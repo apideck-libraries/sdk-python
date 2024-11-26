@@ -1,0 +1,15 @@
+# DeleteInvoiceResponse
+
+Invoice deleted
+
+
+## Fields
+
+| Field                                                  | Type                                                   | Required                                               | Description                                            | Example                                                |
+| ------------------------------------------------------ | ------------------------------------------------------ | ------------------------------------------------------ | ------------------------------------------------------ | ------------------------------------------------------ |
+| `status_code`                                          | *int*                                                  | :heavy_check_mark:                                     | HTTP Response Status Code                              | 200                                                    |
+| `status`                                               | *str*                                                  | :heavy_check_mark:                                     | HTTP Response Status                                   | OK                                                     |
+| `service`                                              | *str*                                                  | :heavy_check_mark:                                     | Apideck ID of service provider                         | xero                                                   |
+| `resource`                                             | *str*                                                  | :heavy_check_mark:                                     | Unified API resource name                              | invoices                                               |
+| `operation`                                            | *str*                                                  | :heavy_check_mark:                                     | Operation performed                                    | delete                                                 |
+| `data`                                                 | [models.InvoiceResponse](../models/invoiceresponse.md) | :heavy_check_mark:                                     | N/A                                                    |                                                        |

@@ -1,0 +1,12 @@
+# ActivitiesFilter
+
+
+## Fields
+
+| Field                                                                | Type                                                                 | Required                                                             | Description                                                          | Example                                                              |
+| -------------------------------------------------------------------- | -------------------------------------------------------------------- | -------------------------------------------------------------------- | -------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| `company_id`                                                         | *Optional[str]*                                                      | :heavy_minus_sign:                                                   | Company ID to filter on                                              | 1234                                                                 |
+| `owner_id`                                                           | *Optional[str]*                                                      | :heavy_minus_sign:                                                   | Owner ID to filter on                                                | 1234                                                                 |
+| `contact_id`                                                         | *Optional[str]*                                                      | :heavy_minus_sign:                                                   | Primary contact ID to filter on                                      | 1234                                                                 |
+| `updated_since`                                                      | [date](https://docs.python.org/3/library/datetime.html#date-objects) | :heavy_minus_sign:                                                   | N/A                                                                  | 2020-09-30T07:43:32.000Z                                             |
+| `type`                                                               | *Optional[str]*                                                      | :heavy_minus_sign:                                                   | Type to filter on                                                    | Task                                                                 |

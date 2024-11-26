@@ -1,0 +1,9 @@
+# FilesSort
+
+
+## Fields
+
+| Field                                                        | Type                                                         | Required                                                     | Description                                                  | Example                                                      |
+| ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| `by`                                                         | [Optional[models.FilesSortBy]](../models/filessortby.md)     | :heavy_minus_sign:                                           | The field on which to sort the Files                         | updated_at                                                   |
+| `direction`                                                  | [Optional[models.SortDirection]](../models/sortdirection.md) | :heavy_minus_sign:                                           | The direction in which to sort the results                   |                                                              |

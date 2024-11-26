@@ -1,0 +1,10 @@
+# FormFieldOptionGroup
+
+
+## Fields
+
+| Field                                                                    | Type                                                                     | Required                                                                 | Description                                                              | Example                                                                  |
+| ------------------------------------------------------------------------ | ------------------------------------------------------------------------ | ------------------------------------------------------------------------ | ------------------------------------------------------------------------ | ------------------------------------------------------------------------ |
+| `id`                                                                     | *Optional[str]*                                                          | :heavy_minus_sign:                                                       | N/A                                                                      | 1234                                                                     |
+| `label`                                                                  | *Optional[str]*                                                          | :heavy_minus_sign:                                                       | N/A                                                                      | General Channel                                                          |
+| `options`                                                                | List[[models.SimpleFormFieldOption](../models/simpleformfieldoption.md)] | :heavy_minus_sign:                                                       | N/A                                                                      |                                                                          |

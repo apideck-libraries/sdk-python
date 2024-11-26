@@ -1,0 +1,34 @@
+speakeasyVersion: 1.446.1
+sources:
+    apideck-OAS:
+        sourceNamespace: apideck-oas
+        sourceRevisionDigest: sha256:02551218f30a59294f052ed522ed2fe1640fb36ccda309abec79d9ad45a25769
+        sourceBlobDigest: sha256:699b3eb6377b8eb11bd30a9fa7b959c5d13b341d583aacc499276a8bf17fc64f
+        tags:
+            - latest
+            - 10.8.1
+targets:
+    apideck:
+        source: apideck-OAS
+        sourceNamespace: apideck-oas
+        sourceRevisionDigest: sha256:02551218f30a59294f052ed522ed2fe1640fb36ccda309abec79d9ad45a25769
+        sourceBlobDigest: sha256:699b3eb6377b8eb11bd30a9fa7b959c5d13b341d583aacc499276a8bf17fc64f
+        codeSamplesNamespace: apideck-oas-code-samples
+        codeSamplesRevisionDigest: sha256:8556285c7f0bb2e9b53667384613b4670f34cd605c0062db390f832cd05d76b7
+workflow:
+    workflowVersion: 1.0.0
+    speakeasyVersion: latest
+    sources:
+        apideck-OAS:
+            inputs:
+                - location: ../unify/speakeasy-spec.yml
+            registry:
+                location: registry.speakeasyapi.dev/apideck-k2o/apideck/apideck-oas
+    targets:
+        apideck:
+            target: python
+            source: apideck-OAS
+            codeSamples:
+                registry:
+                    location: registry.speakeasyapi.dev/apideck-k2o/apideck/apideck-oas-code-samples
+                blocking: false

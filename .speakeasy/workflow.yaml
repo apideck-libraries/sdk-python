@@ -1,0 +1,16 @@
+workflowVersion: 1.0.0
+speakeasyVersion: latest
+sources:
+    apideck-OAS:
+        inputs:
+            - location: ../unify/speakeasy-spec.yml
+        registry:
+            location: registry.speakeasyapi.dev/apideck-k2o/apideck/apideck-oas
+targets:
+    apideck:
+        target: python
+        source: apideck-OAS
+        codeSamples:
+            registry:
+                location: registry.speakeasyapi.dev/apideck-k2o/apideck/apideck-oas-code-samples
+            blocking: false

@@ -1,0 +1,9 @@
+# WebhookWebhooksUpdateRequest
+
+
+## Fields
+
+| Field                                                                                              | Type                                                                                               | Required                                                                                           | Description                                                                                        |
+| -------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| `id`                                                                                               | *str*                                                                                              | :heavy_check_mark:                                                                                 | JWT Webhook token that represents the unifiedApi and applicationId associated to the event source. |
+| `update_webhook_request`                                                                           | [models.UpdateWebhookRequest](../models/updatewebhookrequest.md)                                   | :heavy_check_mark:                                                                                 | N/A                                                                                                |

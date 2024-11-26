@@ -1,0 +1,17 @@
+# GetHrisCompaniesResponse
+
+Companies
+
+
+## Fields
+
+| Field                                                       | Type                                                        | Required                                                    | Description                                                 | Example                                                     |
+| ----------------------------------------------------------- | ----------------------------------------------------------- | ----------------------------------------------------------- | ----------------------------------------------------------- | ----------------------------------------------------------- |
+| `status_code`                                               | *int*                                                       | :heavy_check_mark:                                          | HTTP Response Status Code                                   | 200                                                         |
+| `status`                                                    | *str*                                                       | :heavy_check_mark:                                          | HTTP Response Status                                        | OK                                                          |
+| `service`                                                   | *str*                                                       | :heavy_check_mark:                                          | Apideck ID of service provider                              | undefined                                                   |
+| `resource`                                                  | *str*                                                       | :heavy_check_mark:                                          | Unified API resource name                                   | Companies                                                   |
+| `operation`                                                 | *str*                                                       | :heavy_check_mark:                                          | Operation performed                                         | all                                                         |
+| `data`                                                      | List[[models.HrisCompany](../models/hriscompany.md)]        | :heavy_check_mark:                                          | N/A                                                         |                                                             |
+| `meta`                                                      | [Optional[models.Meta]](../models/meta.md)                  | :heavy_minus_sign:                                          | Response metadata                                           |                                                             |
+| `links`                                                     | [Optional[models.Links]](../models/links.md)                | :heavy_minus_sign:                                          | Links to navigate to previous or next pages through the API |                                                             |
