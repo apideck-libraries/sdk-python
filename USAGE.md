@@ -1,7 +1,7 @@
 <!-- Start SDK Example Usage [usage] -->
 ```python
 # Synchronous Example
-from apideck_sdk import Apideck
+from apideck import Apideck
 import os
 
 with Apideck(
@@ -34,7 +34,7 @@ with Apideck(
 The same SDK client can also be used to make asychronous requests by importing asyncio.
 ```python
 # Asynchronous Example
-from apideck_sdk import Apideck
+from apideck import Apideck
 import asyncio
 import os
 

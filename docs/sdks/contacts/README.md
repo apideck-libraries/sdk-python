@@ -18,8 +18,8 @@ List contacts
 ### Example Usage
 
 ```python
-import apideck_sdk
-from apideck_sdk import Apideck
+import apideck
+from apideck import Apideck
 import os
 
 with Apideck(
@@ -37,8 +37,8 @@ with Apideck(
             "owner_id": "12345",
         },
         "sort": {
-            "by": apideck_sdk.ContactsSortBy.CREATED_AT,
-            "direction": apideck_sdk.SortDirection.DESC,
+            "by": apideck.ContactsSortBy.CREATED_AT,
+            "direction": apideck.SortDirection.DESC,
         },
         "pass_through": {
             "search": "San Francisco",
@@ -81,8 +81,8 @@ Create contact
 ### Example Usage
 
 ```python
-import apideck_sdk
-from apideck_sdk import Apideck
+import apideck
+from apideck import Apideck
 import os
 
 with Apideck(
@@ -93,7 +93,7 @@ with Apideck(
     res = s.crm.contacts.create(contact={
         "name": "Elon Musk",
         "owner_id": "54321",
-        "type": apideck_sdk.ContactType.PERSONAL,
+        "type": apideck.ContactType.PERSONAL,
         "company_id": "23456",
         "company_name": "23456",
         "lead_id": "34567",
@@ -105,7 +105,7 @@ with Apideck(
         "title": "CEO",
         "department": "Engineering",
         "language": "EN",
-        "gender": apideck_sdk.ContactGender.FEMALE,
+        "gender": apideck.ContactGender.FEMALE,
         "birthday": "2000-08-12",
         "photo_url": "https://unavatar.io/elon-musk",
         "lead_source": "Cold Call",
@@ -118,13 +118,13 @@ with Apideck(
             {
                 "url": "http://example.com",
                 "id": "12345",
-                "type": apideck_sdk.WebsiteType.PRIMARY,
+                "type": apideck.WebsiteType.PRIMARY,
             },
         ],
         "addresses": [
             {
                 "id": "123",
-                "type": apideck_sdk.Type.PRIMARY,
+                "type": apideck.Type.PRIMARY,
                 "string": "25 Spring Street, Blackburn, VIC 3130",
                 "name": "HQ US",
                 "line1": "Main street",
@@ -150,7 +150,7 @@ with Apideck(
             },
             {
                 "id": "123",
-                "type": apideck_sdk.Type.PRIMARY,
+                "type": apideck.Type.PRIMARY,
                 "string": "25 Spring Street, Blackburn, VIC 3130",
                 "name": "HQ US",
                 "line1": "Main street",
@@ -189,14 +189,14 @@ with Apideck(
                 "country_code": "1",
                 "area_code": "323",
                 "extension": "105",
-                "type": apideck_sdk.PhoneNumberType.PRIMARY,
+                "type": apideck.PhoneNumberType.PRIMARY,
             },
         ],
         "emails": [
             {
                 "email": "elon@musk.com",
                 "id": "123",
-                "type": apideck_sdk.EmailType.PRIMARY,
+                "type": apideck.EmailType.PRIMARY,
             },
         ],
         "email_domain": "gmail.com",
@@ -346,7 +346,7 @@ Get contact
 ### Example Usage
 
 ```python
-from apideck_sdk import Apideck
+from apideck import Apideck
 import os
 
 with Apideck(
@@ -402,8 +402,8 @@ Update contact
 ### Example Usage
 
 ```python
-import apideck_sdk
-from apideck_sdk import Apideck
+import apideck
+from apideck import Apideck
 import os
 
 with Apideck(
@@ -414,7 +414,7 @@ with Apideck(
     res = s.crm.contacts.update(id="<id>", contact={
         "name": "Elon Musk",
         "owner_id": "54321",
-        "type": apideck_sdk.ContactType.PERSONAL,
+        "type": apideck.ContactType.PERSONAL,
         "company_id": "23456",
         "company_name": "23456",
         "lead_id": "34567",
@@ -426,7 +426,7 @@ with Apideck(
         "title": "CEO",
         "department": "Engineering",
         "language": "EN",
-        "gender": apideck_sdk.ContactGender.FEMALE,
+        "gender": apideck.ContactGender.FEMALE,
         "birthday": "2000-08-12",
         "photo_url": "https://unavatar.io/elon-musk",
         "lead_source": "Cold Call",
@@ -439,23 +439,23 @@ with Apideck(
             {
                 "url": "http://example.com",
                 "id": "12345",
-                "type": apideck_sdk.WebsiteType.PRIMARY,
+                "type": apideck.WebsiteType.PRIMARY,
             },
             {
                 "url": "http://example.com",
                 "id": "12345",
-                "type": apideck_sdk.WebsiteType.PRIMARY,
+                "type": apideck.WebsiteType.PRIMARY,
             },
             {
                 "url": "http://example.com",
                 "id": "12345",
-                "type": apideck_sdk.WebsiteType.PRIMARY,
+                "type": apideck.WebsiteType.PRIMARY,
             },
         ],
         "addresses": [
             {
                 "id": "123",
-                "type": apideck_sdk.Type.PRIMARY,
+                "type": apideck.Type.PRIMARY,
                 "string": "25 Spring Street, Blackburn, VIC 3130",
                 "name": "HQ US",
                 "line1": "Main street",
@@ -481,7 +481,7 @@ with Apideck(
             },
             {
                 "id": "123",
-                "type": apideck_sdk.Type.PRIMARY,
+                "type": apideck.Type.PRIMARY,
                 "string": "25 Spring Street, Blackburn, VIC 3130",
                 "name": "HQ US",
                 "line1": "Main street",
@@ -520,7 +520,7 @@ with Apideck(
                 "country_code": "1",
                 "area_code": "323",
                 "extension": "105",
-                "type": apideck_sdk.PhoneNumberType.PRIMARY,
+                "type": apideck.PhoneNumberType.PRIMARY,
             },
             {
                 "number": "111-111-1111",
@@ -528,7 +528,7 @@ with Apideck(
                 "country_code": "1",
                 "area_code": "323",
                 "extension": "105",
-                "type": apideck_sdk.PhoneNumberType.PRIMARY,
+                "type": apideck.PhoneNumberType.PRIMARY,
             },
             {
                 "number": "111-111-1111",
@@ -536,19 +536,19 @@ with Apideck(
                 "country_code": "1",
                 "area_code": "323",
                 "extension": "105",
-                "type": apideck_sdk.PhoneNumberType.PRIMARY,
+                "type": apideck.PhoneNumberType.PRIMARY,
             },
         ],
         "emails": [
             {
                 "email": "elon@musk.com",
                 "id": "123",
-                "type": apideck_sdk.EmailType.PRIMARY,
+                "type": apideck.EmailType.PRIMARY,
             },
             {
                 "email": "elon@musk.com",
                 "id": "123",
-                "type": apideck_sdk.EmailType.PRIMARY,
+                "type": apideck.EmailType.PRIMARY,
             },
         ],
         "email_domain": "gmail.com",
@@ -647,7 +647,7 @@ Delete contact
 ### Example Usage
 
 ```python
-from apideck_sdk import Apideck
+from apideck import Apideck
 import os
 
 with Apideck(

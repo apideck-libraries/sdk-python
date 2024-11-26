@@ -18,7 +18,7 @@ List Departments
 ### Example Usage
 
 ```python
-from apideck_sdk import Apideck
+from apideck import Apideck
 import os
 
 with Apideck(
@@ -69,7 +69,7 @@ Create Department
 ### Example Usage
 
 ```python
-from apideck_sdk import Apideck
+from apideck import Apideck
 import os
 
 with Apideck(
@@ -143,7 +143,7 @@ Get Department
 ### Example Usage
 
 ```python
-from apideck_sdk import Apideck
+from apideck import Apideck
 import os
 
 with Apideck(
@@ -191,7 +191,7 @@ Update Department
 ### Example Usage
 
 ```python
-from apideck_sdk import Apideck
+from apideck import Apideck
 import os
 
 with Apideck(
@@ -308,7 +308,7 @@ Delete Department
 ### Example Usage
 
 ```python
-from apideck_sdk import Apideck
+from apideck import Apideck
 import os
 
 with Apideck(

@@ -18,7 +18,7 @@ List Invoice Items
 ### Example Usage
 
 ```python
-from apideck_sdk import Apideck
+from apideck import Apideck
 import os
 
 with Apideck(
@@ -72,8 +72,8 @@ Create Invoice Item
 ### Example Usage
 
 ```python
-import apideck_sdk
-from apideck_sdk import Apideck
+import apideck
+from apideck import Apideck
 import dateutil.parser
 import os
 
@@ -91,7 +91,7 @@ with Apideck(
         "tracked": True,
         "taxable": True,
         "inventory_date": dateutil.parser.parse("2020-10-30").date(),
-        "type": apideck_sdk.InvoiceItemType.INVENTORY,
+        "type": apideck.InvoiceItemType.INVENTORY,
         "sales_details": {
             "unit_price": 27500.5,
             "unit_of_measure": "pc.",
@@ -202,7 +202,7 @@ Get Invoice Item
 ### Example Usage
 
 ```python
-from apideck_sdk import Apideck
+from apideck import Apideck
 import os
 
 with Apideck(
@@ -250,8 +250,8 @@ Update Invoice Item
 ### Example Usage
 
 ```python
-import apideck_sdk
-from apideck_sdk import Apideck
+import apideck
+from apideck import Apideck
 import dateutil.parser
 import os
 
@@ -269,7 +269,7 @@ with Apideck(
         "tracked": True,
         "taxable": True,
         "inventory_date": dateutil.parser.parse("2020-10-30").date(),
-        "type": apideck_sdk.InvoiceItemType.INVENTORY,
+        "type": apideck.InvoiceItemType.INVENTORY,
         "sales_details": {
             "unit_price": 27500.5,
             "unit_of_measure": "pc.",
@@ -405,7 +405,7 @@ Delete Invoice Item
 ### Example Usage
 
 ```python
-from apideck_sdk import Apideck
+from apideck import Apideck
 import os
 
 with Apideck(

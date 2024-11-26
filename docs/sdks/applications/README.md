@@ -18,7 +18,7 @@ List Applications
 ### Example Usage
 
 ```python
-from apideck_sdk import Apideck
+from apideck import Apideck
 import os
 
 with Apideck(
@@ -68,8 +68,8 @@ Create Application
 ### Example Usage
 
 ```python
-import apideck_sdk
-from apideck_sdk import Apideck
+import apideck
+from apideck import Apideck
 import os
 
 with Apideck(
@@ -80,7 +80,7 @@ with Apideck(
     res = s.ats.applications.create(application={
         "applicant_id": "12345",
         "job_id": "12345",
-        "status": apideck_sdk.ApplicationStatus.OPEN,
+        "status": apideck.ApplicationStatus.OPEN,
         "stage": {
             "id": "12345",
             "name": "12345",
@@ -147,7 +147,7 @@ Get Application
 ### Example Usage
 
 ```python
-from apideck_sdk import Apideck
+from apideck import Apideck
 import os
 
 with Apideck(
@@ -194,8 +194,8 @@ Update Application
 ### Example Usage
 
 ```python
-import apideck_sdk
-from apideck_sdk import Apideck
+import apideck
+from apideck import Apideck
 import os
 
 with Apideck(
@@ -206,7 +206,7 @@ with Apideck(
     res = s.ats.applications.update(id="<id>", application={
         "applicant_id": "12345",
         "job_id": "12345",
-        "status": apideck_sdk.ApplicationStatus.OPEN,
+        "status": apideck.ApplicationStatus.OPEN,
         "stage": {
             "id": "12345",
             "name": "12345",
@@ -316,7 +316,7 @@ Delete Application
 ### Example Usage
 
 ```python
-from apideck_sdk import Apideck
+from apideck import Apideck
 import os
 
 with Apideck(

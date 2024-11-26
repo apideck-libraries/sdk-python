@@ -18,8 +18,8 @@ List Invoices
 ### Example Usage
 
 ```python
-import apideck_sdk
-from apideck_sdk import Apideck
+import apideck
+from apideck import Apideck
 import dateutil.parser
 import os
 
@@ -36,8 +36,8 @@ with Apideck(
             "number": "OIT00546",
         },
         "sort": {
-            "by": apideck_sdk.InvoicesSortBy.UPDATED_AT,
-            "direction": apideck_sdk.SortDirection.DESC,
+            "by": apideck.InvoicesSortBy.UPDATED_AT,
+            "direction": apideck.SortDirection.DESC,
         },
         "pass_through": {
             "search": "San Francisco",
@@ -80,8 +80,8 @@ Create Invoice
 ### Example Usage
 
 ```python
-import apideck_sdk
-from apideck_sdk import Apideck
+import apideck
+from apideck import Apideck
 import dateutil.parser
 import os
 
@@ -91,7 +91,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as s:
     res = s.accounting.invoices.create(invoice={
-        "type": apideck_sdk.InvoiceType.SERVICE,
+        "type": apideck.InvoiceType.SERVICE,
         "number": "OIT00546",
         "customer": {
             "id": "12345",
@@ -104,9 +104,9 @@ with Apideck(
         "terms": "Net 30 days",
         "po_number": "90000117",
         "reference": "123456",
-        "status": apideck_sdk.InvoiceStatus.DRAFT,
+        "status": apideck.InvoiceStatus.DRAFT,
         "invoice_sent": True,
-        "currency": apideck_sdk.Currency.USD,
+        "currency": apideck.Currency.USD,
         "currency_rate": 0.69,
         "tax_inclusive": True,
         "sub_total": 27500,
@@ -131,7 +131,7 @@ with Apideck(
                 "code": "120-C",
                 "line_number": 1,
                 "description": "Model Y is a fully electric, mid-size SUV, with seating for up to seven, dual motor AWD and unparalleled protection.",
-                "type": apideck_sdk.InvoiceLineItemType.SALES_ITEM,
+                "type": apideck.InvoiceLineItemType.SALES_ITEM,
                 "tax_amount": 27500,
                 "total_amount": 27500,
                 "quantity": 1,
@@ -177,7 +177,7 @@ with Apideck(
                 "code": "120-C",
                 "line_number": 1,
                 "description": "Model Y is a fully electric, mid-size SUV, with seating for up to seven, dual motor AWD and unparalleled protection.",
-                "type": apideck_sdk.InvoiceLineItemType.SALES_ITEM,
+                "type": apideck.InvoiceLineItemType.SALES_ITEM,
                 "tax_amount": 27500,
                 "total_amount": 27500,
                 "quantity": 1,
@@ -232,7 +232,7 @@ with Apideck(
         ],
         "billing_address": {
             "id": "123",
-            "type": apideck_sdk.Type.PRIMARY,
+            "type": apideck.Type.PRIMARY,
             "string": "25 Spring Street, Blackburn, VIC 3130",
             "name": "HQ US",
             "line1": "Main street",
@@ -258,7 +258,7 @@ with Apideck(
         },
         "shipping_address": {
             "id": "123",
-            "type": apideck_sdk.Type.PRIMARY,
+            "type": apideck.Type.PRIMARY,
             "string": "25 Spring Street, Blackburn, VIC 3130",
             "name": "HQ US",
             "line1": "Main street",
@@ -292,14 +292,14 @@ with Apideck(
             "bank_name": "Monzo",
             "account_number": "123465",
             "account_name": "SPACEX LLC",
-            "account_type": apideck_sdk.AccountType.CREDIT_CARD,
+            "account_type": apideck.AccountType.CREDIT_CARD,
             "iban": "CH2989144532982975332",
             "bic": "AUDSCHGGXXX",
             "routing_number": "012345678",
             "bsb_number": "062-001",
             "branch_identifier": "001",
             "bank_code": "BNH",
-            "currency": apideck_sdk.Currency.USD,
+            "currency": apideck.Currency.USD,
         },
         "ledger_account": {
             "id": "123456",
@@ -388,7 +388,7 @@ Get Invoice
 ### Example Usage
 
 ```python
-from apideck_sdk import Apideck
+from apideck import Apideck
 import os
 
 with Apideck(
@@ -436,8 +436,8 @@ Update Invoice
 ### Example Usage
 
 ```python
-import apideck_sdk
-from apideck_sdk import Apideck
+import apideck
+from apideck import Apideck
 import dateutil.parser
 import os
 
@@ -447,7 +447,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as s:
     res = s.accounting.invoices.update(id="<id>", invoice={
-        "type": apideck_sdk.InvoiceType.SERVICE,
+        "type": apideck.InvoiceType.SERVICE,
         "number": "OIT00546",
         "customer": {
             "id": "12345",
@@ -460,9 +460,9 @@ with Apideck(
         "terms": "Net 30 days",
         "po_number": "90000117",
         "reference": "123456",
-        "status": apideck_sdk.InvoiceStatus.DRAFT,
+        "status": apideck.InvoiceStatus.DRAFT,
         "invoice_sent": True,
-        "currency": apideck_sdk.Currency.USD,
+        "currency": apideck.Currency.USD,
         "currency_rate": 0.69,
         "tax_inclusive": True,
         "sub_total": 27500,
@@ -495,7 +495,7 @@ with Apideck(
                 "code": "120-C",
                 "line_number": 1,
                 "description": "Model Y is a fully electric, mid-size SUV, with seating for up to seven, dual motor AWD and unparalleled protection.",
-                "type": apideck_sdk.InvoiceLineItemType.SALES_ITEM,
+                "type": apideck.InvoiceLineItemType.SALES_ITEM,
                 "tax_amount": 27500,
                 "total_amount": 27500,
                 "quantity": 1,
@@ -552,7 +552,7 @@ with Apideck(
                 "code": "120-C",
                 "line_number": 1,
                 "description": "Model Y is a fully electric, mid-size SUV, with seating for up to seven, dual motor AWD and unparalleled protection.",
-                "type": apideck_sdk.InvoiceLineItemType.SALES_ITEM,
+                "type": apideck.InvoiceLineItemType.SALES_ITEM,
                 "tax_amount": 27500,
                 "total_amount": 27500,
                 "quantity": 1,
@@ -603,7 +603,7 @@ with Apideck(
         ],
         "billing_address": {
             "id": "123",
-            "type": apideck_sdk.Type.PRIMARY,
+            "type": apideck.Type.PRIMARY,
             "string": "25 Spring Street, Blackburn, VIC 3130",
             "name": "HQ US",
             "line1": "Main street",
@@ -629,7 +629,7 @@ with Apideck(
         },
         "shipping_address": {
             "id": "123",
-            "type": apideck_sdk.Type.PRIMARY,
+            "type": apideck.Type.PRIMARY,
             "string": "25 Spring Street, Blackburn, VIC 3130",
             "name": "HQ US",
             "line1": "Main street",
@@ -663,14 +663,14 @@ with Apideck(
             "bank_name": "Monzo",
             "account_number": "123465",
             "account_name": "SPACEX LLC",
-            "account_type": apideck_sdk.AccountType.CREDIT_CARD,
+            "account_type": apideck.AccountType.CREDIT_CARD,
             "iban": "CH2989144532982975332",
             "bic": "AUDSCHGGXXX",
             "routing_number": "012345678",
             "bsb_number": "062-001",
             "branch_identifier": "001",
             "bank_code": "BNH",
-            "currency": apideck_sdk.Currency.USD,
+            "currency": apideck.Currency.USD,
         },
         "ledger_account": {
             "id": "123456",
@@ -743,7 +743,7 @@ Delete Invoice
 ### Example Usage
 
 ```python
-from apideck_sdk import Apideck
+from apideck import Apideck
 import os
 
 with Apideck(

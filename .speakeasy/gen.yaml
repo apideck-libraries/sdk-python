@@ -16,7 +16,7 @@ generation:
     oAuth2ClientCredentialsEnabled: true
     oAuth2PasswordEnabled: true
 python:
-  version: 0.0.3
+  version: 0.0.4
   additionalDependencies:
     dev: {}
     main: {}
@@ -44,6 +44,6 @@ python:
   maxMethodParams: 4
   methodArguments: infer-optional-args
   outputModelSuffix: output
-  packageName: apideck-sdk
+  packageName: apideck
   responseFormat: flat
   templateVersion: v2

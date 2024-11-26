@@ -17,8 +17,8 @@ List Attachments
 ### Example Usage
 
 ```python
-import apideck_sdk
-from apideck_sdk import Apideck
+import apideck
+from apideck import Apideck
 import os
 
 with Apideck(
@@ -27,7 +27,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as s:
     res = s.accounting.attachments.list(request={
-        "reference_type": apideck_sdk.AttachmentReferenceType.INVOICE,
+        "reference_type": apideck.AttachmentReferenceType.INVOICE,
         "reference_id": "123456",
         "service_id": "salesforce",
         "fields": "id,updated_at",
@@ -68,8 +68,8 @@ Get Attachment
 ### Example Usage
 
 ```python
-import apideck_sdk
-from apideck_sdk import Apideck
+import apideck
+from apideck import Apideck
 import os
 
 with Apideck(
@@ -78,7 +78,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as s:
     res = s.accounting.attachments.get(request={
-        "reference_type": apideck_sdk.AttachmentReferenceType.INVOICE,
+        "reference_type": apideck.AttachmentReferenceType.INVOICE,
         "reference_id": "123456",
         "id": "<id>",
         "service_id": "salesforce",
@@ -120,8 +120,8 @@ Delete Attachment
 ### Example Usage
 
 ```python
-import apideck_sdk
-from apideck_sdk import Apideck
+import apideck
+from apideck import Apideck
 import os
 
 with Apideck(
@@ -130,7 +130,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as s:
     res = s.accounting.attachments.delete(request={
-        "reference_type": apideck_sdk.AttachmentReferenceType.INVOICE,
+        "reference_type": apideck.AttachmentReferenceType.INVOICE,
         "reference_id": "123456",
         "id": "<id>",
         "service_id": "salesforce",
@@ -171,8 +171,8 @@ Download Attachment
 ### Example Usage
 
 ```python
-import apideck_sdk
-from apideck_sdk import Apideck
+import apideck
+from apideck import Apideck
 import os
 
 with Apideck(
@@ -181,7 +181,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as s:
     res = s.accounting.attachments.download(request={
-        "reference_type": apideck_sdk.AttachmentReferenceType.INVOICE,
+        "reference_type": apideck.AttachmentReferenceType.INVOICE,
         "reference_id": "123456",
         "id": "<id>",
         "service_id": "salesforce",

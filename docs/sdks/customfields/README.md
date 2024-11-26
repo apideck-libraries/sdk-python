@@ -15,7 +15,7 @@ This endpoint returns an custom fields on a connection resource.
 ### Example Usage
 
 ```python
-from apideck_sdk import Apideck
+from apideck import Apideck
 import os
 
 with Apideck(

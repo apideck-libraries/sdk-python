@@ -18,8 +18,8 @@ List Time Off Requests
 ### Example Usage
 
 ```python
-import apideck_sdk
-from apideck_sdk import Apideck
+import apideck
+from apideck import Apideck
 import os
 
 with Apideck(
@@ -34,7 +34,7 @@ with Apideck(
             "end_date": "2022-04-21",
             "updated_since": "2020-09-30T07:43:32.000Z",
             "employee_id": "1234",
-            "time_off_request_status": apideck_sdk.TimeOffRequestStatus.APPROVED,
+            "time_off_request_status": apideck.TimeOffRequestStatus.APPROVED,
             "company_id": "1234",
         },
         "pass_through": {
@@ -78,8 +78,8 @@ Create Time Off Request
 ### Example Usage
 
 ```python
-import apideck_sdk
-from apideck_sdk import Apideck
+import apideck
+from apideck import Apideck
 import os
 
 with Apideck(
@@ -90,14 +90,14 @@ with Apideck(
     res = s.hris.time_off_requests.create(time_off_request={
         "employee_id": "12345",
         "policy_id": "12345",
-        "status": apideck_sdk.TimeOffRequestStatusStatus.APPROVED,
+        "status": apideck.TimeOffRequestStatusStatus.APPROVED,
         "description": "Enjoying some sun.",
         "start_date": "2022-04-01",
         "end_date": "2022-04-01",
         "request_date": "2022-03-21",
-        "request_type": apideck_sdk.RequestType.VACATION,
+        "request_type": apideck.RequestType.VACATION,
         "approval_date": "2022-03-21",
-        "units": apideck_sdk.Units.HOURS,
+        "units": apideck.Units.HOURS,
         "amount": 3.5,
         "day_part": "morning",
         "notes": {
@@ -167,7 +167,7 @@ Get Time Off Request
 ### Example Usage
 
 ```python
-from apideck_sdk import Apideck
+from apideck import Apideck
 import os
 
 with Apideck(
@@ -217,8 +217,8 @@ Update Time Off Request
 ### Example Usage
 
 ```python
-import apideck_sdk
-from apideck_sdk import Apideck
+import apideck
+from apideck import Apideck
 import os
 
 with Apideck(
@@ -232,14 +232,14 @@ with Apideck(
         "time_off_request": {
             "employee_id": "12345",
             "policy_id": "12345",
-            "status": apideck_sdk.TimeOffRequestStatusStatus.APPROVED,
+            "status": apideck.TimeOffRequestStatusStatus.APPROVED,
             "description": "Enjoying some sun.",
             "start_date": "2022-04-01",
             "end_date": "2022-04-01",
             "request_date": "2022-03-21",
-            "request_type": apideck_sdk.RequestType.VACATION,
+            "request_type": apideck.RequestType.VACATION,
             "approval_date": "2022-03-21",
-            "units": apideck_sdk.Units.HOURS,
+            "units": apideck.Units.HOURS,
             "amount": 3.5,
             "day_part": "morning",
             "notes": {
@@ -351,7 +351,7 @@ Delete Time Off Request
 ### Example Usage
 
 ```python
-from apideck_sdk import Apideck
+from apideck import Apideck
 import os
 
 with Apideck(

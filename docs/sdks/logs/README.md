@@ -15,7 +15,7 @@ This endpoint includes all consumer request logs.
 ### Example Usage
 
 ```python
-from apideck_sdk import Apideck
+from apideck import Apideck
 import os
 
 with Apideck(

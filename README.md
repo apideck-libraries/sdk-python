@@ -76,7 +76,7 @@ Generally, the SDK will work well with most IDEs out of the box. However, when u
 
 ```python
 # Synchronous Example
-from apideck_sdk import Apideck
+from apideck import Apideck
 import os
 
 with Apideck(
@@ -109,7 +109,7 @@ with Apideck(
 The same SDK client can also be used to make asychronous requests by importing asyncio.
 ```python
 # Asynchronous Example
-from apideck_sdk import Apideck
+from apideck import Apideck
 import asyncio
 import os
 
@@ -676,8 +676,8 @@ Some of the endpoints in this SDK support retries. If you use the SDK without an
 
 To change the default retry strategy for a single API call, simply provide a `RetryConfig` object to the call:
 ```python
+from apideck import Apideck
 from apideck.utils import BackoffStrategy, RetryConfig
-from apideck_sdk import Apideck
 import os
 
 with Apideck(
@@ -709,8 +709,8 @@ with Apideck(
 
 If you'd like to override the default retry strategy for all operations that support retries, you can use the `retry_config` optional parameter when initializing the SDK:
 ```python
+from apideck import Apideck
 from apideck.utils import BackoffStrategy, RetryConfig
-from apideck_sdk import Apideck
 import os
 
 with Apideck(
@@ -769,7 +769,7 @@ When custom error responses are specified for an operation, the SDK may also rai
 ### Example
 
 ```python
-from apideck_sdk import Apideck, models
+from apideck import Apideck, models
 import os
 
 with Apideck(
@@ -826,7 +826,7 @@ with Apideck(
 
 The default server can also be overridden globally by passing a URL to the `server_url: str` optional parameter when initializing the SDK client instance. For example:
 ```python
-from apideck_sdk import Apideck
+from apideck import Apideck
 import os
 
 with Apideck(
@@ -860,7 +860,7 @@ with Apideck(
 
 The server URL can also be overridden on a per-operation basis, provided a server list was specified for the operation. For example:
 ```python
-from apideck_sdk import Apideck
+from apideck import Apideck
 import os
 
 with Apideck(
@@ -914,7 +914,7 @@ This allows you to wrap the client with your own custom logic, such as adding cu
 
 For example, you could specify a header for every request that this sdk makes as follows:
 ```python
-from apideck_sdk import Apideck
+from apideck import Apideck
 import httpx
 
 http_client = httpx.Client(headers={"x-custom-header": "someValue"})
@@ -923,8 +923,8 @@ s = Apideck(client=http_client)
 
 or you could wrap the client with your own custom logic:
 ```python
-from apideck_sdk import Apideck
-from apideck_sdk.httpclient import AsyncHttpClient
+from apideck import Apideck
+from apideck.httpclient import AsyncHttpClient
 import httpx
 
 class CustomClient(AsyncHttpClient):
@@ -999,7 +999,7 @@ This SDK supports the following security scheme globally:
 
 To authenticate with the API the `api_key` parameter must be set when initializing the SDK client instance. For example:
 ```python
-from apideck_sdk import Apideck
+from apideck import Apideck
 import os
 
 with Apideck(
@@ -1036,11 +1036,11 @@ You can setup your SDK to emit debug logs for SDK requests and responses.
 
 You can pass your own logger class directly into your SDK.
 ```python
-from apideck_sdk import Apideck
+from apideck import Apideck
 import logging
 
 logging.basicConfig(level=logging.DEBUG)
-s = Apideck(debug_logger=logging.getLogger("apideck_sdk"))
+s = Apideck(debug_logger=logging.getLogger("apideck"))
 ```
 
 You can also enable a default debug logger by setting an environment variable `APIDECK_DEBUG` to true.

@@ -19,7 +19,7 @@ List Tax Rates. Note: Not all connectors return the actual rate/percentage value
 ### Example Usage
 
 ```python
-from apideck_sdk import Apideck
+from apideck import Apideck
 import os
 
 with Apideck(
@@ -77,8 +77,8 @@ Create Tax Rate
 ### Example Usage
 
 ```python
-import apideck_sdk
-from apideck_sdk import Apideck
+import apideck
+from apideck import Apideck
 import os
 
 with Apideck(
@@ -106,7 +106,7 @@ with Apideck(
         "type": "NONE",
         "report_tax_type": "NONE",
         "original_tax_rate_id": "12345",
-        "status": apideck_sdk.TaxRateStatus.ACTIVE,
+        "status": apideck.TaxRateStatus.ACTIVE,
         "row_version": "1-12345",
         "pass_through": [
             {
@@ -176,7 +176,7 @@ Get Tax Rate. Note: Not all connectors return the actual rate/percentage value. 
 ### Example Usage
 
 ```python
-from apideck_sdk import Apideck
+from apideck import Apideck
 import os
 
 with Apideck(
@@ -224,8 +224,8 @@ Update Tax Rate
 ### Example Usage
 
 ```python
-import apideck_sdk
-from apideck_sdk import Apideck
+import apideck
+from apideck import Apideck
 import os
 
 with Apideck(
@@ -265,7 +265,7 @@ with Apideck(
         "type": "NONE",
         "report_tax_type": "NONE",
         "original_tax_rate_id": "12345",
-        "status": apideck_sdk.TaxRateStatus.ACTIVE,
+        "status": apideck.TaxRateStatus.ACTIVE,
         "row_version": "1-12345",
         "pass_through": [
             {
@@ -351,7 +351,7 @@ Delete Tax Rate
 ### Example Usage
 
 ```python
-from apideck_sdk import Apideck
+from apideck import Apideck
 import os
 
 with Apideck(

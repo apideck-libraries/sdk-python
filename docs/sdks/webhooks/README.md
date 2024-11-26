@@ -18,7 +18,7 @@ List all webhook subscriptions
 ### Example Usage
 
 ```python
-from apideck_sdk import Apideck
+from apideck import Apideck
 import os
 
 with Apideck(
@@ -64,8 +64,8 @@ Create a webhook subscription to receive events
 ### Example Usage
 
 ```python
-import apideck_sdk
-from apideck_sdk import Apideck
+import apideck
+from apideck import Apideck
 import os
 
 with Apideck(
@@ -74,12 +74,12 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as s:
     res = s.webhook.webhooks.create(request={
-        "unified_api": apideck_sdk.UnifiedAPIID.CRM,
-        "status": apideck_sdk.Status.ENABLED,
+        "unified_api": apideck.UnifiedAPIID.CRM,
+        "status": apideck.Status.ENABLED,
         "delivery_url": "https://example.com/my/webhook/endpoint",
         "events": [
-            apideck_sdk.WebhookEventType.VAULT_CONNECTION_CREATED,
-            apideck_sdk.WebhookEventType.VAULT_CONNECTION_UPDATED,
+            apideck.WebhookEventType.VAULT_CONNECTION_CREATED,
+            apideck.WebhookEventType.VAULT_CONNECTION_UPDATED,
         ],
         "description": "A description",
     })
@@ -119,7 +119,7 @@ Get the webhook subscription details
 ### Example Usage
 
 ```python
-from apideck_sdk import Apideck
+from apideck import Apideck
 import os
 
 with Apideck(
@@ -164,8 +164,8 @@ Update a webhook subscription
 ### Example Usage
 
 ```python
-import apideck_sdk
-from apideck_sdk import Apideck
+import apideck
+from apideck import Apideck
 import os
 
 with Apideck(
@@ -175,11 +175,11 @@ with Apideck(
 ) as s:
     res = s.webhook.webhooks.update(id="<id>", update_webhook_request={
         "description": "A description",
-        "status": apideck_sdk.Status.ENABLED,
+        "status": apideck.Status.ENABLED,
         "delivery_url": "https://example.com/my/webhook/endpoint",
         "events": [
-            apideck_sdk.WebhookEventType.VAULT_CONNECTION_CREATED,
-            apideck_sdk.WebhookEventType.VAULT_CONNECTION_UPDATED,
+            apideck.WebhookEventType.VAULT_CONNECTION_CREATED,
+            apideck.WebhookEventType.VAULT_CONNECTION_UPDATED,
         ],
     })
 
@@ -219,7 +219,7 @@ Delete a webhook subscription
 ### Example Usage
 
 ```python
-from apideck_sdk import Apideck
+from apideck import Apideck
 import os
 
 with Apideck(

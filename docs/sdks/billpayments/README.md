@@ -18,8 +18,8 @@ List Bill Payments
 ### Example Usage
 
 ```python
-import apideck_sdk
-from apideck_sdk import Apideck
+import apideck
+from apideck import Apideck
 import dateutil.parser
 import os
 
@@ -34,8 +34,8 @@ with Apideck(
             "updated_since": dateutil.parser.isoparse("2020-09-30T07:43:32.000Z"),
         },
         "sort": {
-            "by": apideck_sdk.PaymentsSortBy.UPDATED_AT,
-            "direction": apideck_sdk.SortDirection.DESC,
+            "by": apideck.PaymentsSortBy.UPDATED_AT,
+            "direction": apideck.SortDirection.DESC,
         },
         "pass_through": {
             "search": "San Francisco",
@@ -78,8 +78,8 @@ Create Bill Payment
 ### Example Usage
 
 ```python
-import apideck_sdk
-from apideck_sdk import Apideck
+import apideck
+from apideck import Apideck
 import dateutil.parser
 import os
 
@@ -91,7 +91,7 @@ with Apideck(
     res = s.accounting.bill_payments.create(bill_payment={
         "total_amount": 49.99,
         "transaction_date": dateutil.parser.isoparse("2021-05-01T12:00:00.000Z"),
-        "currency": apideck_sdk.Currency.USD,
+        "currency": apideck.Currency.USD,
         "currency_rate": 0.69,
         "reference": "123456",
         "payment_method": "cash",
@@ -107,7 +107,7 @@ with Apideck(
             "display_name": "Windsurf Shop",
             "address": {
                 "id": "123",
-                "type": apideck_sdk.Type.PRIMARY,
+                "type": apideck.Type.PRIMARY,
                 "string": "25 Spring Street, Blackburn, VIC 3130",
                 "name": "HQ US",
                 "line1": "Main street",
@@ -134,12 +134,12 @@ with Apideck(
         },
         "company_id": "12345",
         "reconciled": True,
-        "status": apideck_sdk.PaymentStatus.AUTHORISED,
-        "type": apideck_sdk.BillPaymentType.ACCOUNTS_PAYABLE,
+        "status": apideck.PaymentStatus.AUTHORISED,
+        "type": apideck.BillPaymentType.ACCOUNTS_PAYABLE,
         "allocations": [
             {
                 "id": "12345",
-                "type": apideck_sdk.BillPaymentAllocationType.BILL,
+                "type": apideck.BillPaymentAllocationType.BILL,
                 "amount": 49.99,
                 "allocation_id": "123456",
             },
@@ -220,7 +220,7 @@ Get Bill Payment
 ### Example Usage
 
 ```python
-from apideck_sdk import Apideck
+from apideck import Apideck
 import os
 
 with Apideck(
@@ -268,8 +268,8 @@ Update Bill Payment
 ### Example Usage
 
 ```python
-import apideck_sdk
-from apideck_sdk import Apideck
+import apideck
+from apideck import Apideck
 import dateutil.parser
 import os
 
@@ -281,7 +281,7 @@ with Apideck(
     res = s.accounting.bill_payments.update(id="<id>", bill_payment={
         "total_amount": 49.99,
         "transaction_date": dateutil.parser.isoparse("2021-05-01T12:00:00.000Z"),
-        "currency": apideck_sdk.Currency.USD,
+        "currency": apideck.Currency.USD,
         "currency_rate": 0.69,
         "reference": "123456",
         "payment_method": "cash",
@@ -297,7 +297,7 @@ with Apideck(
             "display_name": "Windsurf Shop",
             "address": {
                 "id": "123",
-                "type": apideck_sdk.Type.PRIMARY,
+                "type": apideck.Type.PRIMARY,
                 "string": "25 Spring Street, Blackburn, VIC 3130",
                 "name": "HQ US",
                 "line1": "Main street",
@@ -324,24 +324,24 @@ with Apideck(
         },
         "company_id": "12345",
         "reconciled": True,
-        "status": apideck_sdk.PaymentStatus.AUTHORISED,
-        "type": apideck_sdk.BillPaymentType.ACCOUNTS_PAYABLE,
+        "status": apideck.PaymentStatus.AUTHORISED,
+        "type": apideck.BillPaymentType.ACCOUNTS_PAYABLE,
         "allocations": [
             {
                 "id": "12345",
-                "type": apideck_sdk.BillPaymentAllocationType.BILL,
+                "type": apideck.BillPaymentAllocationType.BILL,
                 "amount": 49.99,
                 "allocation_id": "123456",
             },
             {
                 "id": "12345",
-                "type": apideck_sdk.BillPaymentAllocationType.BILL,
+                "type": apideck.BillPaymentAllocationType.BILL,
                 "amount": 49.99,
                 "allocation_id": "123456",
             },
             {
                 "id": "12345",
-                "type": apideck_sdk.BillPaymentAllocationType.BILL,
+                "type": apideck.BillPaymentAllocationType.BILL,
                 "amount": 49.99,
                 "allocation_id": "123456",
             },
@@ -438,7 +438,7 @@ Delete Bill Payment
 ### Example Usage
 
 ```python
-from apideck_sdk import Apideck
+from apideck import Apideck
 import os
 
 with Apideck(

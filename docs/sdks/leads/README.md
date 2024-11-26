@@ -18,8 +18,8 @@ List leads
 ### Example Usage
 
 ```python
-import apideck_sdk
-from apideck_sdk import Apideck
+import apideck
+from apideck import Apideck
 import os
 
 with Apideck(
@@ -36,8 +36,8 @@ with Apideck(
             "phone_number": "1234567890",
         },
         "sort": {
-            "by": apideck_sdk.LeadsSortBy.CREATED_AT,
-            "direction": apideck_sdk.SortDirection.DESC,
+            "by": apideck.LeadsSortBy.CREATED_AT,
+            "direction": apideck.SortDirection.DESC,
         },
         "pass_through": {
             "search": "San Francisco",
@@ -80,8 +80,8 @@ Create lead
 ### Example Usage
 
 ```python
-import apideck_sdk
-from apideck_sdk import Apideck
+import apideck
+from apideck import Apideck
 import os
 
 with Apideck(
@@ -105,19 +105,19 @@ with Apideck(
         "language": "EN",
         "status": "New",
         "monetary_amount": 75000,
-        "currency": apideck_sdk.Currency.USD,
+        "currency": apideck.Currency.USD,
         "fax": "+12129876543",
         "websites": [
             {
                 "url": "http://example.com",
                 "id": "12345",
-                "type": apideck_sdk.WebsiteType.PRIMARY,
+                "type": apideck.WebsiteType.PRIMARY,
             },
         ],
         "addresses": [
             {
                 "id": "123",
-                "type": apideck_sdk.Type.PRIMARY,
+                "type": apideck.Type.PRIMARY,
                 "string": "25 Spring Street, Blackburn, VIC 3130",
                 "name": "HQ US",
                 "line1": "Main street",
@@ -143,7 +143,7 @@ with Apideck(
             },
             {
                 "id": "123",
-                "type": apideck_sdk.Type.PRIMARY,
+                "type": apideck.Type.PRIMARY,
                 "string": "25 Spring Street, Blackburn, VIC 3130",
                 "name": "HQ US",
                 "line1": "Main street",
@@ -182,14 +182,14 @@ with Apideck(
                 "country_code": "1",
                 "area_code": "323",
                 "extension": "105",
-                "type": apideck_sdk.PhoneNumberType.PRIMARY,
+                "type": apideck.PhoneNumberType.PRIMARY,
             },
         ],
         "emails": [
             {
                 "email": "elon@musk.com",
                 "id": "123",
-                "type": apideck_sdk.EmailType.PRIMARY,
+                "type": apideck.EmailType.PRIMARY,
             },
         ],
         "custom_fields": [
@@ -335,7 +335,7 @@ Get lead
 ### Example Usage
 
 ```python
-from apideck_sdk import Apideck
+from apideck import Apideck
 import os
 
 with Apideck(
@@ -383,8 +383,8 @@ Update lead
 ### Example Usage
 
 ```python
-import apideck_sdk
-from apideck_sdk import Apideck
+import apideck
+from apideck import Apideck
 import os
 
 with Apideck(
@@ -408,29 +408,29 @@ with Apideck(
         "language": "EN",
         "status": "New",
         "monetary_amount": 75000,
-        "currency": apideck_sdk.Currency.USD,
+        "currency": apideck.Currency.USD,
         "fax": "+12129876543",
         "websites": [
             {
                 "url": "http://example.com",
                 "id": "12345",
-                "type": apideck_sdk.WebsiteType.PRIMARY,
+                "type": apideck.WebsiteType.PRIMARY,
             },
             {
                 "url": "http://example.com",
                 "id": "12345",
-                "type": apideck_sdk.WebsiteType.PRIMARY,
+                "type": apideck.WebsiteType.PRIMARY,
             },
             {
                 "url": "http://example.com",
                 "id": "12345",
-                "type": apideck_sdk.WebsiteType.PRIMARY,
+                "type": apideck.WebsiteType.PRIMARY,
             },
         ],
         "addresses": [
             {
                 "id": "123",
-                "type": apideck_sdk.Type.PRIMARY,
+                "type": apideck.Type.PRIMARY,
                 "string": "25 Spring Street, Blackburn, VIC 3130",
                 "name": "HQ US",
                 "line1": "Main street",
@@ -456,7 +456,7 @@ with Apideck(
             },
             {
                 "id": "123",
-                "type": apideck_sdk.Type.PRIMARY,
+                "type": apideck.Type.PRIMARY,
                 "string": "25 Spring Street, Blackburn, VIC 3130",
                 "name": "HQ US",
                 "line1": "Main street",
@@ -495,7 +495,7 @@ with Apideck(
                 "country_code": "1",
                 "area_code": "323",
                 "extension": "105",
-                "type": apideck_sdk.PhoneNumberType.PRIMARY,
+                "type": apideck.PhoneNumberType.PRIMARY,
             },
             {
                 "number": "111-111-1111",
@@ -503,7 +503,7 @@ with Apideck(
                 "country_code": "1",
                 "area_code": "323",
                 "extension": "105",
-                "type": apideck_sdk.PhoneNumberType.PRIMARY,
+                "type": apideck.PhoneNumberType.PRIMARY,
             },
             {
                 "number": "111-111-1111",
@@ -511,19 +511,19 @@ with Apideck(
                 "country_code": "1",
                 "area_code": "323",
                 "extension": "105",
-                "type": apideck_sdk.PhoneNumberType.PRIMARY,
+                "type": apideck.PhoneNumberType.PRIMARY,
             },
         ],
         "emails": [
             {
                 "email": "elon@musk.com",
                 "id": "123",
-                "type": apideck_sdk.EmailType.PRIMARY,
+                "type": apideck.EmailType.PRIMARY,
             },
             {
                 "email": "elon@musk.com",
                 "id": "123",
-                "type": apideck_sdk.EmailType.PRIMARY,
+                "type": apideck.EmailType.PRIMARY,
             },
         ],
         "custom_fields": [
@@ -618,7 +618,7 @@ Delete lead
 ### Example Usage
 
 ```python
-from apideck_sdk import Apideck
+from apideck import Apideck
 import os
 
 with Apideck(

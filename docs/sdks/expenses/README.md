@@ -18,7 +18,7 @@ List Expenses
 ### Example Usage
 
 ```python
-from apideck_sdk import Apideck
+from apideck import Apideck
 import os
 
 with Apideck(
@@ -66,8 +66,8 @@ Create Expense
 ### Example Usage
 
 ```python
-import apideck_sdk
-from apideck_sdk import Apideck
+import apideck
+from apideck import Apideck
 import dateutil.parser
 import os
 
@@ -109,9 +109,9 @@ with Apideck(
         "supplier_id": "12345",
         "company_id": "12345",
         "department_id": "12345",
-        "currency": apideck_sdk.Currency.USD,
+        "currency": apideck.Currency.USD,
         "currency_rate": 0.69,
-        "type": apideck_sdk.ExpenseType.EXPENSE,
+        "type": apideck.ExpenseType.EXPENSE,
         "memo": "For travel expenses incurred on 2024-05-15",
         "tax_rate": {
             "id": "123456",
@@ -181,7 +181,7 @@ Get Expense
 ### Example Usage
 
 ```python
-from apideck_sdk import Apideck
+from apideck import Apideck
 import os
 
 with Apideck(
@@ -228,8 +228,8 @@ Update Expense
 ### Example Usage
 
 ```python
-import apideck_sdk
-from apideck_sdk import Apideck
+import apideck
+from apideck import Apideck
 import dateutil.parser
 import os
 
@@ -317,9 +317,9 @@ with Apideck(
         "supplier_id": "12345",
         "company_id": "12345",
         "department_id": "12345",
-        "currency": apideck_sdk.Currency.USD,
+        "currency": apideck.Currency.USD,
         "currency_rate": 0.69,
-        "type": apideck_sdk.ExpenseType.EXPENSE,
+        "type": apideck.ExpenseType.EXPENSE,
         "memo": "For travel expenses incurred on 2024-05-15",
         "tax_rate": {
             "id": "123456",
@@ -422,7 +422,7 @@ Delete Expense
 ### Example Usage
 
 ```python
-from apideck_sdk import Apideck
+from apideck import Apideck
 import os
 
 with Apideck(

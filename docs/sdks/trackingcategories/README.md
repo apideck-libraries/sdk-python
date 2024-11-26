@@ -18,7 +18,7 @@ List Tracking Categories
 ### Example Usage
 
 ```python
-from apideck_sdk import Apideck
+from apideck import Apideck
 import os
 
 with Apideck(
@@ -69,8 +69,8 @@ Create Tracking Category
 ### Example Usage
 
 ```python
-import apideck_sdk
-from apideck_sdk import Apideck
+import apideck
+from apideck import Apideck
 import os
 
 with Apideck(
@@ -82,7 +82,7 @@ with Apideck(
         "parent_id": "12345",
         "name": "Department",
         "code": "100",
-        "status": apideck_sdk.TrackingCategoryStatus.ACTIVE,
+        "status": apideck.TrackingCategoryStatus.ACTIVE,
         "row_version": "1-12345",
         "pass_through": [
             {
@@ -146,7 +146,7 @@ Get Tracking Category
 ### Example Usage
 
 ```python
-from apideck_sdk import Apideck
+from apideck import Apideck
 import os
 
 with Apideck(
@@ -194,8 +194,8 @@ Update Tracking Category
 ### Example Usage
 
 ```python
-import apideck_sdk
-from apideck_sdk import Apideck
+import apideck
+from apideck import Apideck
 import os
 
 with Apideck(
@@ -207,7 +207,7 @@ with Apideck(
         "parent_id": "12345",
         "name": "Department",
         "code": "100",
-        "status": apideck_sdk.TrackingCategoryStatus.ACTIVE,
+        "status": apideck.TrackingCategoryStatus.ACTIVE,
         "row_version": "1-12345",
         "pass_through": [
             {
@@ -314,7 +314,7 @@ Delete Tracking Category
 ### Example Usage
 
 ```python
-from apideck_sdk import Apideck
+from apideck import Apideck
 import os
 
 with Apideck(

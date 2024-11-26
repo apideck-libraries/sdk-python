@@ -18,8 +18,8 @@ List companies
 ### Example Usage
 
 ```python
-import apideck_sdk
-from apideck_sdk import Apideck
+import apideck
+from apideck import Apideck
 import os
 
 with Apideck(
@@ -33,8 +33,8 @@ with Apideck(
             "name": "SpaceX",
         },
         "sort": {
-            "by": apideck_sdk.CompaniesSortBy.CREATED_AT,
-            "direction": apideck_sdk.SortDirection.DESC,
+            "by": apideck.CompaniesSortBy.CREATED_AT,
+            "direction": apideck.SortDirection.DESC,
         },
         "pass_through": {
             "search": "San Francisco",
@@ -77,8 +77,8 @@ Create company
 ### Example Usage
 
 ```python
-import apideck_sdk
-from apideck_sdk import Apideck
+import apideck
+from apideck import Apideck
 import dateutil.parser
 import os
 
@@ -93,7 +93,7 @@ with Apideck(
         "image": "https://www.spacex.com/static/images/share.jpg",
         "description": "Space Exploration Technologies Corp. is an American aerospace manufacturer, space transportation services and communications company headquartered in Hawthorne, California.",
         "vat_number": "BE0689615164",
-        "currency": apideck_sdk.Currency.USD,
+        "currency": apideck.Currency.USD,
         "status": "Open",
         "fax": "+12129876543",
         "annual_revenue": "+$35m",
@@ -112,32 +112,32 @@ with Apideck(
                 "bank_name": "Monzo",
                 "account_number": "123465",
                 "account_name": "SPACEX LLC",
-                "account_type": apideck_sdk.AccountType.CREDIT_CARD,
+                "account_type": apideck.AccountType.CREDIT_CARD,
                 "iban": "CH2989144532982975332",
                 "bic": "AUDSCHGGXXX",
                 "routing_number": "012345678",
                 "bsb_number": "062-001",
                 "branch_identifier": "001",
                 "bank_code": "BNH",
-                "currency": apideck_sdk.Currency.USD,
+                "currency": apideck.Currency.USD,
             },
         ],
         "websites": [
             {
                 "url": "http://example.com",
                 "id": "12345",
-                "type": apideck_sdk.WebsiteType.PRIMARY,
+                "type": apideck.WebsiteType.PRIMARY,
             },
             {
                 "url": "http://example.com",
                 "id": "12345",
-                "type": apideck_sdk.WebsiteType.PRIMARY,
+                "type": apideck.WebsiteType.PRIMARY,
             },
         ],
         "addresses": [
             {
                 "id": "123",
-                "type": apideck_sdk.Type.PRIMARY,
+                "type": apideck.Type.PRIMARY,
                 "string": "25 Spring Street, Blackburn, VIC 3130",
                 "name": "HQ US",
                 "line1": "Main street",
@@ -176,24 +176,24 @@ with Apideck(
                 "country_code": "1",
                 "area_code": "323",
                 "extension": "105",
-                "type": apideck_sdk.PhoneNumberType.PRIMARY,
+                "type": apideck.PhoneNumberType.PRIMARY,
             },
         ],
         "emails": [
             {
                 "email": "elon@musk.com",
                 "id": "123",
-                "type": apideck_sdk.EmailType.PRIMARY,
+                "type": apideck.EmailType.PRIMARY,
             },
             {
                 "email": "elon@musk.com",
                 "id": "123",
-                "type": apideck_sdk.EmailType.PRIMARY,
+                "type": apideck.EmailType.PRIMARY,
             },
             {
                 "email": "elon@musk.com",
                 "id": "123",
-                "type": apideck_sdk.EmailType.PRIMARY,
+                "type": apideck.EmailType.PRIMARY,
             },
         ],
         "row_type": {
@@ -346,7 +346,7 @@ Get company
 ### Example Usage
 
 ```python
-from apideck_sdk import Apideck
+from apideck import Apideck
 import os
 
 with Apideck(
@@ -394,8 +394,8 @@ Update company
 ### Example Usage
 
 ```python
-import apideck_sdk
-from apideck_sdk import Apideck
+import apideck
+from apideck import Apideck
 import dateutil.parser
 import os
 
@@ -410,7 +410,7 @@ with Apideck(
         "image": "https://www.spacex.com/static/images/share.jpg",
         "description": "Space Exploration Technologies Corp. is an American aerospace manufacturer, space transportation services and communications company headquartered in Hawthorne, California.",
         "vat_number": "BE0689615164",
-        "currency": apideck_sdk.Currency.USD,
+        "currency": apideck.Currency.USD,
         "status": "Open",
         "fax": "+12129876543",
         "annual_revenue": "+$35m",
@@ -429,58 +429,58 @@ with Apideck(
                 "bank_name": "Monzo",
                 "account_number": "123465",
                 "account_name": "SPACEX LLC",
-                "account_type": apideck_sdk.AccountType.CREDIT_CARD,
+                "account_type": apideck.AccountType.CREDIT_CARD,
                 "iban": "CH2989144532982975332",
                 "bic": "AUDSCHGGXXX",
                 "routing_number": "012345678",
                 "bsb_number": "062-001",
                 "branch_identifier": "001",
                 "bank_code": "BNH",
-                "currency": apideck_sdk.Currency.USD,
+                "currency": apideck.Currency.USD,
             },
             {
                 "bank_name": "Monzo",
                 "account_number": "123465",
                 "account_name": "SPACEX LLC",
-                "account_type": apideck_sdk.AccountType.CREDIT_CARD,
+                "account_type": apideck.AccountType.CREDIT_CARD,
                 "iban": "CH2989144532982975332",
                 "bic": "AUDSCHGGXXX",
                 "routing_number": "012345678",
                 "bsb_number": "062-001",
                 "branch_identifier": "001",
                 "bank_code": "BNH",
-                "currency": apideck_sdk.Currency.USD,
+                "currency": apideck.Currency.USD,
             },
             {
                 "bank_name": "Monzo",
                 "account_number": "123465",
                 "account_name": "SPACEX LLC",
-                "account_type": apideck_sdk.AccountType.CREDIT_CARD,
+                "account_type": apideck.AccountType.CREDIT_CARD,
                 "iban": "CH2989144532982975332",
                 "bic": "AUDSCHGGXXX",
                 "routing_number": "012345678",
                 "bsb_number": "062-001",
                 "branch_identifier": "001",
                 "bank_code": "BNH",
-                "currency": apideck_sdk.Currency.USD,
+                "currency": apideck.Currency.USD,
             },
         ],
         "websites": [
             {
                 "url": "http://example.com",
                 "id": "12345",
-                "type": apideck_sdk.WebsiteType.PRIMARY,
+                "type": apideck.WebsiteType.PRIMARY,
             },
             {
                 "url": "http://example.com",
                 "id": "12345",
-                "type": apideck_sdk.WebsiteType.PRIMARY,
+                "type": apideck.WebsiteType.PRIMARY,
             },
         ],
         "addresses": [
             {
                 "id": "123",
-                "type": apideck_sdk.Type.PRIMARY,
+                "type": apideck.Type.PRIMARY,
                 "string": "25 Spring Street, Blackburn, VIC 3130",
                 "name": "HQ US",
                 "line1": "Main street",
@@ -529,7 +529,7 @@ with Apideck(
                 "country_code": "1",
                 "area_code": "323",
                 "extension": "105",
-                "type": apideck_sdk.PhoneNumberType.PRIMARY,
+                "type": apideck.PhoneNumberType.PRIMARY,
             },
             {
                 "number": "111-111-1111",
@@ -537,14 +537,14 @@ with Apideck(
                 "country_code": "1",
                 "area_code": "323",
                 "extension": "105",
-                "type": apideck_sdk.PhoneNumberType.PRIMARY,
+                "type": apideck.PhoneNumberType.PRIMARY,
             },
         ],
         "emails": [
             {
                 "email": "elon@musk.com",
                 "id": "123",
-                "type": apideck_sdk.EmailType.PRIMARY,
+                "type": apideck.EmailType.PRIMARY,
             },
         ],
         "row_type": {
@@ -631,7 +631,7 @@ Delete company
 ### Example Usage
 
 ```python
-from apideck_sdk import Apideck
+from apideck import Apideck
 import os
 
 with Apideck(

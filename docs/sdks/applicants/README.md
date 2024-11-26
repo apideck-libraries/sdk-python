@@ -18,7 +18,7 @@ List Applicants
 ### Example Usage
 
 ```python
-from apideck_sdk import Apideck
+from apideck import Apideck
 import os
 
 with Apideck(
@@ -72,8 +72,8 @@ Create Applicant
 ### Example Usage
 
 ```python
-import apideck_sdk
-from apideck_sdk import Apideck
+import apideck
+from apideck import Apideck
 import dateutil.parser
 import os
 
@@ -97,7 +97,7 @@ with Apideck(
             {
                 "email": "elon@musk.com",
                 "id": "123",
-                "type": apideck_sdk.EmailType.PRIMARY,
+                "type": apideck.EmailType.PRIMARY,
             },
         ],
         "custom_fields": [
@@ -121,13 +121,13 @@ with Apideck(
                 "country_code": "1",
                 "area_code": "323",
                 "extension": "105",
-                "type": apideck_sdk.PhoneNumberType.PRIMARY,
+                "type": apideck.PhoneNumberType.PRIMARY,
             },
         ],
         "addresses": [
             {
                 "id": "123",
-                "type": apideck_sdk.Type.PRIMARY,
+                "type": apideck.Type.PRIMARY,
                 "string": "25 Spring Street, Blackburn, VIC 3130",
                 "name": "HQ US",
                 "line1": "Main street",
@@ -153,7 +153,7 @@ with Apideck(
             },
             {
                 "id": "123",
-                "type": apideck_sdk.Type.PRIMARY,
+                "type": apideck.Type.PRIMARY,
                 "string": "25 Spring Street, Blackburn, VIC 3130",
                 "name": "HQ US",
                 "line1": "Main street",
@@ -179,7 +179,7 @@ with Apideck(
             },
             {
                 "id": "123",
-                "type": apideck_sdk.Type.PRIMARY,
+                "type": apideck.Type.PRIMARY,
                 "string": "25 Spring Street, Blackburn, VIC 3130",
                 "name": "HQ US",
                 "line1": "Main street",
@@ -208,17 +208,17 @@ with Apideck(
             {
                 "url": "http://example.com",
                 "id": "12345",
-                "type": apideck_sdk.ApplicantType.PRIMARY,
+                "type": apideck.ApplicantType.PRIMARY,
             },
             {
                 "url": "http://example.com",
                 "id": "12345",
-                "type": apideck_sdk.ApplicantType.PRIMARY,
+                "type": apideck.ApplicantType.PRIMARY,
             },
             {
                 "url": "http://example.com",
                 "id": "12345",
-                "type": apideck_sdk.ApplicantType.PRIMARY,
+                "type": apideck.ApplicantType.PRIMARY,
             },
         ],
         "social_links": [
@@ -309,7 +309,7 @@ Get Applicant
 ### Example Usage
 
 ```python
-from apideck_sdk import Apideck
+from apideck import Apideck
 import os
 
 with Apideck(
@@ -357,8 +357,8 @@ Update Applicant
 ### Example Usage
 
 ```python
-import apideck_sdk
-from apideck_sdk import Apideck
+import apideck
+from apideck import Apideck
 import dateutil.parser
 import os
 
@@ -382,17 +382,17 @@ with Apideck(
             {
                 "email": "elon@musk.com",
                 "id": "123",
-                "type": apideck_sdk.EmailType.PRIMARY,
+                "type": apideck.EmailType.PRIMARY,
             },
             {
                 "email": "elon@musk.com",
                 "id": "123",
-                "type": apideck_sdk.EmailType.PRIMARY,
+                "type": apideck.EmailType.PRIMARY,
             },
             {
                 "email": "elon@musk.com",
                 "id": "123",
-                "type": apideck_sdk.EmailType.PRIMARY,
+                "type": apideck.EmailType.PRIMARY,
             },
         ],
         "custom_fields": [
@@ -415,13 +415,13 @@ with Apideck(
                 "country_code": "1",
                 "area_code": "323",
                 "extension": "105",
-                "type": apideck_sdk.PhoneNumberType.PRIMARY,
+                "type": apideck.PhoneNumberType.PRIMARY,
             },
         ],
         "addresses": [
             {
                 "id": "123",
-                "type": apideck_sdk.Type.PRIMARY,
+                "type": apideck.Type.PRIMARY,
                 "string": "25 Spring Street, Blackburn, VIC 3130",
                 "name": "HQ US",
                 "line1": "Main street",
@@ -447,7 +447,7 @@ with Apideck(
             },
             {
                 "id": "123",
-                "type": apideck_sdk.Type.PRIMARY,
+                "type": apideck.Type.PRIMARY,
                 "string": "25 Spring Street, Blackburn, VIC 3130",
                 "name": "HQ US",
                 "line1": "Main street",
@@ -473,7 +473,7 @@ with Apideck(
             },
             {
                 "id": "123",
-                "type": apideck_sdk.Type.PRIMARY,
+                "type": apideck.Type.PRIMARY,
                 "string": "25 Spring Street, Blackburn, VIC 3130",
                 "name": "HQ US",
                 "line1": "Main street",
@@ -502,7 +502,7 @@ with Apideck(
             {
                 "url": "http://example.com",
                 "id": "12345",
-                "type": apideck_sdk.ApplicantType.PRIMARY,
+                "type": apideck.ApplicantType.PRIMARY,
             },
         ],
         "social_links": [
@@ -604,7 +604,7 @@ Delete Applicant
 ### Example Usage
 
 ```python
-from apideck_sdk import Apideck
+from apideck import Apideck
 import os
 
 with Apideck(

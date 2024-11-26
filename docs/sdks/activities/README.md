@@ -18,8 +18,8 @@ List activities
 ### Example Usage
 
 ```python
-import apideck_sdk
-from apideck_sdk import Apideck
+import apideck
+from apideck import Apideck
 import dateutil.parser
 import os
 
@@ -34,8 +34,8 @@ with Apideck(
             "updated_since": dateutil.parser.isoparse("2020-09-30T07:43:32.000Z"),
         },
         "sort": {
-            "by": apideck_sdk.ActivitiesSortBy.CREATED_AT,
-            "direction": apideck_sdk.SortDirection.DESC,
+            "by": apideck.ActivitiesSortBy.CREATED_AT,
+            "direction": apideck.SortDirection.DESC,
         },
         "pass_through": {
             "search": "San Francisco",
@@ -78,8 +78,8 @@ Create activity
 ### Example Usage
 
 ```python
-import apideck_sdk
-from apideck_sdk import Apideck
+import apideck
+from apideck import Apideck
 import os
 
 with Apideck(
@@ -88,7 +88,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as s:
     res = s.crm.activities.create(activity={
-        "type": apideck_sdk.ActivityType.MEETING,
+        "type": apideck.ActivityType.MEETING,
         "activity_datetime": "2021-05-01T12:00:00.000Z",
         "duration_seconds": 1800,
         "user_id": "12345",
@@ -111,7 +111,7 @@ with Apideck(
         "location": "Space",
         "location_address": {
             "id": "123",
-            "type": apideck_sdk.Type.PRIMARY,
+            "type": apideck.Type.PRIMARY,
             "string": "25 Spring Street, Blackburn, VIC 3130",
             "name": "HQ US",
             "line1": "Main street",
@@ -143,7 +143,7 @@ with Apideck(
         "child": False,
         "archived": False,
         "deleted": False,
-        "show_as": apideck_sdk.ShowAs.BUSY,
+        "show_as": apideck.ShowAs.BUSY,
         "done": False,
         "start_datetime": "2021-05-01T12:00:00.000Z",
         "end_datetime": "2021-05-01T12:30:00.000Z",
@@ -171,7 +171,7 @@ with Apideck(
                 "suffix": "PhD",
                 "email_address": "elon@musk.com",
                 "is_organizer": True,
-                "status": apideck_sdk.ActivityAttendeeStatus.ACCEPTED,
+                "status": apideck.ActivityAttendeeStatus.ACCEPTED,
             },
         ],
         "pass_through": [
@@ -228,7 +228,7 @@ Get activity
 ### Example Usage
 
 ```python
-from apideck_sdk import Apideck
+from apideck import Apideck
 import os
 
 with Apideck(
@@ -276,8 +276,8 @@ Update activity
 ### Example Usage
 
 ```python
-import apideck_sdk
-from apideck_sdk import Apideck
+import apideck
+from apideck import Apideck
 import os
 
 with Apideck(
@@ -286,7 +286,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as s:
     res = s.crm.activities.update(id="<id>", activity={
-        "type": apideck_sdk.ActivityType.MEETING,
+        "type": apideck.ActivityType.MEETING,
         "activity_datetime": "2021-05-01T12:00:00.000Z",
         "duration_seconds": 1800,
         "user_id": "12345",
@@ -309,7 +309,7 @@ with Apideck(
         "location": "Space",
         "location_address": {
             "id": "123",
-            "type": apideck_sdk.Type.PRIMARY,
+            "type": apideck.Type.PRIMARY,
             "string": "25 Spring Street, Blackburn, VIC 3130",
             "name": "HQ US",
             "line1": "Main street",
@@ -341,7 +341,7 @@ with Apideck(
         "child": False,
         "archived": False,
         "deleted": False,
-        "show_as": apideck_sdk.ShowAs.BUSY,
+        "show_as": apideck.ShowAs.BUSY,
         "done": False,
         "start_datetime": "2021-05-01T12:00:00.000Z",
         "end_datetime": "2021-05-01T12:30:00.000Z",
@@ -380,7 +380,7 @@ with Apideck(
                 "suffix": "PhD",
                 "email_address": "elon@musk.com",
                 "is_organizer": True,
-                "status": apideck_sdk.ActivityAttendeeStatus.ACCEPTED,
+                "status": apideck.ActivityAttendeeStatus.ACCEPTED,
             },
         ],
         "pass_through": [
@@ -480,7 +480,7 @@ Delete activity
 ### Example Usage
 
 ```python
-from apideck_sdk import Apideck
+from apideck import Apideck
 import os
 
 with Apideck(

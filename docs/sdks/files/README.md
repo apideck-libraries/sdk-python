@@ -20,8 +20,8 @@ List Files
 ### Example Usage
 
 ```python
-import apideck_sdk
-from apideck_sdk import Apideck
+import apideck
+from apideck import Apideck
 import os
 
 with Apideck(
@@ -37,8 +37,8 @@ with Apideck(
             "shared": True,
         },
         "sort": {
-            "by": apideck_sdk.FilesSortBy.UPDATED_AT,
-            "direction": apideck_sdk.SortDirection.DESC,
+            "by": apideck.FilesSortBy.UPDATED_AT,
+            "direction": apideck.SortDirection.DESC,
         },
         "pass_through": {
             "search": "San Francisco",
@@ -81,7 +81,7 @@ Search Files
 ### Example Usage
 
 ```python
-from apideck_sdk import Apideck
+from apideck import Apideck
 import os
 
 with Apideck(
@@ -140,7 +140,7 @@ Get File
 ### Example Usage
 
 ```python
-from apideck_sdk import Apideck
+from apideck import Apideck
 import os
 
 with Apideck(
@@ -188,7 +188,7 @@ Rename or move File
 ### Example Usage
 
 ```python
-from apideck_sdk import Apideck
+from apideck import Apideck
 import os
 
 with Apideck(
@@ -305,7 +305,7 @@ Delete File
 ### Example Usage
 
 ```python
-from apideck_sdk import Apideck
+from apideck import Apideck
 import os
 
 with Apideck(
@@ -352,7 +352,7 @@ Download File
 ### Example Usage
 
 ```python
-from apideck_sdk import Apideck
+from apideck import Apideck
 import os
 
 with Apideck(
@@ -399,7 +399,7 @@ Export File
 ### Example Usage
 
 ```python
-from apideck_sdk import Apideck
+from apideck import Apideck
 import os
 
 with Apideck(

@@ -18,7 +18,7 @@ List Departments
 ### Example Usage
 
 ```python
-from apideck_sdk import Apideck
+from apideck import Apideck
 import os
 
 with Apideck(
@@ -69,8 +69,8 @@ Create Department
 ### Example Usage
 
 ```python
-import apideck_sdk
-from apideck_sdk import Apideck
+import apideck
+from apideck import Apideck
 import os
 
 with Apideck(
@@ -81,7 +81,7 @@ with Apideck(
     res = s.accounting.departments.create(accounting_department={
         "parent_id": "12345",
         "name": "Sales",
-        "status": apideck_sdk.DepartmentStatus.ACTIVE,
+        "status": apideck.DepartmentStatus.ACTIVE,
         "subsidiaries": [
             {
                 "name": "SpaceX",
@@ -155,7 +155,7 @@ Get Department
 ### Example Usage
 
 ```python
-from apideck_sdk import Apideck
+from apideck import Apideck
 import os
 
 with Apideck(
@@ -203,8 +203,8 @@ Update Department
 ### Example Usage
 
 ```python
-import apideck_sdk
-from apideck_sdk import Apideck
+import apideck
+from apideck import Apideck
 import os
 
 with Apideck(
@@ -215,7 +215,7 @@ with Apideck(
     res = s.accounting.departments.update(id="<id>", accounting_department={
         "parent_id": "12345",
         "name": "Sales",
-        "status": apideck_sdk.DepartmentStatus.ACTIVE,
+        "status": apideck.DepartmentStatus.ACTIVE,
         "subsidiaries": [
             {
                 "name": "SpaceX",
@@ -312,7 +312,7 @@ Delete Department
 ### Example Usage
 
 ```python
-from apideck_sdk import Apideck
+from apideck import Apideck
 import os
 
 with Apideck(
