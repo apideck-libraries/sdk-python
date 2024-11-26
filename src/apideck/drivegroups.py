@@ -53,7 +53,7 @@ class DriveGroups(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.FileStorageDriveGroupsAllGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -166,7 +166,7 @@ class DriveGroups(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.FileStorageDriveGroupsAllGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -282,7 +282,7 @@ class DriveGroups(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.FileStorageDriveGroupsAddGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -401,7 +401,7 @@ class DriveGroups(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.FileStorageDriveGroupsAddGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -523,7 +523,7 @@ class DriveGroups(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.FileStorageDriveGroupsOneGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -642,7 +642,7 @@ class DriveGroups(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.FileStorageDriveGroupsOneGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -761,7 +761,7 @@ class DriveGroups(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.FileStorageDriveGroupsUpdateGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -883,7 +883,7 @@ class DriveGroups(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.FileStorageDriveGroupsUpdateGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -1002,7 +1002,7 @@ class DriveGroups(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.FileStorageDriveGroupsDeleteGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -1118,7 +1118,7 @@ class DriveGroups(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.FileStorageDriveGroupsDeleteGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,

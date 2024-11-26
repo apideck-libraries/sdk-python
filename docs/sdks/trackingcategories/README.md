@@ -23,7 +23,7 @@ import os
 
 with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
-    customer_id="test-consumer",
+    consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as s:
     res = s.accounting.tracking_categories.list(request={
@@ -75,7 +75,7 @@ import os
 
 with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
-    customer_id="test-consumer",
+    consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as s:
     res = s.accounting.tracking_categories.create(tracking_category={
@@ -151,7 +151,7 @@ import os
 
 with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
-    customer_id="test-consumer",
+    consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as s:
     res = s.accounting.tracking_categories.get(id="<id>", service_id="salesforce", fields="id,updated_at")
@@ -200,7 +200,7 @@ import os
 
 with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
-    customer_id="test-consumer",
+    consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as s:
     res = s.accounting.tracking_categories.update(id="<id>", tracking_category={
@@ -319,7 +319,7 @@ import os
 
 with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
-    customer_id="test-consumer",
+    consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as s:
     res = s.accounting.tracking_categories.delete(id="<id>", service_id="salesforce")

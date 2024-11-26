@@ -23,7 +23,7 @@ import os
 
 with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
-    customer_id="test-consumer",
+    consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as s:
     res = s.accounting.locations.list(request={
@@ -75,7 +75,7 @@ import os
 
 with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
-    customer_id="test-consumer",
+    consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as s:
     res = s.accounting.locations.create(accounting_location={
@@ -179,7 +179,7 @@ import os
 
 with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
-    customer_id="test-consumer",
+    consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as s:
     res = s.accounting.locations.get(id="<id>", service_id="salesforce", fields="id,updated_at")
@@ -228,7 +228,7 @@ import os
 
 with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
-    customer_id="test-consumer",
+    consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as s:
     res = s.accounting.locations.update(id="<id>", accounting_location={
@@ -401,7 +401,7 @@ import os
 
 with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
-    customer_id="test-consumer",
+    consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as s:
     res = s.accounting.locations.delete(id="<id>", service_id="salesforce")

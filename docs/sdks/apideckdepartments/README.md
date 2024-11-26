@@ -23,7 +23,7 @@ import os
 
 with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
-    customer_id="test-consumer",
+    consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as s:
     res = s.hris.departments.list(request={
@@ -74,7 +74,7 @@ import os
 
 with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
-    customer_id="test-consumer",
+    consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as s:
     res = s.hris.departments.create(department={
@@ -148,7 +148,7 @@ import os
 
 with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
-    customer_id="test-consumer",
+    consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as s:
     res = s.hris.departments.get(id="<id>", service_id="salesforce", fields="id,updated_at")
@@ -196,7 +196,7 @@ import os
 
 with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
-    customer_id="test-consumer",
+    consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as s:
     res = s.hris.departments.update(id="<id>", department={
@@ -313,7 +313,7 @@ import os
 
 with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
-    customer_id="test-consumer",
+    consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as s:
     res = s.hris.departments.delete(id="<id>", service_id="salesforce")

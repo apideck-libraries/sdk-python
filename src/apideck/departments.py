@@ -53,7 +53,7 @@ class Departments(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.AccountingDepartmentsAllGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -168,7 +168,7 @@ class Departments(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.AccountingDepartmentsAllGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -290,7 +290,7 @@ class Departments(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.AccountingDepartmentsAddGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -419,7 +419,7 @@ class Departments(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.AccountingDepartmentsAddGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -547,7 +547,7 @@ class Departments(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.AccountingDepartmentsOneGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -668,7 +668,7 @@ class Departments(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.AccountingDepartmentsOneGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -793,7 +793,7 @@ class Departments(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.AccountingDepartmentsUpdateGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -925,7 +925,7 @@ class Departments(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.AccountingDepartmentsUpdateGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -1050,7 +1050,7 @@ class Departments(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.AccountingDepartmentsDeleteGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -1168,7 +1168,7 @@ class Departments(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.AccountingDepartmentsDeleteGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,

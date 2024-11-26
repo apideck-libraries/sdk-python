@@ -1,12 +1,12 @@
 lockVersion: 2.0.0
 id: d7ba7cba-c2a0-459f-bdba-f75b68a9a9ae
 management:
-  docChecksum: 89e154e4638bce2dddd31a19c58d123c
+  docChecksum: c306a47a4efe0a64ea62b04dc2b9f8d0
   docVersion: 10.8.1
   speakeasyVersion: 1.446.1
   generationVersion: 2.462.1
-  releaseVersion: 0.0.4
-  configChecksum: 6562b0a20508c6d93c00fd8973e442c2
+  releaseVersion: 0.0.5
+  configChecksum: c4a1acf183585fd781d338eee869efc5
 features:
   python:
     acceptHeaders: 3.0.0
@@ -519,7 +519,7 @@ generatedFiles:
   - docs/models/createapplicationresponse.md
   - docs/models/createbillpaymentresponse.md
   - docs/models/createbillresponse.md
-  - docs/models/createcallbackstatedata.md
+  - docs/models/createcallbackstate.md
   - docs/models/createcallbackstateresponse.md
   - docs/models/createcallbackstateresponsedata.md
   - docs/models/createcommentresponse.md
@@ -1917,7 +1917,7 @@ generatedFiles:
   - src/apideck/models/createapplicationresponse.py
   - src/apideck/models/createbillpaymentresponse.py
   - src/apideck/models/createbillresponse.py
-  - src/apideck/models/createcallbackstatedata.py
+  - src/apideck/models/createcallbackstate.py
   - src/apideck/models/createcallbackstateresponse.py
   - src/apideck/models/createcommentresponse.py
   - src/apideck/models/createcompanyresponse.py

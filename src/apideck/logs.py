@@ -58,7 +58,7 @@ class Logs(BaseSDK):
             accept_header_value="application/json",
             _globals=models.VaultLogsAllGlobals(
                 app_id=self.sdk_configuration.globals.app_id,
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
             ),
             security=self.sdk_configuration.security,
             timeout_ms=timeout_ms,
@@ -175,7 +175,7 @@ class Logs(BaseSDK):
             accept_header_value="application/json",
             _globals=models.VaultLogsAllGlobals(
                 app_id=self.sdk_configuration.globals.app_id,
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
             ),
             security=self.sdk_configuration.security,
             timeout_ms=timeout_ms,

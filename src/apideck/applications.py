@@ -52,7 +52,7 @@ class Applications(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.AtsApplicationsAllGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -164,7 +164,7 @@ class Applications(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.AtsApplicationsAllGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -280,7 +280,7 @@ class Applications(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.AtsApplicationsAddGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -399,7 +399,7 @@ class Applications(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.AtsApplicationsAddGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -518,7 +518,7 @@ class Applications(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.AtsApplicationsOneGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -634,7 +634,7 @@ class Applications(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.AtsApplicationsOneGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -753,7 +753,7 @@ class Applications(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.AtsApplicationsUpdateGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -875,7 +875,7 @@ class Applications(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.AtsApplicationsUpdateGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -994,7 +994,7 @@ class Applications(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.AtsApplicationsDeleteGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -1110,7 +1110,7 @@ class Applications(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.AtsApplicationsDeleteGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,

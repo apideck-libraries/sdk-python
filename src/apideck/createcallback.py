@@ -14,8 +14,8 @@ class CreateCallback(BaseSDK):
         *,
         service_id: str,
         unified_api: str,
-        create_callback_state_data: Union[
-            models.CreateCallbackStateData, models.CreateCallbackStateDataTypedDict
+        create_callback_state: Union[
+            models.CreateCallbackState, models.CreateCallbackStateTypedDict
         ],
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -28,7 +28,7 @@ class CreateCallback(BaseSDK):
 
         :param service_id: Service ID of the resource to return
         :param unified_api: Unified API
-        :param create_callback_state_data: Callback state data
+        :param create_callback_state: Callback state data
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -44,8 +44,8 @@ class CreateCallback(BaseSDK):
         request = models.VaultCreateCallbackStateRequest(
             service_id=service_id,
             unified_api=unified_api,
-            create_callback_state_data=utils.get_pydantic_model(
-                create_callback_state_data, models.CreateCallbackStateData
+            create_callback_state=utils.get_pydantic_model(
+                create_callback_state, models.CreateCallbackState
             ),
         )
 
@@ -61,16 +61,16 @@ class CreateCallback(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.VaultCreateCallbackStateGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
             get_serialized_body=lambda: utils.serialize_request_body(
-                request.create_callback_state_data,
+                request.create_callback_state,
                 False,
                 False,
                 "json",
-                models.CreateCallbackStateData,
+                models.CreateCallbackState,
             ),
             timeout_ms=timeout_ms,
         )
@@ -144,8 +144,8 @@ class CreateCallback(BaseSDK):
         *,
         service_id: str,
         unified_api: str,
-        create_callback_state_data: Union[
-            models.CreateCallbackStateData, models.CreateCallbackStateDataTypedDict
+        create_callback_state: Union[
+            models.CreateCallbackState, models.CreateCallbackStateTypedDict
         ],
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -158,7 +158,7 @@ class CreateCallback(BaseSDK):
 
         :param service_id: Service ID of the resource to return
         :param unified_api: Unified API
-        :param create_callback_state_data: Callback state data
+        :param create_callback_state: Callback state data
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -174,8 +174,8 @@ class CreateCallback(BaseSDK):
         request = models.VaultCreateCallbackStateRequest(
             service_id=service_id,
             unified_api=unified_api,
-            create_callback_state_data=utils.get_pydantic_model(
-                create_callback_state_data, models.CreateCallbackStateData
+            create_callback_state=utils.get_pydantic_model(
+                create_callback_state, models.CreateCallbackState
             ),
         )
 
@@ -191,16 +191,16 @@ class CreateCallback(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.VaultCreateCallbackStateGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
             get_serialized_body=lambda: utils.serialize_request_body(
-                request.create_callback_state_data,
+                request.create_callback_state,
                 False,
                 False,
                 "json",
-                models.CreateCallbackStateData,
+                models.CreateCallbackState,
             ),
             timeout_ms=timeout_ms,
         )

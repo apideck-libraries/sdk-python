@@ -23,7 +23,7 @@ import os
 
 with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
-    customer_id="test-consumer",
+    consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as s:
     res = s.vault.consumers.create(request={
@@ -77,7 +77,7 @@ import os
 
 with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
-    customer_id="test-consumer",
+    consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as s:
     res = s.vault.consumers.list()
@@ -124,7 +124,7 @@ import os
 
 with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
-    customer_id="test-consumer",
+    consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as s:
     res = s.vault.consumers.get(consumer_id="test_user_id")
@@ -169,7 +169,7 @@ import os
 
 with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
-    customer_id="test-consumer",
+    consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as s:
     res = s.vault.consumers.update(consumer_id="test_user_id", update_consumer_request={
@@ -222,7 +222,7 @@ import os
 
 with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
-    customer_id="test-consumer",
+    consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as s:
     res = s.vault.consumers.delete(consumer_id="test_user_id")

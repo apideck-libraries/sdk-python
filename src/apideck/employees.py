@@ -52,7 +52,7 @@ class Employees(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.HrisEmployeesAllGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -164,7 +164,7 @@ class Employees(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.HrisEmployeesAllGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -280,7 +280,7 @@ class Employees(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.HrisEmployeesAddGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -399,7 +399,7 @@ class Employees(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.HrisEmployeesAddGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -514,7 +514,7 @@ class Employees(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.HrisEmployeesOneGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -626,7 +626,7 @@ class Employees(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.HrisEmployeesOneGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -745,7 +745,7 @@ class Employees(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.HrisEmployeesUpdateGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -867,7 +867,7 @@ class Employees(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.HrisEmployeesUpdateGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -986,7 +986,7 @@ class Employees(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.HrisEmployeesDeleteGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -1102,7 +1102,7 @@ class Employees(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.HrisEmployeesDeleteGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,

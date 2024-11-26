@@ -23,7 +23,7 @@ import os
 
 with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
-    customer_id="test-consumer",
+    consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as s:
     res = s.crm.users.list(request={
@@ -75,7 +75,7 @@ import os
 
 with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
-    customer_id="test-consumer",
+    consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as s:
     res = s.crm.users.create(user={
@@ -204,7 +204,7 @@ import os
 
 with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
-    customer_id="test-consumer",
+    consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as s:
     res = s.crm.users.get(id="<id>", service_id="salesforce", fields="id,updated_at")
@@ -253,7 +253,7 @@ import os
 
 with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
-    customer_id="test-consumer",
+    consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as s:
     res = s.crm.users.update(id="<id>", user={
@@ -485,7 +485,7 @@ import os
 
 with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
-    customer_id="test-consumer",
+    consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as s:
     res = s.crm.users.delete(id="<id>", service_id="salesforce")

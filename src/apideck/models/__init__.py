@@ -1174,10 +1174,7 @@ from .createbillpaymentresponse import (
     CreateBillPaymentResponseTypedDict,
 )
 from .createbillresponse import CreateBillResponse, CreateBillResponseTypedDict
-from .createcallbackstatedata import (
-    CreateCallbackStateData,
-    CreateCallbackStateDataTypedDict,
-)
+from .createcallbackstate import CreateCallbackState, CreateCallbackStateTypedDict
 from .createcallbackstateresponse import (
     CreateCallbackStateResponse,
     CreateCallbackStateResponseData,
@@ -4505,12 +4502,12 @@ __all__ = [
     "CreateBillPaymentResponseTypedDict",
     "CreateBillResponse",
     "CreateBillResponseTypedDict",
-    "CreateCallbackStateData",
-    "CreateCallbackStateDataTypedDict",
+    "CreateCallbackState",
     "CreateCallbackStateResponse",
     "CreateCallbackStateResponseData",
     "CreateCallbackStateResponseDataTypedDict",
     "CreateCallbackStateResponseTypedDict",
+    "CreateCallbackStateTypedDict",
     "CreateCommentResponse",
     "CreateCommentResponseTypedDict",
     "CreateCompanyResponse",

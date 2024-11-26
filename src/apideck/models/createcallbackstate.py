@@ -6,11 +6,11 @@ from typing import Optional
 from typing_extensions import NotRequired, TypedDict
 
 
-class CreateCallbackStateDataTypedDict(TypedDict):
+class CreateCallbackStateTypedDict(TypedDict):
     redirect_uri: NotRequired[str]
     r"""The redirect URI to be used after the connection is created."""
 
 
-class CreateCallbackStateData(BaseModel):
+class CreateCallbackState(BaseModel):
     redirect_uri: Optional[str] = None
     r"""The redirect URI to be used after the connection is created."""

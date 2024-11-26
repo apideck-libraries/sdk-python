@@ -53,7 +53,7 @@ class EmployeePayrolls(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.HrisEmployeePayrollsAllGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -168,7 +168,7 @@ class EmployeePayrolls(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.HrisEmployeePayrollsAllGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -283,7 +283,7 @@ class EmployeePayrolls(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.HrisEmployeePayrollsOneGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -398,7 +398,7 @@ class EmployeePayrolls(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.HrisEmployeePayrollsOneGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,

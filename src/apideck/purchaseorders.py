@@ -55,7 +55,7 @@ class PurchaseOrders(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.AccountingPurchaseOrdersAllGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -170,7 +170,7 @@ class PurchaseOrders(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.AccountingPurchaseOrdersAllGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -290,7 +290,7 @@ class PurchaseOrders(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.AccountingPurchaseOrdersAddGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -415,7 +415,7 @@ class PurchaseOrders(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.AccountingPurchaseOrdersAddGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -536,7 +536,7 @@ class PurchaseOrders(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.AccountingPurchaseOrdersOneGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -652,7 +652,7 @@ class PurchaseOrders(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.AccountingPurchaseOrdersOneGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -775,7 +775,7 @@ class PurchaseOrders(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.AccountingPurchaseOrdersUpdateGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -903,7 +903,7 @@ class PurchaseOrders(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.AccountingPurchaseOrdersUpdateGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -1024,7 +1024,7 @@ class PurchaseOrders(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.AccountingPurchaseOrdersDeleteGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -1142,7 +1142,7 @@ class PurchaseOrders(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.AccountingPurchaseOrdersDeleteGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,

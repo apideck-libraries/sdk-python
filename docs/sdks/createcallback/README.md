@@ -20,10 +20,10 @@ import os
 
 with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
-    customer_id="test-consumer",
+    consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as s:
-    res = s.vault.create_callback.state(service_id="pipedrive", unified_api="crm", create_callback_state_data={
+    res = s.vault.create_callback.state(service_id="pipedrive", unified_api="crm", create_callback_state={
         "redirect_uri": "https://example.com/callback",
     })
 
@@ -35,12 +35,12 @@ with Apideck(
 
 ### Parameters
 
-| Parameter                                                                 | Type                                                                      | Required                                                                  | Description                                                               | Example                                                                   |
-| ------------------------------------------------------------------------- | ------------------------------------------------------------------------- | ------------------------------------------------------------------------- | ------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
-| `service_id`                                                              | *str*                                                                     | :heavy_check_mark:                                                        | Service ID of the resource to return                                      | pipedrive                                                                 |
-| `unified_api`                                                             | *str*                                                                     | :heavy_check_mark:                                                        | Unified API                                                               | crm                                                                       |
-| `create_callback_state_data`                                              | [models.CreateCallbackStateData](../../models/createcallbackstatedata.md) | :heavy_check_mark:                                                        | Callback state data                                                       |                                                                           |
-| `retries`                                                                 | [Optional[utils.RetryConfig]](../../models/utils/retryconfig.md)          | :heavy_minus_sign:                                                        | Configuration to override the default retry behavior of the client.       |                                                                           |
+| Parameter                                                           | Type                                                                | Required                                                            | Description                                                         | Example                                                             |
+| ------------------------------------------------------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------------- |
+| `service_id`                                                        | *str*                                                               | :heavy_check_mark:                                                  | Service ID of the resource to return                                | pipedrive                                                           |
+| `unified_api`                                                       | *str*                                                               | :heavy_check_mark:                                                  | Unified API                                                         | crm                                                                 |
+| `create_callback_state`                                             | [models.CreateCallbackState](../../models/createcallbackstate.md)   | :heavy_check_mark:                                                  | Callback state data                                                 |                                                                     |
+| `retries`                                                           | [Optional[utils.RetryConfig]](../../models/utils/retryconfig.md)    | :heavy_minus_sign:                                                  | Configuration to override the default retry behavior of the client. |                                                                     |
 
 ### Response
 

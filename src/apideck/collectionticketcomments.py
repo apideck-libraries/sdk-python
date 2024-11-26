@@ -55,7 +55,7 @@ class CollectionTicketComments(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.IssueTrackingCollectionTicketCommentsAllGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -170,7 +170,7 @@ class CollectionTicketComments(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.IssueTrackingCollectionTicketCommentsAllGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -285,7 +285,7 @@ class CollectionTicketComments(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.IssueTrackingCollectionTicketCommentsAddGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -407,7 +407,7 @@ class CollectionTicketComments(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.IssueTrackingCollectionTicketCommentsAddGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -529,7 +529,7 @@ class CollectionTicketComments(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.IssueTrackingCollectionTicketCommentsOneGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -644,7 +644,7 @@ class CollectionTicketComments(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.IssueTrackingCollectionTicketCommentsOneGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -761,7 +761,7 @@ class CollectionTicketComments(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.IssueTrackingCollectionTicketCommentsUpdateGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -885,7 +885,7 @@ class CollectionTicketComments(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.IssueTrackingCollectionTicketCommentsUpdateGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -1009,7 +1009,7 @@ class CollectionTicketComments(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.IssueTrackingCollectionTicketCommentsDeleteGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -1126,7 +1126,7 @@ class CollectionTicketComments(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.IssueTrackingCollectionTicketCommentsDeleteGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,

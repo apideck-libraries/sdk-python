@@ -17,14 +17,14 @@ from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
 
 
 class CrmContactsAllGlobalsTypedDict(TypedDict):
-    customer_id: NotRequired[str]
+    consumer_id: NotRequired[str]
     r"""ID of the consumer which you want to get or push data from"""
     app_id: NotRequired[str]
     r"""The ID of your Unify application"""
 
 
 class CrmContactsAllGlobals(BaseModel):
-    customer_id: Annotated[
+    consumer_id: Annotated[
         Optional[str],
         pydantic.Field(alias="x-apideck-consumer-id"),
         FieldMetadata(header=HeaderMetadata(style="simple", explode=False)),

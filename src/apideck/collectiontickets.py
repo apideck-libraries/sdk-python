@@ -55,7 +55,7 @@ class CollectionTickets(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.IssueTrackingCollectionTicketsAllGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -170,7 +170,7 @@ class CollectionTickets(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.IssueTrackingCollectionTicketsAllGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -289,7 +289,7 @@ class CollectionTickets(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.IssueTrackingCollectionTicketsAddGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -411,7 +411,7 @@ class CollectionTickets(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.IssueTrackingCollectionTicketsAddGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -529,7 +529,7 @@ class CollectionTickets(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.IssueTrackingCollectionTicketsOneGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -644,7 +644,7 @@ class CollectionTickets(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.IssueTrackingCollectionTicketsOneGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -759,7 +759,7 @@ class CollectionTickets(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.IssueTrackingCollectionTicketsUpdateGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -877,7 +877,7 @@ class CollectionTickets(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.IssueTrackingCollectionTicketsUpdateGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -999,7 +999,7 @@ class CollectionTickets(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.IssueTrackingCollectionTicketsDeleteGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -1118,7 +1118,7 @@ class CollectionTickets(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.IssueTrackingCollectionTicketsDeleteGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,

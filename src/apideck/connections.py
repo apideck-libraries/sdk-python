@@ -56,7 +56,7 @@ class Connections(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.VaultConnectionsAllGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -172,7 +172,7 @@ class Connections(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.VaultConnectionsAllGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -285,7 +285,7 @@ class Connections(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.VaultConnectionsOneGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -398,7 +398,7 @@ class Connections(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.VaultConnectionsOneGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -514,7 +514,7 @@ class Connections(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.VaultConnectionsUpdateGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -633,7 +633,7 @@ class Connections(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.VaultConnectionsUpdateGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -749,7 +749,7 @@ class Connections(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.VaultConnectionsDeleteGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -862,7 +862,7 @@ class Connections(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.VaultConnectionsDeleteGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -983,7 +983,7 @@ class Connections(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.VaultConnectionsImportGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -1111,7 +1111,7 @@ class Connections(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.VaultConnectionsImportGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -1247,7 +1247,7 @@ class Connections(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.VaultConnectionsTokenGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -1383,7 +1383,7 @@ class Connections(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.VaultConnectionsTokenGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,

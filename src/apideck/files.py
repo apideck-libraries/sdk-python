@@ -64,7 +64,7 @@ class Files(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.FileStorageFilesAllGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -177,7 +177,7 @@ class Files(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.FileStorageFilesAllGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -290,7 +290,7 @@ class Files(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.FileStorageFilesSearchGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -406,7 +406,7 @@ class Files(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.FileStorageFilesSearchGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -528,7 +528,7 @@ class Files(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.FileStorageFilesOneGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -647,7 +647,7 @@ class Files(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.FileStorageFilesOneGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -770,7 +770,7 @@ class Files(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.FileStorageFilesUpdateGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -900,7 +900,7 @@ class Files(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.FileStorageFilesUpdateGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -1023,7 +1023,7 @@ class Files(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.FileStorageFilesDeleteGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -1139,7 +1139,7 @@ class Files(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.FileStorageFilesDeleteGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -1259,7 +1259,7 @@ class Files(BaseSDK):
             if accept_header_override is not None
             else "application/json;q=1, */*;q=0",
             _globals=models.FileStorageFilesDownloadGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -1388,7 +1388,7 @@ class Files(BaseSDK):
             if accept_header_override is not None
             else "application/json;q=1, */*;q=0",
             _globals=models.FileStorageFilesDownloadGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -1520,7 +1520,7 @@ class Files(BaseSDK):
             if accept_header_override is not None
             else "application/json;q=1, */*;q=0",
             _globals=models.FileStorageFilesExportGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -1652,7 +1652,7 @@ class Files(BaseSDK):
             if accept_header_override is not None
             else "application/json;q=1, */*;q=0",
             _globals=models.FileStorageFilesExportGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,

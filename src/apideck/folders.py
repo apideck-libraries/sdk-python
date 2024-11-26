@@ -63,7 +63,7 @@ class Folders(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.FileStorageFoldersAddGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -193,7 +193,7 @@ class Folders(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.FileStorageFoldersAddGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -319,7 +319,7 @@ class Folders(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.FileStorageFoldersOneGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -438,7 +438,7 @@ class Folders(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.FileStorageFoldersOneGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -561,7 +561,7 @@ class Folders(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.FileStorageFoldersUpdateGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -691,7 +691,7 @@ class Folders(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.FileStorageFoldersUpdateGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -814,7 +814,7 @@ class Folders(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.FileStorageFoldersDeleteGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -930,7 +930,7 @@ class Folders(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.FileStorageFoldersDeleteGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -1043,7 +1043,7 @@ class Folders(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.FileStorageFoldersCopyGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -1163,7 +1163,7 @@ class Folders(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.FileStorageFoldersCopyGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,

@@ -54,7 +54,7 @@ class TaxRates(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.AccountingTaxRatesAllGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -168,7 +168,7 @@ class TaxRates(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.AccountingTaxRatesAllGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -284,7 +284,7 @@ class TaxRates(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.AccountingTaxRatesAddGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -403,7 +403,7 @@ class TaxRates(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.AccountingTaxRatesAddGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -526,7 +526,7 @@ class TaxRates(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.AccountingTaxRatesOneGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -646,7 +646,7 @@ class TaxRates(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.AccountingTaxRatesOneGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -765,7 +765,7 @@ class TaxRates(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.AccountingTaxRatesUpdateGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -887,7 +887,7 @@ class TaxRates(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.AccountingTaxRatesUpdateGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -1006,7 +1006,7 @@ class TaxRates(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.AccountingTaxRatesDeleteGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
@@ -1122,7 +1122,7 @@ class TaxRates(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             _globals=models.AccountingTaxRatesDeleteGlobals(
-                customer_id=self.sdk_configuration.globals.customer_id,
+                consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,

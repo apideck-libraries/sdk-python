@@ -44,7 +44,7 @@ class Apideck(BaseSDK):
     def __init__(
         self,
         api_key: Optional[Union[Optional[str], Callable[[], Optional[str]]]] = None,
-        customer_id: Optional[str] = None,
+        consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         server_idx: Optional[int] = None,
         server_url: Optional[str] = None,
@@ -58,7 +58,7 @@ class Apideck(BaseSDK):
         r"""Instantiates the SDK configuring it with the provided parameters.
 
         :param api_key: The api_key required for authentication
-        :param customer_id: Configures the customer_id parameter for all supported operations
+        :param consumer_id: Configures the consumer_id parameter for all supported operations
         :param app_id: Configures the app_id parameter for all supported operations
         :param server_idx: The index of the server to use for all methods
         :param server_url: The server URL to use for all methods
@@ -96,8 +96,8 @@ class Apideck(BaseSDK):
                 server_url = utils.template_url(server_url, url_params)
 
         _globals = internal.Globals(
-            customer_id=utils.get_global_from_env(
-                customer_id, "APIDECK_CUSTOMER_ID", str
+            consumer_id=utils.get_global_from_env(
+                consumer_id, "APIDECK_CONSUMER_ID", str
             ),
             app_id=utils.get_global_from_env(app_id, "APIDECK_APP_ID", str),
         )

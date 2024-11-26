@@ -30,14 +30,14 @@ FILE_STORAGE_UPLOAD_SESSIONS_ADD_OP_SERVERS = [
 
 
 class FileStorageUploadSessionsAddGlobalsTypedDict(TypedDict):
-    customer_id: NotRequired[str]
+    consumer_id: NotRequired[str]
     r"""ID of the consumer which you want to get or push data from"""
     app_id: NotRequired[str]
     r"""The ID of your Unify application"""
 
 
 class FileStorageUploadSessionsAddGlobals(BaseModel):
-    customer_id: Annotated[
+    consumer_id: Annotated[
         Optional[str],
         pydantic.Field(alias="x-apideck-consumer-id"),
         FieldMetadata(header=HeaderMetadata(style="simple", explode=False)),
