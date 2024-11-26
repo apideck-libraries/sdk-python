@@ -15,7 +15,7 @@ List Jobs
 ### Example Usage
 
 ```python
-from apideck import Apideck
+from apideck_sdk import Apideck
 import os
 
 with Apideck(
@@ -66,7 +66,7 @@ Get Job
 ### Example Usage
 
 ```python
-from apideck import Apideck
+from apideck_sdk import Apideck
 import os
 
 with Apideck(

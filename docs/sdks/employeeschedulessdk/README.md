@@ -14,7 +14,7 @@ List schedules for employee, a schedule is a work pattern, not the actual worked
 ### Example Usage
 
 ```python
-from apideck import Apideck
+from apideck_sdk import Apideck
 import os
 
 with Apideck(

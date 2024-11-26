@@ -18,7 +18,7 @@ List Drives
 ### Example Usage
 
 ```python
-from apideck import Apideck
+from apideck_sdk import Apideck
 import os
 
 with Apideck(
@@ -69,7 +69,7 @@ Create Drive
 ### Example Usage
 
 ```python
-from apideck import Apideck
+from apideck_sdk import Apideck
 import os
 
 with Apideck(
@@ -142,7 +142,7 @@ Get Drive
 ### Example Usage
 
 ```python
-from apideck import Apideck
+from apideck_sdk import Apideck
 import os
 
 with Apideck(
@@ -190,7 +190,7 @@ Update Drive
 ### Example Usage
 
 ```python
-from apideck import Apideck
+from apideck_sdk import Apideck
 import os
 
 with Apideck(
@@ -306,7 +306,7 @@ Delete Drive
 ### Example Usage
 
 ```python
-from apideck import Apideck
+from apideck_sdk import Apideck
 import os
 
 with Apideck(

@@ -18,8 +18,8 @@ Note: This is a short lived token that will expire after 1 hour (TTL: 3600).
 ### Example Usage
 
 ```python
-import apideck
-from apideck import Apideck
+import apideck_sdk
+from apideck_sdk import Apideck
 import os
 
 with Apideck(
@@ -37,7 +37,7 @@ with Apideck(
         "redirect_uri": "https://mysaas.com/dashboard",
         "settings": {
             "unified_apis": [
-                apideck.UnifiedAPIID.CRM,
+                apideck_sdk.UnifiedAPIID.CRM,
             ],
             "session_length": "30m",
         },

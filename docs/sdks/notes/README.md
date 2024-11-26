@@ -18,7 +18,7 @@ List notes
 ### Example Usage
 
 ```python
-from apideck import Apideck
+from apideck_sdk import Apideck
 import os
 
 with Apideck(
@@ -69,7 +69,7 @@ Create note
 ### Example Usage
 
 ```python
-from apideck import Apideck
+from apideck_sdk import Apideck
 import os
 
 with Apideck(
@@ -148,7 +148,7 @@ Get note
 ### Example Usage
 
 ```python
-from apideck import Apideck
+from apideck_sdk import Apideck
 import os
 
 with Apideck(
@@ -196,7 +196,7 @@ Update note
 ### Example Usage
 
 ```python
-from apideck import Apideck
+from apideck_sdk import Apideck
 import os
 
 with Apideck(
@@ -318,7 +318,7 @@ Delete note
 ### Example Usage
 
 ```python
-from apideck import Apideck
+from apideck_sdk import Apideck
 import os
 
 with Apideck(

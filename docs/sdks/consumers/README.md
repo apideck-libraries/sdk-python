@@ -18,7 +18,7 @@ Create a consumer
 ### Example Usage
 
 ```python
-from apideck import Apideck
+from apideck_sdk import Apideck
 import os
 
 with Apideck(
@@ -72,7 +72,7 @@ This endpoint includes all application consumers, along with an aggregated count
 ### Example Usage
 
 ```python
-from apideck import Apideck
+from apideck_sdk import Apideck
 import os
 
 with Apideck(
@@ -119,7 +119,7 @@ Consumer detail including their aggregated counts with the connections they have
 ### Example Usage
 
 ```python
-from apideck import Apideck
+from apideck_sdk import Apideck
 import os
 
 with Apideck(
@@ -164,7 +164,7 @@ Update consumer metadata such as name and email.
 ### Example Usage
 
 ```python
-from apideck import Apideck
+from apideck_sdk import Apideck
 import os
 
 with Apideck(
@@ -217,7 +217,7 @@ Delete consumer and all their connections, including credentials.
 ### Example Usage
 
 ```python
-from apideck import Apideck
+from apideck_sdk import Apideck
 import os
 
 with Apideck(

@@ -2,7 +2,7 @@ speakeasyVersion: 1.446.1
 sources:
     apideck-OAS:
         sourceNamespace: apideck-oas
-        sourceRevisionDigest: sha256:02551218f30a59294f052ed522ed2fe1640fb36ccda309abec79d9ad45a25769
+        sourceRevisionDigest: sha256:896387975aac3ffa026ada72f5899c740e5786085076ea935f8707e0fda23ad0
         sourceBlobDigest: sha256:699b3eb6377b8eb11bd30a9fa7b959c5d13b341d583aacc499276a8bf17fc64f
         tags:
             - latest
@@ -11,10 +11,10 @@ targets:
     apideck:
         source: apideck-OAS
         sourceNamespace: apideck-oas
-        sourceRevisionDigest: sha256:02551218f30a59294f052ed522ed2fe1640fb36ccda309abec79d9ad45a25769
+        sourceRevisionDigest: sha256:896387975aac3ffa026ada72f5899c740e5786085076ea935f8707e0fda23ad0
         sourceBlobDigest: sha256:699b3eb6377b8eb11bd30a9fa7b959c5d13b341d583aacc499276a8bf17fc64f
         codeSamplesNamespace: apideck-oas-code-samples
-        codeSamplesRevisionDigest: sha256:8556285c7f0bb2e9b53667384613b4670f34cd605c0062db390f832cd05d76b7
+        codeSamplesRevisionDigest: sha256:b509fee48f3ad8a345d69033853511edf8e3b80c1a4482f690e7ec10953ffc85
 workflow:
     workflowVersion: 1.0.0
     speakeasyVersion: latest

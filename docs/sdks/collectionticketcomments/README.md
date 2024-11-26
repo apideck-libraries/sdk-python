@@ -18,8 +18,8 @@ List Comments
 ### Example Usage
 
 ```python
-import apideck
-from apideck import Apideck
+import apideck_sdk
+from apideck_sdk import Apideck
 import os
 
 with Apideck(
@@ -32,8 +32,8 @@ with Apideck(
         "ticket_id": "<id>",
         "service_id": "salesforce",
         "sort": {
-            "by": apideck.CommentsSortBy.CREATED_AT,
-            "direction": apideck.SortDirection.DESC,
+            "by": apideck_sdk.CommentsSortBy.CREATED_AT,
+            "direction": apideck_sdk.SortDirection.DESC,
         },
         "pass_through": {
             "search": "San Francisco",
@@ -76,7 +76,7 @@ Create Comment
 ### Example Usage
 
 ```python
-from apideck import Apideck
+from apideck_sdk import Apideck
 import os
 
 with Apideck(
@@ -151,7 +151,7 @@ Get Comment
 ### Example Usage
 
 ```python
-from apideck import Apideck
+from apideck_sdk import Apideck
 import os
 
 with Apideck(
@@ -202,7 +202,7 @@ Update Comment
 ### Example Usage
 
 ```python
-from apideck import Apideck
+from apideck_sdk import Apideck
 import os
 
 with Apideck(
@@ -320,7 +320,7 @@ Delete Comment
 ### Example Usage
 
 ```python
-from apideck import Apideck
+from apideck_sdk import Apideck
 import os
 
 with Apideck(

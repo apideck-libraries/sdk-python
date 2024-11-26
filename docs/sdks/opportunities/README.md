@@ -18,8 +18,8 @@ List opportunities
 ### Example Usage
 
 ```python
-import apideck
-from apideck import Apideck
+import apideck_sdk
+from apideck_sdk import Apideck
 import os
 
 with Apideck(
@@ -34,8 +34,8 @@ with Apideck(
             "monetary_amount": 75000,
         },
         "sort": {
-            "by": apideck.OpportunitiesSortBy.CREATED_AT,
-            "direction": apideck.SortDirection.DESC,
+            "by": apideck_sdk.OpportunitiesSortBy.CREATED_AT,
+            "direction": apideck_sdk.SortDirection.DESC,
         },
         "pass_through": {
             "search": "San Francisco",
@@ -78,8 +78,8 @@ Create opportunity
 ### Example Usage
 
 ```python
-import apideck
-from apideck import Apideck
+import apideck_sdk
+from apideck_sdk import Apideck
 import dateutil.parser
 import os
 
@@ -94,7 +94,7 @@ with Apideck(
         "description": "Opportunities are created for People and Companies that are interested in buying your products or services. Create Opportunities for People and Companies to move them through one of your Pipelines.",
         "type": "Existing Customer - Upgrade",
         "monetary_amount": 75000,
-        "currency": apideck.Currency.USD,
+        "currency": apideck_sdk.Currency.USD,
         "win_probability": 40,
         "close_date": dateutil.parser.parse("2020-10-30").date(),
         "loss_reason_id": "12345",
@@ -181,7 +181,7 @@ Get opportunity
 ### Example Usage
 
 ```python
-from apideck import Apideck
+from apideck_sdk import Apideck
 import os
 
 with Apideck(
@@ -229,8 +229,8 @@ Update opportunity
 ### Example Usage
 
 ```python
-import apideck
-from apideck import Apideck
+import apideck_sdk
+from apideck_sdk import Apideck
 import dateutil.parser
 import os
 
@@ -245,7 +245,7 @@ with Apideck(
         "description": "Opportunities are created for People and Companies that are interested in buying your products or services. Create Opportunities for People and Companies to move them through one of your Pipelines.",
         "type": "Existing Customer - Upgrade",
         "monetary_amount": 75000,
-        "currency": apideck.Currency.USD,
+        "currency": apideck_sdk.Currency.USD,
         "win_probability": 40,
         "close_date": dateutil.parser.parse("2020-10-30").date(),
         "loss_reason_id": "12345",
@@ -360,7 +360,7 @@ Delete opportunity
 ### Example Usage
 
 ```python
-from apideck import Apideck
+from apideck_sdk import Apideck
 import os
 
 with Apideck(

@@ -18,7 +18,7 @@ List users
 ### Example Usage
 
 ```python
-from apideck import Apideck
+from apideck_sdk import Apideck
 import os
 
 with Apideck(
@@ -69,8 +69,8 @@ Create user
 ### Example Usage
 
 ```python
-import apideck
-from apideck import Apideck
+import apideck_sdk
+from apideck_sdk import Apideck
 import os
 
 with Apideck(
@@ -83,7 +83,7 @@ with Apideck(
             {
                 "email": "elon@musk.com",
                 "id": "123",
-                "type": apideck.EmailType.PRIMARY,
+                "type": apideck_sdk.EmailType.PRIMARY,
             },
         ],
         "parent_id": "54321",
@@ -102,7 +102,7 @@ with Apideck(
         "addresses": [
             {
                 "id": "123",
-                "type": apideck.Type.PRIMARY,
+                "type": apideck_sdk.Type.PRIMARY,
                 "string": "25 Spring Street, Blackburn, VIC 3130",
                 "name": "HQ US",
                 "line1": "Main street",
@@ -134,7 +134,7 @@ with Apideck(
                 "country_code": "1",
                 "area_code": "323",
                 "extension": "105",
-                "type": apideck.PhoneNumberType.PRIMARY,
+                "type": apideck_sdk.PhoneNumberType.PRIMARY,
             },
             {
                 "number": "111-111-1111",
@@ -142,7 +142,7 @@ with Apideck(
                 "country_code": "1",
                 "area_code": "323",
                 "extension": "105",
-                "type": apideck.PhoneNumberType.PRIMARY,
+                "type": apideck_sdk.PhoneNumberType.PRIMARY,
             },
         ],
         "pass_through": [
@@ -199,7 +199,7 @@ Get user
 ### Example Usage
 
 ```python
-from apideck import Apideck
+from apideck_sdk import Apideck
 import os
 
 with Apideck(
@@ -247,8 +247,8 @@ Update user
 ### Example Usage
 
 ```python
-import apideck
-from apideck import Apideck
+import apideck_sdk
+from apideck_sdk import Apideck
 import os
 
 with Apideck(
@@ -261,7 +261,7 @@ with Apideck(
             {
                 "email": "elon@musk.com",
                 "id": "123",
-                "type": apideck.EmailType.PRIMARY,
+                "type": apideck_sdk.EmailType.PRIMARY,
             },
         ],
         "parent_id": "54321",
@@ -280,7 +280,7 @@ with Apideck(
         "addresses": [
             {
                 "id": "123",
-                "type": apideck.Type.PRIMARY,
+                "type": apideck_sdk.Type.PRIMARY,
                 "string": "25 Spring Street, Blackburn, VIC 3130",
                 "name": "HQ US",
                 "line1": "Main street",
@@ -306,7 +306,7 @@ with Apideck(
             },
             {
                 "id": "123",
-                "type": apideck.Type.PRIMARY,
+                "type": apideck_sdk.Type.PRIMARY,
                 "string": "25 Spring Street, Blackburn, VIC 3130",
                 "name": "HQ US",
                 "line1": "Main street",
@@ -332,7 +332,7 @@ with Apideck(
             },
             {
                 "id": "123",
-                "type": apideck.Type.PRIMARY,
+                "type": apideck_sdk.Type.PRIMARY,
                 "string": "25 Spring Street, Blackburn, VIC 3130",
                 "name": "HQ US",
                 "line1": "Main street",
@@ -364,7 +364,7 @@ with Apideck(
                 "country_code": "1",
                 "area_code": "323",
                 "extension": "105",
-                "type": apideck.PhoneNumberType.PRIMARY,
+                "type": apideck_sdk.PhoneNumberType.PRIMARY,
             },
             {
                 "number": "111-111-1111",
@@ -372,7 +372,7 @@ with Apideck(
                 "country_code": "1",
                 "area_code": "323",
                 "extension": "105",
-                "type": apideck.PhoneNumberType.PRIMARY,
+                "type": apideck_sdk.PhoneNumberType.PRIMARY,
             },
         ],
         "pass_through": [
@@ -480,7 +480,7 @@ Delete user
 ### Example Usage
 
 ```python
-from apideck import Apideck
+from apideck_sdk import Apideck
 import os
 
 with Apideck(

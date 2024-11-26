@@ -18,8 +18,8 @@ List Payments
 ### Example Usage
 
 ```python
-import apideck
-from apideck import Apideck
+import apideck_sdk
+from apideck_sdk import Apideck
 import dateutil.parser
 import os
 
@@ -34,8 +34,8 @@ with Apideck(
             "updated_since": dateutil.parser.isoparse("2020-09-30T07:43:32.000Z"),
         },
         "sort": {
-            "by": apideck.PaymentsSortBy.UPDATED_AT,
-            "direction": apideck.SortDirection.DESC,
+            "by": apideck_sdk.PaymentsSortBy.UPDATED_AT,
+            "direction": apideck_sdk.SortDirection.DESC,
         },
         "pass_through": {
             "search": "San Francisco",
@@ -78,8 +78,8 @@ Create Payment
 ### Example Usage
 
 ```python
-import apideck
-from apideck import Apideck
+import apideck_sdk
+from apideck_sdk import Apideck
 import dateutil.parser
 import os
 
@@ -91,7 +91,7 @@ with Apideck(
     res = s.accounting.payments.create(payment={
         "total_amount": 49.99,
         "transaction_date": dateutil.parser.isoparse("2021-05-01T12:00:00.000Z"),
-        "currency": apideck.Currency.USD,
+        "currency": apideck_sdk.Currency.USD,
         "currency_rate": 0.69,
         "reference": "123456",
         "payment_method": "cash",
@@ -109,8 +109,8 @@ with Apideck(
         },
         "company_id": "12345",
         "reconciled": True,
-        "status": apideck.PaymentStatus.AUTHORISED,
-        "type": apideck.PaymentType.ACCOUNTS_RECEIVABLE,
+        "status": apideck_sdk.PaymentStatus.AUTHORISED,
+        "type": apideck_sdk.PaymentType.ACCOUNTS_RECEIVABLE,
         "allocations": [
             {
                 "id": "123456",
@@ -194,7 +194,7 @@ Get Payment
 ### Example Usage
 
 ```python
-from apideck import Apideck
+from apideck_sdk import Apideck
 import os
 
 with Apideck(
@@ -242,8 +242,8 @@ Update Payment
 ### Example Usage
 
 ```python
-import apideck
-from apideck import Apideck
+import apideck_sdk
+from apideck_sdk import Apideck
 import dateutil.parser
 import os
 
@@ -255,7 +255,7 @@ with Apideck(
     res = s.accounting.payments.update(id="<id>", payment={
         "total_amount": 49.99,
         "transaction_date": dateutil.parser.isoparse("2021-05-01T12:00:00.000Z"),
-        "currency": apideck.Currency.USD,
+        "currency": apideck_sdk.Currency.USD,
         "currency_rate": 0.69,
         "reference": "123456",
         "payment_method": "cash",
@@ -273,8 +273,8 @@ with Apideck(
         },
         "company_id": "12345",
         "reconciled": True,
-        "status": apideck.PaymentStatus.AUTHORISED,
-        "type": apideck.PaymentType.ACCOUNTS_RECEIVABLE,
+        "status": apideck_sdk.PaymentStatus.AUTHORISED,
+        "type": apideck_sdk.PaymentType.ACCOUNTS_RECEIVABLE,
         "allocations": [
             {
                 "id": "123456",
@@ -384,7 +384,7 @@ Delete Payment
 ### Example Usage
 
 ```python
-from apideck import Apideck
+from apideck_sdk import Apideck
 import os
 
 with Apideck(

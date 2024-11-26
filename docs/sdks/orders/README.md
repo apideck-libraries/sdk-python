@@ -15,8 +15,8 @@ List Orders
 ### Example Usage
 
 ```python
-import apideck
-from apideck import Apideck
+import apideck_sdk
+from apideck_sdk import Apideck
 import os
 
 with Apideck(
@@ -33,8 +33,8 @@ with Apideck(
             "created_since": "2020-09-30T07:43:32.000Z",
         },
         "sort": {
-            "by": apideck.OrdersSortBy.CREATED_AT,
-            "direction": apideck.SortDirection.DESC,
+            "by": apideck_sdk.OrdersSortBy.CREATED_AT,
+            "direction": apideck_sdk.SortDirection.DESC,
         },
         "pass_through": {
             "search": "San Francisco",
@@ -77,7 +77,7 @@ Get Order
 ### Example Usage
 
 ```python
-from apideck import Apideck
+from apideck_sdk import Apideck
 import os
 
 with Apideck(

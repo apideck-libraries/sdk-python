@@ -18,7 +18,7 @@ List pipelines
 ### Example Usage
 
 ```python
-from apideck import Apideck
+from apideck_sdk import Apideck
 import os
 
 with Apideck(
@@ -69,8 +69,8 @@ Create pipeline
 ### Example Usage
 
 ```python
-import apideck
-from apideck import Apideck
+import apideck_sdk
+from apideck_sdk import Apideck
 import os
 
 with Apideck(
@@ -81,7 +81,7 @@ with Apideck(
     res = s.crm.pipelines.create(pipeline={
         "name": "Sales Pipeline",
         "id": "default",
-        "currency": apideck.Currency.USD,
+        "currency": apideck_sdk.Currency.USD,
         "archived": False,
         "active": False,
         "display_order": 1,
@@ -161,7 +161,7 @@ Get pipeline
 ### Example Usage
 
 ```python
-from apideck import Apideck
+from apideck_sdk import Apideck
 import os
 
 with Apideck(
@@ -209,8 +209,8 @@ Update pipeline
 ### Example Usage
 
 ```python
-import apideck
-from apideck import Apideck
+import apideck_sdk
+from apideck_sdk import Apideck
 import os
 
 with Apideck(
@@ -221,7 +221,7 @@ with Apideck(
     res = s.crm.pipelines.update(id="<id>", pipeline={
         "name": "Sales Pipeline",
         "id": "default",
-        "currency": apideck.Currency.USD,
+        "currency": apideck_sdk.Currency.USD,
         "archived": False,
         "active": False,
         "display_order": 1,
@@ -330,7 +330,7 @@ Delete pipeline
 ### Example Usage
 
 ```python
-from apideck import Apideck
+from apideck_sdk import Apideck
 import os
 
 with Apideck(

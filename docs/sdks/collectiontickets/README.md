@@ -18,8 +18,8 @@ List Tickets
 ### Example Usage
 
 ```python
-import apideck
-from apideck import Apideck
+import apideck_sdk
+from apideck_sdk import Apideck
 import os
 
 with Apideck(
@@ -31,8 +31,8 @@ with Apideck(
         "collection_id": "apideck-io",
         "service_id": "salesforce",
         "sort": {
-            "by": apideck.TicketsSortBy.CREATED_AT,
-            "direction": apideck.SortDirection.DESC,
+            "by": apideck_sdk.TicketsSortBy.CREATED_AT,
+            "direction": apideck_sdk.SortDirection.DESC,
         },
         "filter_": {
             "status": [
@@ -80,8 +80,8 @@ Create Ticket
 ### Example Usage
 
 ```python
-import apideck
-from apideck import Apideck
+import apideck_sdk
+from apideck_sdk import Apideck
 import dateutil.parser
 import os
 
@@ -96,7 +96,7 @@ with Apideck(
         "subject": "Technical Support Request",
         "description": "I am facing issues with my internet connection",
         "status": "open",
-        "priority": apideck.Priority.HIGH,
+        "priority": apideck_sdk.Priority.HIGH,
         "assignees": [
             {
                 "id": "12345",
@@ -166,7 +166,7 @@ Get Ticket
 ### Example Usage
 
 ```python
-from apideck import Apideck
+from apideck_sdk import Apideck
 import os
 
 with Apideck(
@@ -216,8 +216,8 @@ Update Ticket
 ### Example Usage
 
 ```python
-import apideck
-from apideck import Apideck
+import apideck_sdk
+from apideck_sdk import Apideck
 import dateutil.parser
 import os
 
@@ -235,7 +235,7 @@ with Apideck(
             "subject": "Technical Support Request",
             "description": "I am facing issues with my internet connection",
             "status": "open",
-            "priority": apideck.Priority.HIGH,
+            "priority": apideck_sdk.Priority.HIGH,
             "assignees": [
                 {
                     "id": "12345",
@@ -326,7 +326,7 @@ Delete Ticket
 ### Example Usage
 
 ```python
-from apideck import Apideck
+from apideck_sdk import Apideck
 import os
 
 with Apideck(

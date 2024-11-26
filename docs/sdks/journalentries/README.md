@@ -18,8 +18,8 @@ List Journal Entries
 ### Example Usage
 
 ```python
-import apideck
-from apideck import Apideck
+import apideck_sdk
+from apideck_sdk import Apideck
 import dateutil.parser
 import os
 
@@ -34,8 +34,8 @@ with Apideck(
             "updated_since": dateutil.parser.isoparse("2020-09-30T07:43:32.000Z"),
         },
         "sort": {
-            "by": apideck.JournalEntriesSortBy.UPDATED_AT,
-            "direction": apideck.SortDirection.DESC,
+            "by": apideck_sdk.JournalEntriesSortBy.UPDATED_AT,
+            "direction": apideck_sdk.SortDirection.DESC,
         },
         "pass_through": {
             "search": "San Francisco",
@@ -78,8 +78,8 @@ Create Journal Entry
 ### Example Usage
 
 ```python
-import apideck
-from apideck import Apideck
+import apideck_sdk
+from apideck_sdk import Apideck
 import dateutil.parser
 import os
 
@@ -91,11 +91,11 @@ with Apideck(
     res = s.accounting.journal_entries.create(journal_entry={
         "title": "Purchase Invoice-Inventory (USD): 2019/02/01 Batch Summary Entry",
         "currency_rate": 0.69,
-        "currency": apideck.Currency.USD,
+        "currency": apideck_sdk.Currency.USD,
         "company_id": "12345",
         "line_items": [
             {
-                "type": apideck.JournalEntryLineItemType.DEBIT,
+                "type": apideck_sdk.JournalEntryLineItemType.DEBIT,
                 "ledger_account": {
                     "id": "123456",
                     "nominal_code": "N091",
@@ -129,7 +129,7 @@ with Apideck(
                     "display_name": "Windsurf Shop",
                     "address": {
                         "id": "123",
-                        "type": apideck.Type.PRIMARY,
+                        "type": apideck_sdk.Type.PRIMARY,
                         "string": "25 Spring Street, Blackburn, VIC 3130",
                         "name": "HQ US",
                         "line1": "Main street",
@@ -225,7 +225,7 @@ Get Journal Entry
 ### Example Usage
 
 ```python
-from apideck import Apideck
+from apideck_sdk import Apideck
 import os
 
 with Apideck(
@@ -273,8 +273,8 @@ Update Journal Entry
 ### Example Usage
 
 ```python
-import apideck
-from apideck import Apideck
+import apideck_sdk
+from apideck_sdk import Apideck
 import dateutil.parser
 import os
 
@@ -286,11 +286,11 @@ with Apideck(
     res = s.accounting.journal_entries.update(id="<id>", journal_entry={
         "title": "Purchase Invoice-Inventory (USD): 2019/02/01 Batch Summary Entry",
         "currency_rate": 0.69,
-        "currency": apideck.Currency.USD,
+        "currency": apideck_sdk.Currency.USD,
         "company_id": "12345",
         "line_items": [
             {
-                "type": apideck.JournalEntryLineItemType.DEBIT,
+                "type": apideck_sdk.JournalEntryLineItemType.DEBIT,
                 "ledger_account": {
                     "id": "123456",
                     "nominal_code": "N091",
@@ -324,7 +324,7 @@ with Apideck(
                     "display_name": "Windsurf Shop",
                     "address": {
                         "id": "123",
-                        "type": apideck.Type.PRIMARY,
+                        "type": apideck_sdk.Type.PRIMARY,
                         "string": "25 Spring Street, Blackburn, VIC 3130",
                         "name": "HQ US",
                         "line1": "Main street",
@@ -352,7 +352,7 @@ with Apideck(
                 "line_number": 1,
             },
             {
-                "type": apideck.JournalEntryLineItemType.DEBIT,
+                "type": apideck_sdk.JournalEntryLineItemType.DEBIT,
                 "ledger_account": {
                     "id": "123456",
                     "nominal_code": "N091",
@@ -382,7 +382,7 @@ with Apideck(
                     "display_name": "Windsurf Shop",
                     "address": {
                         "id": "123",
-                        "type": apideck.Type.PRIMARY,
+                        "type": apideck_sdk.Type.PRIMARY,
                         "string": "25 Spring Street, Blackburn, VIC 3130",
                         "name": "HQ US",
                         "line1": "Main street",
@@ -410,7 +410,7 @@ with Apideck(
                 "line_number": 1,
             },
             {
-                "type": apideck.JournalEntryLineItemType.DEBIT,
+                "type": apideck_sdk.JournalEntryLineItemType.DEBIT,
                 "ledger_account": {
                     "id": "123456",
                     "nominal_code": "N091",
@@ -448,7 +448,7 @@ with Apideck(
                     "display_name": "Windsurf Shop",
                     "address": {
                         "id": "123",
-                        "type": apideck.Type.PRIMARY,
+                        "type": apideck_sdk.Type.PRIMARY,
                         "string": "25 Spring Street, Blackburn, VIC 3130",
                         "name": "HQ US",
                         "line1": "Main street",
@@ -565,7 +565,7 @@ Delete Journal Entry
 ### Example Usage
 
 ```python
-from apideck import Apideck
+from apideck_sdk import Apideck
 import os
 
 with Apideck(

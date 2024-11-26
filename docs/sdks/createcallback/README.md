@@ -15,7 +15,7 @@ This endpoint creates a callback state that can be used to issue requests to the
 ### Example Usage
 
 ```python
-from apideck import Apideck
+from apideck_sdk import Apideck
 import os
 
 with Apideck(

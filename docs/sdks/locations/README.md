@@ -18,7 +18,7 @@ List Locations
 ### Example Usage
 
 ```python
-from apideck import Apideck
+from apideck_sdk import Apideck
 import os
 
 with Apideck(
@@ -69,8 +69,8 @@ Create Location
 ### Example Usage
 
 ```python
-import apideck
-from apideck import Apideck
+import apideck_sdk
+from apideck_sdk import Apideck
 import os
 
 with Apideck(
@@ -82,11 +82,11 @@ with Apideck(
         "parent_id": "12345",
         "company_name": "SpaceX",
         "display_name": "11 UT - South Jordan",
-        "status": apideck.LocationStatus.ACTIVE,
+        "status": apideck_sdk.LocationStatus.ACTIVE,
         "addresses": [
             {
                 "id": "123",
-                "type": apideck.Type.PRIMARY,
+                "type": apideck_sdk.Type.PRIMARY,
                 "string": "25 Spring Street, Blackburn, VIC 3130",
                 "name": "HQ US",
                 "line1": "Main street",
@@ -174,7 +174,7 @@ Get Location
 ### Example Usage
 
 ```python
-from apideck import Apideck
+from apideck_sdk import Apideck
 import os
 
 with Apideck(
@@ -222,8 +222,8 @@ Update Location
 ### Example Usage
 
 ```python
-import apideck
-from apideck import Apideck
+import apideck_sdk
+from apideck_sdk import Apideck
 import os
 
 with Apideck(
@@ -235,11 +235,11 @@ with Apideck(
         "parent_id": "12345",
         "company_name": "SpaceX",
         "display_name": "11 UT - South Jordan",
-        "status": apideck.LocationStatus.ACTIVE,
+        "status": apideck_sdk.LocationStatus.ACTIVE,
         "addresses": [
             {
                 "id": "123",
-                "type": apideck.Type.PRIMARY,
+                "type": apideck_sdk.Type.PRIMARY,
                 "string": "25 Spring Street, Blackburn, VIC 3130",
                 "name": "HQ US",
                 "line1": "Main street",
@@ -265,7 +265,7 @@ with Apideck(
             },
             {
                 "id": "123",
-                "type": apideck.Type.PRIMARY,
+                "type": apideck_sdk.Type.PRIMARY,
                 "string": "25 Spring Street, Blackburn, VIC 3130",
                 "name": "HQ US",
                 "line1": "Main street",
@@ -291,7 +291,7 @@ with Apideck(
             },
             {
                 "id": "123",
-                "type": apideck.Type.PRIMARY,
+                "type": apideck_sdk.Type.PRIMARY,
                 "string": "25 Spring Street, Blackburn, VIC 3130",
                 "name": "HQ US",
                 "line1": "Main street",
@@ -396,7 +396,7 @@ Delete Location
 ### Example Usage
 
 ```python
-from apideck import Apideck
+from apideck_sdk import Apideck
 import os
 
 with Apideck(

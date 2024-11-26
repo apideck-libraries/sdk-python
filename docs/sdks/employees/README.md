@@ -18,8 +18,8 @@ Apideck operates as a stateless Unified API, which means that the list endpoint 
 ### Example Usage
 
 ```python
-import apideck
-from apideck import Apideck
+import apideck_sdk
+from apideck_sdk import Apideck
 import os
 
 with Apideck(
@@ -36,13 +36,13 @@ with Apideck(
             "title": "Manager",
             "last_name": "Musk",
             "manager_id": "1234",
-            "employment_status": apideck.EmployeesFilterEmploymentStatus.ACTIVE,
+            "employment_status": apideck_sdk.EmployeesFilterEmploymentStatus.ACTIVE,
             "employee_number": "123456-AB",
             "department_id": "1234",
         },
         "sort": {
-            "by": apideck.EmployeesSortBy.CREATED_AT,
-            "direction": apideck.SortDirection.DESC,
+            "by": apideck_sdk.EmployeesSortBy.CREATED_AT,
+            "direction": apideck_sdk.SortDirection.DESC,
         },
         "pass_through": {
             "search": "San Francisco",
@@ -85,8 +85,8 @@ Create Employee
 ### Example Usage
 
 ```python
-import apideck
-from apideck import Apideck
+import apideck_sdk
+from apideck_sdk import Apideck
 import dateutil.parser
 import os
 
@@ -110,7 +110,7 @@ with Apideck(
             "first_name": "Elon",
             "last_name": "Musk",
             "middle_name": "D.",
-            "gender": apideck.Gender.MALE,
+            "gender": apideck_sdk.Gender.MALE,
             "initials": "EM",
             "birthday": dateutil.parser.parse("2000-08-12").date(),
             "deceased_on": dateutil.parser.parse("2000-08-12").date(),
@@ -127,9 +127,9 @@ with Apideck(
         "company_name": "SpaceX",
         "employment_start_date": "2021-10-26",
         "employment_end_date": "2028-10-26",
-        "leaving_reason": apideck.LeavingReason.RESIGNED,
+        "leaving_reason": apideck_sdk.LeavingReason.RESIGNED,
         "employee_number": "123456-AB",
-        "employment_status": apideck.EmploymentStatus.ACTIVE,
+        "employment_status": apideck_sdk.EmploymentStatus.ACTIVE,
         "ethnicity": "African American",
         "manager": {
             "id": "12345",
@@ -137,7 +137,7 @@ with Apideck(
             "first_name": "Elon",
             "last_name": "Musk",
             "email": "elon@musk.com",
-            "employment_status": apideck.EmploymentStatus.ACTIVE,
+            "employment_status": apideck_sdk.EmploymentStatus.ACTIVE,
         },
         "direct_reports": [
             "a0d636c6-43b3-4bde-8c70-85b707d992f4",
@@ -148,7 +148,7 @@ with Apideck(
         "deceased_on": dateutil.parser.parse("2000-08-12").date(),
         "country_of_birth": "US",
         "description": "A description",
-        "gender": apideck.Gender.MALE,
+        "gender": apideck_sdk.Gender.MALE,
         "pronouns": "she,her",
         "preferred_language": "EN",
         "languages": [
@@ -169,15 +169,15 @@ with Apideck(
                 "start_date": dateutil.parser.parse("2020-08-12").date(),
                 "end_date": dateutil.parser.parse("2020-08-12").date(),
                 "compensation_rate": 72000,
-                "currency": apideck.Currency.USD,
-                "payment_unit": apideck.PaymentUnit.YEAR,
+                "currency": apideck_sdk.Currency.USD,
+                "payment_unit": apideck_sdk.PaymentUnit.YEAR,
                 "hired_at": dateutil.parser.parse("2020-08-12").date(),
                 "is_primary": True,
                 "is_manager": True,
-                "status": apideck.EmployeeJobStatus.ACTIVE,
+                "status": apideck_sdk.EmployeeJobStatus.ACTIVE,
                 "location": {
                     "id": "123",
-                    "type": apideck.Type.PRIMARY,
+                    "type": apideck_sdk.Type.PRIMARY,
                     "string": "25 Spring Street, Blackburn, VIC 3130",
                     "name": "HQ US",
                     "line1": "Main street",
@@ -206,8 +206,8 @@ with Apideck(
         "compensations": [
             {
                 "rate": 50,
-                "payment_unit": apideck.PaymentUnit.HOUR,
-                "flsa_status": apideck.FlsaStatus.NONEXEMPT,
+                "payment_unit": apideck_sdk.PaymentUnit.HOUR,
+                "flsa_status": apideck_sdk.FlsaStatus.NONEXEMPT,
                 "effective_date": "2021-06-11",
             },
         ],
@@ -215,7 +215,7 @@ with Apideck(
         "addresses": [
             {
                 "id": "123",
-                "type": apideck.Type.PRIMARY,
+                "type": apideck_sdk.Type.PRIMARY,
                 "string": "25 Spring Street, Blackburn, VIC 3130",
                 "name": "HQ US",
                 "line1": "Main street",
@@ -241,7 +241,7 @@ with Apideck(
             },
             {
                 "id": "123",
-                "type": apideck.Type.PRIMARY,
+                "type": apideck_sdk.Type.PRIMARY,
                 "string": "25 Spring Street, Blackburn, VIC 3130",
                 "name": "HQ US",
                 "line1": "Main street",
@@ -273,14 +273,14 @@ with Apideck(
                 "country_code": "1",
                 "area_code": "323",
                 "extension": "105",
-                "type": apideck.PhoneNumberType.PRIMARY,
+                "type": apideck_sdk.PhoneNumberType.PRIMARY,
             },
         ],
         "emails": [
             {
                 "email": "elon@musk.com",
                 "id": "123",
-                "type": apideck.EmailType.PRIMARY,
+                "type": apideck_sdk.EmailType.PRIMARY,
             },
         ],
         "custom_fields": [
@@ -313,40 +313,40 @@ with Apideck(
                 "bank_name": "Monzo",
                 "account_number": "123465",
                 "account_name": "SPACEX LLC",
-                "account_type": apideck.AccountType.CREDIT_CARD,
+                "account_type": apideck_sdk.AccountType.CREDIT_CARD,
                 "iban": "CH2989144532982975332",
                 "bic": "AUDSCHGGXXX",
                 "routing_number": "012345678",
                 "bsb_number": "062-001",
                 "branch_identifier": "001",
                 "bank_code": "BNH",
-                "currency": apideck.Currency.USD,
+                "currency": apideck_sdk.Currency.USD,
             },
             {
                 "bank_name": "Monzo",
                 "account_number": "123465",
                 "account_name": "SPACEX LLC",
-                "account_type": apideck.AccountType.CREDIT_CARD,
+                "account_type": apideck_sdk.AccountType.CREDIT_CARD,
                 "iban": "CH2989144532982975332",
                 "bic": "AUDSCHGGXXX",
                 "routing_number": "012345678",
                 "bsb_number": "062-001",
                 "branch_identifier": "001",
                 "bank_code": "BNH",
-                "currency": apideck.Currency.USD,
+                "currency": apideck_sdk.Currency.USD,
             },
             {
                 "bank_name": "Monzo",
                 "account_number": "123465",
                 "account_name": "SPACEX LLC",
-                "account_type": apideck.AccountType.CREDIT_CARD,
+                "account_type": apideck_sdk.AccountType.CREDIT_CARD,
                 "iban": "CH2989144532982975332",
                 "bic": "AUDSCHGGXXX",
                 "routing_number": "012345678",
                 "bsb_number": "062-001",
                 "branch_identifier": "001",
                 "bank_code": "BNH",
-                "currency": apideck.Currency.USD,
+                "currency": apideck_sdk.Currency.USD,
             },
         ],
         "tax_code": "1111",
@@ -418,7 +418,7 @@ Get Employee
 ### Example Usage
 
 ```python
-from apideck import Apideck
+from apideck_sdk import Apideck
 import os
 
 with Apideck(
@@ -473,8 +473,8 @@ Update Employee
 ### Example Usage
 
 ```python
-import apideck
-from apideck import Apideck
+import apideck_sdk
+from apideck_sdk import Apideck
 import dateutil.parser
 import os
 
@@ -498,7 +498,7 @@ with Apideck(
             "first_name": "Elon",
             "last_name": "Musk",
             "middle_name": "D.",
-            "gender": apideck.Gender.MALE,
+            "gender": apideck_sdk.Gender.MALE,
             "initials": "EM",
             "birthday": dateutil.parser.parse("2000-08-12").date(),
             "deceased_on": dateutil.parser.parse("2000-08-12").date(),
@@ -515,9 +515,9 @@ with Apideck(
         "company_name": "SpaceX",
         "employment_start_date": "2021-10-26",
         "employment_end_date": "2028-10-26",
-        "leaving_reason": apideck.LeavingReason.RESIGNED,
+        "leaving_reason": apideck_sdk.LeavingReason.RESIGNED,
         "employee_number": "123456-AB",
-        "employment_status": apideck.EmploymentStatus.ACTIVE,
+        "employment_status": apideck_sdk.EmploymentStatus.ACTIVE,
         "ethnicity": "African American",
         "manager": {
             "id": "12345",
@@ -525,7 +525,7 @@ with Apideck(
             "first_name": "Elon",
             "last_name": "Musk",
             "email": "elon@musk.com",
-            "employment_status": apideck.EmploymentStatus.ACTIVE,
+            "employment_status": apideck_sdk.EmploymentStatus.ACTIVE,
         },
         "direct_reports": [
             "a0d636c6-43b3-4bde-8c70-85b707d992f4",
@@ -536,7 +536,7 @@ with Apideck(
         "deceased_on": dateutil.parser.parse("2000-08-12").date(),
         "country_of_birth": "US",
         "description": "A description",
-        "gender": apideck.Gender.MALE,
+        "gender": apideck_sdk.Gender.MALE,
         "pronouns": "she,her",
         "preferred_language": "EN",
         "languages": [
@@ -557,15 +557,15 @@ with Apideck(
                 "start_date": dateutil.parser.parse("2020-08-12").date(),
                 "end_date": dateutil.parser.parse("2020-08-12").date(),
                 "compensation_rate": 72000,
-                "currency": apideck.Currency.USD,
-                "payment_unit": apideck.PaymentUnit.YEAR,
+                "currency": apideck_sdk.Currency.USD,
+                "payment_unit": apideck_sdk.PaymentUnit.YEAR,
                 "hired_at": dateutil.parser.parse("2020-08-12").date(),
                 "is_primary": True,
                 "is_manager": True,
-                "status": apideck.EmployeeJobStatus.ACTIVE,
+                "status": apideck_sdk.EmployeeJobStatus.ACTIVE,
                 "location": {
                     "id": "123",
-                    "type": apideck.Type.PRIMARY,
+                    "type": apideck_sdk.Type.PRIMARY,
                     "string": "25 Spring Street, Blackburn, VIC 3130",
                     "name": "HQ US",
                     "line1": "Main street",
@@ -596,15 +596,15 @@ with Apideck(
                 "start_date": dateutil.parser.parse("2020-08-12").date(),
                 "end_date": dateutil.parser.parse("2020-08-12").date(),
                 "compensation_rate": 72000,
-                "currency": apideck.Currency.USD,
-                "payment_unit": apideck.PaymentUnit.YEAR,
+                "currency": apideck_sdk.Currency.USD,
+                "payment_unit": apideck_sdk.PaymentUnit.YEAR,
                 "hired_at": dateutil.parser.parse("2020-08-12").date(),
                 "is_primary": True,
                 "is_manager": True,
-                "status": apideck.EmployeeJobStatus.ACTIVE,
+                "status": apideck_sdk.EmployeeJobStatus.ACTIVE,
                 "location": {
                     "id": "123",
-                    "type": apideck.Type.PRIMARY,
+                    "type": apideck_sdk.Type.PRIMARY,
                     "string": "25 Spring Street, Blackburn, VIC 3130",
                     "name": "HQ US",
                     "line1": "Main street",
@@ -635,15 +635,15 @@ with Apideck(
                 "start_date": dateutil.parser.parse("2020-08-12").date(),
                 "end_date": dateutil.parser.parse("2020-08-12").date(),
                 "compensation_rate": 72000,
-                "currency": apideck.Currency.USD,
-                "payment_unit": apideck.PaymentUnit.YEAR,
+                "currency": apideck_sdk.Currency.USD,
+                "payment_unit": apideck_sdk.PaymentUnit.YEAR,
                 "hired_at": dateutil.parser.parse("2020-08-12").date(),
                 "is_primary": True,
                 "is_manager": True,
-                "status": apideck.EmployeeJobStatus.ACTIVE,
+                "status": apideck_sdk.EmployeeJobStatus.ACTIVE,
                 "location": {
                     "id": "123",
-                    "type": apideck.Type.PRIMARY,
+                    "type": apideck_sdk.Type.PRIMARY,
                     "string": "25 Spring Street, Blackburn, VIC 3130",
                     "name": "HQ US",
                     "line1": "Main street",
@@ -672,8 +672,8 @@ with Apideck(
         "compensations": [
             {
                 "rate": 50,
-                "payment_unit": apideck.PaymentUnit.HOUR,
-                "flsa_status": apideck.FlsaStatus.NONEXEMPT,
+                "payment_unit": apideck_sdk.PaymentUnit.HOUR,
+                "flsa_status": apideck_sdk.FlsaStatus.NONEXEMPT,
                 "effective_date": "2021-06-11",
             },
         ],
@@ -681,7 +681,7 @@ with Apideck(
         "addresses": [
             {
                 "id": "123",
-                "type": apideck.Type.PRIMARY,
+                "type": apideck_sdk.Type.PRIMARY,
                 "string": "25 Spring Street, Blackburn, VIC 3130",
                 "name": "HQ US",
                 "line1": "Main street",
@@ -707,7 +707,7 @@ with Apideck(
             },
             {
                 "id": "123",
-                "type": apideck.Type.PRIMARY,
+                "type": apideck_sdk.Type.PRIMARY,
                 "string": "25 Spring Street, Blackburn, VIC 3130",
                 "name": "HQ US",
                 "line1": "Main street",
@@ -739,24 +739,24 @@ with Apideck(
                 "country_code": "1",
                 "area_code": "323",
                 "extension": "105",
-                "type": apideck.PhoneNumberType.PRIMARY,
+                "type": apideck_sdk.PhoneNumberType.PRIMARY,
             },
         ],
         "emails": [
             {
                 "email": "elon@musk.com",
                 "id": "123",
-                "type": apideck.EmailType.PRIMARY,
+                "type": apideck_sdk.EmailType.PRIMARY,
             },
             {
                 "email": "elon@musk.com",
                 "id": "123",
-                "type": apideck.EmailType.PRIMARY,
+                "type": apideck_sdk.EmailType.PRIMARY,
             },
             {
                 "email": "elon@musk.com",
                 "id": "123",
-                "type": apideck.EmailType.PRIMARY,
+                "type": apideck_sdk.EmailType.PRIMARY,
             },
         ],
         "custom_fields": [
@@ -795,14 +795,14 @@ with Apideck(
                 "bank_name": "Monzo",
                 "account_number": "123465",
                 "account_name": "SPACEX LLC",
-                "account_type": apideck.AccountType.CREDIT_CARD,
+                "account_type": apideck_sdk.AccountType.CREDIT_CARD,
                 "iban": "CH2989144532982975332",
                 "bic": "AUDSCHGGXXX",
                 "routing_number": "012345678",
                 "bsb_number": "062-001",
                 "branch_identifier": "001",
                 "bank_code": "BNH",
-                "currency": apideck.Currency.USD,
+                "currency": apideck_sdk.Currency.USD,
             },
         ],
         "tax_code": "1111",
@@ -875,7 +875,7 @@ Delete Employee
 ### Example Usage
 
 ```python
-from apideck import Apideck
+from apideck_sdk import Apideck
 import os
 
 with Apideck(

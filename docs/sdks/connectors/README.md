@@ -15,8 +15,8 @@ List Connectors
 ### Example Usage
 
 ```python
-import apideck
-from apideck import Apideck
+import apideck_sdk
+from apideck_sdk import Apideck
 import os
 
 with Apideck(
@@ -25,7 +25,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as s:
     res = s.connector.connectors.list(filter_={
-        "unified_api": apideck.UnifiedAPIID.FILE_STORAGE,
+        "unified_api": apideck_sdk.UnifiedAPIID.FILE_STORAGE,
     })
 
     if res is not None:
@@ -63,7 +63,7 @@ Get Connector
 ### Example Usage
 
 ```python
-from apideck import Apideck
+from apideck_sdk import Apideck
 import os
 
 with Apideck(
