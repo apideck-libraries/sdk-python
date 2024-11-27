@@ -2,23 +2,15 @@
 
 from __future__ import annotations
 from apideck.types import BaseModel
-from typing import Optional, Union
+from typing import Any, Dict, Optional, Union
 from typing_extensions import NotRequired, TypeAliasType, TypedDict
 
 
-class TwoTypedDict(TypedDict):
-    pass
-
-
-class Two(BaseModel):
-    pass
-
-
-DetailTypedDict = TypeAliasType("DetailTypedDict", Union[TwoTypedDict, str])
+DetailTypedDict = TypeAliasType("DetailTypedDict", Union[str, Dict[str, Any]])
 r"""Contains parameter or domain specific information related to the error and why it occurred."""
 
 
-Detail = TypeAliasType("Detail", Union[Two, str])
+Detail = TypeAliasType("Detail", Union[str, Dict[str, Any]])
 r"""Contains parameter or domain specific information related to the error and why it occurred."""
 
 

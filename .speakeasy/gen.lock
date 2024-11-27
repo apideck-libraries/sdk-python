@@ -1,12 +1,12 @@
 lockVersion: 2.0.0
 id: d7ba7cba-c2a0-459f-bdba-f75b68a9a9ae
 management:
-  docChecksum: c306a47a4efe0a64ea62b04dc2b9f8d0
+  docChecksum: ba8967439df737aeb09b5ff1bd198151
   docVersion: 10.8.1
-  speakeasyVersion: 1.446.1
-  generationVersion: 2.462.1
-  releaseVersion: 0.0.5
-  configChecksum: c4a1acf183585fd781d338eee869efc5
+  speakeasyVersion: 1.448.0
+  generationVersion: 2.466.0
+  releaseVersion: 0.1.0
+  configChecksum: e8dad2d0a6cfdbf544715effd2aad79f
 features:
   python:
     acceptHeaders: 3.0.0
@@ -20,6 +20,7 @@ features:
     downloadStreams: 1.0.1
     enumUnions: 0.1.0
     envVarSecurityUsage: 0.3.2
+    errors: 3.2.0
     flattening: 3.1.0
     globalSecurity: 3.0.2
     globalSecurityCallbacks: 1.0.0
@@ -758,10 +759,6 @@ generatedFiles:
   - docs/models/deprecatedlinkedsupplierinput.md
   - docs/models/deprecatedlinkedtrackingcategory.md
   - docs/models/detail.md
-  - docs/models/detail2.md
-  - docs/models/detailnotfoundresponse2.md
-  - docs/models/detailunauthorizedresponse2.md
-  - docs/models/detailunprocessableresponse2.md
   - docs/models/direction.md
   - docs/models/disabledreason.md
   - docs/models/drive.md
@@ -1407,7 +1404,6 @@ generatedFiles:
   - docs/models/trackingcategoryinput.md
   - docs/models/trackingcategorystatus.md
   - docs/models/trackingitem.md
-  - docs/models/two.md
   - docs/models/type.md
   - docs/models/unauthorizedresponse.md
   - docs/models/unauthorizedresponsedetail.md

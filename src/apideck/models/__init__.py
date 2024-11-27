@@ -928,8 +928,6 @@ from .badrequestresponse import (
     BadRequestResponse,
     BadRequestResponseData,
     BadRequestResponseDetail,
-    Detail2,
-    Detail2TypedDict,
 )
 from .balancesheet import (
     BalanceSheet,
@@ -2959,8 +2957,6 @@ from .meta import Cursors, CursorsTypedDict, Meta, MetaTypedDict
 from .note import Note, NoteTypedDict
 from .note_input import NoteInput, NoteInputTypedDict
 from .notfoundresponse import (
-    DetailNotFoundResponse2,
-    DetailNotFoundResponse2TypedDict,
     NotFoundResponse,
     NotFoundResponseData,
     NotFoundResponseDetail,
@@ -3186,8 +3182,6 @@ from .trackingcategory import (
 )
 from .trackingitem import TrackingItem, TrackingItemTypedDict
 from .unauthorizedresponse import (
-    DetailUnauthorizedResponse2,
-    DetailUnauthorizedResponse2TypedDict,
     UnauthorizedResponse,
     UnauthorizedResponseData,
     UnauthorizedResponseDetail,
@@ -3195,8 +3189,6 @@ from .unauthorizedresponse import (
 from .unexpectederrorresponse import (
     Detail,
     DetailTypedDict,
-    Two,
-    TwoTypedDict,
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
 )
@@ -3209,8 +3201,6 @@ from .unifiedfile import (
 )
 from .unifiedid import UnifiedID, UnifiedIDTypedDict
 from .unprocessableresponse import (
-    DetailUnprocessableResponse2,
-    DetailUnprocessableResponse2TypedDict,
     UnprocessableResponse,
     UnprocessableResponseData,
     UnprocessableResponseDetail,
@@ -4970,15 +4960,7 @@ __all__ = [
     "DeprecatedLinkedTrackingCategory",
     "DeprecatedLinkedTrackingCategoryTypedDict",
     "Detail",
-    "Detail2",
-    "Detail2TypedDict",
-    "DetailNotFoundResponse2",
-    "DetailNotFoundResponse2TypedDict",
     "DetailTypedDict",
-    "DetailUnauthorizedResponse2",
-    "DetailUnauthorizedResponse2TypedDict",
-    "DetailUnprocessableResponse2",
-    "DetailUnprocessableResponse2TypedDict",
     "Direction",
     "DisabledReason",
     "Drive",
@@ -6195,8 +6177,6 @@ __all__ = [
     "TrackingCategoryTypedDict",
     "TrackingItem",
     "TrackingItemTypedDict",
-    "Two",
-    "TwoTypedDict",
     "Type",
     "UnauthorizedResponse",
     "UnauthorizedResponseData",

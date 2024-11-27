@@ -11,9 +11,9 @@ Contains parameter or domain specific information related to the error and why i
 value: str = /* values here */
 ```
 
-### `models.DetailUnauthorizedResponse2`
+### `Dict[str, Any]`
 
 ```python
-value: models.DetailUnauthorizedResponse2 = /* values here */
+value: Dict[str, Any] = /* values here */
 ```
 
