@@ -45,5 +45,5 @@ python:
   methodArguments: infer-optional-args
   outputModelSuffix: output
   packageName: apideck
-  responseFormat: flat
+  responseFormat: envelope-http
   templateVersion: v2
