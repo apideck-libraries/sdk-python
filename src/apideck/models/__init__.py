@@ -2688,6 +2688,7 @@ from .hriscompany import (
     HrisCompanyStatus,
     HrisCompanyTypedDict,
 )
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .integrationstate import IntegrationState
 from .invoice import (
     Invoice,
@@ -3356,6 +3357,8 @@ from .vault_connectionsdeleteop import (
     VaultConnectionsDeleteGlobalsTypedDict,
     VaultConnectionsDeleteRequest,
     VaultConnectionsDeleteRequestTypedDict,
+    VaultConnectionsDeleteResponse,
+    VaultConnectionsDeleteResponseTypedDict,
 )
 from .vault_connectionsettingsallop import (
     VaultConnectionSettingsAllGlobals,
@@ -5554,6 +5557,8 @@ __all__ = [
     "GetWebhooksResponseTypedDict",
     "GrossProfit",
     "GrossProfitTypedDict",
+    "HTTPMetadata",
+    "HTTPMetadataTypedDict",
     "HrisCompaniesAddGlobals",
     "HrisCompaniesAddGlobalsTypedDict",
     "HrisCompaniesAddRequest",
@@ -6332,6 +6337,8 @@ __all__ = [
     "VaultConnectionsDeleteGlobalsTypedDict",
     "VaultConnectionsDeleteRequest",
     "VaultConnectionsDeleteRequestTypedDict",
+    "VaultConnectionsDeleteResponse",
+    "VaultConnectionsDeleteResponseTypedDict",
     "VaultConnectionsImportGlobals",
     "VaultConnectionsImportGlobalsTypedDict",
     "VaultConnectionsImportRequest",

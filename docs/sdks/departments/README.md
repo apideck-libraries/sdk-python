@@ -34,7 +34,7 @@ with Apideck(
         },
     })
 
-    if res is not None:
+    if res.get_accounting_departments_response is not None:
         # handle response
         pass
 
@@ -118,7 +118,7 @@ with Apideck(
         ],
     }, service_id="salesforce")
 
-    if res is not None:
+    if res.create_accounting_department_response is not None:
         # handle response
         pass
 
@@ -165,7 +165,7 @@ with Apideck(
 ) as s:
     res = s.accounting.departments.get(id="<id>", service_id="salesforce", fields="id,updated_at")
 
-    if res is not None:
+    if res.get_accounting_department_response is not None:
         # handle response
         pass
 
@@ -274,7 +274,7 @@ with Apideck(
         ],
     }, service_id="salesforce")
 
-    if res is not None:
+    if res.update_accounting_department_response is not None:
         # handle response
         pass
 
@@ -322,7 +322,7 @@ with Apideck(
 ) as s:
     res = s.accounting.departments.delete(id="<id>", service_id="salesforce")
 
-    if res is not None:
+    if res.delete_accounting_department_response is not None:
         # handle response
         pass
 

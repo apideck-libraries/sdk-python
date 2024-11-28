@@ -1,17 +1,10 @@
 # AccountingExpensesAllResponse
 
 
-## Supported Types
+## Fields
 
-### `models.GetExpensesResponse`
-
-```python
-value: models.GetExpensesResponse = /* values here */
-```
-
-### `models.UnexpectedErrorResponse`
-
-```python
-value: models.UnexpectedErrorResponse = /* values here */
-```
-
+| Field                                                                            | Type                                                                             | Required                                                                         | Description                                                                      |
+| -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| `http_meta`                                                                      | [models.HTTPMetadata](../models/httpmetadata.md)                                 | :heavy_check_mark:                                                               | N/A                                                                              |
+| `get_expenses_response`                                                          | [Optional[models.GetExpensesResponse]](../models/getexpensesresponse.md)         | :heavy_minus_sign:                                                               | Expenses                                                                         |
+| `unexpected_error_response`                                                      | [Optional[models.UnexpectedErrorResponse]](../models/unexpectederrorresponse.md) | :heavy_minus_sign:                                                               | Unexpected error                                                                 |

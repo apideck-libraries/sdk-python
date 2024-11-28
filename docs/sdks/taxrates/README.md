@@ -42,7 +42,7 @@ with Apideck(
         "fields": "id,updated_at",
     })
 
-    if res is not None:
+    if res.get_tax_rates_response is not None:
         # handle response
         pass
 
@@ -138,7 +138,7 @@ with Apideck(
         ],
     }, service_id="salesforce")
 
-    if res is not None:
+    if res.create_tax_rate_response is not None:
         # handle response
         pass
 
@@ -186,7 +186,7 @@ with Apideck(
 ) as s:
     res = s.accounting.tax_rates.get(id="<id>", service_id="salesforce", fields="id,updated_at")
 
-    if res is not None:
+    if res.get_tax_rate_response is not None:
         # handle response
         pass
 
@@ -313,7 +313,7 @@ with Apideck(
         ],
     }, service_id="salesforce")
 
-    if res is not None:
+    if res.update_tax_rate_response is not None:
         # handle response
         pass
 
@@ -361,7 +361,7 @@ with Apideck(
 ) as s:
     res = s.accounting.tax_rates.delete(id="<id>", service_id="salesforce")
 
-    if res is not None:
+    if res.delete_tax_rate_response is not None:
         # handle response
         pass
 

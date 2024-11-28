@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 from .getusersresponse import GetUsersResponse, GetUsersResponseTypedDict
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -10,8 +11,8 @@ from apideck.types import BaseModel, Nullable, OptionalNullable, UNSET, UNSET_SE
 from apideck.utils import FieldMetadata, HeaderMetadata, QueryParamMetadata
 import pydantic
 from pydantic import model_serializer
-from typing import Any, Dict, Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Any, Dict, Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class CrmUsersAllGlobalsTypedDict(TypedDict):
@@ -128,12 +129,19 @@ class CrmUsersAllRequest(BaseModel):
         return m
 
 
-CrmUsersAllResponseTypedDict = TypeAliasType(
-    "CrmUsersAllResponseTypedDict",
-    Union[UnexpectedErrorResponseTypedDict, GetUsersResponseTypedDict],
-)
+class CrmUsersAllResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    get_users_response: NotRequired[GetUsersResponseTypedDict]
+    r"""Users"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-CrmUsersAllResponse = TypeAliasType(
-    "CrmUsersAllResponse", Union[UnexpectedErrorResponse, GetUsersResponse]
-)
+class CrmUsersAllResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    get_users_response: Optional[GetUsersResponse] = None
+    r"""Users"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

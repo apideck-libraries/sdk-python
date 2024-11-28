@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 from .getconsumersresponse import GetConsumersResponse, GetConsumersResponseTypedDict
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -10,8 +11,8 @@ from apideck.types import BaseModel, Nullable, OptionalNullable, UNSET, UNSET_SE
 from apideck.utils import FieldMetadata, HeaderMetadata, QueryParamMetadata
 import pydantic
 from pydantic import model_serializer
-from typing import Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class VaultConsumersAllGlobalsTypedDict(TypedDict):
@@ -79,12 +80,19 @@ class VaultConsumersAllRequest(BaseModel):
         return m
 
 
-VaultConsumersAllResponseTypedDict = TypeAliasType(
-    "VaultConsumersAllResponseTypedDict",
-    Union[GetConsumersResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
+class VaultConsumersAllResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    get_consumers_response: NotRequired[GetConsumersResponseTypedDict]
+    r"""Consumers"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-VaultConsumersAllResponse = TypeAliasType(
-    "VaultConsumersAllResponse", Union[GetConsumersResponse, UnexpectedErrorResponse]
-)
+class VaultConsumersAllResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    get_consumers_response: Optional[GetConsumersResponse] = None
+    r"""Consumers"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 from .deletedriveresponse import DeleteDriveResponse, DeleteDriveResponseTypedDict
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -14,8 +15,8 @@ from apideck.utils import (
     QueryParamMetadata,
 )
 import pydantic
-from typing import Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class FileStorageDrivesDeleteGlobalsTypedDict(TypedDict):
@@ -70,13 +71,19 @@ class FileStorageDrivesDeleteRequest(BaseModel):
     r"""Include raw response. Mostly used for debugging purposes"""
 
 
-FileStorageDrivesDeleteResponseTypedDict = TypeAliasType(
-    "FileStorageDrivesDeleteResponseTypedDict",
-    Union[DeleteDriveResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
+class FileStorageDrivesDeleteResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    delete_drive_response: NotRequired[DeleteDriveResponseTypedDict]
+    r"""Drives"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-FileStorageDrivesDeleteResponse = TypeAliasType(
-    "FileStorageDrivesDeleteResponse",
-    Union[DeleteDriveResponse, UnexpectedErrorResponse],
-)
+class FileStorageDrivesDeleteResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    delete_drive_response: Optional[DeleteDriveResponse] = None
+    r"""Drives"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

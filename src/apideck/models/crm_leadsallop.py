@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 from .getleadsresponse import GetLeadsResponse, GetLeadsResponseTypedDict
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .leadsfilter import LeadsFilter, LeadsFilterTypedDict
 from .leadssort import LeadsSort, LeadsSortTypedDict
 from .unexpectederrorresponse import (
@@ -12,8 +13,8 @@ from apideck.types import BaseModel, Nullable, OptionalNullable, UNSET, UNSET_SE
 from apideck.utils import FieldMetadata, HeaderMetadata, QueryParamMetadata
 import pydantic
 from pydantic import model_serializer
-from typing import Any, Dict, Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Any, Dict, Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class CrmLeadsAllGlobalsTypedDict(TypedDict):
@@ -149,12 +150,19 @@ class CrmLeadsAllRequest(BaseModel):
         return m
 
 
-CrmLeadsAllResponseTypedDict = TypeAliasType(
-    "CrmLeadsAllResponseTypedDict",
-    Union[UnexpectedErrorResponseTypedDict, GetLeadsResponseTypedDict],
-)
+class CrmLeadsAllResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    get_leads_response: NotRequired[GetLeadsResponseTypedDict]
+    r"""Leads"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-CrmLeadsAllResponse = TypeAliasType(
-    "CrmLeadsAllResponse", Union[UnexpectedErrorResponse, GetLeadsResponse]
-)
+class CrmLeadsAllResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    get_leads_response: Optional[GetLeadsResponse] = None
+    r"""Leads"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

@@ -43,7 +43,7 @@ with Apideck(
         "fields": "id,updated_at",
     })
 
-    if res is not None:
+    if res.get_journal_entries_response is not None:
         # handle response
         pass
 
@@ -188,7 +188,7 @@ with Apideck(
         ],
     }, service_id="salesforce")
 
-    if res is not None:
+    if res.create_journal_entry_response is not None:
         # handle response
         pass
 
@@ -235,7 +235,7 @@ with Apideck(
 ) as s:
     res = s.accounting.journal_entries.get(id="<id>", service_id="salesforce", fields="id,updated_at")
 
-    if res is not None:
+    if res.get_journal_entry_response is not None:
         # handle response
         pass
 
@@ -527,7 +527,7 @@ with Apideck(
         ],
     }, service_id="salesforce")
 
-    if res is not None:
+    if res.update_journal_entry_response is not None:
         # handle response
         pass
 
@@ -575,7 +575,7 @@ with Apideck(
 ) as s:
     res = s.accounting.journal_entries.delete(id="<id>", service_id="salesforce")
 
-    if res is not None:
+    if res.delete_journal_entry_response is not None:
         # handle response
         pass
 

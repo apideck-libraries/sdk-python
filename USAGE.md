@@ -24,7 +24,7 @@ with Apideck(
         "fields": "id,updated_at",
     })
 
-    if res is not None:
+    if res.get_tax_rates_response is not None:
         # handle response
         pass
 ```
@@ -59,7 +59,7 @@ async def main():
             "fields": "id,updated_at",
         })
 
-        if res is not None:
+        if res.get_tax_rates_response is not None:
             # handle response
             pass
 

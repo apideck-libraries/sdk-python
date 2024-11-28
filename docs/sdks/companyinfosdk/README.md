@@ -24,7 +24,7 @@ with Apideck(
 ) as s:
     res = s.accounting.company_info.get(service_id="salesforce", fields="id,updated_at")
 
-    if res is not None:
+    if res.get_company_info_response is not None:
         # handle response
         pass
 

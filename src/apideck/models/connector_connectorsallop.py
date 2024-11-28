@@ -3,6 +3,7 @@
 from __future__ import annotations
 from .connectorsfilter import ConnectorsFilter, ConnectorsFilterTypedDict
 from .getconnectorsresponse import GetConnectorsResponse, GetConnectorsResponseTypedDict
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -11,8 +12,8 @@ from apideck.types import BaseModel, Nullable, OptionalNullable, UNSET, UNSET_SE
 from apideck.utils import FieldMetadata, HeaderMetadata, QueryParamMetadata
 import pydantic
 from pydantic import model_serializer
-from typing import Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class ConnectorConnectorsAllGlobalsTypedDict(TypedDict):
@@ -89,13 +90,19 @@ class ConnectorConnectorsAllRequest(BaseModel):
         return m
 
 
-ConnectorConnectorsAllResponseTypedDict = TypeAliasType(
-    "ConnectorConnectorsAllResponseTypedDict",
-    Union[GetConnectorsResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
+class ConnectorConnectorsAllResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    get_connectors_response: NotRequired[GetConnectorsResponseTypedDict]
+    r"""Connectors"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-ConnectorConnectorsAllResponse = TypeAliasType(
-    "ConnectorConnectorsAllResponse",
-    Union[GetConnectorsResponse, UnexpectedErrorResponse],
-)
+class ConnectorConnectorsAllResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    get_connectors_response: Optional[GetConnectorsResponse] = None
+    r"""Connectors"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

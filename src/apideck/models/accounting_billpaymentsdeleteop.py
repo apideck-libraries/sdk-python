@@ -5,6 +5,7 @@ from .deletebillpaymentresponse import (
     DeleteBillPaymentResponse,
     DeleteBillPaymentResponseTypedDict,
 )
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -17,8 +18,8 @@ from apideck.utils import (
     QueryParamMetadata,
 )
 import pydantic
-from typing import Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class AccountingBillPaymentsDeleteGlobalsTypedDict(TypedDict):
@@ -73,13 +74,19 @@ class AccountingBillPaymentsDeleteRequest(BaseModel):
     r"""Include raw response. Mostly used for debugging purposes"""
 
 
-AccountingBillPaymentsDeleteResponseTypedDict = TypeAliasType(
-    "AccountingBillPaymentsDeleteResponseTypedDict",
-    Union[DeleteBillPaymentResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
+class AccountingBillPaymentsDeleteResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    delete_bill_payment_response: NotRequired[DeleteBillPaymentResponseTypedDict]
+    r"""Bill Payment deleted"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-AccountingBillPaymentsDeleteResponse = TypeAliasType(
-    "AccountingBillPaymentsDeleteResponse",
-    Union[DeleteBillPaymentResponse, UnexpectedErrorResponse],
-)
+class AccountingBillPaymentsDeleteResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    delete_bill_payment_response: Optional[DeleteBillPaymentResponse] = None
+    r"""Bill Payment deleted"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

@@ -34,7 +34,7 @@ with Apideck(
         "fields": "id,updated_at",
     })
 
-    if res is not None:
+    if res.get_notes_response is not None:
         # handle response
         pass
 
@@ -111,7 +111,7 @@ with Apideck(
         ],
     }, service_id="salesforce")
 
-    if res is not None:
+    if res.create_note_response is not None:
         # handle response
         pass
 
@@ -158,7 +158,7 @@ with Apideck(
 ) as s:
     res = s.crm.notes.get(id="<id>", service_id="salesforce", fields="id,updated_at")
 
-    if res is not None:
+    if res.get_note_response is not None:
         # handle response
         pass
 
@@ -280,7 +280,7 @@ with Apideck(
         ],
     }, service_id="salesforce")
 
-    if res is not None:
+    if res.update_note_response is not None:
         # handle response
         pass
 
@@ -328,7 +328,7 @@ with Apideck(
 ) as s:
     res = s.crm.notes.delete(id="<id>", service_id="salesforce")
 
-    if res is not None:
+    if res.delete_note_response is not None:
         # handle response
         pass
 

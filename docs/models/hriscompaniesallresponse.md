@@ -1,17 +1,10 @@
 # HrisCompaniesAllResponse
 
 
-## Supported Types
+## Fields
 
-### `models.GetHrisCompaniesResponse`
-
-```python
-value: models.GetHrisCompaniesResponse = /* values here */
-```
-
-### `models.UnexpectedErrorResponse`
-
-```python
-value: models.UnexpectedErrorResponse = /* values here */
-```
-
+| Field                                                                              | Type                                                                               | Required                                                                           | Description                                                                        |
+| ---------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| `http_meta`                                                                        | [models.HTTPMetadata](../models/httpmetadata.md)                                   | :heavy_check_mark:                                                                 | N/A                                                                                |
+| `get_hris_companies_response`                                                      | [Optional[models.GetHrisCompaniesResponse]](../models/gethriscompaniesresponse.md) | :heavy_minus_sign:                                                                 | Companies                                                                          |
+| `unexpected_error_response`                                                        | [Optional[models.UnexpectedErrorResponse]](../models/unexpectederrorresponse.md)   | :heavy_minus_sign:                                                                 | Unexpected error                                                                   |

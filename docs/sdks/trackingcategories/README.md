@@ -34,7 +34,7 @@ with Apideck(
         "fields": "id,updated_at",
     })
 
-    if res is not None:
+    if res.get_tracking_categories_response is not None:
         # handle response
         pass
 
@@ -109,7 +109,7 @@ with Apideck(
         ],
     }, service_id="salesforce")
 
-    if res is not None:
+    if res.create_tracking_category_response is not None:
         # handle response
         pass
 
@@ -156,7 +156,7 @@ with Apideck(
 ) as s:
     res = s.accounting.tracking_categories.get(id="<id>", service_id="salesforce", fields="id,updated_at")
 
-    if res is not None:
+    if res.get_tracking_category_response is not None:
         # handle response
         pass
 
@@ -276,7 +276,7 @@ with Apideck(
         ],
     }, service_id="salesforce")
 
-    if res is not None:
+    if res.update_tracking_category_response is not None:
         # handle response
         pass
 
@@ -324,7 +324,7 @@ with Apideck(
 ) as s:
     res = s.accounting.tracking_categories.delete(id="<id>", service_id="salesforce")
 
-    if res is not None:
+    if res.delete_tracking_category_response is not None:
         # handle response
         pass
 

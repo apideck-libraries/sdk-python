@@ -5,6 +5,7 @@ from .getcollectionusersresponse import (
     GetCollectionUsersResponse,
     GetCollectionUsersResponseTypedDict,
 )
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -18,8 +19,8 @@ from apideck.utils import (
 )
 import pydantic
 from pydantic import model_serializer
-from typing import Any, Dict, Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Any, Dict, Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class IssueTrackingCollectionUsersAllGlobalsTypedDict(TypedDict):
@@ -143,13 +144,19 @@ class IssueTrackingCollectionUsersAllRequest(BaseModel):
         return m
 
 
-IssueTrackingCollectionUsersAllResponseTypedDict = TypeAliasType(
-    "IssueTrackingCollectionUsersAllResponseTypedDict",
-    Union[UnexpectedErrorResponseTypedDict, GetCollectionUsersResponseTypedDict],
-)
+class IssueTrackingCollectionUsersAllResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    get_collection_users_response: NotRequired[GetCollectionUsersResponseTypedDict]
+    r"""Users"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-IssueTrackingCollectionUsersAllResponse = TypeAliasType(
-    "IssueTrackingCollectionUsersAllResponse",
-    Union[UnexpectedErrorResponse, GetCollectionUsersResponse],
-)
+class IssueTrackingCollectionUsersAllResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    get_collection_users_response: Optional[GetCollectionUsersResponse] = None
+    r"""Users"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

@@ -43,7 +43,7 @@ with Apideck(
         "fields": "id,updated_at",
     })
 
-    if res is not None:
+    if res.get_ledger_accounts_response is not None:
         # handle response
         pass
 
@@ -155,7 +155,7 @@ with Apideck(
         ],
     }, service_id="salesforce")
 
-    if res is not None:
+    if res.create_ledger_account_response is not None:
         # handle response
         pass
 
@@ -202,7 +202,7 @@ with Apideck(
 ) as s:
     res = s.accounting.ledger_accounts.get(id="<id>", service_id="salesforce", fields="id,updated_at")
 
-    if res is not None:
+    if res.get_ledger_account_response is not None:
         # handle response
         pass
 
@@ -359,7 +359,7 @@ with Apideck(
         ],
     }, service_id="salesforce")
 
-    if res is not None:
+    if res.update_ledger_account_response is not None:
         # handle response
         pass
 
@@ -407,7 +407,7 @@ with Apideck(
 ) as s:
     res = s.accounting.ledger_accounts.delete(id="<id>", service_id="salesforce")
 
-    if res is not None:
+    if res.delete_ledger_account_response is not None:
         # handle response
         pass
 

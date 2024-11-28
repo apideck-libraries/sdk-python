@@ -5,6 +5,7 @@ from .getledgeraccountresponse import (
     GetLedgerAccountResponse,
     GetLedgerAccountResponseTypedDict,
 )
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -18,8 +19,8 @@ from apideck.utils import (
 )
 import pydantic
 from pydantic import model_serializer
-from typing import Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class AccountingLedgerAccountsOneGlobalsTypedDict(TypedDict):
@@ -112,13 +113,19 @@ class AccountingLedgerAccountsOneRequest(BaseModel):
         return m
 
 
-AccountingLedgerAccountsOneResponseTypedDict = TypeAliasType(
-    "AccountingLedgerAccountsOneResponseTypedDict",
-    Union[GetLedgerAccountResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
+class AccountingLedgerAccountsOneResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    get_ledger_account_response: NotRequired[GetLedgerAccountResponseTypedDict]
+    r"""LedgerAccount"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-AccountingLedgerAccountsOneResponse = TypeAliasType(
-    "AccountingLedgerAccountsOneResponse",
-    Union[GetLedgerAccountResponse, UnexpectedErrorResponse],
-)
+class AccountingLedgerAccountsOneResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    get_ledger_account_response: Optional[GetLedgerAccountResponse] = None
+    r"""LedgerAccount"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

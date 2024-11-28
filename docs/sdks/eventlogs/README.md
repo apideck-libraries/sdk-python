@@ -29,7 +29,7 @@ with Apideck(
         "event_type": "vault.connection.callable",
     })
 
-    if res is not None:
+    if res.get_webhook_event_logs_response is not None:
         # handle response
         pass
 

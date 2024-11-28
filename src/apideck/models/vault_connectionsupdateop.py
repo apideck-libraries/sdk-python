@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 from .connection import ConnectionInput, ConnectionInputTypedDict
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -18,8 +19,8 @@ from apideck.utils import (
     RequestMetadata,
 )
 import pydantic
-from typing import Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class VaultConnectionsUpdateGlobalsTypedDict(TypedDict):
@@ -72,13 +73,19 @@ class VaultConnectionsUpdateRequest(BaseModel):
     r"""Fields that need to be updated on the resource"""
 
 
-VaultConnectionsUpdateResponseTypedDict = TypeAliasType(
-    "VaultConnectionsUpdateResponseTypedDict",
-    Union[UpdateConnectionResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
+class VaultConnectionsUpdateResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    update_connection_response: NotRequired[UpdateConnectionResponseTypedDict]
+    r"""Connection updated"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-VaultConnectionsUpdateResponse = TypeAliasType(
-    "VaultConnectionsUpdateResponse",
-    Union[UpdateConnectionResponse, UnexpectedErrorResponse],
-)
+class VaultConnectionsUpdateResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    update_connection_response: Optional[UpdateConnectionResponse] = None
+    r"""Connection updated"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

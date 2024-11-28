@@ -1,17 +1,10 @@
 # ConnectorAPIResourceCoverageOneResponse
 
 
-## Supported Types
+## Fields
 
-### `models.GetAPIResourceCoverageResponse`
-
-```python
-value: models.GetAPIResourceCoverageResponse = /* values here */
-```
-
-### `models.UnexpectedErrorResponse`
-
-```python
-value: models.UnexpectedErrorResponse = /* values here */
-```
-
+| Field                                                                                          | Type                                                                                           | Required                                                                                       | Description                                                                                    |
+| ---------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| `http_meta`                                                                                    | [models.HTTPMetadata](../models/httpmetadata.md)                                               | :heavy_check_mark:                                                                             | N/A                                                                                            |
+| `get_api_resource_coverage_response`                                                           | [Optional[models.GetAPIResourceCoverageResponse]](../models/getapiresourcecoverageresponse.md) | :heavy_minus_sign:                                                                             | ApiResources                                                                                   |
+| `unexpected_error_response`                                                                    | [Optional[models.UnexpectedErrorResponse]](../models/unexpectederrorresponse.md)               | :heavy_minus_sign:                                                                             | Unexpected error                                                                               |

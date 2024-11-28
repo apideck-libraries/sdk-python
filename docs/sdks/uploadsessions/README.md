@@ -55,7 +55,7 @@ with Apideck(
         ],
     }, service_id="salesforce")
 
-    if res is not None:
+    if res.create_upload_session_response is not None:
         # handle response
         pass
 
@@ -103,7 +103,7 @@ with Apideck(
 ) as s:
     res = s.file_storage.upload_sessions.get(id="<id>", service_id="salesforce", fields="id,updated_at")
 
-    if res is not None:
+    if res.get_upload_session_response is not None:
         # handle response
         pass
 
@@ -152,7 +152,7 @@ with Apideck(
 ) as s:
     res = s.file_storage.upload_sessions.delete(id="<id>", service_id="salesforce")
 
-    if res is not None:
+    if res.delete_upload_session_response is not None:
         # handle response
         pass
 
@@ -203,7 +203,7 @@ with Apideck(
         "digest": "sha=fpRyg5eVQletdZqEKaFlqwBXJzM=",
     })
 
-    if res is not None:
+    if res.get_file_response is not None:
         # handle response
         pass
 

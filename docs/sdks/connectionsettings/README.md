@@ -26,7 +26,7 @@ with Apideck(
 ) as s:
     res = s.vault.connection_settings.list(unified_api="crm", service_id="pipedrive", resource="leads")
 
-    if res is not None:
+    if res.get_connection_response is not None:
         # handle response
         pass
 
@@ -249,7 +249,7 @@ with Apideck(
         ],
     })
 
-    if res is not None:
+    if res.update_connection_response is not None:
         # handle response
         pass
 

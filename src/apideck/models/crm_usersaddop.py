@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 from .createuserresponse import CreateUserResponse, CreateUserResponseTypedDict
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -15,8 +16,8 @@ from apideck.utils import (
     RequestMetadata,
 )
 import pydantic
-from typing import Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class CrmUsersAddGlobalsTypedDict(TypedDict):
@@ -69,12 +70,19 @@ class CrmUsersAddRequest(BaseModel):
     r"""Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API."""
 
 
-CrmUsersAddResponseTypedDict = TypeAliasType(
-    "CrmUsersAddResponseTypedDict",
-    Union[CreateUserResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
+class CrmUsersAddResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    create_user_response: NotRequired[CreateUserResponseTypedDict]
+    r"""User created"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-CrmUsersAddResponse = TypeAliasType(
-    "CrmUsersAddResponse", Union[CreateUserResponse, UnexpectedErrorResponse]
-)
+class CrmUsersAddResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    create_user_response: Optional[CreateUserResponse] = None
+    r"""User created"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

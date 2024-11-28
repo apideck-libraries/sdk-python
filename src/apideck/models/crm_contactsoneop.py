@@ -3,6 +3,7 @@
 from __future__ import annotations
 from .contactsfilter import ContactsFilter, ContactsFilterTypedDict
 from .getcontactresponse import GetContactResponse, GetContactResponseTypedDict
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -16,8 +17,8 @@ from apideck.utils import (
 )
 import pydantic
 from pydantic import model_serializer
-from typing import Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class CrmContactsOneGlobalsTypedDict(TypedDict):
@@ -119,12 +120,19 @@ class CrmContactsOneRequest(BaseModel):
         return m
 
 
-CrmContactsOneResponseTypedDict = TypeAliasType(
-    "CrmContactsOneResponseTypedDict",
-    Union[GetContactResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
+class CrmContactsOneResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    get_contact_response: NotRequired[GetContactResponseTypedDict]
+    r"""Contact"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-CrmContactsOneResponse = TypeAliasType(
-    "CrmContactsOneResponse", Union[GetContactResponse, UnexpectedErrorResponse]
-)
+class CrmContactsOneResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    get_contact_response: Optional[GetContactResponse] = None
+    r"""Contact"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

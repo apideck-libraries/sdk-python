@@ -1,17 +1,10 @@
 # CrmContactsAllResponse
 
 
-## Supported Types
+## Fields
 
-### `models.GetContactsResponse`
-
-```python
-value: models.GetContactsResponse = /* values here */
-```
-
-### `models.UnexpectedErrorResponse`
-
-```python
-value: models.UnexpectedErrorResponse = /* values here */
-```
-
+| Field                                                                            | Type                                                                             | Required                                                                         | Description                                                                      |
+| -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| `http_meta`                                                                      | [models.HTTPMetadata](../models/httpmetadata.md)                                 | :heavy_check_mark:                                                               | N/A                                                                              |
+| `get_contacts_response`                                                          | [Optional[models.GetContactsResponse]](../models/getcontactsresponse.md)         | :heavy_minus_sign:                                                               | Contacts                                                                         |
+| `unexpected_error_response`                                                      | [Optional[models.UnexpectedErrorResponse]](../models/unexpectederrorresponse.md) | :heavy_minus_sign:                                                               | Unexpected error                                                                 |

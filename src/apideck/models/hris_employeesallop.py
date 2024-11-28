@@ -4,6 +4,7 @@ from __future__ import annotations
 from .employeesfilter import EmployeesFilter, EmployeesFilterTypedDict
 from .employeessort import EmployeesSort, EmployeesSortTypedDict
 from .getemployeesresponse import GetEmployeesResponse, GetEmployeesResponseTypedDict
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -12,8 +13,8 @@ from apideck.types import BaseModel, Nullable, OptionalNullable, UNSET, UNSET_SE
 from apideck.utils import FieldMetadata, HeaderMetadata, QueryParamMetadata
 import pydantic
 from pydantic import model_serializer
-from typing import Any, Dict, Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Any, Dict, Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class HrisEmployeesAllGlobalsTypedDict(TypedDict):
@@ -149,12 +150,19 @@ class HrisEmployeesAllRequest(BaseModel):
         return m
 
 
-HrisEmployeesAllResponseTypedDict = TypeAliasType(
-    "HrisEmployeesAllResponseTypedDict",
-    Union[UnexpectedErrorResponseTypedDict, GetEmployeesResponseTypedDict],
-)
+class HrisEmployeesAllResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    get_employees_response: NotRequired[GetEmployeesResponseTypedDict]
+    r"""Employees"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-HrisEmployeesAllResponse = TypeAliasType(
-    "HrisEmployeesAllResponse", Union[UnexpectedErrorResponse, GetEmployeesResponse]
-)
+class HrisEmployeesAllResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    get_employees_response: Optional[GetEmployeesResponse] = None
+    r"""Employees"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

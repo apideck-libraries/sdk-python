@@ -5,6 +5,7 @@ from .getjournalentriesresponse import (
     GetJournalEntriesResponse,
     GetJournalEntriesResponseTypedDict,
 )
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .journalentriesfilter import JournalEntriesFilter, JournalEntriesFilterTypedDict
 from .journalentriessort import JournalEntriesSort, JournalEntriesSortTypedDict
 from .unexpectederrorresponse import (
@@ -15,8 +16,8 @@ from apideck.types import BaseModel, Nullable, OptionalNullable, UNSET, UNSET_SE
 from apideck.utils import FieldMetadata, HeaderMetadata, QueryParamMetadata
 import pydantic
 from pydantic import model_serializer
-from typing import Any, Dict, Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Any, Dict, Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class AccountingJournalEntriesAllGlobalsTypedDict(TypedDict):
@@ -152,13 +153,19 @@ class AccountingJournalEntriesAllRequest(BaseModel):
         return m
 
 
-AccountingJournalEntriesAllResponseTypedDict = TypeAliasType(
-    "AccountingJournalEntriesAllResponseTypedDict",
-    Union[UnexpectedErrorResponseTypedDict, GetJournalEntriesResponseTypedDict],
-)
+class AccountingJournalEntriesAllResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    get_journal_entries_response: NotRequired[GetJournalEntriesResponseTypedDict]
+    r"""JournalEntry"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-AccountingJournalEntriesAllResponse = TypeAliasType(
-    "AccountingJournalEntriesAllResponse",
-    Union[UnexpectedErrorResponse, GetJournalEntriesResponse],
-)
+class AccountingJournalEntriesAllResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    get_journal_entries_response: Optional[GetJournalEntriesResponse] = None
+    r"""JournalEntry"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

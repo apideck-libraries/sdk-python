@@ -28,7 +28,7 @@ with Apideck(
         "status": apideck.APIStatus.BETA,
     })
 
-    if res is not None:
+    if res.get_apis_response is not None:
         # handle response
         pass
 
@@ -73,7 +73,7 @@ with Apideck(
 ) as s:
     res = s.connector.apis.get(id="<id>")
 
-    if res is not None:
+    if res.get_api_response is not None:
         # handle response
         pass
 

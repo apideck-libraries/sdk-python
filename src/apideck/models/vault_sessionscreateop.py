@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 from .createsessionresponse import CreateSessionResponse, CreateSessionResponseTypedDict
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -9,8 +10,8 @@ from .unexpectederrorresponse import (
 from apideck.types import BaseModel
 from apideck.utils import FieldMetadata, HeaderMetadata
 import pydantic
-from typing import Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class VaultSessionsCreateGlobalsTypedDict(TypedDict):
@@ -36,12 +37,19 @@ class VaultSessionsCreateGlobals(BaseModel):
     r"""The ID of your Unify application"""
 
 
-VaultSessionsCreateResponseTypedDict = TypeAliasType(
-    "VaultSessionsCreateResponseTypedDict",
-    Union[CreateSessionResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
+class VaultSessionsCreateResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    create_session_response: NotRequired[CreateSessionResponseTypedDict]
+    r"""Session created"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-VaultSessionsCreateResponse = TypeAliasType(
-    "VaultSessionsCreateResponse", Union[CreateSessionResponse, UnexpectedErrorResponse]
-)
+class VaultSessionsCreateResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    create_session_response: Optional[CreateSessionResponse] = None
+    r"""Session created"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

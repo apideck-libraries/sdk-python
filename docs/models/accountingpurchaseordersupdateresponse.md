@@ -1,17 +1,10 @@
 # AccountingPurchaseOrdersUpdateResponse
 
 
-## Supported Types
+## Fields
 
-### `models.UpdatePurchaseOrderResponse`
-
-```python
-value: models.UpdatePurchaseOrderResponse = /* values here */
-```
-
-### `models.UnexpectedErrorResponse`
-
-```python
-value: models.UnexpectedErrorResponse = /* values here */
-```
-
+| Field                                                                                    | Type                                                                                     | Required                                                                                 | Description                                                                              |
+| ---------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| `http_meta`                                                                              | [models.HTTPMetadata](../models/httpmetadata.md)                                         | :heavy_check_mark:                                                                       | N/A                                                                                      |
+| `update_purchase_order_response`                                                         | [Optional[models.UpdatePurchaseOrderResponse]](../models/updatepurchaseorderresponse.md) | :heavy_minus_sign:                                                                       | PurchaseOrders                                                                           |
+| `unexpected_error_response`                                                              | [Optional[models.UnexpectedErrorResponse]](../models/unexpectederrorresponse.md)         | :heavy_minus_sign:                                                                       | Unexpected error                                                                         |

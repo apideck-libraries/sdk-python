@@ -46,7 +46,7 @@ with Apideck(
         "fields": "id,updated_at",
     })
 
-    if res is not None:
+    if res.get_files_response is not None:
         # handle response
         pass
 
@@ -105,7 +105,7 @@ with Apideck(
         },
     })
 
-    if res is not None:
+    if res.get_files_response is not None:
         # handle response
         pass
 
@@ -150,7 +150,7 @@ with Apideck(
 ) as s:
     res = s.file_storage.files.get(id="<id>", service_id="salesforce", fields="id,updated_at")
 
-    if res is not None:
+    if res.get_file_response is not None:
         # handle response
         pass
 
@@ -267,7 +267,7 @@ with Apideck(
         ],
     }, service_id="salesforce")
 
-    if res is not None:
+    if res.update_file_response is not None:
         # handle response
         pass
 
@@ -315,7 +315,7 @@ with Apideck(
 ) as s:
     res = s.file_storage.files.delete(id="<id>", service_id="salesforce")
 
-    if res is not None:
+    if res.delete_file_response is not None:
         # handle response
         pass
 
@@ -362,7 +362,7 @@ with Apideck(
 ) as s:
     res = s.file_storage.files.download(id="<id>", service_id="salesforce", fields="id,updated_at")
 
-    if res is not None:
+    if res.get_file_download_response is not None:
         # handle response
         pass
 
@@ -409,7 +409,7 @@ with Apideck(
 ) as s:
     res = s.file_storage.files.export(id="<id>", format="pdf", service_id="salesforce", fields="id,updated_at")
 
-    if res is not None:
+    if res.get_file_download_response is not None:
         # handle response
         pass
 

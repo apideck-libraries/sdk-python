@@ -9,6 +9,7 @@ from .createuploadsessionresponse import (
     CreateUploadSessionResponse,
     CreateUploadSessionResponseTypedDict,
 )
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -21,8 +22,8 @@ from apideck.utils import (
     RequestMetadata,
 )
 import pydantic
-from typing import Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 FILE_STORAGE_UPLOAD_SESSIONS_ADD_OP_SERVERS = [
     "https://upload.apideck.com",
@@ -80,13 +81,19 @@ class FileStorageUploadSessionsAddRequest(BaseModel):
     r"""Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API."""
 
 
-FileStorageUploadSessionsAddResponseTypedDict = TypeAliasType(
-    "FileStorageUploadSessionsAddResponseTypedDict",
-    Union[CreateUploadSessionResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
+class FileStorageUploadSessionsAddResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    create_upload_session_response: NotRequired[CreateUploadSessionResponseTypedDict]
+    r"""UploadSessions"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-FileStorageUploadSessionsAddResponse = TypeAliasType(
-    "FileStorageUploadSessionsAddResponse",
-    Union[CreateUploadSessionResponse, UnexpectedErrorResponse],
-)
+class FileStorageUploadSessionsAddResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    create_upload_session_response: Optional[CreateUploadSessionResponse] = None
+    r"""UploadSessions"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

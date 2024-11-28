@@ -1,17 +1,10 @@
 # AccountingTrackingCategoriesAllResponse
 
 
-## Supported Types
+## Fields
 
-### `models.GetTrackingCategoriesResponse`
-
-```python
-value: models.GetTrackingCategoriesResponse = /* values here */
-```
-
-### `models.UnexpectedErrorResponse`
-
-```python
-value: models.UnexpectedErrorResponse = /* values here */
-```
-
+| Field                                                                                        | Type                                                                                         | Required                                                                                     | Description                                                                                  |
+| -------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| `http_meta`                                                                                  | [models.HTTPMetadata](../models/httpmetadata.md)                                             | :heavy_check_mark:                                                                           | N/A                                                                                          |
+| `get_tracking_categories_response`                                                           | [Optional[models.GetTrackingCategoriesResponse]](../models/gettrackingcategoriesresponse.md) | :heavy_minus_sign:                                                                           | Tracking categories                                                                          |
+| `unexpected_error_response`                                                                  | [Optional[models.UnexpectedErrorResponse]](../models/unexpectederrorresponse.md)             | :heavy_minus_sign:                                                                           | Unexpected error                                                                             |

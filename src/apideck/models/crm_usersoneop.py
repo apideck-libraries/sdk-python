@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 from .getuserresponse import GetUserResponse, GetUserResponseTypedDict
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -15,8 +16,8 @@ from apideck.utils import (
 )
 import pydantic
 from pydantic import model_serializer
-from typing import Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class CrmUsersOneGlobalsTypedDict(TypedDict):
@@ -109,12 +110,19 @@ class CrmUsersOneRequest(BaseModel):
         return m
 
 
-CrmUsersOneResponseTypedDict = TypeAliasType(
-    "CrmUsersOneResponseTypedDict",
-    Union[GetUserResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
+class CrmUsersOneResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    get_user_response: NotRequired[GetUserResponseTypedDict]
+    r"""User"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-CrmUsersOneResponse = TypeAliasType(
-    "CrmUsersOneResponse", Union[GetUserResponse, UnexpectedErrorResponse]
-)
+class CrmUsersOneResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    get_user_response: Optional[GetUserResponse] = None
+    r"""User"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

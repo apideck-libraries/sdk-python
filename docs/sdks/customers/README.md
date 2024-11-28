@@ -49,7 +49,7 @@ with Apideck(
         "fields": "id,updated_at",
     })
 
-    if res is not None:
+    if res.get_customers_response is not None:
         # handle response
         pass
 
@@ -259,7 +259,7 @@ with Apideck(
         ],
     }, service_id="salesforce")
 
-    if res is not None:
+    if res.create_customer_response is not None:
         # handle response
         pass
 
@@ -306,7 +306,7 @@ with Apideck(
 ) as s:
     res = s.accounting.customers.get(id="<id>", service_id="salesforce", fields="id,updated_at")
 
-    if res is not None:
+    if res.get_customer_response is not None:
         # handle response
         pass
 
@@ -568,7 +568,7 @@ with Apideck(
         ],
     }, service_id="salesforce")
 
-    if res is not None:
+    if res.update_customer_response is not None:
         # handle response
         pass
 
@@ -616,7 +616,7 @@ with Apideck(
 ) as s:
     res = s.accounting.customers.delete(id="<id>", service_id="salesforce")
 
-    if res is not None:
+    if res.delete_customer_response is not None:
         # handle response
         pass
 

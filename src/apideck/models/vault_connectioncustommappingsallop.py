@@ -5,6 +5,7 @@ from .getcustommappingsresponse import (
     GetCustomMappingsResponse,
     GetCustomMappingsResponseTypedDict,
 )
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -17,8 +18,8 @@ from apideck.utils import (
     QueryParamMetadata,
 )
 import pydantic
-from typing import Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class VaultConnectionCustomMappingsAllGlobalsTypedDict(TypedDict):
@@ -78,13 +79,19 @@ class VaultConnectionCustomMappingsAllRequest(BaseModel):
     r"""This is the id of the resource you want to fetch when listing custom fields. For example, if you want to fetch custom fields for a specific contact, you would use the contact id."""
 
 
-VaultConnectionCustomMappingsAllResponseTypedDict = TypeAliasType(
-    "VaultConnectionCustomMappingsAllResponseTypedDict",
-    Union[GetCustomMappingsResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
+class VaultConnectionCustomMappingsAllResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    get_custom_mappings_response: NotRequired[GetCustomMappingsResponseTypedDict]
+    r"""Custom mapping"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-VaultConnectionCustomMappingsAllResponse = TypeAliasType(
-    "VaultConnectionCustomMappingsAllResponse",
-    Union[GetCustomMappingsResponse, UnexpectedErrorResponse],
-)
+class VaultConnectionCustomMappingsAllResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    get_custom_mappings_response: Optional[GetCustomMappingsResponse] = None
+    r"""Custom mapping"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

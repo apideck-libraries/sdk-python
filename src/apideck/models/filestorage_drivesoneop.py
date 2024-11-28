@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 from .getdriveresponse import GetDriveResponse, GetDriveResponseTypedDict
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -15,8 +16,8 @@ from apideck.utils import (
 )
 import pydantic
 from pydantic import model_serializer
-from typing import Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class FileStorageDrivesOneGlobalsTypedDict(TypedDict):
@@ -109,12 +110,19 @@ class FileStorageDrivesOneRequest(BaseModel):
         return m
 
 
-FileStorageDrivesOneResponseTypedDict = TypeAliasType(
-    "FileStorageDrivesOneResponseTypedDict",
-    Union[GetDriveResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
+class FileStorageDrivesOneResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    get_drive_response: NotRequired[GetDriveResponseTypedDict]
+    r"""Drives"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-FileStorageDrivesOneResponse = TypeAliasType(
-    "FileStorageDrivesOneResponse", Union[GetDriveResponse, UnexpectedErrorResponse]
-)
+class FileStorageDrivesOneResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    get_drive_response: Optional[GetDriveResponse] = None
+    r"""Drives"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

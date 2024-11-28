@@ -24,7 +24,7 @@ with Apideck(
 ) as s:
     res = s.vault.connection_custom_mappings.list(unified_api="crm", service_id="pipedrive", resource="leads", resource_id="1234")
 
-    if res is not None:
+    if res.get_custom_mappings_response is not None:
         # handle response
         pass
 

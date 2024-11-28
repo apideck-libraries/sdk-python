@@ -36,7 +36,7 @@ with Apideck(
         },
     })
 
-    if res is not None:
+    if res.create_consumer_response is not None:
         # handle response
         pass
 
@@ -82,7 +82,7 @@ with Apideck(
 ) as s:
     res = s.vault.consumers.list()
 
-    if res is not None:
+    if res.get_consumers_response is not None:
         # handle response
         pass
 
@@ -129,7 +129,7 @@ with Apideck(
 ) as s:
     res = s.vault.consumers.get(consumer_id="test_user_id")
 
-    if res is not None:
+    if res.get_consumer_response is not None:
         # handle response
         pass
 
@@ -181,7 +181,7 @@ with Apideck(
         },
     })
 
-    if res is not None:
+    if res.update_consumer_response is not None:
         # handle response
         pass
 
@@ -227,7 +227,7 @@ with Apideck(
 ) as s:
     res = s.vault.consumers.delete(consumer_id="test_user_id")
 
-    if res is not None:
+    if res.delete_consumer_response is not None:
         # handle response
         pass
 

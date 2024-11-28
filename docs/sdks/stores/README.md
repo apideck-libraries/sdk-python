@@ -24,7 +24,7 @@ with Apideck(
 ) as s:
     res = s.ecommerce.stores.get(service_id="salesforce", fields="id,updated_at")
 
-    if res is not None:
+    if res.get_store_response is not None:
         # handle response
         pass
 

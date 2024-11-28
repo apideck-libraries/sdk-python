@@ -31,7 +31,7 @@ with Apideck(
         "fields": "id,updated_at",
     })
 
-    if res is not None:
+    if res.get_employee_schedules_response is not None:
         # handle response
         pass
 

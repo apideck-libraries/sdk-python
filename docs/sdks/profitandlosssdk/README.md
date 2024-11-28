@@ -35,7 +35,7 @@ with Apideck(
         "fields": "id,updated_at",
     })
 
-    if res is not None:
+    if res.get_profit_and_loss_response is not None:
         # handle response
         pass
 

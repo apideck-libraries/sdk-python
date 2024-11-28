@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 from .copyfolderrequest import CopyFolderRequest, CopyFolderRequestTypedDict
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -17,8 +18,8 @@ from apideck.utils import (
 )
 import pydantic
 from pydantic import model_serializer
-from typing import Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class FileStorageFoldersCopyGlobalsTypedDict(TypedDict):
@@ -117,13 +118,19 @@ class FileStorageFoldersCopyRequest(BaseModel):
         return m
 
 
-FileStorageFoldersCopyResponseTypedDict = TypeAliasType(
-    "FileStorageFoldersCopyResponseTypedDict",
-    Union[UpdateFolderResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
+class FileStorageFoldersCopyResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    update_folder_response: NotRequired[UpdateFolderResponseTypedDict]
+    r"""Folders"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-FileStorageFoldersCopyResponse = TypeAliasType(
-    "FileStorageFoldersCopyResponse",
-    Union[UpdateFolderResponse, UnexpectedErrorResponse],
-)
+class FileStorageFoldersCopyResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    update_folder_response: Optional[UpdateFolderResponse] = None
+    r"""Folders"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

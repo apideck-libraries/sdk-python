@@ -31,7 +31,7 @@ with Apideck(
         "fields": "id,updated_at",
     })
 
-    if res is not None:
+    if res.get_collection_tags_response is not None:
         # handle response
         pass
 

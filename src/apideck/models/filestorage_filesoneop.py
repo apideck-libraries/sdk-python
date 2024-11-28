@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 from .getfileresponse import GetFileResponse, GetFileResponseTypedDict
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -15,8 +16,8 @@ from apideck.utils import (
 )
 import pydantic
 from pydantic import model_serializer
-from typing import Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class FileStorageFilesOneGlobalsTypedDict(TypedDict):
@@ -109,12 +110,19 @@ class FileStorageFilesOneRequest(BaseModel):
         return m
 
 
-FileStorageFilesOneResponseTypedDict = TypeAliasType(
-    "FileStorageFilesOneResponseTypedDict",
-    Union[GetFileResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
+class FileStorageFilesOneResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    get_file_response: NotRequired[GetFileResponseTypedDict]
+    r"""File"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-FileStorageFilesOneResponse = TypeAliasType(
-    "FileStorageFilesOneResponse", Union[GetFileResponse, UnexpectedErrorResponse]
-)
+class FileStorageFilesOneResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    get_file_response: Optional[GetFileResponse] = None
+    r"""File"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

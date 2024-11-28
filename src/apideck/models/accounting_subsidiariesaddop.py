@@ -5,6 +5,7 @@ from .createsubsidiaryresponse import (
     CreateSubsidiaryResponse,
     CreateSubsidiaryResponseTypedDict,
 )
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .subsidiary import SubsidiaryInput, SubsidiaryInputTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
@@ -18,8 +19,8 @@ from apideck.utils import (
     RequestMetadata,
 )
 import pydantic
-from typing import Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class AccountingSubsidiariesAddGlobalsTypedDict(TypedDict):
@@ -73,13 +74,19 @@ class AccountingSubsidiariesAddRequest(BaseModel):
     r"""Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API."""
 
 
-AccountingSubsidiariesAddResponseTypedDict = TypeAliasType(
-    "AccountingSubsidiariesAddResponseTypedDict",
-    Union[CreateSubsidiaryResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
+class AccountingSubsidiariesAddResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    create_subsidiary_response: NotRequired[CreateSubsidiaryResponseTypedDict]
+    r"""Subsidiaries"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-AccountingSubsidiariesAddResponse = TypeAliasType(
-    "AccountingSubsidiariesAddResponse",
-    Union[CreateSubsidiaryResponse, UnexpectedErrorResponse],
-)
+class AccountingSubsidiariesAddResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    create_subsidiary_response: Optional[CreateSubsidiaryResponse] = None
+    r"""Subsidiaries"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

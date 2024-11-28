@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 from .getcreditnoteresponse import GetCreditNoteResponse, GetCreditNoteResponseTypedDict
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -15,8 +16,8 @@ from apideck.utils import (
 )
 import pydantic
 from pydantic import model_serializer
-from typing import Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class AccountingCreditNotesOneGlobalsTypedDict(TypedDict):
@@ -109,13 +110,19 @@ class AccountingCreditNotesOneRequest(BaseModel):
         return m
 
 
-AccountingCreditNotesOneResponseTypedDict = TypeAliasType(
-    "AccountingCreditNotesOneResponseTypedDict",
-    Union[GetCreditNoteResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
+class AccountingCreditNotesOneResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    get_credit_note_response: NotRequired[GetCreditNoteResponseTypedDict]
+    r"""Credit Note"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-AccountingCreditNotesOneResponse = TypeAliasType(
-    "AccountingCreditNotesOneResponse",
-    Union[GetCreditNoteResponse, UnexpectedErrorResponse],
-)
+class AccountingCreditNotesOneResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    get_credit_note_response: Optional[GetCreditNoteResponse] = None
+    r"""Credit Note"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

@@ -24,7 +24,7 @@ with Apideck(
 ) as s:
     res = s.connector.api_resource_coverage.get(id="<id>", resource_id="<id>")
 
-    if res is not None:
+    if res.get_api_resource_coverage_response is not None:
         # handle response
         pass
 

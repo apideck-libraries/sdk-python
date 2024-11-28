@@ -9,6 +9,7 @@ from .createaccountingdepartmentresponse import (
     CreateAccountingDepartmentResponse,
     CreateAccountingDepartmentResponseTypedDict,
 )
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -21,8 +22,8 @@ from apideck.utils import (
     RequestMetadata,
 )
 import pydantic
-from typing import Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class AccountingDepartmentsAddGlobalsTypedDict(TypedDict):
@@ -76,15 +77,23 @@ class AccountingDepartmentsAddRequest(BaseModel):
     r"""Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API."""
 
 
-AccountingDepartmentsAddResponseTypedDict = TypeAliasType(
-    "AccountingDepartmentsAddResponseTypedDict",
-    Union[
-        CreateAccountingDepartmentResponseTypedDict, UnexpectedErrorResponseTypedDict
-    ],
-)
+class AccountingDepartmentsAddResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    create_accounting_department_response: NotRequired[
+        CreateAccountingDepartmentResponseTypedDict
+    ]
+    r"""Department"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-AccountingDepartmentsAddResponse = TypeAliasType(
-    "AccountingDepartmentsAddResponse",
-    Union[CreateAccountingDepartmentResponse, UnexpectedErrorResponse],
-)
+class AccountingDepartmentsAddResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    create_accounting_department_response: Optional[
+        CreateAccountingDepartmentResponse
+    ] = None
+    r"""Department"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

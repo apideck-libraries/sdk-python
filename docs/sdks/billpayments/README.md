@@ -43,7 +43,7 @@ with Apideck(
         "fields": "id,updated_at",
     })
 
-    if res is not None:
+    if res.get_bill_payments_response is not None:
         # handle response
         pass
 
@@ -183,7 +183,7 @@ with Apideck(
         ],
     }, service_id="salesforce")
 
-    if res is not None:
+    if res.create_bill_payment_response is not None:
         # handle response
         pass
 
@@ -230,7 +230,7 @@ with Apideck(
 ) as s:
     res = s.accounting.bill_payments.get(id="<id>", service_id="salesforce", fields="id,updated_at")
 
-    if res is not None:
+    if res.get_bill_payment_response is not None:
         # handle response
         pass
 
@@ -400,7 +400,7 @@ with Apideck(
         ],
     }, service_id="salesforce")
 
-    if res is not None:
+    if res.update_bill_payment_response is not None:
         # handle response
         pass
 
@@ -448,7 +448,7 @@ with Apideck(
 ) as s:
     res = s.accounting.bill_payments.delete(id="<id>", service_id="salesforce")
 
-    if res is not None:
+    if res.delete_bill_payment_response is not None:
         # handle response
         pass
 

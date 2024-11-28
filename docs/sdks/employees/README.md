@@ -50,7 +50,7 @@ with Apideck(
         "fields": "id,updated_at",
     })
 
-    if res is not None:
+    if res.get_employees_response is not None:
         # handle response
         pass
 
@@ -381,7 +381,7 @@ with Apideck(
         ],
     }, service_id="salesforce")
 
-    if res is not None:
+    if res.create_employee_response is not None:
         # handle response
         pass
 
@@ -438,7 +438,7 @@ with Apideck(
         },
     })
 
-    if res is not None:
+    if res.get_employee_response is not None:
         # handle response
         pass
 
@@ -837,7 +837,7 @@ with Apideck(
         ],
     }, service_id="salesforce")
 
-    if res is not None:
+    if res.update_employee_response is not None:
         # handle response
         pass
 
@@ -885,7 +885,7 @@ with Apideck(
 ) as s:
     res = s.hris.employees.delete(id="<id>", service_id="salesforce")
 
-    if res is not None:
+    if res.delete_employee_response is not None:
         # handle response
         pass
 

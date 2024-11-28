@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 from .deletetaxrateresponse import DeleteTaxRateResponse, DeleteTaxRateResponseTypedDict
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -14,8 +15,8 @@ from apideck.utils import (
     QueryParamMetadata,
 )
 import pydantic
-from typing import Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class AccountingInvoiceItemsDeleteGlobalsTypedDict(TypedDict):
@@ -70,13 +71,19 @@ class AccountingInvoiceItemsDeleteRequest(BaseModel):
     r"""Include raw response. Mostly used for debugging purposes"""
 
 
-AccountingInvoiceItemsDeleteResponseTypedDict = TypeAliasType(
-    "AccountingInvoiceItemsDeleteResponseTypedDict",
-    Union[DeleteTaxRateResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
+class AccountingInvoiceItemsDeleteResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    delete_tax_rate_response: NotRequired[DeleteTaxRateResponseTypedDict]
+    r"""InvoiceItems"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-AccountingInvoiceItemsDeleteResponse = TypeAliasType(
-    "AccountingInvoiceItemsDeleteResponse",
-    Union[DeleteTaxRateResponse, UnexpectedErrorResponse],
-)
+class AccountingInvoiceItemsDeleteResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    delete_tax_rate_response: Optional[DeleteTaxRateResponse] = None
+    r"""InvoiceItems"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

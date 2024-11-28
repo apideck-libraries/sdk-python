@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 from .creditnote import CreditNoteInput, CreditNoteInputTypedDict
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -19,8 +20,8 @@ from apideck.utils import (
     RequestMetadata,
 )
 import pydantic
-from typing import Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class AccountingCreditNotesUpdateGlobalsTypedDict(TypedDict):
@@ -81,13 +82,19 @@ class AccountingCreditNotesUpdateRequest(BaseModel):
     r"""Include raw response. Mostly used for debugging purposes"""
 
 
-AccountingCreditNotesUpdateResponseTypedDict = TypeAliasType(
-    "AccountingCreditNotesUpdateResponseTypedDict",
-    Union[UpdateCreditNoteResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
+class AccountingCreditNotesUpdateResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    update_credit_note_response: NotRequired[UpdateCreditNoteResponseTypedDict]
+    r"""Credit Note updated"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-AccountingCreditNotesUpdateResponse = TypeAliasType(
-    "AccountingCreditNotesUpdateResponse",
-    Union[UpdateCreditNoteResponse, UnexpectedErrorResponse],
-)
+class AccountingCreditNotesUpdateResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    update_credit_note_response: Optional[UpdateCreditNoteResponse] = None
+    r"""Credit Note updated"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

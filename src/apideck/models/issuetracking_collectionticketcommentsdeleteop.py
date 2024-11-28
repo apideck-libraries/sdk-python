@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 from .deletecommentresponse import DeleteCommentResponse, DeleteCommentResponseTypedDict
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -14,8 +15,8 @@ from apideck.utils import (
     QueryParamMetadata,
 )
 import pydantic
-from typing import Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class IssueTrackingCollectionTicketCommentsDeleteGlobalsTypedDict(TypedDict):
@@ -84,13 +85,19 @@ class IssueTrackingCollectionTicketCommentsDeleteRequest(BaseModel):
     r"""Include raw response. Mostly used for debugging purposes"""
 
 
-IssueTrackingCollectionTicketCommentsDeleteResponseTypedDict = TypeAliasType(
-    "IssueTrackingCollectionTicketCommentsDeleteResponseTypedDict",
-    Union[DeleteCommentResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
+class IssueTrackingCollectionTicketCommentsDeleteResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    delete_comment_response: NotRequired[DeleteCommentResponseTypedDict]
+    r"""Delete a Comment"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-IssueTrackingCollectionTicketCommentsDeleteResponse = TypeAliasType(
-    "IssueTrackingCollectionTicketCommentsDeleteResponse",
-    Union[DeleteCommentResponse, UnexpectedErrorResponse],
-)
+class IssueTrackingCollectionTicketCommentsDeleteResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    delete_comment_response: Optional[DeleteCommentResponse] = None
+    r"""Delete a Comment"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

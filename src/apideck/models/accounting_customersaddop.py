@@ -6,6 +6,7 @@ from .createcustomerresponse import (
     CreateCustomerResponseTypedDict,
 )
 from .customer import CustomerInput, CustomerInputTypedDict
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -18,8 +19,8 @@ from apideck.utils import (
     RequestMetadata,
 )
 import pydantic
-from typing import Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class AccountingCustomersAddGlobalsTypedDict(TypedDict):
@@ -73,13 +74,19 @@ class AccountingCustomersAddRequest(BaseModel):
     r"""Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API."""
 
 
-AccountingCustomersAddResponseTypedDict = TypeAliasType(
-    "AccountingCustomersAddResponseTypedDict",
-    Union[CreateCustomerResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
+class AccountingCustomersAddResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    create_customer_response: NotRequired[CreateCustomerResponseTypedDict]
+    r"""Customers"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-AccountingCustomersAddResponse = TypeAliasType(
-    "AccountingCustomersAddResponse",
-    Union[CreateCustomerResponse, UnexpectedErrorResponse],
-)
+class AccountingCustomersAddResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    create_customer_response: Optional[CreateCustomerResponse] = None
+    r"""Customers"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

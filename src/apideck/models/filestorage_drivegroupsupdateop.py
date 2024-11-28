@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 from .drivegroup_input import DriveGroupInput, DriveGroupInputTypedDict
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -19,8 +20,8 @@ from apideck.utils import (
     RequestMetadata,
 )
 import pydantic
-from typing import Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class FileStorageDriveGroupsUpdateGlobalsTypedDict(TypedDict):
@@ -81,13 +82,19 @@ class FileStorageDriveGroupsUpdateRequest(BaseModel):
     r"""Include raw response. Mostly used for debugging purposes"""
 
 
-FileStorageDriveGroupsUpdateResponseTypedDict = TypeAliasType(
-    "FileStorageDriveGroupsUpdateResponseTypedDict",
-    Union[UpdateDriveGroupResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
+class FileStorageDriveGroupsUpdateResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    update_drive_group_response: NotRequired[UpdateDriveGroupResponseTypedDict]
+    r"""DriveGroups"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-FileStorageDriveGroupsUpdateResponse = TypeAliasType(
-    "FileStorageDriveGroupsUpdateResponse",
-    Union[UpdateDriveGroupResponse, UnexpectedErrorResponse],
-)
+class FileStorageDriveGroupsUpdateResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    update_drive_group_response: Optional[UpdateDriveGroupResponse] = None
+    r"""DriveGroups"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

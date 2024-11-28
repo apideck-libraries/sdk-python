@@ -24,7 +24,7 @@ with Apideck(
 ) as s:
     res = s.connector.connector_docs.get(id="<id>", doc_id="application_owner+oauth_credentials")
 
-    if res is not None:
+    if res.get_connector_doc_response is not None:
         # handle response
         pass
 

@@ -48,7 +48,7 @@ with Apideck(
         "fields": "id,updated_at",
     })
 
-    if res is not None:
+    if res.get_suppliers_response is not None:
         # handle response
         pass
 
@@ -253,7 +253,7 @@ with Apideck(
         ],
     }, service_id="salesforce")
 
-    if res is not None:
+    if res.create_supplier_response is not None:
         # handle response
         pass
 
@@ -300,7 +300,7 @@ with Apideck(
 ) as s:
     res = s.accounting.suppliers.get(id="<id>", service_id="salesforce", fields="id,updated_at")
 
-    if res is not None:
+    if res.get_supplier_response is not None:
         # handle response
         pass
 
@@ -557,7 +557,7 @@ with Apideck(
         ],
     }, service_id="salesforce")
 
-    if res is not None:
+    if res.update_supplier_response is not None:
         # handle response
         pass
 
@@ -605,7 +605,7 @@ with Apideck(
 ) as s:
     res = s.accounting.suppliers.delete(id="<id>", service_id="salesforce")
 
-    if res is not None:
+    if res.delete_supplier_response is not None:
         # handle response
         pass
 

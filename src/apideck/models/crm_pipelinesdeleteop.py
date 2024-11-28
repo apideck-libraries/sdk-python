@@ -5,6 +5,7 @@ from .deletepipelineresponse import (
     DeletePipelineResponse,
     DeletePipelineResponseTypedDict,
 )
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -17,8 +18,8 @@ from apideck.utils import (
     QueryParamMetadata,
 )
 import pydantic
-from typing import Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class CrmPipelinesDeleteGlobalsTypedDict(TypedDict):
@@ -73,12 +74,19 @@ class CrmPipelinesDeleteRequest(BaseModel):
     r"""Include raw response. Mostly used for debugging purposes"""
 
 
-CrmPipelinesDeleteResponseTypedDict = TypeAliasType(
-    "CrmPipelinesDeleteResponseTypedDict",
-    Union[DeletePipelineResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
+class CrmPipelinesDeleteResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    delete_pipeline_response: NotRequired[DeletePipelineResponseTypedDict]
+    r"""Pipeline deleted"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-CrmPipelinesDeleteResponse = TypeAliasType(
-    "CrmPipelinesDeleteResponse", Union[DeletePipelineResponse, UnexpectedErrorResponse]
-)
+class CrmPipelinesDeleteResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    delete_pipeline_response: Optional[DeletePipelineResponse] = None
+    r"""Pipeline deleted"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

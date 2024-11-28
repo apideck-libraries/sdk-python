@@ -31,7 +31,7 @@ with Apideck(
         "fields": "id,updated_at",
     })
 
-    if res is not None:
+    if res.get_jobs_response is not None:
         # handle response
         pass
 
@@ -76,7 +76,7 @@ with Apideck(
 ) as s:
     res = s.ats.jobs.get(id="<id>", service_id="salesforce", fields="id,updated_at")
 
-    if res is not None:
+    if res.get_job_response is not None:
         # handle response
         pass
 

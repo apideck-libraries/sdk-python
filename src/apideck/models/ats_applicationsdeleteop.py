@@ -5,6 +5,7 @@ from .deleteapplicationresponse import (
     DeleteApplicationResponse,
     DeleteApplicationResponseTypedDict,
 )
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -17,8 +18,8 @@ from apideck.utils import (
     QueryParamMetadata,
 )
 import pydantic
-from typing import Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class AtsApplicationsDeleteGlobalsTypedDict(TypedDict):
@@ -73,13 +74,19 @@ class AtsApplicationsDeleteRequest(BaseModel):
     r"""Include raw response. Mostly used for debugging purposes"""
 
 
-AtsApplicationsDeleteResponseTypedDict = TypeAliasType(
-    "AtsApplicationsDeleteResponseTypedDict",
-    Union[DeleteApplicationResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
+class AtsApplicationsDeleteResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    delete_application_response: NotRequired[DeleteApplicationResponseTypedDict]
+    r"""Applications"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-AtsApplicationsDeleteResponse = TypeAliasType(
-    "AtsApplicationsDeleteResponse",
-    Union[DeleteApplicationResponse, UnexpectedErrorResponse],
-)
+class AtsApplicationsDeleteResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    delete_application_response: Optional[DeleteApplicationResponse] = None
+    r"""Applications"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

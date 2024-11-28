@@ -5,6 +5,7 @@ from .getcompanyinforesponse import (
     GetCompanyInfoResponse,
     GetCompanyInfoResponseTypedDict,
 )
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -13,8 +14,8 @@ from apideck.types import BaseModel, Nullable, OptionalNullable, UNSET, UNSET_SE
 from apideck.utils import FieldMetadata, HeaderMetadata, QueryParamMetadata
 import pydantic
 from pydantic import model_serializer
-from typing import Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class AccountingCompanyInfoOneGlobalsTypedDict(TypedDict):
@@ -100,13 +101,19 @@ class AccountingCompanyInfoOneRequest(BaseModel):
         return m
 
 
-AccountingCompanyInfoOneResponseTypedDict = TypeAliasType(
-    "AccountingCompanyInfoOneResponseTypedDict",
-    Union[GetCompanyInfoResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
+class AccountingCompanyInfoOneResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    get_company_info_response: NotRequired[GetCompanyInfoResponseTypedDict]
+    r"""CompanyInfo"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-AccountingCompanyInfoOneResponse = TypeAliasType(
-    "AccountingCompanyInfoOneResponse",
-    Union[GetCompanyInfoResponse, UnexpectedErrorResponse],
-)
+class AccountingCompanyInfoOneResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    get_company_info_response: Optional[GetCompanyInfoResponse] = None
+    r"""CompanyInfo"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

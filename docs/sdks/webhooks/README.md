@@ -28,7 +28,7 @@ with Apideck(
 ) as s:
     res = s.webhook.webhooks.list()
 
-    if res is not None:
+    if res.get_webhooks_response is not None:
         # handle response
         pass
 
@@ -84,7 +84,7 @@ with Apideck(
         "description": "A description",
     })
 
-    if res is not None:
+    if res.create_webhook_response is not None:
         # handle response
         pass
 
@@ -129,7 +129,7 @@ with Apideck(
 ) as s:
     res = s.webhook.webhooks.get(id="<id>")
 
-    if res is not None:
+    if res.get_webhook_response is not None:
         # handle response
         pass
 
@@ -183,7 +183,7 @@ with Apideck(
         ],
     })
 
-    if res is not None:
+    if res.update_webhook_response is not None:
         # handle response
         pass
 
@@ -229,7 +229,7 @@ with Apideck(
 ) as s:
     res = s.webhook.webhooks.delete(id="<id>")
 
-    if res is not None:
+    if res.delete_webhook_response is not None:
         # handle response
         pass
 

@@ -34,7 +34,7 @@ with Apideck(
         "fields": "id,updated_at",
     })
 
-    if res is not None:
+    if res.get_drives_response is not None:
         # handle response
         pass
 
@@ -105,7 +105,7 @@ with Apideck(
         ],
     }, service_id="salesforce")
 
-    if res is not None:
+    if res.create_drive_response is not None:
         # handle response
         pass
 
@@ -152,7 +152,7 @@ with Apideck(
 ) as s:
     res = s.file_storage.drives.get(id="<id>", service_id="salesforce", fields="id,updated_at")
 
-    if res is not None:
+    if res.get_drive_response is not None:
         # handle response
         pass
 
@@ -268,7 +268,7 @@ with Apideck(
         ],
     }, service_id="salesforce")
 
-    if res is not None:
+    if res.update_drive_response is not None:
         # handle response
         pass
 
@@ -316,7 +316,7 @@ with Apideck(
 ) as s:
     res = s.file_storage.drives.delete(id="<id>", service_id="salesforce")
 
-    if res is not None:
+    if res.delete_drive_response is not None:
         # handle response
         pass
 

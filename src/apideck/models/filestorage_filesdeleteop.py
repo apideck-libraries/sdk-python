@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 from .deletefileresponse import DeleteFileResponse, DeleteFileResponseTypedDict
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -14,8 +15,8 @@ from apideck.utils import (
     QueryParamMetadata,
 )
 import pydantic
-from typing import Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class FileStorageFilesDeleteGlobalsTypedDict(TypedDict):
@@ -70,12 +71,19 @@ class FileStorageFilesDeleteRequest(BaseModel):
     r"""Include raw response. Mostly used for debugging purposes"""
 
 
-FileStorageFilesDeleteResponseTypedDict = TypeAliasType(
-    "FileStorageFilesDeleteResponseTypedDict",
-    Union[DeleteFileResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
+class FileStorageFilesDeleteResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    delete_file_response: NotRequired[DeleteFileResponseTypedDict]
+    r"""Files"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-FileStorageFilesDeleteResponse = TypeAliasType(
-    "FileStorageFilesDeleteResponse", Union[DeleteFileResponse, UnexpectedErrorResponse]
-)
+class FileStorageFilesDeleteResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    delete_file_response: Optional[DeleteFileResponse] = None
+    r"""Files"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

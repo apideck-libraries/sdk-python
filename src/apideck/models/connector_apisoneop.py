@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 from .getapiresponse import GetAPIResponse, GetAPIResponseTypedDict
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -9,8 +10,8 @@ from .unexpectederrorresponse import (
 from apideck.types import BaseModel
 from apideck.utils import FieldMetadata, HeaderMetadata, PathParamMetadata
 import pydantic
-from typing import Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class ConnectorApisOneGlobalsTypedDict(TypedDict):
@@ -39,12 +40,19 @@ class ConnectorApisOneRequest(BaseModel):
     r"""ID of the record you are acting upon."""
 
 
-ConnectorApisOneResponseTypedDict = TypeAliasType(
-    "ConnectorApisOneResponseTypedDict",
-    Union[GetAPIResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
+class ConnectorApisOneResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    get_api_response: NotRequired[GetAPIResponseTypedDict]
+    r"""Apis"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-ConnectorApisOneResponse = TypeAliasType(
-    "ConnectorApisOneResponse", Union[GetAPIResponse, UnexpectedErrorResponse]
-)
+class ConnectorApisOneResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    get_api_response: Optional[GetAPIResponse] = None
+    r"""Apis"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

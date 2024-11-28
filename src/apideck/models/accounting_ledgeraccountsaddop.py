@@ -5,6 +5,7 @@ from .createledgeraccountresponse import (
     CreateLedgerAccountResponse,
     CreateLedgerAccountResponseTypedDict,
 )
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .ledgeraccount import LedgerAccountInput, LedgerAccountInputTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
@@ -18,8 +19,8 @@ from apideck.utils import (
     RequestMetadata,
 )
 import pydantic
-from typing import Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class AccountingLedgerAccountsAddGlobalsTypedDict(TypedDict):
@@ -73,13 +74,19 @@ class AccountingLedgerAccountsAddRequest(BaseModel):
     r"""Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API."""
 
 
-AccountingLedgerAccountsAddResponseTypedDict = TypeAliasType(
-    "AccountingLedgerAccountsAddResponseTypedDict",
-    Union[CreateLedgerAccountResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
+class AccountingLedgerAccountsAddResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    create_ledger_account_response: NotRequired[CreateLedgerAccountResponseTypedDict]
+    r"""LedgerAccount created"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-AccountingLedgerAccountsAddResponse = TypeAliasType(
-    "AccountingLedgerAccountsAddResponse",
-    Union[CreateLedgerAccountResponse, UnexpectedErrorResponse],
-)
+class AccountingLedgerAccountsAddResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    create_ledger_account_response: Optional[CreateLedgerAccountResponse] = None
+    r"""LedgerAccount created"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

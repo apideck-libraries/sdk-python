@@ -31,7 +31,7 @@ with Apideck(
         "fields": "id,updated_at",
     })
 
-    if res is not None:
+    if res.get_messages_response is not None:
         # handle response
         pass
 
@@ -111,7 +111,7 @@ with Apideck(
         ],
     }, service_id="salesforce")
 
-    if res is not None:
+    if res.create_message_response is not None:
         # handle response
         pass
 
@@ -158,7 +158,7 @@ with Apideck(
 ) as s:
     res = s.sms.messages.get(id="<id>", service_id="salesforce", fields="id,updated_at")
 
-    if res is not None:
+    if res.get_message_response is not None:
         # handle response
         pass
 
@@ -283,7 +283,7 @@ with Apideck(
         ],
     }, service_id="salesforce")
 
-    if res is not None:
+    if res.update_message_response is not None:
         # handle response
         pass
 
@@ -331,7 +331,7 @@ with Apideck(
 ) as s:
     res = s.sms.messages.delete(id="<id>", service_id="salesforce")
 
-    if res is not None:
+    if res.delete_message_response is not None:
         # handle response
         pass
 

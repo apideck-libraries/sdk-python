@@ -43,7 +43,7 @@ with Apideck(
         },
     })
 
-    if res is not None:
+    if res.get_purchase_orders_response is not None:
         # handle response
         pass
 
@@ -302,7 +302,7 @@ with Apideck(
         ],
     }, service_id="salesforce")
 
-    if res is not None:
+    if res.create_purchase_order_response is not None:
         # handle response
         pass
 
@@ -349,7 +349,7 @@ with Apideck(
 ) as s:
     res = s.accounting.purchase_orders.get(id="<id>", service_id="salesforce")
 
-    if res is not None:
+    if res.get_purchase_order_response is not None:
         # handle response
         pass
 
@@ -722,7 +722,7 @@ with Apideck(
         ],
     }, service_id="salesforce")
 
-    if res is not None:
+    if res.update_purchase_order_response is not None:
         # handle response
         pass
 
@@ -770,7 +770,7 @@ with Apideck(
 ) as s:
     res = s.accounting.purchase_orders.delete(id="<id>", service_id="salesforce")
 
-    if res is not None:
+    if res.delete_purchase_order_response is not None:
         # handle response
         pass
 

@@ -24,17 +24,22 @@ For more information about the API: [Apideck Developer Docs](https://developers.
 
 <!-- Start Table of Contents [toc] -->
 ## Table of Contents
+<!-- $toc-max-depth=2 -->
+* [apideck](#apideck)
+  * [SDK Installation](#sdk-installation)
+  * [IDE Support](#ide-support)
+  * [SDK Example Usage](#sdk-example-usage)
+  * [Available Resources and Operations](#available-resources-and-operations)
+  * [Retries](#retries)
+  * [Error Handling](#error-handling)
+  * [Server Selection](#server-selection)
+  * [Custom HTTP Client](#custom-http-client)
+  * [Authentication](#authentication)
+  * [Debugging](#debugging)
+* [Development](#development)
+  * [Maturity](#maturity)
+  * [Contributions](#contributions)
 
-* [SDK Installation](#sdk-installation)
-* [IDE Support](#ide-support)
-* [SDK Example Usage](#sdk-example-usage)
-* [Available Resources and Operations](#available-resources-and-operations)
-* [Retries](#retries)
-* [Error Handling](#error-handling)
-* [Server Selection](#server-selection)
-* [Custom HTTP Client](#custom-http-client)
-* [Authentication](#authentication)
-* [Debugging](#debugging)
 <!-- End Table of Contents [toc] -->
 
 <!-- Start SDK Installation [installation] -->
@@ -99,7 +104,7 @@ with Apideck(
         "fields": "id,updated_at",
     })
 
-    if res is not None:
+    if res.get_tax_rates_response is not None:
         # handle response
         pass
 ```
@@ -134,7 +139,7 @@ async def main():
             "fields": "id,updated_at",
         })
 
-        if res is not None:
+        if res.get_tax_rates_response is not None:
             # handle response
             pass
 
@@ -701,7 +706,7 @@ with Apideck(
     },
         RetryConfig("backoff", BackoffStrategy(1, 50, 1.1, 100), False))
 
-    if res is not None:
+    if res.get_tax_rates_response is not None:
         # handle response
         pass
 
@@ -734,7 +739,7 @@ with Apideck(
         "fields": "id,updated_at",
     })
 
-    if res is not None:
+    if res.get_tax_rates_response is not None:
         # handle response
         pass
 
@@ -794,7 +799,7 @@ with Apideck(
             "fields": "id,updated_at",
         })
 
-        if res is not None:
+        if res.get_tax_rates_response is not None:
             # handle response
             pass
 
@@ -850,7 +855,7 @@ with Apideck(
         "fields": "id,updated_at",
     })
 
-    if res is not None:
+    if res.get_tax_rates_response is not None:
         # handle response
         pass
 
@@ -898,7 +903,7 @@ with Apideck(
         ],
     }, service_id="salesforce", server_url="https://upload.apideck.com")
 
-    if res is not None:
+    if res.create_upload_session_response is not None:
         # handle response
         pass
 
@@ -1022,7 +1027,7 @@ with Apideck(
         "fields": "id,updated_at",
     })
 
-    if res is not None:
+    if res.get_tax_rates_response is not None:
         # handle response
         pass
 

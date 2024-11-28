@@ -6,6 +6,7 @@ from .getecommerceordersresponse import (
     GetEcommerceOrdersResponse,
     GetEcommerceOrdersResponseTypedDict,
 )
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .orderssort import OrdersSort, OrdersSortTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
@@ -15,8 +16,8 @@ from apideck.types import BaseModel, Nullable, OptionalNullable, UNSET, UNSET_SE
 from apideck.utils import FieldMetadata, HeaderMetadata, QueryParamMetadata
 import pydantic
 from pydantic import model_serializer
-from typing import Any, Dict, Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Any, Dict, Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class EcommerceOrdersAllGlobalsTypedDict(TypedDict):
@@ -152,13 +153,19 @@ class EcommerceOrdersAllRequest(BaseModel):
         return m
 
 
-EcommerceOrdersAllResponseTypedDict = TypeAliasType(
-    "EcommerceOrdersAllResponseTypedDict",
-    Union[UnexpectedErrorResponseTypedDict, GetEcommerceOrdersResponseTypedDict],
-)
+class EcommerceOrdersAllResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    get_ecommerce_orders_response: NotRequired[GetEcommerceOrdersResponseTypedDict]
+    r"""Orders"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-EcommerceOrdersAllResponse = TypeAliasType(
-    "EcommerceOrdersAllResponse",
-    Union[UnexpectedErrorResponse, GetEcommerceOrdersResponse],
-)
+class EcommerceOrdersAllResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    get_ecommerce_orders_response: Optional[GetEcommerceOrdersResponse] = None
+    r"""Orders"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 from .deletecontactresponse import DeleteContactResponse, DeleteContactResponseTypedDict
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -14,8 +15,8 @@ from apideck.utils import (
     QueryParamMetadata,
 )
 import pydantic
-from typing import Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class CrmContactsDeleteGlobalsTypedDict(TypedDict):
@@ -70,12 +71,19 @@ class CrmContactsDeleteRequest(BaseModel):
     r"""Include raw response. Mostly used for debugging purposes"""
 
 
-CrmContactsDeleteResponseTypedDict = TypeAliasType(
-    "CrmContactsDeleteResponseTypedDict",
-    Union[DeleteContactResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
+class CrmContactsDeleteResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    delete_contact_response: NotRequired[DeleteContactResponseTypedDict]
+    r"""Contact deleted"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-CrmContactsDeleteResponse = TypeAliasType(
-    "CrmContactsDeleteResponse", Union[DeleteContactResponse, UnexpectedErrorResponse]
-)
+class CrmContactsDeleteResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    delete_contact_response: Optional[DeleteContactResponse] = None
+    r"""Contact deleted"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 from .getinvoicesresponse import GetInvoicesResponse, GetInvoicesResponseTypedDict
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .invoicesfilter import InvoicesFilter, InvoicesFilterTypedDict
 from .invoicessort import InvoicesSort, InvoicesSortTypedDict
 from .unexpectederrorresponse import (
@@ -12,8 +13,8 @@ from apideck.types import BaseModel, Nullable, OptionalNullable, UNSET, UNSET_SE
 from apideck.utils import FieldMetadata, HeaderMetadata, QueryParamMetadata
 import pydantic
 from pydantic import model_serializer
-from typing import Any, Dict, Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Any, Dict, Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class AccountingInvoicesAllGlobalsTypedDict(TypedDict):
@@ -149,12 +150,19 @@ class AccountingInvoicesAllRequest(BaseModel):
         return m
 
 
-AccountingInvoicesAllResponseTypedDict = TypeAliasType(
-    "AccountingInvoicesAllResponseTypedDict",
-    Union[UnexpectedErrorResponseTypedDict, GetInvoicesResponseTypedDict],
-)
+class AccountingInvoicesAllResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    get_invoices_response: NotRequired[GetInvoicesResponseTypedDict]
+    r"""Invoices"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-AccountingInvoicesAllResponse = TypeAliasType(
-    "AccountingInvoicesAllResponse", Union[UnexpectedErrorResponse, GetInvoicesResponse]
-)
+class AccountingInvoicesAllResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    get_invoices_response: Optional[GetInvoicesResponse] = None
+    r"""Invoices"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

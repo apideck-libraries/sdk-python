@@ -6,6 +6,7 @@ from .createhriscompanyresponse import (
     CreateHrisCompanyResponseTypedDict,
 )
 from .hriscompany import HrisCompanyInput, HrisCompanyInputTypedDict
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -18,8 +19,8 @@ from apideck.utils import (
     RequestMetadata,
 )
 import pydantic
-from typing import Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class HrisCompaniesAddGlobalsTypedDict(TypedDict):
@@ -73,13 +74,19 @@ class HrisCompaniesAddRequest(BaseModel):
     r"""Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API."""
 
 
-HrisCompaniesAddResponseTypedDict = TypeAliasType(
-    "HrisCompaniesAddResponseTypedDict",
-    Union[CreateHrisCompanyResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
+class HrisCompaniesAddResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    create_hris_company_response: NotRequired[CreateHrisCompanyResponseTypedDict]
+    r"""Companies"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-HrisCompaniesAddResponse = TypeAliasType(
-    "HrisCompaniesAddResponse",
-    Union[CreateHrisCompanyResponse, UnexpectedErrorResponse],
-)
+class HrisCompaniesAddResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    create_hris_company_response: Optional[CreateHrisCompanyResponse] = None
+    r"""Companies"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

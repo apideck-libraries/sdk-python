@@ -1,17 +1,10 @@
 # HrisDepartmentsDeleteResponse
 
 
-## Supported Types
+## Fields
 
-### `models.DeleteDepartmentResponse`
-
-```python
-value: models.DeleteDepartmentResponse = /* values here */
-```
-
-### `models.UnexpectedErrorResponse`
-
-```python
-value: models.UnexpectedErrorResponse = /* values here */
-```
-
+| Field                                                                              | Type                                                                               | Required                                                                           | Description                                                                        |
+| ---------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| `http_meta`                                                                        | [models.HTTPMetadata](../models/httpmetadata.md)                                   | :heavy_check_mark:                                                                 | N/A                                                                                |
+| `delete_department_response`                                                       | [Optional[models.DeleteDepartmentResponse]](../models/deletedepartmentresponse.md) | :heavy_minus_sign:                                                                 | Departments                                                                        |
+| `unexpected_error_response`                                                        | [Optional[models.UnexpectedErrorResponse]](../models/unexpectederrorresponse.md)   | :heavy_minus_sign:                                                                 | Unexpected error                                                                   |

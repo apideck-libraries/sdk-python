@@ -28,7 +28,7 @@ with Apideck(
         "unified_api": apideck.UnifiedAPIID.FILE_STORAGE,
     })
 
-    if res is not None:
+    if res.get_connectors_response is not None:
         # handle response
         pass
 
@@ -73,7 +73,7 @@ with Apideck(
 ) as s:
     res = s.connector.connectors.get(id="<id>")
 
-    if res is not None:
+    if res.get_connector_response is not None:
         # handle response
         pass
 

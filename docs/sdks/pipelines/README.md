@@ -34,7 +34,7 @@ with Apideck(
         "fields": "id,updated_at",
     })
 
-    if res is not None:
+    if res.get_pipelines_response is not None:
         # handle response
         pass
 
@@ -124,7 +124,7 @@ with Apideck(
         ],
     }, service_id="salesforce")
 
-    if res is not None:
+    if res.create_pipeline_response is not None:
         # handle response
         pass
 
@@ -171,7 +171,7 @@ with Apideck(
 ) as s:
     res = s.crm.pipelines.get(id="<id>", service_id="salesforce", fields="id,updated_at")
 
-    if res is not None:
+    if res.get_pipeline_response is not None:
         # handle response
         pass
 
@@ -292,7 +292,7 @@ with Apideck(
         ],
     }, service_id="salesforce")
 
-    if res is not None:
+    if res.update_pipeline_response is not None:
         # handle response
         pass
 
@@ -340,7 +340,7 @@ with Apideck(
 ) as s:
     res = s.crm.pipelines.delete(id="<id>", service_id="salesforce")
 
-    if res is not None:
+    if res.delete_pipeline_response is not None:
         # handle response
         pass
 

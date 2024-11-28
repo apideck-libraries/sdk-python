@@ -3,6 +3,7 @@
 from __future__ import annotations
 from .employeesonefilter import EmployeesOneFilter, EmployeesOneFilterTypedDict
 from .getemployeeresponse import GetEmployeeResponse, GetEmployeeResponseTypedDict
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -16,8 +17,8 @@ from apideck.utils import (
 )
 import pydantic
 from pydantic import model_serializer
-from typing import Any, Dict, Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Any, Dict, Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class HrisEmployeesOneGlobalsTypedDict(TypedDict):
@@ -127,12 +128,19 @@ class HrisEmployeesOneRequest(BaseModel):
         return m
 
 
-HrisEmployeesOneResponseTypedDict = TypeAliasType(
-    "HrisEmployeesOneResponseTypedDict",
-    Union[GetEmployeeResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
+class HrisEmployeesOneResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    get_employee_response: NotRequired[GetEmployeeResponseTypedDict]
+    r"""Employees"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-HrisEmployeesOneResponse = TypeAliasType(
-    "HrisEmployeesOneResponse", Union[GetEmployeeResponse, UnexpectedErrorResponse]
-)
+class HrisEmployeesOneResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    get_employee_response: Optional[GetEmployeeResponse] = None
+    r"""Employees"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

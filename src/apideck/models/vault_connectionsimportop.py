@@ -6,6 +6,7 @@ from .createconnectionresponse import (
     CreateConnectionResponse,
     CreateConnectionResponseTypedDict,
 )
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -18,8 +19,8 @@ from apideck.utils import (
     RequestMetadata,
 )
 import pydantic
-from typing import Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class VaultConnectionsImportGlobalsTypedDict(TypedDict):
@@ -72,13 +73,19 @@ class VaultConnectionsImportRequest(BaseModel):
     r"""Fields that need to be persisted on the resource"""
 
 
-VaultConnectionsImportResponseTypedDict = TypeAliasType(
-    "VaultConnectionsImportResponseTypedDict",
-    Union[CreateConnectionResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
+class VaultConnectionsImportResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    create_connection_response: NotRequired[CreateConnectionResponseTypedDict]
+    r"""Connection created"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-VaultConnectionsImportResponse = TypeAliasType(
-    "VaultConnectionsImportResponse",
-    Union[CreateConnectionResponse, UnexpectedErrorResponse],
-)
+class VaultConnectionsImportResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    create_connection_response: Optional[CreateConnectionResponse] = None
+    r"""Connection created"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

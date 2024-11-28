@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 from .createpaymentresponse import CreatePaymentResponse, CreatePaymentResponseTypedDict
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .payment_input import PaymentInput, PaymentInputTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
@@ -15,8 +16,8 @@ from apideck.utils import (
     RequestMetadata,
 )
 import pydantic
-from typing import Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class AccountingPaymentsAddGlobalsTypedDict(TypedDict):
@@ -70,13 +71,19 @@ class AccountingPaymentsAddRequest(BaseModel):
     r"""Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API."""
 
 
-AccountingPaymentsAddResponseTypedDict = TypeAliasType(
-    "AccountingPaymentsAddResponseTypedDict",
-    Union[CreatePaymentResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
+class AccountingPaymentsAddResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    create_payment_response: NotRequired[CreatePaymentResponseTypedDict]
+    r"""Payment created"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-AccountingPaymentsAddResponse = TypeAliasType(
-    "AccountingPaymentsAddResponse",
-    Union[CreatePaymentResponse, UnexpectedErrorResponse],
-)
+class AccountingPaymentsAddResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    create_payment_response: Optional[CreatePaymentResponse] = None
+    r"""Payment created"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

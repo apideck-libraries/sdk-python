@@ -30,7 +30,7 @@ with Apideck(
 ) as s:
     res = s.vault.validate_connection.state(service_id="pipedrive", unified_api="crm")
 
-    if res is not None:
+    if res.validate_connection_state_response is not None:
         # handle response
         pass
 

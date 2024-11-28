@@ -5,6 +5,7 @@ from .createinvoiceitemresponse import (
     CreateInvoiceItemResponse,
     CreateInvoiceItemResponseTypedDict,
 )
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .invoiceitem import InvoiceItemInput, InvoiceItemInputTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
@@ -18,8 +19,8 @@ from apideck.utils import (
     RequestMetadata,
 )
 import pydantic
-from typing import Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class AccountingInvoiceItemsAddGlobalsTypedDict(TypedDict):
@@ -73,13 +74,19 @@ class AccountingInvoiceItemsAddRequest(BaseModel):
     r"""Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API."""
 
 
-AccountingInvoiceItemsAddResponseTypedDict = TypeAliasType(
-    "AccountingInvoiceItemsAddResponseTypedDict",
-    Union[CreateInvoiceItemResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
+class AccountingInvoiceItemsAddResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    create_invoice_item_response: NotRequired[CreateInvoiceItemResponseTypedDict]
+    r"""InvoiceItems"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-AccountingInvoiceItemsAddResponse = TypeAliasType(
-    "AccountingInvoiceItemsAddResponse",
-    Union[CreateInvoiceItemResponse, UnexpectedErrorResponse],
-)
+class AccountingInvoiceItemsAddResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    create_invoice_item_response: Optional[CreateInvoiceItemResponse] = None
+    r"""InvoiceItems"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

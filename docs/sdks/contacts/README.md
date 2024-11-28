@@ -46,7 +46,7 @@ with Apideck(
         "fields": "id,updated_at",
     })
 
-    if res is not None:
+    if res.get_contacts_response is not None:
         # handle response
         pass
 
@@ -309,7 +309,7 @@ with Apideck(
         ],
     }, service_id="salesforce")
 
-    if res is not None:
+    if res.create_contact_response is not None:
         # handle response
         pass
 
@@ -367,7 +367,7 @@ with Apideck(
         },
     })
 
-    if res is not None:
+    if res.get_contact_response is not None:
         # handle response
         pass
 
@@ -609,7 +609,7 @@ with Apideck(
         ],
     }, service_id="salesforce")
 
-    if res is not None:
+    if res.update_contact_response is not None:
         # handle response
         pass
 
@@ -657,7 +657,7 @@ with Apideck(
 ) as s:
     res = s.crm.contacts.delete(id="<id>", service_id="salesforce")
 
-    if res is not None:
+    if res.delete_contact_response is not None:
         # handle response
         pass
 

@@ -25,7 +25,7 @@ with Apideck(
 ) as s:
     res = s.vault.consumer_request_counts.list(consumer_id="test_user_id", start_datetime="2021-05-01T12:00:00.000Z", end_datetime="2021-05-30T12:00:00.000Z")
 
-    if res is not None:
+    if res.consumer_request_counts_in_date_range_response is not None:
         # handle response
         pass
 

@@ -29,7 +29,7 @@ with Apideck(
         "end_date": "2021-12-31",
     })
 
-    if res is not None:
+    if res.get_balance_sheet_response is not None:
         # handle response
         pass
 

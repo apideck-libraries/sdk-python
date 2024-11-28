@@ -6,6 +6,7 @@ from .collectionticketcomment_input import (
     CollectionTicketCommentInputTypedDict,
 )
 from .createcommentresponse import CreateCommentResponse, CreateCommentResponseTypedDict
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -19,8 +20,8 @@ from apideck.utils import (
     RequestMetadata,
 )
 import pydantic
-from typing import Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class IssueTrackingCollectionTicketCommentsAddGlobalsTypedDict(TypedDict):
@@ -88,13 +89,19 @@ class IssueTrackingCollectionTicketCommentsAddRequest(BaseModel):
     r"""Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API."""
 
 
-IssueTrackingCollectionTicketCommentsAddResponseTypedDict = TypeAliasType(
-    "IssueTrackingCollectionTicketCommentsAddResponseTypedDict",
-    Union[CreateCommentResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
+class IssueTrackingCollectionTicketCommentsAddResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    create_comment_response: NotRequired[CreateCommentResponseTypedDict]
+    r"""Create a Comment"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-IssueTrackingCollectionTicketCommentsAddResponse = TypeAliasType(
-    "IssueTrackingCollectionTicketCommentsAddResponse",
-    Union[CreateCommentResponse, UnexpectedErrorResponse],
-)
+class IssueTrackingCollectionTicketCommentsAddResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    create_comment_response: Optional[CreateCommentResponse] = None
+    r"""Create a Comment"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

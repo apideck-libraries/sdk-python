@@ -66,7 +66,7 @@ with Apideck(
         },
     })
 
-    if res is not None:
+    if res.create_session_response is not None:
         # handle response
         pass
 

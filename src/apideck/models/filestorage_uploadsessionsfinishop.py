@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 from .getfileresponse import GetFileResponse, GetFileResponseTypedDict
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -15,8 +16,8 @@ from apideck.utils import (
     RequestMetadata,
 )
 import pydantic
-from typing import Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 FILE_STORAGE_UPLOAD_SESSIONS_FINISH_OP_SERVERS = [
     "https://upload.apideck.com",
@@ -97,13 +98,19 @@ class FileStorageUploadSessionsFinishRequest(BaseModel):
     ] = None
 
 
-FileStorageUploadSessionsFinishResponseTypedDict = TypeAliasType(
-    "FileStorageUploadSessionsFinishResponseTypedDict",
-    Union[GetFileResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
+class FileStorageUploadSessionsFinishResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    get_file_response: NotRequired[GetFileResponseTypedDict]
+    r"""File"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-FileStorageUploadSessionsFinishResponse = TypeAliasType(
-    "FileStorageUploadSessionsFinishResponse",
-    Union[GetFileResponse, UnexpectedErrorResponse],
-)
+class FileStorageUploadSessionsFinishResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    get_file_response: Optional[GetFileResponse] = None
+    r"""File"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

@@ -5,6 +5,7 @@ from .createpipelineresponse import (
     CreatePipelineResponse,
     CreatePipelineResponseTypedDict,
 )
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .pipeline_input import PipelineInput, PipelineInputTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
@@ -18,8 +19,8 @@ from apideck.utils import (
     RequestMetadata,
 )
 import pydantic
-from typing import Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class CrmPipelinesAddGlobalsTypedDict(TypedDict):
@@ -73,12 +74,19 @@ class CrmPipelinesAddRequest(BaseModel):
     r"""Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API."""
 
 
-CrmPipelinesAddResponseTypedDict = TypeAliasType(
-    "CrmPipelinesAddResponseTypedDict",
-    Union[CreatePipelineResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
+class CrmPipelinesAddResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    create_pipeline_response: NotRequired[CreatePipelineResponseTypedDict]
+    r"""Pipeline created"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-CrmPipelinesAddResponse = TypeAliasType(
-    "CrmPipelinesAddResponse", Union[CreatePipelineResponse, UnexpectedErrorResponse]
-)
+class CrmPipelinesAddResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    create_pipeline_response: Optional[CreatePipelineResponse] = None
+    r"""Pipeline created"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

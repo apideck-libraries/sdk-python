@@ -27,7 +27,7 @@ with Apideck(
         "redirect_uri": "https://example.com/callback",
     })
 
-    if res is not None:
+    if res.create_callback_state_response is not None:
         # handle response
         pass
 

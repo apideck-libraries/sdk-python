@@ -3,10 +3,10 @@ id: d7ba7cba-c2a0-459f-bdba-f75b68a9a9ae
 management:
   docChecksum: ba8967439df737aeb09b5ff1bd198151
   docVersion: 10.8.1
-  speakeasyVersion: 1.448.0
-  generationVersion: 2.466.0
-  releaseVersion: 0.1.0
-  configChecksum: e8dad2d0a6cfdbf544715effd2aad79f
+  speakeasyVersion: 1.448.2
+  generationVersion: 2.467.4
+  releaseVersion: 0.1.1
+  configChecksum: ee8f57e03d53abd5602122cf04b95819
 features:
   python:
     acceptHeaders: 3.0.0
@@ -1143,6 +1143,7 @@ generatedFiles:
   - docs/models/hristimeoffrequestsupdateglobals.md
   - docs/models/hristimeoffrequestsupdaterequest.md
   - docs/models/hristimeoffrequestsupdateresponse.md
+  - docs/models/httpmetadata.md
   - docs/models/images.md
   - docs/models/income.md
   - docs/models/integrationstate.md
@@ -1480,6 +1481,7 @@ generatedFiles:
   - docs/models/vaultconnectionsallresponse.md
   - docs/models/vaultconnectionsdeleteglobals.md
   - docs/models/vaultconnectionsdeleterequest.md
+  - docs/models/vaultconnectionsdeleteresponse.md
   - docs/models/vaultconnectionsettingsallglobals.md
   - docs/models/vaultconnectionsettingsallrequest.md
   - docs/models/vaultconnectionsettingsallresponse.md
@@ -2275,6 +2277,7 @@ generatedFiles:
   - src/apideck/models/hris_timeoffrequestsoneop.py
   - src/apideck/models/hris_timeoffrequestsupdateop.py
   - src/apideck/models/hriscompany.py
+  - src/apideck/models/httpmetadata.py
   - src/apideck/models/integrationstate.py
   - src/apideck/models/internal/__init__.py
   - src/apideck/models/internal/globals.py

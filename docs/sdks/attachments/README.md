@@ -33,7 +33,7 @@ with Apideck(
         "fields": "id,updated_at",
     })
 
-    if res is not None:
+    if res.get_attachments_response is not None:
         # handle response
         pass
 
@@ -85,7 +85,7 @@ with Apideck(
         "fields": "id,updated_at",
     })
 
-    if res is not None:
+    if res.get_attachment_response is not None:
         # handle response
         pass
 
@@ -136,7 +136,7 @@ with Apideck(
         "service_id": "salesforce",
     })
 
-    if res is not None:
+    if res.delete_attachment_response is not None:
         # handle response
         pass
 
@@ -188,7 +188,7 @@ with Apideck(
         "fields": "id,updated_at",
     })
 
-    if res is not None:
+    if res.get_attachment_download_response is not None:
         # handle response
         pass
 

@@ -5,6 +5,7 @@ from .deleteemployeeresponse import (
     DeleteEmployeeResponse,
     DeleteEmployeeResponseTypedDict,
 )
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -17,8 +18,8 @@ from apideck.utils import (
     QueryParamMetadata,
 )
 import pydantic
-from typing import Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class HrisEmployeesDeleteGlobalsTypedDict(TypedDict):
@@ -73,13 +74,19 @@ class HrisEmployeesDeleteRequest(BaseModel):
     r"""Include raw response. Mostly used for debugging purposes"""
 
 
-HrisEmployeesDeleteResponseTypedDict = TypeAliasType(
-    "HrisEmployeesDeleteResponseTypedDict",
-    Union[DeleteEmployeeResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
+class HrisEmployeesDeleteResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    delete_employee_response: NotRequired[DeleteEmployeeResponseTypedDict]
+    r"""Employees"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-HrisEmployeesDeleteResponse = TypeAliasType(
-    "HrisEmployeesDeleteResponse",
-    Union[DeleteEmployeeResponse, UnexpectedErrorResponse],
-)
+class HrisEmployeesDeleteResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    delete_employee_response: Optional[DeleteEmployeeResponse] = None
+    r"""Employees"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

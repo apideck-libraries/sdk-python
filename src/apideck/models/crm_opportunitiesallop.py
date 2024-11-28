@@ -5,6 +5,7 @@ from .getopportunitiesresponse import (
     GetOpportunitiesResponse,
     GetOpportunitiesResponseTypedDict,
 )
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .opportunitiesfilter import OpportunitiesFilter, OpportunitiesFilterTypedDict
 from .opportunitiessort import OpportunitiesSort, OpportunitiesSortTypedDict
 from .unexpectederrorresponse import (
@@ -15,8 +16,8 @@ from apideck.types import BaseModel, Nullable, OptionalNullable, UNSET, UNSET_SE
 from apideck.utils import FieldMetadata, HeaderMetadata, QueryParamMetadata
 import pydantic
 from pydantic import model_serializer
-from typing import Any, Dict, Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Any, Dict, Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class CrmOpportunitiesAllGlobalsTypedDict(TypedDict):
@@ -152,13 +153,19 @@ class CrmOpportunitiesAllRequest(BaseModel):
         return m
 
 
-CrmOpportunitiesAllResponseTypedDict = TypeAliasType(
-    "CrmOpportunitiesAllResponseTypedDict",
-    Union[UnexpectedErrorResponseTypedDict, GetOpportunitiesResponseTypedDict],
-)
+class CrmOpportunitiesAllResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    get_opportunities_response: NotRequired[GetOpportunitiesResponseTypedDict]
+    r"""Opportunities"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-CrmOpportunitiesAllResponse = TypeAliasType(
-    "CrmOpportunitiesAllResponse",
-    Union[UnexpectedErrorResponse, GetOpportunitiesResponse],
-)
+class CrmOpportunitiesAllResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    get_opportunities_response: Optional[GetOpportunitiesResponse] = None
+    r"""Opportunities"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

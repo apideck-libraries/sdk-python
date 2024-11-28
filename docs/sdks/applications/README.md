@@ -33,7 +33,7 @@ with Apideck(
         },
     })
 
-    if res is not None:
+    if res.get_applications_response is not None:
         # handle response
         pass
 
@@ -110,7 +110,7 @@ with Apideck(
         ],
     }, service_id="salesforce")
 
-    if res is not None:
+    if res.create_application_response is not None:
         # handle response
         pass
 
@@ -157,7 +157,7 @@ with Apideck(
 ) as s:
     res = s.ats.applications.get(id="<id>", service_id="salesforce")
 
-    if res is not None:
+    if res.get_application_response is not None:
         # handle response
         pass
 
@@ -278,7 +278,7 @@ with Apideck(
         ],
     }, service_id="salesforce")
 
-    if res is not None:
+    if res.update_application_response is not None:
         # handle response
         pass
 
@@ -326,7 +326,7 @@ with Apideck(
 ) as s:
     res = s.ats.applications.delete(id="<id>", service_id="salesforce")
 
-    if res is not None:
+    if res.delete_application_response is not None:
         # handle response
         pass
 

@@ -45,7 +45,7 @@ with Apideck(
         "fields": "id,updated_at",
     })
 
-    if res is not None:
+    if res.get_tickets_response is not None:
         # handle response
         pass
 
@@ -128,7 +128,7 @@ with Apideck(
         ],
     }, service_id="salesforce")
 
-    if res is not None:
+    if res.create_ticket_response is not None:
         # handle response
         pass
 
@@ -181,7 +181,7 @@ with Apideck(
         "fields": "id,updated_at",
     })
 
-    if res is not None:
+    if res.get_ticket_response is not None:
         # handle response
         pass
 
@@ -291,7 +291,7 @@ with Apideck(
         "service_id": "salesforce",
     })
 
-    if res is not None:
+    if res.update_ticket_response is not None:
         # handle response
         pass
 
@@ -336,7 +336,7 @@ with Apideck(
 ) as s:
     res = s.issue_tracking.collection_tickets.delete(ticket_id="<id>", collection_id="apideck-io", service_id="salesforce")
 
-    if res is not None:
+    if res.delete_ticket_response is not None:
         # handle response
         pass
 

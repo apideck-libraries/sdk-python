@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 from .deletemessageresponse import DeleteMessageResponse, DeleteMessageResponseTypedDict
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -14,8 +15,8 @@ from apideck.utils import (
     QueryParamMetadata,
 )
 import pydantic
-from typing import Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class SmsMessagesDeleteGlobalsTypedDict(TypedDict):
@@ -70,12 +71,19 @@ class SmsMessagesDeleteRequest(BaseModel):
     r"""Include raw response. Mostly used for debugging purposes"""
 
 
-SmsMessagesDeleteResponseTypedDict = TypeAliasType(
-    "SmsMessagesDeleteResponseTypedDict",
-    Union[DeleteMessageResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
+class SmsMessagesDeleteResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    delete_message_response: NotRequired[DeleteMessageResponseTypedDict]
+    r"""Messages"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-SmsMessagesDeleteResponse = TypeAliasType(
-    "SmsMessagesDeleteResponse", Union[DeleteMessageResponse, UnexpectedErrorResponse]
-)
+class SmsMessagesDeleteResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    delete_message_response: Optional[DeleteMessageResponse] = None
+    r"""Messages"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

@@ -43,7 +43,7 @@ with Apideck(
         "fields": "id,updated_at",
     })
 
-    if res is not None:
+    if res.get_time_off_requests_response is not None:
         # handle response
         pass
 
@@ -130,7 +130,7 @@ with Apideck(
         "policy_type": "sick",
     }, service_id="salesforce")
 
-    if res is not None:
+    if res.create_time_off_request_response is not None:
         # handle response
         pass
 
@@ -182,7 +182,7 @@ with Apideck(
         "fields": "id,updated_at",
     })
 
-    if res is not None:
+    if res.get_time_off_request_response is not None:
         # handle response
         pass
 
@@ -316,7 +316,7 @@ with Apideck(
         "service_id": "salesforce",
     })
 
-    if res is not None:
+    if res.update_time_off_request_response is not None:
         # handle response
         pass
 
@@ -361,7 +361,7 @@ with Apideck(
 ) as s:
     res = s.hris.time_off_requests.delete(id="<id>", employee_id="<id>", service_id="salesforce")
 
-    if res is not None:
+    if res.delete_time_off_request_response is not None:
         # handle response
         pass
 

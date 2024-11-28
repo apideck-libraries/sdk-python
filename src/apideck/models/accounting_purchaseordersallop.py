@@ -5,6 +5,7 @@ from .getpurchaseordersresponse import (
     GetPurchaseOrdersResponse,
     GetPurchaseOrdersResponseTypedDict,
 )
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .purchaseordersfilter import PurchaseOrdersFilter, PurchaseOrdersFilterTypedDict
 from .purchaseorderssort import PurchaseOrdersSort, PurchaseOrdersSortTypedDict
 from .unexpectederrorresponse import (
@@ -15,8 +16,8 @@ from apideck.types import BaseModel, Nullable, OptionalNullable, UNSET, UNSET_SE
 from apideck.utils import FieldMetadata, HeaderMetadata, QueryParamMetadata
 import pydantic
 from pydantic import model_serializer
-from typing import Any, Dict, Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Any, Dict, Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class AccountingPurchaseOrdersAllGlobalsTypedDict(TypedDict):
@@ -143,13 +144,19 @@ class AccountingPurchaseOrdersAllRequest(BaseModel):
         return m
 
 
-AccountingPurchaseOrdersAllResponseTypedDict = TypeAliasType(
-    "AccountingPurchaseOrdersAllResponseTypedDict",
-    Union[UnexpectedErrorResponseTypedDict, GetPurchaseOrdersResponseTypedDict],
-)
+class AccountingPurchaseOrdersAllResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    get_purchase_orders_response: NotRequired[GetPurchaseOrdersResponseTypedDict]
+    r"""PurchaseOrders"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-AccountingPurchaseOrdersAllResponse = TypeAliasType(
-    "AccountingPurchaseOrdersAllResponse",
-    Union[UnexpectedErrorResponse, GetPurchaseOrdersResponse],
-)
+class AccountingPurchaseOrdersAllResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    get_purchase_orders_response: Optional[GetPurchaseOrdersResponse] = None
+    r"""PurchaseOrders"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

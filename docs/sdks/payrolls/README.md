@@ -35,7 +35,7 @@ with Apideck(
         "fields": "id,updated_at",
     })
 
-    if res is not None:
+    if res.get_payrolls_response is not None:
         # handle response
         pass
 
@@ -80,7 +80,7 @@ with Apideck(
 ) as s:
     res = s.hris.payrolls.get(payroll_id="<id>", service_id="salesforce", fields="id,updated_at")
 
-    if res is not None:
+    if res.get_payroll_response is not None:
         # handle response
         pass
 

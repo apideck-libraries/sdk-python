@@ -29,7 +29,7 @@ with Apideck(
         "exclude_unified_apis": "vault,proxy",
     })
 
-    if res is not None:
+    if res.get_logs_response is not None:
         # handle response
         pass
 

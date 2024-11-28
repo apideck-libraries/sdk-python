@@ -5,6 +5,7 @@ from .consumerrequestcountsindaterangeresponse import (
     ConsumerRequestCountsInDateRangeResponse,
     ConsumerRequestCountsInDateRangeResponseTypedDict,
 )
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -17,8 +18,8 @@ from apideck.utils import (
     QueryParamMetadata,
 )
 import pydantic
-from typing import Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class VaultConsumerRequestCountsAllGlobalsTypedDict(TypedDict):
@@ -61,16 +62,23 @@ class VaultConsumerRequestCountsAllRequest(BaseModel):
     r"""Scopes results to requests that happened before datetime"""
 
 
-VaultConsumerRequestCountsAllResponseTypedDict = TypeAliasType(
-    "VaultConsumerRequestCountsAllResponseTypedDict",
-    Union[
-        ConsumerRequestCountsInDateRangeResponseTypedDict,
-        UnexpectedErrorResponseTypedDict,
-    ],
-)
+class VaultConsumerRequestCountsAllResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    consumer_request_counts_in_date_range_response: NotRequired[
+        ConsumerRequestCountsInDateRangeResponseTypedDict
+    ]
+    r"""Consumers Request Counts within Date Range"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-VaultConsumerRequestCountsAllResponse = TypeAliasType(
-    "VaultConsumerRequestCountsAllResponse",
-    Union[ConsumerRequestCountsInDateRangeResponse, UnexpectedErrorResponse],
-)
+class VaultConsumerRequestCountsAllResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    consumer_request_counts_in_date_range_response: Optional[
+        ConsumerRequestCountsInDateRangeResponse
+    ] = None
+    r"""Consumers Request Counts within Date Range"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

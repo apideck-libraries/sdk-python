@@ -34,7 +34,7 @@ with Apideck(
         },
     })
 
-    if res is not None:
+    if res.get_accounting_locations_response is not None:
         # handle response
         pass
 
@@ -137,7 +137,7 @@ with Apideck(
         ],
     }, service_id="salesforce")
 
-    if res is not None:
+    if res.create_accounting_location_response is not None:
         # handle response
         pass
 
@@ -184,7 +184,7 @@ with Apideck(
 ) as s:
     res = s.accounting.locations.get(id="<id>", service_id="salesforce", fields="id,updated_at")
 
-    if res is not None:
+    if res.get_accounting_location_response is not None:
         # handle response
         pass
 
@@ -358,7 +358,7 @@ with Apideck(
         ],
     }, service_id="salesforce")
 
-    if res is not None:
+    if res.update_accounting_location_response is not None:
         # handle response
         pass
 
@@ -406,7 +406,7 @@ with Apideck(
 ) as s:
     res = s.accounting.locations.delete(id="<id>", service_id="salesforce")
 
-    if res is not None:
+    if res.delete_accounting_location_response is not None:
         # handle response
         pass
 

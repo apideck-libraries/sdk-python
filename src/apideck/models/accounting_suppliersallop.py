@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 from .getsuppliersresponse import GetSuppliersResponse, GetSuppliersResponseTypedDict
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .suppliersfilter import SuppliersFilter, SuppliersFilterTypedDict
 from .supplierssort import SuppliersSort, SuppliersSortTypedDict
 from .unexpectederrorresponse import (
@@ -12,8 +13,8 @@ from apideck.types import BaseModel, Nullable, OptionalNullable, UNSET, UNSET_SE
 from apideck.utils import FieldMetadata, HeaderMetadata, QueryParamMetadata
 import pydantic
 from pydantic import model_serializer
-from typing import Any, Dict, Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Any, Dict, Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class AccountingSuppliersAllGlobalsTypedDict(TypedDict):
@@ -149,13 +150,19 @@ class AccountingSuppliersAllRequest(BaseModel):
         return m
 
 
-AccountingSuppliersAllResponseTypedDict = TypeAliasType(
-    "AccountingSuppliersAllResponseTypedDict",
-    Union[UnexpectedErrorResponseTypedDict, GetSuppliersResponseTypedDict],
-)
+class AccountingSuppliersAllResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    get_suppliers_response: NotRequired[GetSuppliersResponseTypedDict]
+    r"""Suppliers"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-AccountingSuppliersAllResponse = TypeAliasType(
-    "AccountingSuppliersAllResponse",
-    Union[UnexpectedErrorResponse, GetSuppliersResponse],
-)
+class AccountingSuppliersAllResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    get_suppliers_response: Optional[GetSuppliersResponse] = None
+    r"""Suppliers"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

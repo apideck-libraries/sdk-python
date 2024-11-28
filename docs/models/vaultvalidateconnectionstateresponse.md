@@ -1,17 +1,10 @@
 # VaultValidateConnectionStateResponse
 
 
-## Supported Types
+## Fields
 
-### `models.ValidateConnectionStateResponse`
-
-```python
-value: models.ValidateConnectionStateResponse = /* values here */
-```
-
-### `models.UnexpectedErrorResponse`
-
-```python
-value: models.UnexpectedErrorResponse = /* values here */
-```
-
+| Field                                                                                            | Type                                                                                             | Required                                                                                         | Description                                                                                      |
+| ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------ |
+| `http_meta`                                                                                      | [models.HTTPMetadata](../models/httpmetadata.md)                                                 | :heavy_check_mark:                                                                               | N/A                                                                                              |
+| `validate_connection_state_response`                                                             | [Optional[models.ValidateConnectionStateResponse]](../models/validateconnectionstateresponse.md) | :heavy_minus_sign:                                                                               | Connection access token refreshed                                                                |
+| `unexpected_error_response`                                                                      | [Optional[models.UnexpectedErrorResponse]](../models/unexpectederrorresponse.md)                 | :heavy_minus_sign:                                                                               | Unexpected error                                                                                 |

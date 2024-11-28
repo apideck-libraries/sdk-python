@@ -5,6 +5,7 @@ from .getbillpaymentsresponse import (
     GetBillPaymentsResponse,
     GetBillPaymentsResponseTypedDict,
 )
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .paymentsfilter import PaymentsFilter, PaymentsFilterTypedDict
 from .paymentssort import PaymentsSort, PaymentsSortTypedDict
 from .unexpectederrorresponse import (
@@ -15,8 +16,8 @@ from apideck.types import BaseModel, Nullable, OptionalNullable, UNSET, UNSET_SE
 from apideck.utils import FieldMetadata, HeaderMetadata, QueryParamMetadata
 import pydantic
 from pydantic import model_serializer
-from typing import Any, Dict, Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Any, Dict, Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class AccountingBillPaymentsAllGlobalsTypedDict(TypedDict):
@@ -152,13 +153,19 @@ class AccountingBillPaymentsAllRequest(BaseModel):
         return m
 
 
-AccountingBillPaymentsAllResponseTypedDict = TypeAliasType(
-    "AccountingBillPaymentsAllResponseTypedDict",
-    Union[UnexpectedErrorResponseTypedDict, GetBillPaymentsResponseTypedDict],
-)
+class AccountingBillPaymentsAllResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    get_bill_payments_response: NotRequired[GetBillPaymentsResponseTypedDict]
+    r"""Bill Payments"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-AccountingBillPaymentsAllResponse = TypeAliasType(
-    "AccountingBillPaymentsAllResponse",
-    Union[UnexpectedErrorResponse, GetBillPaymentsResponse],
-)
+class AccountingBillPaymentsAllResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    get_bill_payments_response: Optional[GetBillPaymentsResponse] = None
+    r"""Bill Payments"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

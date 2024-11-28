@@ -28,7 +28,7 @@ with Apideck(
 ) as s:
     res = s.accounting.expenses.list(service_id="salesforce")
 
-    if res is not None:
+    if res.get_expenses_response is not None:
         # handle response
         pass
 
@@ -144,7 +144,7 @@ with Apideck(
         ],
     }, service_id="salesforce")
 
-    if res is not None:
+    if res.create_expense_response is not None:
         # handle response
         pass
 
@@ -191,7 +191,7 @@ with Apideck(
 ) as s:
     res = s.accounting.expenses.get(id="<id>", service_id="salesforce")
 
-    if res is not None:
+    if res.get_expense_response is not None:
         # handle response
         pass
 
@@ -384,7 +384,7 @@ with Apideck(
         ],
     }, service_id="salesforce")
 
-    if res is not None:
+    if res.update_expense_response is not None:
         # handle response
         pass
 
@@ -432,7 +432,7 @@ with Apideck(
 ) as s:
     res = s.accounting.expenses.delete(id="<id>", service_id="salesforce")
 
-    if res is not None:
+    if res.delete_expense_response is not None:
         # handle response
         pass
 

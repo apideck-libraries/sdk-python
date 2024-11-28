@@ -25,7 +25,7 @@ with Apideck(
 ) as s:
     res = s.connector.connector_resources.get(id="<id>", resource_id="<id>", unified_api=apideck.UnifiedAPIID.CRM)
 
-    if res is not None:
+    if res.get_connector_resource_response is not None:
         # handle response
         pass
 

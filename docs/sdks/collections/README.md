@@ -36,7 +36,7 @@ with Apideck(
         "fields": "id,updated_at",
     })
 
-    if res is not None:
+    if res.get_collections_response is not None:
         # handle response
         pass
 
@@ -81,7 +81,7 @@ with Apideck(
 ) as s:
     res = s.issue_tracking.collections.get(collection_id="apideck-io", service_id="salesforce", fields="id,updated_at")
 
-    if res is not None:
+    if res.get_collection_response is not None:
         # handle response
         pass
 

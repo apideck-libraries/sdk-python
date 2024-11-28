@@ -43,7 +43,7 @@ with Apideck(
         "fields": "id,updated_at",
     })
 
-    if res is not None:
+    if res.get_credit_notes_response is not None:
         # handle response
         pass
 
@@ -346,7 +346,7 @@ with Apideck(
         ],
     }, service_id="salesforce")
 
-    if res is not None:
+    if res.create_credit_note_response is not None:
         # handle response
         pass
 
@@ -393,7 +393,7 @@ with Apideck(
 ) as s:
     res = s.accounting.credit_notes.get(id="<id>", service_id="salesforce", fields="id,updated_at")
 
-    if res is not None:
+    if res.get_credit_note_response is not None:
         # handle response
         pass
 
@@ -769,7 +769,7 @@ with Apideck(
         ],
     }, service_id="salesforce")
 
-    if res is not None:
+    if res.update_credit_note_response is not None:
         # handle response
         pass
 
@@ -817,7 +817,7 @@ with Apideck(
 ) as s:
     res = s.accounting.credit_notes.delete(id="<id>", service_id="salesforce")
 
-    if res is not None:
+    if res.delete_credit_note_response is not None:
         # handle response
         pass
 

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 from .getcommentresponse import GetCommentResponse, GetCommentResponseTypedDict
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -15,8 +16,8 @@ from apideck.utils import (
 )
 import pydantic
 from pydantic import model_serializer
-from typing import Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class IssueTrackingCollectionTicketCommentsOneGlobalsTypedDict(TypedDict):
@@ -139,13 +140,19 @@ class IssueTrackingCollectionTicketCommentsOneRequest(BaseModel):
         return m
 
 
-IssueTrackingCollectionTicketCommentsOneResponseTypedDict = TypeAliasType(
-    "IssueTrackingCollectionTicketCommentsOneResponseTypedDict",
-    Union[GetCommentResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
+class IssueTrackingCollectionTicketCommentsOneResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    get_comment_response: NotRequired[GetCommentResponseTypedDict]
+    r"""Get a Comment"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-IssueTrackingCollectionTicketCommentsOneResponse = TypeAliasType(
-    "IssueTrackingCollectionTicketCommentsOneResponse",
-    Union[GetCommentResponse, UnexpectedErrorResponse],
-)
+class IssueTrackingCollectionTicketCommentsOneResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    get_comment_response: Optional[GetCommentResponse] = None
+    r"""Get a Comment"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

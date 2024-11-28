@@ -41,7 +41,7 @@ with Apideck(
         "fields": "id,updated_at",
     })
 
-    if res is not None:
+    if res.get_comments_response is not None:
         # handle response
         pass
 
@@ -116,7 +116,7 @@ with Apideck(
         "service_id": "salesforce",
     })
 
-    if res is not None:
+    if res.create_comment_response is not None:
         # handle response
         pass
 
@@ -167,7 +167,7 @@ with Apideck(
         "fields": "id,updated_at",
     })
 
-    if res is not None:
+    if res.get_comment_response is not None:
         # handle response
         pass
 
@@ -285,7 +285,7 @@ with Apideck(
         "service_id": "salesforce",
     })
 
-    if res is not None:
+    if res.update_comment_response is not None:
         # handle response
         pass
 
@@ -335,7 +335,7 @@ with Apideck(
         "service_id": "salesforce",
     })
 
-    if res is not None:
+    if res.delete_comment_response is not None:
         # handle response
         pass
 

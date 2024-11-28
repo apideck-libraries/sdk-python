@@ -5,6 +5,7 @@ from .createtrackingcategoryresponse import (
     CreateTrackingCategoryResponse,
     CreateTrackingCategoryResponseTypedDict,
 )
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .trackingcategory import TrackingCategoryInput, TrackingCategoryInputTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
@@ -18,8 +19,8 @@ from apideck.utils import (
     RequestMetadata,
 )
 import pydantic
-from typing import Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class AccountingTrackingCategoriesAddGlobalsTypedDict(TypedDict):
@@ -73,13 +74,21 @@ class AccountingTrackingCategoriesAddRequest(BaseModel):
     r"""Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API."""
 
 
-AccountingTrackingCategoriesAddResponseTypedDict = TypeAliasType(
-    "AccountingTrackingCategoriesAddResponseTypedDict",
-    Union[CreateTrackingCategoryResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
+class AccountingTrackingCategoriesAddResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    create_tracking_category_response: NotRequired[
+        CreateTrackingCategoryResponseTypedDict
+    ]
+    r"""Tracking category created"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-AccountingTrackingCategoriesAddResponse = TypeAliasType(
-    "AccountingTrackingCategoriesAddResponse",
-    Union[CreateTrackingCategoryResponse, UnexpectedErrorResponse],
-)
+class AccountingTrackingCategoriesAddResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    create_tracking_category_response: Optional[CreateTrackingCategoryResponse] = None
+    r"""Tracking category created"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

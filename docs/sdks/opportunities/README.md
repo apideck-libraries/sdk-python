@@ -43,7 +43,7 @@ with Apideck(
         "fields": "id,updated_at",
     })
 
-    if res is not None:
+    if res.get_opportunities_response is not None:
         # handle response
         pass
 
@@ -144,7 +144,7 @@ with Apideck(
         ],
     }, service_id="salesforce")
 
-    if res is not None:
+    if res.create_opportunity_response is not None:
         # handle response
         pass
 
@@ -191,7 +191,7 @@ with Apideck(
 ) as s:
     res = s.crm.opportunities.get(id="<id>", service_id="salesforce", fields="id,updated_at")
 
-    if res is not None:
+    if res.get_opportunity_response is not None:
         # handle response
         pass
 
@@ -322,7 +322,7 @@ with Apideck(
         ],
     }, service_id="salesforce")
 
-    if res is not None:
+    if res.update_opportunity_response is not None:
         # handle response
         pass
 
@@ -370,7 +370,7 @@ with Apideck(
 ) as s:
     res = s.crm.opportunities.delete(id="<id>", service_id="salesforce")
 
-    if res is not None:
+    if res.delete_opportunity_response is not None:
         # handle response
         pass
 

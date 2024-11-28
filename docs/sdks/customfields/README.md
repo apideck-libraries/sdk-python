@@ -25,7 +25,7 @@ with Apideck(
 ) as s:
     res = s.vault.custom_fields.list(unified_api="crm", service_id="pipedrive", resource="leads", resource_id="1234")
 
-    if res is not None:
+    if res.get_custom_fields_response is not None:
         # handle response
         pass
 

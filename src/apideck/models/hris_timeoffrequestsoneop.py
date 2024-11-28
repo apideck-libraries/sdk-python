@@ -5,6 +5,7 @@ from .gettimeoffrequestresponse import (
     GetTimeOffRequestResponse,
     GetTimeOffRequestResponseTypedDict,
 )
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -18,8 +19,8 @@ from apideck.utils import (
 )
 import pydantic
 from pydantic import model_serializer
-from typing import Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class HrisTimeOffRequestsOneGlobalsTypedDict(TypedDict):
@@ -119,13 +120,19 @@ class HrisTimeOffRequestsOneRequest(BaseModel):
         return m
 
 
-HrisTimeOffRequestsOneResponseTypedDict = TypeAliasType(
-    "HrisTimeOffRequestsOneResponseTypedDict",
-    Union[GetTimeOffRequestResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
+class HrisTimeOffRequestsOneResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    get_time_off_request_response: NotRequired[GetTimeOffRequestResponseTypedDict]
+    r"""TimeOffRequests"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-HrisTimeOffRequestsOneResponse = TypeAliasType(
-    "HrisTimeOffRequestsOneResponse",
-    Union[GetTimeOffRequestResponse, UnexpectedErrorResponse],
-)
+class HrisTimeOffRequestsOneResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    get_time_off_request_response: Optional[GetTimeOffRequestResponse] = None
+    r"""TimeOffRequests"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

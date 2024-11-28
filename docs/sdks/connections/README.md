@@ -32,7 +32,7 @@ with Apideck(
 ) as s:
     res = s.vault.connections.list(api="crm", configured=True)
 
-    if res is not None:
+    if res.get_connections_response is not None:
         # handle response
         pass
 
@@ -78,7 +78,7 @@ with Apideck(
 ) as s:
     res = s.vault.connections.get(service_id="pipedrive", unified_api="crm")
 
-    if res is not None:
+    if res.get_connection_response is not None:
         # handle response
         pass
 
@@ -300,7 +300,7 @@ with Apideck(
         ],
     })
 
-    if res is not None:
+    if res.update_connection_response is not None:
         # handle response
         pass
 
@@ -363,7 +363,7 @@ with Apideck(
 
 ### Response
 
-**[models.UnexpectedErrorResponse](../../models/unexpectederrorresponse.md)**
+**[models.VaultConnectionsDeleteResponse](../../models/vaultconnectionsdeleteresponse.md)**
 
 ### Errors
 
@@ -406,7 +406,7 @@ with Apideck(
         },
     })
 
-    if res is not None:
+    if res.create_connection_response is not None:
         # handle response
         pass
 
@@ -459,7 +459,7 @@ with Apideck(
 ) as s:
     res = s.vault.connections.token(service_id="pipedrive", unified_api="crm")
 
-    if res is not None:
+    if res.get_connection_response is not None:
         # handle response
         pass
 

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 from .getproductresponse import GetProductResponse, GetProductResponseTypedDict
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -15,8 +16,8 @@ from apideck.utils import (
 )
 import pydantic
 from pydantic import model_serializer
-from typing import Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class EcommerceProductsOneGlobalsTypedDict(TypedDict):
@@ -109,12 +110,19 @@ class EcommerceProductsOneRequest(BaseModel):
         return m
 
 
-EcommerceProductsOneResponseTypedDict = TypeAliasType(
-    "EcommerceProductsOneResponseTypedDict",
-    Union[GetProductResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
+class EcommerceProductsOneResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    get_product_response: NotRequired[GetProductResponseTypedDict]
+    r"""Products"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-EcommerceProductsOneResponse = TypeAliasType(
-    "EcommerceProductsOneResponse", Union[GetProductResponse, UnexpectedErrorResponse]
-)
+class EcommerceProductsOneResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    get_product_response: Optional[GetProductResponse] = None
+    r"""Products"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

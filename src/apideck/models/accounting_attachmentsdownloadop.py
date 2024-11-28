@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 from .attachmentreferencetype import AttachmentReferenceType
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -16,8 +17,8 @@ from apideck.utils import (
 import httpx
 import pydantic
 from pydantic import model_serializer
-from typing import Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class AccountingAttachmentsDownloadGlobalsTypedDict(TypedDict):
@@ -117,13 +118,19 @@ class AccountingAttachmentsDownloadRequest(BaseModel):
         return m
 
 
-AccountingAttachmentsDownloadResponseTypedDict = TypeAliasType(
-    "AccountingAttachmentsDownloadResponseTypedDict",
-    Union[UnexpectedErrorResponseTypedDict, httpx.Response],
-)
+class AccountingAttachmentsDownloadResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    get_attachment_download_response: NotRequired[httpx.Response]
+    r"""Attachment Download"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-AccountingAttachmentsDownloadResponse = TypeAliasType(
-    "AccountingAttachmentsDownloadResponse",
-    Union[UnexpectedErrorResponse, httpx.Response],
-)
+class AccountingAttachmentsDownloadResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    get_attachment_download_response: Optional[httpx.Response] = None
+    r"""Attachment Download"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

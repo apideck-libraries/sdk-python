@@ -1,17 +1,10 @@
 # EcommerceOrdersAllResponse
 
 
-## Supported Types
+## Fields
 
-### `models.GetEcommerceOrdersResponse`
-
-```python
-value: models.GetEcommerceOrdersResponse = /* values here */
-```
-
-### `models.UnexpectedErrorResponse`
-
-```python
-value: models.UnexpectedErrorResponse = /* values here */
-```
-
+| Field                                                                                  | Type                                                                                   | Required                                                                               | Description                                                                            |
+| -------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| `http_meta`                                                                            | [models.HTTPMetadata](../models/httpmetadata.md)                                       | :heavy_check_mark:                                                                     | N/A                                                                                    |
+| `get_ecommerce_orders_response`                                                        | [Optional[models.GetEcommerceOrdersResponse]](../models/getecommerceordersresponse.md) | :heavy_minus_sign:                                                                     | Orders                                                                                 |
+| `unexpected_error_response`                                                            | [Optional[models.UnexpectedErrorResponse]](../models/unexpectederrorresponse.md)       | :heavy_minus_sign:                                                                     | Unexpected error                                                                       |

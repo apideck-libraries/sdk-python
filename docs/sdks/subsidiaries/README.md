@@ -31,7 +31,7 @@ with Apideck(
         "fields": "id,updated_at",
     })
 
-    if res is not None:
+    if res.get_subsidiaries_response is not None:
         # handle response
         pass
 
@@ -105,7 +105,7 @@ with Apideck(
         ],
     }, service_id="salesforce")
 
-    if res is not None:
+    if res.create_subsidiary_response is not None:
         # handle response
         pass
 
@@ -152,7 +152,7 @@ with Apideck(
 ) as s:
     res = s.accounting.subsidiaries.get(id="<id>", service_id="salesforce", fields="id,updated_at")
 
-    if res is not None:
+    if res.get_subsidiary_response is not None:
         # handle response
         pass
 
@@ -271,7 +271,7 @@ with Apideck(
         ],
     }, service_id="salesforce")
 
-    if res is not None:
+    if res.update_subsidiary_response is not None:
         # handle response
         pass
 
@@ -319,7 +319,7 @@ with Apideck(
 ) as s:
     res = s.accounting.subsidiaries.delete(id="<id>", service_id="salesforce")
 
-    if res is not None:
+    if res.delete_subsidiary_response is not None:
         # handle response
         pass
 
