@@ -20,7 +20,7 @@ python:
   additionalDependencies:
     dev: {}
     main:
-      - "requests>=2.31.0"
+      - "requests"
   authors:
     - Speakeasy
   clientServerStatusCodesAsErrors: true
