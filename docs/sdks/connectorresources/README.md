@@ -14,8 +14,8 @@ Get Connector Resource
 ### Example Usage
 
 ```python
-import apideck
-from apideck import Apideck
+import apideck_unify
+from apideck_unify import Apideck
 import os
 
 with Apideck(
@@ -23,7 +23,7 @@ with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as s:
-    res = s.connector.connector_resources.get(id="<id>", resource_id="<id>", unified_api=apideck.UnifiedAPIID.CRM)
+    res = s.connector.connector_resources.get(id="<id>", resource_id="<id>", unified_api=apideck_unify.UnifiedAPIID.CRM)
 
     if res.get_connector_resource_response is not None:
         # handle response

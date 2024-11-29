@@ -15,8 +15,8 @@ List APIs
 ### Example Usage
 
 ```python
-import apideck
-from apideck import Apideck
+import apideck_unify
+from apideck_unify import Apideck
 import os
 
 with Apideck(
@@ -25,7 +25,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as s:
     res = s.connector.apis.list(filter_={
-        "status": apideck.APIStatus.BETA,
+        "status": apideck_unify.APIStatus.BETA,
     })
 
     if res.get_apis_response is not None:
@@ -63,7 +63,7 @@ Get API
 ### Example Usage
 
 ```python
-from apideck import Apideck
+from apideck_unify import Apideck
 import os
 
 with Apideck(

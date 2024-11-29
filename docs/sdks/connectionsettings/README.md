@@ -16,7 +16,7 @@ This endpoint returns custom settings and their defaults required by connection 
 ### Example Usage
 
 ```python
-from apideck import Apideck
+from apideck_unify import Apideck
 import os
 
 with Apideck(
@@ -63,7 +63,7 @@ Update default values for a connection's resource settings
 ### Example Usage
 
 ```python
-from apideck import Apideck
+from apideck_unify import Apideck
 import os
 
 with Apideck(

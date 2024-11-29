@@ -2,8 +2,8 @@ speakeasyVersion: 1.448.2
 sources:
     apideck-OAS:
         sourceNamespace: apideck-oas
-        sourceRevisionDigest: sha256:569a82033cf13c3baadece5dceb86b172779135524f7fe4eb27f793ec8298183
-        sourceBlobDigest: sha256:b6b8a8a94b070fcbb65739c646056e11cd2b47031888af5348c130db4f68251d
+        sourceRevisionDigest: sha256:8760de187808d31230db0f311e0a640f3276d46214df14735496d94c59315845
+        sourceBlobDigest: sha256:e6b097d93e10ba4eaa9f98c4162a12d4d7a26787874d6eb398bc81162530b08e
         tags:
             - latest
             - 10.8.1
@@ -11,10 +11,10 @@ targets:
     apideck:
         source: apideck-OAS
         sourceNamespace: apideck-oas
-        sourceRevisionDigest: sha256:569a82033cf13c3baadece5dceb86b172779135524f7fe4eb27f793ec8298183
-        sourceBlobDigest: sha256:b6b8a8a94b070fcbb65739c646056e11cd2b47031888af5348c130db4f68251d
-        codeSamplesNamespace: apideck-oas-code-samples
-        codeSamplesRevisionDigest: sha256:e9aa5570c99dcbed4a67653ae28c9340f2e1ce38c1ad899ee53f6cf5aad05a91
+        sourceRevisionDigest: sha256:8760de187808d31230db0f311e0a640f3276d46214df14735496d94c59315845
+        sourceBlobDigest: sha256:e6b097d93e10ba4eaa9f98c4162a12d4d7a26787874d6eb398bc81162530b08e
+        codeSamplesNamespace: apideck-oas-python-code-samples
+        codeSamplesRevisionDigest: sha256:fe552c5fa53459c24c878021a60e2dcb7fa5c2a7a09522d872f06ae3e009bfad
 workflow:
     workflowVersion: 1.0.0
     speakeasyVersion: latest
@@ -28,7 +28,10 @@ workflow:
         apideck:
             target: python
             source: apideck-OAS
+            publish:
+                pypi:
+                    token: $pypi_token
             codeSamples:
                 registry:
-                    location: registry.speakeasyapi.dev/apideck-k2o/apideck/apideck-oas-code-samples
+                    location: registry.speakeasyapi.dev/apideck-k2o/apideck/apideck-oas-python-code-samples
                 blocking: false

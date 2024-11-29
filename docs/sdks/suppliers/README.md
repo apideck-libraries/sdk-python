@@ -18,8 +18,8 @@ List Suppliers
 ### Example Usage
 
 ```python
-import apideck
-from apideck import Apideck
+import apideck_unify
+from apideck_unify import Apideck
 import dateutil.parser
 import os
 
@@ -39,8 +39,8 @@ with Apideck(
             "updated_since": dateutil.parser.isoparse("2020-09-30T07:43:32.000Z"),
         },
         "sort": {
-            "by": apideck.SuppliersSortBy.UPDATED_AT,
-            "direction": apideck.SortDirection.DESC,
+            "by": apideck_unify.SuppliersSortBy.UPDATED_AT,
+            "direction": apideck_unify.SortDirection.DESC,
         },
         "pass_through": {
             "search": "San Francisco",
@@ -83,8 +83,8 @@ Create Supplier
 ### Example Usage
 
 ```python
-import apideck
-from apideck import Apideck
+import apideck_unify
+from apideck_unify import Apideck
 import os
 
 with Apideck(
@@ -106,7 +106,7 @@ with Apideck(
         "addresses": [
             {
                 "id": "123",
-                "type": apideck.Type.PRIMARY,
+                "type": apideck_unify.Type.PRIMARY,
                 "string": "25 Spring Street, Blackburn, VIC 3130",
                 "name": "HQ US",
                 "line1": "Main street",
@@ -138,7 +138,7 @@ with Apideck(
                 "country_code": "1",
                 "area_code": "323",
                 "extension": "105",
-                "type": apideck.PhoneNumberType.PRIMARY,
+                "type": apideck_unify.PhoneNumberType.PRIMARY,
             },
             {
                 "number": "111-111-1111",
@@ -146,21 +146,21 @@ with Apideck(
                 "country_code": "1",
                 "area_code": "323",
                 "extension": "105",
-                "type": apideck.PhoneNumberType.PRIMARY,
+                "type": apideck_unify.PhoneNumberType.PRIMARY,
             },
         ],
         "emails": [
             {
                 "email": "elon@musk.com",
                 "id": "123",
-                "type": apideck.EmailType.PRIMARY,
+                "type": apideck_unify.EmailType.PRIMARY,
             },
         ],
         "websites": [
             {
                 "url": "http://example.com",
                 "id": "12345",
-                "type": apideck.WebsiteType.PRIMARY,
+                "type": apideck_unify.WebsiteType.PRIMARY,
             },
         ],
         "bank_accounts": [
@@ -168,14 +168,14 @@ with Apideck(
                 "bank_name": "Monzo",
                 "account_number": "123465",
                 "account_name": "SPACEX LLC",
-                "account_type": apideck.AccountType.CREDIT_CARD,
+                "account_type": apideck_unify.AccountType.CREDIT_CARD,
                 "iban": "CH2989144532982975332",
                 "bic": "AUDSCHGGXXX",
                 "routing_number": "012345678",
                 "bsb_number": "062-001",
                 "branch_identifier": "001",
                 "bank_code": "BNH",
-                "currency": apideck.Currency.USD,
+                "currency": apideck_unify.Currency.USD,
             },
         ],
         "notes": "Some notes about this supplier",
@@ -184,13 +184,13 @@ with Apideck(
             "rate": 10,
         },
         "tax_number": "US123945459",
-        "currency": apideck.Currency.USD,
+        "currency": apideck_unify.Currency.USD,
         "account": {
             "id": "123456",
             "nominal_code": "N091",
             "code": "453",
         },
-        "status": apideck.SupplierStatus.ACTIVE,
+        "status": apideck_unify.SupplierStatus.ACTIVE,
         "payment_method": "cash",
         "channel": "email",
         "row_version": "1-12345",
@@ -290,7 +290,7 @@ Get Supplier
 ### Example Usage
 
 ```python
-from apideck import Apideck
+from apideck_unify import Apideck
 import os
 
 with Apideck(
@@ -338,8 +338,8 @@ Update Supplier
 ### Example Usage
 
 ```python
-import apideck
-from apideck import Apideck
+import apideck_unify
+from apideck_unify import Apideck
 import os
 
 with Apideck(
@@ -361,7 +361,7 @@ with Apideck(
         "addresses": [
             {
                 "id": "123",
-                "type": apideck.Type.PRIMARY,
+                "type": apideck_unify.Type.PRIMARY,
                 "string": "25 Spring Street, Blackburn, VIC 3130",
                 "name": "HQ US",
                 "line1": "Main street",
@@ -387,7 +387,7 @@ with Apideck(
             },
             {
                 "id": "123",
-                "type": apideck.Type.PRIMARY,
+                "type": apideck_unify.Type.PRIMARY,
                 "string": "25 Spring Street, Blackburn, VIC 3130",
                 "name": "HQ US",
                 "line1": "Main street",
@@ -413,7 +413,7 @@ with Apideck(
             },
             {
                 "id": "123",
-                "type": apideck.Type.PRIMARY,
+                "type": apideck_unify.Type.PRIMARY,
                 "string": "25 Spring Street, Blackburn, VIC 3130",
                 "name": "HQ US",
                 "line1": "Main street",
@@ -445,7 +445,7 @@ with Apideck(
                 "country_code": "1",
                 "area_code": "323",
                 "extension": "105",
-                "type": apideck.PhoneNumberType.PRIMARY,
+                "type": apideck_unify.PhoneNumberType.PRIMARY,
             },
             {
                 "number": "111-111-1111",
@@ -453,31 +453,31 @@ with Apideck(
                 "country_code": "1",
                 "area_code": "323",
                 "extension": "105",
-                "type": apideck.PhoneNumberType.PRIMARY,
+                "type": apideck_unify.PhoneNumberType.PRIMARY,
             },
         ],
         "emails": [
             {
                 "email": "elon@musk.com",
                 "id": "123",
-                "type": apideck.EmailType.PRIMARY,
+                "type": apideck_unify.EmailType.PRIMARY,
             },
         ],
         "websites": [
             {
                 "url": "http://example.com",
                 "id": "12345",
-                "type": apideck.WebsiteType.PRIMARY,
+                "type": apideck_unify.WebsiteType.PRIMARY,
             },
             {
                 "url": "http://example.com",
                 "id": "12345",
-                "type": apideck.WebsiteType.PRIMARY,
+                "type": apideck_unify.WebsiteType.PRIMARY,
             },
             {
                 "url": "http://example.com",
                 "id": "12345",
-                "type": apideck.WebsiteType.PRIMARY,
+                "type": apideck_unify.WebsiteType.PRIMARY,
             },
         ],
         "bank_accounts": [
@@ -485,27 +485,27 @@ with Apideck(
                 "bank_name": "Monzo",
                 "account_number": "123465",
                 "account_name": "SPACEX LLC",
-                "account_type": apideck.AccountType.CREDIT_CARD,
+                "account_type": apideck_unify.AccountType.CREDIT_CARD,
                 "iban": "CH2989144532982975332",
                 "bic": "AUDSCHGGXXX",
                 "routing_number": "012345678",
                 "bsb_number": "062-001",
                 "branch_identifier": "001",
                 "bank_code": "BNH",
-                "currency": apideck.Currency.USD,
+                "currency": apideck_unify.Currency.USD,
             },
             {
                 "bank_name": "Monzo",
                 "account_number": "123465",
                 "account_name": "SPACEX LLC",
-                "account_type": apideck.AccountType.CREDIT_CARD,
+                "account_type": apideck_unify.AccountType.CREDIT_CARD,
                 "iban": "CH2989144532982975332",
                 "bic": "AUDSCHGGXXX",
                 "routing_number": "012345678",
                 "bsb_number": "062-001",
                 "branch_identifier": "001",
                 "bank_code": "BNH",
-                "currency": apideck.Currency.USD,
+                "currency": apideck_unify.Currency.USD,
             },
         ],
         "notes": "Some notes about this supplier",
@@ -514,13 +514,13 @@ with Apideck(
             "rate": 10,
         },
         "tax_number": "US123945459",
-        "currency": apideck.Currency.USD,
+        "currency": apideck_unify.Currency.USD,
         "account": {
             "id": "123456",
             "nominal_code": "N091",
             "code": "453",
         },
-        "status": apideck.SupplierStatus.ACTIVE,
+        "status": apideck_unify.SupplierStatus.ACTIVE,
         "payment_method": "cash",
         "channel": "email",
         "row_version": "1-12345",
@@ -595,7 +595,7 @@ Delete Supplier
 ### Example Usage
 
 ```python
-from apideck import Apideck
+from apideck_unify import Apideck
 import os
 
 with Apideck(

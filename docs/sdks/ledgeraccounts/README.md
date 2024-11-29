@@ -18,8 +18,8 @@ List Ledger Accounts
 ### Example Usage
 
 ```python
-import apideck
-from apideck import Apideck
+import apideck_unify
+from apideck_unify import Apideck
 import dateutil.parser
 import os
 
@@ -34,8 +34,8 @@ with Apideck(
             "updated_since": dateutil.parser.isoparse("2020-09-30T07:43:32.000Z"),
         },
         "sort": {
-            "by": apideck.LedgerAccountsSortBy.UPDATED_AT,
-            "direction": apideck.SortDirection.DESC,
+            "by": apideck_unify.LedgerAccountsSortBy.UPDATED_AT,
+            "direction": apideck_unify.SortDirection.DESC,
         },
         "pass_through": {
             "search": "San Francisco",
@@ -78,8 +78,8 @@ Create Ledger Account
 ### Example Usage
 
 ```python
-import apideck
-from apideck import Apideck
+import apideck_unify
+from apideck_unify import Apideck
 import dateutil.parser
 import os
 
@@ -91,15 +91,15 @@ with Apideck(
     res = s.accounting.ledger_accounts.create(ledger_account={
         "display_id": "1-12345",
         "code": "453",
-        "classification": apideck.Classification.ASSET,
-        "type": apideck.LedgerAccountType.BANK,
+        "classification": apideck_unify.Classification.ASSET,
+        "type": apideck_unify.LedgerAccountType.BANK,
         "sub_type": "CHECKING_ACCOUNT",
         "name": "Bank account",
         "fully_qualified_name": "Asset.Bank.Checking_Account",
         "description": "Main checking account",
         "opening_balance": 75000,
         "current_balance": 20000,
-        "currency": apideck.Currency.USD,
+        "currency": apideck_unify.Currency.USD,
         "tax_type": "NONE",
         "tax_rate": {
             "id": "123456",
@@ -107,20 +107,20 @@ with Apideck(
         },
         "level": 1,
         "active": True,
-        "status": apideck.AccountStatus.ACTIVE,
+        "status": apideck_unify.AccountStatus.ACTIVE,
         "header": True,
         "bank_account": {
             "bank_name": "Monzo",
             "account_number": "123465",
             "account_name": "SPACEX LLC",
-            "account_type": apideck.AccountType.CREDIT_CARD,
+            "account_type": apideck_unify.AccountType.CREDIT_CARD,
             "iban": "CH2989144532982975332",
             "bic": "AUDSCHGGXXX",
             "routing_number": "012345678",
             "bsb_number": "062-001",
             "branch_identifier": "001",
             "bank_code": "BNH",
-            "currency": apideck.Currency.USD,
+            "currency": apideck_unify.Currency.USD,
         },
         "parent_account": {
             "id": "12345",
@@ -192,7 +192,7 @@ Get Ledger Account
 ### Example Usage
 
 ```python
-from apideck import Apideck
+from apideck_unify import Apideck
 import os
 
 with Apideck(
@@ -240,8 +240,8 @@ Update Ledger Account
 ### Example Usage
 
 ```python
-import apideck
-from apideck import Apideck
+import apideck_unify
+from apideck_unify import Apideck
 import dateutil.parser
 import os
 
@@ -253,15 +253,15 @@ with Apideck(
     res = s.accounting.ledger_accounts.update(id="<id>", ledger_account={
         "display_id": "1-12345",
         "code": "453",
-        "classification": apideck.Classification.ASSET,
-        "type": apideck.LedgerAccountType.BANK,
+        "classification": apideck_unify.Classification.ASSET,
+        "type": apideck_unify.LedgerAccountType.BANK,
         "sub_type": "CHECKING_ACCOUNT",
         "name": "Bank account",
         "fully_qualified_name": "Asset.Bank.Checking_Account",
         "description": "Main checking account",
         "opening_balance": 75000,
         "current_balance": 20000,
-        "currency": apideck.Currency.USD,
+        "currency": apideck_unify.Currency.USD,
         "tax_type": "NONE",
         "tax_rate": {
             "id": "123456",
@@ -269,20 +269,20 @@ with Apideck(
         },
         "level": 1,
         "active": True,
-        "status": apideck.AccountStatus.ACTIVE,
+        "status": apideck_unify.AccountStatus.ACTIVE,
         "header": True,
         "bank_account": {
             "bank_name": "Monzo",
             "account_number": "123465",
             "account_name": "SPACEX LLC",
-            "account_type": apideck.AccountType.CREDIT_CARD,
+            "account_type": apideck_unify.AccountType.CREDIT_CARD,
             "iban": "CH2989144532982975332",
             "bic": "AUDSCHGGXXX",
             "routing_number": "012345678",
             "bsb_number": "062-001",
             "branch_identifier": "001",
             "bank_code": "BNH",
-            "currency": apideck.Currency.USD,
+            "currency": apideck_unify.Currency.USD,
         },
         "parent_account": {
             "id": "12345",
@@ -397,7 +397,7 @@ Delete Ledger Account
 ### Example Usage
 
 ```python
-from apideck import Apideck
+from apideck_unify import Apideck
 import os
 
 with Apideck(

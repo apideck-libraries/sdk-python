@@ -15,8 +15,8 @@ List Collections
 ### Example Usage
 
 ```python
-import apideck
-from apideck import Apideck
+import apideck_unify
+from apideck_unify import Apideck
 import os
 
 with Apideck(
@@ -27,8 +27,8 @@ with Apideck(
     res = s.issue_tracking.collections.list(request={
         "service_id": "salesforce",
         "sort": {
-            "by": apideck.CollectionsSortBy.NAME,
-            "direction": apideck.SortDirection.DESC,
+            "by": apideck_unify.CollectionsSortBy.NAME,
+            "direction": apideck_unify.SortDirection.DESC,
         },
         "pass_through": {
             "search": "San Francisco",
@@ -71,7 +71,7 @@ Get Collection
 ### Example Usage
 
 ```python
-from apideck import Apideck
+from apideck_unify import Apideck
 import os
 
 with Apideck(

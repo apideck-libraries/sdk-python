@@ -18,8 +18,8 @@ List Credit Notes
 ### Example Usage
 
 ```python
-import apideck
-from apideck import Apideck
+import apideck_unify
+from apideck_unify import Apideck
 import dateutil.parser
 import os
 
@@ -34,8 +34,8 @@ with Apideck(
             "updated_since": dateutil.parser.isoparse("2020-09-30T07:43:32.000Z"),
         },
         "sort": {
-            "by": apideck.CreditNotesSortBy.UPDATED_AT,
-            "direction": apideck.SortDirection.DESC,
+            "by": apideck_unify.CreditNotesSortBy.UPDATED_AT,
+            "direction": apideck_unify.SortDirection.DESC,
         },
         "pass_through": {
             "search": "San Francisco",
@@ -78,8 +78,8 @@ Create Credit Note
 ### Example Usage
 
 ```python
-import apideck
-from apideck import Apideck
+import apideck_unify
+from apideck_unify import Apideck
 import dateutil.parser
 import os
 
@@ -97,7 +97,7 @@ with Apideck(
             "email": "boring@boring.com",
         },
         "company_id": "12345",
-        "currency": apideck.Currency.USD,
+        "currency": apideck_unify.Currency.USD,
         "currency_rate": 0.69,
         "tax_inclusive": True,
         "sub_total": 27500,
@@ -105,11 +105,11 @@ with Apideck(
         "tax_code": "1234",
         "balance": 27500,
         "remaining_credit": 27500,
-        "status": apideck.CreditNoteStatus.AUTHORISED,
+        "status": apideck_unify.CreditNoteStatus.AUTHORISED,
         "reference": "123456",
         "date_issued": dateutil.parser.isoparse("2021-05-01T12:00:00.000Z"),
         "date_paid": dateutil.parser.isoparse("2021-05-01T12:00:00.000Z"),
-        "type": apideck.CreditNoteType.ACCOUNTS_RECEIVABLE_CREDIT,
+        "type": apideck_unify.CreditNoteType.ACCOUNTS_RECEIVABLE_CREDIT,
         "account": {
             "id": "123456",
             "nominal_code": "N091",
@@ -122,7 +122,7 @@ with Apideck(
                 "code": "120-C",
                 "line_number": 1,
                 "description": "Model Y is a fully electric, mid-size SUV, with seating for up to seven, dual motor AWD and unparalleled protection.",
-                "type": apideck.InvoiceLineItemType.SALES_ITEM,
+                "type": apideck_unify.InvoiceLineItemType.SALES_ITEM,
                 "tax_amount": 27500,
                 "total_amount": 27500,
                 "quantity": 1,
@@ -178,7 +178,7 @@ with Apideck(
         "terms": "Some terms about this credit note",
         "billing_address": {
             "id": "123",
-            "type": apideck.Type.PRIMARY,
+            "type": apideck_unify.Type.PRIMARY,
             "string": "25 Spring Street, Blackburn, VIC 3130",
             "name": "HQ US",
             "line1": "Main street",
@@ -204,7 +204,7 @@ with Apideck(
         },
         "shipping_address": {
             "id": "123",
-            "type": apideck.Type.PRIMARY,
+            "type": apideck_unify.Type.PRIMARY,
             "string": "25 Spring Street, Blackburn, VIC 3130",
             "name": "HQ US",
             "line1": "Main street",
@@ -383,7 +383,7 @@ Get Credit Note
 ### Example Usage
 
 ```python
-from apideck import Apideck
+from apideck_unify import Apideck
 import os
 
 with Apideck(
@@ -431,8 +431,8 @@ Update Credit Note
 ### Example Usage
 
 ```python
-import apideck
-from apideck import Apideck
+import apideck_unify
+from apideck_unify import Apideck
 import dateutil.parser
 import os
 
@@ -450,7 +450,7 @@ with Apideck(
             "email": "boring@boring.com",
         },
         "company_id": "12345",
-        "currency": apideck.Currency.USD,
+        "currency": apideck_unify.Currency.USD,
         "currency_rate": 0.69,
         "tax_inclusive": True,
         "sub_total": 27500,
@@ -458,11 +458,11 @@ with Apideck(
         "tax_code": "1234",
         "balance": 27500,
         "remaining_credit": 27500,
-        "status": apideck.CreditNoteStatus.AUTHORISED,
+        "status": apideck_unify.CreditNoteStatus.AUTHORISED,
         "reference": "123456",
         "date_issued": dateutil.parser.isoparse("2021-05-01T12:00:00.000Z"),
         "date_paid": dateutil.parser.isoparse("2021-05-01T12:00:00.000Z"),
-        "type": apideck.CreditNoteType.ACCOUNTS_RECEIVABLE_CREDIT,
+        "type": apideck_unify.CreditNoteType.ACCOUNTS_RECEIVABLE_CREDIT,
         "account": {
             "id": "123456",
             "nominal_code": "N091",
@@ -475,7 +475,7 @@ with Apideck(
                 "code": "120-C",
                 "line_number": 1,
                 "description": "Model Y is a fully electric, mid-size SUV, with seating for up to seven, dual motor AWD and unparalleled protection.",
-                "type": apideck.InvoiceLineItemType.SALES_ITEM,
+                "type": apideck_unify.InvoiceLineItemType.SALES_ITEM,
                 "tax_amount": 27500,
                 "total_amount": 27500,
                 "quantity": 1,
@@ -524,7 +524,7 @@ with Apideck(
                 "code": "120-C",
                 "line_number": 1,
                 "description": "Model Y is a fully electric, mid-size SUV, with seating for up to seven, dual motor AWD and unparalleled protection.",
-                "type": apideck.InvoiceLineItemType.SALES_ITEM,
+                "type": apideck_unify.InvoiceLineItemType.SALES_ITEM,
                 "tax_amount": 27500,
                 "total_amount": 27500,
                 "quantity": 1,
@@ -581,7 +581,7 @@ with Apideck(
                 "code": "120-C",
                 "line_number": 1,
                 "description": "Model Y is a fully electric, mid-size SUV, with seating for up to seven, dual motor AWD and unparalleled protection.",
-                "type": apideck.InvoiceLineItemType.SALES_ITEM,
+                "type": apideck_unify.InvoiceLineItemType.SALES_ITEM,
                 "tax_amount": 27500,
                 "total_amount": 27500,
                 "quantity": 1,
@@ -645,7 +645,7 @@ with Apideck(
         "terms": "Some terms about this credit note",
         "billing_address": {
             "id": "123",
-            "type": apideck.Type.PRIMARY,
+            "type": apideck_unify.Type.PRIMARY,
             "string": "25 Spring Street, Blackburn, VIC 3130",
             "name": "HQ US",
             "line1": "Main street",
@@ -671,7 +671,7 @@ with Apideck(
         },
         "shipping_address": {
             "id": "123",
-            "type": apideck.Type.PRIMARY,
+            "type": apideck_unify.Type.PRIMARY,
             "string": "25 Spring Street, Blackburn, VIC 3130",
             "name": "HQ US",
             "line1": "Main street",
@@ -807,7 +807,7 @@ Delete Credit Note
 ### Example Usage
 
 ```python
-from apideck import Apideck
+from apideck_unify import Apideck
 import os
 
 with Apideck(
