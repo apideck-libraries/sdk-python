@@ -18,8 +18,8 @@ List Bills
 ### Example Usage
 
 ```python
-import apideck
-from apideck import Apideck
+import apideck_unify
+from apideck_unify import Apideck
 import dateutil.parser
 import os
 
@@ -34,8 +34,8 @@ with Apideck(
             "updated_since": dateutil.parser.isoparse("2020-09-30T07:43:32.000Z"),
         },
         "sort": {
-            "by": apideck.By.UPDATED_AT,
-            "direction": apideck.SortDirection.DESC,
+            "by": apideck_unify.By.UPDATED_AT,
+            "direction": apideck_unify.SortDirection.DESC,
         },
         "pass_through": {
             "search": "San Francisco",
@@ -78,8 +78,8 @@ Create Bill
 ### Example Usage
 
 ```python
-import apideck
-from apideck import Apideck
+import apideck_unify
+from apideck_unify import Apideck
 import dateutil.parser
 import os
 
@@ -95,7 +95,7 @@ with Apideck(
             "display_name": "Windsurf Shop",
             "address": {
                 "id": "123",
-                "type": apideck.Type.PRIMARY,
+                "type": apideck_unify.Type.PRIMARY,
                 "string": "25 Spring Street, Blackburn, VIC 3130",
                 "name": "HQ US",
                 "line1": "Main street",
@@ -121,7 +121,7 @@ with Apideck(
             },
         },
         "company_id": "12345",
-        "currency": apideck.Currency.USD,
+        "currency": apideck_unify.Currency.USD,
         "currency_rate": 0.69,
         "tax_inclusive": True,
         "bill_date": dateutil.parser.parse("2020-09-30").date(),
@@ -135,7 +135,7 @@ with Apideck(
                 "code": "120-C",
                 "line_number": 1,
                 "description": "Model Y is a fully electric, mid-size SUV, with seating for up to seven, dual motor AWD and unparalleled protection.",
-                "type": apideck.BillLineItemType.EXPENSE_ACCOUNT,
+                "type": apideck_unify.BillLineItemType.EXPENSE_ACCOUNT,
                 "tax_amount": 27500,
                 "total_amount": 27500,
                 "quantity": 1,
@@ -180,7 +180,7 @@ with Apideck(
         "total": 27500,
         "tax_code": "1234",
         "notes": "Some notes about this bill.",
-        "status": apideck.BillStatus.DRAFT,
+        "status": apideck_unify.BillStatus.DRAFT,
         "ledger_account": {
             "id": "123456",
             "nominal_code": "N091",
@@ -194,14 +194,14 @@ with Apideck(
             "bank_name": "Monzo",
             "account_number": "123465",
             "account_name": "SPACEX LLC",
-            "account_type": apideck.AccountType.CREDIT_CARD,
+            "account_type": apideck_unify.AccountType.CREDIT_CARD,
             "iban": "CH2989144532982975332",
             "bic": "AUDSCHGGXXX",
             "routing_number": "012345678",
             "bsb_number": "062-001",
             "branch_identifier": "001",
             "bank_code": "BNH",
-            "currency": apideck.Currency.USD,
+            "currency": apideck_unify.Currency.USD,
         },
         "discount_percentage": 5.5,
         "tracking_categories": [
@@ -266,7 +266,7 @@ Get Bill
 ### Example Usage
 
 ```python
-from apideck import Apideck
+from apideck_unify import Apideck
 import os
 
 with Apideck(
@@ -314,8 +314,8 @@ Update Bill
 ### Example Usage
 
 ```python
-import apideck
-from apideck import Apideck
+import apideck_unify
+from apideck_unify import Apideck
 import dateutil.parser
 import os
 
@@ -331,7 +331,7 @@ with Apideck(
             "display_name": "Windsurf Shop",
             "address": {
                 "id": "123",
-                "type": apideck.Type.PRIMARY,
+                "type": apideck_unify.Type.PRIMARY,
                 "string": "25 Spring Street, Blackburn, VIC 3130",
                 "name": "HQ US",
                 "line1": "Main street",
@@ -357,7 +357,7 @@ with Apideck(
             },
         },
         "company_id": "12345",
-        "currency": apideck.Currency.USD,
+        "currency": apideck_unify.Currency.USD,
         "currency_rate": 0.69,
         "tax_inclusive": True,
         "bill_date": dateutil.parser.parse("2020-09-30").date(),
@@ -371,7 +371,7 @@ with Apideck(
                 "code": "120-C",
                 "line_number": 1,
                 "description": "Model Y is a fully electric, mid-size SUV, with seating for up to seven, dual motor AWD and unparalleled protection.",
-                "type": apideck.BillLineItemType.EXPENSE_ACCOUNT,
+                "type": apideck_unify.BillLineItemType.EXPENSE_ACCOUNT,
                 "tax_amount": 27500,
                 "total_amount": 27500,
                 "quantity": 1,
@@ -412,7 +412,7 @@ with Apideck(
                 "code": "120-C",
                 "line_number": 1,
                 "description": "Model Y is a fully electric, mid-size SUV, with seating for up to seven, dual motor AWD and unparalleled protection.",
-                "type": apideck.BillLineItemType.EXPENSE_ACCOUNT,
+                "type": apideck_unify.BillLineItemType.EXPENSE_ACCOUNT,
                 "tax_amount": 27500,
                 "total_amount": 27500,
                 "quantity": 1,
@@ -449,7 +449,7 @@ with Apideck(
                 "code": "120-C",
                 "line_number": 1,
                 "description": "Model Y is a fully electric, mid-size SUV, with seating for up to seven, dual motor AWD and unparalleled protection.",
-                "type": apideck.BillLineItemType.EXPENSE_ACCOUNT,
+                "type": apideck_unify.BillLineItemType.EXPENSE_ACCOUNT,
                 "tax_amount": 27500,
                 "total_amount": 27500,
                 "quantity": 1,
@@ -498,7 +498,7 @@ with Apideck(
         "total": 27500,
         "tax_code": "1234",
         "notes": "Some notes about this bill.",
-        "status": apideck.BillStatus.DRAFT,
+        "status": apideck_unify.BillStatus.DRAFT,
         "ledger_account": {
             "id": "123456",
             "nominal_code": "N091",
@@ -512,14 +512,14 @@ with Apideck(
             "bank_name": "Monzo",
             "account_number": "123465",
             "account_name": "SPACEX LLC",
-            "account_type": apideck.AccountType.CREDIT_CARD,
+            "account_type": apideck_unify.AccountType.CREDIT_CARD,
             "iban": "CH2989144532982975332",
             "bic": "AUDSCHGGXXX",
             "routing_number": "012345678",
             "bsb_number": "062-001",
             "branch_identifier": "001",
             "bank_code": "BNH",
-            "currency": apideck.Currency.USD,
+            "currency": apideck_unify.Currency.USD,
         },
         "discount_percentage": 5.5,
         "tracking_categories": [
@@ -605,7 +605,7 @@ Delete Bill
 ### Example Usage
 
 ```python
-from apideck import Apideck
+from apideck_unify import Apideck
 import os
 
 with Apideck(

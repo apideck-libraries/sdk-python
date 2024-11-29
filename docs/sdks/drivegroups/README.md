@@ -18,7 +18,7 @@ List DriveGroups
 ### Example Usage
 
 ```python
-from apideck import Apideck
+from apideck_unify import Apideck
 import os
 
 with Apideck(
@@ -72,7 +72,7 @@ Create DriveGroup
 ### Example Usage
 
 ```python
-from apideck import Apideck
+from apideck_unify import Apideck
 import os
 
 with Apideck(
@@ -146,7 +146,7 @@ Get DriveGroup
 ### Example Usage
 
 ```python
-from apideck import Apideck
+from apideck_unify import Apideck
 import os
 
 with Apideck(
@@ -194,7 +194,7 @@ Update DriveGroup
 ### Example Usage
 
 ```python
-from apideck import Apideck
+from apideck_unify import Apideck
 import os
 
 with Apideck(
@@ -311,7 +311,7 @@ Delete DriveGroup
 ### Example Usage
 
 ```python
-from apideck import Apideck
+from apideck_unify import Apideck
 import os
 
 with Apideck(

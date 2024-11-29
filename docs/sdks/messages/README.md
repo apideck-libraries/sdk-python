@@ -18,7 +18,7 @@ List Messages
 ### Example Usage
 
 ```python
-from apideck import Apideck
+from apideck_unify import Apideck
 import os
 
 with Apideck(
@@ -66,8 +66,8 @@ Create Message
 ### Example Usage
 
 ```python
-import apideck
-from apideck import Apideck
+import apideck_unify
+from apideck_unify import Apideck
 import dateutil.parser
 import os
 
@@ -81,7 +81,7 @@ with Apideck(
         "to": "+15017122662",
         "body": "Hi! How are you doing?",
         "subject": "Picture",
-        "type": apideck.MessageType.SMS,
+        "type": apideck_unify.MessageType.SMS,
         "scheduled_at": dateutil.parser.isoparse("2020-09-30T07:43:32.000Z"),
         "webhook_url": "https://unify.apideck.com/webhook/webhooks/eyz329dkffdl4949/x/sms",
         "reference": "CUST001",
@@ -148,7 +148,7 @@ Get Message
 ### Example Usage
 
 ```python
-from apideck import Apideck
+from apideck_unify import Apideck
 import os
 
 with Apideck(
@@ -196,8 +196,8 @@ Update Message
 ### Example Usage
 
 ```python
-import apideck
-from apideck import Apideck
+import apideck_unify
+from apideck_unify import Apideck
 import dateutil.parser
 import os
 
@@ -211,7 +211,7 @@ with Apideck(
         "to": "+15017122662",
         "body": "Hi! How are you doing?",
         "subject": "Picture",
-        "type": apideck.MessageType.SMS,
+        "type": apideck_unify.MessageType.SMS,
         "scheduled_at": dateutil.parser.isoparse("2020-09-30T07:43:32.000Z"),
         "webhook_url": "https://unify.apideck.com/webhook/webhooks/eyz329dkffdl4949/x/sms",
         "reference": "CUST001",
@@ -321,7 +321,7 @@ Delete Message
 ### Example Usage
 
 ```python
-from apideck import Apideck
+from apideck_unify import Apideck
 import os
 
 with Apideck(

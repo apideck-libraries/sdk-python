@@ -14,7 +14,7 @@ This endpoint returns a list of custom mappings.
 ### Example Usage
 
 ```python
-from apideck import Apideck
+from apideck_unify import Apideck
 import os
 
 with Apideck(

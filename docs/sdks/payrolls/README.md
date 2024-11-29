@@ -15,7 +15,7 @@ List Payroll
 ### Example Usage
 
 ```python
-from apideck import Apideck
+from apideck_unify import Apideck
 import os
 
 with Apideck(
@@ -70,7 +70,7 @@ Get Payroll
 ### Example Usage
 
 ```python
-from apideck import Apideck
+from apideck_unify import Apideck
 import os
 
 with Apideck(

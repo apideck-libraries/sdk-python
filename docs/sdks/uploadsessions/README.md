@@ -17,7 +17,7 @@ Start an Upload Session. Upload sessions are used to upload large files, use the
 ### Example Usage
 
 ```python
-from apideck import Apideck
+from apideck_unify import Apideck
 import os
 
 with Apideck(
@@ -93,7 +93,7 @@ Get Upload Session. Use the `part_size` to split your file into parts. Upload th
 ### Example Usage
 
 ```python
-from apideck import Apideck
+from apideck_unify import Apideck
 import os
 
 with Apideck(
@@ -142,7 +142,7 @@ Abort Upload Session. Note that the base URL is upload.apideck.com instead of un
 ### Example Usage
 
 ```python
-from apideck import Apideck
+from apideck_unify import Apideck
 import os
 
 with Apideck(
@@ -189,7 +189,7 @@ Finish Upload Session. Only call this endpoint after all File parts have been up
 ### Example Usage
 
 ```python
-from apideck import Apideck
+from apideck_unify import Apideck
 import os
 
 with Apideck(

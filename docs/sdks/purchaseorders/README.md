@@ -18,8 +18,8 @@ List Purchase Orders
 ### Example Usage
 
 ```python
-import apideck
-from apideck import Apideck
+import apideck_unify
+from apideck_unify import Apideck
 import dateutil.parser
 import os
 
@@ -38,8 +38,8 @@ with Apideck(
             "supplier_id": "1234",
         },
         "sort": {
-            "by": apideck.PurchaseOrdersSortBy.UPDATED_AT,
-            "direction": apideck.SortDirection.DESC,
+            "by": apideck_unify.PurchaseOrdersSortBy.UPDATED_AT,
+            "direction": apideck_unify.SortDirection.DESC,
         },
     })
 
@@ -78,8 +78,8 @@ Create Purchase Order
 ### Example Usage
 
 ```python
-import apideck
-from apideck import Apideck
+import apideck_unify
+from apideck_unify import Apideck
 import dateutil.parser
 import os
 
@@ -96,7 +96,7 @@ with Apideck(
             "display_name": "Windsurf Shop",
             "address": {
                 "id": "123",
-                "type": apideck.Type.PRIMARY,
+                "type": apideck_unify.Type.PRIMARY,
                 "string": "25 Spring Street, Blackburn, VIC 3130",
                 "name": "HQ US",
                 "line1": "Main street",
@@ -122,11 +122,11 @@ with Apideck(
             },
         },
         "company_id": "12345",
-        "status": apideck.PurchaseOrderStatus.OPEN,
+        "status": apideck_unify.PurchaseOrderStatus.OPEN,
         "issued_date": dateutil.parser.parse("2020-09-30").date(),
         "delivery_date": dateutil.parser.parse("2020-09-30").date(),
         "expected_arrival_date": dateutil.parser.parse("2020-09-30").date(),
-        "currency": apideck.Currency.USD,
+        "currency": apideck_unify.Currency.USD,
         "currency_rate": 0.69,
         "sub_total": 27500,
         "total_tax": 2500,
@@ -139,7 +139,7 @@ with Apideck(
                 "code": "120-C",
                 "line_number": 1,
                 "description": "Model Y is a fully electric, mid-size SUV, with seating for up to seven, dual motor AWD and unparalleled protection.",
-                "type": apideck.InvoiceLineItemType.SALES_ITEM,
+                "type": apideck_unify.InvoiceLineItemType.SALES_ITEM,
                 "tax_amount": 27500,
                 "total_amount": 27500,
                 "quantity": 1,
@@ -186,7 +186,7 @@ with Apideck(
         ],
         "shipping_address": {
             "id": "123",
-            "type": apideck.Type.PRIMARY,
+            "type": apideck_unify.Type.PRIMARY,
             "string": "25 Spring Street, Blackburn, VIC 3130",
             "name": "HQ US",
             "line1": "Main street",
@@ -221,14 +221,14 @@ with Apideck(
             "bank_name": "Monzo",
             "account_number": "123465",
             "account_name": "SPACEX LLC",
-            "account_type": apideck.AccountType.CREDIT_CARD,
+            "account_type": apideck_unify.AccountType.CREDIT_CARD,
             "iban": "CH2989144532982975332",
             "bic": "AUDSCHGGXXX",
             "routing_number": "012345678",
             "bsb_number": "062-001",
             "branch_identifier": "001",
             "bank_code": "BNH",
-            "currency": apideck.Currency.USD,
+            "currency": apideck_unify.Currency.USD,
         },
         "accounting_by_row": False,
         "due_date": dateutil.parser.parse("2020-10-30").date(),
@@ -339,7 +339,7 @@ Get Purchase Order
 ### Example Usage
 
 ```python
-from apideck import Apideck
+from apideck_unify import Apideck
 import os
 
 with Apideck(
@@ -386,8 +386,8 @@ Update Purchase Order
 ### Example Usage
 
 ```python
-import apideck
-from apideck import Apideck
+import apideck_unify
+from apideck_unify import Apideck
 import dateutil.parser
 import os
 
@@ -404,7 +404,7 @@ with Apideck(
             "display_name": "Windsurf Shop",
             "address": {
                 "id": "123",
-                "type": apideck.Type.PRIMARY,
+                "type": apideck_unify.Type.PRIMARY,
                 "string": "25 Spring Street, Blackburn, VIC 3130",
                 "name": "HQ US",
                 "line1": "Main street",
@@ -430,11 +430,11 @@ with Apideck(
             },
         },
         "company_id": "12345",
-        "status": apideck.PurchaseOrderStatus.OPEN,
+        "status": apideck_unify.PurchaseOrderStatus.OPEN,
         "issued_date": dateutil.parser.parse("2020-09-30").date(),
         "delivery_date": dateutil.parser.parse("2020-09-30").date(),
         "expected_arrival_date": dateutil.parser.parse("2020-09-30").date(),
-        "currency": apideck.Currency.USD,
+        "currency": apideck_unify.Currency.USD,
         "currency_rate": 0.69,
         "sub_total": 27500,
         "total_tax": 2500,
@@ -447,7 +447,7 @@ with Apideck(
                 "code": "120-C",
                 "line_number": 1,
                 "description": "Model Y is a fully electric, mid-size SUV, with seating for up to seven, dual motor AWD and unparalleled protection.",
-                "type": apideck.InvoiceLineItemType.SALES_ITEM,
+                "type": apideck_unify.InvoiceLineItemType.SALES_ITEM,
                 "tax_amount": 27500,
                 "total_amount": 27500,
                 "quantity": 1,
@@ -496,7 +496,7 @@ with Apideck(
                 "code": "120-C",
                 "line_number": 1,
                 "description": "Model Y is a fully electric, mid-size SUV, with seating for up to seven, dual motor AWD and unparalleled protection.",
-                "type": apideck.InvoiceLineItemType.SALES_ITEM,
+                "type": apideck_unify.InvoiceLineItemType.SALES_ITEM,
                 "tax_amount": 27500,
                 "total_amount": 27500,
                 "quantity": 1,
@@ -553,7 +553,7 @@ with Apideck(
                 "code": "120-C",
                 "line_number": 1,
                 "description": "Model Y is a fully electric, mid-size SUV, with seating for up to seven, dual motor AWD and unparalleled protection.",
-                "type": apideck.InvoiceLineItemType.SALES_ITEM,
+                "type": apideck_unify.InvoiceLineItemType.SALES_ITEM,
                 "tax_amount": 27500,
                 "total_amount": 27500,
                 "quantity": 1,
@@ -598,7 +598,7 @@ with Apideck(
         ],
         "shipping_address": {
             "id": "123",
-            "type": apideck.Type.PRIMARY,
+            "type": apideck_unify.Type.PRIMARY,
             "string": "25 Spring Street, Blackburn, VIC 3130",
             "name": "HQ US",
             "line1": "Main street",
@@ -633,14 +633,14 @@ with Apideck(
             "bank_name": "Monzo",
             "account_number": "123465",
             "account_name": "SPACEX LLC",
-            "account_type": apideck.AccountType.CREDIT_CARD,
+            "account_type": apideck_unify.AccountType.CREDIT_CARD,
             "iban": "CH2989144532982975332",
             "bic": "AUDSCHGGXXX",
             "routing_number": "012345678",
             "bsb_number": "062-001",
             "branch_identifier": "001",
             "bank_code": "BNH",
-            "currency": apideck.Currency.USD,
+            "currency": apideck_unify.Currency.USD,
         },
         "accounting_by_row": False,
         "due_date": dateutil.parser.parse("2020-10-30").date(),
@@ -760,7 +760,7 @@ Delete Purchase Order
 ### Example Usage
 
 ```python
-from apideck import Apideck
+from apideck_unify import Apideck
 import os
 
 with Apideck(

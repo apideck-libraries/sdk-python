@@ -18,7 +18,7 @@ List Subsidiaries
 ### Example Usage
 
 ```python
-from apideck import Apideck
+from apideck_unify import Apideck
 import os
 
 with Apideck(
@@ -66,8 +66,8 @@ Create Subsidiary
 ### Example Usage
 
 ```python
-import apideck
-from apideck import Apideck
+import apideck_unify
+from apideck_unify import Apideck
 import os
 
 with Apideck(
@@ -78,7 +78,7 @@ with Apideck(
     res = s.accounting.subsidiaries.create(subsidiary={
         "parent_id": "12345",
         "name": "SpaceX",
-        "status": apideck.SubsidiaryStatus.ACTIVE,
+        "status": apideck_unify.SubsidiaryStatus.ACTIVE,
         "row_version": "1-12345",
         "pass_through": [
             {
@@ -142,7 +142,7 @@ Get Subsidiary
 ### Example Usage
 
 ```python
-from apideck import Apideck
+from apideck_unify import Apideck
 import os
 
 with Apideck(
@@ -190,8 +190,8 @@ Update Subsidiary
 ### Example Usage
 
 ```python
-import apideck
-from apideck import Apideck
+import apideck_unify
+from apideck_unify import Apideck
 import os
 
 with Apideck(
@@ -202,7 +202,7 @@ with Apideck(
     res = s.accounting.subsidiaries.update(id="<id>", subsidiary={
         "parent_id": "12345",
         "name": "SpaceX",
-        "status": apideck.SubsidiaryStatus.ACTIVE,
+        "status": apideck_unify.SubsidiaryStatus.ACTIVE,
         "row_version": "1-12345",
         "pass_through": [
             {
@@ -309,7 +309,7 @@ Delete Subsidiary
 ### Example Usage
 
 ```python
-from apideck import Apideck
+from apideck_unify import Apideck
 import os
 
 with Apideck(

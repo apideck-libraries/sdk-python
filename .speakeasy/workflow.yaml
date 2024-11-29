@@ -15,5 +15,5 @@ targets:
                 token: $pypi_token
         codeSamples:
             registry:
-                location: registry.speakeasyapi.dev/apideck-k2o/apideck/apideck-oas-code-samples
+                location: registry.speakeasyapi.dev/apideck-k2o/apideck/apideck-oas-python-code-samples
             blocking: false

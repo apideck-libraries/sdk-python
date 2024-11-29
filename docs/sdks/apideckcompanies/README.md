@@ -18,7 +18,7 @@ List Companies
 ### Example Usage
 
 ```python
-from apideck import Apideck
+from apideck_unify import Apideck
 import os
 
 with Apideck(
@@ -69,8 +69,8 @@ Create Company
 ### Example Usage
 
 ```python
-import apideck
-from apideck import Apideck
+import apideck_unify
+from apideck_unify import Apideck
 import os
 
 with Apideck(
@@ -82,13 +82,13 @@ with Apideck(
         "legal_name": "SpaceX",
         "display_name": "SpaceX",
         "subdomain": "company",
-        "status": apideck.HrisCompanyStatus.ACTIVE,
+        "status": apideck_unify.HrisCompanyStatus.ACTIVE,
         "company_number": "123456-AB",
-        "currency": apideck.Currency.USD,
+        "currency": apideck_unify.Currency.USD,
         "addresses": [
             {
                 "id": "123",
-                "type": apideck.Type.PRIMARY,
+                "type": apideck_unify.Type.PRIMARY,
                 "string": "25 Spring Street, Blackburn, VIC 3130",
                 "name": "HQ US",
                 "line1": "Main street",
@@ -120,7 +120,7 @@ with Apideck(
                 "country_code": "1",
                 "area_code": "323",
                 "extension": "105",
-                "type": apideck.PhoneNumberType.PRIMARY,
+                "type": apideck_unify.PhoneNumberType.PRIMARY,
             },
             {
                 "number": "111-111-1111",
@@ -128,21 +128,21 @@ with Apideck(
                 "country_code": "1",
                 "area_code": "323",
                 "extension": "105",
-                "type": apideck.PhoneNumberType.PRIMARY,
+                "type": apideck_unify.PhoneNumberType.PRIMARY,
             },
         ],
         "emails": [
             {
                 "email": "elon@musk.com",
                 "id": "123",
-                "type": apideck.EmailType.PRIMARY,
+                "type": apideck_unify.EmailType.PRIMARY,
             },
         ],
         "websites": [
             {
                 "url": "http://example.com",
                 "id": "12345",
-                "type": apideck.WebsiteType.PRIMARY,
+                "type": apideck_unify.WebsiteType.PRIMARY,
             },
         ],
         "debtor_id": "12345",
@@ -200,7 +200,7 @@ Get Company
 ### Example Usage
 
 ```python
-from apideck import Apideck
+from apideck_unify import Apideck
 import os
 
 with Apideck(
@@ -248,8 +248,8 @@ Update Company
 ### Example Usage
 
 ```python
-import apideck
-from apideck import Apideck
+import apideck_unify
+from apideck_unify import Apideck
 import os
 
 with Apideck(
@@ -261,13 +261,13 @@ with Apideck(
         "legal_name": "SpaceX",
         "display_name": "SpaceX",
         "subdomain": "company",
-        "status": apideck.HrisCompanyStatus.ACTIVE,
+        "status": apideck_unify.HrisCompanyStatus.ACTIVE,
         "company_number": "123456-AB",
-        "currency": apideck.Currency.USD,
+        "currency": apideck_unify.Currency.USD,
         "addresses": [
             {
                 "id": "123",
-                "type": apideck.Type.PRIMARY,
+                "type": apideck_unify.Type.PRIMARY,
                 "string": "25 Spring Street, Blackburn, VIC 3130",
                 "name": "HQ US",
                 "line1": "Main street",
@@ -293,7 +293,7 @@ with Apideck(
             },
             {
                 "id": "123",
-                "type": apideck.Type.PRIMARY,
+                "type": apideck_unify.Type.PRIMARY,
                 "string": "25 Spring Street, Blackburn, VIC 3130",
                 "name": "HQ US",
                 "line1": "Main street",
@@ -319,7 +319,7 @@ with Apideck(
             },
             {
                 "id": "123",
-                "type": apideck.Type.PRIMARY,
+                "type": apideck_unify.Type.PRIMARY,
                 "string": "25 Spring Street, Blackburn, VIC 3130",
                 "name": "HQ US",
                 "line1": "Main street",
@@ -351,7 +351,7 @@ with Apideck(
                 "country_code": "1",
                 "area_code": "323",
                 "extension": "105",
-                "type": apideck.PhoneNumberType.PRIMARY,
+                "type": apideck_unify.PhoneNumberType.PRIMARY,
             },
             {
                 "number": "111-111-1111",
@@ -359,31 +359,31 @@ with Apideck(
                 "country_code": "1",
                 "area_code": "323",
                 "extension": "105",
-                "type": apideck.PhoneNumberType.PRIMARY,
+                "type": apideck_unify.PhoneNumberType.PRIMARY,
             },
         ],
         "emails": [
             {
                 "email": "elon@musk.com",
                 "id": "123",
-                "type": apideck.EmailType.PRIMARY,
+                "type": apideck_unify.EmailType.PRIMARY,
             },
         ],
         "websites": [
             {
                 "url": "http://example.com",
                 "id": "12345",
-                "type": apideck.WebsiteType.PRIMARY,
+                "type": apideck_unify.WebsiteType.PRIMARY,
             },
             {
                 "url": "http://example.com",
                 "id": "12345",
-                "type": apideck.WebsiteType.PRIMARY,
+                "type": apideck_unify.WebsiteType.PRIMARY,
             },
             {
                 "url": "http://example.com",
                 "id": "12345",
-                "type": apideck.WebsiteType.PRIMARY,
+                "type": apideck_unify.WebsiteType.PRIMARY,
             },
         ],
         "debtor_id": "12345",
@@ -471,7 +471,7 @@ Delete Company
 ### Example Usage
 
 ```python
-from apideck import Apideck
+from apideck_unify import Apideck
 import os
 
 with Apideck(

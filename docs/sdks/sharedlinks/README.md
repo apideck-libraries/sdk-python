@@ -18,7 +18,7 @@ List SharedLinks
 ### Example Usage
 
 ```python
-from apideck import Apideck
+from apideck_unify import Apideck
 import os
 
 with Apideck(
@@ -69,8 +69,8 @@ Create Shared Link
 ### Example Usage
 
 ```python
-import apideck
-from apideck import Apideck
+import apideck_unify
+from apideck_unify import Apideck
 import os
 
 with Apideck(
@@ -81,7 +81,7 @@ with Apideck(
     res = s.file_storage.shared_links.create(shared_link={
         "target_id": "<id>",
         "download_url": "https://www.box.com/shared/static/rh935iit6ewrmw0unyul.jpeg",
-        "scope": apideck.Scope.COMPANY,
+        "scope": apideck_unify.Scope.COMPANY,
         "pass_through": [
             {
                 "service_id": "<id>",
@@ -144,7 +144,7 @@ Get Shared Link
 ### Example Usage
 
 ```python
-from apideck import Apideck
+from apideck_unify import Apideck
 import os
 
 with Apideck(
@@ -192,8 +192,8 @@ Update Shared Link
 ### Example Usage
 
 ```python
-import apideck
-from apideck import Apideck
+import apideck_unify
+from apideck_unify import Apideck
 import os
 
 with Apideck(
@@ -204,7 +204,7 @@ with Apideck(
     res = s.file_storage.shared_links.update(id="<id>", shared_link={
         "target_id": "<id>",
         "download_url": "https://www.box.com/shared/static/rh935iit6ewrmw0unyul.jpeg",
-        "scope": apideck.Scope.COMPANY,
+        "scope": apideck_unify.Scope.COMPANY,
         "pass_through": [
             {
                 "service_id": "<id>",
@@ -310,7 +310,7 @@ Delete Shared Link
 ### Example Usage
 
 ```python
-from apideck import Apideck
+from apideck_unify import Apideck
 import os
 
 with Apideck(
