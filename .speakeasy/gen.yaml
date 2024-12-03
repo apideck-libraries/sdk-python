@@ -21,7 +21,6 @@ python:
     dev: {}
     main:
       requests: ^2.32.3
-      types-requests: ^2.32.3
   authors:
     - Speakeasy
   clientServerStatusCodesAsErrors: true
