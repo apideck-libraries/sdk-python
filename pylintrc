@@ -402,43 +402,7 @@ logging-modules=logging
 
 
 [MESSAGES CONTROL]
-disable=raw-checker-failed,
-        bad-inline-option,
-        locally-disabled,
-        file-ignored,
-        suppressed-message,
-        useless-suppression,
-        deprecated-pragma,
-        use-implicit-booleaness-not-comparison-to-string,
-        use-implicit-booleaness-not-comparison-to-zero,
-        use-symbolic-message-instead,
-        trailing-whitespace,
-        line-too-long,
-        missing-class-docstring,
-        missing-module-docstring,
-        missing-function-docstring,
-        too-many-instance-attributes,
-        wrong-import-order,
-        too-many-arguments,
-        broad-exception-raised,
-        too-few-public-methods,
-        too-many-branches,
-        duplicate-code,
-        trailing-newlines,
-        too-many-public-methods,
-        too-many-locals,
-        too-many-lines,
-        using-constant-test,
-        too-many-statements,
-        cyclic-import,
-        too-many-nested-blocks,
-        too-many-boolean-expressions,
-        no-else-raise,
-        bare-except,
-        broad-exception-caught,
-        fixme,
-        relative-beyond-top-level,
-        redefined-builtin
+
 
 # Only show warnings with the listed confidence levels. Leave empty to show
 # all. Valid levels: HIGH, CONTROL_FLOW, INFERENCE, INFERENCE_FAILURE,
@@ -493,7 +457,8 @@ disable=raw-checker-failed,
         bare-except,
         broad-exception-caught,
         fixme,
-        relative-beyond-top-level
+        relative-beyond-top-level,
+        redefined-builtin
 
 # Enable the message, report, category or checker with the given id(s). You can
 # either give multiple identifier separated by comma (,) or put this option
