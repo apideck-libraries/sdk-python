@@ -1,0 +1,12 @@
+# TaxRatesFilter
+
+
+## Fields
+
+| Field                                                              | Type                                                               | Required                                                           | Description                                                        | Example                                                            |
+| ------------------------------------------------------------------ | ------------------------------------------------------------------ | ------------------------------------------------------------------ | ------------------------------------------------------------------ | ------------------------------------------------------------------ |
+| `assets`                                                           | *Optional[bool]*                                                   | :heavy_minus_sign:                                                 | Boolean to describe if tax rate can be used for asset accounts     | true                                                               |
+| `equity`                                                           | *Optional[bool]*                                                   | :heavy_minus_sign:                                                 | Boolean to describe if tax rate can be used for equity accounts    | true                                                               |
+| `expenses`                                                         | *Optional[bool]*                                                   | :heavy_minus_sign:                                                 | Boolean to describe if tax rate can be used for expense accounts   | true                                                               |
+| `liabilities`                                                      | *Optional[bool]*                                                   | :heavy_minus_sign:                                                 | Boolean to describe if tax rate can be used for liability accounts | true                                                               |
+| `revenue`                                                          | *Optional[bool]*                                                   | :heavy_minus_sign:                                                 | Boolean to describe if tax rate can be used for revenue accounts   | true                                                               |

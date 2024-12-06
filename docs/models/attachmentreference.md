@@ -1,0 +1,9 @@
+# AttachmentReference
+
+
+## Fields
+
+| Field                                                                            | Type                                                                             | Required                                                                         | Description                                                                      | Example                                                                          |
+| -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| `type`                                                                           | [Optional[models.AttachmentReferenceType]](../models/attachmentreferencetype.md) | :heavy_minus_sign:                                                               | N/A                                                                              | invoice                                                                          |
+| `id`                                                                             | *Optional[str]*                                                                  | :heavy_minus_sign:                                                               | A unique identifier for an object.                                               | 12345                                                                            |

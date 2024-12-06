@@ -1,0 +1,11 @@
+# InvoiceItemSalesDetails
+
+
+## Fields
+
+| Field                                                                  | Type                                                                   | Required                                                               | Description                                                            | Example                                                                |
+| ---------------------------------------------------------------------- | ---------------------------------------------------------------------- | ---------------------------------------------------------------------- | ---------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| `unit_price`                                                           | *OptionalNullable[float]*                                              | :heavy_minus_sign:                                                     | N/A                                                                    | 27500.5                                                                |
+| `unit_of_measure`                                                      | *OptionalNullable[str]*                                                | :heavy_minus_sign:                                                     | Description of the unit type the item is sold as, ie: kg, hour.        | pc.                                                                    |
+| `tax_inclusive`                                                        | *OptionalNullable[bool]*                                               | :heavy_minus_sign:                                                     | Amounts are including tax                                              | true                                                                   |
+| `tax_rate`                                                             | [Optional[models.LinkedTaxRateInput]](../models/linkedtaxrateinput.md) | :heavy_minus_sign:                                                     | N/A                                                                    |                                                                        |

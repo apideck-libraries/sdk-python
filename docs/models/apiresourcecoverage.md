@@ -1,0 +1,11 @@
+# APIResourceCoverage
+
+
+## Fields
+
+| Field                                                                    | Type                                                                     | Required                                                                 | Description                                                              | Example                                                                  |
+| ------------------------------------------------------------------------ | ------------------------------------------------------------------------ | ------------------------------------------------------------------------ | ------------------------------------------------------------------------ | ------------------------------------------------------------------------ |
+| `id`                                                                     | *Optional[str]*                                                          | :heavy_minus_sign:                                                       | ID of the resource, typically a lowercased version of name.              | companies                                                                |
+| `name`                                                                   | *Optional[str]*                                                          | :heavy_minus_sign:                                                       | Name of the resource (plural)                                            | Companies                                                                |
+| `status`                                                                 | [Optional[models.ResourceStatus]](../models/resourcestatus.md)           | :heavy_minus_sign:                                                       | Status of the resource. Resources with status live or beta are callable. |                                                                          |
+| `coverage`                                                               | List[[models.Coverage](../models/coverage.md)]                           | :heavy_minus_sign:                                                       | N/A                                                                      |                                                                          |
