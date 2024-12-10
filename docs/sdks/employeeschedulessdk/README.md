@@ -21,8 +21,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.hris.employee_schedules.list(request={
+) as apideck:
+    res = apideck.hris.employee_schedules.list(request={
         "employee_id": "<id>",
         "service_id": "salesforce",
         "pass_through": {

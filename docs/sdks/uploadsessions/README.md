@@ -24,8 +24,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.file_storage.upload_sessions.create(create_upload_session_request={
+) as apideck:
+    res = apideck.file_storage.upload_sessions.create(create_upload_session_request={
         "name": "Documents",
         "parent_folder_id": "1234",
         "size": 1810673,
@@ -100,8 +100,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.file_storage.upload_sessions.get(id="<id>", service_id="salesforce", fields="id,updated_at")
+) as apideck:
+    res = apideck.file_storage.upload_sessions.get(id="<id>", service_id="salesforce", fields="id,updated_at")
 
     if res is not None:
         # handle response
@@ -149,8 +149,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.file_storage.upload_sessions.delete(id="<id>", service_id="salesforce")
+) as apideck:
+    res = apideck.file_storage.upload_sessions.delete(id="<id>", service_id="salesforce")
 
     if res is not None:
         # handle response
@@ -196,8 +196,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.file_storage.upload_sessions.finish(request={
+) as apideck:
+    res = apideck.file_storage.upload_sessions.finish(request={
         "id": "<id>",
         "service_id": "salesforce",
         "digest": "sha=fpRyg5eVQletdZqEKaFlqwBXJzM=",

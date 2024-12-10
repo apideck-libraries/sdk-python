@@ -22,8 +22,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.ecommerce.products.list(request={
+) as apideck:
+    res = apideck.ecommerce.products.list(request={
         "service_id": "salesforce",
         "pass_through": {
             "search": "San Francisco",
@@ -73,8 +73,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.ecommerce.products.get(id="<id>", service_id="salesforce", fields="id,updated_at")
+) as apideck:
+    res = apideck.ecommerce.products.get(id="<id>", service_id="salesforce", fields="id,updated_at")
 
     if res is not None:
         # handle response

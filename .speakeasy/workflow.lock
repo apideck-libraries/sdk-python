@@ -1,9 +1,9 @@
-speakeasyVersion: 1.453.0
+speakeasyVersion: 1.453.8
 sources:
     Apideck:
         sourceNamespace: apideck
-        sourceRevisionDigest: sha256:bd31296f2b3ce64ae294b0e2921db4689f713fe0896e51a38dcaded2676414e6
-        sourceBlobDigest: sha256:c78223a6f6e3fb5b1d9f0d663d8bd72bf35ecc3ed8435dd81561c45569a9f642
+        sourceRevisionDigest: sha256:4370f91648df925a9cd5ee51f82e76448642303ca9fde1ea6aadf656bfe5694e
+        sourceBlobDigest: sha256:19939b73f05d1c30fba2779c43866e9c4d163b4e97a074b3a8961a34e04e5e8f
         tags:
             - latest
             - 10.8.3
@@ -11,10 +11,10 @@ targets:
     apideck:
         source: Apideck
         sourceNamespace: apideck
-        sourceRevisionDigest: sha256:bd31296f2b3ce64ae294b0e2921db4689f713fe0896e51a38dcaded2676414e6
-        sourceBlobDigest: sha256:c78223a6f6e3fb5b1d9f0d663d8bd72bf35ecc3ed8435dd81561c45569a9f642
+        sourceRevisionDigest: sha256:4370f91648df925a9cd5ee51f82e76448642303ca9fde1ea6aadf656bfe5694e
+        sourceBlobDigest: sha256:19939b73f05d1c30fba2779c43866e9c4d163b4e97a074b3a8961a34e04e5e8f
         codeSamplesNamespace: apideck-python-code-samples
-        codeSamplesRevisionDigest: sha256:9f12e8cc9d69d0ea4cbbd760a992e82f7a19a4744f9376bbfab9ea2b6843587c
+        codeSamplesRevisionDigest: sha256:3e9b2e781657df8ba931972b4537cab054eedda9568491c6d850f139a1b9c52b
 workflow:
     workflowVersion: 1.0.0
     speakeasyVersion: latest
@@ -22,12 +22,17 @@ workflow:
         Apideck:
             inputs:
                 - location: https://ci-spec-unify.s3.eu-central-1.amazonaws.com/speakeasy-spec.yml
+            overlays:
+                - location: ./.speakeasy/overlay-spec.yaml
             registry:
                 location: registry.speakeasyapi.dev/apideck-k2o/apideck/apideck
     targets:
         apideck:
             target: python
             source: Apideck
+            publish:
+                pypi:
+                    token: $pypi_token
             codeSamples:
                 registry:
                     location: registry.speakeasyapi.dev/apideck-k2o/apideck/apideck-python-code-samples

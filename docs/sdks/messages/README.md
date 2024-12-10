@@ -25,8 +25,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.sms.messages.list(request={
+) as apideck:
+    res = apideck.sms.messages.list(request={
         "service_id": "salesforce",
         "fields": "id,updated_at",
     })
@@ -75,8 +75,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.sms.messages.create(message={
+) as apideck:
+    res = apideck.sms.messages.create(message={
         "from_": "+15017122661",
         "to": "+15017122662",
         "body": "Hi! How are you doing?",
@@ -155,8 +155,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.sms.messages.get(id="<id>", service_id="salesforce", fields="id,updated_at")
+) as apideck:
+    res = apideck.sms.messages.get(id="<id>", service_id="salesforce", fields="id,updated_at")
 
     if res is not None:
         # handle response
@@ -205,8 +205,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.sms.messages.update(id="<id>", message={
+) as apideck:
+    res = apideck.sms.messages.update(id="<id>", message={
         "from_": "+15017122661",
         "to": "+15017122662",
         "body": "Hi! How are you doing?",
@@ -328,8 +328,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.sms.messages.delete(id="<id>", service_id="salesforce")
+) as apideck:
+    res = apideck.sms.messages.delete(id="<id>", service_id="salesforce")
 
     if res is not None:
         # handle response

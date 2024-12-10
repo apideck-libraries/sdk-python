@@ -26,8 +26,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.crm.contacts.list(request={
+) as apideck:
+    res = apideck.crm.contacts.list(request={
         "service_id": "salesforce",
         "filter_": {
             "first_name": "Elon",
@@ -89,8 +89,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.crm.contacts.create(contact={
+) as apideck:
+    res = apideck.crm.contacts.create(contact={
         "name": "Elon Musk",
         "owner_id": "54321",
         "type": apideck_unify.ContactType.PERSONAL,
@@ -353,8 +353,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.crm.contacts.get(request={
+) as apideck:
+    res = apideck.crm.contacts.get(request={
         "id": "<id>",
         "service_id": "salesforce",
         "fields": "id,updated_at",
@@ -410,8 +410,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.crm.contacts.update(id="<id>", contact={
+) as apideck:
+    res = apideck.crm.contacts.update(id="<id>", contact={
         "name": "Elon Musk",
         "owner_id": "54321",
         "type": apideck_unify.ContactType.PERSONAL,
@@ -654,8 +654,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.crm.contacts.delete(id="<id>", service_id="salesforce")
+) as apideck:
+    res = apideck.crm.contacts.delete(id="<id>", service_id="salesforce")
 
     if res is not None:
         # handle response

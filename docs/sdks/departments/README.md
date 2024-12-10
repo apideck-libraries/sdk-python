@@ -25,8 +25,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.accounting.departments.list(request={
+) as apideck:
+    res = apideck.accounting.departments.list(request={
         "service_id": "salesforce",
         "fields": "id,updated_at",
         "filter_": {
@@ -77,8 +77,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.accounting.departments.create(accounting_department={
+) as apideck:
+    res = apideck.accounting.departments.create(accounting_department={
         "parent_id": "12345",
         "name": "Sales",
         "status": apideck_unify.DepartmentStatus.ACTIVE,
@@ -162,8 +162,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.accounting.departments.get(id="<id>", service_id="salesforce", fields="id,updated_at")
+) as apideck:
+    res = apideck.accounting.departments.get(id="<id>", service_id="salesforce", fields="id,updated_at")
 
     if res is not None:
         # handle response
@@ -211,8 +211,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.accounting.departments.update(id="<id>", accounting_department={
+) as apideck:
+    res = apideck.accounting.departments.update(id="<id>", accounting_department={
         "parent_id": "12345",
         "name": "Sales",
         "status": apideck_unify.DepartmentStatus.ACTIVE,
@@ -319,8 +319,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.accounting.departments.delete(id="<id>", service_id="salesforce")
+) as apideck:
+    res = apideck.accounting.departments.delete(id="<id>", service_id="salesforce")
 
     if res is not None:
         # handle response

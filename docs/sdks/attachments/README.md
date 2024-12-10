@@ -25,8 +25,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.accounting.attachments.list(request={
+) as apideck:
+    res = apideck.accounting.attachments.list(request={
         "reference_type": apideck_unify.AttachmentReferenceType.INVOICE,
         "reference_id": "123456",
         "service_id": "salesforce",
@@ -76,8 +76,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.accounting.attachments.get(request={
+) as apideck:
+    res = apideck.accounting.attachments.get(request={
         "reference_type": apideck_unify.AttachmentReferenceType.INVOICE,
         "reference_id": "123456",
         "id": "<id>",
@@ -128,8 +128,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.accounting.attachments.delete(request={
+) as apideck:
+    res = apideck.accounting.attachments.delete(request={
         "reference_type": apideck_unify.AttachmentReferenceType.INVOICE,
         "reference_id": "123456",
         "id": "<id>",
@@ -179,8 +179,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.accounting.attachments.download(request={
+) as apideck:
+    res = apideck.accounting.attachments.download(request={
         "reference_type": apideck_unify.AttachmentReferenceType.INVOICE,
         "reference_id": "123456",
         "id": "<id>",

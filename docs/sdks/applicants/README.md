@@ -25,8 +25,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.ats.applicants.list(request={
+) as apideck:
+    res = apideck.ats.applicants.list(request={
         "service_id": "salesforce",
         "filter_": {
             "job_id": "1234",
@@ -81,8 +81,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.ats.applicants.create(applicant={
+) as apideck:
+    res = apideck.ats.applicants.create(applicant={
         "name": "Elon Musk",
         "first_name": "Elon",
         "last_name": "Musk",
@@ -316,8 +316,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.ats.applicants.get(id="<id>", service_id="salesforce", fields="id,updated_at")
+) as apideck:
+    res = apideck.ats.applicants.get(id="<id>", service_id="salesforce", fields="id,updated_at")
 
     if res is not None:
         # handle response
@@ -366,8 +366,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.ats.applicants.update(id="<id>", applicant={
+) as apideck:
+    res = apideck.ats.applicants.update(id="<id>", applicant={
         "name": "Elon Musk",
         "first_name": "Elon",
         "last_name": "Musk",
@@ -611,8 +611,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.ats.applicants.delete(id="<id>", service_id="salesforce")
+) as apideck:
+    res = apideck.ats.applicants.delete(id="<id>", service_id="salesforce")
 
     if res is not None:
         # handle response

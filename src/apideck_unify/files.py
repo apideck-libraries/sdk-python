@@ -11,12 +11,12 @@ from typing import Any, Optional, Union, cast
 
 class DownloadAcceptEnum(str, Enum):
     APPLICATION_JSON = "application/json"
-    WILDCARD_WILDCARD_ = "*/*"
+    WILDCARD_ROOT_WILDCARD_ = "*/*"
 
 
 class ExportAcceptEnum(str, Enum):
     APPLICATION_JSON = "application/json"
-    WILDCARD_WILDCARD_ = "*/*"
+    WILDCARD_ROOT_WILDCARD_ = "*/*"
 
 
 class Files(BaseSDK):
@@ -1470,7 +1470,7 @@ class Files(BaseSDK):
         self,
         *,
         id: str,
-        format: str,
+        file_format: str,
         service_id: Optional[str] = None,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
@@ -1483,7 +1483,7 @@ class Files(BaseSDK):
         Export File
 
         :param id: ID of the record you are acting upon.
-        :param format: File format to export this file to. A list of available file formats for the current file is available as `export_formats` on the File resource.
+        :param file_format: File format to export this file to. A list of available file formats for the current file is available as `export_formats` on the File resource.
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param fields: The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded.
         :param retries: Override the default retry configuration for this method
@@ -1503,7 +1503,7 @@ class Files(BaseSDK):
             id=id,
             service_id=service_id,
             fields=fields,
-            format=format,
+            file_format=file_format,
         )
 
         req = self.build_request(
@@ -1602,7 +1602,7 @@ class Files(BaseSDK):
         self,
         *,
         id: str,
-        format: str,
+        file_format: str,
         service_id: Optional[str] = None,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
@@ -1615,7 +1615,7 @@ class Files(BaseSDK):
         Export File
 
         :param id: ID of the record you are acting upon.
-        :param format: File format to export this file to. A list of available file formats for the current file is available as `export_formats` on the File resource.
+        :param file_format: File format to export this file to. A list of available file formats for the current file is available as `export_formats` on the File resource.
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param fields: The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded.
         :param retries: Override the default retry configuration for this method
@@ -1635,7 +1635,7 @@ class Files(BaseSDK):
             id=id,
             service_id=service_id,
             fields=fields,
-            format=format,
+            file_format=file_format,
         )
 
         req = self.build_request_async(

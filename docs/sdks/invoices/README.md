@@ -27,8 +27,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.accounting.invoices.list(request={
+) as apideck:
+    res = apideck.accounting.invoices.list(request={
         "service_id": "salesforce",
         "filter_": {
             "updated_since": dateutil.parser.isoparse("2020-09-30T07:43:32.000Z"),
@@ -89,8 +89,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.accounting.invoices.create(invoice={
+) as apideck:
+    res = apideck.accounting.invoices.create(invoice={
         "type": apideck_unify.InvoiceType.SERVICE,
         "number": "OIT00546",
         "customer": {
@@ -395,8 +395,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.accounting.invoices.get(id="<id>", service_id="salesforce", fields="id,updated_at")
+) as apideck:
+    res = apideck.accounting.invoices.get(id="<id>", service_id="salesforce", fields="id,updated_at")
 
     if res is not None:
         # handle response
@@ -445,8 +445,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.accounting.invoices.update(id="<id>", invoice={
+) as apideck:
+    res = apideck.accounting.invoices.update(id="<id>", invoice={
         "type": apideck_unify.InvoiceType.SERVICE,
         "number": "OIT00546",
         "customer": {
@@ -750,8 +750,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.accounting.invoices.delete(id="<id>", service_id="salesforce")
+) as apideck:
+    res = apideck.accounting.invoices.delete(id="<id>", service_id="salesforce")
 
     if res is not None:
         # handle response

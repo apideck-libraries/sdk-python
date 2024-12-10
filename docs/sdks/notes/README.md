@@ -25,8 +25,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.crm.notes.list(request={
+) as apideck:
+    res = apideck.crm.notes.list(request={
         "service_id": "salesforce",
         "pass_through": {
             "search": "San Francisco",
@@ -76,8 +76,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.crm.notes.create(note={
+) as apideck:
+    res = apideck.crm.notes.create(note={
         "title": "Meeting Notes",
         "content": "Office hours are 9AM-6PM",
         "owner_id": "12345",
@@ -155,8 +155,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.crm.notes.get(id="<id>", service_id="salesforce", fields="id,updated_at")
+) as apideck:
+    res = apideck.crm.notes.get(id="<id>", service_id="salesforce", fields="id,updated_at")
 
     if res is not None:
         # handle response
@@ -203,8 +203,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.crm.notes.update(id="<id>", note={
+) as apideck:
+    res = apideck.crm.notes.update(id="<id>", note={
         "title": "Meeting Notes",
         "content": "Office hours are 9AM-6PM",
         "owner_id": "12345",
@@ -325,8 +325,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.crm.notes.delete(id="<id>", service_id="salesforce")
+) as apideck:
+    res = apideck.crm.notes.delete(id="<id>", service_id="salesforce")
 
     if res is not None:
         # handle response

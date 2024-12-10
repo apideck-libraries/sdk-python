@@ -25,8 +25,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.accounting.expenses.list(service_id="salesforce")
+) as apideck:
+    res = apideck.accounting.expenses.list(service_id="salesforce")
 
     if res is not None:
         # handle response
@@ -75,8 +75,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.accounting.expenses.create(expense={
+) as apideck:
+    res = apideck.accounting.expenses.create(expense={
         "transaction_date": dateutil.parser.isoparse("2021-05-01T12:00:00.000Z"),
         "account_id": "123456",
         "line_items": [
@@ -189,8 +189,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.accounting.expenses.get(id="<id>", service_id="salesforce")
+) as apideck:
+    res = apideck.accounting.expenses.get(id="<id>", service_id="salesforce")
 
     if res is not None:
         # handle response
@@ -238,8 +238,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.accounting.expenses.update(id="<id>", expense={
+) as apideck:
+    res = apideck.accounting.expenses.update(id="<id>", expense={
         "transaction_date": dateutil.parser.isoparse("2021-05-01T12:00:00.000Z"),
         "account_id": "123456",
         "line_items": [
@@ -431,8 +431,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.accounting.expenses.delete(id="<id>", service_id="salesforce")
+) as apideck:
+    res = apideck.accounting.expenses.delete(id="<id>", service_id="salesforce")
 
     if res is not None:
         # handle response

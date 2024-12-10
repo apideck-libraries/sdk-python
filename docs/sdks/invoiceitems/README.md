@@ -26,8 +26,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.accounting.invoice_items.list(request={
+) as apideck:
+    res = apideck.accounting.invoice_items.list(request={
         "service_id": "salesforce",
         "filter_": {
             "name": "Widgets Large",
@@ -83,8 +83,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.accounting.invoice_items.create(invoice_item={
+) as apideck:
+    res = apideck.accounting.invoice_items.create(invoice_item={
         "name": "Model Y",
         "description": "Model Y is a fully electric, mid-size SUV, with seating for up to seven, dual motor AWD and unparalleled protection.",
         "code": "120-C",
@@ -212,8 +212,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.accounting.invoice_items.get(request={
+) as apideck:
+    res = apideck.accounting.invoice_items.get(request={
         "id": "<id>",
         "service_id": "salesforce",
         "fields": "id,updated_at",
@@ -266,8 +266,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.accounting.invoice_items.update(id="<id>", invoice_item={
+) as apideck:
+    res = apideck.accounting.invoice_items.update(id="<id>", invoice_item={
         "name": "Model Y",
         "description": "Model Y is a fully electric, mid-size SUV, with seating for up to seven, dual motor AWD and unparalleled protection.",
         "code": "120-C",
@@ -419,8 +419,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.accounting.invoice_items.delete(id="<id>", service_id="salesforce")
+) as apideck:
+    res = apideck.accounting.invoice_items.delete(id="<id>", service_id="salesforce")
 
     if res is not None:
         # handle response

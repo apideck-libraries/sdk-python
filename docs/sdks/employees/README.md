@@ -26,8 +26,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.hris.employees.list(request={
+) as apideck:
+    res = apideck.hris.employees.list(request={
         "service_id": "salesforce",
         "filter_": {
             "company_id": "1234",
@@ -94,8 +94,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.hris.employees.create(employee={
+) as apideck:
+    res = apideck.hris.employees.create(employee={
         "id": "12345",
         "first_name": "Elon",
         "last_name": "Musk",
@@ -425,8 +425,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.hris.employees.get(request={
+) as apideck:
+    res = apideck.hris.employees.get(request={
         "id": "<id>",
         "service_id": "salesforce",
         "fields": "id,updated_at",
@@ -482,8 +482,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.hris.employees.update(id="<id>", employee={
+) as apideck:
+    res = apideck.hris.employees.update(id="<id>", employee={
         "id": "12345",
         "first_name": "Elon",
         "last_name": "Musk",
@@ -882,8 +882,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.hris.employees.delete(id="<id>", service_id="salesforce")
+) as apideck:
+    res = apideck.hris.employees.delete(id="<id>", service_id="salesforce")
 
     if res is not None:
         # handle response

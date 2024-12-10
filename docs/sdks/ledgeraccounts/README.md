@@ -27,8 +27,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.accounting.ledger_accounts.list(request={
+) as apideck:
+    res = apideck.accounting.ledger_accounts.list(request={
         "service_id": "salesforce",
         "filter_": {
             "updated_since": dateutil.parser.isoparse("2020-09-30T07:43:32.000Z"),
@@ -87,8 +87,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.accounting.ledger_accounts.create(ledger_account={
+) as apideck:
+    res = apideck.accounting.ledger_accounts.create(ledger_account={
         "display_id": "1-12345",
         "code": "453",
         "classification": apideck_unify.Classification.ASSET,
@@ -199,8 +199,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.accounting.ledger_accounts.get(id="<id>", service_id="salesforce", fields="id,updated_at")
+) as apideck:
+    res = apideck.accounting.ledger_accounts.get(id="<id>", service_id="salesforce", fields="id,updated_at")
 
     if res is not None:
         # handle response
@@ -249,8 +249,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.accounting.ledger_accounts.update(id="<id>", ledger_account={
+) as apideck:
+    res = apideck.accounting.ledger_accounts.update(id="<id>", ledger_account={
         "display_id": "1-12345",
         "code": "453",
         "classification": apideck_unify.Classification.ASSET,
@@ -404,8 +404,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.accounting.ledger_accounts.delete(id="<id>", service_id="salesforce")
+) as apideck:
+    res = apideck.accounting.ledger_accounts.delete(id="<id>", service_id="salesforce")
 
     if res is not None:
         # handle response

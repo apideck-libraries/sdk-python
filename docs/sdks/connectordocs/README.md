@@ -21,8 +21,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.connector.connector_docs.get(id="<id>", doc_id="application_owner+oauth_credentials")
+) as apideck:
+    res = apideck.connector.connector_docs.get(id="<id>", doc_id="application_owner+oauth_credentials")
 
     if res is not None:
         # handle response

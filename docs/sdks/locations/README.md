@@ -25,8 +25,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.accounting.locations.list(request={
+) as apideck:
+    res = apideck.accounting.locations.list(request={
         "service_id": "salesforce",
         "fields": "id,updated_at",
         "filter_": {
@@ -77,8 +77,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.accounting.locations.create(accounting_location={
+) as apideck:
+    res = apideck.accounting.locations.create(accounting_location={
         "parent_id": "12345",
         "company_name": "SpaceX",
         "display_name": "11 UT - South Jordan",
@@ -181,8 +181,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.accounting.locations.get(id="<id>", service_id="salesforce", fields="id,updated_at")
+) as apideck:
+    res = apideck.accounting.locations.get(id="<id>", service_id="salesforce", fields="id,updated_at")
 
     if res is not None:
         # handle response
@@ -230,8 +230,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.accounting.locations.update(id="<id>", accounting_location={
+) as apideck:
+    res = apideck.accounting.locations.update(id="<id>", accounting_location={
         "parent_id": "12345",
         "company_name": "SpaceX",
         "display_name": "11 UT - South Jordan",
@@ -403,8 +403,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.accounting.locations.delete(id="<id>", service_id="salesforce")
+) as apideck:
+    res = apideck.accounting.locations.delete(id="<id>", service_id="salesforce")
 
     if res is not None:
         # handle response

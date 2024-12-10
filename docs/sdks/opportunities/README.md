@@ -26,8 +26,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.crm.opportunities.list(request={
+) as apideck:
+    res = apideck.crm.opportunities.list(request={
         "service_id": "salesforce",
         "filter_": {
             "status": "Completed",
@@ -87,8 +87,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.crm.opportunities.create(opportunity={
+) as apideck:
+    res = apideck.crm.opportunities.create(opportunity={
         "title": "New Rocket",
         "primary_contact_id": "12345",
         "description": "Opportunities are created for People and Companies that are interested in buying your products or services. Create Opportunities for People and Companies to move them through one of your Pipelines.",
@@ -188,8 +188,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.crm.opportunities.get(id="<id>", service_id="salesforce", fields="id,updated_at")
+) as apideck:
+    res = apideck.crm.opportunities.get(id="<id>", service_id="salesforce", fields="id,updated_at")
 
     if res is not None:
         # handle response
@@ -238,8 +238,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.crm.opportunities.update(id="<id>", opportunity={
+) as apideck:
+    res = apideck.crm.opportunities.update(id="<id>", opportunity={
         "title": "New Rocket",
         "primary_contact_id": "12345",
         "description": "Opportunities are created for People and Companies that are interested in buying your products or services. Create Opportunities for People and Companies to move them through one of your Pipelines.",
@@ -367,8 +367,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.crm.opportunities.delete(id="<id>", service_id="salesforce")
+) as apideck:
+    res = apideck.crm.opportunities.delete(id="<id>", service_id="salesforce")
 
     if res is not None:
         # handle response

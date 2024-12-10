@@ -25,8 +25,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.webhook.webhooks.list()
+) as apideck:
+    res = apideck.webhook.webhooks.list()
 
     if res is not None:
         # handle response
@@ -72,8 +72,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.webhook.webhooks.create(request={
+) as apideck:
+    res = apideck.webhook.webhooks.create(request={
         "unified_api": apideck_unify.UnifiedAPIID.CRM,
         "status": apideck_unify.Status.ENABLED,
         "delivery_url": "https://example.com/my/webhook/endpoint",
@@ -126,8 +126,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.webhook.webhooks.get(id="<id>")
+) as apideck:
+    res = apideck.webhook.webhooks.get(id="<id>")
 
     if res is not None:
         # handle response
@@ -172,8 +172,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.webhook.webhooks.update(id="<id>", update_webhook_request={
+) as apideck:
+    res = apideck.webhook.webhooks.update(id="<id>", update_webhook_request={
         "description": "A description",
         "status": apideck_unify.Status.ENABLED,
         "delivery_url": "https://example.com/my/webhook/endpoint",
@@ -226,8 +226,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.webhook.webhooks.delete(id="<id>")
+) as apideck:
+    res = apideck.webhook.webhooks.delete(id="<id>")
 
     if res is not None:
         # handle response

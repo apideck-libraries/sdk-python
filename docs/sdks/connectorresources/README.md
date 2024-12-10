@@ -22,8 +22,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.connector.connector_resources.get(id="<id>", resource_id="<id>", unified_api=apideck_unify.UnifiedAPIID.CRM)
+) as apideck:
+    res = apideck.connector.connector_resources.get(id="<id>", resource_id="<id>", unified_api=apideck_unify.UnifiedAPIID.CRM)
 
     if res is not None:
         # handle response

@@ -27,8 +27,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.crm.activities.list(request={
+) as apideck:
+    res = apideck.crm.activities.list(request={
         "service_id": "salesforce",
         "filter_": {
             "updated_since": dateutil.parser.isoparse("2020-09-30T07:43:32.000Z"),
@@ -86,8 +86,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.crm.activities.create(activity={
+) as apideck:
+    res = apideck.crm.activities.create(activity={
         "type": apideck_unify.ActivityType.MEETING,
         "activity_datetime": "2021-05-01T12:00:00.000Z",
         "duration_seconds": 1800,
@@ -235,8 +235,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.crm.activities.get(id="<id>", service_id="salesforce", fields="id,updated_at")
+) as apideck:
+    res = apideck.crm.activities.get(id="<id>", service_id="salesforce", fields="id,updated_at")
 
     if res is not None:
         # handle response
@@ -284,8 +284,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.crm.activities.update(id="<id>", activity={
+) as apideck:
+    res = apideck.crm.activities.update(id="<id>", activity={
         "type": apideck_unify.ActivityType.MEETING,
         "activity_datetime": "2021-05-01T12:00:00.000Z",
         "duration_seconds": 1800,
@@ -487,8 +487,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.crm.activities.delete(id="<id>", service_id="salesforce")
+) as apideck:
+    res = apideck.crm.activities.delete(id="<id>", service_id="salesforce")
 
     if res is not None:
         # handle response

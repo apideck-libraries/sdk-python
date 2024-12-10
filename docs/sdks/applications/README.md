@@ -25,8 +25,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.ats.applications.list(request={
+) as apideck:
+    res = apideck.ats.applications.list(request={
         "service_id": "salesforce",
         "pass_through": {
             "search": "San Francisco",
@@ -76,8 +76,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.ats.applications.create(application={
+) as apideck:
+    res = apideck.ats.applications.create(application={
         "applicant_id": "12345",
         "job_id": "12345",
         "status": apideck_unify.ApplicationStatus.OPEN,
@@ -154,8 +154,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.ats.applications.get(id="<id>", service_id="salesforce")
+) as apideck:
+    res = apideck.ats.applications.get(id="<id>", service_id="salesforce")
 
     if res is not None:
         # handle response
@@ -202,8 +202,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.ats.applications.update(id="<id>", application={
+) as apideck:
+    res = apideck.ats.applications.update(id="<id>", application={
         "applicant_id": "12345",
         "job_id": "12345",
         "status": apideck_unify.ApplicationStatus.OPEN,
@@ -323,8 +323,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.ats.applications.delete(id="<id>", service_id="salesforce")
+) as apideck:
+    res = apideck.ats.applications.delete(id="<id>", service_id="salesforce")
 
     if res is not None:
         # handle response

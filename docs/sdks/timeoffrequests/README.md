@@ -26,8 +26,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.hris.time_off_requests.list(request={
+) as apideck:
+    res = apideck.hris.time_off_requests.list(request={
         "service_id": "salesforce",
         "filter_": {
             "start_date": "2022-04-08",
@@ -86,8 +86,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.hris.time_off_requests.create(time_off_request={
+) as apideck:
+    res = apideck.hris.time_off_requests.create(time_off_request={
         "employee_id": "12345",
         "policy_id": "12345",
         "status": apideck_unify.TimeOffRequestStatusStatus.APPROVED,
@@ -174,8 +174,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.hris.time_off_requests.get(request={
+) as apideck:
+    res = apideck.hris.time_off_requests.get(request={
         "id": "<id>",
         "employee_id": "<id>",
         "service_id": "salesforce",
@@ -225,8 +225,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.hris.time_off_requests.update(request={
+) as apideck:
+    res = apideck.hris.time_off_requests.update(request={
         "id": "<id>",
         "employee_id": "<id>",
         "time_off_request": {
@@ -358,8 +358,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.hris.time_off_requests.delete(id="<id>", employee_id="<id>", service_id="salesforce")
+) as apideck:
+    res = apideck.hris.time_off_requests.delete(id="<id>", employee_id="<id>", service_id="salesforce")
 
     if res is not None:
         # handle response

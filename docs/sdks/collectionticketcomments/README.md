@@ -26,8 +26,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.issue_tracking.collection_ticket_comments.list(request={
+) as apideck:
+    res = apideck.issue_tracking.collection_ticket_comments.list(request={
         "collection_id": "apideck-io",
         "ticket_id": "<id>",
         "service_id": "salesforce",
@@ -83,8 +83,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.issue_tracking.collection_ticket_comments.create(request={
+) as apideck:
+    res = apideck.issue_tracking.collection_ticket_comments.create(request={
         "collection_id": "apideck-io",
         "ticket_id": "<id>",
         "collection_ticket_comment": {
@@ -158,8 +158,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.issue_tracking.collection_ticket_comments.get(request={
+) as apideck:
+    res = apideck.issue_tracking.collection_ticket_comments.get(request={
         "id": "<id>",
         "collection_id": "apideck-io",
         "ticket_id": "<id>",
@@ -209,8 +209,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.issue_tracking.collection_ticket_comments.update(request={
+) as apideck:
+    res = apideck.issue_tracking.collection_ticket_comments.update(request={
         "id": "<id>",
         "collection_id": "apideck-io",
         "ticket_id": "<id>",
@@ -327,8 +327,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.issue_tracking.collection_ticket_comments.delete(request={
+) as apideck:
+    res = apideck.issue_tracking.collection_ticket_comments.delete(request={
         "id": "<id>",
         "collection_id": "apideck-io",
         "ticket_id": "<id>",

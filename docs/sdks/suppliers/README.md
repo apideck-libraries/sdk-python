@@ -27,8 +27,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.accounting.suppliers.list(request={
+) as apideck:
+    res = apideck.accounting.suppliers.list(request={
         "service_id": "salesforce",
         "filter_": {
             "company_name": "SpaceX",
@@ -91,8 +91,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.accounting.suppliers.create(supplier={
+) as apideck:
+    res = apideck.accounting.suppliers.create(supplier={
         "display_id": "EMP00101",
         "display_name": "Windsurf Shop",
         "company_name": "SpaceX",
@@ -298,8 +298,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.accounting.suppliers.get(id="<id>", service_id="salesforce", fields="id,updated_at")
+) as apideck:
+    res = apideck.accounting.suppliers.get(id="<id>", service_id="salesforce", fields="id,updated_at")
 
     if res is not None:
         # handle response
@@ -347,8 +347,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.accounting.suppliers.update(id="<id>", supplier={
+) as apideck:
+    res = apideck.accounting.suppliers.update(id="<id>", supplier={
         "display_id": "EMP00101",
         "display_name": "Windsurf Shop",
         "company_name": "SpaceX",
@@ -604,8 +604,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.accounting.suppliers.delete(id="<id>", service_id="salesforce")
+) as apideck:
+    res = apideck.accounting.suppliers.delete(id="<id>", service_id="salesforce")
 
     if res is not None:
         # handle response

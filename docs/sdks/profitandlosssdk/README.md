@@ -21,8 +21,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.accounting.profit_and_loss.get(request={
+) as apideck:
+    res = apideck.accounting.profit_and_loss.get(request={
         "service_id": "salesforce",
         "filter_": {
             "customer_id": "123abc",

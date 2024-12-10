@@ -21,8 +21,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.ecommerce.stores.get(service_id="salesforce", fields="id,updated_at")
+) as apideck:
+    res = apideck.ecommerce.stores.get(service_id="salesforce", fields="id,updated_at")
 
     if res is not None:
         # handle response

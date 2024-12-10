@@ -25,8 +25,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.hris.companies.list(request={
+) as apideck:
+    res = apideck.hris.companies.list(request={
         "service_id": "salesforce",
         "pass_through": {
             "search": "San Francisco",
@@ -77,8 +77,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.hris.companies.create(hris_company={
+) as apideck:
+    res = apideck.hris.companies.create(hris_company={
         "legal_name": "SpaceX",
         "display_name": "SpaceX",
         "subdomain": "company",
@@ -207,8 +207,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.hris.companies.get(id="<id>", service_id="salesforce", fields="id,updated_at")
+) as apideck:
+    res = apideck.hris.companies.get(id="<id>", service_id="salesforce", fields="id,updated_at")
 
     if res is not None:
         # handle response
@@ -256,8 +256,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.hris.companies.update(id="<id>", hris_company={
+) as apideck:
+    res = apideck.hris.companies.update(id="<id>", hris_company={
         "legal_name": "SpaceX",
         "display_name": "SpaceX",
         "subdomain": "company",
@@ -478,8 +478,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.hris.companies.delete(id="<id>", service_id="salesforce")
+) as apideck:
+    res = apideck.hris.companies.delete(id="<id>", service_id="salesforce")
 
     if res is not None:
         # handle response

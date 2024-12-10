@@ -25,8 +25,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.file_storage.shared_links.list(request={
+) as apideck:
+    res = apideck.file_storage.shared_links.list(request={
         "service_id": "salesforce",
         "pass_through": {
             "search": "San Francisco",
@@ -77,8 +77,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.file_storage.shared_links.create(shared_link={
+) as apideck:
+    res = apideck.file_storage.shared_links.create(shared_link={
         "target_id": "<id>",
         "download_url": "https://www.box.com/shared/static/rh935iit6ewrmw0unyul.jpeg",
         "scope": apideck_unify.Scope.COMPANY,
@@ -151,8 +151,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.file_storage.shared_links.get(id="<id>", service_id="salesforce", fields="id,updated_at")
+) as apideck:
+    res = apideck.file_storage.shared_links.get(id="<id>", service_id="salesforce", fields="id,updated_at")
 
     if res is not None:
         # handle response
@@ -200,8 +200,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.file_storage.shared_links.update(id="<id>", shared_link={
+) as apideck:
+    res = apideck.file_storage.shared_links.update(id="<id>", shared_link={
         "target_id": "<id>",
         "download_url": "https://www.box.com/shared/static/rh935iit6ewrmw0unyul.jpeg",
         "scope": apideck_unify.Scope.COMPANY,
@@ -317,8 +317,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.file_storage.shared_links.delete(id="<id>", service_id="salesforce")
+) as apideck:
+    res = apideck.file_storage.shared_links.delete(id="<id>", service_id="salesforce")
 
     if res is not None:
         # handle response

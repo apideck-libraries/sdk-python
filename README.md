@@ -52,7 +52,7 @@ The SDK can be installed with either *pip* or *poetry* package managers.
 *PIP* is the default package installer for Python, enabling easy installation and management of packages from PyPI via the command line.
 
 ```bash
-pip install git+<UNSET>.git
+pip install apideck-unify
 ```
 
 ### Poetry
@@ -60,7 +60,7 @@ pip install git+<UNSET>.git
 *Poetry* is a modern tool that simplifies dependency management and package publishing by using a single `pyproject.toml` file to handle project metadata and dependencies.
 
 ```bash
-poetry add git+<UNSET>.git
+poetry add apideck-unify
 ```
 <!-- End SDK Installation [installation] -->
 
@@ -88,8 +88,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.accounting.tax_rates.list(request={
+) as apideck:
+    res = apideck.accounting.tax_rates.list(request={
         "service_id": "salesforce",
         "filter_": {
             "assets": True,
@@ -123,8 +123,8 @@ async def main():
         api_key=os.getenv("APIDECK_API_KEY", ""),
         consumer_id="test-consumer",
         app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-    ) as s:
-        res = await s.accounting.tax_rates.list_async(request={
+    ) as apideck:
+        res = await apideck.accounting.tax_rates.list_async(request={
             "service_id": "salesforce",
             "filter_": {
                 "assets": True,
@@ -167,8 +167,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.accounting.tax_rates.list(request={
+) as apideck:
+    res = apideck.accounting.tax_rates.list(request={
         "service_id": "salesforce",
         "filter_": {
             "assets": True,
@@ -724,16 +724,16 @@ Some of the endpoints in this SDK support retries. If you use the SDK without an
 
 To change the default retry strategy for a single API call, simply provide a `RetryConfig` object to the call:
 ```python
-from apideck.utils import BackoffStrategy, RetryConfig
 from apideck_unify import Apideck
+from apideck_unify.utils import BackoffStrategy, RetryConfig
 import os
 
 with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.accounting.tax_rates.list(request={
+) as apideck:
+    res = apideck.accounting.tax_rates.list(request={
         "service_id": "salesforce",
         "filter_": {
             "assets": True,
@@ -757,8 +757,8 @@ with Apideck(
 
 If you'd like to override the default retry strategy for all operations that support retries, you can use the `retry_config` optional parameter when initializing the SDK:
 ```python
-from apideck.utils import BackoffStrategy, RetryConfig
 from apideck_unify import Apideck
+from apideck_unify.utils import BackoffStrategy, RetryConfig
 import os
 
 with Apideck(
@@ -766,8 +766,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.accounting.tax_rates.list(request={
+) as apideck:
+    res = apideck.accounting.tax_rates.list(request={
         "service_id": "salesforce",
         "filter_": {
             "assets": True,
@@ -824,10 +824,10 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
+) as apideck:
     res = None
     try:
-        res = s.accounting.tax_rates.list(request={
+        res = apideck.accounting.tax_rates.list(request={
             "service_id": "salesforce",
             "filter_": {
                 "assets": True,
@@ -882,8 +882,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.accounting.tax_rates.list(request={
+) as apideck:
+    res = apideck.accounting.tax_rates.list(request={
         "service_id": "salesforce",
         "filter_": {
             "assets": True,
@@ -915,8 +915,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.file_storage.upload_sessions.create(create_upload_session_request={
+) as apideck:
+    res = apideck.file_storage.upload_sessions.create(create_upload_session_request={
         "name": "Documents",
         "parent_folder_id": "1234",
         "size": 1810673,

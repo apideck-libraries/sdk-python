@@ -11,7 +11,7 @@ from typing import Any, Optional, Union, cast
 
 class DownloadAcceptEnum(str, Enum):
     APPLICATION_JSON = "application/json"
-    WILDCARD_WILDCARD_ = "*/*"
+    WILDCARD_ROOT_WILDCARD_ = "*/*"
 
 
 class Attachments(BaseSDK):

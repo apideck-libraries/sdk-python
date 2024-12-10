@@ -25,8 +25,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.hris.departments.list(request={
+) as apideck:
+    res = apideck.hris.departments.list(request={
         "service_id": "salesforce",
         "pass_through": {
             "search": "San Francisco",
@@ -76,8 +76,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.hris.departments.create(department={
+) as apideck:
+    res = apideck.hris.departments.create(department={
         "name": "R&D",
         "code": "2",
         "description": "R&D",
@@ -150,8 +150,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.hris.departments.get(id="<id>", service_id="salesforce", fields="id,updated_at")
+) as apideck:
+    res = apideck.hris.departments.get(id="<id>", service_id="salesforce", fields="id,updated_at")
 
     if res is not None:
         # handle response
@@ -198,8 +198,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.hris.departments.update(id="<id>", department={
+) as apideck:
+    res = apideck.hris.departments.update(id="<id>", department={
         "name": "R&D",
         "code": "2",
         "description": "R&D",
@@ -315,8 +315,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.hris.departments.delete(id="<id>", service_id="salesforce")
+) as apideck:
+    res = apideck.hris.departments.delete(id="<id>", service_id="salesforce")
 
     if res is not None:
         # handle response

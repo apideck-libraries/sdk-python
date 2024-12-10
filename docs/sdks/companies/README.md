@@ -26,8 +26,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.crm.companies.list(request={
+) as apideck:
+    res = apideck.crm.companies.list(request={
         "service_id": "salesforce",
         "filter_": {
             "name": "SpaceX",
@@ -86,8 +86,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.crm.companies.create(company={
+) as apideck:
+    res = apideck.crm.companies.create(company={
         "name": "SpaceX",
         "owner_id": "12345",
         "image": "https://www.spacex.com/static/images/share.jpg",
@@ -353,8 +353,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.crm.companies.get(id="<id>", service_id="salesforce", fields="id,updated_at")
+) as apideck:
+    res = apideck.crm.companies.get(id="<id>", service_id="salesforce", fields="id,updated_at")
 
     if res is not None:
         # handle response
@@ -403,8 +403,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.crm.companies.update(id="<id>", company={
+) as apideck:
+    res = apideck.crm.companies.update(id="<id>", company={
         "name": "SpaceX",
         "owner_id": "12345",
         "image": "https://www.spacex.com/static/images/share.jpg",
@@ -638,8 +638,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.crm.companies.delete(id="<id>", service_id="salesforce")
+) as apideck:
+    res = apideck.crm.companies.delete(id="<id>", service_id="salesforce")
 
     if res is not None:
         # handle response

@@ -21,8 +21,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.issue_tracking.collection_tags.list(request={
+) as apideck:
+    res = apideck.issue_tracking.collection_tags.list(request={
         "collection_id": "apideck-io",
         "service_id": "salesforce",
         "pass_through": {

@@ -27,8 +27,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.accounting.bill_payments.list(request={
+) as apideck:
+    res = apideck.accounting.bill_payments.list(request={
         "service_id": "salesforce",
         "filter_": {
             "updated_since": dateutil.parser.isoparse("2020-09-30T07:43:32.000Z"),
@@ -87,8 +87,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.accounting.bill_payments.create(bill_payment={
+) as apideck:
+    res = apideck.accounting.bill_payments.create(bill_payment={
         "total_amount": 49.99,
         "transaction_date": dateutil.parser.isoparse("2021-05-01T12:00:00.000Z"),
         "currency": apideck_unify.Currency.USD,
@@ -227,8 +227,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.accounting.bill_payments.get(id="<id>", service_id="salesforce", fields="id,updated_at")
+) as apideck:
+    res = apideck.accounting.bill_payments.get(id="<id>", service_id="salesforce", fields="id,updated_at")
 
     if res is not None:
         # handle response
@@ -277,8 +277,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.accounting.bill_payments.update(id="<id>", bill_payment={
+) as apideck:
+    res = apideck.accounting.bill_payments.update(id="<id>", bill_payment={
         "total_amount": 49.99,
         "transaction_date": dateutil.parser.isoparse("2021-05-01T12:00:00.000Z"),
         "currency": apideck_unify.Currency.USD,
@@ -445,8 +445,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.accounting.bill_payments.delete(id="<id>", service_id="salesforce")
+) as apideck:
+    res = apideck.accounting.bill_payments.delete(id="<id>", service_id="salesforce")
 
     if res is not None:
         # handle response

@@ -3,8 +3,9 @@
 from __future__ import annotations
 from apideck_unify.types import BaseModel
 from enum import Enum
+import pydantic
 from typing import Optional
-from typing_extensions import NotRequired, TypedDict
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class Audience(str, Enum):
@@ -27,7 +28,7 @@ class ConnectorDocTypedDict(TypedDict):
     r"""Name of the doc."""
     audience: NotRequired[Audience]
     r"""Audience for the doc."""
-    format: NotRequired[Format]
+    format_: NotRequired[Format]
     r"""Format of the doc."""
     url: NotRequired[str]
     r"""Link to fetch the content of the doc."""
@@ -43,7 +44,7 @@ class ConnectorDoc(BaseModel):
     audience: Optional[Audience] = None
     r"""Audience for the doc."""
 
-    format: Optional[Format] = None
+    format_: Annotated[Optional[Format], pydantic.Field(alias="format")] = None
     r"""Format of the doc."""
 
     url: Optional[str] = None

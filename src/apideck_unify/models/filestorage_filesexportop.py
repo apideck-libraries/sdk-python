@@ -51,7 +51,7 @@ class FileStorageFilesExportGlobals(BaseModel):
 class FileStorageFilesExportRequestTypedDict(TypedDict):
     id: str
     r"""ID of the record you are acting upon."""
-    format: str
+    file_format: str
     r"""File format to export this file to. A list of available file formats for the current file is available as `export_formats` on the File resource."""
     service_id: NotRequired[str]
     r"""Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API."""
@@ -65,7 +65,7 @@ class FileStorageFilesExportRequest(BaseModel):
     ]
     r"""ID of the record you are acting upon."""
 
-    format: Annotated[
+    file_format: Annotated[
         str, FieldMetadata(query=QueryParamMetadata(style="form", explode=True))
     ]
     r"""File format to export this file to. A list of available file formats for the current file is available as `export_formats` on the File resource."""

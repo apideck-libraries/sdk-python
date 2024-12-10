@@ -25,8 +25,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.accounting.subsidiaries.list(request={
+) as apideck:
+    res = apideck.accounting.subsidiaries.list(request={
         "service_id": "salesforce",
         "fields": "id,updated_at",
     })
@@ -74,8 +74,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.accounting.subsidiaries.create(subsidiary={
+) as apideck:
+    res = apideck.accounting.subsidiaries.create(subsidiary={
         "parent_id": "12345",
         "name": "SpaceX",
         "status": apideck_unify.SubsidiaryStatus.ACTIVE,
@@ -149,8 +149,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.accounting.subsidiaries.get(id="<id>", service_id="salesforce", fields="id,updated_at")
+) as apideck:
+    res = apideck.accounting.subsidiaries.get(id="<id>", service_id="salesforce", fields="id,updated_at")
 
     if res is not None:
         # handle response
@@ -198,8 +198,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.accounting.subsidiaries.update(id="<id>", subsidiary={
+) as apideck:
+    res = apideck.accounting.subsidiaries.update(id="<id>", subsidiary={
         "parent_id": "12345",
         "name": "SpaceX",
         "status": apideck_unify.SubsidiaryStatus.ACTIVE,
@@ -316,8 +316,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.accounting.subsidiaries.delete(id="<id>", service_id="salesforce")
+) as apideck:
+    res = apideck.accounting.subsidiaries.delete(id="<id>", service_id="salesforce")
 
     if res is not None:
         # handle response

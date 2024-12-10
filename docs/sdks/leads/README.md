@@ -26,8 +26,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.crm.leads.list(request={
+) as apideck:
+    res = apideck.crm.leads.list(request={
         "service_id": "salesforce",
         "filter_": {
             "first_name": "Elon",
@@ -88,8 +88,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.crm.leads.create(lead={
+) as apideck:
+    res = apideck.crm.leads.create(lead={
         "name": "Elon Musk",
         "company_name": "Spacex",
         "owner_id": "54321",
@@ -342,8 +342,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.crm.leads.get(id="<id>", service_id="salesforce", fields="id,updated_at")
+) as apideck:
+    res = apideck.crm.leads.get(id="<id>", service_id="salesforce", fields="id,updated_at")
 
     if res is not None:
         # handle response
@@ -391,8 +391,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.crm.leads.update(id="<id>", lead={
+) as apideck:
+    res = apideck.crm.leads.update(id="<id>", lead={
         "name": "Elon Musk",
         "company_name": "Spacex",
         "owner_id": "54321",
@@ -625,8 +625,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.crm.leads.delete(id="<id>", service_id="salesforce")
+) as apideck:
+    res = apideck.crm.leads.delete(id="<id>", service_id="salesforce")
 
     if res is not None:
         # handle response

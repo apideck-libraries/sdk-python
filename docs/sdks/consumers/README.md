@@ -25,8 +25,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.vault.consumers.create(request={
+) as apideck:
+    res = apideck.vault.consumers.create(request={
         "consumer_id": "test_consumer_id",
         "metadata": {
             "account_name": "SpaceX",
@@ -79,8 +79,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.vault.consumers.list()
+) as apideck:
+    res = apideck.vault.consumers.list()
 
     if res is not None:
         # handle response
@@ -126,8 +126,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.vault.consumers.get(consumer_id="test_user_id")
+) as apideck:
+    res = apideck.vault.consumers.get(consumer_id="test_user_id")
 
     if res is not None:
         # handle response
@@ -171,8 +171,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.vault.consumers.update(consumer_id="test_user_id", update_consumer_request={
+) as apideck:
+    res = apideck.vault.consumers.update(consumer_id="test_user_id", update_consumer_request={
         "metadata": {
             "account_name": "SpaceX",
             "user_name": "Elon Musk",
@@ -224,8 +224,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.vault.consumers.delete(consumer_id="test_user_id")
+) as apideck:
+    res = apideck.vault.consumers.delete(consumer_id="test_user_id")
 
     if res is not None:
         # handle response

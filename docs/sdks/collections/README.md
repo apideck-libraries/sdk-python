@@ -23,8 +23,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.issue_tracking.collections.list(request={
+) as apideck:
+    res = apideck.issue_tracking.collections.list(request={
         "service_id": "salesforce",
         "sort": {
             "by": apideck_unify.CollectionsSortBy.NAME,
@@ -78,8 +78,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.issue_tracking.collections.get(collection_id="apideck-io", service_id="salesforce", fields="id,updated_at")
+) as apideck:
+    res = apideck.issue_tracking.collections.get(collection_id="apideck-io", service_id="salesforce", fields="id,updated_at")
 
     if res is not None:
         # handle response

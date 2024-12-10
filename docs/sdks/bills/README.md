@@ -27,8 +27,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.accounting.bills.list(request={
+) as apideck:
+    res = apideck.accounting.bills.list(request={
         "service_id": "salesforce",
         "filter_": {
             "updated_since": dateutil.parser.isoparse("2020-09-30T07:43:32.000Z"),
@@ -87,8 +87,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.accounting.bills.create(bill={
+) as apideck:
+    res = apideck.accounting.bills.create(bill={
         "bill_number": "10001",
         "supplier": {
             "id": "12345",
@@ -273,8 +273,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.accounting.bills.get(id="<id>", service_id="salesforce", fields="id,updated_at")
+) as apideck:
+    res = apideck.accounting.bills.get(id="<id>", service_id="salesforce", fields="id,updated_at")
 
     if res is not None:
         # handle response
@@ -323,8 +323,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.accounting.bills.update(id="<id>", bill={
+) as apideck:
+    res = apideck.accounting.bills.update(id="<id>", bill={
         "bill_number": "10001",
         "supplier": {
             "id": "12345",
@@ -612,8 +612,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.accounting.bills.delete(id="<id>", service_id="salesforce")
+) as apideck:
+    res = apideck.accounting.bills.delete(id="<id>", service_id="salesforce")
 
     if res is not None:
         # handle response

@@ -26,8 +26,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.issue_tracking.collection_tickets.list(request={
+) as apideck:
+    res = apideck.issue_tracking.collection_tickets.list(request={
         "collection_id": "apideck-io",
         "service_id": "salesforce",
         "sort": {
@@ -89,8 +89,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.issue_tracking.collection_tickets.create(collection_id="apideck-io", ticket={
+) as apideck:
+    res = apideck.issue_tracking.collection_tickets.create(collection_id="apideck-io", ticket={
         "parent_id": "12345",
         "type": "Technical",
         "subject": "Technical Support Request",
@@ -173,8 +173,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.issue_tracking.collection_tickets.get(request={
+) as apideck:
+    res = apideck.issue_tracking.collection_tickets.get(request={
         "ticket_id": "<id>",
         "collection_id": "apideck-io",
         "service_id": "salesforce",
@@ -225,8 +225,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.issue_tracking.collection_tickets.update(request={
+) as apideck:
+    res = apideck.issue_tracking.collection_tickets.update(request={
         "ticket_id": "<id>",
         "collection_id": "apideck-io",
         "ticket": {
@@ -333,8 +333,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.issue_tracking.collection_tickets.delete(ticket_id="<id>", collection_id="apideck-io", service_id="salesforce")
+) as apideck:
+    res = apideck.issue_tracking.collection_tickets.delete(ticket_id="<id>", collection_id="apideck-io", service_id="salesforce")
 
     if res is not None:
         # handle response

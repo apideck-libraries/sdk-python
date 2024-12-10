@@ -23,8 +23,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.vault.connection_settings.list(unified_api="crm", service_id="pipedrive", resource="leads")
+) as apideck:
+    res = apideck.vault.connection_settings.list(unified_api="crm", service_id="pipedrive", resource="leads")
 
     if res is not None:
         # handle response
@@ -70,8 +70,8 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
-) as s:
-    res = s.vault.connection_settings.update(service_id="pipedrive", unified_api="crm", resource="leads", connection={
+) as apideck:
+    res = apideck.vault.connection_settings.update(service_id="pipedrive", unified_api="crm", resource="leads", connection={
         "enabled": True,
         "settings": {
             "instance_url": "https://eu28.salesforce.com",
