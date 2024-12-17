@@ -3,31 +3,50 @@
 from .basesdk import BaseSDK
 from apideck_unify import models, utils
 from apideck_unify._hooks import HookContext
-from apideck_unify.types import BaseModel, OptionalNullable, UNSET
+from apideck_unify.types import OptionalNullable, UNSET
 from apideck_unify.utils import get_security_from_env
-from typing import Any, Optional, Union, cast
+from datetime import datetime
+from jsonpath import JSONPath
+from typing import Any, Dict, List, Mapping, Optional, Union
 
 
 class CreditNotes(BaseSDK):
     def list(
         self,
         *,
-        request: Union[
-            models.AccountingCreditNotesAllRequest,
-            models.AccountingCreditNotesAllRequestTypedDict,
-        ] = models.AccountingCreditNotesAllRequest(),
+        raw: Optional[bool] = False,
+        service_id: Optional[str] = None,
+        cursor: OptionalNullable[str] = UNSET,
+        limit: Optional[int] = 20,
+        filter_: Optional[
+            Union[models.CreditNotesFilter, models.CreditNotesFilterTypedDict]
+        ] = None,
+        sort: Optional[
+            Union[models.CreditNotesSort, models.CreditNotesSortTypedDict]
+        ] = None,
+        pass_through: Optional[Dict[str, Any]] = None,
+        fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
-    ) -> models.AccountingCreditNotesAllResponse:
+        http_headers: Optional[Mapping[str, str]] = None,
+    ) -> Optional[models.AccountingCreditNotesAllResponse]:
         r"""List Credit Notes
 
         List Credit Notes
 
-        :param request: The request object to send.
+        :param raw: Include raw response. Mostly used for debugging purposes
+        :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
+        :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
+        :param filter_: Apply filters
+        :param sort: Apply sorting
+        :param pass_through: Optional unmapped key/values that will be passed through to downstream as query parameters. Ie: ?pass_through[search]=leads becomes ?search=leads
+        :param fields: The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -37,9 +56,18 @@ class CreditNotes(BaseSDK):
         if server_url is not None:
             base_url = server_url
 
-        if not isinstance(request, BaseModel):
-            request = utils.unmarshal(request, models.AccountingCreditNotesAllRequest)
-        request = cast(models.AccountingCreditNotesAllRequest, request)
+        request = models.AccountingCreditNotesAllRequest(
+            raw=raw,
+            service_id=service_id,
+            cursor=cursor,
+            limit=limit,
+            filter_=utils.get_pydantic_model(
+                filter_, Optional[models.CreditNotesFilter]
+            ),
+            sort=utils.get_pydantic_model(sort, Optional[models.CreditNotesSort]),
+            pass_through=pass_through,
+            fields=fields,
+        )
 
         req = self.build_request(
             method="GET",
@@ -52,6 +80,7 @@ class CreditNotes(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.AccountingCreditNotesAllGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -85,9 +114,34 @@ class CreditNotes(BaseSDK):
             retry_config=retry_config,
         )
 
+        def next_func() -> Optional[models.AccountingCreditNotesAllResponse]:
+            body = utils.unmarshal_json(http_res.text, Dict[Any, Any])
+            next_cursor = JSONPath("$.meta.cursors.next").parse(body)
+
+            if len(next_cursor) == 0:
+                return None
+            next_cursor = next_cursor[0]
+
+            return self.list(
+                raw=raw,
+                service_id=service_id,
+                cursor=next_cursor,
+                limit=limit,
+                filter_=filter_,
+                sort=sort,
+                pass_through=pass_through,
+                fields=fields,
+                retries=retries,
+            )
+
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.GetCreditNotesResponse)
+            return models.AccountingCreditNotesAllResponse(
+                result=utils.unmarshal_json(
+                    http_res.text, models.GetCreditNotesResponse
+                ),
+                next=next_func,
+            )
         if utils.match_response(http_res, "400", "application/json"):
             data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
             raise models.BadRequestResponse(data=data)
@@ -111,7 +165,12 @@ class CreditNotes(BaseSDK):
                 "API error occurred", http_res.status_code, http_res_text, http_res
             )
         if utils.match_response(http_res, "default", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UnexpectedErrorResponse)
+            return models.AccountingCreditNotesAllResponse(
+                result=utils.unmarshal_json(
+                    http_res.text, models.UnexpectedErrorResponse
+                ),
+                next=next_func,
+            )
 
         content_type = http_res.headers.get("Content-Type")
         http_res_text = utils.stream_to_text(http_res)
@@ -125,22 +184,39 @@ class CreditNotes(BaseSDK):
     async def list_async(
         self,
         *,
-        request: Union[
-            models.AccountingCreditNotesAllRequest,
-            models.AccountingCreditNotesAllRequestTypedDict,
-        ] = models.AccountingCreditNotesAllRequest(),
+        raw: Optional[bool] = False,
+        service_id: Optional[str] = None,
+        cursor: OptionalNullable[str] = UNSET,
+        limit: Optional[int] = 20,
+        filter_: Optional[
+            Union[models.CreditNotesFilter, models.CreditNotesFilterTypedDict]
+        ] = None,
+        sort: Optional[
+            Union[models.CreditNotesSort, models.CreditNotesSortTypedDict]
+        ] = None,
+        pass_through: Optional[Dict[str, Any]] = None,
+        fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
-    ) -> models.AccountingCreditNotesAllResponse:
+        http_headers: Optional[Mapping[str, str]] = None,
+    ) -> Optional[models.AccountingCreditNotesAllResponse]:
         r"""List Credit Notes
 
         List Credit Notes
 
-        :param request: The request object to send.
+        :param raw: Include raw response. Mostly used for debugging purposes
+        :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
+        :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
+        :param filter_: Apply filters
+        :param sort: Apply sorting
+        :param pass_through: Optional unmapped key/values that will be passed through to downstream as query parameters. Ie: ?pass_through[search]=leads becomes ?search=leads
+        :param fields: The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -150,9 +226,18 @@ class CreditNotes(BaseSDK):
         if server_url is not None:
             base_url = server_url
 
-        if not isinstance(request, BaseModel):
-            request = utils.unmarshal(request, models.AccountingCreditNotesAllRequest)
-        request = cast(models.AccountingCreditNotesAllRequest, request)
+        request = models.AccountingCreditNotesAllRequest(
+            raw=raw,
+            service_id=service_id,
+            cursor=cursor,
+            limit=limit,
+            filter_=utils.get_pydantic_model(
+                filter_, Optional[models.CreditNotesFilter]
+            ),
+            sort=utils.get_pydantic_model(sort, Optional[models.CreditNotesSort]),
+            pass_through=pass_through,
+            fields=fields,
+        )
 
         req = self.build_request_async(
             method="GET",
@@ -165,6 +250,7 @@ class CreditNotes(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.AccountingCreditNotesAllGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -198,9 +284,34 @@ class CreditNotes(BaseSDK):
             retry_config=retry_config,
         )
 
+        def next_func() -> Optional[models.AccountingCreditNotesAllResponse]:
+            body = utils.unmarshal_json(http_res.text, Dict[Any, Any])
+            next_cursor = JSONPath("$.meta.cursors.next").parse(body)
+
+            if len(next_cursor) == 0:
+                return None
+            next_cursor = next_cursor[0]
+
+            return self.list(
+                raw=raw,
+                service_id=service_id,
+                cursor=next_cursor,
+                limit=limit,
+                filter_=filter_,
+                sort=sort,
+                pass_through=pass_through,
+                fields=fields,
+                retries=retries,
+            )
+
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.GetCreditNotesResponse)
+            return models.AccountingCreditNotesAllResponse(
+                result=utils.unmarshal_json(
+                    http_res.text, models.GetCreditNotesResponse
+                ),
+                next=next_func,
+            )
         if utils.match_response(http_res, "400", "application/json"):
             data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
             raise models.BadRequestResponse(data=data)
@@ -224,7 +335,12 @@ class CreditNotes(BaseSDK):
                 "API error occurred", http_res.status_code, http_res_text, http_res
             )
         if utils.match_response(http_res, "default", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UnexpectedErrorResponse)
+            return models.AccountingCreditNotesAllResponse(
+                result=utils.unmarshal_json(
+                    http_res.text, models.UnexpectedErrorResponse
+                ),
+                next=next_func,
+            )
 
         content_type = http_res.headers.get("Content-Type")
         http_res_text = await utils.stream_to_text_async(http_res)
@@ -238,23 +354,106 @@ class CreditNotes(BaseSDK):
     def create(
         self,
         *,
-        credit_note: Union[models.CreditNoteInput, models.CreditNoteInputTypedDict],
+        total_amount: float,
         raw: Optional[bool] = False,
         service_id: Optional[str] = None,
+        number: OptionalNullable[str] = UNSET,
+        customer: OptionalNullable[
+            Union[models.LinkedCustomerInput, models.LinkedCustomerInputTypedDict]
+        ] = UNSET,
+        company_id: OptionalNullable[str] = UNSET,
+        currency: OptionalNullable[models.Currency] = UNSET,
+        currency_rate: OptionalNullable[float] = UNSET,
+        tax_inclusive: OptionalNullable[bool] = UNSET,
+        sub_total: OptionalNullable[float] = UNSET,
+        total_tax: OptionalNullable[float] = UNSET,
+        tax_code: OptionalNullable[str] = UNSET,
+        balance: OptionalNullable[float] = UNSET,
+        remaining_credit: OptionalNullable[float] = UNSET,
+        status: Optional[models.CreditNoteStatus] = None,
+        reference: OptionalNullable[str] = UNSET,
+        date_issued: Optional[datetime] = None,
+        date_paid: OptionalNullable[datetime] = UNSET,
+        type_: Optional[models.CreditNoteType] = None,
+        account: OptionalNullable[
+            Union[
+                models.LinkedLedgerAccountInput,
+                models.LinkedLedgerAccountInputTypedDict,
+            ]
+        ] = UNSET,
+        line_items: Optional[
+            Union[
+                List[models.InvoiceLineItemInput],
+                List[models.InvoiceLineItemInputTypedDict],
+            ]
+        ] = None,
+        allocations: Optional[
+            Union[List[models.AllocationInput], List[models.AllocationInputTypedDict]]
+        ] = None,
+        note: OptionalNullable[str] = UNSET,
+        terms: OptionalNullable[str] = UNSET,
+        billing_address: Optional[
+            Union[models.Address, models.AddressTypedDict]
+        ] = None,
+        shipping_address: Optional[
+            Union[models.Address, models.AddressTypedDict]
+        ] = None,
+        tracking_categories: OptionalNullable[
+            Union[
+                List[models.LinkedTrackingCategory],
+                List[models.LinkedTrackingCategoryTypedDict],
+            ]
+        ] = UNSET,
+        custom_fields: Optional[
+            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+        ] = None,
+        row_version: OptionalNullable[str] = UNSET,
+        pass_through: Optional[
+            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.AccountingCreditNotesAddResponse:
         r"""Create Credit Note
 
         Create Credit Note
 
-        :param credit_note:
+        :param total_amount: Amount of transaction
         :param raw: Include raw response. Mostly used for debugging purposes
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param number: Credit note number.
+        :param customer: The customer this entity is linked to.
+        :param company_id: The company or subsidiary id the transaction belongs to
+        :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
+        :param currency_rate: Currency Exchange Rate at the time entity was recorded/generated.
+        :param tax_inclusive: Amounts are including tax
+        :param sub_total: Sub-total amount, normally before tax.
+        :param total_tax: Total tax amount applied to this invoice.
+        :param tax_code: Applicable tax id/code override if tax is not supplied on a line item basis.
+        :param balance: The balance reflecting any payments made against the transaction.
+        :param remaining_credit: Indicates the total credit amount still available to apply towards the payment.
+        :param status: Status of credit notes
+        :param reference: Optional reference message ie: Debit remittance detail.
+        :param date_issued: Date credit note issued - YYYY:MM::DDThh:mm:ss.sTZD
+        :param date_paid: Date credit note paid - YYYY:MM::DDThh:mm:ss.sTZD
+        :param type: Type of payment
+        :param account:
+        :param line_items:
+        :param allocations:
+        :param note: Optional note to be associated with the credit note.
+        :param terms: Optional terms to be associated with the credit note.
+        :param billing_address:
+        :param shipping_address:
+        :param tracking_categories: A list of linked tracking categories.
+        :param custom_fields:
+        :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
+        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -267,7 +466,55 @@ class CreditNotes(BaseSDK):
         request = models.AccountingCreditNotesAddRequest(
             raw=raw,
             service_id=service_id,
-            credit_note=utils.get_pydantic_model(credit_note, models.CreditNoteInput),
+            credit_note=models.CreditNoteInput(
+                number=number,
+                customer=utils.get_pydantic_model(
+                    customer, OptionalNullable[models.LinkedCustomerInput]
+                ),
+                company_id=company_id,
+                currency=currency,
+                currency_rate=currency_rate,
+                tax_inclusive=tax_inclusive,
+                sub_total=sub_total,
+                total_amount=total_amount,
+                total_tax=total_tax,
+                tax_code=tax_code,
+                balance=balance,
+                remaining_credit=remaining_credit,
+                status=status,
+                reference=reference,
+                date_issued=date_issued,
+                date_paid=date_paid,
+                type=type_,
+                account=utils.get_pydantic_model(
+                    account, OptionalNullable[models.LinkedLedgerAccountInput]
+                ),
+                line_items=utils.get_pydantic_model(
+                    line_items, Optional[List[models.InvoiceLineItemInput]]
+                ),
+                allocations=utils.get_pydantic_model(
+                    allocations, Optional[List[models.AllocationInput]]
+                ),
+                note=note,
+                terms=terms,
+                billing_address=utils.get_pydantic_model(
+                    billing_address, Optional[models.Address]
+                ),
+                shipping_address=utils.get_pydantic_model(
+                    shipping_address, Optional[models.Address]
+                ),
+                tracking_categories=utils.get_pydantic_model(
+                    tracking_categories,
+                    OptionalNullable[List[models.LinkedTrackingCategory]],
+                ),
+                custom_fields=utils.get_pydantic_model(
+                    custom_fields, Optional[List[models.CustomField]]
+                ),
+                row_version=row_version,
+                pass_through=utils.get_pydantic_model(
+                    pass_through, Optional[List[models.PassThroughBody]]
+                ),
+            ),
         )
 
         req = self.build_request(
@@ -281,6 +528,7 @@ class CreditNotes(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.AccountingCreditNotesAddGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -357,23 +605,106 @@ class CreditNotes(BaseSDK):
     async def create_async(
         self,
         *,
-        credit_note: Union[models.CreditNoteInput, models.CreditNoteInputTypedDict],
+        total_amount: float,
         raw: Optional[bool] = False,
         service_id: Optional[str] = None,
+        number: OptionalNullable[str] = UNSET,
+        customer: OptionalNullable[
+            Union[models.LinkedCustomerInput, models.LinkedCustomerInputTypedDict]
+        ] = UNSET,
+        company_id: OptionalNullable[str] = UNSET,
+        currency: OptionalNullable[models.Currency] = UNSET,
+        currency_rate: OptionalNullable[float] = UNSET,
+        tax_inclusive: OptionalNullable[bool] = UNSET,
+        sub_total: OptionalNullable[float] = UNSET,
+        total_tax: OptionalNullable[float] = UNSET,
+        tax_code: OptionalNullable[str] = UNSET,
+        balance: OptionalNullable[float] = UNSET,
+        remaining_credit: OptionalNullable[float] = UNSET,
+        status: Optional[models.CreditNoteStatus] = None,
+        reference: OptionalNullable[str] = UNSET,
+        date_issued: Optional[datetime] = None,
+        date_paid: OptionalNullable[datetime] = UNSET,
+        type_: Optional[models.CreditNoteType] = None,
+        account: OptionalNullable[
+            Union[
+                models.LinkedLedgerAccountInput,
+                models.LinkedLedgerAccountInputTypedDict,
+            ]
+        ] = UNSET,
+        line_items: Optional[
+            Union[
+                List[models.InvoiceLineItemInput],
+                List[models.InvoiceLineItemInputTypedDict],
+            ]
+        ] = None,
+        allocations: Optional[
+            Union[List[models.AllocationInput], List[models.AllocationInputTypedDict]]
+        ] = None,
+        note: OptionalNullable[str] = UNSET,
+        terms: OptionalNullable[str] = UNSET,
+        billing_address: Optional[
+            Union[models.Address, models.AddressTypedDict]
+        ] = None,
+        shipping_address: Optional[
+            Union[models.Address, models.AddressTypedDict]
+        ] = None,
+        tracking_categories: OptionalNullable[
+            Union[
+                List[models.LinkedTrackingCategory],
+                List[models.LinkedTrackingCategoryTypedDict],
+            ]
+        ] = UNSET,
+        custom_fields: Optional[
+            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+        ] = None,
+        row_version: OptionalNullable[str] = UNSET,
+        pass_through: Optional[
+            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.AccountingCreditNotesAddResponse:
         r"""Create Credit Note
 
         Create Credit Note
 
-        :param credit_note:
+        :param total_amount: Amount of transaction
         :param raw: Include raw response. Mostly used for debugging purposes
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param number: Credit note number.
+        :param customer: The customer this entity is linked to.
+        :param company_id: The company or subsidiary id the transaction belongs to
+        :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
+        :param currency_rate: Currency Exchange Rate at the time entity was recorded/generated.
+        :param tax_inclusive: Amounts are including tax
+        :param sub_total: Sub-total amount, normally before tax.
+        :param total_tax: Total tax amount applied to this invoice.
+        :param tax_code: Applicable tax id/code override if tax is not supplied on a line item basis.
+        :param balance: The balance reflecting any payments made against the transaction.
+        :param remaining_credit: Indicates the total credit amount still available to apply towards the payment.
+        :param status: Status of credit notes
+        :param reference: Optional reference message ie: Debit remittance detail.
+        :param date_issued: Date credit note issued - YYYY:MM::DDThh:mm:ss.sTZD
+        :param date_paid: Date credit note paid - YYYY:MM::DDThh:mm:ss.sTZD
+        :param type: Type of payment
+        :param account:
+        :param line_items:
+        :param allocations:
+        :param note: Optional note to be associated with the credit note.
+        :param terms: Optional terms to be associated with the credit note.
+        :param billing_address:
+        :param shipping_address:
+        :param tracking_categories: A list of linked tracking categories.
+        :param custom_fields:
+        :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
+        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -386,7 +717,55 @@ class CreditNotes(BaseSDK):
         request = models.AccountingCreditNotesAddRequest(
             raw=raw,
             service_id=service_id,
-            credit_note=utils.get_pydantic_model(credit_note, models.CreditNoteInput),
+            credit_note=models.CreditNoteInput(
+                number=number,
+                customer=utils.get_pydantic_model(
+                    customer, OptionalNullable[models.LinkedCustomerInput]
+                ),
+                company_id=company_id,
+                currency=currency,
+                currency_rate=currency_rate,
+                tax_inclusive=tax_inclusive,
+                sub_total=sub_total,
+                total_amount=total_amount,
+                total_tax=total_tax,
+                tax_code=tax_code,
+                balance=balance,
+                remaining_credit=remaining_credit,
+                status=status,
+                reference=reference,
+                date_issued=date_issued,
+                date_paid=date_paid,
+                type=type_,
+                account=utils.get_pydantic_model(
+                    account, OptionalNullable[models.LinkedLedgerAccountInput]
+                ),
+                line_items=utils.get_pydantic_model(
+                    line_items, Optional[List[models.InvoiceLineItemInput]]
+                ),
+                allocations=utils.get_pydantic_model(
+                    allocations, Optional[List[models.AllocationInput]]
+                ),
+                note=note,
+                terms=terms,
+                billing_address=utils.get_pydantic_model(
+                    billing_address, Optional[models.Address]
+                ),
+                shipping_address=utils.get_pydantic_model(
+                    shipping_address, Optional[models.Address]
+                ),
+                tracking_categories=utils.get_pydantic_model(
+                    tracking_categories,
+                    OptionalNullable[List[models.LinkedTrackingCategory]],
+                ),
+                custom_fields=utils.get_pydantic_model(
+                    custom_fields, Optional[List[models.CustomField]]
+                ),
+                row_version=row_version,
+                pass_through=utils.get_pydantic_model(
+                    pass_through, Optional[List[models.PassThroughBody]]
+                ),
+            ),
         )
 
         req = self.build_request_async(
@@ -400,6 +779,7 @@ class CreditNotes(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.AccountingCreditNotesAddGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -483,6 +863,7 @@ class CreditNotes(BaseSDK):
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.AccountingCreditNotesOneResponse:
         r"""Get Credit Note
 
@@ -495,6 +876,7 @@ class CreditNotes(BaseSDK):
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -522,6 +904,7 @@ class CreditNotes(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.AccountingCreditNotesOneGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -602,6 +985,7 @@ class CreditNotes(BaseSDK):
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.AccountingCreditNotesOneResponse:
         r"""Get Credit Note
 
@@ -614,6 +998,7 @@ class CreditNotes(BaseSDK):
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -641,6 +1026,7 @@ class CreditNotes(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.AccountingCreditNotesOneGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -715,24 +1101,107 @@ class CreditNotes(BaseSDK):
         self,
         *,
         id: str,
-        credit_note: Union[models.CreditNoteInput, models.CreditNoteInputTypedDict],
+        total_amount: float,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
+        number: OptionalNullable[str] = UNSET,
+        customer: OptionalNullable[
+            Union[models.LinkedCustomerInput, models.LinkedCustomerInputTypedDict]
+        ] = UNSET,
+        company_id: OptionalNullable[str] = UNSET,
+        currency: OptionalNullable[models.Currency] = UNSET,
+        currency_rate: OptionalNullable[float] = UNSET,
+        tax_inclusive: OptionalNullable[bool] = UNSET,
+        sub_total: OptionalNullable[float] = UNSET,
+        total_tax: OptionalNullable[float] = UNSET,
+        tax_code: OptionalNullable[str] = UNSET,
+        balance: OptionalNullable[float] = UNSET,
+        remaining_credit: OptionalNullable[float] = UNSET,
+        status: Optional[models.CreditNoteStatus] = None,
+        reference: OptionalNullable[str] = UNSET,
+        date_issued: Optional[datetime] = None,
+        date_paid: OptionalNullable[datetime] = UNSET,
+        type_: Optional[models.CreditNoteType] = None,
+        account: OptionalNullable[
+            Union[
+                models.LinkedLedgerAccountInput,
+                models.LinkedLedgerAccountInputTypedDict,
+            ]
+        ] = UNSET,
+        line_items: Optional[
+            Union[
+                List[models.InvoiceLineItemInput],
+                List[models.InvoiceLineItemInputTypedDict],
+            ]
+        ] = None,
+        allocations: Optional[
+            Union[List[models.AllocationInput], List[models.AllocationInputTypedDict]]
+        ] = None,
+        note: OptionalNullable[str] = UNSET,
+        terms: OptionalNullable[str] = UNSET,
+        billing_address: Optional[
+            Union[models.Address, models.AddressTypedDict]
+        ] = None,
+        shipping_address: Optional[
+            Union[models.Address, models.AddressTypedDict]
+        ] = None,
+        tracking_categories: OptionalNullable[
+            Union[
+                List[models.LinkedTrackingCategory],
+                List[models.LinkedTrackingCategoryTypedDict],
+            ]
+        ] = UNSET,
+        custom_fields: Optional[
+            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+        ] = None,
+        row_version: OptionalNullable[str] = UNSET,
+        pass_through: Optional[
+            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.AccountingCreditNotesUpdateResponse:
         r"""Update Credit Note
 
         Update Credit Note
 
         :param id: ID of the record you are acting upon.
-        :param credit_note:
+        :param total_amount: Amount of transaction
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param number: Credit note number.
+        :param customer: The customer this entity is linked to.
+        :param company_id: The company or subsidiary id the transaction belongs to
+        :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
+        :param currency_rate: Currency Exchange Rate at the time entity was recorded/generated.
+        :param tax_inclusive: Amounts are including tax
+        :param sub_total: Sub-total amount, normally before tax.
+        :param total_tax: Total tax amount applied to this invoice.
+        :param tax_code: Applicable tax id/code override if tax is not supplied on a line item basis.
+        :param balance: The balance reflecting any payments made against the transaction.
+        :param remaining_credit: Indicates the total credit amount still available to apply towards the payment.
+        :param status: Status of credit notes
+        :param reference: Optional reference message ie: Debit remittance detail.
+        :param date_issued: Date credit note issued - YYYY:MM::DDThh:mm:ss.sTZD
+        :param date_paid: Date credit note paid - YYYY:MM::DDThh:mm:ss.sTZD
+        :param type: Type of payment
+        :param account:
+        :param line_items:
+        :param allocations:
+        :param note: Optional note to be associated with the credit note.
+        :param terms: Optional terms to be associated with the credit note.
+        :param billing_address:
+        :param shipping_address:
+        :param tracking_categories: A list of linked tracking categories.
+        :param custom_fields:
+        :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
+        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -746,7 +1215,55 @@ class CreditNotes(BaseSDK):
             id=id,
             service_id=service_id,
             raw=raw,
-            credit_note=utils.get_pydantic_model(credit_note, models.CreditNoteInput),
+            credit_note=models.CreditNoteInput(
+                number=number,
+                customer=utils.get_pydantic_model(
+                    customer, OptionalNullable[models.LinkedCustomerInput]
+                ),
+                company_id=company_id,
+                currency=currency,
+                currency_rate=currency_rate,
+                tax_inclusive=tax_inclusive,
+                sub_total=sub_total,
+                total_amount=total_amount,
+                total_tax=total_tax,
+                tax_code=tax_code,
+                balance=balance,
+                remaining_credit=remaining_credit,
+                status=status,
+                reference=reference,
+                date_issued=date_issued,
+                date_paid=date_paid,
+                type=type_,
+                account=utils.get_pydantic_model(
+                    account, OptionalNullable[models.LinkedLedgerAccountInput]
+                ),
+                line_items=utils.get_pydantic_model(
+                    line_items, Optional[List[models.InvoiceLineItemInput]]
+                ),
+                allocations=utils.get_pydantic_model(
+                    allocations, Optional[List[models.AllocationInput]]
+                ),
+                note=note,
+                terms=terms,
+                billing_address=utils.get_pydantic_model(
+                    billing_address, Optional[models.Address]
+                ),
+                shipping_address=utils.get_pydantic_model(
+                    shipping_address, Optional[models.Address]
+                ),
+                tracking_categories=utils.get_pydantic_model(
+                    tracking_categories,
+                    OptionalNullable[List[models.LinkedTrackingCategory]],
+                ),
+                custom_fields=utils.get_pydantic_model(
+                    custom_fields, Optional[List[models.CustomField]]
+                ),
+                row_version=row_version,
+                pass_through=utils.get_pydantic_model(
+                    pass_through, Optional[List[models.PassThroughBody]]
+                ),
+            ),
         )
 
         req = self.build_request(
@@ -760,6 +1277,7 @@ class CreditNotes(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.AccountingCreditNotesUpdateGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -837,24 +1355,107 @@ class CreditNotes(BaseSDK):
         self,
         *,
         id: str,
-        credit_note: Union[models.CreditNoteInput, models.CreditNoteInputTypedDict],
+        total_amount: float,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
+        number: OptionalNullable[str] = UNSET,
+        customer: OptionalNullable[
+            Union[models.LinkedCustomerInput, models.LinkedCustomerInputTypedDict]
+        ] = UNSET,
+        company_id: OptionalNullable[str] = UNSET,
+        currency: OptionalNullable[models.Currency] = UNSET,
+        currency_rate: OptionalNullable[float] = UNSET,
+        tax_inclusive: OptionalNullable[bool] = UNSET,
+        sub_total: OptionalNullable[float] = UNSET,
+        total_tax: OptionalNullable[float] = UNSET,
+        tax_code: OptionalNullable[str] = UNSET,
+        balance: OptionalNullable[float] = UNSET,
+        remaining_credit: OptionalNullable[float] = UNSET,
+        status: Optional[models.CreditNoteStatus] = None,
+        reference: OptionalNullable[str] = UNSET,
+        date_issued: Optional[datetime] = None,
+        date_paid: OptionalNullable[datetime] = UNSET,
+        type_: Optional[models.CreditNoteType] = None,
+        account: OptionalNullable[
+            Union[
+                models.LinkedLedgerAccountInput,
+                models.LinkedLedgerAccountInputTypedDict,
+            ]
+        ] = UNSET,
+        line_items: Optional[
+            Union[
+                List[models.InvoiceLineItemInput],
+                List[models.InvoiceLineItemInputTypedDict],
+            ]
+        ] = None,
+        allocations: Optional[
+            Union[List[models.AllocationInput], List[models.AllocationInputTypedDict]]
+        ] = None,
+        note: OptionalNullable[str] = UNSET,
+        terms: OptionalNullable[str] = UNSET,
+        billing_address: Optional[
+            Union[models.Address, models.AddressTypedDict]
+        ] = None,
+        shipping_address: Optional[
+            Union[models.Address, models.AddressTypedDict]
+        ] = None,
+        tracking_categories: OptionalNullable[
+            Union[
+                List[models.LinkedTrackingCategory],
+                List[models.LinkedTrackingCategoryTypedDict],
+            ]
+        ] = UNSET,
+        custom_fields: Optional[
+            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+        ] = None,
+        row_version: OptionalNullable[str] = UNSET,
+        pass_through: Optional[
+            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.AccountingCreditNotesUpdateResponse:
         r"""Update Credit Note
 
         Update Credit Note
 
         :param id: ID of the record you are acting upon.
-        :param credit_note:
+        :param total_amount: Amount of transaction
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param number: Credit note number.
+        :param customer: The customer this entity is linked to.
+        :param company_id: The company or subsidiary id the transaction belongs to
+        :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
+        :param currency_rate: Currency Exchange Rate at the time entity was recorded/generated.
+        :param tax_inclusive: Amounts are including tax
+        :param sub_total: Sub-total amount, normally before tax.
+        :param total_tax: Total tax amount applied to this invoice.
+        :param tax_code: Applicable tax id/code override if tax is not supplied on a line item basis.
+        :param balance: The balance reflecting any payments made against the transaction.
+        :param remaining_credit: Indicates the total credit amount still available to apply towards the payment.
+        :param status: Status of credit notes
+        :param reference: Optional reference message ie: Debit remittance detail.
+        :param date_issued: Date credit note issued - YYYY:MM::DDThh:mm:ss.sTZD
+        :param date_paid: Date credit note paid - YYYY:MM::DDThh:mm:ss.sTZD
+        :param type: Type of payment
+        :param account:
+        :param line_items:
+        :param allocations:
+        :param note: Optional note to be associated with the credit note.
+        :param terms: Optional terms to be associated with the credit note.
+        :param billing_address:
+        :param shipping_address:
+        :param tracking_categories: A list of linked tracking categories.
+        :param custom_fields:
+        :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
+        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -868,7 +1469,55 @@ class CreditNotes(BaseSDK):
             id=id,
             service_id=service_id,
             raw=raw,
-            credit_note=utils.get_pydantic_model(credit_note, models.CreditNoteInput),
+            credit_note=models.CreditNoteInput(
+                number=number,
+                customer=utils.get_pydantic_model(
+                    customer, OptionalNullable[models.LinkedCustomerInput]
+                ),
+                company_id=company_id,
+                currency=currency,
+                currency_rate=currency_rate,
+                tax_inclusive=tax_inclusive,
+                sub_total=sub_total,
+                total_amount=total_amount,
+                total_tax=total_tax,
+                tax_code=tax_code,
+                balance=balance,
+                remaining_credit=remaining_credit,
+                status=status,
+                reference=reference,
+                date_issued=date_issued,
+                date_paid=date_paid,
+                type=type_,
+                account=utils.get_pydantic_model(
+                    account, OptionalNullable[models.LinkedLedgerAccountInput]
+                ),
+                line_items=utils.get_pydantic_model(
+                    line_items, Optional[List[models.InvoiceLineItemInput]]
+                ),
+                allocations=utils.get_pydantic_model(
+                    allocations, Optional[List[models.AllocationInput]]
+                ),
+                note=note,
+                terms=terms,
+                billing_address=utils.get_pydantic_model(
+                    billing_address, Optional[models.Address]
+                ),
+                shipping_address=utils.get_pydantic_model(
+                    shipping_address, Optional[models.Address]
+                ),
+                tracking_categories=utils.get_pydantic_model(
+                    tracking_categories,
+                    OptionalNullable[List[models.LinkedTrackingCategory]],
+                ),
+                custom_fields=utils.get_pydantic_model(
+                    custom_fields, Optional[List[models.CustomField]]
+                ),
+                row_version=row_version,
+                pass_through=utils.get_pydantic_model(
+                    pass_through, Optional[List[models.PassThroughBody]]
+                ),
+            ),
         )
 
         req = self.build_request_async(
@@ -882,6 +1531,7 @@ class CreditNotes(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.AccountingCreditNotesUpdateGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -964,6 +1614,7 @@ class CreditNotes(BaseSDK):
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.AccountingCreditNotesDeleteResponse:
         r"""Delete Credit Note
 
@@ -975,6 +1626,7 @@ class CreditNotes(BaseSDK):
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -1001,6 +1653,7 @@ class CreditNotes(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.AccountingCreditNotesDeleteGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -1080,6 +1733,7 @@ class CreditNotes(BaseSDK):
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.AccountingCreditNotesDeleteResponse:
         r"""Delete Credit Note
 
@@ -1091,6 +1745,7 @@ class CreditNotes(BaseSDK):
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -1117,6 +1772,7 @@ class CreditNotes(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.AccountingCreditNotesDeleteGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,

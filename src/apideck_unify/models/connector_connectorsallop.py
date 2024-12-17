@@ -17,7 +17,7 @@ from apideck_unify.types import (
 from apideck_unify.utils import FieldMetadata, HeaderMetadata, QueryParamMetadata
 import pydantic
 from pydantic import model_serializer
-from typing import Optional, Union
+from typing import Callable, Optional, Union
 from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
 
 
@@ -95,13 +95,23 @@ class ConnectorConnectorsAllRequest(BaseModel):
         return m
 
 
-ConnectorConnectorsAllResponseTypedDict = TypeAliasType(
-    "ConnectorConnectorsAllResponseTypedDict",
+ConnectorConnectorsAllResponseResultTypedDict = TypeAliasType(
+    "ConnectorConnectorsAllResponseResultTypedDict",
     Union[GetConnectorsResponseTypedDict, UnexpectedErrorResponseTypedDict],
 )
 
 
-ConnectorConnectorsAllResponse = TypeAliasType(
-    "ConnectorConnectorsAllResponse",
+ConnectorConnectorsAllResponseResult = TypeAliasType(
+    "ConnectorConnectorsAllResponseResult",
     Union[GetConnectorsResponse, UnexpectedErrorResponse],
 )
+
+
+class ConnectorConnectorsAllResponseTypedDict(TypedDict):
+    result: ConnectorConnectorsAllResponseResultTypedDict
+
+
+class ConnectorConnectorsAllResponse(BaseModel):
+    next: Callable[[], Optional[ConnectorConnectorsAllResponse]]
+
+    result: ConnectorConnectorsAllResponseResult

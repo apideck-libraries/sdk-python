@@ -1,17 +1,8 @@
 # AccountingSubsidiariesAllResponse
 
 
-## Supported Types
+## Fields
 
-### `models.GetSubsidiariesResponse`
-
-```python
-value: models.GetSubsidiariesResponse = /* values here */
-```
-
-### `models.UnexpectedErrorResponse`
-
-```python
-value: models.UnexpectedErrorResponse = /* values here */
-```
-
+| Field                                                                                                  | Type                                                                                                   | Required                                                                                               | Description                                                                                            |
+| ------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------ |
+| `result`                                                                                               | [models.AccountingSubsidiariesAllResponseResult](../models/accountingsubsidiariesallresponseresult.md) | :heavy_check_mark:                                                                                     | N/A                                                                                                    |

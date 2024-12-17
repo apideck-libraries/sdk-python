@@ -9,24 +9,21 @@ with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
-    res = apideck.accounting.tax_rates.list(request={
-        "service_id": "salesforce",
-        "filter_": {
-            "assets": True,
-            "equity": True,
-            "expenses": True,
-            "liabilities": True,
-            "revenue": True,
-        },
-        "pass_through": {
-            "search": "San Francisco",
-        },
-        "fields": "id,updated_at",
-    })
 
-    if res is not None:
-        # handle response
-        pass
+    res = apideck.accounting.tax_rates.list(service_id="salesforce", filter_={
+        "assets": True,
+        "equity": True,
+        "expenses": True,
+        "liabilities": True,
+        "revenue": True,
+    }, pass_through={
+        "search": "San Francisco",
+    }, fields="id,updated_at")
+
+    while res is not None:
+        # Handle items
+
+        res = res.next()
 ```
 
 </br>
@@ -44,24 +41,21 @@ async def main():
         consumer_id="test-consumer",
         app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
     ) as apideck:
-        res = await apideck.accounting.tax_rates.list_async(request={
-            "service_id": "salesforce",
-            "filter_": {
-                "assets": True,
-                "equity": True,
-                "expenses": True,
-                "liabilities": True,
-                "revenue": True,
-            },
-            "pass_through": {
-                "search": "San Francisco",
-            },
-            "fields": "id,updated_at",
-        })
 
-        if res is not None:
-            # handle response
-            pass
+        res = await apideck.accounting.tax_rates.list_async(service_id="salesforce", filter_={
+            "assets": True,
+            "equity": True,
+            "expenses": True,
+            "liabilities": True,
+            "revenue": True,
+        }, pass_through={
+            "search": "San Francisco",
+        }, fields="id,updated_at")
+
+        while res is not None:
+            # Handle items
+
+            res = res.next()
 
 asyncio.run(main())
 ```

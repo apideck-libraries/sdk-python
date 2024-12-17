@@ -1,17 +1,8 @@
 # CrmActivitiesAllResponse
 
 
-## Supported Types
+## Fields
 
-### `models.GetActivitiesResponse`
-
-```python
-value: models.GetActivitiesResponse = /* values here */
-```
-
-### `models.UnexpectedErrorResponse`
-
-```python
-value: models.UnexpectedErrorResponse = /* values here */
-```
-
+| Field                                                                                | Type                                                                                 | Required                                                                             | Description                                                                          |
+| ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ |
+| `result`                                                                             | [models.CrmActivitiesAllResponseResult](../models/crmactivitiesallresponseresult.md) | :heavy_check_mark:                                                                   | N/A                                                                                  |

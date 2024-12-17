@@ -16,7 +16,7 @@ from apideck_unify.types import (
 from apideck_unify.utils import FieldMetadata, HeaderMetadata, QueryParamMetadata
 import pydantic
 from pydantic import model_serializer
-from typing import Optional, Union
+from typing import Callable, Optional, Union
 from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
 
 
@@ -85,12 +85,23 @@ class WebhookWebhooksAllRequest(BaseModel):
         return m
 
 
-WebhookWebhooksAllResponseTypedDict = TypeAliasType(
-    "WebhookWebhooksAllResponseTypedDict",
+WebhookWebhooksAllResponseResultTypedDict = TypeAliasType(
+    "WebhookWebhooksAllResponseResultTypedDict",
     Union[GetWebhooksResponseTypedDict, UnexpectedErrorResponseTypedDict],
 )
 
 
-WebhookWebhooksAllResponse = TypeAliasType(
-    "WebhookWebhooksAllResponse", Union[GetWebhooksResponse, UnexpectedErrorResponse]
+WebhookWebhooksAllResponseResult = TypeAliasType(
+    "WebhookWebhooksAllResponseResult",
+    Union[GetWebhooksResponse, UnexpectedErrorResponse],
 )
+
+
+class WebhookWebhooksAllResponseTypedDict(TypedDict):
+    result: WebhookWebhooksAllResponseResultTypedDict
+
+
+class WebhookWebhooksAllResponse(BaseModel):
+    next: Callable[[], Optional[WebhookWebhooksAllResponse]]
+
+    result: WebhookWebhooksAllResponseResult

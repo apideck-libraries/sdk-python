@@ -1,17 +1,8 @@
 # IssueTrackingCollectionUsersAllResponse
 
 
-## Supported Types
+## Fields
 
-### `models.GetCollectionUsersResponse`
-
-```python
-value: models.GetCollectionUsersResponse = /* values here */
-```
-
-### `models.UnexpectedErrorResponse`
-
-```python
-value: models.UnexpectedErrorResponse = /* values here */
-```
-
+| Field                                                                                                              | Type                                                                                                               | Required                                                                                                           | Description                                                                                                        |
+| ------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------ |
+| `result`                                                                                                           | [models.IssueTrackingCollectionUsersAllResponseResult](../models/issuetrackingcollectionusersallresponseresult.md) | :heavy_check_mark:                                                                                                 | N/A                                                                                                                |

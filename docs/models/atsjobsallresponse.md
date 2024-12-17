@@ -1,17 +1,8 @@
 # AtsJobsAllResponse
 
 
-## Supported Types
+## Fields
 
-### `models.GetJobsResponse`
-
-```python
-value: models.GetJobsResponse = /* values here */
-```
-
-### `models.UnexpectedErrorResponse`
-
-```python
-value: models.UnexpectedErrorResponse = /* values here */
-```
-
+| Field                                                                    | Type                                                                     | Required                                                                 | Description                                                              |
+| ------------------------------------------------------------------------ | ------------------------------------------------------------------------ | ------------------------------------------------------------------------ | ------------------------------------------------------------------------ |
+| `result`                                                                 | [models.AtsJobsAllResponseResult](../models/atsjobsallresponseresult.md) | :heavy_check_mark:                                                       | N/A                                                                      |

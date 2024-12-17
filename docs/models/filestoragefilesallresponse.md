@@ -1,17 +1,8 @@
 # FileStorageFilesAllResponse
 
 
-## Supported Types
+## Fields
 
-### `models.GetFilesResponse`
-
-```python
-value: models.GetFilesResponse = /* values here */
-```
-
-### `models.UnexpectedErrorResponse`
-
-```python
-value: models.UnexpectedErrorResponse = /* values here */
-```
-
+| Field                                                                                      | Type                                                                                       | Required                                                                                   | Description                                                                                |
+| ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------ |
+| `result`                                                                                   | [models.FileStorageFilesAllResponseResult](../models/filestoragefilesallresponseresult.md) | :heavy_check_mark:                                                                         | N/A                                                                                        |

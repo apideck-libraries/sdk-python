@@ -17,7 +17,7 @@ from apideck_unify.types import (
 from apideck_unify.utils import FieldMetadata, HeaderMetadata, QueryParamMetadata
 import pydantic
 from pydantic import model_serializer
-from typing import Any, Dict, Optional, Union
+from typing import Any, Callable, Dict, Optional, Union
 from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
 
 
@@ -145,12 +145,23 @@ class AtsApplicantsAllRequest(BaseModel):
         return m
 
 
-AtsApplicantsAllResponseTypedDict = TypeAliasType(
-    "AtsApplicantsAllResponseTypedDict",
+AtsApplicantsAllResponseResultTypedDict = TypeAliasType(
+    "AtsApplicantsAllResponseResultTypedDict",
     Union[UnexpectedErrorResponseTypedDict, GetApplicantsResponseTypedDict],
 )
 
 
-AtsApplicantsAllResponse = TypeAliasType(
-    "AtsApplicantsAllResponse", Union[UnexpectedErrorResponse, GetApplicantsResponse]
+AtsApplicantsAllResponseResult = TypeAliasType(
+    "AtsApplicantsAllResponseResult",
+    Union[UnexpectedErrorResponse, GetApplicantsResponse],
 )
+
+
+class AtsApplicantsAllResponseTypedDict(TypedDict):
+    result: AtsApplicantsAllResponseResultTypedDict
+
+
+class AtsApplicantsAllResponse(BaseModel):
+    next: Callable[[], Optional[AtsApplicantsAllResponse]]
+
+    result: AtsApplicantsAllResponseResult

@@ -5,7 +5,7 @@ from apideck_unify import models, utils
 from apideck_unify._hooks import HookContext
 from apideck_unify.types import OptionalNullable, UNSET
 from apideck_unify.utils import get_security_from_env
-from typing import Any, Optional, Union
+from typing import Any, Mapping, Optional
 
 
 class CreateCallback(BaseSDK):
@@ -14,12 +14,11 @@ class CreateCallback(BaseSDK):
         *,
         service_id: str,
         unified_api: str,
-        create_callback_state: Union[
-            models.CreateCallbackState, models.CreateCallbackStateTypedDict
-        ],
+        redirect_uri: Optional[str] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.VaultCreateCallbackStateResponse:
         r"""Create Callback State
 
@@ -28,10 +27,11 @@ class CreateCallback(BaseSDK):
 
         :param service_id: Service ID of the resource to return
         :param unified_api: Unified API
-        :param create_callback_state: Callback state data
+        :param redirect_uri: The redirect URI to be used after the connection is created.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -44,8 +44,8 @@ class CreateCallback(BaseSDK):
         request = models.VaultCreateCallbackStateRequest(
             service_id=service_id,
             unified_api=unified_api,
-            create_callback_state=utils.get_pydantic_model(
-                create_callback_state, models.CreateCallbackState
+            create_callback_state=models.CreateCallbackState(
+                redirect_uri=redirect_uri,
             ),
         )
 
@@ -60,6 +60,7 @@ class CreateCallback(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.VaultCreateCallbackStateGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -144,12 +145,11 @@ class CreateCallback(BaseSDK):
         *,
         service_id: str,
         unified_api: str,
-        create_callback_state: Union[
-            models.CreateCallbackState, models.CreateCallbackStateTypedDict
-        ],
+        redirect_uri: Optional[str] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.VaultCreateCallbackStateResponse:
         r"""Create Callback State
 
@@ -158,10 +158,11 @@ class CreateCallback(BaseSDK):
 
         :param service_id: Service ID of the resource to return
         :param unified_api: Unified API
-        :param create_callback_state: Callback state data
+        :param redirect_uri: The redirect URI to be used after the connection is created.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -174,8 +175,8 @@ class CreateCallback(BaseSDK):
         request = models.VaultCreateCallbackStateRequest(
             service_id=service_id,
             unified_api=unified_api,
-            create_callback_state=utils.get_pydantic_model(
-                create_callback_state, models.CreateCallbackState
+            create_callback_state=models.CreateCallbackState(
+                redirect_uri=redirect_uri,
             ),
         )
 
@@ -190,6 +191,7 @@ class CreateCallback(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.VaultCreateCallbackStateGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,

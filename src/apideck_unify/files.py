@@ -3,10 +3,11 @@
 from .basesdk import BaseSDK
 from apideck_unify import models, utils
 from apideck_unify._hooks import HookContext
-from apideck_unify.types import BaseModel, OptionalNullable, UNSET
+from apideck_unify.types import OptionalNullable, UNSET
 from apideck_unify.utils import get_security_from_env
 from enum import Enum
-from typing import Any, Optional, Union, cast
+from jsonpath import JSONPath
+from typing import Any, Dict, List, Mapping, Optional, Union
 
 
 class DownloadAcceptEnum(str, Enum):
@@ -23,22 +24,37 @@ class Files(BaseSDK):
     def list(
         self,
         *,
-        request: Union[
-            models.FileStorageFilesAllRequest,
-            models.FileStorageFilesAllRequestTypedDict,
-        ] = models.FileStorageFilesAllRequest(),
+        raw: Optional[bool] = False,
+        service_id: Optional[str] = None,
+        cursor: OptionalNullable[str] = UNSET,
+        limit: Optional[int] = 20,
+        filter_: Optional[
+            Union[models.FilesFilter, models.FilesFilterTypedDict]
+        ] = None,
+        sort: Optional[Union[models.FilesSort, models.FilesSortTypedDict]] = None,
+        pass_through: Optional[Dict[str, Any]] = None,
+        fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
-    ) -> models.FileStorageFilesAllResponse:
+        http_headers: Optional[Mapping[str, str]] = None,
+    ) -> Optional[models.FileStorageFilesAllResponse]:
         r"""List Files
 
         List Files
 
-        :param request: The request object to send.
+        :param raw: Include raw response. Mostly used for debugging purposes
+        :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
+        :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
+        :param filter_: Apply filters
+        :param sort: Apply sorting
+        :param pass_through: Optional unmapped key/values that will be passed through to downstream as query parameters. Ie: ?pass_through[search]=leads becomes ?search=leads
+        :param fields: The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -48,9 +64,16 @@ class Files(BaseSDK):
         if server_url is not None:
             base_url = server_url
 
-        if not isinstance(request, BaseModel):
-            request = utils.unmarshal(request, models.FileStorageFilesAllRequest)
-        request = cast(models.FileStorageFilesAllRequest, request)
+        request = models.FileStorageFilesAllRequest(
+            raw=raw,
+            service_id=service_id,
+            cursor=cursor,
+            limit=limit,
+            filter_=utils.get_pydantic_model(filter_, Optional[models.FilesFilter]),
+            sort=utils.get_pydantic_model(sort, Optional[models.FilesSort]),
+            pass_through=pass_through,
+            fields=fields,
+        )
 
         req = self.build_request(
             method="GET",
@@ -63,6 +86,7 @@ class Files(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.FileStorageFilesAllGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -96,9 +120,32 @@ class Files(BaseSDK):
             retry_config=retry_config,
         )
 
+        def next_func() -> Optional[models.FileStorageFilesAllResponse]:
+            body = utils.unmarshal_json(http_res.text, Dict[Any, Any])
+            next_cursor = JSONPath("$.meta.cursors.next").parse(body)
+
+            if len(next_cursor) == 0:
+                return None
+            next_cursor = next_cursor[0]
+
+            return self.list(
+                raw=raw,
+                service_id=service_id,
+                cursor=next_cursor,
+                limit=limit,
+                filter_=filter_,
+                sort=sort,
+                pass_through=pass_through,
+                fields=fields,
+                retries=retries,
+            )
+
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.GetFilesResponse)
+            return models.FileStorageFilesAllResponse(
+                result=utils.unmarshal_json(http_res.text, models.GetFilesResponse),
+                next=next_func,
+            )
         if utils.match_response(http_res, "400", "application/json"):
             data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
             raise models.BadRequestResponse(data=data)
@@ -122,7 +169,12 @@ class Files(BaseSDK):
                 "API error occurred", http_res.status_code, http_res_text, http_res
             )
         if utils.match_response(http_res, "default", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UnexpectedErrorResponse)
+            return models.FileStorageFilesAllResponse(
+                result=utils.unmarshal_json(
+                    http_res.text, models.UnexpectedErrorResponse
+                ),
+                next=next_func,
+            )
 
         content_type = http_res.headers.get("Content-Type")
         http_res_text = utils.stream_to_text(http_res)
@@ -136,22 +188,37 @@ class Files(BaseSDK):
     async def list_async(
         self,
         *,
-        request: Union[
-            models.FileStorageFilesAllRequest,
-            models.FileStorageFilesAllRequestTypedDict,
-        ] = models.FileStorageFilesAllRequest(),
+        raw: Optional[bool] = False,
+        service_id: Optional[str] = None,
+        cursor: OptionalNullable[str] = UNSET,
+        limit: Optional[int] = 20,
+        filter_: Optional[
+            Union[models.FilesFilter, models.FilesFilterTypedDict]
+        ] = None,
+        sort: Optional[Union[models.FilesSort, models.FilesSortTypedDict]] = None,
+        pass_through: Optional[Dict[str, Any]] = None,
+        fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
-    ) -> models.FileStorageFilesAllResponse:
+        http_headers: Optional[Mapping[str, str]] = None,
+    ) -> Optional[models.FileStorageFilesAllResponse]:
         r"""List Files
 
         List Files
 
-        :param request: The request object to send.
+        :param raw: Include raw response. Mostly used for debugging purposes
+        :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
+        :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
+        :param filter_: Apply filters
+        :param sort: Apply sorting
+        :param pass_through: Optional unmapped key/values that will be passed through to downstream as query parameters. Ie: ?pass_through[search]=leads becomes ?search=leads
+        :param fields: The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -161,9 +228,16 @@ class Files(BaseSDK):
         if server_url is not None:
             base_url = server_url
 
-        if not isinstance(request, BaseModel):
-            request = utils.unmarshal(request, models.FileStorageFilesAllRequest)
-        request = cast(models.FileStorageFilesAllRequest, request)
+        request = models.FileStorageFilesAllRequest(
+            raw=raw,
+            service_id=service_id,
+            cursor=cursor,
+            limit=limit,
+            filter_=utils.get_pydantic_model(filter_, Optional[models.FilesFilter]),
+            sort=utils.get_pydantic_model(sort, Optional[models.FilesSort]),
+            pass_through=pass_through,
+            fields=fields,
+        )
 
         req = self.build_request_async(
             method="GET",
@@ -176,6 +250,7 @@ class Files(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.FileStorageFilesAllGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -209,9 +284,32 @@ class Files(BaseSDK):
             retry_config=retry_config,
         )
 
+        def next_func() -> Optional[models.FileStorageFilesAllResponse]:
+            body = utils.unmarshal_json(http_res.text, Dict[Any, Any])
+            next_cursor = JSONPath("$.meta.cursors.next").parse(body)
+
+            if len(next_cursor) == 0:
+                return None
+            next_cursor = next_cursor[0]
+
+            return self.list(
+                raw=raw,
+                service_id=service_id,
+                cursor=next_cursor,
+                limit=limit,
+                filter_=filter_,
+                sort=sort,
+                pass_through=pass_through,
+                fields=fields,
+                retries=retries,
+            )
+
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.GetFilesResponse)
+            return models.FileStorageFilesAllResponse(
+                result=utils.unmarshal_json(http_res.text, models.GetFilesResponse),
+                next=next_func,
+            )
         if utils.match_response(http_res, "400", "application/json"):
             data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
             raise models.BadRequestResponse(data=data)
@@ -235,7 +333,12 @@ class Files(BaseSDK):
                 "API error occurred", http_res.status_code, http_res_text, http_res
             )
         if utils.match_response(http_res, "default", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UnexpectedErrorResponse)
+            return models.FileStorageFilesAllResponse(
+                result=utils.unmarshal_json(
+                    http_res.text, models.UnexpectedErrorResponse
+                ),
+                next=next_func,
+            )
 
         content_type = http_res.headers.get("Content-Type")
         http_res_text = await utils.stream_to_text_async(http_res)
@@ -249,22 +352,41 @@ class Files(BaseSDK):
     def search(
         self,
         *,
-        request: Union[
-            models.FileStorageFilesSearchRequest,
-            models.FileStorageFilesSearchRequestTypedDict,
-        ],
+        query: str,
+        service_id: Optional[str] = None,
+        pass_through_param: Optional[Dict[str, Any]] = None,
+        fields: OptionalNullable[str] = UNSET,
+        cursor: OptionalNullable[str] = UNSET,
+        limit: Optional[int] = 20,
+        filter_: Optional[
+            Union[models.FilesFilter, models.FilesFilterTypedDict]
+        ] = None,
+        drive_id: Optional[str] = None,
+        pass_through: Optional[
+            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.FileStorageFilesSearchResponse:
         r"""Search Files
 
         Search Files
 
-        :param request: The request object to send.
+        :param query: The query to search for. May match across multiple fields.
+        :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param pass_through_param: Optional unmapped key/values that will be passed through to downstream as query parameters. Ie: ?pass_through[search]=leads becomes ?search=leads
+        :param fields: The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded.
+        :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
+        :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
+        :param filter_: Apply filters
+        :param drive_id: ID of the drive to filter on
+        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -274,9 +396,21 @@ class Files(BaseSDK):
         if server_url is not None:
             base_url = server_url
 
-        if not isinstance(request, BaseModel):
-            request = utils.unmarshal(request, models.FileStorageFilesSearchRequest)
-        request = cast(models.FileStorageFilesSearchRequest, request)
+        request = models.FileStorageFilesSearchRequest(
+            service_id=service_id,
+            pass_through_param=pass_through_param,
+            fields=fields,
+            cursor=cursor,
+            limit=limit,
+            filter_=utils.get_pydantic_model(filter_, Optional[models.FilesFilter]),
+            files_search=models.FilesSearch(
+                query=query,
+                drive_id=drive_id,
+                pass_through=utils.get_pydantic_model(
+                    pass_through, Optional[List[models.PassThroughBody]]
+                ),
+            ),
+        )
 
         req = self.build_request(
             method="POST",
@@ -289,6 +423,7 @@ class Files(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.FileStorageFilesSearchGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -365,22 +500,41 @@ class Files(BaseSDK):
     async def search_async(
         self,
         *,
-        request: Union[
-            models.FileStorageFilesSearchRequest,
-            models.FileStorageFilesSearchRequestTypedDict,
-        ],
+        query: str,
+        service_id: Optional[str] = None,
+        pass_through_param: Optional[Dict[str, Any]] = None,
+        fields: OptionalNullable[str] = UNSET,
+        cursor: OptionalNullable[str] = UNSET,
+        limit: Optional[int] = 20,
+        filter_: Optional[
+            Union[models.FilesFilter, models.FilesFilterTypedDict]
+        ] = None,
+        drive_id: Optional[str] = None,
+        pass_through: Optional[
+            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.FileStorageFilesSearchResponse:
         r"""Search Files
 
         Search Files
 
-        :param request: The request object to send.
+        :param query: The query to search for. May match across multiple fields.
+        :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param pass_through_param: Optional unmapped key/values that will be passed through to downstream as query parameters. Ie: ?pass_through[search]=leads becomes ?search=leads
+        :param fields: The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded.
+        :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
+        :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
+        :param filter_: Apply filters
+        :param drive_id: ID of the drive to filter on
+        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -390,9 +544,21 @@ class Files(BaseSDK):
         if server_url is not None:
             base_url = server_url
 
-        if not isinstance(request, BaseModel):
-            request = utils.unmarshal(request, models.FileStorageFilesSearchRequest)
-        request = cast(models.FileStorageFilesSearchRequest, request)
+        request = models.FileStorageFilesSearchRequest(
+            service_id=service_id,
+            pass_through_param=pass_through_param,
+            fields=fields,
+            cursor=cursor,
+            limit=limit,
+            filter_=utils.get_pydantic_model(filter_, Optional[models.FilesFilter]),
+            files_search=models.FilesSearch(
+                query=query,
+                drive_id=drive_id,
+                pass_through=utils.get_pydantic_model(
+                    pass_through, Optional[List[models.PassThroughBody]]
+                ),
+            ),
+        )
 
         req = self.build_request_async(
             method="POST",
@@ -405,6 +571,7 @@ class Files(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.FileStorageFilesSearchGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -488,6 +655,7 @@ class Files(BaseSDK):
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.FileStorageFilesOneResponse:
         r"""Get File
 
@@ -500,6 +668,7 @@ class Files(BaseSDK):
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -527,6 +696,7 @@ class Files(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.FileStorageFilesOneGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -607,6 +777,7 @@ class Files(BaseSDK):
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.FileStorageFilesOneResponse:
         r"""Get File
 
@@ -619,6 +790,7 @@ class Files(BaseSDK):
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -646,6 +818,7 @@ class Files(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.FileStorageFilesOneGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -720,26 +893,34 @@ class Files(BaseSDK):
         self,
         *,
         id: str,
-        update_file_request: Union[
-            models.UpdateFileRequest, models.UpdateFileRequestTypedDict
-        ],
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
+        name: Optional[str] = None,
+        description: Optional[str] = None,
+        parent_folder_id: Optional[str] = None,
+        pass_through: Optional[
+            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.FileStorageFilesUpdateResponse:
         r"""Rename or move File
 
         Rename or move File
 
         :param id: ID of the record you are acting upon.
-        :param update_file_request:
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param name: The name of the file.
+        :param description: Optional description of the file.
+        :param parent_folder_id: The parent folder to create the new file within. This can be an ID or a path depending on the downstream folder. Please see the connector section below to see downstream specific gotchas.
+        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -753,8 +934,13 @@ class Files(BaseSDK):
             id=id,
             service_id=service_id,
             raw=raw,
-            update_file_request=utils.get_pydantic_model(
-                update_file_request, models.UpdateFileRequest
+            update_file_request=models.UpdateFileRequest(
+                name=name,
+                description=description,
+                parent_folder_id=parent_folder_id,
+                pass_through=utils.get_pydantic_model(
+                    pass_through, Optional[List[models.PassThroughBody]]
+                ),
             ),
         )
 
@@ -769,6 +955,7 @@ class Files(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.FileStorageFilesUpdateGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -850,26 +1037,34 @@ class Files(BaseSDK):
         self,
         *,
         id: str,
-        update_file_request: Union[
-            models.UpdateFileRequest, models.UpdateFileRequestTypedDict
-        ],
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
+        name: Optional[str] = None,
+        description: Optional[str] = None,
+        parent_folder_id: Optional[str] = None,
+        pass_through: Optional[
+            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.FileStorageFilesUpdateResponse:
         r"""Rename or move File
 
         Rename or move File
 
         :param id: ID of the record you are acting upon.
-        :param update_file_request:
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param name: The name of the file.
+        :param description: Optional description of the file.
+        :param parent_folder_id: The parent folder to create the new file within. This can be an ID or a path depending on the downstream folder. Please see the connector section below to see downstream specific gotchas.
+        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -883,8 +1078,13 @@ class Files(BaseSDK):
             id=id,
             service_id=service_id,
             raw=raw,
-            update_file_request=utils.get_pydantic_model(
-                update_file_request, models.UpdateFileRequest
+            update_file_request=models.UpdateFileRequest(
+                name=name,
+                description=description,
+                parent_folder_id=parent_folder_id,
+                pass_through=utils.get_pydantic_model(
+                    pass_through, Optional[List[models.PassThroughBody]]
+                ),
             ),
         )
 
@@ -899,6 +1099,7 @@ class Files(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.FileStorageFilesUpdateGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -985,6 +1186,7 @@ class Files(BaseSDK):
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.FileStorageFilesDeleteResponse:
         r"""Delete File
 
@@ -996,6 +1198,7 @@ class Files(BaseSDK):
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -1022,6 +1225,7 @@ class Files(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.FileStorageFilesDeleteGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -1101,6 +1305,7 @@ class Files(BaseSDK):
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.FileStorageFilesDeleteResponse:
         r"""Delete File
 
@@ -1112,6 +1317,7 @@ class Files(BaseSDK):
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -1138,6 +1344,7 @@ class Files(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.FileStorageFilesDeleteGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -1218,6 +1425,7 @@ class Files(BaseSDK):
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
         accept_header_override: Optional[DownloadAcceptEnum] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.FileStorageFilesDownloadResponse:
         r"""Download File
 
@@ -1230,6 +1438,7 @@ class Files(BaseSDK):
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
         :param accept_header_override: Override the default accept header for this method
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -1258,6 +1467,7 @@ class Files(BaseSDK):
             accept_header_value=accept_header_override.value
             if accept_header_override is not None
             else "application/json;q=1, */*;q=0",
+            http_headers=http_headers,
             _globals=models.FileStorageFilesDownloadGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -1347,6 +1557,7 @@ class Files(BaseSDK):
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
         accept_header_override: Optional[DownloadAcceptEnum] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.FileStorageFilesDownloadResponse:
         r"""Download File
 
@@ -1359,6 +1570,7 @@ class Files(BaseSDK):
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
         :param accept_header_override: Override the default accept header for this method
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -1387,6 +1599,7 @@ class Files(BaseSDK):
             accept_header_value=accept_header_override.value
             if accept_header_override is not None
             else "application/json;q=1, */*;q=0",
+            http_headers=http_headers,
             _globals=models.FileStorageFilesDownloadGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -1477,6 +1690,7 @@ class Files(BaseSDK):
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
         accept_header_override: Optional[ExportAcceptEnum] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.FileStorageFilesExportResponse:
         r"""Export File
 
@@ -1490,6 +1704,7 @@ class Files(BaseSDK):
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
         :param accept_header_override: Override the default accept header for this method
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -1519,6 +1734,7 @@ class Files(BaseSDK):
             accept_header_value=accept_header_override.value
             if accept_header_override is not None
             else "application/json;q=1, */*;q=0",
+            http_headers=http_headers,
             _globals=models.FileStorageFilesExportGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -1609,6 +1825,7 @@ class Files(BaseSDK):
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
         accept_header_override: Optional[ExportAcceptEnum] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.FileStorageFilesExportResponse:
         r"""Export File
 
@@ -1622,6 +1839,7 @@ class Files(BaseSDK):
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
         :param accept_header_override: Override the default accept header for this method
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -1651,6 +1869,7 @@ class Files(BaseSDK):
             accept_header_value=accept_header_override.value
             if accept_header_override is not None
             else "application/json;q=1, */*;q=0",
+            http_headers=http_headers,
             _globals=models.FileStorageFilesExportGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,

@@ -1,17 +1,8 @@
 # FileStorageSharedLinksAllResponse
 
 
-## Supported Types
+## Fields
 
-### `models.GetSharedLinksResponse`
-
-```python
-value: models.GetSharedLinksResponse = /* values here */
-```
-
-### `models.UnexpectedErrorResponse`
-
-```python
-value: models.UnexpectedErrorResponse = /* values here */
-```
-
+| Field                                                                                                  | Type                                                                                                   | Required                                                                                               | Description                                                                                            |
+| ------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------ |
+| `result`                                                                                               | [models.FileStorageSharedLinksAllResponseResult](../models/filestoragesharedlinksallresponseresult.md) | :heavy_check_mark:                                                                                     | N/A                                                                                                    |

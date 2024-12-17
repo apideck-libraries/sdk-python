@@ -1,17 +1,8 @@
 # WebhookWebhooksAllResponse
 
 
-## Supported Types
+## Fields
 
-### `models.GetWebhooksResponse`
-
-```python
-value: models.GetWebhooksResponse = /* values here */
-```
-
-### `models.UnexpectedErrorResponse`
-
-```python
-value: models.UnexpectedErrorResponse = /* values here */
-```
-
+| Field                                                                                    | Type                                                                                     | Required                                                                                 | Description                                                                              |
+| ---------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| `result`                                                                                 | [models.WebhookWebhooksAllResponseResult](../models/webhookwebhooksallresponseresult.md) | :heavy_check_mark:                                                                       | N/A                                                                                      |

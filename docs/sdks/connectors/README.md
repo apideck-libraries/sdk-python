@@ -24,13 +24,15 @@ with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
+
     res = apideck.connector.connectors.list(filter_={
         "unified_api": apideck_unify.UnifiedAPIID.FILE_STORAGE,
     })
 
-    if res is not None:
-        # handle response
-        pass
+    while res is not None:
+        # Handle items
+
+        res = res.next()
 
 ```
 
@@ -71,11 +73,11 @@ with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
+
     res = apideck.connector.connectors.get(id="<id>")
 
-    if res is not None:
-        # handle response
-        pass
+    # Handle response
+    print(res)
 
 ```
 

@@ -3,30 +3,47 @@
 from .basesdk import BaseSDK
 from apideck_unify import models, utils
 from apideck_unify._hooks import HookContext
-from apideck_unify.types import BaseModel, OptionalNullable, UNSET
+from apideck_unify.types import Nullable, OptionalNullable, UNSET
 from apideck_unify.utils import get_security_from_env
-from typing import Any, Optional, Union, cast
+from jsonpath import JSONPath
+from typing import Any, Dict, List, Mapping, Optional, Union
 
 
 class Contacts(BaseSDK):
     def list(
         self,
         *,
-        request: Union[
-            models.CrmContactsAllRequest, models.CrmContactsAllRequestTypedDict
-        ] = models.CrmContactsAllRequest(),
+        raw: Optional[bool] = False,
+        service_id: Optional[str] = None,
+        cursor: OptionalNullable[str] = UNSET,
+        limit: Optional[int] = 20,
+        filter_: Optional[
+            Union[models.ContactsFilter, models.ContactsFilterTypedDict]
+        ] = None,
+        sort: Optional[Union[models.ContactsSort, models.ContactsSortTypedDict]] = None,
+        pass_through: Optional[Dict[str, Any]] = None,
+        fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
-    ) -> models.CrmContactsAllResponse:
+        http_headers: Optional[Mapping[str, str]] = None,
+    ) -> Optional[models.CrmContactsAllResponse]:
         r"""List contacts
 
         List contacts
 
-        :param request: The request object to send.
+        :param raw: Include raw response. Mostly used for debugging purposes
+        :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
+        :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
+        :param filter_: Apply filters
+        :param sort: Apply sorting
+        :param pass_through: Optional unmapped key/values that will be passed through to downstream as query parameters. Ie: ?pass_through[search]=leads becomes ?search=leads
+        :param fields: The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -36,9 +53,16 @@ class Contacts(BaseSDK):
         if server_url is not None:
             base_url = server_url
 
-        if not isinstance(request, BaseModel):
-            request = utils.unmarshal(request, models.CrmContactsAllRequest)
-        request = cast(models.CrmContactsAllRequest, request)
+        request = models.CrmContactsAllRequest(
+            raw=raw,
+            service_id=service_id,
+            cursor=cursor,
+            limit=limit,
+            filter_=utils.get_pydantic_model(filter_, Optional[models.ContactsFilter]),
+            sort=utils.get_pydantic_model(sort, Optional[models.ContactsSort]),
+            pass_through=pass_through,
+            fields=fields,
+        )
 
         req = self.build_request(
             method="GET",
@@ -51,6 +75,7 @@ class Contacts(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.CrmContactsAllGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -84,9 +109,32 @@ class Contacts(BaseSDK):
             retry_config=retry_config,
         )
 
+        def next_func() -> Optional[models.CrmContactsAllResponse]:
+            body = utils.unmarshal_json(http_res.text, Dict[Any, Any])
+            next_cursor = JSONPath("$.meta.cursors.next").parse(body)
+
+            if len(next_cursor) == 0:
+                return None
+            next_cursor = next_cursor[0]
+
+            return self.list(
+                raw=raw,
+                service_id=service_id,
+                cursor=next_cursor,
+                limit=limit,
+                filter_=filter_,
+                sort=sort,
+                pass_through=pass_through,
+                fields=fields,
+                retries=retries,
+            )
+
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.GetContactsResponse)
+            return models.CrmContactsAllResponse(
+                result=utils.unmarshal_json(http_res.text, models.GetContactsResponse),
+                next=next_func,
+            )
         if utils.match_response(http_res, "400", "application/json"):
             data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
             raise models.BadRequestResponse(data=data)
@@ -110,7 +158,12 @@ class Contacts(BaseSDK):
                 "API error occurred", http_res.status_code, http_res_text, http_res
             )
         if utils.match_response(http_res, "default", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UnexpectedErrorResponse)
+            return models.CrmContactsAllResponse(
+                result=utils.unmarshal_json(
+                    http_res.text, models.UnexpectedErrorResponse
+                ),
+                next=next_func,
+            )
 
         content_type = http_res.headers.get("Content-Type")
         http_res_text = utils.stream_to_text(http_res)
@@ -124,21 +177,37 @@ class Contacts(BaseSDK):
     async def list_async(
         self,
         *,
-        request: Union[
-            models.CrmContactsAllRequest, models.CrmContactsAllRequestTypedDict
-        ] = models.CrmContactsAllRequest(),
+        raw: Optional[bool] = False,
+        service_id: Optional[str] = None,
+        cursor: OptionalNullable[str] = UNSET,
+        limit: Optional[int] = 20,
+        filter_: Optional[
+            Union[models.ContactsFilter, models.ContactsFilterTypedDict]
+        ] = None,
+        sort: Optional[Union[models.ContactsSort, models.ContactsSortTypedDict]] = None,
+        pass_through: Optional[Dict[str, Any]] = None,
+        fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
-    ) -> models.CrmContactsAllResponse:
+        http_headers: Optional[Mapping[str, str]] = None,
+    ) -> Optional[models.CrmContactsAllResponse]:
         r"""List contacts
 
         List contacts
 
-        :param request: The request object to send.
+        :param raw: Include raw response. Mostly used for debugging purposes
+        :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
+        :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
+        :param filter_: Apply filters
+        :param sort: Apply sorting
+        :param pass_through: Optional unmapped key/values that will be passed through to downstream as query parameters. Ie: ?pass_through[search]=leads becomes ?search=leads
+        :param fields: The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -148,9 +217,16 @@ class Contacts(BaseSDK):
         if server_url is not None:
             base_url = server_url
 
-        if not isinstance(request, BaseModel):
-            request = utils.unmarshal(request, models.CrmContactsAllRequest)
-        request = cast(models.CrmContactsAllRequest, request)
+        request = models.CrmContactsAllRequest(
+            raw=raw,
+            service_id=service_id,
+            cursor=cursor,
+            limit=limit,
+            filter_=utils.get_pydantic_model(filter_, Optional[models.ContactsFilter]),
+            sort=utils.get_pydantic_model(sort, Optional[models.ContactsSort]),
+            pass_through=pass_through,
+            fields=fields,
+        )
 
         req = self.build_request_async(
             method="GET",
@@ -163,6 +239,7 @@ class Contacts(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.CrmContactsAllGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -196,9 +273,32 @@ class Contacts(BaseSDK):
             retry_config=retry_config,
         )
 
+        def next_func() -> Optional[models.CrmContactsAllResponse]:
+            body = utils.unmarshal_json(http_res.text, Dict[Any, Any])
+            next_cursor = JSONPath("$.meta.cursors.next").parse(body)
+
+            if len(next_cursor) == 0:
+                return None
+            next_cursor = next_cursor[0]
+
+            return self.list(
+                raw=raw,
+                service_id=service_id,
+                cursor=next_cursor,
+                limit=limit,
+                filter_=filter_,
+                sort=sort,
+                pass_through=pass_through,
+                fields=fields,
+                retries=retries,
+            )
+
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.GetContactsResponse)
+            return models.CrmContactsAllResponse(
+                result=utils.unmarshal_json(http_res.text, models.GetContactsResponse),
+                next=next_func,
+            )
         if utils.match_response(http_res, "400", "application/json"):
             data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
             raise models.BadRequestResponse(data=data)
@@ -222,7 +322,12 @@ class Contacts(BaseSDK):
                 "API error occurred", http_res.status_code, http_res_text, http_res
             )
         if utils.match_response(http_res, "default", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UnexpectedErrorResponse)
+            return models.CrmContactsAllResponse(
+                result=utils.unmarshal_json(
+                    http_res.text, models.UnexpectedErrorResponse
+                ),
+                next=next_func,
+            )
 
         content_type = http_res.headers.get("Content-Type")
         http_res_text = await utils.stream_to_text_async(http_res)
@@ -236,23 +341,103 @@ class Contacts(BaseSDK):
     def create(
         self,
         *,
-        contact: Union[models.ContactInput, models.ContactInputTypedDict],
+        name: Nullable[str],
         raw: Optional[bool] = False,
         service_id: Optional[str] = None,
+        owner_id: OptionalNullable[str] = UNSET,
+        type_: OptionalNullable[models.ContactType] = UNSET,
+        company_id: OptionalNullable[str] = UNSET,
+        company_name: OptionalNullable[str] = UNSET,
+        lead_id: OptionalNullable[str] = UNSET,
+        first_name: OptionalNullable[str] = UNSET,
+        middle_name: OptionalNullable[str] = UNSET,
+        last_name: OptionalNullable[str] = UNSET,
+        prefix: OptionalNullable[str] = UNSET,
+        suffix: OptionalNullable[str] = UNSET,
+        title: OptionalNullable[str] = UNSET,
+        department: OptionalNullable[str] = UNSET,
+        language: OptionalNullable[str] = UNSET,
+        gender: OptionalNullable[models.ContactGender] = UNSET,
+        birthday: OptionalNullable[str] = UNSET,
+        image: OptionalNullable[str] = UNSET,
+        photo_url: OptionalNullable[str] = UNSET,
+        lead_source: OptionalNullable[str] = UNSET,
+        fax: OptionalNullable[str] = UNSET,
+        description: OptionalNullable[str] = UNSET,
+        current_balance: OptionalNullable[float] = UNSET,
+        status: OptionalNullable[str] = UNSET,
+        active: OptionalNullable[bool] = UNSET,
+        websites: Optional[
+            Union[List[models.Website], List[models.WebsiteTypedDict]]
+        ] = None,
+        addresses: Optional[
+            Union[List[models.Address], List[models.AddressTypedDict]]
+        ] = None,
+        social_links: Optional[
+            Union[List[models.SocialLink], List[models.SocialLinkTypedDict]]
+        ] = None,
+        phone_numbers: Optional[
+            Union[List[models.PhoneNumber], List[models.PhoneNumberTypedDict]]
+        ] = None,
+        emails: Optional[Union[List[models.Email], List[models.EmailTypedDict]]] = None,
+        email_domain: OptionalNullable[str] = UNSET,
+        custom_fields: Optional[
+            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+        ] = None,
+        tags: OptionalNullable[List[str]] = UNSET,
+        opportunity_ids: Optional[List[str]] = None,
+        pass_through: Optional[
+            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.CrmContactsAddResponse:
         r"""Create contact
 
         Create contact
 
-        :param contact:
+        :param name: Full name of the contact.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param owner_id: The owner of the contact.
+        :param type: The type of the contact.
+        :param company_id: The company the contact is associated with.
+        :param company_name: The name of the company the contact is associated with.
+        :param lead_id: The lead the contact is associated with.
+        :param first_name: The first name of the contact.
+        :param middle_name: The middle name of the contact.
+        :param last_name: The last name of the contact.
+        :param prefix: The prefix of the contact.
+        :param suffix: The suffix of the contact.
+        :param title: The job title of the contact.
+        :param department: The department of the contact.
+        :param language: language code according to ISO 639-1. For the United States - EN
+        :param gender: The gender of the contact.
+        :param birthday: The birthday of the contact.
+        :param image:
+        :param photo_url: The URL of the photo of a person.
+        :param lead_source: The lead source of the contact.
+        :param fax: The fax number of the contact.
+        :param description: The description of the contact.
+        :param current_balance: The current balance of the contact.
+        :param status: The status of the contact.
+        :param active: The active status of the contact.
+        :param websites:
+        :param addresses:
+        :param social_links:
+        :param phone_numbers:
+        :param emails:
+        :param email_domain:
+        :param custom_fields:
+        :param tags:
+        :param opportunity_ids: The opportunity ids of the contact.
+        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -265,7 +450,54 @@ class Contacts(BaseSDK):
         request = models.CrmContactsAddRequest(
             raw=raw,
             service_id=service_id,
-            contact=utils.get_pydantic_model(contact, models.ContactInput),
+            contact=models.ContactInput(
+                name=name,
+                owner_id=owner_id,
+                type=type_,
+                company_id=company_id,
+                company_name=company_name,
+                lead_id=lead_id,
+                first_name=first_name,
+                middle_name=middle_name,
+                last_name=last_name,
+                prefix=prefix,
+                suffix=suffix,
+                title=title,
+                department=department,
+                language=language,
+                gender=gender,
+                birthday=birthday,
+                image=image,
+                photo_url=photo_url,
+                lead_source=lead_source,
+                fax=fax,
+                description=description,
+                current_balance=current_balance,
+                status=status,
+                active=active,
+                websites=utils.get_pydantic_model(
+                    websites, Optional[List[models.Website]]
+                ),
+                addresses=utils.get_pydantic_model(
+                    addresses, Optional[List[models.Address]]
+                ),
+                social_links=utils.get_pydantic_model(
+                    social_links, Optional[List[models.SocialLink]]
+                ),
+                phone_numbers=utils.get_pydantic_model(
+                    phone_numbers, Optional[List[models.PhoneNumber]]
+                ),
+                emails=utils.get_pydantic_model(emails, Optional[List[models.Email]]),
+                email_domain=email_domain,
+                custom_fields=utils.get_pydantic_model(
+                    custom_fields, Optional[List[models.CustomField]]
+                ),
+                tags=tags,
+                opportunity_ids=opportunity_ids,
+                pass_through=utils.get_pydantic_model(
+                    pass_through, Optional[List[models.PassThroughBody]]
+                ),
+            ),
         )
 
         req = self.build_request(
@@ -279,6 +511,7 @@ class Contacts(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.CrmContactsAddGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -355,23 +588,103 @@ class Contacts(BaseSDK):
     async def create_async(
         self,
         *,
-        contact: Union[models.ContactInput, models.ContactInputTypedDict],
+        name: Nullable[str],
         raw: Optional[bool] = False,
         service_id: Optional[str] = None,
+        owner_id: OptionalNullable[str] = UNSET,
+        type_: OptionalNullable[models.ContactType] = UNSET,
+        company_id: OptionalNullable[str] = UNSET,
+        company_name: OptionalNullable[str] = UNSET,
+        lead_id: OptionalNullable[str] = UNSET,
+        first_name: OptionalNullable[str] = UNSET,
+        middle_name: OptionalNullable[str] = UNSET,
+        last_name: OptionalNullable[str] = UNSET,
+        prefix: OptionalNullable[str] = UNSET,
+        suffix: OptionalNullable[str] = UNSET,
+        title: OptionalNullable[str] = UNSET,
+        department: OptionalNullable[str] = UNSET,
+        language: OptionalNullable[str] = UNSET,
+        gender: OptionalNullable[models.ContactGender] = UNSET,
+        birthday: OptionalNullable[str] = UNSET,
+        image: OptionalNullable[str] = UNSET,
+        photo_url: OptionalNullable[str] = UNSET,
+        lead_source: OptionalNullable[str] = UNSET,
+        fax: OptionalNullable[str] = UNSET,
+        description: OptionalNullable[str] = UNSET,
+        current_balance: OptionalNullable[float] = UNSET,
+        status: OptionalNullable[str] = UNSET,
+        active: OptionalNullable[bool] = UNSET,
+        websites: Optional[
+            Union[List[models.Website], List[models.WebsiteTypedDict]]
+        ] = None,
+        addresses: Optional[
+            Union[List[models.Address], List[models.AddressTypedDict]]
+        ] = None,
+        social_links: Optional[
+            Union[List[models.SocialLink], List[models.SocialLinkTypedDict]]
+        ] = None,
+        phone_numbers: Optional[
+            Union[List[models.PhoneNumber], List[models.PhoneNumberTypedDict]]
+        ] = None,
+        emails: Optional[Union[List[models.Email], List[models.EmailTypedDict]]] = None,
+        email_domain: OptionalNullable[str] = UNSET,
+        custom_fields: Optional[
+            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+        ] = None,
+        tags: OptionalNullable[List[str]] = UNSET,
+        opportunity_ids: Optional[List[str]] = None,
+        pass_through: Optional[
+            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.CrmContactsAddResponse:
         r"""Create contact
 
         Create contact
 
-        :param contact:
+        :param name: Full name of the contact.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param owner_id: The owner of the contact.
+        :param type: The type of the contact.
+        :param company_id: The company the contact is associated with.
+        :param company_name: The name of the company the contact is associated with.
+        :param lead_id: The lead the contact is associated with.
+        :param first_name: The first name of the contact.
+        :param middle_name: The middle name of the contact.
+        :param last_name: The last name of the contact.
+        :param prefix: The prefix of the contact.
+        :param suffix: The suffix of the contact.
+        :param title: The job title of the contact.
+        :param department: The department of the contact.
+        :param language: language code according to ISO 639-1. For the United States - EN
+        :param gender: The gender of the contact.
+        :param birthday: The birthday of the contact.
+        :param image:
+        :param photo_url: The URL of the photo of a person.
+        :param lead_source: The lead source of the contact.
+        :param fax: The fax number of the contact.
+        :param description: The description of the contact.
+        :param current_balance: The current balance of the contact.
+        :param status: The status of the contact.
+        :param active: The active status of the contact.
+        :param websites:
+        :param addresses:
+        :param social_links:
+        :param phone_numbers:
+        :param emails:
+        :param email_domain:
+        :param custom_fields:
+        :param tags:
+        :param opportunity_ids: The opportunity ids of the contact.
+        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -384,7 +697,54 @@ class Contacts(BaseSDK):
         request = models.CrmContactsAddRequest(
             raw=raw,
             service_id=service_id,
-            contact=utils.get_pydantic_model(contact, models.ContactInput),
+            contact=models.ContactInput(
+                name=name,
+                owner_id=owner_id,
+                type=type_,
+                company_id=company_id,
+                company_name=company_name,
+                lead_id=lead_id,
+                first_name=first_name,
+                middle_name=middle_name,
+                last_name=last_name,
+                prefix=prefix,
+                suffix=suffix,
+                title=title,
+                department=department,
+                language=language,
+                gender=gender,
+                birthday=birthday,
+                image=image,
+                photo_url=photo_url,
+                lead_source=lead_source,
+                fax=fax,
+                description=description,
+                current_balance=current_balance,
+                status=status,
+                active=active,
+                websites=utils.get_pydantic_model(
+                    websites, Optional[List[models.Website]]
+                ),
+                addresses=utils.get_pydantic_model(
+                    addresses, Optional[List[models.Address]]
+                ),
+                social_links=utils.get_pydantic_model(
+                    social_links, Optional[List[models.SocialLink]]
+                ),
+                phone_numbers=utils.get_pydantic_model(
+                    phone_numbers, Optional[List[models.PhoneNumber]]
+                ),
+                emails=utils.get_pydantic_model(emails, Optional[List[models.Email]]),
+                email_domain=email_domain,
+                custom_fields=utils.get_pydantic_model(
+                    custom_fields, Optional[List[models.CustomField]]
+                ),
+                tags=tags,
+                opportunity_ids=opportunity_ids,
+                pass_through=utils.get_pydantic_model(
+                    pass_through, Optional[List[models.PassThroughBody]]
+                ),
+            ),
         )
 
         req = self.build_request_async(
@@ -398,6 +758,7 @@ class Contacts(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.CrmContactsAddGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -474,21 +835,31 @@ class Contacts(BaseSDK):
     def get(
         self,
         *,
-        request: Union[
-            models.CrmContactsOneRequest, models.CrmContactsOneRequestTypedDict
-        ],
+        id: str,
+        service_id: Optional[str] = None,
+        raw: Optional[bool] = False,
+        fields: OptionalNullable[str] = UNSET,
+        filter_: Optional[
+            Union[models.ContactsFilter, models.ContactsFilterTypedDict]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.CrmContactsOneResponse:
         r"""Get contact
 
         Get contact
 
-        :param request: The request object to send.
+        :param id: ID of the record you are acting upon.
+        :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param raw: Include raw response. Mostly used for debugging purposes
+        :param fields: The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded.
+        :param filter_: Apply filters
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -498,9 +869,13 @@ class Contacts(BaseSDK):
         if server_url is not None:
             base_url = server_url
 
-        if not isinstance(request, BaseModel):
-            request = utils.unmarshal(request, models.CrmContactsOneRequest)
-        request = cast(models.CrmContactsOneRequest, request)
+        request = models.CrmContactsOneRequest(
+            id=id,
+            service_id=service_id,
+            raw=raw,
+            fields=fields,
+            filter_=utils.get_pydantic_model(filter_, Optional[models.ContactsFilter]),
+        )
 
         req = self.build_request(
             method="GET",
@@ -513,6 +888,7 @@ class Contacts(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.CrmContactsOneGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -586,21 +962,31 @@ class Contacts(BaseSDK):
     async def get_async(
         self,
         *,
-        request: Union[
-            models.CrmContactsOneRequest, models.CrmContactsOneRequestTypedDict
-        ],
+        id: str,
+        service_id: Optional[str] = None,
+        raw: Optional[bool] = False,
+        fields: OptionalNullable[str] = UNSET,
+        filter_: Optional[
+            Union[models.ContactsFilter, models.ContactsFilterTypedDict]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.CrmContactsOneResponse:
         r"""Get contact
 
         Get contact
 
-        :param request: The request object to send.
+        :param id: ID of the record you are acting upon.
+        :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param raw: Include raw response. Mostly used for debugging purposes
+        :param fields: The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded.
+        :param filter_: Apply filters
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -610,9 +996,13 @@ class Contacts(BaseSDK):
         if server_url is not None:
             base_url = server_url
 
-        if not isinstance(request, BaseModel):
-            request = utils.unmarshal(request, models.CrmContactsOneRequest)
-        request = cast(models.CrmContactsOneRequest, request)
+        request = models.CrmContactsOneRequest(
+            id=id,
+            service_id=service_id,
+            raw=raw,
+            fields=fields,
+            filter_=utils.get_pydantic_model(filter_, Optional[models.ContactsFilter]),
+        )
 
         req = self.build_request_async(
             method="GET",
@@ -625,6 +1015,7 @@ class Contacts(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.CrmContactsOneGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -699,24 +1090,104 @@ class Contacts(BaseSDK):
         self,
         *,
         id: str,
-        contact: Union[models.ContactInput, models.ContactInputTypedDict],
+        name: Nullable[str],
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
+        owner_id: OptionalNullable[str] = UNSET,
+        type_: OptionalNullable[models.ContactType] = UNSET,
+        company_id: OptionalNullable[str] = UNSET,
+        company_name: OptionalNullable[str] = UNSET,
+        lead_id: OptionalNullable[str] = UNSET,
+        first_name: OptionalNullable[str] = UNSET,
+        middle_name: OptionalNullable[str] = UNSET,
+        last_name: OptionalNullable[str] = UNSET,
+        prefix: OptionalNullable[str] = UNSET,
+        suffix: OptionalNullable[str] = UNSET,
+        title: OptionalNullable[str] = UNSET,
+        department: OptionalNullable[str] = UNSET,
+        language: OptionalNullable[str] = UNSET,
+        gender: OptionalNullable[models.ContactGender] = UNSET,
+        birthday: OptionalNullable[str] = UNSET,
+        image: OptionalNullable[str] = UNSET,
+        photo_url: OptionalNullable[str] = UNSET,
+        lead_source: OptionalNullable[str] = UNSET,
+        fax: OptionalNullable[str] = UNSET,
+        description: OptionalNullable[str] = UNSET,
+        current_balance: OptionalNullable[float] = UNSET,
+        status: OptionalNullable[str] = UNSET,
+        active: OptionalNullable[bool] = UNSET,
+        websites: Optional[
+            Union[List[models.Website], List[models.WebsiteTypedDict]]
+        ] = None,
+        addresses: Optional[
+            Union[List[models.Address], List[models.AddressTypedDict]]
+        ] = None,
+        social_links: Optional[
+            Union[List[models.SocialLink], List[models.SocialLinkTypedDict]]
+        ] = None,
+        phone_numbers: Optional[
+            Union[List[models.PhoneNumber], List[models.PhoneNumberTypedDict]]
+        ] = None,
+        emails: Optional[Union[List[models.Email], List[models.EmailTypedDict]]] = None,
+        email_domain: OptionalNullable[str] = UNSET,
+        custom_fields: Optional[
+            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+        ] = None,
+        tags: OptionalNullable[List[str]] = UNSET,
+        opportunity_ids: Optional[List[str]] = None,
+        pass_through: Optional[
+            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.CrmContactsUpdateResponse:
         r"""Update contact
 
         Update contact
 
         :param id: ID of the record you are acting upon.
-        :param contact:
+        :param name: Full name of the contact.
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param owner_id: The owner of the contact.
+        :param type: The type of the contact.
+        :param company_id: The company the contact is associated with.
+        :param company_name: The name of the company the contact is associated with.
+        :param lead_id: The lead the contact is associated with.
+        :param first_name: The first name of the contact.
+        :param middle_name: The middle name of the contact.
+        :param last_name: The last name of the contact.
+        :param prefix: The prefix of the contact.
+        :param suffix: The suffix of the contact.
+        :param title: The job title of the contact.
+        :param department: The department of the contact.
+        :param language: language code according to ISO 639-1. For the United States - EN
+        :param gender: The gender of the contact.
+        :param birthday: The birthday of the contact.
+        :param image:
+        :param photo_url: The URL of the photo of a person.
+        :param lead_source: The lead source of the contact.
+        :param fax: The fax number of the contact.
+        :param description: The description of the contact.
+        :param current_balance: The current balance of the contact.
+        :param status: The status of the contact.
+        :param active: The active status of the contact.
+        :param websites:
+        :param addresses:
+        :param social_links:
+        :param phone_numbers:
+        :param emails:
+        :param email_domain:
+        :param custom_fields:
+        :param tags:
+        :param opportunity_ids: The opportunity ids of the contact.
+        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -730,7 +1201,54 @@ class Contacts(BaseSDK):
             id=id,
             service_id=service_id,
             raw=raw,
-            contact=utils.get_pydantic_model(contact, models.ContactInput),
+            contact=models.ContactInput(
+                name=name,
+                owner_id=owner_id,
+                type=type_,
+                company_id=company_id,
+                company_name=company_name,
+                lead_id=lead_id,
+                first_name=first_name,
+                middle_name=middle_name,
+                last_name=last_name,
+                prefix=prefix,
+                suffix=suffix,
+                title=title,
+                department=department,
+                language=language,
+                gender=gender,
+                birthday=birthday,
+                image=image,
+                photo_url=photo_url,
+                lead_source=lead_source,
+                fax=fax,
+                description=description,
+                current_balance=current_balance,
+                status=status,
+                active=active,
+                websites=utils.get_pydantic_model(
+                    websites, Optional[List[models.Website]]
+                ),
+                addresses=utils.get_pydantic_model(
+                    addresses, Optional[List[models.Address]]
+                ),
+                social_links=utils.get_pydantic_model(
+                    social_links, Optional[List[models.SocialLink]]
+                ),
+                phone_numbers=utils.get_pydantic_model(
+                    phone_numbers, Optional[List[models.PhoneNumber]]
+                ),
+                emails=utils.get_pydantic_model(emails, Optional[List[models.Email]]),
+                email_domain=email_domain,
+                custom_fields=utils.get_pydantic_model(
+                    custom_fields, Optional[List[models.CustomField]]
+                ),
+                tags=tags,
+                opportunity_ids=opportunity_ids,
+                pass_through=utils.get_pydantic_model(
+                    pass_through, Optional[List[models.PassThroughBody]]
+                ),
+            ),
         )
 
         req = self.build_request(
@@ -744,6 +1262,7 @@ class Contacts(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.CrmContactsUpdateGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -821,24 +1340,104 @@ class Contacts(BaseSDK):
         self,
         *,
         id: str,
-        contact: Union[models.ContactInput, models.ContactInputTypedDict],
+        name: Nullable[str],
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
+        owner_id: OptionalNullable[str] = UNSET,
+        type_: OptionalNullable[models.ContactType] = UNSET,
+        company_id: OptionalNullable[str] = UNSET,
+        company_name: OptionalNullable[str] = UNSET,
+        lead_id: OptionalNullable[str] = UNSET,
+        first_name: OptionalNullable[str] = UNSET,
+        middle_name: OptionalNullable[str] = UNSET,
+        last_name: OptionalNullable[str] = UNSET,
+        prefix: OptionalNullable[str] = UNSET,
+        suffix: OptionalNullable[str] = UNSET,
+        title: OptionalNullable[str] = UNSET,
+        department: OptionalNullable[str] = UNSET,
+        language: OptionalNullable[str] = UNSET,
+        gender: OptionalNullable[models.ContactGender] = UNSET,
+        birthday: OptionalNullable[str] = UNSET,
+        image: OptionalNullable[str] = UNSET,
+        photo_url: OptionalNullable[str] = UNSET,
+        lead_source: OptionalNullable[str] = UNSET,
+        fax: OptionalNullable[str] = UNSET,
+        description: OptionalNullable[str] = UNSET,
+        current_balance: OptionalNullable[float] = UNSET,
+        status: OptionalNullable[str] = UNSET,
+        active: OptionalNullable[bool] = UNSET,
+        websites: Optional[
+            Union[List[models.Website], List[models.WebsiteTypedDict]]
+        ] = None,
+        addresses: Optional[
+            Union[List[models.Address], List[models.AddressTypedDict]]
+        ] = None,
+        social_links: Optional[
+            Union[List[models.SocialLink], List[models.SocialLinkTypedDict]]
+        ] = None,
+        phone_numbers: Optional[
+            Union[List[models.PhoneNumber], List[models.PhoneNumberTypedDict]]
+        ] = None,
+        emails: Optional[Union[List[models.Email], List[models.EmailTypedDict]]] = None,
+        email_domain: OptionalNullable[str] = UNSET,
+        custom_fields: Optional[
+            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+        ] = None,
+        tags: OptionalNullable[List[str]] = UNSET,
+        opportunity_ids: Optional[List[str]] = None,
+        pass_through: Optional[
+            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.CrmContactsUpdateResponse:
         r"""Update contact
 
         Update contact
 
         :param id: ID of the record you are acting upon.
-        :param contact:
+        :param name: Full name of the contact.
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param owner_id: The owner of the contact.
+        :param type: The type of the contact.
+        :param company_id: The company the contact is associated with.
+        :param company_name: The name of the company the contact is associated with.
+        :param lead_id: The lead the contact is associated with.
+        :param first_name: The first name of the contact.
+        :param middle_name: The middle name of the contact.
+        :param last_name: The last name of the contact.
+        :param prefix: The prefix of the contact.
+        :param suffix: The suffix of the contact.
+        :param title: The job title of the contact.
+        :param department: The department of the contact.
+        :param language: language code according to ISO 639-1. For the United States - EN
+        :param gender: The gender of the contact.
+        :param birthday: The birthday of the contact.
+        :param image:
+        :param photo_url: The URL of the photo of a person.
+        :param lead_source: The lead source of the contact.
+        :param fax: The fax number of the contact.
+        :param description: The description of the contact.
+        :param current_balance: The current balance of the contact.
+        :param status: The status of the contact.
+        :param active: The active status of the contact.
+        :param websites:
+        :param addresses:
+        :param social_links:
+        :param phone_numbers:
+        :param emails:
+        :param email_domain:
+        :param custom_fields:
+        :param tags:
+        :param opportunity_ids: The opportunity ids of the contact.
+        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -852,7 +1451,54 @@ class Contacts(BaseSDK):
             id=id,
             service_id=service_id,
             raw=raw,
-            contact=utils.get_pydantic_model(contact, models.ContactInput),
+            contact=models.ContactInput(
+                name=name,
+                owner_id=owner_id,
+                type=type_,
+                company_id=company_id,
+                company_name=company_name,
+                lead_id=lead_id,
+                first_name=first_name,
+                middle_name=middle_name,
+                last_name=last_name,
+                prefix=prefix,
+                suffix=suffix,
+                title=title,
+                department=department,
+                language=language,
+                gender=gender,
+                birthday=birthday,
+                image=image,
+                photo_url=photo_url,
+                lead_source=lead_source,
+                fax=fax,
+                description=description,
+                current_balance=current_balance,
+                status=status,
+                active=active,
+                websites=utils.get_pydantic_model(
+                    websites, Optional[List[models.Website]]
+                ),
+                addresses=utils.get_pydantic_model(
+                    addresses, Optional[List[models.Address]]
+                ),
+                social_links=utils.get_pydantic_model(
+                    social_links, Optional[List[models.SocialLink]]
+                ),
+                phone_numbers=utils.get_pydantic_model(
+                    phone_numbers, Optional[List[models.PhoneNumber]]
+                ),
+                emails=utils.get_pydantic_model(emails, Optional[List[models.Email]]),
+                email_domain=email_domain,
+                custom_fields=utils.get_pydantic_model(
+                    custom_fields, Optional[List[models.CustomField]]
+                ),
+                tags=tags,
+                opportunity_ids=opportunity_ids,
+                pass_through=utils.get_pydantic_model(
+                    pass_through, Optional[List[models.PassThroughBody]]
+                ),
+            ),
         )
 
         req = self.build_request_async(
@@ -866,6 +1512,7 @@ class Contacts(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.CrmContactsUpdateGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -948,6 +1595,7 @@ class Contacts(BaseSDK):
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.CrmContactsDeleteResponse:
         r"""Delete contact
 
@@ -959,6 +1607,7 @@ class Contacts(BaseSDK):
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -985,6 +1634,7 @@ class Contacts(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.CrmContactsDeleteGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -1064,6 +1714,7 @@ class Contacts(BaseSDK):
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.CrmContactsDeleteResponse:
         r"""Delete contact
 
@@ -1075,6 +1726,7 @@ class Contacts(BaseSDK):
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -1101,6 +1753,7 @@ class Contacts(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.CrmContactsDeleteGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,

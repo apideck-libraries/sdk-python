@@ -5,7 +5,7 @@ from apideck_unify import models, utils
 from apideck_unify._hooks import HookContext
 from apideck_unify.types import OptionalNullable, UNSET
 from apideck_unify.utils import get_security_from_env
-from typing import Any, Optional, Union
+from typing import Any, Dict, List, Mapping, Optional, Union
 
 
 class ConnectionSettings(BaseSDK):
@@ -18,6 +18,7 @@ class ConnectionSettings(BaseSDK):
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.VaultConnectionSettingsAllResponse:
         r"""Get resource settings
 
@@ -30,6 +31,7 @@ class ConnectionSettings(BaseSDK):
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -56,6 +58,7 @@ class ConnectionSettings(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.VaultConnectionSettingsAllGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -135,6 +138,7 @@ class ConnectionSettings(BaseSDK):
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.VaultConnectionSettingsAllResponse:
         r"""Get resource settings
 
@@ -147,6 +151,7 @@ class ConnectionSettings(BaseSDK):
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -173,6 +178,7 @@ class ConnectionSettings(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.VaultConnectionSettingsAllGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -249,10 +255,25 @@ class ConnectionSettings(BaseSDK):
         service_id: str,
         unified_api: str,
         resource: str,
-        connection: Union[models.ConnectionInput, models.ConnectionInputTypedDict],
+        enabled: Optional[bool] = None,
+        settings: OptionalNullable[Dict[str, Any]] = UNSET,
+        metadata: OptionalNullable[Dict[str, Any]] = UNSET,
+        configuration: Optional[
+            Union[
+                List[models.ConnectionConfiguration],
+                List[models.ConnectionConfigurationTypedDict],
+            ]
+        ] = None,
+        custom_mappings: Optional[
+            Union[
+                List[models.CustomMappingInput],
+                List[models.CustomMappingInputTypedDict],
+            ]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.VaultConnectionSettingsUpdateResponse:
         r"""Update settings
 
@@ -261,10 +282,15 @@ class ConnectionSettings(BaseSDK):
         :param service_id: Service ID of the resource to return
         :param unified_api: Unified API
         :param resource: Name of the resource (plural)
-        :param connection: Fields that need to be updated on the resource
+        :param enabled: Whether the connection is enabled or not. You can enable or disable a connection using the Update Connection API.
+        :param settings: Connection settings. Values will persist to `form_fields` with corresponding id
+        :param metadata: Attach your own consumer specific metadata
+        :param configuration:
+        :param custom_mappings: List of custom mappings configured for this connection
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -278,7 +304,17 @@ class ConnectionSettings(BaseSDK):
             service_id=service_id,
             unified_api=unified_api,
             resource=resource,
-            connection=utils.get_pydantic_model(connection, models.ConnectionInput),
+            connection=models.ConnectionInput(
+                enabled=enabled,
+                settings=settings,
+                metadata=metadata,
+                configuration=utils.get_pydantic_model(
+                    configuration, Optional[List[models.ConnectionConfiguration]]
+                ),
+                custom_mappings=utils.get_pydantic_model(
+                    custom_mappings, Optional[List[models.CustomMappingInput]]
+                ),
+            ),
         )
 
         req = self.build_request(
@@ -292,6 +328,7 @@ class ConnectionSettings(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.VaultConnectionSettingsUpdateGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -371,10 +408,25 @@ class ConnectionSettings(BaseSDK):
         service_id: str,
         unified_api: str,
         resource: str,
-        connection: Union[models.ConnectionInput, models.ConnectionInputTypedDict],
+        enabled: Optional[bool] = None,
+        settings: OptionalNullable[Dict[str, Any]] = UNSET,
+        metadata: OptionalNullable[Dict[str, Any]] = UNSET,
+        configuration: Optional[
+            Union[
+                List[models.ConnectionConfiguration],
+                List[models.ConnectionConfigurationTypedDict],
+            ]
+        ] = None,
+        custom_mappings: Optional[
+            Union[
+                List[models.CustomMappingInput],
+                List[models.CustomMappingInputTypedDict],
+            ]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.VaultConnectionSettingsUpdateResponse:
         r"""Update settings
 
@@ -383,10 +435,15 @@ class ConnectionSettings(BaseSDK):
         :param service_id: Service ID of the resource to return
         :param unified_api: Unified API
         :param resource: Name of the resource (plural)
-        :param connection: Fields that need to be updated on the resource
+        :param enabled: Whether the connection is enabled or not. You can enable or disable a connection using the Update Connection API.
+        :param settings: Connection settings. Values will persist to `form_fields` with corresponding id
+        :param metadata: Attach your own consumer specific metadata
+        :param configuration:
+        :param custom_mappings: List of custom mappings configured for this connection
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -400,7 +457,17 @@ class ConnectionSettings(BaseSDK):
             service_id=service_id,
             unified_api=unified_api,
             resource=resource,
-            connection=utils.get_pydantic_model(connection, models.ConnectionInput),
+            connection=models.ConnectionInput(
+                enabled=enabled,
+                settings=settings,
+                metadata=metadata,
+                configuration=utils.get_pydantic_model(
+                    configuration, Optional[List[models.ConnectionConfiguration]]
+                ),
+                custom_mappings=utils.get_pydantic_model(
+                    custom_mappings, Optional[List[models.CustomMappingInput]]
+                ),
+            ),
         )
 
         req = self.build_request_async(
@@ -414,6 +481,7 @@ class ConnectionSettings(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.VaultConnectionSettingsUpdateGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,

@@ -19,7 +19,7 @@ from apideck_unify.types import (
 from apideck_unify.utils import FieldMetadata, HeaderMetadata, QueryParamMetadata
 import pydantic
 from pydantic import model_serializer
-from typing import Any, Dict, Optional, Union
+from typing import Any, Callable, Dict, Optional, Union
 from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
 
 
@@ -137,12 +137,23 @@ class HrisCompaniesAllRequest(BaseModel):
         return m
 
 
-HrisCompaniesAllResponseTypedDict = TypeAliasType(
-    "HrisCompaniesAllResponseTypedDict",
+HrisCompaniesAllResponseResultTypedDict = TypeAliasType(
+    "HrisCompaniesAllResponseResultTypedDict",
     Union[UnexpectedErrorResponseTypedDict, GetHrisCompaniesResponseTypedDict],
 )
 
 
-HrisCompaniesAllResponse = TypeAliasType(
-    "HrisCompaniesAllResponse", Union[UnexpectedErrorResponse, GetHrisCompaniesResponse]
+HrisCompaniesAllResponseResult = TypeAliasType(
+    "HrisCompaniesAllResponseResult",
+    Union[UnexpectedErrorResponse, GetHrisCompaniesResponse],
 )
+
+
+class HrisCompaniesAllResponseTypedDict(TypedDict):
+    result: HrisCompaniesAllResponseResultTypedDict
+
+
+class HrisCompaniesAllResponse(BaseModel):
+    next: Callable[[], Optional[HrisCompaniesAllResponse]]
+
+    result: HrisCompaniesAllResponseResult

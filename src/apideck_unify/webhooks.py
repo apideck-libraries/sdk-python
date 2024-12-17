@@ -5,7 +5,8 @@ from apideck_unify import models, utils
 from apideck_unify._hooks import HookContext
 from apideck_unify.types import OptionalNullable, UNSET
 from apideck_unify.utils import get_security_from_env
-from typing import Any, Optional, Union
+from jsonpath import JSONPath
+from typing import Any, Dict, List, Mapping, Optional
 
 
 class Webhooks(BaseSDK):
@@ -17,7 +18,8 @@ class Webhooks(BaseSDK):
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
-    ) -> models.WebhookWebhooksAllResponse:
+        http_headers: Optional[Mapping[str, str]] = None,
+    ) -> Optional[models.WebhookWebhooksAllResponse]:
         r"""List webhook subscriptions
 
         List all webhook subscriptions
@@ -27,6 +29,7 @@ class Webhooks(BaseSDK):
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -52,6 +55,7 @@ class Webhooks(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.WebhookWebhooksAllGlobals(
                 app_id=self.sdk_configuration.globals.app_id,
             ),
@@ -84,9 +88,26 @@ class Webhooks(BaseSDK):
             retry_config=retry_config,
         )
 
+        def next_func() -> Optional[models.WebhookWebhooksAllResponse]:
+            body = utils.unmarshal_json(http_res.text, Dict[Any, Any])
+            next_cursor = JSONPath("$.meta.cursors.next").parse(body)
+
+            if len(next_cursor) == 0:
+                return None
+            next_cursor = next_cursor[0]
+
+            return self.list(
+                cursor=next_cursor,
+                limit=limit,
+                retries=retries,
+            )
+
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.GetWebhooksResponse)
+            return models.WebhookWebhooksAllResponse(
+                result=utils.unmarshal_json(http_res.text, models.GetWebhooksResponse),
+                next=next_func,
+            )
         if utils.match_response(http_res, "400", "application/json"):
             data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
             raise models.BadRequestResponse(data=data)
@@ -110,7 +131,12 @@ class Webhooks(BaseSDK):
                 "API error occurred", http_res.status_code, http_res_text, http_res
             )
         if utils.match_response(http_res, "default", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UnexpectedErrorResponse)
+            return models.WebhookWebhooksAllResponse(
+                result=utils.unmarshal_json(
+                    http_res.text, models.UnexpectedErrorResponse
+                ),
+                next=next_func,
+            )
 
         content_type = http_res.headers.get("Content-Type")
         http_res_text = utils.stream_to_text(http_res)
@@ -129,7 +155,8 @@ class Webhooks(BaseSDK):
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
-    ) -> models.WebhookWebhooksAllResponse:
+        http_headers: Optional[Mapping[str, str]] = None,
+    ) -> Optional[models.WebhookWebhooksAllResponse]:
         r"""List webhook subscriptions
 
         List all webhook subscriptions
@@ -139,6 +166,7 @@ class Webhooks(BaseSDK):
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -164,6 +192,7 @@ class Webhooks(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.WebhookWebhooksAllGlobals(
                 app_id=self.sdk_configuration.globals.app_id,
             ),
@@ -196,9 +225,26 @@ class Webhooks(BaseSDK):
             retry_config=retry_config,
         )
 
+        def next_func() -> Optional[models.WebhookWebhooksAllResponse]:
+            body = utils.unmarshal_json(http_res.text, Dict[Any, Any])
+            next_cursor = JSONPath("$.meta.cursors.next").parse(body)
+
+            if len(next_cursor) == 0:
+                return None
+            next_cursor = next_cursor[0]
+
+            return self.list(
+                cursor=next_cursor,
+                limit=limit,
+                retries=retries,
+            )
+
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.GetWebhooksResponse)
+            return models.WebhookWebhooksAllResponse(
+                result=utils.unmarshal_json(http_res.text, models.GetWebhooksResponse),
+                next=next_func,
+            )
         if utils.match_response(http_res, "400", "application/json"):
             data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
             raise models.BadRequestResponse(data=data)
@@ -222,7 +268,12 @@ class Webhooks(BaseSDK):
                 "API error occurred", http_res.status_code, http_res_text, http_res
             )
         if utils.match_response(http_res, "default", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UnexpectedErrorResponse)
+            return models.WebhookWebhooksAllResponse(
+                result=utils.unmarshal_json(
+                    http_res.text, models.UnexpectedErrorResponse
+                ),
+                next=next_func,
+            )
 
         content_type = http_res.headers.get("Content-Type")
         http_res_text = await utils.stream_to_text_async(http_res)
@@ -236,21 +287,29 @@ class Webhooks(BaseSDK):
     def create(
         self,
         *,
-        request: Union[
-            models.CreateWebhookRequest, models.CreateWebhookRequestTypedDict
-        ],
+        unified_api: models.UnifiedAPIID,
+        status: models.Status,
+        delivery_url: str,
+        events: List[models.WebhookEventType],
+        description: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.WebhookWebhooksAddResponse:
         r"""Create webhook subscription
 
         Create a webhook subscription to receive events
 
-        :param request: The request object to send.
+        :param unified_api: Name of Apideck Unified API
+        :param status: The status of the webhook.
+        :param delivery_url: The delivery url of the webhook endpoint.
+        :param events: The list of subscribed events for this webhook. [`*`] indicates that all events are enabled.
+        :param description: A description of the object.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -261,7 +320,11 @@ class Webhooks(BaseSDK):
             base_url = server_url
 
         request = models.CreateWebhookRequest(
-            request=utils.get_pydantic_model(request, models.CreateWebhookRequest),
+            description=description,
+            unified_api=unified_api,
+            status=status,
+            delivery_url=delivery_url,
+            events=events,
         )
 
         req = self.build_request(
@@ -275,6 +338,7 @@ class Webhooks(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.WebhookWebhooksAddGlobals(
                 app_id=self.sdk_configuration.globals.app_id,
             ),
@@ -350,21 +414,29 @@ class Webhooks(BaseSDK):
     async def create_async(
         self,
         *,
-        request: Union[
-            models.CreateWebhookRequest, models.CreateWebhookRequestTypedDict
-        ],
+        unified_api: models.UnifiedAPIID,
+        status: models.Status,
+        delivery_url: str,
+        events: List[models.WebhookEventType],
+        description: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.WebhookWebhooksAddResponse:
         r"""Create webhook subscription
 
         Create a webhook subscription to receive events
 
-        :param request: The request object to send.
+        :param unified_api: Name of Apideck Unified API
+        :param status: The status of the webhook.
+        :param delivery_url: The delivery url of the webhook endpoint.
+        :param events: The list of subscribed events for this webhook. [`*`] indicates that all events are enabled.
+        :param description: A description of the object.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -375,7 +447,11 @@ class Webhooks(BaseSDK):
             base_url = server_url
 
         request = models.CreateWebhookRequest(
-            request=utils.get_pydantic_model(request, models.CreateWebhookRequest),
+            description=description,
+            unified_api=unified_api,
+            status=status,
+            delivery_url=delivery_url,
+            events=events,
         )
 
         req = self.build_request_async(
@@ -389,6 +465,7 @@ class Webhooks(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.WebhookWebhooksAddGlobals(
                 app_id=self.sdk_configuration.globals.app_id,
             ),
@@ -468,6 +545,7 @@ class Webhooks(BaseSDK):
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.WebhookWebhooksOneResponse:
         r"""Get webhook subscription
 
@@ -477,6 +555,7 @@ class Webhooks(BaseSDK):
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -501,6 +580,7 @@ class Webhooks(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.WebhookWebhooksOneGlobals(
                 app_id=self.sdk_configuration.globals.app_id,
             ),
@@ -577,6 +657,7 @@ class Webhooks(BaseSDK):
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.WebhookWebhooksOneResponse:
         r"""Get webhook subscription
 
@@ -586,6 +667,7 @@ class Webhooks(BaseSDK):
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -610,6 +692,7 @@ class Webhooks(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.WebhookWebhooksOneGlobals(
                 app_id=self.sdk_configuration.globals.app_id,
             ),
@@ -683,22 +766,28 @@ class Webhooks(BaseSDK):
         self,
         *,
         id: str,
-        update_webhook_request: Union[
-            models.UpdateWebhookRequest, models.UpdateWebhookRequestTypedDict
-        ],
+        description: OptionalNullable[str] = UNSET,
+        status: Optional[models.Status] = None,
+        delivery_url: Optional[str] = None,
+        events: Optional[List[models.WebhookEventType]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.WebhookWebhooksUpdateResponse:
         r"""Update webhook subscription
 
         Update a webhook subscription
 
         :param id: JWT Webhook token that represents the unifiedApi and applicationId associated to the event source.
-        :param update_webhook_request:
+        :param description: A description of the object.
+        :param status: The status of the webhook.
+        :param delivery_url: The delivery url of the webhook endpoint.
+        :param events: The list of subscribed events for this webhook. [`*`] indicates that all events are enabled.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -710,8 +799,11 @@ class Webhooks(BaseSDK):
 
         request = models.WebhookWebhooksUpdateRequest(
             id=id,
-            update_webhook_request=utils.get_pydantic_model(
-                update_webhook_request, models.UpdateWebhookRequest
+            update_webhook_request=models.UpdateWebhookRequest(
+                description=description,
+                status=status,
+                delivery_url=delivery_url,
+                events=events,
             ),
         )
 
@@ -726,6 +818,7 @@ class Webhooks(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.WebhookWebhooksUpdateGlobals(
                 app_id=self.sdk_configuration.globals.app_id,
             ),
@@ -806,22 +899,28 @@ class Webhooks(BaseSDK):
         self,
         *,
         id: str,
-        update_webhook_request: Union[
-            models.UpdateWebhookRequest, models.UpdateWebhookRequestTypedDict
-        ],
+        description: OptionalNullable[str] = UNSET,
+        status: Optional[models.Status] = None,
+        delivery_url: Optional[str] = None,
+        events: Optional[List[models.WebhookEventType]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.WebhookWebhooksUpdateResponse:
         r"""Update webhook subscription
 
         Update a webhook subscription
 
         :param id: JWT Webhook token that represents the unifiedApi and applicationId associated to the event source.
-        :param update_webhook_request:
+        :param description: A description of the object.
+        :param status: The status of the webhook.
+        :param delivery_url: The delivery url of the webhook endpoint.
+        :param events: The list of subscribed events for this webhook. [`*`] indicates that all events are enabled.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -833,8 +932,11 @@ class Webhooks(BaseSDK):
 
         request = models.WebhookWebhooksUpdateRequest(
             id=id,
-            update_webhook_request=utils.get_pydantic_model(
-                update_webhook_request, models.UpdateWebhookRequest
+            update_webhook_request=models.UpdateWebhookRequest(
+                description=description,
+                status=status,
+                delivery_url=delivery_url,
+                events=events,
             ),
         )
 
@@ -849,6 +951,7 @@ class Webhooks(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.WebhookWebhooksUpdateGlobals(
                 app_id=self.sdk_configuration.globals.app_id,
             ),
@@ -932,6 +1035,7 @@ class Webhooks(BaseSDK):
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.WebhookWebhooksDeleteResponse:
         r"""Delete webhook subscription
 
@@ -941,6 +1045,7 @@ class Webhooks(BaseSDK):
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -965,6 +1070,7 @@ class Webhooks(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.WebhookWebhooksDeleteGlobals(
                 app_id=self.sdk_configuration.globals.app_id,
             ),
@@ -1041,6 +1147,7 @@ class Webhooks(BaseSDK):
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.WebhookWebhooksDeleteResponse:
         r"""Delete webhook subscription
 
@@ -1050,6 +1157,7 @@ class Webhooks(BaseSDK):
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -1074,6 +1182,7 @@ class Webhooks(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.WebhookWebhooksDeleteGlobals(
                 app_id=self.sdk_configuration.globals.app_id,
             ),

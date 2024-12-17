@@ -3,30 +3,47 @@
 from .basesdk import BaseSDK
 from apideck_unify import models, utils
 from apideck_unify._hooks import HookContext
-from apideck_unify.types import BaseModel, OptionalNullable, UNSET
+from apideck_unify.types import Nullable, OptionalNullable, UNSET
 from apideck_unify.utils import get_security_from_env
-from typing import Any, Optional, Union, cast
+from jsonpath import JSONPath
+from typing import Any, Dict, List, Mapping, Optional, Union
 
 
 class Leads(BaseSDK):
     def list(
         self,
         *,
-        request: Union[
-            models.CrmLeadsAllRequest, models.CrmLeadsAllRequestTypedDict
-        ] = models.CrmLeadsAllRequest(),
+        raw: Optional[bool] = False,
+        service_id: Optional[str] = None,
+        cursor: OptionalNullable[str] = UNSET,
+        limit: Optional[int] = 20,
+        filter_: Optional[
+            Union[models.LeadsFilter, models.LeadsFilterTypedDict]
+        ] = None,
+        sort: Optional[Union[models.LeadsSort, models.LeadsSortTypedDict]] = None,
+        pass_through: Optional[Dict[str, Any]] = None,
+        fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
-    ) -> models.CrmLeadsAllResponse:
+        http_headers: Optional[Mapping[str, str]] = None,
+    ) -> Optional[models.CrmLeadsAllResponse]:
         r"""List leads
 
         List leads
 
-        :param request: The request object to send.
+        :param raw: Include raw response. Mostly used for debugging purposes
+        :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
+        :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
+        :param filter_: Apply filters
+        :param sort: Apply sorting
+        :param pass_through: Optional unmapped key/values that will be passed through to downstream as query parameters. Ie: ?pass_through[search]=leads becomes ?search=leads
+        :param fields: The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -36,9 +53,16 @@ class Leads(BaseSDK):
         if server_url is not None:
             base_url = server_url
 
-        if not isinstance(request, BaseModel):
-            request = utils.unmarshal(request, models.CrmLeadsAllRequest)
-        request = cast(models.CrmLeadsAllRequest, request)
+        request = models.CrmLeadsAllRequest(
+            raw=raw,
+            service_id=service_id,
+            cursor=cursor,
+            limit=limit,
+            filter_=utils.get_pydantic_model(filter_, Optional[models.LeadsFilter]),
+            sort=utils.get_pydantic_model(sort, Optional[models.LeadsSort]),
+            pass_through=pass_through,
+            fields=fields,
+        )
 
         req = self.build_request(
             method="GET",
@@ -51,6 +75,7 @@ class Leads(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.CrmLeadsAllGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -84,9 +109,32 @@ class Leads(BaseSDK):
             retry_config=retry_config,
         )
 
+        def next_func() -> Optional[models.CrmLeadsAllResponse]:
+            body = utils.unmarshal_json(http_res.text, Dict[Any, Any])
+            next_cursor = JSONPath("$.meta.cursors.next").parse(body)
+
+            if len(next_cursor) == 0:
+                return None
+            next_cursor = next_cursor[0]
+
+            return self.list(
+                raw=raw,
+                service_id=service_id,
+                cursor=next_cursor,
+                limit=limit,
+                filter_=filter_,
+                sort=sort,
+                pass_through=pass_through,
+                fields=fields,
+                retries=retries,
+            )
+
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.GetLeadsResponse)
+            return models.CrmLeadsAllResponse(
+                result=utils.unmarshal_json(http_res.text, models.GetLeadsResponse),
+                next=next_func,
+            )
         if utils.match_response(http_res, "400", "application/json"):
             data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
             raise models.BadRequestResponse(data=data)
@@ -110,7 +158,12 @@ class Leads(BaseSDK):
                 "API error occurred", http_res.status_code, http_res_text, http_res
             )
         if utils.match_response(http_res, "default", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UnexpectedErrorResponse)
+            return models.CrmLeadsAllResponse(
+                result=utils.unmarshal_json(
+                    http_res.text, models.UnexpectedErrorResponse
+                ),
+                next=next_func,
+            )
 
         content_type = http_res.headers.get("Content-Type")
         http_res_text = utils.stream_to_text(http_res)
@@ -124,21 +177,37 @@ class Leads(BaseSDK):
     async def list_async(
         self,
         *,
-        request: Union[
-            models.CrmLeadsAllRequest, models.CrmLeadsAllRequestTypedDict
-        ] = models.CrmLeadsAllRequest(),
+        raw: Optional[bool] = False,
+        service_id: Optional[str] = None,
+        cursor: OptionalNullable[str] = UNSET,
+        limit: Optional[int] = 20,
+        filter_: Optional[
+            Union[models.LeadsFilter, models.LeadsFilterTypedDict]
+        ] = None,
+        sort: Optional[Union[models.LeadsSort, models.LeadsSortTypedDict]] = None,
+        pass_through: Optional[Dict[str, Any]] = None,
+        fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
-    ) -> models.CrmLeadsAllResponse:
+        http_headers: Optional[Mapping[str, str]] = None,
+    ) -> Optional[models.CrmLeadsAllResponse]:
         r"""List leads
 
         List leads
 
-        :param request: The request object to send.
+        :param raw: Include raw response. Mostly used for debugging purposes
+        :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
+        :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
+        :param filter_: Apply filters
+        :param sort: Apply sorting
+        :param pass_through: Optional unmapped key/values that will be passed through to downstream as query parameters. Ie: ?pass_through[search]=leads becomes ?search=leads
+        :param fields: The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -148,9 +217,16 @@ class Leads(BaseSDK):
         if server_url is not None:
             base_url = server_url
 
-        if not isinstance(request, BaseModel):
-            request = utils.unmarshal(request, models.CrmLeadsAllRequest)
-        request = cast(models.CrmLeadsAllRequest, request)
+        request = models.CrmLeadsAllRequest(
+            raw=raw,
+            service_id=service_id,
+            cursor=cursor,
+            limit=limit,
+            filter_=utils.get_pydantic_model(filter_, Optional[models.LeadsFilter]),
+            sort=utils.get_pydantic_model(sort, Optional[models.LeadsSort]),
+            pass_through=pass_through,
+            fields=fields,
+        )
 
         req = self.build_request_async(
             method="GET",
@@ -163,6 +239,7 @@ class Leads(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.CrmLeadsAllGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -196,9 +273,32 @@ class Leads(BaseSDK):
             retry_config=retry_config,
         )
 
+        def next_func() -> Optional[models.CrmLeadsAllResponse]:
+            body = utils.unmarshal_json(http_res.text, Dict[Any, Any])
+            next_cursor = JSONPath("$.meta.cursors.next").parse(body)
+
+            if len(next_cursor) == 0:
+                return None
+            next_cursor = next_cursor[0]
+
+            return self.list(
+                raw=raw,
+                service_id=service_id,
+                cursor=next_cursor,
+                limit=limit,
+                filter_=filter_,
+                sort=sort,
+                pass_through=pass_through,
+                fields=fields,
+                retries=retries,
+            )
+
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.GetLeadsResponse)
+            return models.CrmLeadsAllResponse(
+                result=utils.unmarshal_json(http_res.text, models.GetLeadsResponse),
+                next=next_func,
+            )
         if utils.match_response(http_res, "400", "application/json"):
             data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
             raise models.BadRequestResponse(data=data)
@@ -222,7 +322,12 @@ class Leads(BaseSDK):
                 "API error occurred", http_res.status_code, http_res_text, http_res
             )
         if utils.match_response(http_res, "default", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UnexpectedErrorResponse)
+            return models.CrmLeadsAllResponse(
+                result=utils.unmarshal_json(
+                    http_res.text, models.UnexpectedErrorResponse
+                ),
+                next=next_func,
+            )
 
         content_type = http_res.headers.get("Content-Type")
         http_res_text = await utils.stream_to_text_async(http_res)
@@ -236,23 +341,85 @@ class Leads(BaseSDK):
     def create(
         self,
         *,
-        lead: Union[models.LeadInput, models.LeadInputTypedDict],
+        name: str,
+        company_name: Nullable[str],
         raw: Optional[bool] = False,
         service_id: Optional[str] = None,
+        owner_id: OptionalNullable[str] = UNSET,
+        owner_name: OptionalNullable[str] = UNSET,
+        company_id: OptionalNullable[str] = UNSET,
+        lead_id: OptionalNullable[str] = UNSET,
+        lead_source: OptionalNullable[str] = UNSET,
+        first_name: OptionalNullable[str] = UNSET,
+        last_name: OptionalNullable[str] = UNSET,
+        description: OptionalNullable[str] = UNSET,
+        prefix: OptionalNullable[str] = UNSET,
+        title: OptionalNullable[str] = UNSET,
+        language: OptionalNullable[str] = UNSET,
+        status: OptionalNullable[str] = UNSET,
+        monetary_amount: OptionalNullable[float] = UNSET,
+        currency: OptionalNullable[models.Currency] = UNSET,
+        fax: OptionalNullable[str] = UNSET,
+        websites: Optional[
+            Union[List[models.Website], List[models.WebsiteTypedDict]]
+        ] = None,
+        addresses: Optional[
+            Union[List[models.Address], List[models.AddressTypedDict]]
+        ] = None,
+        social_links: Optional[
+            Union[List[models.SocialLink], List[models.SocialLinkTypedDict]]
+        ] = None,
+        phone_numbers: Optional[
+            Union[List[models.PhoneNumber], List[models.PhoneNumberTypedDict]]
+        ] = None,
+        emails: Optional[Union[List[models.Email], List[models.EmailTypedDict]]] = None,
+        custom_fields: Optional[
+            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+        ] = None,
+        tags: OptionalNullable[List[str]] = UNSET,
+        pass_through: Optional[
+            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.CrmLeadsAddResponse:
         r"""Create lead
 
         Create lead
 
-        :param lead:
+        :param name: Full name of the lead.
+        :param company_name: The name of the company the lead is associated with.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param owner_id: The owner of the lead.
+        :param owner_name: The name of the owner of the lead.
+        :param company_id: The company the lead is associated with.
+        :param lead_id: The identifier of the lead.
+        :param lead_source: The source of the lead.
+        :param first_name: The first name of the lead.
+        :param last_name: The last name of the lead.
+        :param description: The description of the lead.
+        :param prefix: The prefix of the lead.
+        :param title: The job title of the lead.
+        :param language: language code according to ISO 639-1. For the United States - EN
+        :param status:
+        :param monetary_amount: The monetary amount of the lead.
+        :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
+        :param fax: The fax number of the lead.
+        :param websites:
+        :param addresses:
+        :param social_links:
+        :param phone_numbers:
+        :param emails:
+        :param custom_fields:
+        :param tags:
+        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -265,7 +432,45 @@ class Leads(BaseSDK):
         request = models.CrmLeadsAddRequest(
             raw=raw,
             service_id=service_id,
-            lead=utils.get_pydantic_model(lead, models.LeadInput),
+            lead=models.LeadInput(
+                name=name,
+                company_name=company_name,
+                owner_id=owner_id,
+                owner_name=owner_name,
+                company_id=company_id,
+                lead_id=lead_id,
+                lead_source=lead_source,
+                first_name=first_name,
+                last_name=last_name,
+                description=description,
+                prefix=prefix,
+                title=title,
+                language=language,
+                status=status,
+                monetary_amount=monetary_amount,
+                currency=currency,
+                fax=fax,
+                websites=utils.get_pydantic_model(
+                    websites, Optional[List[models.Website]]
+                ),
+                addresses=utils.get_pydantic_model(
+                    addresses, Optional[List[models.Address]]
+                ),
+                social_links=utils.get_pydantic_model(
+                    social_links, Optional[List[models.SocialLink]]
+                ),
+                phone_numbers=utils.get_pydantic_model(
+                    phone_numbers, Optional[List[models.PhoneNumber]]
+                ),
+                emails=utils.get_pydantic_model(emails, Optional[List[models.Email]]),
+                custom_fields=utils.get_pydantic_model(
+                    custom_fields, Optional[List[models.CustomField]]
+                ),
+                tags=tags,
+                pass_through=utils.get_pydantic_model(
+                    pass_through, Optional[List[models.PassThroughBody]]
+                ),
+            ),
         )
 
         req = self.build_request(
@@ -279,6 +484,7 @@ class Leads(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.CrmLeadsAddGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -355,23 +561,85 @@ class Leads(BaseSDK):
     async def create_async(
         self,
         *,
-        lead: Union[models.LeadInput, models.LeadInputTypedDict],
+        name: str,
+        company_name: Nullable[str],
         raw: Optional[bool] = False,
         service_id: Optional[str] = None,
+        owner_id: OptionalNullable[str] = UNSET,
+        owner_name: OptionalNullable[str] = UNSET,
+        company_id: OptionalNullable[str] = UNSET,
+        lead_id: OptionalNullable[str] = UNSET,
+        lead_source: OptionalNullable[str] = UNSET,
+        first_name: OptionalNullable[str] = UNSET,
+        last_name: OptionalNullable[str] = UNSET,
+        description: OptionalNullable[str] = UNSET,
+        prefix: OptionalNullable[str] = UNSET,
+        title: OptionalNullable[str] = UNSET,
+        language: OptionalNullable[str] = UNSET,
+        status: OptionalNullable[str] = UNSET,
+        monetary_amount: OptionalNullable[float] = UNSET,
+        currency: OptionalNullable[models.Currency] = UNSET,
+        fax: OptionalNullable[str] = UNSET,
+        websites: Optional[
+            Union[List[models.Website], List[models.WebsiteTypedDict]]
+        ] = None,
+        addresses: Optional[
+            Union[List[models.Address], List[models.AddressTypedDict]]
+        ] = None,
+        social_links: Optional[
+            Union[List[models.SocialLink], List[models.SocialLinkTypedDict]]
+        ] = None,
+        phone_numbers: Optional[
+            Union[List[models.PhoneNumber], List[models.PhoneNumberTypedDict]]
+        ] = None,
+        emails: Optional[Union[List[models.Email], List[models.EmailTypedDict]]] = None,
+        custom_fields: Optional[
+            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+        ] = None,
+        tags: OptionalNullable[List[str]] = UNSET,
+        pass_through: Optional[
+            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.CrmLeadsAddResponse:
         r"""Create lead
 
         Create lead
 
-        :param lead:
+        :param name: Full name of the lead.
+        :param company_name: The name of the company the lead is associated with.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param owner_id: The owner of the lead.
+        :param owner_name: The name of the owner of the lead.
+        :param company_id: The company the lead is associated with.
+        :param lead_id: The identifier of the lead.
+        :param lead_source: The source of the lead.
+        :param first_name: The first name of the lead.
+        :param last_name: The last name of the lead.
+        :param description: The description of the lead.
+        :param prefix: The prefix of the lead.
+        :param title: The job title of the lead.
+        :param language: language code according to ISO 639-1. For the United States - EN
+        :param status:
+        :param monetary_amount: The monetary amount of the lead.
+        :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
+        :param fax: The fax number of the lead.
+        :param websites:
+        :param addresses:
+        :param social_links:
+        :param phone_numbers:
+        :param emails:
+        :param custom_fields:
+        :param tags:
+        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -384,7 +652,45 @@ class Leads(BaseSDK):
         request = models.CrmLeadsAddRequest(
             raw=raw,
             service_id=service_id,
-            lead=utils.get_pydantic_model(lead, models.LeadInput),
+            lead=models.LeadInput(
+                name=name,
+                company_name=company_name,
+                owner_id=owner_id,
+                owner_name=owner_name,
+                company_id=company_id,
+                lead_id=lead_id,
+                lead_source=lead_source,
+                first_name=first_name,
+                last_name=last_name,
+                description=description,
+                prefix=prefix,
+                title=title,
+                language=language,
+                status=status,
+                monetary_amount=monetary_amount,
+                currency=currency,
+                fax=fax,
+                websites=utils.get_pydantic_model(
+                    websites, Optional[List[models.Website]]
+                ),
+                addresses=utils.get_pydantic_model(
+                    addresses, Optional[List[models.Address]]
+                ),
+                social_links=utils.get_pydantic_model(
+                    social_links, Optional[List[models.SocialLink]]
+                ),
+                phone_numbers=utils.get_pydantic_model(
+                    phone_numbers, Optional[List[models.PhoneNumber]]
+                ),
+                emails=utils.get_pydantic_model(emails, Optional[List[models.Email]]),
+                custom_fields=utils.get_pydantic_model(
+                    custom_fields, Optional[List[models.CustomField]]
+                ),
+                tags=tags,
+                pass_through=utils.get_pydantic_model(
+                    pass_through, Optional[List[models.PassThroughBody]]
+                ),
+            ),
         )
 
         req = self.build_request_async(
@@ -398,6 +704,7 @@ class Leads(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.CrmLeadsAddGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -481,6 +788,7 @@ class Leads(BaseSDK):
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.CrmLeadsOneResponse:
         r"""Get lead
 
@@ -493,6 +801,7 @@ class Leads(BaseSDK):
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -520,6 +829,7 @@ class Leads(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.CrmLeadsOneGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -600,6 +910,7 @@ class Leads(BaseSDK):
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.CrmLeadsOneResponse:
         r"""Get lead
 
@@ -612,6 +923,7 @@ class Leads(BaseSDK):
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -639,6 +951,7 @@ class Leads(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.CrmLeadsOneGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -713,24 +1026,86 @@ class Leads(BaseSDK):
         self,
         *,
         id: str,
-        lead: Union[models.LeadInput, models.LeadInputTypedDict],
+        name: str,
+        company_name: Nullable[str],
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
+        owner_id: OptionalNullable[str] = UNSET,
+        owner_name: OptionalNullable[str] = UNSET,
+        company_id: OptionalNullable[str] = UNSET,
+        lead_id: OptionalNullable[str] = UNSET,
+        lead_source: OptionalNullable[str] = UNSET,
+        first_name: OptionalNullable[str] = UNSET,
+        last_name: OptionalNullable[str] = UNSET,
+        description: OptionalNullable[str] = UNSET,
+        prefix: OptionalNullable[str] = UNSET,
+        title: OptionalNullable[str] = UNSET,
+        language: OptionalNullable[str] = UNSET,
+        status: OptionalNullable[str] = UNSET,
+        monetary_amount: OptionalNullable[float] = UNSET,
+        currency: OptionalNullable[models.Currency] = UNSET,
+        fax: OptionalNullable[str] = UNSET,
+        websites: Optional[
+            Union[List[models.Website], List[models.WebsiteTypedDict]]
+        ] = None,
+        addresses: Optional[
+            Union[List[models.Address], List[models.AddressTypedDict]]
+        ] = None,
+        social_links: Optional[
+            Union[List[models.SocialLink], List[models.SocialLinkTypedDict]]
+        ] = None,
+        phone_numbers: Optional[
+            Union[List[models.PhoneNumber], List[models.PhoneNumberTypedDict]]
+        ] = None,
+        emails: Optional[Union[List[models.Email], List[models.EmailTypedDict]]] = None,
+        custom_fields: Optional[
+            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+        ] = None,
+        tags: OptionalNullable[List[str]] = UNSET,
+        pass_through: Optional[
+            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.CrmLeadsUpdateResponse:
         r"""Update lead
 
         Update lead
 
         :param id: ID of the record you are acting upon.
-        :param lead:
+        :param name: Full name of the lead.
+        :param company_name: The name of the company the lead is associated with.
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param owner_id: The owner of the lead.
+        :param owner_name: The name of the owner of the lead.
+        :param company_id: The company the lead is associated with.
+        :param lead_id: The identifier of the lead.
+        :param lead_source: The source of the lead.
+        :param first_name: The first name of the lead.
+        :param last_name: The last name of the lead.
+        :param description: The description of the lead.
+        :param prefix: The prefix of the lead.
+        :param title: The job title of the lead.
+        :param language: language code according to ISO 639-1. For the United States - EN
+        :param status:
+        :param monetary_amount: The monetary amount of the lead.
+        :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
+        :param fax: The fax number of the lead.
+        :param websites:
+        :param addresses:
+        :param social_links:
+        :param phone_numbers:
+        :param emails:
+        :param custom_fields:
+        :param tags:
+        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -744,7 +1119,45 @@ class Leads(BaseSDK):
             id=id,
             service_id=service_id,
             raw=raw,
-            lead=utils.get_pydantic_model(lead, models.LeadInput),
+            lead=models.LeadInput(
+                name=name,
+                company_name=company_name,
+                owner_id=owner_id,
+                owner_name=owner_name,
+                company_id=company_id,
+                lead_id=lead_id,
+                lead_source=lead_source,
+                first_name=first_name,
+                last_name=last_name,
+                description=description,
+                prefix=prefix,
+                title=title,
+                language=language,
+                status=status,
+                monetary_amount=monetary_amount,
+                currency=currency,
+                fax=fax,
+                websites=utils.get_pydantic_model(
+                    websites, Optional[List[models.Website]]
+                ),
+                addresses=utils.get_pydantic_model(
+                    addresses, Optional[List[models.Address]]
+                ),
+                social_links=utils.get_pydantic_model(
+                    social_links, Optional[List[models.SocialLink]]
+                ),
+                phone_numbers=utils.get_pydantic_model(
+                    phone_numbers, Optional[List[models.PhoneNumber]]
+                ),
+                emails=utils.get_pydantic_model(emails, Optional[List[models.Email]]),
+                custom_fields=utils.get_pydantic_model(
+                    custom_fields, Optional[List[models.CustomField]]
+                ),
+                tags=tags,
+                pass_through=utils.get_pydantic_model(
+                    pass_through, Optional[List[models.PassThroughBody]]
+                ),
+            ),
         )
 
         req = self.build_request(
@@ -758,6 +1171,7 @@ class Leads(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.CrmLeadsUpdateGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -835,24 +1249,86 @@ class Leads(BaseSDK):
         self,
         *,
         id: str,
-        lead: Union[models.LeadInput, models.LeadInputTypedDict],
+        name: str,
+        company_name: Nullable[str],
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
+        owner_id: OptionalNullable[str] = UNSET,
+        owner_name: OptionalNullable[str] = UNSET,
+        company_id: OptionalNullable[str] = UNSET,
+        lead_id: OptionalNullable[str] = UNSET,
+        lead_source: OptionalNullable[str] = UNSET,
+        first_name: OptionalNullable[str] = UNSET,
+        last_name: OptionalNullable[str] = UNSET,
+        description: OptionalNullable[str] = UNSET,
+        prefix: OptionalNullable[str] = UNSET,
+        title: OptionalNullable[str] = UNSET,
+        language: OptionalNullable[str] = UNSET,
+        status: OptionalNullable[str] = UNSET,
+        monetary_amount: OptionalNullable[float] = UNSET,
+        currency: OptionalNullable[models.Currency] = UNSET,
+        fax: OptionalNullable[str] = UNSET,
+        websites: Optional[
+            Union[List[models.Website], List[models.WebsiteTypedDict]]
+        ] = None,
+        addresses: Optional[
+            Union[List[models.Address], List[models.AddressTypedDict]]
+        ] = None,
+        social_links: Optional[
+            Union[List[models.SocialLink], List[models.SocialLinkTypedDict]]
+        ] = None,
+        phone_numbers: Optional[
+            Union[List[models.PhoneNumber], List[models.PhoneNumberTypedDict]]
+        ] = None,
+        emails: Optional[Union[List[models.Email], List[models.EmailTypedDict]]] = None,
+        custom_fields: Optional[
+            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+        ] = None,
+        tags: OptionalNullable[List[str]] = UNSET,
+        pass_through: Optional[
+            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.CrmLeadsUpdateResponse:
         r"""Update lead
 
         Update lead
 
         :param id: ID of the record you are acting upon.
-        :param lead:
+        :param name: Full name of the lead.
+        :param company_name: The name of the company the lead is associated with.
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param owner_id: The owner of the lead.
+        :param owner_name: The name of the owner of the lead.
+        :param company_id: The company the lead is associated with.
+        :param lead_id: The identifier of the lead.
+        :param lead_source: The source of the lead.
+        :param first_name: The first name of the lead.
+        :param last_name: The last name of the lead.
+        :param description: The description of the lead.
+        :param prefix: The prefix of the lead.
+        :param title: The job title of the lead.
+        :param language: language code according to ISO 639-1. For the United States - EN
+        :param status:
+        :param monetary_amount: The monetary amount of the lead.
+        :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
+        :param fax: The fax number of the lead.
+        :param websites:
+        :param addresses:
+        :param social_links:
+        :param phone_numbers:
+        :param emails:
+        :param custom_fields:
+        :param tags:
+        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -866,7 +1342,45 @@ class Leads(BaseSDK):
             id=id,
             service_id=service_id,
             raw=raw,
-            lead=utils.get_pydantic_model(lead, models.LeadInput),
+            lead=models.LeadInput(
+                name=name,
+                company_name=company_name,
+                owner_id=owner_id,
+                owner_name=owner_name,
+                company_id=company_id,
+                lead_id=lead_id,
+                lead_source=lead_source,
+                first_name=first_name,
+                last_name=last_name,
+                description=description,
+                prefix=prefix,
+                title=title,
+                language=language,
+                status=status,
+                monetary_amount=monetary_amount,
+                currency=currency,
+                fax=fax,
+                websites=utils.get_pydantic_model(
+                    websites, Optional[List[models.Website]]
+                ),
+                addresses=utils.get_pydantic_model(
+                    addresses, Optional[List[models.Address]]
+                ),
+                social_links=utils.get_pydantic_model(
+                    social_links, Optional[List[models.SocialLink]]
+                ),
+                phone_numbers=utils.get_pydantic_model(
+                    phone_numbers, Optional[List[models.PhoneNumber]]
+                ),
+                emails=utils.get_pydantic_model(emails, Optional[List[models.Email]]),
+                custom_fields=utils.get_pydantic_model(
+                    custom_fields, Optional[List[models.CustomField]]
+                ),
+                tags=tags,
+                pass_through=utils.get_pydantic_model(
+                    pass_through, Optional[List[models.PassThroughBody]]
+                ),
+            ),
         )
 
         req = self.build_request_async(
@@ -880,6 +1394,7 @@ class Leads(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.CrmLeadsUpdateGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -962,6 +1477,7 @@ class Leads(BaseSDK):
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.CrmLeadsDeleteResponse:
         r"""Delete lead
 
@@ -973,6 +1489,7 @@ class Leads(BaseSDK):
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -999,6 +1516,7 @@ class Leads(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.CrmLeadsDeleteGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -1078,6 +1596,7 @@ class Leads(BaseSDK):
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.CrmLeadsDeleteResponse:
         r"""Delete lead
 
@@ -1089,6 +1608,7 @@ class Leads(BaseSDK):
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -1115,6 +1635,7 @@ class Leads(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.CrmLeadsDeleteGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,

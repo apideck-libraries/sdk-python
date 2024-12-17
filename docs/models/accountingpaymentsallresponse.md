@@ -1,17 +1,8 @@
 # AccountingPaymentsAllResponse
 
 
-## Supported Types
+## Fields
 
-### `models.GetPaymentsResponse`
-
-```python
-value: models.GetPaymentsResponse = /* values here */
-```
-
-### `models.UnexpectedErrorResponse`
-
-```python
-value: models.UnexpectedErrorResponse = /* values here */
-```
-
+| Field                                                                                          | Type                                                                                           | Required                                                                                       | Description                                                                                    |
+| ---------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| `result`                                                                                       | [models.AccountingPaymentsAllResponseResult](../models/accountingpaymentsallresponseresult.md) | :heavy_check_mark:                                                                             | N/A                                                                                            |

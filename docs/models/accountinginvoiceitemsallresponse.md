@@ -1,17 +1,8 @@
 # AccountingInvoiceItemsAllResponse
 
 
-## Supported Types
+## Fields
 
-### `models.GetInvoiceItemsResponse`
-
-```python
-value: models.GetInvoiceItemsResponse = /* values here */
-```
-
-### `models.UnexpectedErrorResponse`
-
-```python
-value: models.UnexpectedErrorResponse = /* values here */
-```
-
+| Field                                                                                                  | Type                                                                                                   | Required                                                                                               | Description                                                                                            |
+| ------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------ |
+| `result`                                                                                               | [models.AccountingInvoiceItemsAllResponseResult](../models/accountinginvoiceitemsallresponseresult.md) | :heavy_check_mark:                                                                                     | N/A                                                                                                    |

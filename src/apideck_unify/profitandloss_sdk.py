@@ -3,31 +3,40 @@
 from .basesdk import BaseSDK
 from apideck_unify import models, utils
 from apideck_unify._hooks import HookContext
-from apideck_unify.types import BaseModel, OptionalNullable, UNSET
+from apideck_unify.types import OptionalNullable, UNSET
 from apideck_unify.utils import get_security_from_env
-from typing import Any, Optional, Union, cast
+from typing import Any, Dict, Mapping, Optional, Union
 
 
 class ProfitAndLossSDK(BaseSDK):
     def get(
         self,
         *,
-        request: Union[
-            models.AccountingProfitAndLossOneRequest,
-            models.AccountingProfitAndLossOneRequestTypedDict,
-        ] = models.AccountingProfitAndLossOneRequest(),
+        raw: Optional[bool] = False,
+        service_id: Optional[str] = None,
+        filter_: Optional[
+            Union[models.ProfitAndLossFilter, models.ProfitAndLossFilterTypedDict]
+        ] = None,
+        pass_through: Optional[Dict[str, Any]] = None,
+        fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.AccountingProfitAndLossOneResponse:
         r"""Get Profit and Loss
 
         Get Profit and Loss
 
-        :param request: The request object to send.
+        :param raw: Include raw response. Mostly used for debugging purposes
+        :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param filter_: Apply filters
+        :param pass_through: Optional unmapped key/values that will be passed through to downstream as query parameters. Ie: ?pass_through[search]=leads becomes ?search=leads
+        :param fields: The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -37,9 +46,15 @@ class ProfitAndLossSDK(BaseSDK):
         if server_url is not None:
             base_url = server_url
 
-        if not isinstance(request, BaseModel):
-            request = utils.unmarshal(request, models.AccountingProfitAndLossOneRequest)
-        request = cast(models.AccountingProfitAndLossOneRequest, request)
+        request = models.AccountingProfitAndLossOneRequest(
+            raw=raw,
+            service_id=service_id,
+            filter_=utils.get_pydantic_model(
+                filter_, Optional[models.ProfitAndLossFilter]
+            ),
+            pass_through=pass_through,
+            fields=fields,
+        )
 
         req = self.build_request(
             method="GET",
@@ -52,6 +67,7 @@ class ProfitAndLossSDK(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.AccountingProfitAndLossOneGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -125,22 +141,31 @@ class ProfitAndLossSDK(BaseSDK):
     async def get_async(
         self,
         *,
-        request: Union[
-            models.AccountingProfitAndLossOneRequest,
-            models.AccountingProfitAndLossOneRequestTypedDict,
-        ] = models.AccountingProfitAndLossOneRequest(),
+        raw: Optional[bool] = False,
+        service_id: Optional[str] = None,
+        filter_: Optional[
+            Union[models.ProfitAndLossFilter, models.ProfitAndLossFilterTypedDict]
+        ] = None,
+        pass_through: Optional[Dict[str, Any]] = None,
+        fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.AccountingProfitAndLossOneResponse:
         r"""Get Profit and Loss
 
         Get Profit and Loss
 
-        :param request: The request object to send.
+        :param raw: Include raw response. Mostly used for debugging purposes
+        :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param filter_: Apply filters
+        :param pass_through: Optional unmapped key/values that will be passed through to downstream as query parameters. Ie: ?pass_through[search]=leads becomes ?search=leads
+        :param fields: The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -150,9 +175,15 @@ class ProfitAndLossSDK(BaseSDK):
         if server_url is not None:
             base_url = server_url
 
-        if not isinstance(request, BaseModel):
-            request = utils.unmarshal(request, models.AccountingProfitAndLossOneRequest)
-        request = cast(models.AccountingProfitAndLossOneRequest, request)
+        request = models.AccountingProfitAndLossOneRequest(
+            raw=raw,
+            service_id=service_id,
+            filter_=utils.get_pydantic_model(
+                filter_, Optional[models.ProfitAndLossFilter]
+            ),
+            pass_through=pass_through,
+            fields=fields,
+        )
 
         req = self.build_request_async(
             method="GET",
@@ -165,6 +196,7 @@ class ProfitAndLossSDK(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.AccountingProfitAndLossOneGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,

@@ -1,17 +1,8 @@
 # SmsMessagesAllResponse
 
 
-## Supported Types
+## Fields
 
-### `models.GetMessagesResponse`
-
-```python
-value: models.GetMessagesResponse = /* values here */
-```
-
-### `models.UnexpectedErrorResponse`
-
-```python
-value: models.UnexpectedErrorResponse = /* values here */
-```
-
+| Field                                                                            | Type                                                                             | Required                                                                         | Description                                                                      |
+| -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| `result`                                                                         | [models.SmsMessagesAllResponseResult](../models/smsmessagesallresponseresult.md) | :heavy_check_mark:                                                               | N/A                                                                              |

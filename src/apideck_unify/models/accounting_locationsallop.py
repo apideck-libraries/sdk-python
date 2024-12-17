@@ -23,7 +23,7 @@ from apideck_unify.types import (
 from apideck_unify.utils import FieldMetadata, HeaderMetadata, QueryParamMetadata
 import pydantic
 from pydantic import model_serializer
-from typing import Optional, Union
+from typing import Callable, Optional, Union
 from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
 
 
@@ -135,13 +135,23 @@ class AccountingLocationsAllRequest(BaseModel):
         return m
 
 
-AccountingLocationsAllResponseTypedDict = TypeAliasType(
-    "AccountingLocationsAllResponseTypedDict",
+AccountingLocationsAllResponseResultTypedDict = TypeAliasType(
+    "AccountingLocationsAllResponseResultTypedDict",
     Union[UnexpectedErrorResponseTypedDict, GetAccountingLocationsResponseTypedDict],
 )
 
 
-AccountingLocationsAllResponse = TypeAliasType(
-    "AccountingLocationsAllResponse",
+AccountingLocationsAllResponseResult = TypeAliasType(
+    "AccountingLocationsAllResponseResult",
     Union[UnexpectedErrorResponse, GetAccountingLocationsResponse],
 )
+
+
+class AccountingLocationsAllResponseTypedDict(TypedDict):
+    result: AccountingLocationsAllResponseResultTypedDict
+
+
+class AccountingLocationsAllResponse(BaseModel):
+    next: Callable[[], Optional[AccountingLocationsAllResponse]]
+
+    result: AccountingLocationsAllResponseResult

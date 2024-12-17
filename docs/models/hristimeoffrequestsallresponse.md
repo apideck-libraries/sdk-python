@@ -1,17 +1,8 @@
 # HrisTimeOffRequestsAllResponse
 
 
-## Supported Types
+## Fields
 
-### `models.GetTimeOffRequestsResponse`
-
-```python
-value: models.GetTimeOffRequestsResponse = /* values here */
-```
-
-### `models.UnexpectedErrorResponse`
-
-```python
-value: models.UnexpectedErrorResponse = /* values here */
-```
-
+| Field                                                                                            | Type                                                                                             | Required                                                                                         | Description                                                                                      |
+| ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------ |
+| `result`                                                                                         | [models.HrisTimeOffRequestsAllResponseResult](../models/hristimeoffrequestsallresponseresult.md) | :heavy_check_mark:                                                                               | N/A                                                                                              |

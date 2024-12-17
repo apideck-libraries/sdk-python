@@ -5,26 +5,33 @@ from apideck_unify import models, utils
 from apideck_unify._hooks import HookContext
 from apideck_unify.types import OptionalNullable, UNSET
 from apideck_unify.utils import get_security_from_env
-from typing import Any, Optional, Union
+from jsonpath import JSONPath
+from typing import Any, Dict, Mapping, Optional, Union
 
 
 class Consumers(BaseSDK):
     def create(
         self,
         *,
-        request: Union[models.ConsumerInput, models.ConsumerInputTypedDict],
+        consumer_id: str,
+        metadata: Optional[
+            Union[models.ConsumerMetadata, models.ConsumerMetadataTypedDict]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.VaultConsumersAddResponse:
         r"""Create consumer
 
         Create a consumer
 
-        :param request: The request object to send.
+        :param consumer_id: Unique consumer identifier. You can freely choose a consumer ID yourself. Most of the time, this is an ID of your internal data model that represents a user or account in your system (for example account:12345). If the consumer doesn't exist yet, Vault will upsert a consumer based on your ID.
+        :param metadata: The metadata of the consumer. This is used to display the consumer in the sidebar. This is optional, but recommended.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -35,7 +42,10 @@ class Consumers(BaseSDK):
             base_url = server_url
 
         request = models.ConsumerInput(
-            request=utils.get_pydantic_model(request, models.ConsumerInput),
+            consumer_id=consumer_id,
+            metadata=utils.get_pydantic_model(
+                metadata, Optional[models.ConsumerMetadata]
+            ),
         )
 
         req = self.build_request(
@@ -49,6 +59,7 @@ class Consumers(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.VaultConsumersAddGlobals(
                 app_id=self.sdk_configuration.globals.app_id,
             ),
@@ -124,19 +135,25 @@ class Consumers(BaseSDK):
     async def create_async(
         self,
         *,
-        request: Union[models.ConsumerInput, models.ConsumerInputTypedDict],
+        consumer_id: str,
+        metadata: Optional[
+            Union[models.ConsumerMetadata, models.ConsumerMetadataTypedDict]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.VaultConsumersAddResponse:
         r"""Create consumer
 
         Create a consumer
 
-        :param request: The request object to send.
+        :param consumer_id: Unique consumer identifier. You can freely choose a consumer ID yourself. Most of the time, this is an ID of your internal data model that represents a user or account in your system (for example account:12345). If the consumer doesn't exist yet, Vault will upsert a consumer based on your ID.
+        :param metadata: The metadata of the consumer. This is used to display the consumer in the sidebar. This is optional, but recommended.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -147,7 +164,10 @@ class Consumers(BaseSDK):
             base_url = server_url
 
         request = models.ConsumerInput(
-            request=utils.get_pydantic_model(request, models.ConsumerInput),
+            consumer_id=consumer_id,
+            metadata=utils.get_pydantic_model(
+                metadata, Optional[models.ConsumerMetadata]
+            ),
         )
 
         req = self.build_request_async(
@@ -161,6 +181,7 @@ class Consumers(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.VaultConsumersAddGlobals(
                 app_id=self.sdk_configuration.globals.app_id,
             ),
@@ -241,7 +262,8 @@ class Consumers(BaseSDK):
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
-    ) -> models.VaultConsumersAllResponse:
+        http_headers: Optional[Mapping[str, str]] = None,
+    ) -> Optional[models.VaultConsumersAllResponse]:
         r"""Get all consumers
 
         This endpoint includes all application consumers, along with an aggregated count of requests made.
@@ -252,6 +274,7 @@ class Consumers(BaseSDK):
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -277,6 +300,7 @@ class Consumers(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.VaultConsumersAllGlobals(
                 app_id=self.sdk_configuration.globals.app_id,
             ),
@@ -309,9 +333,26 @@ class Consumers(BaseSDK):
             retry_config=retry_config,
         )
 
+        def next_func() -> Optional[models.VaultConsumersAllResponse]:
+            body = utils.unmarshal_json(http_res.text, Dict[Any, Any])
+            next_cursor = JSONPath("$.meta.cursors.next").parse(body)
+
+            if len(next_cursor) == 0:
+                return None
+            next_cursor = next_cursor[0]
+
+            return self.list(
+                cursor=next_cursor,
+                limit=limit,
+                retries=retries,
+            )
+
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.GetConsumersResponse)
+            return models.VaultConsumersAllResponse(
+                result=utils.unmarshal_json(http_res.text, models.GetConsumersResponse),
+                next=next_func,
+            )
         if utils.match_response(http_res, "400", "application/json"):
             data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
             raise models.BadRequestResponse(data=data)
@@ -335,7 +376,12 @@ class Consumers(BaseSDK):
                 "API error occurred", http_res.status_code, http_res_text, http_res
             )
         if utils.match_response(http_res, "default", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UnexpectedErrorResponse)
+            return models.VaultConsumersAllResponse(
+                result=utils.unmarshal_json(
+                    http_res.text, models.UnexpectedErrorResponse
+                ),
+                next=next_func,
+            )
 
         content_type = http_res.headers.get("Content-Type")
         http_res_text = utils.stream_to_text(http_res)
@@ -354,7 +400,8 @@ class Consumers(BaseSDK):
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
-    ) -> models.VaultConsumersAllResponse:
+        http_headers: Optional[Mapping[str, str]] = None,
+    ) -> Optional[models.VaultConsumersAllResponse]:
         r"""Get all consumers
 
         This endpoint includes all application consumers, along with an aggregated count of requests made.
@@ -365,6 +412,7 @@ class Consumers(BaseSDK):
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -390,6 +438,7 @@ class Consumers(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.VaultConsumersAllGlobals(
                 app_id=self.sdk_configuration.globals.app_id,
             ),
@@ -422,9 +471,26 @@ class Consumers(BaseSDK):
             retry_config=retry_config,
         )
 
+        def next_func() -> Optional[models.VaultConsumersAllResponse]:
+            body = utils.unmarshal_json(http_res.text, Dict[Any, Any])
+            next_cursor = JSONPath("$.meta.cursors.next").parse(body)
+
+            if len(next_cursor) == 0:
+                return None
+            next_cursor = next_cursor[0]
+
+            return self.list(
+                cursor=next_cursor,
+                limit=limit,
+                retries=retries,
+            )
+
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.GetConsumersResponse)
+            return models.VaultConsumersAllResponse(
+                result=utils.unmarshal_json(http_res.text, models.GetConsumersResponse),
+                next=next_func,
+            )
         if utils.match_response(http_res, "400", "application/json"):
             data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
             raise models.BadRequestResponse(data=data)
@@ -448,7 +514,12 @@ class Consumers(BaseSDK):
                 "API error occurred", http_res.status_code, http_res_text, http_res
             )
         if utils.match_response(http_res, "default", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UnexpectedErrorResponse)
+            return models.VaultConsumersAllResponse(
+                result=utils.unmarshal_json(
+                    http_res.text, models.UnexpectedErrorResponse
+                ),
+                next=next_func,
+            )
 
         content_type = http_res.headers.get("Content-Type")
         http_res_text = await utils.stream_to_text_async(http_res)
@@ -466,6 +537,7 @@ class Consumers(BaseSDK):
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.VaultConsumersOneResponse:
         r"""Get consumer
 
@@ -476,6 +548,7 @@ class Consumers(BaseSDK):
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -500,6 +573,7 @@ class Consumers(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.VaultConsumersOneGlobals(
                 app_id=self.sdk_configuration.globals.app_id,
             ),
@@ -576,6 +650,7 @@ class Consumers(BaseSDK):
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.VaultConsumersOneResponse:
         r"""Get consumer
 
@@ -586,6 +661,7 @@ class Consumers(BaseSDK):
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -610,6 +686,7 @@ class Consumers(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.VaultConsumersOneGlobals(
                 app_id=self.sdk_configuration.globals.app_id,
             ),
@@ -683,22 +760,24 @@ class Consumers(BaseSDK):
         self,
         *,
         consumer_id: str,
-        update_consumer_request: Union[
-            models.UpdateConsumerRequest, models.UpdateConsumerRequestTypedDict
-        ],
+        metadata: Optional[
+            Union[models.ConsumerMetadata, models.ConsumerMetadataTypedDict]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.VaultConsumersUpdateResponse:
         r"""Update consumer
 
         Update consumer metadata such as name and email.
 
         :param consumer_id: ID of the consumer to return
-        :param update_consumer_request:
+        :param metadata: The metadata of the consumer. This is used to display the consumer in the sidebar. This is optional, but recommended.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -710,8 +789,10 @@ class Consumers(BaseSDK):
 
         request = models.VaultConsumersUpdateRequest(
             consumer_id=consumer_id,
-            update_consumer_request=utils.get_pydantic_model(
-                update_consumer_request, models.UpdateConsumerRequest
+            update_consumer_request=models.UpdateConsumerRequest(
+                metadata=utils.get_pydantic_model(
+                    metadata, Optional[models.ConsumerMetadata]
+                ),
             ),
         )
 
@@ -726,6 +807,7 @@ class Consumers(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.VaultConsumersUpdateGlobals(
                 app_id=self.sdk_configuration.globals.app_id,
             ),
@@ -806,22 +888,24 @@ class Consumers(BaseSDK):
         self,
         *,
         consumer_id: str,
-        update_consumer_request: Union[
-            models.UpdateConsumerRequest, models.UpdateConsumerRequestTypedDict
-        ],
+        metadata: Optional[
+            Union[models.ConsumerMetadata, models.ConsumerMetadataTypedDict]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.VaultConsumersUpdateResponse:
         r"""Update consumer
 
         Update consumer metadata such as name and email.
 
         :param consumer_id: ID of the consumer to return
-        :param update_consumer_request:
+        :param metadata: The metadata of the consumer. This is used to display the consumer in the sidebar. This is optional, but recommended.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -833,8 +917,10 @@ class Consumers(BaseSDK):
 
         request = models.VaultConsumersUpdateRequest(
             consumer_id=consumer_id,
-            update_consumer_request=utils.get_pydantic_model(
-                update_consumer_request, models.UpdateConsumerRequest
+            update_consumer_request=models.UpdateConsumerRequest(
+                metadata=utils.get_pydantic_model(
+                    metadata, Optional[models.ConsumerMetadata]
+                ),
             ),
         )
 
@@ -849,6 +935,7 @@ class Consumers(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.VaultConsumersUpdateGlobals(
                 app_id=self.sdk_configuration.globals.app_id,
             ),
@@ -932,6 +1019,7 @@ class Consumers(BaseSDK):
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.VaultConsumersDeleteResponse:
         r"""Delete consumer
 
@@ -941,6 +1029,7 @@ class Consumers(BaseSDK):
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -965,6 +1054,7 @@ class Consumers(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.VaultConsumersDeleteGlobals(
                 app_id=self.sdk_configuration.globals.app_id,
             ),
@@ -1041,6 +1131,7 @@ class Consumers(BaseSDK):
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.VaultConsumersDeleteResponse:
         r"""Delete consumer
 
@@ -1050,6 +1141,7 @@ class Consumers(BaseSDK):
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -1074,6 +1166,7 @@ class Consumers(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.VaultConsumersDeleteGlobals(
                 app_id=self.sdk_configuration.globals.app_id,
             ),

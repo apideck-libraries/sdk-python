@@ -1,17 +1,8 @@
 # AccountingJournalEntriesAllResponse
 
 
-## Supported Types
+## Fields
 
-### `models.GetJournalEntriesResponse`
-
-```python
-value: models.GetJournalEntriesResponse = /* values here */
-```
-
-### `models.UnexpectedErrorResponse`
-
-```python
-value: models.UnexpectedErrorResponse = /* values here */
-```
-
+| Field                                                                                                      | Type                                                                                                       | Required                                                                                                   | Description                                                                                                |
+| ---------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| `result`                                                                                                   | [models.AccountingJournalEntriesAllResponseResult](../models/accountingjournalentriesallresponseresult.md) | :heavy_check_mark:                                                                                         | N/A                                                                                                        |

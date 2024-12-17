@@ -49,7 +49,7 @@ class HrisTimeOffRequestsUpdateGlobals(BaseModel):
 class HrisTimeOffRequestsUpdateRequestTypedDict(TypedDict):
     id: str
     r"""ID of the record you are acting upon."""
-    employee_id: str
+    employee_id_param: str
     r"""ID of the employee you are acting upon."""
     time_off_request: TimeOffRequestInputTypedDict
     service_id: NotRequired[str]
@@ -64,8 +64,10 @@ class HrisTimeOffRequestsUpdateRequest(BaseModel):
     ]
     r"""ID of the record you are acting upon."""
 
-    employee_id: Annotated[
-        str, FieldMetadata(path=PathParamMetadata(style="simple", explode=False))
+    employee_id_param: Annotated[
+        str,
+        pydantic.Field(alias="employee_id"),
+        FieldMetadata(path=PathParamMetadata(style="simple", explode=False)),
     ]
     r"""ID of the employee you are acting upon."""
 

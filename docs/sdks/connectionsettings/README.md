@@ -24,11 +24,11 @@ with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
+
     res = apideck.vault.connection_settings.list(unified_api="crm", service_id="pipedrive", resource="leads")
 
-    if res is not None:
-        # handle response
-        pass
+    # Handle response
+    print(res)
 
 ```
 
@@ -71,199 +71,197 @@ with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
-    res = apideck.vault.connection_settings.update(service_id="pipedrive", unified_api="crm", resource="leads", connection={
-        "enabled": True,
-        "settings": {
-            "instance_url": "https://eu28.salesforce.com",
-            "api_key": "12345xxxxxx",
-        },
-        "metadata": {
-            "account": {
-                "name": "My Company",
-                "id": "c01458a5-7276-41ce-bc19-639906b0450a",
-            },
-            "plan": "enterprise",
-        },
-        "configuration": [
-            {
-                "resource": "leads",
-                "defaults": [
-                    {
-                        "id": "ProductInterest",
-                        "options": [
-                            {
-                                "id": "1234",
-                                "label": "General Channel",
-                                "options": [
-                                    {
-                                        "label": "General Channel",
-                                        "value": 12.5,
-                                    },
-                                    {
-                                        "label": "General Channel",
-                                        "value": [
-                                            "team",
-                                            "general",
-                                        ],
-                                    },
-                                ],
-                            },
-                        ],
-                        "value": "GC5000 series",
-                    },
-                    {
-                        "id": "ProductInterest",
-                        "options": [
-                            {
-                                "label": "General Channel",
-                                "value": 123,
-                            },
-                            {
-                                "label": "General Channel",
-                                "value": "general",
-                            },
-                            {
-                                "id": "1234",
-                                "label": "General Channel",
-                                "options": [
-                                    {
-                                        "label": "General Channel",
-                                        "value": 123,
-                                    },
-                                    {
-                                        "label": "General Channel",
-                                        "value": 12.5,
-                                    },
-                                    {
-                                        "label": "General Channel",
-                                        "value": True,
-                                    },
-                                ],
-                            },
-                        ],
-                        "value": True,
-                    },
-                ],
-            },
-            {
-                "resource": "leads",
-                "defaults": [
-                    {
-                        "id": "ProductInterest",
-                        "options": [
-                            {
-                                "id": "1234",
-                                "label": "General Channel",
-                                "options": [
-                                    {
-                                        "label": "General Channel",
-                                        "value": 12.5,
-                                    },
-                                ],
-                            },
-                        ],
-                        "value": True,
-                    },
-                ],
-            },
-            {
-                "resource": "leads",
-                "defaults": [
-                    {
-                        "id": "ProductInterest",
-                        "options": [
-                            {
-                                "id": "1234",
-                                "label": "General Channel",
-                                "options": [
-                                    {
-                                        "label": "General Channel",
-                                        "value": 123,
-                                    },
-                                ],
-                            },
-                        ],
-                        "value": 10,
-                    },
-                    {
-                        "id": "ProductInterest",
-                        "options": [
-                            {
-                                "id": "1234",
-                                "label": "General Channel",
-                                "options": [
-                                    {
-                                        "label": "General Channel",
-                                        "value": [
-                                            "team",
-                                            "general",
-                                        ],
-                                    },
-                                    {
-                                        "label": "General Channel",
-                                        "value": True,
-                                    },
-                                    {
-                                        "label": "General Channel",
-                                        "value": 12.5,
-                                    },
-                                ],
-                            },
-                        ],
-                        "value": 10,
-                    },
-                    {
-                        "id": "ProductInterest",
-                        "options": [
-                            {
-                                "id": "1234",
-                                "label": "General Channel",
-                                "options": [
-                                    {
-                                        "label": "General Channel",
-                                        "value": [
-                                            "team",
-                                            "general",
-                                        ],
-                                    },
-                                    {
-                                        "label": "General Channel",
-                                        "value": "general",
-                                    },
-                                ],
-                            },
-                            {
-                                "label": "General Channel",
-                                "value": 123,
-                            },
-                        ],
-                        "value": True,
-                    },
-                ],
-            },
-        ],
-        "custom_mappings": [
-            {
-                "value": "$.root.training.first_aid",
-            },
-        ],
-    })
 
-    if res is not None:
-        # handle response
-        pass
+    res = apideck.vault.connection_settings.update(service_id="pipedrive", unified_api="crm", resource="leads", enabled=True, settings={
+        "instance_url": "https://eu28.salesforce.com",
+        "api_key": "12345xxxxxx",
+    }, metadata={
+        "account": {
+            "name": "My Company",
+            "id": "c01458a5-7276-41ce-bc19-639906b0450a",
+        },
+        "plan": "enterprise",
+    }, configuration=[
+        {
+            "resource": "leads",
+            "defaults": [
+                {
+                    "id": "ProductInterest",
+                    "options": [
+                        {
+                            "id": "1234",
+                            "label": "General Channel",
+                            "options": [
+                                {
+                                    "label": "General Channel",
+                                    "value": 12.5,
+                                },
+                                {
+                                    "label": "General Channel",
+                                    "value": [
+                                        "team",
+                                        "general",
+                                    ],
+                                },
+                            ],
+                        },
+                    ],
+                    "value": "GC5000 series",
+                },
+                {
+                    "id": "ProductInterest",
+                    "options": [
+                        {
+                            "label": "General Channel",
+                            "value": 123,
+                        },
+                        {
+                            "label": "General Channel",
+                            "value": "general",
+                        },
+                        {
+                            "id": "1234",
+                            "label": "General Channel",
+                            "options": [
+                                {
+                                    "label": "General Channel",
+                                    "value": 123,
+                                },
+                                {
+                                    "label": "General Channel",
+                                    "value": 12.5,
+                                },
+                                {
+                                    "label": "General Channel",
+                                    "value": True,
+                                },
+                            ],
+                        },
+                    ],
+                    "value": True,
+                },
+            ],
+        },
+        {
+            "resource": "leads",
+            "defaults": [
+                {
+                    "id": "ProductInterest",
+                    "options": [
+                        {
+                            "id": "1234",
+                            "label": "General Channel",
+                            "options": [
+                                {
+                                    "label": "General Channel",
+                                    "value": 12.5,
+                                },
+                            ],
+                        },
+                    ],
+                    "value": True,
+                },
+            ],
+        },
+        {
+            "resource": "leads",
+            "defaults": [
+                {
+                    "id": "ProductInterest",
+                    "options": [
+                        {
+                            "id": "1234",
+                            "label": "General Channel",
+                            "options": [
+                                {
+                                    "label": "General Channel",
+                                    "value": 123,
+                                },
+                            ],
+                        },
+                    ],
+                    "value": 10,
+                },
+                {
+                    "id": "ProductInterest",
+                    "options": [
+                        {
+                            "id": "1234",
+                            "label": "General Channel",
+                            "options": [
+                                {
+                                    "label": "General Channel",
+                                    "value": [
+                                        "team",
+                                        "general",
+                                    ],
+                                },
+                                {
+                                    "label": "General Channel",
+                                    "value": True,
+                                },
+                                {
+                                    "label": "General Channel",
+                                    "value": 12.5,
+                                },
+                            ],
+                        },
+                    ],
+                    "value": 10,
+                },
+                {
+                    "id": "ProductInterest",
+                    "options": [
+                        {
+                            "id": "1234",
+                            "label": "General Channel",
+                            "options": [
+                                {
+                                    "label": "General Channel",
+                                    "value": [
+                                        "team",
+                                        "general",
+                                    ],
+                                },
+                                {
+                                    "label": "General Channel",
+                                    "value": "general",
+                                },
+                            ],
+                        },
+                        {
+                            "label": "General Channel",
+                            "value": 123,
+                        },
+                    ],
+                    "value": True,
+                },
+            ],
+        },
+    ], custom_mappings=[
+        {
+            "value": "$.root.training.first_aid",
+        },
+    ])
+
+    # Handle response
+    print(res)
 
 ```
 
 ### Parameters
 
-| Parameter                                                           | Type                                                                | Required                                                            | Description                                                         | Example                                                             |
-| ------------------------------------------------------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------------- |
-| `service_id`                                                        | *str*                                                               | :heavy_check_mark:                                                  | Service ID of the resource to return                                | pipedrive                                                           |
-| `unified_api`                                                       | *str*                                                               | :heavy_check_mark:                                                  | Unified API                                                         | crm                                                                 |
-| `resource`                                                          | *str*                                                               | :heavy_check_mark:                                                  | Name of the resource (plural)                                       | leads                                                               |
-| `connection`                                                        | [models.ConnectionInput](../../models/connectioninput.md)           | :heavy_check_mark:                                                  | Fields that need to be updated on the resource                      |                                                                     |
-| `retries`                                                           | [Optional[utils.RetryConfig]](../../models/utils/retryconfig.md)    | :heavy_minus_sign:                                                  | Configuration to override the default retry behavior of the client. |                                                                     |
+| Parameter                                                                                                         | Type                                                                                                              | Required                                                                                                          | Description                                                                                                       | Example                                                                                                           |
+| ----------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| `service_id`                                                                                                      | *str*                                                                                                             | :heavy_check_mark:                                                                                                | Service ID of the resource to return                                                                              | pipedrive                                                                                                         |
+| `unified_api`                                                                                                     | *str*                                                                                                             | :heavy_check_mark:                                                                                                | Unified API                                                                                                       | crm                                                                                                               |
+| `resource`                                                                                                        | *str*                                                                                                             | :heavy_check_mark:                                                                                                | Name of the resource (plural)                                                                                     | leads                                                                                                             |
+| `enabled`                                                                                                         | *Optional[bool]*                                                                                                  | :heavy_minus_sign:                                                                                                | Whether the connection is enabled or not. You can enable or disable a connection using the Update Connection API. | true                                                                                                              |
+| `settings`                                                                                                        | Dict[str, *Any*]                                                                                                  | :heavy_minus_sign:                                                                                                | Connection settings. Values will persist to `form_fields` with corresponding id                                   | {<br/>"instance_url": "https://eu28.salesforce.com",<br/>"api_key": "12345xxxxxx"<br/>}                           |
+| `metadata`                                                                                                        | Dict[str, *Any*]                                                                                                  | :heavy_minus_sign:                                                                                                | Attach your own consumer specific metadata                                                                        | {<br/>"account": {<br/>"name": "My Company",<br/>"id": "c01458a5-7276-41ce-bc19-639906b0450a"<br/>},<br/>"plan": "enterprise"<br/>} |
+| `configuration`                                                                                                   | List[[models.ConnectionConfiguration](../../models/connectionconfiguration.md)]                                   | :heavy_minus_sign:                                                                                                | N/A                                                                                                               |                                                                                                                   |
+| `custom_mappings`                                                                                                 | List[[models.CustomMappingInput](../../models/custommappinginput.md)]                                             | :heavy_minus_sign:                                                                                                | List of custom mappings configured for this connection                                                            |                                                                                                                   |
+| `retries`                                                                                                         | [Optional[utils.RetryConfig]](../../models/utils/retryconfig.md)                                                  | :heavy_minus_sign:                                                                                                | Configuration to override the default retry behavior of the client.                                               |                                                                                                                   |
 
 ### Response
 

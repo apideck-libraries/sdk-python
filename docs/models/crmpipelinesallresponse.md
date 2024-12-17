@@ -1,17 +1,8 @@
 # CrmPipelinesAllResponse
 
 
-## Supported Types
+## Fields
 
-### `models.GetPipelinesResponse`
-
-```python
-value: models.GetPipelinesResponse = /* values here */
-```
-
-### `models.UnexpectedErrorResponse`
-
-```python
-value: models.UnexpectedErrorResponse = /* values here */
-```
-
+| Field                                                                              | Type                                                                               | Required                                                                           | Description                                                                        |
+| ---------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| `result`                                                                           | [models.CrmPipelinesAllResponseResult](../models/crmpipelinesallresponseresult.md) | :heavy_check_mark:                                                                 | N/A                                                                                |

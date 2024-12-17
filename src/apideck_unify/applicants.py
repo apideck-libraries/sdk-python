@@ -3,30 +3,46 @@
 from .basesdk import BaseSDK
 from apideck_unify import models, utils
 from apideck_unify._hooks import HookContext
-from apideck_unify.types import BaseModel, OptionalNullable, UNSET
+from apideck_unify.types import OptionalNullable, UNSET
 from apideck_unify.utils import get_security_from_env
-from typing import Any, Optional, Union, cast
+from datetime import date
+from jsonpath import JSONPath
+from typing import Any, Dict, List, Mapping, Optional, Union
 
 
 class Applicants(BaseSDK):
     def list(
         self,
         *,
-        request: Union[
-            models.AtsApplicantsAllRequest, models.AtsApplicantsAllRequestTypedDict
-        ] = models.AtsApplicantsAllRequest(),
+        raw: Optional[bool] = False,
+        service_id: Optional[str] = None,
+        cursor: OptionalNullable[str] = UNSET,
+        limit: Optional[int] = 20,
+        filter_: Optional[
+            Union[models.ApplicantsFilter, models.ApplicantsFilterTypedDict]
+        ] = None,
+        pass_through: Optional[Dict[str, Any]] = None,
+        fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
-    ) -> models.AtsApplicantsAllResponse:
+        http_headers: Optional[Mapping[str, str]] = None,
+    ) -> Optional[models.AtsApplicantsAllResponse]:
         r"""List Applicants
 
         List Applicants
 
-        :param request: The request object to send.
+        :param raw: Include raw response. Mostly used for debugging purposes
+        :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
+        :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
+        :param filter_: Apply filters
+        :param pass_through: Optional unmapped key/values that will be passed through to downstream as query parameters. Ie: ?pass_through[search]=leads becomes ?search=leads
+        :param fields: The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -36,9 +52,17 @@ class Applicants(BaseSDK):
         if server_url is not None:
             base_url = server_url
 
-        if not isinstance(request, BaseModel):
-            request = utils.unmarshal(request, models.AtsApplicantsAllRequest)
-        request = cast(models.AtsApplicantsAllRequest, request)
+        request = models.AtsApplicantsAllRequest(
+            raw=raw,
+            service_id=service_id,
+            cursor=cursor,
+            limit=limit,
+            filter_=utils.get_pydantic_model(
+                filter_, Optional[models.ApplicantsFilter]
+            ),
+            pass_through=pass_through,
+            fields=fields,
+        )
 
         req = self.build_request(
             method="GET",
@@ -51,6 +75,7 @@ class Applicants(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.AtsApplicantsAllGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -84,9 +109,33 @@ class Applicants(BaseSDK):
             retry_config=retry_config,
         )
 
+        def next_func() -> Optional[models.AtsApplicantsAllResponse]:
+            body = utils.unmarshal_json(http_res.text, Dict[Any, Any])
+            next_cursor = JSONPath("$.meta.cursors.next").parse(body)
+
+            if len(next_cursor) == 0:
+                return None
+            next_cursor = next_cursor[0]
+
+            return self.list(
+                raw=raw,
+                service_id=service_id,
+                cursor=next_cursor,
+                limit=limit,
+                filter_=filter_,
+                pass_through=pass_through,
+                fields=fields,
+                retries=retries,
+            )
+
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.GetApplicantsResponse)
+            return models.AtsApplicantsAllResponse(
+                result=utils.unmarshal_json(
+                    http_res.text, models.GetApplicantsResponse
+                ),
+                next=next_func,
+            )
         if utils.match_response(http_res, "400", "application/json"):
             data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
             raise models.BadRequestResponse(data=data)
@@ -110,7 +159,12 @@ class Applicants(BaseSDK):
                 "API error occurred", http_res.status_code, http_res_text, http_res
             )
         if utils.match_response(http_res, "default", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UnexpectedErrorResponse)
+            return models.AtsApplicantsAllResponse(
+                result=utils.unmarshal_json(
+                    http_res.text, models.UnexpectedErrorResponse
+                ),
+                next=next_func,
+            )
 
         content_type = http_res.headers.get("Content-Type")
         http_res_text = utils.stream_to_text(http_res)
@@ -124,21 +178,35 @@ class Applicants(BaseSDK):
     async def list_async(
         self,
         *,
-        request: Union[
-            models.AtsApplicantsAllRequest, models.AtsApplicantsAllRequestTypedDict
-        ] = models.AtsApplicantsAllRequest(),
+        raw: Optional[bool] = False,
+        service_id: Optional[str] = None,
+        cursor: OptionalNullable[str] = UNSET,
+        limit: Optional[int] = 20,
+        filter_: Optional[
+            Union[models.ApplicantsFilter, models.ApplicantsFilterTypedDict]
+        ] = None,
+        pass_through: Optional[Dict[str, Any]] = None,
+        fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
-    ) -> models.AtsApplicantsAllResponse:
+        http_headers: Optional[Mapping[str, str]] = None,
+    ) -> Optional[models.AtsApplicantsAllResponse]:
         r"""List Applicants
 
         List Applicants
 
-        :param request: The request object to send.
+        :param raw: Include raw response. Mostly used for debugging purposes
+        :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
+        :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
+        :param filter_: Apply filters
+        :param pass_through: Optional unmapped key/values that will be passed through to downstream as query parameters. Ie: ?pass_through[search]=leads becomes ?search=leads
+        :param fields: The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -148,9 +216,17 @@ class Applicants(BaseSDK):
         if server_url is not None:
             base_url = server_url
 
-        if not isinstance(request, BaseModel):
-            request = utils.unmarshal(request, models.AtsApplicantsAllRequest)
-        request = cast(models.AtsApplicantsAllRequest, request)
+        request = models.AtsApplicantsAllRequest(
+            raw=raw,
+            service_id=service_id,
+            cursor=cursor,
+            limit=limit,
+            filter_=utils.get_pydantic_model(
+                filter_, Optional[models.ApplicantsFilter]
+            ),
+            pass_through=pass_through,
+            fields=fields,
+        )
 
         req = self.build_request_async(
             method="GET",
@@ -163,6 +239,7 @@ class Applicants(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.AtsApplicantsAllGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -196,9 +273,33 @@ class Applicants(BaseSDK):
             retry_config=retry_config,
         )
 
+        def next_func() -> Optional[models.AtsApplicantsAllResponse]:
+            body = utils.unmarshal_json(http_res.text, Dict[Any, Any])
+            next_cursor = JSONPath("$.meta.cursors.next").parse(body)
+
+            if len(next_cursor) == 0:
+                return None
+            next_cursor = next_cursor[0]
+
+            return self.list(
+                raw=raw,
+                service_id=service_id,
+                cursor=next_cursor,
+                limit=limit,
+                filter_=filter_,
+                pass_through=pass_through,
+                fields=fields,
+                retries=retries,
+            )
+
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.GetApplicantsResponse)
+            return models.AtsApplicantsAllResponse(
+                result=utils.unmarshal_json(
+                    http_res.text, models.GetApplicantsResponse
+                ),
+                next=next_func,
+            )
         if utils.match_response(http_res, "400", "application/json"):
             data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
             raise models.BadRequestResponse(data=data)
@@ -222,7 +323,12 @@ class Applicants(BaseSDK):
                 "API error occurred", http_res.status_code, http_res_text, http_res
             )
         if utils.match_response(http_res, "default", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UnexpectedErrorResponse)
+            return models.AtsApplicantsAllResponse(
+                result=utils.unmarshal_json(
+                    http_res.text, models.UnexpectedErrorResponse
+                ),
+                next=next_func,
+            )
 
         content_type = http_res.headers.get("Content-Type")
         http_res_text = await utils.stream_to_text_async(http_res)
@@ -236,23 +342,97 @@ class Applicants(BaseSDK):
     def create(
         self,
         *,
-        applicant: Union[models.ApplicantInput, models.ApplicantInputTypedDict],
         raw: Optional[bool] = False,
         service_id: Optional[str] = None,
+        name: Optional[str] = None,
+        first_name: OptionalNullable[str] = UNSET,
+        last_name: OptionalNullable[str] = UNSET,
+        middle_name: OptionalNullable[str] = UNSET,
+        initials: OptionalNullable[str] = UNSET,
+        birthday: OptionalNullable[date] = UNSET,
+        cover_letter: Optional[str] = None,
+        photo_url: OptionalNullable[str] = UNSET,
+        headline: Optional[str] = None,
+        title: OptionalNullable[str] = UNSET,
+        emails: Optional[Union[List[models.Email], List[models.EmailTypedDict]]] = None,
+        custom_fields: Optional[
+            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+        ] = None,
+        phone_numbers: Optional[
+            Union[List[models.PhoneNumber], List[models.PhoneNumberTypedDict]]
+        ] = None,
+        addresses: Optional[
+            Union[List[models.Address], List[models.AddressTypedDict]]
+        ] = None,
+        websites: Optional[
+            Union[List[models.Websites], List[models.WebsitesTypedDict]]
+        ] = None,
+        social_links: Optional[
+            Union[List[models.SocialLinks], List[models.SocialLinksTypedDict]]
+        ] = None,
+        stage_id: Optional[str] = None,
+        recruiter_id: Optional[str] = None,
+        coordinator_id: Optional[str] = None,
+        application_ids: OptionalNullable[List[str]] = UNSET,
+        applications: OptionalNullable[List[str]] = UNSET,
+        followers: OptionalNullable[List[str]] = UNSET,
+        sources: OptionalNullable[List[str]] = UNSET,
+        confidential: Optional[bool] = None,
+        anonymized: Optional[bool] = None,
+        tags: OptionalNullable[List[str]] = UNSET,
+        archived: OptionalNullable[bool] = UNSET,
+        owner_id: OptionalNullable[str] = UNSET,
+        record_url: OptionalNullable[str] = UNSET,
+        deleted: OptionalNullable[bool] = UNSET,
+        pass_through: Optional[
+            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.AtsApplicantsAddResponse:
         r"""Create Applicant
 
         Create Applicant
 
-        :param applicant:
         :param raw: Include raw response. Mostly used for debugging purposes
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param name: The name of an applicant.
+        :param first_name: The first name of the person.
+        :param last_name: The last name of the person.
+        :param middle_name: Middle name of the person.
+        :param initials: The initials of the person, usually derived from their first, middle, and last names.
+        :param birthday: The date of birth of the person.
+        :param cover_letter:
+        :param photo_url: The URL of the photo of a person.
+        :param headline: Typically a list of previous companies where the contact has worked or schools that the contact has attended
+        :param title: The job title of the person.
+        :param emails:
+        :param custom_fields:
+        :param phone_numbers:
+        :param addresses:
+        :param websites:
+        :param social_links:
+        :param stage_id:
+        :param recruiter_id:
+        :param coordinator_id:
+        :param application_ids:
+        :param applications:
+        :param followers:
+        :param sources:
+        :param confidential:
+        :param anonymized:
+        :param tags:
+        :param archived:
+        :param owner_id:
+        :param record_url:
+        :param deleted: Flag to indicate if the object is deleted.
+        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -265,7 +445,51 @@ class Applicants(BaseSDK):
         request = models.AtsApplicantsAddRequest(
             raw=raw,
             service_id=service_id,
-            applicant=utils.get_pydantic_model(applicant, models.ApplicantInput),
+            applicant=models.ApplicantInput(
+                name=name,
+                first_name=first_name,
+                last_name=last_name,
+                middle_name=middle_name,
+                initials=initials,
+                birthday=birthday,
+                cover_letter=cover_letter,
+                photo_url=photo_url,
+                headline=headline,
+                title=title,
+                emails=utils.get_pydantic_model(emails, Optional[List[models.Email]]),
+                custom_fields=utils.get_pydantic_model(
+                    custom_fields, Optional[List[models.CustomField]]
+                ),
+                phone_numbers=utils.get_pydantic_model(
+                    phone_numbers, Optional[List[models.PhoneNumber]]
+                ),
+                addresses=utils.get_pydantic_model(
+                    addresses, Optional[List[models.Address]]
+                ),
+                websites=utils.get_pydantic_model(
+                    websites, Optional[List[models.Websites]]
+                ),
+                social_links=utils.get_pydantic_model(
+                    social_links, Optional[List[models.SocialLinks]]
+                ),
+                stage_id=stage_id,
+                recruiter_id=recruiter_id,
+                coordinator_id=coordinator_id,
+                application_ids=application_ids,
+                applications=applications,
+                followers=followers,
+                sources=sources,
+                confidential=confidential,
+                anonymized=anonymized,
+                tags=tags,
+                archived=archived,
+                owner_id=owner_id,
+                record_url=record_url,
+                deleted=deleted,
+                pass_through=utils.get_pydantic_model(
+                    pass_through, Optional[List[models.PassThroughBody]]
+                ),
+            ),
         )
 
         req = self.build_request(
@@ -279,6 +503,7 @@ class Applicants(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.AtsApplicantsAddGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -355,23 +580,97 @@ class Applicants(BaseSDK):
     async def create_async(
         self,
         *,
-        applicant: Union[models.ApplicantInput, models.ApplicantInputTypedDict],
         raw: Optional[bool] = False,
         service_id: Optional[str] = None,
+        name: Optional[str] = None,
+        first_name: OptionalNullable[str] = UNSET,
+        last_name: OptionalNullable[str] = UNSET,
+        middle_name: OptionalNullable[str] = UNSET,
+        initials: OptionalNullable[str] = UNSET,
+        birthday: OptionalNullable[date] = UNSET,
+        cover_letter: Optional[str] = None,
+        photo_url: OptionalNullable[str] = UNSET,
+        headline: Optional[str] = None,
+        title: OptionalNullable[str] = UNSET,
+        emails: Optional[Union[List[models.Email], List[models.EmailTypedDict]]] = None,
+        custom_fields: Optional[
+            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+        ] = None,
+        phone_numbers: Optional[
+            Union[List[models.PhoneNumber], List[models.PhoneNumberTypedDict]]
+        ] = None,
+        addresses: Optional[
+            Union[List[models.Address], List[models.AddressTypedDict]]
+        ] = None,
+        websites: Optional[
+            Union[List[models.Websites], List[models.WebsitesTypedDict]]
+        ] = None,
+        social_links: Optional[
+            Union[List[models.SocialLinks], List[models.SocialLinksTypedDict]]
+        ] = None,
+        stage_id: Optional[str] = None,
+        recruiter_id: Optional[str] = None,
+        coordinator_id: Optional[str] = None,
+        application_ids: OptionalNullable[List[str]] = UNSET,
+        applications: OptionalNullable[List[str]] = UNSET,
+        followers: OptionalNullable[List[str]] = UNSET,
+        sources: OptionalNullable[List[str]] = UNSET,
+        confidential: Optional[bool] = None,
+        anonymized: Optional[bool] = None,
+        tags: OptionalNullable[List[str]] = UNSET,
+        archived: OptionalNullable[bool] = UNSET,
+        owner_id: OptionalNullable[str] = UNSET,
+        record_url: OptionalNullable[str] = UNSET,
+        deleted: OptionalNullable[bool] = UNSET,
+        pass_through: Optional[
+            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.AtsApplicantsAddResponse:
         r"""Create Applicant
 
         Create Applicant
 
-        :param applicant:
         :param raw: Include raw response. Mostly used for debugging purposes
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param name: The name of an applicant.
+        :param first_name: The first name of the person.
+        :param last_name: The last name of the person.
+        :param middle_name: Middle name of the person.
+        :param initials: The initials of the person, usually derived from their first, middle, and last names.
+        :param birthday: The date of birth of the person.
+        :param cover_letter:
+        :param photo_url: The URL of the photo of a person.
+        :param headline: Typically a list of previous companies where the contact has worked or schools that the contact has attended
+        :param title: The job title of the person.
+        :param emails:
+        :param custom_fields:
+        :param phone_numbers:
+        :param addresses:
+        :param websites:
+        :param social_links:
+        :param stage_id:
+        :param recruiter_id:
+        :param coordinator_id:
+        :param application_ids:
+        :param applications:
+        :param followers:
+        :param sources:
+        :param confidential:
+        :param anonymized:
+        :param tags:
+        :param archived:
+        :param owner_id:
+        :param record_url:
+        :param deleted: Flag to indicate if the object is deleted.
+        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -384,7 +683,51 @@ class Applicants(BaseSDK):
         request = models.AtsApplicantsAddRequest(
             raw=raw,
             service_id=service_id,
-            applicant=utils.get_pydantic_model(applicant, models.ApplicantInput),
+            applicant=models.ApplicantInput(
+                name=name,
+                first_name=first_name,
+                last_name=last_name,
+                middle_name=middle_name,
+                initials=initials,
+                birthday=birthday,
+                cover_letter=cover_letter,
+                photo_url=photo_url,
+                headline=headline,
+                title=title,
+                emails=utils.get_pydantic_model(emails, Optional[List[models.Email]]),
+                custom_fields=utils.get_pydantic_model(
+                    custom_fields, Optional[List[models.CustomField]]
+                ),
+                phone_numbers=utils.get_pydantic_model(
+                    phone_numbers, Optional[List[models.PhoneNumber]]
+                ),
+                addresses=utils.get_pydantic_model(
+                    addresses, Optional[List[models.Address]]
+                ),
+                websites=utils.get_pydantic_model(
+                    websites, Optional[List[models.Websites]]
+                ),
+                social_links=utils.get_pydantic_model(
+                    social_links, Optional[List[models.SocialLinks]]
+                ),
+                stage_id=stage_id,
+                recruiter_id=recruiter_id,
+                coordinator_id=coordinator_id,
+                application_ids=application_ids,
+                applications=applications,
+                followers=followers,
+                sources=sources,
+                confidential=confidential,
+                anonymized=anonymized,
+                tags=tags,
+                archived=archived,
+                owner_id=owner_id,
+                record_url=record_url,
+                deleted=deleted,
+                pass_through=utils.get_pydantic_model(
+                    pass_through, Optional[List[models.PassThroughBody]]
+                ),
+            ),
         )
 
         req = self.build_request_async(
@@ -398,6 +741,7 @@ class Applicants(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.AtsApplicantsAddGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -481,6 +825,7 @@ class Applicants(BaseSDK):
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.AtsApplicantsOneResponse:
         r"""Get Applicant
 
@@ -493,6 +838,7 @@ class Applicants(BaseSDK):
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -520,6 +866,7 @@ class Applicants(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.AtsApplicantsOneGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -600,6 +947,7 @@ class Applicants(BaseSDK):
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.AtsApplicantsOneResponse:
         r"""Get Applicant
 
@@ -612,6 +960,7 @@ class Applicants(BaseSDK):
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -639,6 +988,7 @@ class Applicants(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.AtsApplicantsOneGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -713,24 +1063,98 @@ class Applicants(BaseSDK):
         self,
         *,
         id: str,
-        applicant: Union[models.ApplicantInput, models.ApplicantInputTypedDict],
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
+        name: Optional[str] = None,
+        first_name: OptionalNullable[str] = UNSET,
+        last_name: OptionalNullable[str] = UNSET,
+        middle_name: OptionalNullable[str] = UNSET,
+        initials: OptionalNullable[str] = UNSET,
+        birthday: OptionalNullable[date] = UNSET,
+        cover_letter: Optional[str] = None,
+        photo_url: OptionalNullable[str] = UNSET,
+        headline: Optional[str] = None,
+        title: OptionalNullable[str] = UNSET,
+        emails: Optional[Union[List[models.Email], List[models.EmailTypedDict]]] = None,
+        custom_fields: Optional[
+            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+        ] = None,
+        phone_numbers: Optional[
+            Union[List[models.PhoneNumber], List[models.PhoneNumberTypedDict]]
+        ] = None,
+        addresses: Optional[
+            Union[List[models.Address], List[models.AddressTypedDict]]
+        ] = None,
+        websites: Optional[
+            Union[List[models.Websites], List[models.WebsitesTypedDict]]
+        ] = None,
+        social_links: Optional[
+            Union[List[models.SocialLinks], List[models.SocialLinksTypedDict]]
+        ] = None,
+        stage_id: Optional[str] = None,
+        recruiter_id: Optional[str] = None,
+        coordinator_id: Optional[str] = None,
+        application_ids: OptionalNullable[List[str]] = UNSET,
+        applications: OptionalNullable[List[str]] = UNSET,
+        followers: OptionalNullable[List[str]] = UNSET,
+        sources: OptionalNullable[List[str]] = UNSET,
+        confidential: Optional[bool] = None,
+        anonymized: Optional[bool] = None,
+        tags: OptionalNullable[List[str]] = UNSET,
+        archived: OptionalNullable[bool] = UNSET,
+        owner_id: OptionalNullable[str] = UNSET,
+        record_url: OptionalNullable[str] = UNSET,
+        deleted: OptionalNullable[bool] = UNSET,
+        pass_through: Optional[
+            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.AtsApplicantsUpdateResponse:
         r"""Update Applicant
 
         Update Applicant
 
         :param id: ID of the record you are acting upon.
-        :param applicant:
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param name: The name of an applicant.
+        :param first_name: The first name of the person.
+        :param last_name: The last name of the person.
+        :param middle_name: Middle name of the person.
+        :param initials: The initials of the person, usually derived from their first, middle, and last names.
+        :param birthday: The date of birth of the person.
+        :param cover_letter:
+        :param photo_url: The URL of the photo of a person.
+        :param headline: Typically a list of previous companies where the contact has worked or schools that the contact has attended
+        :param title: The job title of the person.
+        :param emails:
+        :param custom_fields:
+        :param phone_numbers:
+        :param addresses:
+        :param websites:
+        :param social_links:
+        :param stage_id:
+        :param recruiter_id:
+        :param coordinator_id:
+        :param application_ids:
+        :param applications:
+        :param followers:
+        :param sources:
+        :param confidential:
+        :param anonymized:
+        :param tags:
+        :param archived:
+        :param owner_id:
+        :param record_url:
+        :param deleted: Flag to indicate if the object is deleted.
+        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -744,7 +1168,51 @@ class Applicants(BaseSDK):
             id=id,
             service_id=service_id,
             raw=raw,
-            applicant=utils.get_pydantic_model(applicant, models.ApplicantInput),
+            applicant=models.ApplicantInput(
+                name=name,
+                first_name=first_name,
+                last_name=last_name,
+                middle_name=middle_name,
+                initials=initials,
+                birthday=birthday,
+                cover_letter=cover_letter,
+                photo_url=photo_url,
+                headline=headline,
+                title=title,
+                emails=utils.get_pydantic_model(emails, Optional[List[models.Email]]),
+                custom_fields=utils.get_pydantic_model(
+                    custom_fields, Optional[List[models.CustomField]]
+                ),
+                phone_numbers=utils.get_pydantic_model(
+                    phone_numbers, Optional[List[models.PhoneNumber]]
+                ),
+                addresses=utils.get_pydantic_model(
+                    addresses, Optional[List[models.Address]]
+                ),
+                websites=utils.get_pydantic_model(
+                    websites, Optional[List[models.Websites]]
+                ),
+                social_links=utils.get_pydantic_model(
+                    social_links, Optional[List[models.SocialLinks]]
+                ),
+                stage_id=stage_id,
+                recruiter_id=recruiter_id,
+                coordinator_id=coordinator_id,
+                application_ids=application_ids,
+                applications=applications,
+                followers=followers,
+                sources=sources,
+                confidential=confidential,
+                anonymized=anonymized,
+                tags=tags,
+                archived=archived,
+                owner_id=owner_id,
+                record_url=record_url,
+                deleted=deleted,
+                pass_through=utils.get_pydantic_model(
+                    pass_through, Optional[List[models.PassThroughBody]]
+                ),
+            ),
         )
 
         req = self.build_request(
@@ -758,6 +1226,7 @@ class Applicants(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.AtsApplicantsUpdateGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -835,24 +1304,98 @@ class Applicants(BaseSDK):
         self,
         *,
         id: str,
-        applicant: Union[models.ApplicantInput, models.ApplicantInputTypedDict],
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
+        name: Optional[str] = None,
+        first_name: OptionalNullable[str] = UNSET,
+        last_name: OptionalNullable[str] = UNSET,
+        middle_name: OptionalNullable[str] = UNSET,
+        initials: OptionalNullable[str] = UNSET,
+        birthday: OptionalNullable[date] = UNSET,
+        cover_letter: Optional[str] = None,
+        photo_url: OptionalNullable[str] = UNSET,
+        headline: Optional[str] = None,
+        title: OptionalNullable[str] = UNSET,
+        emails: Optional[Union[List[models.Email], List[models.EmailTypedDict]]] = None,
+        custom_fields: Optional[
+            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+        ] = None,
+        phone_numbers: Optional[
+            Union[List[models.PhoneNumber], List[models.PhoneNumberTypedDict]]
+        ] = None,
+        addresses: Optional[
+            Union[List[models.Address], List[models.AddressTypedDict]]
+        ] = None,
+        websites: Optional[
+            Union[List[models.Websites], List[models.WebsitesTypedDict]]
+        ] = None,
+        social_links: Optional[
+            Union[List[models.SocialLinks], List[models.SocialLinksTypedDict]]
+        ] = None,
+        stage_id: Optional[str] = None,
+        recruiter_id: Optional[str] = None,
+        coordinator_id: Optional[str] = None,
+        application_ids: OptionalNullable[List[str]] = UNSET,
+        applications: OptionalNullable[List[str]] = UNSET,
+        followers: OptionalNullable[List[str]] = UNSET,
+        sources: OptionalNullable[List[str]] = UNSET,
+        confidential: Optional[bool] = None,
+        anonymized: Optional[bool] = None,
+        tags: OptionalNullable[List[str]] = UNSET,
+        archived: OptionalNullable[bool] = UNSET,
+        owner_id: OptionalNullable[str] = UNSET,
+        record_url: OptionalNullable[str] = UNSET,
+        deleted: OptionalNullable[bool] = UNSET,
+        pass_through: Optional[
+            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.AtsApplicantsUpdateResponse:
         r"""Update Applicant
 
         Update Applicant
 
         :param id: ID of the record you are acting upon.
-        :param applicant:
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param name: The name of an applicant.
+        :param first_name: The first name of the person.
+        :param last_name: The last name of the person.
+        :param middle_name: Middle name of the person.
+        :param initials: The initials of the person, usually derived from their first, middle, and last names.
+        :param birthday: The date of birth of the person.
+        :param cover_letter:
+        :param photo_url: The URL of the photo of a person.
+        :param headline: Typically a list of previous companies where the contact has worked or schools that the contact has attended
+        :param title: The job title of the person.
+        :param emails:
+        :param custom_fields:
+        :param phone_numbers:
+        :param addresses:
+        :param websites:
+        :param social_links:
+        :param stage_id:
+        :param recruiter_id:
+        :param coordinator_id:
+        :param application_ids:
+        :param applications:
+        :param followers:
+        :param sources:
+        :param confidential:
+        :param anonymized:
+        :param tags:
+        :param archived:
+        :param owner_id:
+        :param record_url:
+        :param deleted: Flag to indicate if the object is deleted.
+        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -866,7 +1409,51 @@ class Applicants(BaseSDK):
             id=id,
             service_id=service_id,
             raw=raw,
-            applicant=utils.get_pydantic_model(applicant, models.ApplicantInput),
+            applicant=models.ApplicantInput(
+                name=name,
+                first_name=first_name,
+                last_name=last_name,
+                middle_name=middle_name,
+                initials=initials,
+                birthday=birthday,
+                cover_letter=cover_letter,
+                photo_url=photo_url,
+                headline=headline,
+                title=title,
+                emails=utils.get_pydantic_model(emails, Optional[List[models.Email]]),
+                custom_fields=utils.get_pydantic_model(
+                    custom_fields, Optional[List[models.CustomField]]
+                ),
+                phone_numbers=utils.get_pydantic_model(
+                    phone_numbers, Optional[List[models.PhoneNumber]]
+                ),
+                addresses=utils.get_pydantic_model(
+                    addresses, Optional[List[models.Address]]
+                ),
+                websites=utils.get_pydantic_model(
+                    websites, Optional[List[models.Websites]]
+                ),
+                social_links=utils.get_pydantic_model(
+                    social_links, Optional[List[models.SocialLinks]]
+                ),
+                stage_id=stage_id,
+                recruiter_id=recruiter_id,
+                coordinator_id=coordinator_id,
+                application_ids=application_ids,
+                applications=applications,
+                followers=followers,
+                sources=sources,
+                confidential=confidential,
+                anonymized=anonymized,
+                tags=tags,
+                archived=archived,
+                owner_id=owner_id,
+                record_url=record_url,
+                deleted=deleted,
+                pass_through=utils.get_pydantic_model(
+                    pass_through, Optional[List[models.PassThroughBody]]
+                ),
+            ),
         )
 
         req = self.build_request_async(
@@ -880,6 +1467,7 @@ class Applicants(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.AtsApplicantsUpdateGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -962,6 +1550,7 @@ class Applicants(BaseSDK):
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.AtsApplicantsDeleteResponse:
         r"""Delete Applicant
 
@@ -973,6 +1562,7 @@ class Applicants(BaseSDK):
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -999,6 +1589,7 @@ class Applicants(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.AtsApplicantsDeleteGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -1078,6 +1669,7 @@ class Applicants(BaseSDK):
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.AtsApplicantsDeleteResponse:
         r"""Delete Applicant
 
@@ -1089,6 +1681,7 @@ class Applicants(BaseSDK):
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -1115,6 +1708,7 @@ class Applicants(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.AtsApplicantsDeleteGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,

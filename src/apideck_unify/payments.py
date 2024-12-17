@@ -3,31 +3,48 @@
 from .basesdk import BaseSDK
 from apideck_unify import models, utils
 from apideck_unify._hooks import HookContext
-from apideck_unify.types import BaseModel, OptionalNullable, UNSET
+from apideck_unify.types import Nullable, OptionalNullable, UNSET
 from apideck_unify.utils import get_security_from_env
-from typing import Any, Optional, Union, cast
+from datetime import datetime
+from jsonpath import JSONPath
+from typing import Any, Dict, List, Mapping, Optional, Union
 
 
 class Payments(BaseSDK):
     def list(
         self,
         *,
-        request: Union[
-            models.AccountingPaymentsAllRequest,
-            models.AccountingPaymentsAllRequestTypedDict,
-        ] = models.AccountingPaymentsAllRequest(),
+        raw: Optional[bool] = False,
+        service_id: Optional[str] = None,
+        cursor: OptionalNullable[str] = UNSET,
+        limit: Optional[int] = 20,
+        filter_: Optional[
+            Union[models.PaymentsFilter, models.PaymentsFilterTypedDict]
+        ] = None,
+        sort: Optional[Union[models.PaymentsSort, models.PaymentsSortTypedDict]] = None,
+        pass_through: Optional[Dict[str, Any]] = None,
+        fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
-    ) -> models.AccountingPaymentsAllResponse:
+        http_headers: Optional[Mapping[str, str]] = None,
+    ) -> Optional[models.AccountingPaymentsAllResponse]:
         r"""List Payments
 
         List Payments
 
-        :param request: The request object to send.
+        :param raw: Include raw response. Mostly used for debugging purposes
+        :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
+        :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
+        :param filter_: Apply filters
+        :param sort: Apply sorting
+        :param pass_through: Optional unmapped key/values that will be passed through to downstream as query parameters. Ie: ?pass_through[search]=leads becomes ?search=leads
+        :param fields: The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -37,9 +54,16 @@ class Payments(BaseSDK):
         if server_url is not None:
             base_url = server_url
 
-        if not isinstance(request, BaseModel):
-            request = utils.unmarshal(request, models.AccountingPaymentsAllRequest)
-        request = cast(models.AccountingPaymentsAllRequest, request)
+        request = models.AccountingPaymentsAllRequest(
+            raw=raw,
+            service_id=service_id,
+            cursor=cursor,
+            limit=limit,
+            filter_=utils.get_pydantic_model(filter_, Optional[models.PaymentsFilter]),
+            sort=utils.get_pydantic_model(sort, Optional[models.PaymentsSort]),
+            pass_through=pass_through,
+            fields=fields,
+        )
 
         req = self.build_request(
             method="GET",
@@ -52,6 +76,7 @@ class Payments(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.AccountingPaymentsAllGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -85,9 +110,32 @@ class Payments(BaseSDK):
             retry_config=retry_config,
         )
 
+        def next_func() -> Optional[models.AccountingPaymentsAllResponse]:
+            body = utils.unmarshal_json(http_res.text, Dict[Any, Any])
+            next_cursor = JSONPath("$.meta.cursors.next").parse(body)
+
+            if len(next_cursor) == 0:
+                return None
+            next_cursor = next_cursor[0]
+
+            return self.list(
+                raw=raw,
+                service_id=service_id,
+                cursor=next_cursor,
+                limit=limit,
+                filter_=filter_,
+                sort=sort,
+                pass_through=pass_through,
+                fields=fields,
+                retries=retries,
+            )
+
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.GetPaymentsResponse)
+            return models.AccountingPaymentsAllResponse(
+                result=utils.unmarshal_json(http_res.text, models.GetPaymentsResponse),
+                next=next_func,
+            )
         if utils.match_response(http_res, "400", "application/json"):
             data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
             raise models.BadRequestResponse(data=data)
@@ -111,7 +159,12 @@ class Payments(BaseSDK):
                 "API error occurred", http_res.status_code, http_res_text, http_res
             )
         if utils.match_response(http_res, "default", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UnexpectedErrorResponse)
+            return models.AccountingPaymentsAllResponse(
+                result=utils.unmarshal_json(
+                    http_res.text, models.UnexpectedErrorResponse
+                ),
+                next=next_func,
+            )
 
         content_type = http_res.headers.get("Content-Type")
         http_res_text = utils.stream_to_text(http_res)
@@ -125,22 +178,37 @@ class Payments(BaseSDK):
     async def list_async(
         self,
         *,
-        request: Union[
-            models.AccountingPaymentsAllRequest,
-            models.AccountingPaymentsAllRequestTypedDict,
-        ] = models.AccountingPaymentsAllRequest(),
+        raw: Optional[bool] = False,
+        service_id: Optional[str] = None,
+        cursor: OptionalNullable[str] = UNSET,
+        limit: Optional[int] = 20,
+        filter_: Optional[
+            Union[models.PaymentsFilter, models.PaymentsFilterTypedDict]
+        ] = None,
+        sort: Optional[Union[models.PaymentsSort, models.PaymentsSortTypedDict]] = None,
+        pass_through: Optional[Dict[str, Any]] = None,
+        fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
-    ) -> models.AccountingPaymentsAllResponse:
+        http_headers: Optional[Mapping[str, str]] = None,
+    ) -> Optional[models.AccountingPaymentsAllResponse]:
         r"""List Payments
 
         List Payments
 
-        :param request: The request object to send.
+        :param raw: Include raw response. Mostly used for debugging purposes
+        :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
+        :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
+        :param filter_: Apply filters
+        :param sort: Apply sorting
+        :param pass_through: Optional unmapped key/values that will be passed through to downstream as query parameters. Ie: ?pass_through[search]=leads becomes ?search=leads
+        :param fields: The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -150,9 +218,16 @@ class Payments(BaseSDK):
         if server_url is not None:
             base_url = server_url
 
-        if not isinstance(request, BaseModel):
-            request = utils.unmarshal(request, models.AccountingPaymentsAllRequest)
-        request = cast(models.AccountingPaymentsAllRequest, request)
+        request = models.AccountingPaymentsAllRequest(
+            raw=raw,
+            service_id=service_id,
+            cursor=cursor,
+            limit=limit,
+            filter_=utils.get_pydantic_model(filter_, Optional[models.PaymentsFilter]),
+            sort=utils.get_pydantic_model(sort, Optional[models.PaymentsSort]),
+            pass_through=pass_through,
+            fields=fields,
+        )
 
         req = self.build_request_async(
             method="GET",
@@ -165,6 +240,7 @@ class Payments(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.AccountingPaymentsAllGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -198,9 +274,32 @@ class Payments(BaseSDK):
             retry_config=retry_config,
         )
 
+        def next_func() -> Optional[models.AccountingPaymentsAllResponse]:
+            body = utils.unmarshal_json(http_res.text, Dict[Any, Any])
+            next_cursor = JSONPath("$.meta.cursors.next").parse(body)
+
+            if len(next_cursor) == 0:
+                return None
+            next_cursor = next_cursor[0]
+
+            return self.list(
+                raw=raw,
+                service_id=service_id,
+                cursor=next_cursor,
+                limit=limit,
+                filter_=filter_,
+                sort=sort,
+                pass_through=pass_through,
+                fields=fields,
+                retries=retries,
+            )
+
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.GetPaymentsResponse)
+            return models.AccountingPaymentsAllResponse(
+                result=utils.unmarshal_json(http_res.text, models.GetPaymentsResponse),
+                next=next_func,
+            )
         if utils.match_response(http_res, "400", "application/json"):
             data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
             raise models.BadRequestResponse(data=data)
@@ -224,7 +323,12 @@ class Payments(BaseSDK):
                 "API error occurred", http_res.status_code, http_res_text, http_res
             )
         if utils.match_response(http_res, "default", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UnexpectedErrorResponse)
+            return models.AccountingPaymentsAllResponse(
+                result=utils.unmarshal_json(
+                    http_res.text, models.UnexpectedErrorResponse
+                ),
+                next=next_func,
+            )
 
         content_type = http_res.headers.get("Content-Type")
         http_res_text = await utils.stream_to_text_async(http_res)
@@ -238,23 +342,96 @@ class Payments(BaseSDK):
     def create(
         self,
         *,
-        payment: Union[models.PaymentInput, models.PaymentInputTypedDict],
+        total_amount: Nullable[float],
+        transaction_date: Nullable[datetime],
         raw: Optional[bool] = False,
         service_id: Optional[str] = None,
+        currency: OptionalNullable[models.Currency] = UNSET,
+        currency_rate: OptionalNullable[float] = UNSET,
+        reference: OptionalNullable[str] = UNSET,
+        payment_method: OptionalNullable[str] = UNSET,
+        payment_method_reference: OptionalNullable[str] = UNSET,
+        payment_method_id: OptionalNullable[str] = UNSET,
+        accounts_receivable_account_type: OptionalNullable[str] = UNSET,
+        accounts_receivable_account_id: OptionalNullable[str] = UNSET,
+        account: OptionalNullable[
+            Union[
+                models.LinkedLedgerAccountInput,
+                models.LinkedLedgerAccountInputTypedDict,
+            ]
+        ] = UNSET,
+        customer: OptionalNullable[
+            Union[models.LinkedCustomerInput, models.LinkedCustomerInputTypedDict]
+        ] = UNSET,
+        supplier: OptionalNullable[
+            Union[
+                models.DeprecatedLinkedSupplierInput,
+                models.DeprecatedLinkedSupplierInputTypedDict,
+            ]
+        ] = UNSET,
+        company_id: OptionalNullable[str] = UNSET,
+        reconciled: OptionalNullable[bool] = UNSET,
+        status: Optional[models.PaymentStatus] = None,
+        type_: Optional[models.PaymentType] = None,
+        allocations: Optional[
+            Union[List[models.AllocationInput], List[models.AllocationInputTypedDict]]
+        ] = None,
+        note: OptionalNullable[str] = UNSET,
+        number: OptionalNullable[str] = UNSET,
+        tracking_categories: OptionalNullable[
+            Union[
+                List[models.LinkedTrackingCategory],
+                List[models.LinkedTrackingCategoryTypedDict],
+            ]
+        ] = UNSET,
+        custom_fields: Optional[
+            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+        ] = None,
+        row_version: OptionalNullable[str] = UNSET,
+        display_id: OptionalNullable[str] = UNSET,
+        pass_through: Optional[
+            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.AccountingPaymentsAddResponse:
         r"""Create Payment
 
         Create Payment
 
-        :param payment:
+        :param total_amount: The total amount of the transaction
+        :param transaction_date: The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD
         :param raw: Include raw response. Mostly used for debugging purposes
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
+        :param currency_rate: Currency Exchange Rate at the time entity was recorded/generated.
+        :param reference: Optional transaction reference message ie: Debit remittance detail.
+        :param payment_method: Payment method used for the transaction, such as cash, credit card, bank transfer, or check
+        :param payment_method_reference: Optional reference message returned by payment method on processing
+        :param payment_method_id: A unique identifier for an object.
+        :param accounts_receivable_account_type: Type of accounts receivable account.
+        :param accounts_receivable_account_id: Unique identifier for the account to allocate payment to.
+        :param account:
+        :param customer: The customer this entity is linked to.
+        :param supplier: The supplier this entity is linked to.
+        :param company_id: The company or subsidiary id the transaction belongs to
+        :param reconciled: Indicates if the transaction has been reconciled.
+        :param status: Status of payment
+        :param type: Type of payment
+        :param allocations:
+        :param note: Note associated with the transaction
+        :param number: Number associated with the transaction
+        :param tracking_categories: A list of linked tracking categories.
+        :param custom_fields:
+        :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
+        :param display_id: Id to be displayed.
+        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -267,7 +444,48 @@ class Payments(BaseSDK):
         request = models.AccountingPaymentsAddRequest(
             raw=raw,
             service_id=service_id,
-            payment=utils.get_pydantic_model(payment, models.PaymentInput),
+            payment=models.PaymentInput(
+                currency=currency,
+                currency_rate=currency_rate,
+                total_amount=total_amount,
+                reference=reference,
+                payment_method=payment_method,
+                payment_method_reference=payment_method_reference,
+                payment_method_id=payment_method_id,
+                accounts_receivable_account_type=accounts_receivable_account_type,
+                accounts_receivable_account_id=accounts_receivable_account_id,
+                account=utils.get_pydantic_model(
+                    account, OptionalNullable[models.LinkedLedgerAccountInput]
+                ),
+                transaction_date=transaction_date,
+                customer=utils.get_pydantic_model(
+                    customer, OptionalNullable[models.LinkedCustomerInput]
+                ),
+                supplier=utils.get_pydantic_model(
+                    supplier, OptionalNullable[models.DeprecatedLinkedSupplierInput]
+                ),
+                company_id=company_id,
+                reconciled=reconciled,
+                status=status,
+                type=type_,
+                allocations=utils.get_pydantic_model(
+                    allocations, Optional[List[models.AllocationInput]]
+                ),
+                note=note,
+                number=number,
+                tracking_categories=utils.get_pydantic_model(
+                    tracking_categories,
+                    OptionalNullable[List[models.LinkedTrackingCategory]],
+                ),
+                custom_fields=utils.get_pydantic_model(
+                    custom_fields, Optional[List[models.CustomField]]
+                ),
+                row_version=row_version,
+                display_id=display_id,
+                pass_through=utils.get_pydantic_model(
+                    pass_through, Optional[List[models.PassThroughBody]]
+                ),
+            ),
         )
 
         req = self.build_request(
@@ -281,6 +499,7 @@ class Payments(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.AccountingPaymentsAddGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -357,23 +576,96 @@ class Payments(BaseSDK):
     async def create_async(
         self,
         *,
-        payment: Union[models.PaymentInput, models.PaymentInputTypedDict],
+        total_amount: Nullable[float],
+        transaction_date: Nullable[datetime],
         raw: Optional[bool] = False,
         service_id: Optional[str] = None,
+        currency: OptionalNullable[models.Currency] = UNSET,
+        currency_rate: OptionalNullable[float] = UNSET,
+        reference: OptionalNullable[str] = UNSET,
+        payment_method: OptionalNullable[str] = UNSET,
+        payment_method_reference: OptionalNullable[str] = UNSET,
+        payment_method_id: OptionalNullable[str] = UNSET,
+        accounts_receivable_account_type: OptionalNullable[str] = UNSET,
+        accounts_receivable_account_id: OptionalNullable[str] = UNSET,
+        account: OptionalNullable[
+            Union[
+                models.LinkedLedgerAccountInput,
+                models.LinkedLedgerAccountInputTypedDict,
+            ]
+        ] = UNSET,
+        customer: OptionalNullable[
+            Union[models.LinkedCustomerInput, models.LinkedCustomerInputTypedDict]
+        ] = UNSET,
+        supplier: OptionalNullable[
+            Union[
+                models.DeprecatedLinkedSupplierInput,
+                models.DeprecatedLinkedSupplierInputTypedDict,
+            ]
+        ] = UNSET,
+        company_id: OptionalNullable[str] = UNSET,
+        reconciled: OptionalNullable[bool] = UNSET,
+        status: Optional[models.PaymentStatus] = None,
+        type_: Optional[models.PaymentType] = None,
+        allocations: Optional[
+            Union[List[models.AllocationInput], List[models.AllocationInputTypedDict]]
+        ] = None,
+        note: OptionalNullable[str] = UNSET,
+        number: OptionalNullable[str] = UNSET,
+        tracking_categories: OptionalNullable[
+            Union[
+                List[models.LinkedTrackingCategory],
+                List[models.LinkedTrackingCategoryTypedDict],
+            ]
+        ] = UNSET,
+        custom_fields: Optional[
+            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+        ] = None,
+        row_version: OptionalNullable[str] = UNSET,
+        display_id: OptionalNullable[str] = UNSET,
+        pass_through: Optional[
+            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.AccountingPaymentsAddResponse:
         r"""Create Payment
 
         Create Payment
 
-        :param payment:
+        :param total_amount: The total amount of the transaction
+        :param transaction_date: The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD
         :param raw: Include raw response. Mostly used for debugging purposes
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
+        :param currency_rate: Currency Exchange Rate at the time entity was recorded/generated.
+        :param reference: Optional transaction reference message ie: Debit remittance detail.
+        :param payment_method: Payment method used for the transaction, such as cash, credit card, bank transfer, or check
+        :param payment_method_reference: Optional reference message returned by payment method on processing
+        :param payment_method_id: A unique identifier for an object.
+        :param accounts_receivable_account_type: Type of accounts receivable account.
+        :param accounts_receivable_account_id: Unique identifier for the account to allocate payment to.
+        :param account:
+        :param customer: The customer this entity is linked to.
+        :param supplier: The supplier this entity is linked to.
+        :param company_id: The company or subsidiary id the transaction belongs to
+        :param reconciled: Indicates if the transaction has been reconciled.
+        :param status: Status of payment
+        :param type: Type of payment
+        :param allocations:
+        :param note: Note associated with the transaction
+        :param number: Number associated with the transaction
+        :param tracking_categories: A list of linked tracking categories.
+        :param custom_fields:
+        :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
+        :param display_id: Id to be displayed.
+        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -386,7 +678,48 @@ class Payments(BaseSDK):
         request = models.AccountingPaymentsAddRequest(
             raw=raw,
             service_id=service_id,
-            payment=utils.get_pydantic_model(payment, models.PaymentInput),
+            payment=models.PaymentInput(
+                currency=currency,
+                currency_rate=currency_rate,
+                total_amount=total_amount,
+                reference=reference,
+                payment_method=payment_method,
+                payment_method_reference=payment_method_reference,
+                payment_method_id=payment_method_id,
+                accounts_receivable_account_type=accounts_receivable_account_type,
+                accounts_receivable_account_id=accounts_receivable_account_id,
+                account=utils.get_pydantic_model(
+                    account, OptionalNullable[models.LinkedLedgerAccountInput]
+                ),
+                transaction_date=transaction_date,
+                customer=utils.get_pydantic_model(
+                    customer, OptionalNullable[models.LinkedCustomerInput]
+                ),
+                supplier=utils.get_pydantic_model(
+                    supplier, OptionalNullable[models.DeprecatedLinkedSupplierInput]
+                ),
+                company_id=company_id,
+                reconciled=reconciled,
+                status=status,
+                type=type_,
+                allocations=utils.get_pydantic_model(
+                    allocations, Optional[List[models.AllocationInput]]
+                ),
+                note=note,
+                number=number,
+                tracking_categories=utils.get_pydantic_model(
+                    tracking_categories,
+                    OptionalNullable[List[models.LinkedTrackingCategory]],
+                ),
+                custom_fields=utils.get_pydantic_model(
+                    custom_fields, Optional[List[models.CustomField]]
+                ),
+                row_version=row_version,
+                display_id=display_id,
+                pass_through=utils.get_pydantic_model(
+                    pass_through, Optional[List[models.PassThroughBody]]
+                ),
+            ),
         )
 
         req = self.build_request_async(
@@ -400,6 +733,7 @@ class Payments(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.AccountingPaymentsAddGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -483,6 +817,7 @@ class Payments(BaseSDK):
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.AccountingPaymentsOneResponse:
         r"""Get Payment
 
@@ -495,6 +830,7 @@ class Payments(BaseSDK):
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -522,6 +858,7 @@ class Payments(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.AccountingPaymentsOneGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -602,6 +939,7 @@ class Payments(BaseSDK):
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.AccountingPaymentsOneResponse:
         r"""Get Payment
 
@@ -614,6 +952,7 @@ class Payments(BaseSDK):
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -641,6 +980,7 @@ class Payments(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.AccountingPaymentsOneGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -715,24 +1055,97 @@ class Payments(BaseSDK):
         self,
         *,
         id: str,
-        payment: Union[models.PaymentInput, models.PaymentInputTypedDict],
+        total_amount: Nullable[float],
+        transaction_date: Nullable[datetime],
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
+        currency: OptionalNullable[models.Currency] = UNSET,
+        currency_rate: OptionalNullable[float] = UNSET,
+        reference: OptionalNullable[str] = UNSET,
+        payment_method: OptionalNullable[str] = UNSET,
+        payment_method_reference: OptionalNullable[str] = UNSET,
+        payment_method_id: OptionalNullable[str] = UNSET,
+        accounts_receivable_account_type: OptionalNullable[str] = UNSET,
+        accounts_receivable_account_id: OptionalNullable[str] = UNSET,
+        account: OptionalNullable[
+            Union[
+                models.LinkedLedgerAccountInput,
+                models.LinkedLedgerAccountInputTypedDict,
+            ]
+        ] = UNSET,
+        customer: OptionalNullable[
+            Union[models.LinkedCustomerInput, models.LinkedCustomerInputTypedDict]
+        ] = UNSET,
+        supplier: OptionalNullable[
+            Union[
+                models.DeprecatedLinkedSupplierInput,
+                models.DeprecatedLinkedSupplierInputTypedDict,
+            ]
+        ] = UNSET,
+        company_id: OptionalNullable[str] = UNSET,
+        reconciled: OptionalNullable[bool] = UNSET,
+        status: Optional[models.PaymentStatus] = None,
+        type_: Optional[models.PaymentType] = None,
+        allocations: Optional[
+            Union[List[models.AllocationInput], List[models.AllocationInputTypedDict]]
+        ] = None,
+        note: OptionalNullable[str] = UNSET,
+        number: OptionalNullable[str] = UNSET,
+        tracking_categories: OptionalNullable[
+            Union[
+                List[models.LinkedTrackingCategory],
+                List[models.LinkedTrackingCategoryTypedDict],
+            ]
+        ] = UNSET,
+        custom_fields: Optional[
+            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+        ] = None,
+        row_version: OptionalNullable[str] = UNSET,
+        display_id: OptionalNullable[str] = UNSET,
+        pass_through: Optional[
+            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.AccountingPaymentsUpdateResponse:
         r"""Update Payment
 
         Update Payment
 
         :param id: ID of the record you are acting upon.
-        :param payment:
+        :param total_amount: The total amount of the transaction
+        :param transaction_date: The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
+        :param currency_rate: Currency Exchange Rate at the time entity was recorded/generated.
+        :param reference: Optional transaction reference message ie: Debit remittance detail.
+        :param payment_method: Payment method used for the transaction, such as cash, credit card, bank transfer, or check
+        :param payment_method_reference: Optional reference message returned by payment method on processing
+        :param payment_method_id: A unique identifier for an object.
+        :param accounts_receivable_account_type: Type of accounts receivable account.
+        :param accounts_receivable_account_id: Unique identifier for the account to allocate payment to.
+        :param account:
+        :param customer: The customer this entity is linked to.
+        :param supplier: The supplier this entity is linked to.
+        :param company_id: The company or subsidiary id the transaction belongs to
+        :param reconciled: Indicates if the transaction has been reconciled.
+        :param status: Status of payment
+        :param type: Type of payment
+        :param allocations:
+        :param note: Note associated with the transaction
+        :param number: Number associated with the transaction
+        :param tracking_categories: A list of linked tracking categories.
+        :param custom_fields:
+        :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
+        :param display_id: Id to be displayed.
+        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -746,7 +1159,48 @@ class Payments(BaseSDK):
             id=id,
             service_id=service_id,
             raw=raw,
-            payment=utils.get_pydantic_model(payment, models.PaymentInput),
+            payment=models.PaymentInput(
+                currency=currency,
+                currency_rate=currency_rate,
+                total_amount=total_amount,
+                reference=reference,
+                payment_method=payment_method,
+                payment_method_reference=payment_method_reference,
+                payment_method_id=payment_method_id,
+                accounts_receivable_account_type=accounts_receivable_account_type,
+                accounts_receivable_account_id=accounts_receivable_account_id,
+                account=utils.get_pydantic_model(
+                    account, OptionalNullable[models.LinkedLedgerAccountInput]
+                ),
+                transaction_date=transaction_date,
+                customer=utils.get_pydantic_model(
+                    customer, OptionalNullable[models.LinkedCustomerInput]
+                ),
+                supplier=utils.get_pydantic_model(
+                    supplier, OptionalNullable[models.DeprecatedLinkedSupplierInput]
+                ),
+                company_id=company_id,
+                reconciled=reconciled,
+                status=status,
+                type=type_,
+                allocations=utils.get_pydantic_model(
+                    allocations, Optional[List[models.AllocationInput]]
+                ),
+                note=note,
+                number=number,
+                tracking_categories=utils.get_pydantic_model(
+                    tracking_categories,
+                    OptionalNullable[List[models.LinkedTrackingCategory]],
+                ),
+                custom_fields=utils.get_pydantic_model(
+                    custom_fields, Optional[List[models.CustomField]]
+                ),
+                row_version=row_version,
+                display_id=display_id,
+                pass_through=utils.get_pydantic_model(
+                    pass_through, Optional[List[models.PassThroughBody]]
+                ),
+            ),
         )
 
         req = self.build_request(
@@ -760,6 +1214,7 @@ class Payments(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.AccountingPaymentsUpdateGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -837,24 +1292,97 @@ class Payments(BaseSDK):
         self,
         *,
         id: str,
-        payment: Union[models.PaymentInput, models.PaymentInputTypedDict],
+        total_amount: Nullable[float],
+        transaction_date: Nullable[datetime],
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
+        currency: OptionalNullable[models.Currency] = UNSET,
+        currency_rate: OptionalNullable[float] = UNSET,
+        reference: OptionalNullable[str] = UNSET,
+        payment_method: OptionalNullable[str] = UNSET,
+        payment_method_reference: OptionalNullable[str] = UNSET,
+        payment_method_id: OptionalNullable[str] = UNSET,
+        accounts_receivable_account_type: OptionalNullable[str] = UNSET,
+        accounts_receivable_account_id: OptionalNullable[str] = UNSET,
+        account: OptionalNullable[
+            Union[
+                models.LinkedLedgerAccountInput,
+                models.LinkedLedgerAccountInputTypedDict,
+            ]
+        ] = UNSET,
+        customer: OptionalNullable[
+            Union[models.LinkedCustomerInput, models.LinkedCustomerInputTypedDict]
+        ] = UNSET,
+        supplier: OptionalNullable[
+            Union[
+                models.DeprecatedLinkedSupplierInput,
+                models.DeprecatedLinkedSupplierInputTypedDict,
+            ]
+        ] = UNSET,
+        company_id: OptionalNullable[str] = UNSET,
+        reconciled: OptionalNullable[bool] = UNSET,
+        status: Optional[models.PaymentStatus] = None,
+        type_: Optional[models.PaymentType] = None,
+        allocations: Optional[
+            Union[List[models.AllocationInput], List[models.AllocationInputTypedDict]]
+        ] = None,
+        note: OptionalNullable[str] = UNSET,
+        number: OptionalNullable[str] = UNSET,
+        tracking_categories: OptionalNullable[
+            Union[
+                List[models.LinkedTrackingCategory],
+                List[models.LinkedTrackingCategoryTypedDict],
+            ]
+        ] = UNSET,
+        custom_fields: Optional[
+            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+        ] = None,
+        row_version: OptionalNullable[str] = UNSET,
+        display_id: OptionalNullable[str] = UNSET,
+        pass_through: Optional[
+            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.AccountingPaymentsUpdateResponse:
         r"""Update Payment
 
         Update Payment
 
         :param id: ID of the record you are acting upon.
-        :param payment:
+        :param total_amount: The total amount of the transaction
+        :param transaction_date: The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
+        :param currency_rate: Currency Exchange Rate at the time entity was recorded/generated.
+        :param reference: Optional transaction reference message ie: Debit remittance detail.
+        :param payment_method: Payment method used for the transaction, such as cash, credit card, bank transfer, or check
+        :param payment_method_reference: Optional reference message returned by payment method on processing
+        :param payment_method_id: A unique identifier for an object.
+        :param accounts_receivable_account_type: Type of accounts receivable account.
+        :param accounts_receivable_account_id: Unique identifier for the account to allocate payment to.
+        :param account:
+        :param customer: The customer this entity is linked to.
+        :param supplier: The supplier this entity is linked to.
+        :param company_id: The company or subsidiary id the transaction belongs to
+        :param reconciled: Indicates if the transaction has been reconciled.
+        :param status: Status of payment
+        :param type: Type of payment
+        :param allocations:
+        :param note: Note associated with the transaction
+        :param number: Number associated with the transaction
+        :param tracking_categories: A list of linked tracking categories.
+        :param custom_fields:
+        :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
+        :param display_id: Id to be displayed.
+        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -868,7 +1396,48 @@ class Payments(BaseSDK):
             id=id,
             service_id=service_id,
             raw=raw,
-            payment=utils.get_pydantic_model(payment, models.PaymentInput),
+            payment=models.PaymentInput(
+                currency=currency,
+                currency_rate=currency_rate,
+                total_amount=total_amount,
+                reference=reference,
+                payment_method=payment_method,
+                payment_method_reference=payment_method_reference,
+                payment_method_id=payment_method_id,
+                accounts_receivable_account_type=accounts_receivable_account_type,
+                accounts_receivable_account_id=accounts_receivable_account_id,
+                account=utils.get_pydantic_model(
+                    account, OptionalNullable[models.LinkedLedgerAccountInput]
+                ),
+                transaction_date=transaction_date,
+                customer=utils.get_pydantic_model(
+                    customer, OptionalNullable[models.LinkedCustomerInput]
+                ),
+                supplier=utils.get_pydantic_model(
+                    supplier, OptionalNullable[models.DeprecatedLinkedSupplierInput]
+                ),
+                company_id=company_id,
+                reconciled=reconciled,
+                status=status,
+                type=type_,
+                allocations=utils.get_pydantic_model(
+                    allocations, Optional[List[models.AllocationInput]]
+                ),
+                note=note,
+                number=number,
+                tracking_categories=utils.get_pydantic_model(
+                    tracking_categories,
+                    OptionalNullable[List[models.LinkedTrackingCategory]],
+                ),
+                custom_fields=utils.get_pydantic_model(
+                    custom_fields, Optional[List[models.CustomField]]
+                ),
+                row_version=row_version,
+                display_id=display_id,
+                pass_through=utils.get_pydantic_model(
+                    pass_through, Optional[List[models.PassThroughBody]]
+                ),
+            ),
         )
 
         req = self.build_request_async(
@@ -882,6 +1451,7 @@ class Payments(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.AccountingPaymentsUpdateGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -964,6 +1534,7 @@ class Payments(BaseSDK):
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.AccountingPaymentsDeleteResponse:
         r"""Delete Payment
 
@@ -975,6 +1546,7 @@ class Payments(BaseSDK):
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -1001,6 +1573,7 @@ class Payments(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.AccountingPaymentsDeleteGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -1080,6 +1653,7 @@ class Payments(BaseSDK):
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.AccountingPaymentsDeleteResponse:
         r"""Delete Payment
 
@@ -1091,6 +1665,7 @@ class Payments(BaseSDK):
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -1117,6 +1692,7 @@ class Payments(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.AccountingPaymentsDeleteGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,

@@ -22,11 +22,11 @@ with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
+
     res = apideck.vault.connection_custom_mappings.list(unified_api="crm", service_id="pipedrive", resource="leads", resource_id="1234")
 
-    if res is not None:
-        # handle response
-        pass
+    # Handle response
+    print(res)
 
 ```
 

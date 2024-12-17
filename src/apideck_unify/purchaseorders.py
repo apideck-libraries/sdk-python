@@ -3,31 +3,48 @@
 from .basesdk import BaseSDK
 from apideck_unify import models, utils
 from apideck_unify._hooks import HookContext
-from apideck_unify.types import BaseModel, OptionalNullable, UNSET
+from apideck_unify.types import OptionalNullable, UNSET
 from apideck_unify.utils import get_security_from_env
-from typing import Any, Optional, Union, cast
+from datetime import date
+from jsonpath import JSONPath
+from typing import Any, Dict, List, Mapping, Optional, Union
 
 
 class PurchaseOrders(BaseSDK):
     def list(
         self,
         *,
-        request: Union[
-            models.AccountingPurchaseOrdersAllRequest,
-            models.AccountingPurchaseOrdersAllRequestTypedDict,
-        ] = models.AccountingPurchaseOrdersAllRequest(),
+        raw: Optional[bool] = False,
+        service_id: Optional[str] = None,
+        cursor: OptionalNullable[str] = UNSET,
+        pass_through: Optional[Dict[str, Any]] = None,
+        limit: Optional[int] = 20,
+        filter_: Optional[
+            Union[models.PurchaseOrdersFilter, models.PurchaseOrdersFilterTypedDict]
+        ] = None,
+        sort: Optional[
+            Union[models.PurchaseOrdersSort, models.PurchaseOrdersSortTypedDict]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
-    ) -> models.AccountingPurchaseOrdersAllResponse:
+        http_headers: Optional[Mapping[str, str]] = None,
+    ) -> Optional[models.AccountingPurchaseOrdersAllResponse]:
         r"""List Purchase Orders
 
         List Purchase Orders
 
-        :param request: The request object to send.
+        :param raw: Include raw response. Mostly used for debugging purposes
+        :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
+        :param pass_through: Optional unmapped key/values that will be passed through to downstream as query parameters. Ie: ?pass_through[search]=leads becomes ?search=leads
+        :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
+        :param filter_: Apply filters
+        :param sort: Apply sorting
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -37,11 +54,17 @@ class PurchaseOrders(BaseSDK):
         if server_url is not None:
             base_url = server_url
 
-        if not isinstance(request, BaseModel):
-            request = utils.unmarshal(
-                request, models.AccountingPurchaseOrdersAllRequest
-            )
-        request = cast(models.AccountingPurchaseOrdersAllRequest, request)
+        request = models.AccountingPurchaseOrdersAllRequest(
+            raw=raw,
+            service_id=service_id,
+            cursor=cursor,
+            pass_through=pass_through,
+            limit=limit,
+            filter_=utils.get_pydantic_model(
+                filter_, Optional[models.PurchaseOrdersFilter]
+            ),
+            sort=utils.get_pydantic_model(sort, Optional[models.PurchaseOrdersSort]),
+        )
 
         req = self.build_request(
             method="GET",
@@ -54,6 +77,7 @@ class PurchaseOrders(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.AccountingPurchaseOrdersAllGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -87,9 +111,33 @@ class PurchaseOrders(BaseSDK):
             retry_config=retry_config,
         )
 
+        def next_func() -> Optional[models.AccountingPurchaseOrdersAllResponse]:
+            body = utils.unmarshal_json(http_res.text, Dict[Any, Any])
+            next_cursor = JSONPath("$.meta.cursors.next").parse(body)
+
+            if len(next_cursor) == 0:
+                return None
+            next_cursor = next_cursor[0]
+
+            return self.list(
+                raw=raw,
+                service_id=service_id,
+                cursor=next_cursor,
+                pass_through=pass_through,
+                limit=limit,
+                filter_=filter_,
+                sort=sort,
+                retries=retries,
+            )
+
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.GetPurchaseOrdersResponse)
+            return models.AccountingPurchaseOrdersAllResponse(
+                result=utils.unmarshal_json(
+                    http_res.text, models.GetPurchaseOrdersResponse
+                ),
+                next=next_func,
+            )
         if utils.match_response(http_res, "400", "application/json"):
             data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
             raise models.BadRequestResponse(data=data)
@@ -113,7 +161,12 @@ class PurchaseOrders(BaseSDK):
                 "API error occurred", http_res.status_code, http_res_text, http_res
             )
         if utils.match_response(http_res, "default", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UnexpectedErrorResponse)
+            return models.AccountingPurchaseOrdersAllResponse(
+                result=utils.unmarshal_json(
+                    http_res.text, models.UnexpectedErrorResponse
+                ),
+                next=next_func,
+            )
 
         content_type = http_res.headers.get("Content-Type")
         http_res_text = utils.stream_to_text(http_res)
@@ -127,22 +180,37 @@ class PurchaseOrders(BaseSDK):
     async def list_async(
         self,
         *,
-        request: Union[
-            models.AccountingPurchaseOrdersAllRequest,
-            models.AccountingPurchaseOrdersAllRequestTypedDict,
-        ] = models.AccountingPurchaseOrdersAllRequest(),
+        raw: Optional[bool] = False,
+        service_id: Optional[str] = None,
+        cursor: OptionalNullable[str] = UNSET,
+        pass_through: Optional[Dict[str, Any]] = None,
+        limit: Optional[int] = 20,
+        filter_: Optional[
+            Union[models.PurchaseOrdersFilter, models.PurchaseOrdersFilterTypedDict]
+        ] = None,
+        sort: Optional[
+            Union[models.PurchaseOrdersSort, models.PurchaseOrdersSortTypedDict]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
-    ) -> models.AccountingPurchaseOrdersAllResponse:
+        http_headers: Optional[Mapping[str, str]] = None,
+    ) -> Optional[models.AccountingPurchaseOrdersAllResponse]:
         r"""List Purchase Orders
 
         List Purchase Orders
 
-        :param request: The request object to send.
+        :param raw: Include raw response. Mostly used for debugging purposes
+        :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
+        :param pass_through: Optional unmapped key/values that will be passed through to downstream as query parameters. Ie: ?pass_through[search]=leads becomes ?search=leads
+        :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
+        :param filter_: Apply filters
+        :param sort: Apply sorting
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -152,11 +220,17 @@ class PurchaseOrders(BaseSDK):
         if server_url is not None:
             base_url = server_url
 
-        if not isinstance(request, BaseModel):
-            request = utils.unmarshal(
-                request, models.AccountingPurchaseOrdersAllRequest
-            )
-        request = cast(models.AccountingPurchaseOrdersAllRequest, request)
+        request = models.AccountingPurchaseOrdersAllRequest(
+            raw=raw,
+            service_id=service_id,
+            cursor=cursor,
+            pass_through=pass_through,
+            limit=limit,
+            filter_=utils.get_pydantic_model(
+                filter_, Optional[models.PurchaseOrdersFilter]
+            ),
+            sort=utils.get_pydantic_model(sort, Optional[models.PurchaseOrdersSort]),
+        )
 
         req = self.build_request_async(
             method="GET",
@@ -169,6 +243,7 @@ class PurchaseOrders(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.AccountingPurchaseOrdersAllGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -202,9 +277,33 @@ class PurchaseOrders(BaseSDK):
             retry_config=retry_config,
         )
 
+        def next_func() -> Optional[models.AccountingPurchaseOrdersAllResponse]:
+            body = utils.unmarshal_json(http_res.text, Dict[Any, Any])
+            next_cursor = JSONPath("$.meta.cursors.next").parse(body)
+
+            if len(next_cursor) == 0:
+                return None
+            next_cursor = next_cursor[0]
+
+            return self.list(
+                raw=raw,
+                service_id=service_id,
+                cursor=next_cursor,
+                pass_through=pass_through,
+                limit=limit,
+                filter_=filter_,
+                sort=sort,
+                retries=retries,
+            )
+
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.GetPurchaseOrdersResponse)
+            return models.AccountingPurchaseOrdersAllResponse(
+                result=utils.unmarshal_json(
+                    http_res.text, models.GetPurchaseOrdersResponse
+                ),
+                next=next_func,
+            )
         if utils.match_response(http_res, "400", "application/json"):
             data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
             raise models.BadRequestResponse(data=data)
@@ -228,7 +327,12 @@ class PurchaseOrders(BaseSDK):
                 "API error occurred", http_res.status_code, http_res_text, http_res
             )
         if utils.match_response(http_res, "default", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UnexpectedErrorResponse)
+            return models.AccountingPurchaseOrdersAllResponse(
+                result=utils.unmarshal_json(
+                    http_res.text, models.UnexpectedErrorResponse
+                ),
+                next=next_func,
+            )
 
         content_type = http_res.headers.get("Content-Type")
         http_res_text = await utils.stream_to_text_async(http_res)
@@ -242,25 +346,104 @@ class PurchaseOrders(BaseSDK):
     def create(
         self,
         *,
-        purchase_order: Union[
-            models.PurchaseOrderInput, models.PurchaseOrderInputTypedDict
-        ],
         raw: Optional[bool] = False,
         service_id: Optional[str] = None,
+        po_number: OptionalNullable[str] = UNSET,
+        reference: OptionalNullable[str] = UNSET,
+        supplier: OptionalNullable[
+            Union[models.LinkedSupplierInput, models.LinkedSupplierInputTypedDict]
+        ] = UNSET,
+        company_id: OptionalNullable[str] = UNSET,
+        status: OptionalNullable[models.PurchaseOrderStatus] = UNSET,
+        issued_date: OptionalNullable[date] = UNSET,
+        delivery_date: OptionalNullable[date] = UNSET,
+        expected_arrival_date: OptionalNullable[date] = UNSET,
+        currency: OptionalNullable[models.Currency] = UNSET,
+        currency_rate: OptionalNullable[float] = UNSET,
+        sub_total: OptionalNullable[float] = UNSET,
+        total_tax: OptionalNullable[float] = UNSET,
+        total: OptionalNullable[float] = UNSET,
+        tax_inclusive: OptionalNullable[bool] = UNSET,
+        line_items: Optional[
+            Union[
+                List[models.InvoiceLineItemInput],
+                List[models.InvoiceLineItemInputTypedDict],
+            ]
+        ] = None,
+        shipping_address: Optional[
+            Union[models.Address, models.AddressTypedDict]
+        ] = None,
+        ledger_account: OptionalNullable[
+            Union[
+                models.LinkedLedgerAccountInput,
+                models.LinkedLedgerAccountInputTypedDict,
+            ]
+        ] = UNSET,
+        template_id: OptionalNullable[str] = UNSET,
+        discount_percentage: OptionalNullable[float] = UNSET,
+        bank_account: Optional[
+            Union[models.BankAccount, models.BankAccountTypedDict]
+        ] = None,
+        accounting_by_row: OptionalNullable[bool] = UNSET,
+        due_date: Optional[date] = None,
+        payment_method: OptionalNullable[str] = UNSET,
+        tax_code: OptionalNullable[str] = UNSET,
+        channel: OptionalNullable[str] = UNSET,
+        memo: OptionalNullable[str] = UNSET,
+        tracking_categories: OptionalNullable[
+            Union[
+                List[models.LinkedTrackingCategory],
+                List[models.LinkedTrackingCategoryTypedDict],
+            ]
+        ] = UNSET,
+        row_version: OptionalNullable[str] = UNSET,
+        pass_through: Optional[
+            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.AccountingPurchaseOrdersAddResponse:
         r"""Create Purchase Order
 
         Create Purchase Order
 
-        :param purchase_order:
         :param raw: Include raw response. Mostly used for debugging purposes
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param po_number: A PO Number uniquely identifies a purchase order and is generally defined by the buyer.
+        :param reference: Optional purchase order reference.
+        :param supplier: The supplier this entity is linked to.
+        :param company_id: The company or subsidiary id the transaction belongs to
+        :param status:
+        :param issued_date: Date purchase order was issued - YYYY-MM-DD.
+        :param delivery_date: The date on which the purchase order is to be delivered - YYYY-MM-DD.
+        :param expected_arrival_date: The date on which the order is expected to arrive - YYYY-MM-DD.
+        :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
+        :param currency_rate: Currency Exchange Rate at the time entity was recorded/generated.
+        :param sub_total: Sub-total amount, normally before tax.
+        :param total_tax: Total tax amount applied to this invoice.
+        :param total: Total amount of invoice, including tax.
+        :param tax_inclusive: Amounts are including tax
+        :param line_items:
+        :param shipping_address:
+        :param ledger_account:
+        :param template_id: Optional purchase order template
+        :param discount_percentage: Discount percentage applied to this transaction.
+        :param bank_account:
+        :param accounting_by_row: Indicates if accounting by row is used (true) or not (false). Accounting by row means that a separate ledger transaction is created for each row.
+        :param due_date: The due date is the date on which a payment is scheduled to be received - YYYY-MM-DD.
+        :param payment_method: Payment method used for the transaction, such as cash, credit card, bank transfer, or check
+        :param tax_code: Applicable tax id/code override if tax is not supplied on a line item basis.
+        :param channel: The channel through which the transaction is processed.
+        :param memo: Message for the supplier. This text appears on the Purchase Order.
+        :param tracking_categories: A list of linked tracking categories.
+        :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
+        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -273,8 +456,51 @@ class PurchaseOrders(BaseSDK):
         request = models.AccountingPurchaseOrdersAddRequest(
             raw=raw,
             service_id=service_id,
-            purchase_order=utils.get_pydantic_model(
-                purchase_order, models.PurchaseOrderInput
+            purchase_order=models.PurchaseOrderInput(
+                po_number=po_number,
+                reference=reference,
+                supplier=utils.get_pydantic_model(
+                    supplier, OptionalNullable[models.LinkedSupplierInput]
+                ),
+                company_id=company_id,
+                status=status,
+                issued_date=issued_date,
+                delivery_date=delivery_date,
+                expected_arrival_date=expected_arrival_date,
+                currency=currency,
+                currency_rate=currency_rate,
+                sub_total=sub_total,
+                total_tax=total_tax,
+                total=total,
+                tax_inclusive=tax_inclusive,
+                line_items=utils.get_pydantic_model(
+                    line_items, Optional[List[models.InvoiceLineItemInput]]
+                ),
+                shipping_address=utils.get_pydantic_model(
+                    shipping_address, Optional[models.Address]
+                ),
+                ledger_account=utils.get_pydantic_model(
+                    ledger_account, OptionalNullable[models.LinkedLedgerAccountInput]
+                ),
+                template_id=template_id,
+                discount_percentage=discount_percentage,
+                bank_account=utils.get_pydantic_model(
+                    bank_account, Optional[models.BankAccount]
+                ),
+                accounting_by_row=accounting_by_row,
+                due_date=due_date,
+                payment_method=payment_method,
+                tax_code=tax_code,
+                channel=channel,
+                memo=memo,
+                tracking_categories=utils.get_pydantic_model(
+                    tracking_categories,
+                    OptionalNullable[List[models.LinkedTrackingCategory]],
+                ),
+                row_version=row_version,
+                pass_through=utils.get_pydantic_model(
+                    pass_through, Optional[List[models.PassThroughBody]]
+                ),
             ),
         )
 
@@ -289,6 +515,7 @@ class PurchaseOrders(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.AccountingPurchaseOrdersAddGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -367,25 +594,104 @@ class PurchaseOrders(BaseSDK):
     async def create_async(
         self,
         *,
-        purchase_order: Union[
-            models.PurchaseOrderInput, models.PurchaseOrderInputTypedDict
-        ],
         raw: Optional[bool] = False,
         service_id: Optional[str] = None,
+        po_number: OptionalNullable[str] = UNSET,
+        reference: OptionalNullable[str] = UNSET,
+        supplier: OptionalNullable[
+            Union[models.LinkedSupplierInput, models.LinkedSupplierInputTypedDict]
+        ] = UNSET,
+        company_id: OptionalNullable[str] = UNSET,
+        status: OptionalNullable[models.PurchaseOrderStatus] = UNSET,
+        issued_date: OptionalNullable[date] = UNSET,
+        delivery_date: OptionalNullable[date] = UNSET,
+        expected_arrival_date: OptionalNullable[date] = UNSET,
+        currency: OptionalNullable[models.Currency] = UNSET,
+        currency_rate: OptionalNullable[float] = UNSET,
+        sub_total: OptionalNullable[float] = UNSET,
+        total_tax: OptionalNullable[float] = UNSET,
+        total: OptionalNullable[float] = UNSET,
+        tax_inclusive: OptionalNullable[bool] = UNSET,
+        line_items: Optional[
+            Union[
+                List[models.InvoiceLineItemInput],
+                List[models.InvoiceLineItemInputTypedDict],
+            ]
+        ] = None,
+        shipping_address: Optional[
+            Union[models.Address, models.AddressTypedDict]
+        ] = None,
+        ledger_account: OptionalNullable[
+            Union[
+                models.LinkedLedgerAccountInput,
+                models.LinkedLedgerAccountInputTypedDict,
+            ]
+        ] = UNSET,
+        template_id: OptionalNullable[str] = UNSET,
+        discount_percentage: OptionalNullable[float] = UNSET,
+        bank_account: Optional[
+            Union[models.BankAccount, models.BankAccountTypedDict]
+        ] = None,
+        accounting_by_row: OptionalNullable[bool] = UNSET,
+        due_date: Optional[date] = None,
+        payment_method: OptionalNullable[str] = UNSET,
+        tax_code: OptionalNullable[str] = UNSET,
+        channel: OptionalNullable[str] = UNSET,
+        memo: OptionalNullable[str] = UNSET,
+        tracking_categories: OptionalNullable[
+            Union[
+                List[models.LinkedTrackingCategory],
+                List[models.LinkedTrackingCategoryTypedDict],
+            ]
+        ] = UNSET,
+        row_version: OptionalNullable[str] = UNSET,
+        pass_through: Optional[
+            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.AccountingPurchaseOrdersAddResponse:
         r"""Create Purchase Order
 
         Create Purchase Order
 
-        :param purchase_order:
         :param raw: Include raw response. Mostly used for debugging purposes
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param po_number: A PO Number uniquely identifies a purchase order and is generally defined by the buyer.
+        :param reference: Optional purchase order reference.
+        :param supplier: The supplier this entity is linked to.
+        :param company_id: The company or subsidiary id the transaction belongs to
+        :param status:
+        :param issued_date: Date purchase order was issued - YYYY-MM-DD.
+        :param delivery_date: The date on which the purchase order is to be delivered - YYYY-MM-DD.
+        :param expected_arrival_date: The date on which the order is expected to arrive - YYYY-MM-DD.
+        :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
+        :param currency_rate: Currency Exchange Rate at the time entity was recorded/generated.
+        :param sub_total: Sub-total amount, normally before tax.
+        :param total_tax: Total tax amount applied to this invoice.
+        :param total: Total amount of invoice, including tax.
+        :param tax_inclusive: Amounts are including tax
+        :param line_items:
+        :param shipping_address:
+        :param ledger_account:
+        :param template_id: Optional purchase order template
+        :param discount_percentage: Discount percentage applied to this transaction.
+        :param bank_account:
+        :param accounting_by_row: Indicates if accounting by row is used (true) or not (false). Accounting by row means that a separate ledger transaction is created for each row.
+        :param due_date: The due date is the date on which a payment is scheduled to be received - YYYY-MM-DD.
+        :param payment_method: Payment method used for the transaction, such as cash, credit card, bank transfer, or check
+        :param tax_code: Applicable tax id/code override if tax is not supplied on a line item basis.
+        :param channel: The channel through which the transaction is processed.
+        :param memo: Message for the supplier. This text appears on the Purchase Order.
+        :param tracking_categories: A list of linked tracking categories.
+        :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
+        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -398,8 +704,51 @@ class PurchaseOrders(BaseSDK):
         request = models.AccountingPurchaseOrdersAddRequest(
             raw=raw,
             service_id=service_id,
-            purchase_order=utils.get_pydantic_model(
-                purchase_order, models.PurchaseOrderInput
+            purchase_order=models.PurchaseOrderInput(
+                po_number=po_number,
+                reference=reference,
+                supplier=utils.get_pydantic_model(
+                    supplier, OptionalNullable[models.LinkedSupplierInput]
+                ),
+                company_id=company_id,
+                status=status,
+                issued_date=issued_date,
+                delivery_date=delivery_date,
+                expected_arrival_date=expected_arrival_date,
+                currency=currency,
+                currency_rate=currency_rate,
+                sub_total=sub_total,
+                total_tax=total_tax,
+                total=total,
+                tax_inclusive=tax_inclusive,
+                line_items=utils.get_pydantic_model(
+                    line_items, Optional[List[models.InvoiceLineItemInput]]
+                ),
+                shipping_address=utils.get_pydantic_model(
+                    shipping_address, Optional[models.Address]
+                ),
+                ledger_account=utils.get_pydantic_model(
+                    ledger_account, OptionalNullable[models.LinkedLedgerAccountInput]
+                ),
+                template_id=template_id,
+                discount_percentage=discount_percentage,
+                bank_account=utils.get_pydantic_model(
+                    bank_account, Optional[models.BankAccount]
+                ),
+                accounting_by_row=accounting_by_row,
+                due_date=due_date,
+                payment_method=payment_method,
+                tax_code=tax_code,
+                channel=channel,
+                memo=memo,
+                tracking_categories=utils.get_pydantic_model(
+                    tracking_categories,
+                    OptionalNullable[List[models.LinkedTrackingCategory]],
+                ),
+                row_version=row_version,
+                pass_through=utils.get_pydantic_model(
+                    pass_through, Optional[List[models.PassThroughBody]]
+                ),
             ),
         )
 
@@ -414,6 +763,7 @@ class PurchaseOrders(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.AccountingPurchaseOrdersAddGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -498,6 +848,7 @@ class PurchaseOrders(BaseSDK):
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.AccountingPurchaseOrdersOneResponse:
         r"""Get Purchase Order
 
@@ -509,6 +860,7 @@ class PurchaseOrders(BaseSDK):
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -535,6 +887,7 @@ class PurchaseOrders(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.AccountingPurchaseOrdersOneGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -614,6 +967,7 @@ class PurchaseOrders(BaseSDK):
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.AccountingPurchaseOrdersOneResponse:
         r"""Get Purchase Order
 
@@ -625,6 +979,7 @@ class PurchaseOrders(BaseSDK):
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -651,6 +1006,7 @@ class PurchaseOrders(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.AccountingPurchaseOrdersOneGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -725,26 +1081,105 @@ class PurchaseOrders(BaseSDK):
         self,
         *,
         id: str,
-        purchase_order: Union[
-            models.PurchaseOrderInput, models.PurchaseOrderInputTypedDict
-        ],
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
+        po_number: OptionalNullable[str] = UNSET,
+        reference: OptionalNullable[str] = UNSET,
+        supplier: OptionalNullable[
+            Union[models.LinkedSupplierInput, models.LinkedSupplierInputTypedDict]
+        ] = UNSET,
+        company_id: OptionalNullable[str] = UNSET,
+        status: OptionalNullable[models.PurchaseOrderStatus] = UNSET,
+        issued_date: OptionalNullable[date] = UNSET,
+        delivery_date: OptionalNullable[date] = UNSET,
+        expected_arrival_date: OptionalNullable[date] = UNSET,
+        currency: OptionalNullable[models.Currency] = UNSET,
+        currency_rate: OptionalNullable[float] = UNSET,
+        sub_total: OptionalNullable[float] = UNSET,
+        total_tax: OptionalNullable[float] = UNSET,
+        total: OptionalNullable[float] = UNSET,
+        tax_inclusive: OptionalNullable[bool] = UNSET,
+        line_items: Optional[
+            Union[
+                List[models.InvoiceLineItemInput],
+                List[models.InvoiceLineItemInputTypedDict],
+            ]
+        ] = None,
+        shipping_address: Optional[
+            Union[models.Address, models.AddressTypedDict]
+        ] = None,
+        ledger_account: OptionalNullable[
+            Union[
+                models.LinkedLedgerAccountInput,
+                models.LinkedLedgerAccountInputTypedDict,
+            ]
+        ] = UNSET,
+        template_id: OptionalNullable[str] = UNSET,
+        discount_percentage: OptionalNullable[float] = UNSET,
+        bank_account: Optional[
+            Union[models.BankAccount, models.BankAccountTypedDict]
+        ] = None,
+        accounting_by_row: OptionalNullable[bool] = UNSET,
+        due_date: Optional[date] = None,
+        payment_method: OptionalNullable[str] = UNSET,
+        tax_code: OptionalNullable[str] = UNSET,
+        channel: OptionalNullable[str] = UNSET,
+        memo: OptionalNullable[str] = UNSET,
+        tracking_categories: OptionalNullable[
+            Union[
+                List[models.LinkedTrackingCategory],
+                List[models.LinkedTrackingCategoryTypedDict],
+            ]
+        ] = UNSET,
+        row_version: OptionalNullable[str] = UNSET,
+        pass_through: Optional[
+            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.AccountingPurchaseOrdersUpdateResponse:
         r"""Update Purchase Order
 
         Update Purchase Order
 
         :param id: ID of the record you are acting upon.
-        :param purchase_order:
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param po_number: A PO Number uniquely identifies a purchase order and is generally defined by the buyer.
+        :param reference: Optional purchase order reference.
+        :param supplier: The supplier this entity is linked to.
+        :param company_id: The company or subsidiary id the transaction belongs to
+        :param status:
+        :param issued_date: Date purchase order was issued - YYYY-MM-DD.
+        :param delivery_date: The date on which the purchase order is to be delivered - YYYY-MM-DD.
+        :param expected_arrival_date: The date on which the order is expected to arrive - YYYY-MM-DD.
+        :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
+        :param currency_rate: Currency Exchange Rate at the time entity was recorded/generated.
+        :param sub_total: Sub-total amount, normally before tax.
+        :param total_tax: Total tax amount applied to this invoice.
+        :param total: Total amount of invoice, including tax.
+        :param tax_inclusive: Amounts are including tax
+        :param line_items:
+        :param shipping_address:
+        :param ledger_account:
+        :param template_id: Optional purchase order template
+        :param discount_percentage: Discount percentage applied to this transaction.
+        :param bank_account:
+        :param accounting_by_row: Indicates if accounting by row is used (true) or not (false). Accounting by row means that a separate ledger transaction is created for each row.
+        :param due_date: The due date is the date on which a payment is scheduled to be received - YYYY-MM-DD.
+        :param payment_method: Payment method used for the transaction, such as cash, credit card, bank transfer, or check
+        :param tax_code: Applicable tax id/code override if tax is not supplied on a line item basis.
+        :param channel: The channel through which the transaction is processed.
+        :param memo: Message for the supplier. This text appears on the Purchase Order.
+        :param tracking_categories: A list of linked tracking categories.
+        :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
+        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -758,8 +1193,51 @@ class PurchaseOrders(BaseSDK):
             id=id,
             service_id=service_id,
             raw=raw,
-            purchase_order=utils.get_pydantic_model(
-                purchase_order, models.PurchaseOrderInput
+            purchase_order=models.PurchaseOrderInput(
+                po_number=po_number,
+                reference=reference,
+                supplier=utils.get_pydantic_model(
+                    supplier, OptionalNullable[models.LinkedSupplierInput]
+                ),
+                company_id=company_id,
+                status=status,
+                issued_date=issued_date,
+                delivery_date=delivery_date,
+                expected_arrival_date=expected_arrival_date,
+                currency=currency,
+                currency_rate=currency_rate,
+                sub_total=sub_total,
+                total_tax=total_tax,
+                total=total,
+                tax_inclusive=tax_inclusive,
+                line_items=utils.get_pydantic_model(
+                    line_items, Optional[List[models.InvoiceLineItemInput]]
+                ),
+                shipping_address=utils.get_pydantic_model(
+                    shipping_address, Optional[models.Address]
+                ),
+                ledger_account=utils.get_pydantic_model(
+                    ledger_account, OptionalNullable[models.LinkedLedgerAccountInput]
+                ),
+                template_id=template_id,
+                discount_percentage=discount_percentage,
+                bank_account=utils.get_pydantic_model(
+                    bank_account, Optional[models.BankAccount]
+                ),
+                accounting_by_row=accounting_by_row,
+                due_date=due_date,
+                payment_method=payment_method,
+                tax_code=tax_code,
+                channel=channel,
+                memo=memo,
+                tracking_categories=utils.get_pydantic_model(
+                    tracking_categories,
+                    OptionalNullable[List[models.LinkedTrackingCategory]],
+                ),
+                row_version=row_version,
+                pass_through=utils.get_pydantic_model(
+                    pass_through, Optional[List[models.PassThroughBody]]
+                ),
             ),
         )
 
@@ -774,6 +1252,7 @@ class PurchaseOrders(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.AccountingPurchaseOrdersUpdateGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -853,26 +1332,105 @@ class PurchaseOrders(BaseSDK):
         self,
         *,
         id: str,
-        purchase_order: Union[
-            models.PurchaseOrderInput, models.PurchaseOrderInputTypedDict
-        ],
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
+        po_number: OptionalNullable[str] = UNSET,
+        reference: OptionalNullable[str] = UNSET,
+        supplier: OptionalNullable[
+            Union[models.LinkedSupplierInput, models.LinkedSupplierInputTypedDict]
+        ] = UNSET,
+        company_id: OptionalNullable[str] = UNSET,
+        status: OptionalNullable[models.PurchaseOrderStatus] = UNSET,
+        issued_date: OptionalNullable[date] = UNSET,
+        delivery_date: OptionalNullable[date] = UNSET,
+        expected_arrival_date: OptionalNullable[date] = UNSET,
+        currency: OptionalNullable[models.Currency] = UNSET,
+        currency_rate: OptionalNullable[float] = UNSET,
+        sub_total: OptionalNullable[float] = UNSET,
+        total_tax: OptionalNullable[float] = UNSET,
+        total: OptionalNullable[float] = UNSET,
+        tax_inclusive: OptionalNullable[bool] = UNSET,
+        line_items: Optional[
+            Union[
+                List[models.InvoiceLineItemInput],
+                List[models.InvoiceLineItemInputTypedDict],
+            ]
+        ] = None,
+        shipping_address: Optional[
+            Union[models.Address, models.AddressTypedDict]
+        ] = None,
+        ledger_account: OptionalNullable[
+            Union[
+                models.LinkedLedgerAccountInput,
+                models.LinkedLedgerAccountInputTypedDict,
+            ]
+        ] = UNSET,
+        template_id: OptionalNullable[str] = UNSET,
+        discount_percentage: OptionalNullable[float] = UNSET,
+        bank_account: Optional[
+            Union[models.BankAccount, models.BankAccountTypedDict]
+        ] = None,
+        accounting_by_row: OptionalNullable[bool] = UNSET,
+        due_date: Optional[date] = None,
+        payment_method: OptionalNullable[str] = UNSET,
+        tax_code: OptionalNullable[str] = UNSET,
+        channel: OptionalNullable[str] = UNSET,
+        memo: OptionalNullable[str] = UNSET,
+        tracking_categories: OptionalNullable[
+            Union[
+                List[models.LinkedTrackingCategory],
+                List[models.LinkedTrackingCategoryTypedDict],
+            ]
+        ] = UNSET,
+        row_version: OptionalNullable[str] = UNSET,
+        pass_through: Optional[
+            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.AccountingPurchaseOrdersUpdateResponse:
         r"""Update Purchase Order
 
         Update Purchase Order
 
         :param id: ID of the record you are acting upon.
-        :param purchase_order:
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param po_number: A PO Number uniquely identifies a purchase order and is generally defined by the buyer.
+        :param reference: Optional purchase order reference.
+        :param supplier: The supplier this entity is linked to.
+        :param company_id: The company or subsidiary id the transaction belongs to
+        :param status:
+        :param issued_date: Date purchase order was issued - YYYY-MM-DD.
+        :param delivery_date: The date on which the purchase order is to be delivered - YYYY-MM-DD.
+        :param expected_arrival_date: The date on which the order is expected to arrive - YYYY-MM-DD.
+        :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
+        :param currency_rate: Currency Exchange Rate at the time entity was recorded/generated.
+        :param sub_total: Sub-total amount, normally before tax.
+        :param total_tax: Total tax amount applied to this invoice.
+        :param total: Total amount of invoice, including tax.
+        :param tax_inclusive: Amounts are including tax
+        :param line_items:
+        :param shipping_address:
+        :param ledger_account:
+        :param template_id: Optional purchase order template
+        :param discount_percentage: Discount percentage applied to this transaction.
+        :param bank_account:
+        :param accounting_by_row: Indicates if accounting by row is used (true) or not (false). Accounting by row means that a separate ledger transaction is created for each row.
+        :param due_date: The due date is the date on which a payment is scheduled to be received - YYYY-MM-DD.
+        :param payment_method: Payment method used for the transaction, such as cash, credit card, bank transfer, or check
+        :param tax_code: Applicable tax id/code override if tax is not supplied on a line item basis.
+        :param channel: The channel through which the transaction is processed.
+        :param memo: Message for the supplier. This text appears on the Purchase Order.
+        :param tracking_categories: A list of linked tracking categories.
+        :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
+        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -886,8 +1444,51 @@ class PurchaseOrders(BaseSDK):
             id=id,
             service_id=service_id,
             raw=raw,
-            purchase_order=utils.get_pydantic_model(
-                purchase_order, models.PurchaseOrderInput
+            purchase_order=models.PurchaseOrderInput(
+                po_number=po_number,
+                reference=reference,
+                supplier=utils.get_pydantic_model(
+                    supplier, OptionalNullable[models.LinkedSupplierInput]
+                ),
+                company_id=company_id,
+                status=status,
+                issued_date=issued_date,
+                delivery_date=delivery_date,
+                expected_arrival_date=expected_arrival_date,
+                currency=currency,
+                currency_rate=currency_rate,
+                sub_total=sub_total,
+                total_tax=total_tax,
+                total=total,
+                tax_inclusive=tax_inclusive,
+                line_items=utils.get_pydantic_model(
+                    line_items, Optional[List[models.InvoiceLineItemInput]]
+                ),
+                shipping_address=utils.get_pydantic_model(
+                    shipping_address, Optional[models.Address]
+                ),
+                ledger_account=utils.get_pydantic_model(
+                    ledger_account, OptionalNullable[models.LinkedLedgerAccountInput]
+                ),
+                template_id=template_id,
+                discount_percentage=discount_percentage,
+                bank_account=utils.get_pydantic_model(
+                    bank_account, Optional[models.BankAccount]
+                ),
+                accounting_by_row=accounting_by_row,
+                due_date=due_date,
+                payment_method=payment_method,
+                tax_code=tax_code,
+                channel=channel,
+                memo=memo,
+                tracking_categories=utils.get_pydantic_model(
+                    tracking_categories,
+                    OptionalNullable[List[models.LinkedTrackingCategory]],
+                ),
+                row_version=row_version,
+                pass_through=utils.get_pydantic_model(
+                    pass_through, Optional[List[models.PassThroughBody]]
+                ),
             ),
         )
 
@@ -902,6 +1503,7 @@ class PurchaseOrders(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.AccountingPurchaseOrdersUpdateGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -986,6 +1588,7 @@ class PurchaseOrders(BaseSDK):
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.AccountingPurchaseOrdersDeleteResponse:
         r"""Delete Purchase Order
 
@@ -997,6 +1600,7 @@ class PurchaseOrders(BaseSDK):
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -1023,6 +1627,7 @@ class PurchaseOrders(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.AccountingPurchaseOrdersDeleteGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -1104,6 +1709,7 @@ class PurchaseOrders(BaseSDK):
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.AccountingPurchaseOrdersDeleteResponse:
         r"""Delete Purchase Order
 
@@ -1115,6 +1721,7 @@ class PurchaseOrders(BaseSDK):
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -1141,6 +1748,7 @@ class PurchaseOrders(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.AccountingPurchaseOrdersDeleteGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,

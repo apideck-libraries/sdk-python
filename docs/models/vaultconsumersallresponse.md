@@ -1,17 +1,8 @@
 # VaultConsumersAllResponse
 
 
-## Supported Types
+## Fields
 
-### `models.GetConsumersResponse`
-
-```python
-value: models.GetConsumersResponse = /* values here */
-```
-
-### `models.UnexpectedErrorResponse`
-
-```python
-value: models.UnexpectedErrorResponse = /* values here */
-```
-
+| Field                                                                                  | Type                                                                                   | Required                                                                               | Description                                                                            |
+| -------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| `result`                                                                               | [models.VaultConsumersAllResponseResult](../models/vaultconsumersallresponseresult.md) | :heavy_check_mark:                                                                     | N/A                                                                                    |

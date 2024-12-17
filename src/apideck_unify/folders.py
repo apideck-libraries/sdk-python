@@ -3,36 +3,46 @@
 from .basesdk import BaseSDK
 from apideck_unify import models, utils
 from apideck_unify._hooks import HookContext
-from apideck_unify.types import BaseModel, OptionalNullable, UNSET
+from apideck_unify.types import OptionalNullable, UNSET
 from apideck_unify.utils import get_security_from_env
-from typing import Any, Optional, Union, cast
+from typing import Any, List, Mapping, Optional, Union
 
 
 class Folders(BaseSDK):
     def create(
         self,
         *,
-        create_folder_request: Union[
-            models.CreateFolderRequest, models.CreateFolderRequestTypedDict
-        ],
+        name: str,
+        parent_folder_id: str,
         raw: Optional[bool] = False,
         service_id: Optional[str] = None,
         fields: OptionalNullable[str] = UNSET,
+        description: Optional[str] = None,
+        drive_id: Optional[str] = None,
+        pass_through: Optional[
+            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.FileStorageFoldersAddResponse:
         r"""Create Folder
 
         Create Folder
 
-        :param create_folder_request:
+        :param name: The name of the folder.
+        :param parent_folder_id: The parent folder to create the new file within. This can be an ID or a path depending on the downstream folder. Please see the connector section below to see downstream specific gotchas.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param fields: The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded.
+        :param description: Optional description of the folder.
+        :param drive_id: ID of the drive to create the folder in.
+        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -46,8 +56,14 @@ class Folders(BaseSDK):
             raw=raw,
             service_id=service_id,
             fields=fields,
-            create_folder_request=utils.get_pydantic_model(
-                create_folder_request, models.CreateFolderRequest
+            create_folder_request=models.CreateFolderRequest(
+                name=name,
+                description=description,
+                parent_folder_id=parent_folder_id,
+                drive_id=drive_id,
+                pass_through=utils.get_pydantic_model(
+                    pass_through, Optional[List[models.PassThroughBody]]
+                ),
             ),
         )
 
@@ -62,6 +78,7 @@ class Folders(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.FileStorageFoldersAddGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -142,27 +159,37 @@ class Folders(BaseSDK):
     async def create_async(
         self,
         *,
-        create_folder_request: Union[
-            models.CreateFolderRequest, models.CreateFolderRequestTypedDict
-        ],
+        name: str,
+        parent_folder_id: str,
         raw: Optional[bool] = False,
         service_id: Optional[str] = None,
         fields: OptionalNullable[str] = UNSET,
+        description: Optional[str] = None,
+        drive_id: Optional[str] = None,
+        pass_through: Optional[
+            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.FileStorageFoldersAddResponse:
         r"""Create Folder
 
         Create Folder
 
-        :param create_folder_request:
+        :param name: The name of the folder.
+        :param parent_folder_id: The parent folder to create the new file within. This can be an ID or a path depending on the downstream folder. Please see the connector section below to see downstream specific gotchas.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param fields: The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded.
+        :param description: Optional description of the folder.
+        :param drive_id: ID of the drive to create the folder in.
+        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -176,8 +203,14 @@ class Folders(BaseSDK):
             raw=raw,
             service_id=service_id,
             fields=fields,
-            create_folder_request=utils.get_pydantic_model(
-                create_folder_request, models.CreateFolderRequest
+            create_folder_request=models.CreateFolderRequest(
+                name=name,
+                description=description,
+                parent_folder_id=parent_folder_id,
+                drive_id=drive_id,
+                pass_through=utils.get_pydantic_model(
+                    pass_through, Optional[List[models.PassThroughBody]]
+                ),
             ),
         )
 
@@ -192,6 +225,7 @@ class Folders(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.FileStorageFoldersAddGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -279,6 +313,7 @@ class Folders(BaseSDK):
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.FileStorageFoldersOneResponse:
         r"""Get Folder
 
@@ -291,6 +326,7 @@ class Folders(BaseSDK):
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -318,6 +354,7 @@ class Folders(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.FileStorageFoldersOneGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -398,6 +435,7 @@ class Folders(BaseSDK):
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.FileStorageFoldersOneResponse:
         r"""Get Folder
 
@@ -410,6 +448,7 @@ class Folders(BaseSDK):
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -437,6 +476,7 @@ class Folders(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.FileStorageFoldersOneGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -511,26 +551,34 @@ class Folders(BaseSDK):
         self,
         *,
         id: str,
-        update_folder_request: Union[
-            models.UpdateFolderRequest, models.UpdateFolderRequestTypedDict
-        ],
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
+        name: Optional[str] = None,
+        description: Optional[str] = None,
+        parent_folder_id: Optional[str] = None,
+        pass_through: Optional[
+            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.FileStorageFoldersUpdateResponse:
         r"""Rename or move Folder
 
         Rename or move Folder
 
         :param id: ID of the record you are acting upon.
-        :param update_folder_request:
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param name: The name of the folder.
+        :param description: Optional description of the folder.
+        :param parent_folder_id: The parent folder to create the new file within. This can be an ID or a path depending on the downstream folder. Please see the connector section below to see downstream specific gotchas.
+        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -544,8 +592,13 @@ class Folders(BaseSDK):
             id=id,
             service_id=service_id,
             raw=raw,
-            update_folder_request=utils.get_pydantic_model(
-                update_folder_request, models.UpdateFolderRequest
+            update_folder_request=models.UpdateFolderRequest(
+                name=name,
+                description=description,
+                parent_folder_id=parent_folder_id,
+                pass_through=utils.get_pydantic_model(
+                    pass_through, Optional[List[models.PassThroughBody]]
+                ),
             ),
         )
 
@@ -560,6 +613,7 @@ class Folders(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.FileStorageFoldersUpdateGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -641,26 +695,34 @@ class Folders(BaseSDK):
         self,
         *,
         id: str,
-        update_folder_request: Union[
-            models.UpdateFolderRequest, models.UpdateFolderRequestTypedDict
-        ],
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
+        name: Optional[str] = None,
+        description: Optional[str] = None,
+        parent_folder_id: Optional[str] = None,
+        pass_through: Optional[
+            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.FileStorageFoldersUpdateResponse:
         r"""Rename or move Folder
 
         Rename or move Folder
 
         :param id: ID of the record you are acting upon.
-        :param update_folder_request:
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param name: The name of the folder.
+        :param description: Optional description of the folder.
+        :param parent_folder_id: The parent folder to create the new file within. This can be an ID or a path depending on the downstream folder. Please see the connector section below to see downstream specific gotchas.
+        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -674,8 +736,13 @@ class Folders(BaseSDK):
             id=id,
             service_id=service_id,
             raw=raw,
-            update_folder_request=utils.get_pydantic_model(
-                update_folder_request, models.UpdateFolderRequest
+            update_folder_request=models.UpdateFolderRequest(
+                name=name,
+                description=description,
+                parent_folder_id=parent_folder_id,
+                pass_through=utils.get_pydantic_model(
+                    pass_through, Optional[List[models.PassThroughBody]]
+                ),
             ),
         )
 
@@ -690,6 +757,7 @@ class Folders(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.FileStorageFoldersUpdateGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -776,6 +844,7 @@ class Folders(BaseSDK):
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.FileStorageFoldersDeleteResponse:
         r"""Delete Folder
 
@@ -787,6 +856,7 @@ class Folders(BaseSDK):
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -813,6 +883,7 @@ class Folders(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.FileStorageFoldersDeleteGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -892,6 +963,7 @@ class Folders(BaseSDK):
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.FileStorageFoldersDeleteResponse:
         r"""Delete Folder
 
@@ -903,6 +975,7 @@ class Folders(BaseSDK):
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -929,6 +1002,7 @@ class Folders(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.FileStorageFoldersDeleteGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -1002,22 +1076,35 @@ class Folders(BaseSDK):
     def copy(
         self,
         *,
-        request: Union[
-            models.FileStorageFoldersCopyRequest,
-            models.FileStorageFoldersCopyRequestTypedDict,
-        ],
+        id: str,
+        parent_folder_id: str,
+        service_id: Optional[str] = None,
+        raw: Optional[bool] = False,
+        fields: OptionalNullable[str] = UNSET,
+        name: Optional[str] = None,
+        pass_through: Optional[
+            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.FileStorageFoldersCopyResponse:
         r"""Copy Folder
 
         Copy Folder
 
-        :param request: The request object to send.
+        :param id: ID of the record you are acting upon.
+        :param parent_folder_id: The parent folder to create the new file within. This can be an ID or a path depending on the downstream folder. Please see the connector section below to see downstream specific gotchas.
+        :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param raw: Include raw response. Mostly used for debugging purposes
+        :param fields: The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded.
+        :param name: The name of the folder.
+        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -1027,9 +1114,19 @@ class Folders(BaseSDK):
         if server_url is not None:
             base_url = server_url
 
-        if not isinstance(request, BaseModel):
-            request = utils.unmarshal(request, models.FileStorageFoldersCopyRequest)
-        request = cast(models.FileStorageFoldersCopyRequest, request)
+        request = models.FileStorageFoldersCopyRequest(
+            id=id,
+            service_id=service_id,
+            raw=raw,
+            fields=fields,
+            copy_folder_request=models.CopyFolderRequest(
+                name=name,
+                parent_folder_id=parent_folder_id,
+                pass_through=utils.get_pydantic_model(
+                    pass_through, Optional[List[models.PassThroughBody]]
+                ),
+            ),
+        )
 
         req = self.build_request(
             method="POST",
@@ -1042,6 +1139,7 @@ class Folders(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.FileStorageFoldersCopyGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -1122,22 +1220,35 @@ class Folders(BaseSDK):
     async def copy_async(
         self,
         *,
-        request: Union[
-            models.FileStorageFoldersCopyRequest,
-            models.FileStorageFoldersCopyRequestTypedDict,
-        ],
+        id: str,
+        parent_folder_id: str,
+        service_id: Optional[str] = None,
+        raw: Optional[bool] = False,
+        fields: OptionalNullable[str] = UNSET,
+        name: Optional[str] = None,
+        pass_through: Optional[
+            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.FileStorageFoldersCopyResponse:
         r"""Copy Folder
 
         Copy Folder
 
-        :param request: The request object to send.
+        :param id: ID of the record you are acting upon.
+        :param parent_folder_id: The parent folder to create the new file within. This can be an ID or a path depending on the downstream folder. Please see the connector section below to see downstream specific gotchas.
+        :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param raw: Include raw response. Mostly used for debugging purposes
+        :param fields: The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded.
+        :param name: The name of the folder.
+        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -1147,9 +1258,19 @@ class Folders(BaseSDK):
         if server_url is not None:
             base_url = server_url
 
-        if not isinstance(request, BaseModel):
-            request = utils.unmarshal(request, models.FileStorageFoldersCopyRequest)
-        request = cast(models.FileStorageFoldersCopyRequest, request)
+        request = models.FileStorageFoldersCopyRequest(
+            id=id,
+            service_id=service_id,
+            raw=raw,
+            fields=fields,
+            copy_folder_request=models.CopyFolderRequest(
+                name=name,
+                parent_folder_id=parent_folder_id,
+                pass_through=utils.get_pydantic_model(
+                    pass_through, Optional[List[models.PassThroughBody]]
+                ),
+            ),
+        )
 
         req = self.build_request_async(
             method="POST",
@@ -1162,6 +1283,7 @@ class Folders(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.FileStorageFoldersCopyGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,

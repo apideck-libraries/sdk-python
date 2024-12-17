@@ -1,17 +1,8 @@
 # AccountingTaxRatesAllResponse
 
 
-## Supported Types
+## Fields
 
-### `models.GetTaxRatesResponse`
-
-```python
-value: models.GetTaxRatesResponse = /* values here */
-```
-
-### `models.UnexpectedErrorResponse`
-
-```python
-value: models.UnexpectedErrorResponse = /* values here */
-```
-
+| Field                                                                                          | Type                                                                                           | Required                                                                                       | Description                                                                                    |
+| ---------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| `result`                                                                                       | [models.AccountingTaxRatesAllResponseResult](../models/accountingtaxratesallresponseresult.md) | :heavy_check_mark:                                                                             | N/A                                                                                            |

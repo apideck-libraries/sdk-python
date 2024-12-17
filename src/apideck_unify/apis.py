@@ -5,7 +5,8 @@ from apideck_unify import models, utils
 from apideck_unify._hooks import HookContext
 from apideck_unify.types import OptionalNullable, UNSET
 from apideck_unify.utils import get_security_from_env
-from typing import Any, Optional, Union
+from jsonpath import JSONPath
+from typing import Any, Dict, Mapping, Optional, Union
 
 
 class Apis(BaseSDK):
@@ -18,7 +19,8 @@ class Apis(BaseSDK):
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
-    ) -> models.ConnectorApisAllResponse:
+        http_headers: Optional[Mapping[str, str]] = None,
+    ) -> Optional[models.ConnectorApisAllResponse]:
         r"""List APIs
 
         List APIs
@@ -29,6 +31,7 @@ class Apis(BaseSDK):
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -55,6 +58,7 @@ class Apis(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.ConnectorApisAllGlobals(
                 app_id=self.sdk_configuration.globals.app_id,
             ),
@@ -87,9 +91,27 @@ class Apis(BaseSDK):
             retry_config=retry_config,
         )
 
+        def next_func() -> Optional[models.ConnectorApisAllResponse]:
+            body = utils.unmarshal_json(http_res.text, Dict[Any, Any])
+            next_cursor = JSONPath("$.meta.cursors.next").parse(body)
+
+            if len(next_cursor) == 0:
+                return None
+            next_cursor = next_cursor[0]
+
+            return self.list(
+                cursor=next_cursor,
+                limit=limit,
+                filter_=filter_,
+                retries=retries,
+            )
+
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.GetApisResponse)
+            return models.ConnectorApisAllResponse(
+                result=utils.unmarshal_json(http_res.text, models.GetApisResponse),
+                next=next_func,
+            )
         if utils.match_response(http_res, "400", "application/json"):
             data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
             raise models.BadRequestResponse(data=data)
@@ -107,7 +129,12 @@ class Apis(BaseSDK):
                 "API error occurred", http_res.status_code, http_res_text, http_res
             )
         if utils.match_response(http_res, "default", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UnexpectedErrorResponse)
+            return models.ConnectorApisAllResponse(
+                result=utils.unmarshal_json(
+                    http_res.text, models.UnexpectedErrorResponse
+                ),
+                next=next_func,
+            )
 
         content_type = http_res.headers.get("Content-Type")
         http_res_text = utils.stream_to_text(http_res)
@@ -127,7 +154,8 @@ class Apis(BaseSDK):
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
-    ) -> models.ConnectorApisAllResponse:
+        http_headers: Optional[Mapping[str, str]] = None,
+    ) -> Optional[models.ConnectorApisAllResponse]:
         r"""List APIs
 
         List APIs
@@ -138,6 +166,7 @@ class Apis(BaseSDK):
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -164,6 +193,7 @@ class Apis(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.ConnectorApisAllGlobals(
                 app_id=self.sdk_configuration.globals.app_id,
             ),
@@ -196,9 +226,27 @@ class Apis(BaseSDK):
             retry_config=retry_config,
         )
 
+        def next_func() -> Optional[models.ConnectorApisAllResponse]:
+            body = utils.unmarshal_json(http_res.text, Dict[Any, Any])
+            next_cursor = JSONPath("$.meta.cursors.next").parse(body)
+
+            if len(next_cursor) == 0:
+                return None
+            next_cursor = next_cursor[0]
+
+            return self.list(
+                cursor=next_cursor,
+                limit=limit,
+                filter_=filter_,
+                retries=retries,
+            )
+
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.GetApisResponse)
+            return models.ConnectorApisAllResponse(
+                result=utils.unmarshal_json(http_res.text, models.GetApisResponse),
+                next=next_func,
+            )
         if utils.match_response(http_res, "400", "application/json"):
             data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
             raise models.BadRequestResponse(data=data)
@@ -216,7 +264,12 @@ class Apis(BaseSDK):
                 "API error occurred", http_res.status_code, http_res_text, http_res
             )
         if utils.match_response(http_res, "default", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UnexpectedErrorResponse)
+            return models.ConnectorApisAllResponse(
+                result=utils.unmarshal_json(
+                    http_res.text, models.UnexpectedErrorResponse
+                ),
+                next=next_func,
+            )
 
         content_type = http_res.headers.get("Content-Type")
         http_res_text = await utils.stream_to_text_async(http_res)
@@ -234,6 +287,7 @@ class Apis(BaseSDK):
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.ConnectorApisOneResponse:
         r"""Get API
 
@@ -243,6 +297,7 @@ class Apis(BaseSDK):
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -267,6 +322,7 @@ class Apis(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.ConnectorApisOneGlobals(
                 app_id=self.sdk_configuration.globals.app_id,
             ),
@@ -337,6 +393,7 @@ class Apis(BaseSDK):
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.ConnectorApisOneResponse:
         r"""Get API
 
@@ -346,6 +403,7 @@ class Apis(BaseSDK):
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -370,6 +428,7 @@ class Apis(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.ConnectorApisOneGlobals(
                 app_id=self.sdk_configuration.globals.app_id,
             ),

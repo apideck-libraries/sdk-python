@@ -16,7 +16,7 @@ from apideck_unify.types import (
 from apideck_unify.utils import FieldMetadata, HeaderMetadata, QueryParamMetadata
 import pydantic
 from pydantic import model_serializer
-from typing import Any, Dict, Optional, Union
+from typing import Any, Callable, Dict, Optional, Union
 from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
 
 
@@ -134,12 +134,22 @@ class CrmUsersAllRequest(BaseModel):
         return m
 
 
-CrmUsersAllResponseTypedDict = TypeAliasType(
-    "CrmUsersAllResponseTypedDict",
+CrmUsersAllResponseResultTypedDict = TypeAliasType(
+    "CrmUsersAllResponseResultTypedDict",
     Union[UnexpectedErrorResponseTypedDict, GetUsersResponseTypedDict],
 )
 
 
-CrmUsersAllResponse = TypeAliasType(
-    "CrmUsersAllResponse", Union[UnexpectedErrorResponse, GetUsersResponse]
+CrmUsersAllResponseResult = TypeAliasType(
+    "CrmUsersAllResponseResult", Union[UnexpectedErrorResponse, GetUsersResponse]
 )
+
+
+class CrmUsersAllResponseTypedDict(TypedDict):
+    result: CrmUsersAllResponseResultTypedDict
+
+
+class CrmUsersAllResponse(BaseModel):
+    next: Callable[[], Optional[CrmUsersAllResponse]]
+
+    result: CrmUsersAllResponseResult

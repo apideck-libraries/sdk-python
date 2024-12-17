@@ -1,17 +1,8 @@
 # FileStorageDriveGroupsAllResponse
 
 
-## Supported Types
+## Fields
 
-### `models.GetDriveGroupsResponse`
-
-```python
-value: models.GetDriveGroupsResponse = /* values here */
-```
-
-### `models.UnexpectedErrorResponse`
-
-```python
-value: models.UnexpectedErrorResponse = /* values here */
-```
-
+| Field                                                                                                  | Type                                                                                                   | Required                                                                                               | Description                                                                                            |
+| ------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------ |
+| `result`                                                                                               | [models.FileStorageDriveGroupsAllResponseResult](../models/filestoragedrivegroupsallresponseresult.md) | :heavy_check_mark:                                                                                     | N/A                                                                                                    |

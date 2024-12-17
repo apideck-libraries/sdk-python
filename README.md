@@ -31,6 +31,7 @@ For more information about the API: [Apideck Developer Docs](https://developers.
   * [SDK Example Usage](#sdk-example-usage)
   * [Authentication](#authentication)
   * [Available Resources and Operations](#available-resources-and-operations)
+  * [Pagination](#pagination)
   * [Retries](#retries)
   * [Error Handling](#error-handling)
   * [Server Selection](#server-selection)
@@ -89,24 +90,21 @@ with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
-    res = apideck.accounting.tax_rates.list(request={
-        "service_id": "salesforce",
-        "filter_": {
-            "assets": True,
-            "equity": True,
-            "expenses": True,
-            "liabilities": True,
-            "revenue": True,
-        },
-        "pass_through": {
-            "search": "San Francisco",
-        },
-        "fields": "id,updated_at",
-    })
 
-    if res is not None:
-        # handle response
-        pass
+    res = apideck.accounting.tax_rates.list(service_id="salesforce", filter_={
+        "assets": True,
+        "equity": True,
+        "expenses": True,
+        "liabilities": True,
+        "revenue": True,
+    }, pass_through={
+        "search": "San Francisco",
+    }, fields="id,updated_at")
+
+    while res is not None:
+        # Handle items
+
+        res = res.next()
 ```
 
 </br>
@@ -124,24 +122,21 @@ async def main():
         consumer_id="test-consumer",
         app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
     ) as apideck:
-        res = await apideck.accounting.tax_rates.list_async(request={
-            "service_id": "salesforce",
-            "filter_": {
-                "assets": True,
-                "equity": True,
-                "expenses": True,
-                "liabilities": True,
-                "revenue": True,
-            },
-            "pass_through": {
-                "search": "San Francisco",
-            },
-            "fields": "id,updated_at",
-        })
 
-        if res is not None:
-            # handle response
-            pass
+        res = await apideck.accounting.tax_rates.list_async(service_id="salesforce", filter_={
+            "assets": True,
+            "equity": True,
+            "expenses": True,
+            "liabilities": True,
+            "revenue": True,
+        }, pass_through={
+            "search": "San Francisco",
+        }, fields="id,updated_at")
+
+        while res is not None:
+            # Handle items
+
+            res = res.next()
 
 asyncio.run(main())
 ```
@@ -168,24 +163,21 @@ with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
-    res = apideck.accounting.tax_rates.list(request={
-        "service_id": "salesforce",
-        "filter_": {
-            "assets": True,
-            "equity": True,
-            "expenses": True,
-            "liabilities": True,
-            "revenue": True,
-        },
-        "pass_through": {
-            "search": "San Francisco",
-        },
-        "fields": "id,updated_at",
-    })
 
-    if res is not None:
-        # handle response
-        pass
+    res = apideck.accounting.tax_rates.list(service_id="salesforce", filter_={
+        "assets": True,
+        "equity": True,
+        "expenses": True,
+        "liabilities": True,
+        "revenue": True,
+    }, pass_through={
+        "search": "San Francisco",
+    }, fields="id,updated_at")
+
+    while res is not None:
+        # Handle items
+
+        res = res.next()
 
 ```
 <!-- End Authentication [security] -->
@@ -198,6 +190,14 @@ with Apideck(
 
 ### [accounting](docs/sdks/accounting/README.md)
 
+
+#### [accounting.aged_creditors](docs/sdks/agedcreditorssdk/README.md)
+
+* [get](docs/sdks/agedcreditorssdk/README.md#get) - Get Aged Creditors
+
+#### [accounting.aged_debtors](docs/sdks/ageddebtorssdk/README.md)
+
+* [get](docs/sdks/ageddebtorssdk/README.md#get) - Get Aged Debtors
 
 #### [accounting.attachments](docs/sdks/attachments/README.md)
 
@@ -717,6 +717,42 @@ with Apideck(
 </details>
 <!-- End Available Resources and Operations [operations] -->
 
+<!-- Start Pagination [pagination] -->
+## Pagination
+
+Some of the endpoints in this SDK support pagination. To use pagination, you make your SDK calls as usual, but the
+returned response object will have a `Next` method that can be called to pull down the next group of results. If the
+return value of `Next` is `None`, then there are no more pages to be fetched.
+
+Here's an example of one such pagination call:
+```python
+from apideck_unify import Apideck
+import os
+
+with Apideck(
+    api_key=os.getenv("APIDECK_API_KEY", ""),
+    consumer_id="test-consumer",
+    app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+) as apideck:
+
+    res = apideck.accounting.tax_rates.list(service_id="salesforce", filter_={
+        "assets": True,
+        "equity": True,
+        "expenses": True,
+        "liabilities": True,
+        "revenue": True,
+    }, pass_through={
+        "search": "San Francisco",
+    }, fields="id,updated_at")
+
+    while res is not None:
+        # Handle items
+
+        res = res.next()
+
+```
+<!-- End Pagination [pagination] -->
+
 <!-- Start Retries [retries] -->
 ## Retries
 
@@ -733,25 +769,22 @@ with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
-    res = apideck.accounting.tax_rates.list(request={
-        "service_id": "salesforce",
-        "filter_": {
-            "assets": True,
-            "equity": True,
-            "expenses": True,
-            "liabilities": True,
-            "revenue": True,
-        },
-        "pass_through": {
-            "search": "San Francisco",
-        },
-        "fields": "id,updated_at",
-    },
+
+    res = apideck.accounting.tax_rates.list(service_id="salesforce", filter_={
+        "assets": True,
+        "equity": True,
+        "expenses": True,
+        "liabilities": True,
+        "revenue": True,
+    }, pass_through={
+        "search": "San Francisco",
+    }, fields="id,updated_at",
         RetryConfig("backoff", BackoffStrategy(1, 50, 1.1, 100), False))
 
-    if res is not None:
-        # handle response
-        pass
+    while res is not None:
+        # Handle items
+
+        res = res.next()
 
 ```
 
@@ -767,24 +800,21 @@ with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
-    res = apideck.accounting.tax_rates.list(request={
-        "service_id": "salesforce",
-        "filter_": {
-            "assets": True,
-            "equity": True,
-            "expenses": True,
-            "liabilities": True,
-            "revenue": True,
-        },
-        "pass_through": {
-            "search": "San Francisco",
-        },
-        "fields": "id,updated_at",
-    })
 
-    if res is not None:
-        # handle response
-        pass
+    res = apideck.accounting.tax_rates.list(service_id="salesforce", filter_={
+        "assets": True,
+        "equity": True,
+        "expenses": True,
+        "liabilities": True,
+        "revenue": True,
+    }, pass_through={
+        "search": "San Francisco",
+    }, fields="id,updated_at")
+
+    while res is not None:
+        # Handle items
+
+        res = res.next()
 
 ```
 <!-- End Retries [retries] -->
@@ -827,24 +857,21 @@ with Apideck(
 ) as apideck:
     res = None
     try:
-        res = apideck.accounting.tax_rates.list(request={
-            "service_id": "salesforce",
-            "filter_": {
-                "assets": True,
-                "equity": True,
-                "expenses": True,
-                "liabilities": True,
-                "revenue": True,
-            },
-            "pass_through": {
-                "search": "San Francisco",
-            },
-            "fields": "id,updated_at",
-        })
 
-        if res is not None:
-            # handle response
-            pass
+        res = apideck.accounting.tax_rates.list(service_id="salesforce", filter_={
+            "assets": True,
+            "equity": True,
+            "expenses": True,
+            "liabilities": True,
+            "revenue": True,
+        }, pass_through={
+            "search": "San Francisco",
+        }, fields="id,updated_at")
+
+        while res is not None:
+            # Handle items
+
+            res = res.next()
 
     except models.BadRequestResponse as e:
         # handle e.data: models.BadRequestResponseData
@@ -883,24 +910,21 @@ with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
-    res = apideck.accounting.tax_rates.list(request={
-        "service_id": "salesforce",
-        "filter_": {
-            "assets": True,
-            "equity": True,
-            "expenses": True,
-            "liabilities": True,
-            "revenue": True,
-        },
-        "pass_through": {
-            "search": "San Francisco",
-        },
-        "fields": "id,updated_at",
-    })
 
-    if res is not None:
-        # handle response
-        pass
+    res = apideck.accounting.tax_rates.list(service_id="salesforce", filter_={
+        "assets": True,
+        "equity": True,
+        "expenses": True,
+        "liabilities": True,
+        "revenue": True,
+    }, pass_through={
+        "search": "San Francisco",
+    }, fields="id,updated_at")
+
+    while res is not None:
+        # Handle items
+
+        res = res.next()
 
 ```
 
@@ -916,39 +940,33 @@ with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
-    res = apideck.file_storage.upload_sessions.create(create_upload_session_request={
-        "name": "Documents",
-        "parent_folder_id": "1234",
-        "size": 1810673,
-        "drive_id": "1234",
-        "pass_through": [
-            {
-                "service_id": "<id>",
-                "extend_paths": [
-                    {
-                        "path": "$.nested.property",
-                        "value": {
-                            "TaxClassificationRef": {
-                                "value": "EUC-99990201-V1-00020000",
-                            },
-                        },
-                    },
-                    {
-                        "path": "$.nested.property",
-                        "value": {
-                            "TaxClassificationRef": {
-                                "value": "EUC-99990201-V1-00020000",
-                            },
-                        },
-                    },
-                ],
-            },
-        ],
-    }, service_id="salesforce", server_url="https://upload.apideck.com")
 
-    if res is not None:
-        # handle response
-        pass
+    res = apideck.file_storage.upload_sessions.create(name="Documents", parent_folder_id="1234", size=1810673, service_id="salesforce", drive_id="1234", pass_through=[
+        {
+            "service_id": "<id>",
+            "extend_paths": [
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
+            ],
+        },
+    ], server_url="https://upload.apideck.com")
+
+    # Handle response
+    print(res)
 
 ```
 <!-- End Server Selection [server] -->
