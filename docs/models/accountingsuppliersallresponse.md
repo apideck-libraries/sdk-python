@@ -1,17 +1,8 @@
 # AccountingSuppliersAllResponse
 
 
-## Supported Types
+## Fields
 
-### `models.GetSuppliersResponse`
-
-```python
-value: models.GetSuppliersResponse = /* values here */
-```
-
-### `models.UnexpectedErrorResponse`
-
-```python
-value: models.UnexpectedErrorResponse = /* values here */
-```
-
+| Field                                                                                            | Type                                                                                             | Required                                                                                         | Description                                                                                      |
+| ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------ |
+| `result`                                                                                         | [models.AccountingSuppliersAllResponseResult](../models/accountingsuppliersallresponseresult.md) | :heavy_check_mark:                                                                               | N/A                                                                                              |

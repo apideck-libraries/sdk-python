@@ -3,31 +3,49 @@
 from .basesdk import BaseSDK
 from apideck_unify import models, utils
 from apideck_unify._hooks import HookContext
-from apideck_unify.types import BaseModel, OptionalNullable, UNSET
+from apideck_unify.types import OptionalNullable, UNSET
 from apideck_unify.utils import get_security_from_env
-from typing import Any, Optional, Union, cast
+from jsonpath import JSONPath
+from typing import Any, Dict, List, Mapping, Optional, Union
 
 
 class Customers(BaseSDK):
     def list(
         self,
         *,
-        request: Union[
-            models.AccountingCustomersAllRequest,
-            models.AccountingCustomersAllRequestTypedDict,
-        ] = models.AccountingCustomersAllRequest(),
+        raw: Optional[bool] = False,
+        service_id: Optional[str] = None,
+        cursor: OptionalNullable[str] = UNSET,
+        limit: Optional[int] = 20,
+        filter_: Optional[
+            Union[models.CustomersFilter, models.CustomersFilterTypedDict]
+        ] = None,
+        sort: Optional[
+            Union[models.CustomersSort, models.CustomersSortTypedDict]
+        ] = None,
+        pass_through: Optional[Dict[str, Any]] = None,
+        fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
-    ) -> models.AccountingCustomersAllResponse:
+        http_headers: Optional[Mapping[str, str]] = None,
+    ) -> Optional[models.AccountingCustomersAllResponse]:
         r"""List Customers
 
         List Customers
 
-        :param request: The request object to send.
+        :param raw: Include raw response. Mostly used for debugging purposes
+        :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
+        :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
+        :param filter_: Apply filters
+        :param sort: Apply sorting
+        :param pass_through: Optional unmapped key/values that will be passed through to downstream as query parameters. Ie: ?pass_through[search]=leads becomes ?search=leads
+        :param fields: The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -37,9 +55,16 @@ class Customers(BaseSDK):
         if server_url is not None:
             base_url = server_url
 
-        if not isinstance(request, BaseModel):
-            request = utils.unmarshal(request, models.AccountingCustomersAllRequest)
-        request = cast(models.AccountingCustomersAllRequest, request)
+        request = models.AccountingCustomersAllRequest(
+            raw=raw,
+            service_id=service_id,
+            cursor=cursor,
+            limit=limit,
+            filter_=utils.get_pydantic_model(filter_, Optional[models.CustomersFilter]),
+            sort=utils.get_pydantic_model(sort, Optional[models.CustomersSort]),
+            pass_through=pass_through,
+            fields=fields,
+        )
 
         req = self.build_request(
             method="GET",
@@ -52,6 +77,7 @@ class Customers(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.AccountingCustomersAllGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -85,9 +111,32 @@ class Customers(BaseSDK):
             retry_config=retry_config,
         )
 
+        def next_func() -> Optional[models.AccountingCustomersAllResponse]:
+            body = utils.unmarshal_json(http_res.text, Dict[Any, Any])
+            next_cursor = JSONPath("$.meta.cursors.next").parse(body)
+
+            if len(next_cursor) == 0:
+                return None
+            next_cursor = next_cursor[0]
+
+            return self.list(
+                raw=raw,
+                service_id=service_id,
+                cursor=next_cursor,
+                limit=limit,
+                filter_=filter_,
+                sort=sort,
+                pass_through=pass_through,
+                fields=fields,
+                retries=retries,
+            )
+
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.GetCustomersResponse)
+            return models.AccountingCustomersAllResponse(
+                result=utils.unmarshal_json(http_res.text, models.GetCustomersResponse),
+                next=next_func,
+            )
         if utils.match_response(http_res, "400", "application/json"):
             data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
             raise models.BadRequestResponse(data=data)
@@ -111,7 +160,12 @@ class Customers(BaseSDK):
                 "API error occurred", http_res.status_code, http_res_text, http_res
             )
         if utils.match_response(http_res, "default", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UnexpectedErrorResponse)
+            return models.AccountingCustomersAllResponse(
+                result=utils.unmarshal_json(
+                    http_res.text, models.UnexpectedErrorResponse
+                ),
+                next=next_func,
+            )
 
         content_type = http_res.headers.get("Content-Type")
         http_res_text = utils.stream_to_text(http_res)
@@ -125,22 +179,39 @@ class Customers(BaseSDK):
     async def list_async(
         self,
         *,
-        request: Union[
-            models.AccountingCustomersAllRequest,
-            models.AccountingCustomersAllRequestTypedDict,
-        ] = models.AccountingCustomersAllRequest(),
+        raw: Optional[bool] = False,
+        service_id: Optional[str] = None,
+        cursor: OptionalNullable[str] = UNSET,
+        limit: Optional[int] = 20,
+        filter_: Optional[
+            Union[models.CustomersFilter, models.CustomersFilterTypedDict]
+        ] = None,
+        sort: Optional[
+            Union[models.CustomersSort, models.CustomersSortTypedDict]
+        ] = None,
+        pass_through: Optional[Dict[str, Any]] = None,
+        fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
-    ) -> models.AccountingCustomersAllResponse:
+        http_headers: Optional[Mapping[str, str]] = None,
+    ) -> Optional[models.AccountingCustomersAllResponse]:
         r"""List Customers
 
         List Customers
 
-        :param request: The request object to send.
+        :param raw: Include raw response. Mostly used for debugging purposes
+        :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
+        :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
+        :param filter_: Apply filters
+        :param sort: Apply sorting
+        :param pass_through: Optional unmapped key/values that will be passed through to downstream as query parameters. Ie: ?pass_through[search]=leads becomes ?search=leads
+        :param fields: The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -150,9 +221,16 @@ class Customers(BaseSDK):
         if server_url is not None:
             base_url = server_url
 
-        if not isinstance(request, BaseModel):
-            request = utils.unmarshal(request, models.AccountingCustomersAllRequest)
-        request = cast(models.AccountingCustomersAllRequest, request)
+        request = models.AccountingCustomersAllRequest(
+            raw=raw,
+            service_id=service_id,
+            cursor=cursor,
+            limit=limit,
+            filter_=utils.get_pydantic_model(filter_, Optional[models.CustomersFilter]),
+            sort=utils.get_pydantic_model(sort, Optional[models.CustomersSort]),
+            pass_through=pass_through,
+            fields=fields,
+        )
 
         req = self.build_request_async(
             method="GET",
@@ -165,6 +243,7 @@ class Customers(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.AccountingCustomersAllGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -198,9 +277,32 @@ class Customers(BaseSDK):
             retry_config=retry_config,
         )
 
+        def next_func() -> Optional[models.AccountingCustomersAllResponse]:
+            body = utils.unmarshal_json(http_res.text, Dict[Any, Any])
+            next_cursor = JSONPath("$.meta.cursors.next").parse(body)
+
+            if len(next_cursor) == 0:
+                return None
+            next_cursor = next_cursor[0]
+
+            return self.list(
+                raw=raw,
+                service_id=service_id,
+                cursor=next_cursor,
+                limit=limit,
+                filter_=filter_,
+                sort=sort,
+                pass_through=pass_through,
+                fields=fields,
+                retries=retries,
+            )
+
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.GetCustomersResponse)
+            return models.AccountingCustomersAllResponse(
+                result=utils.unmarshal_json(http_res.text, models.GetCustomersResponse),
+                next=next_func,
+            )
         if utils.match_response(http_res, "400", "application/json"):
             data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
             raise models.BadRequestResponse(data=data)
@@ -224,7 +326,12 @@ class Customers(BaseSDK):
                 "API error occurred", http_res.status_code, http_res_text, http_res
             )
         if utils.match_response(http_res, "default", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UnexpectedErrorResponse)
+            return models.AccountingCustomersAllResponse(
+                result=utils.unmarshal_json(
+                    http_res.text, models.UnexpectedErrorResponse
+                ),
+                next=next_func,
+            )
 
         content_type = http_res.headers.get("Content-Type")
         http_res_text = await utils.stream_to_text_async(http_res)
@@ -238,23 +345,96 @@ class Customers(BaseSDK):
     def create(
         self,
         *,
-        customer: Union[models.CustomerInput, models.CustomerInputTypedDict],
         raw: Optional[bool] = False,
         service_id: Optional[str] = None,
+        display_id: OptionalNullable[str] = UNSET,
+        display_name: OptionalNullable[str] = UNSET,
+        company_name: OptionalNullable[str] = UNSET,
+        company_id: OptionalNullable[str] = UNSET,
+        title: OptionalNullable[str] = UNSET,
+        first_name: OptionalNullable[str] = UNSET,
+        middle_name: OptionalNullable[str] = UNSET,
+        last_name: OptionalNullable[str] = UNSET,
+        suffix: OptionalNullable[str] = UNSET,
+        individual: OptionalNullable[bool] = UNSET,
+        project: OptionalNullable[bool] = UNSET,
+        addresses: Optional[
+            Union[List[models.Address], List[models.AddressTypedDict]]
+        ] = None,
+        phone_numbers: Optional[
+            Union[List[models.PhoneNumber], List[models.PhoneNumberTypedDict]]
+        ] = None,
+        emails: Optional[Union[List[models.Email], List[models.EmailTypedDict]]] = None,
+        websites: Optional[
+            Union[List[models.Website], List[models.WebsiteTypedDict]]
+        ] = None,
+        bank_accounts: Optional[
+            Union[List[models.BankAccount], List[models.BankAccountTypedDict]]
+        ] = None,
+        notes: OptionalNullable[str] = UNSET,
+        tax_rate: Optional[
+            Union[models.LinkedTaxRateInput, models.LinkedTaxRateInputTypedDict]
+        ] = None,
+        tax_number: OptionalNullable[str] = UNSET,
+        currency: OptionalNullable[models.Currency] = UNSET,
+        account: OptionalNullable[
+            Union[
+                models.LinkedLedgerAccountInput,
+                models.LinkedLedgerAccountInputTypedDict,
+            ]
+        ] = UNSET,
+        parent: OptionalNullable[
+            Union[models.LinkedParentCustomer, models.LinkedParentCustomerTypedDict]
+        ] = UNSET,
+        status: OptionalNullable[models.CustomerStatusStatus] = UNSET,
+        payment_method: OptionalNullable[str] = UNSET,
+        channel: OptionalNullable[str] = UNSET,
+        row_version: OptionalNullable[str] = UNSET,
+        pass_through: Optional[
+            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.AccountingCustomersAddResponse:
         r"""Create Customer
 
         Create Customer
 
-        :param customer:
         :param raw: Include raw response. Mostly used for debugging purposes
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param display_id: Display ID
+        :param display_name: Display name
+        :param company_name: The name of the company.
+        :param company_id: The company or subsidiary id the transaction belongs to
+        :param title: The job title of the person.
+        :param first_name: The first name of the person.
+        :param middle_name: Middle name of the person.
+        :param last_name: The last name of the person.
+        :param suffix:
+        :param individual: Is this an individual or business customer
+        :param project: If true, indicates this is a Project.
+        :param addresses:
+        :param phone_numbers:
+        :param emails:
+        :param websites:
+        :param bank_accounts:
+        :param notes: Some notes about this customer
+        :param tax_rate:
+        :param tax_number:
+        :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
+        :param account:
+        :param parent: The parent customer this entity is linked to.
+        :param status: Customer status
+        :param payment_method: Payment method used for the transaction, such as cash, credit card, bank transfer, or check
+        :param channel: The channel through which the transaction is processed.
+        :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
+        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -267,7 +447,51 @@ class Customers(BaseSDK):
         request = models.AccountingCustomersAddRequest(
             raw=raw,
             service_id=service_id,
-            customer=utils.get_pydantic_model(customer, models.CustomerInput),
+            customer=models.CustomerInput(
+                display_id=display_id,
+                display_name=display_name,
+                company_name=company_name,
+                company_id=company_id,
+                title=title,
+                first_name=first_name,
+                middle_name=middle_name,
+                last_name=last_name,
+                suffix=suffix,
+                individual=individual,
+                project=project,
+                addresses=utils.get_pydantic_model(
+                    addresses, Optional[List[models.Address]]
+                ),
+                phone_numbers=utils.get_pydantic_model(
+                    phone_numbers, Optional[List[models.PhoneNumber]]
+                ),
+                emails=utils.get_pydantic_model(emails, Optional[List[models.Email]]),
+                websites=utils.get_pydantic_model(
+                    websites, Optional[List[models.Website]]
+                ),
+                bank_accounts=utils.get_pydantic_model(
+                    bank_accounts, Optional[List[models.BankAccount]]
+                ),
+                notes=notes,
+                tax_rate=utils.get_pydantic_model(
+                    tax_rate, Optional[models.LinkedTaxRateInput]
+                ),
+                tax_number=tax_number,
+                currency=currency,
+                account=utils.get_pydantic_model(
+                    account, OptionalNullable[models.LinkedLedgerAccountInput]
+                ),
+                parent=utils.get_pydantic_model(
+                    parent, OptionalNullable[models.LinkedParentCustomer]
+                ),
+                status=status,
+                payment_method=payment_method,
+                channel=channel,
+                row_version=row_version,
+                pass_through=utils.get_pydantic_model(
+                    pass_through, Optional[List[models.PassThroughBody]]
+                ),
+            ),
         )
 
         req = self.build_request(
@@ -281,6 +505,7 @@ class Customers(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.AccountingCustomersAddGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -357,23 +582,96 @@ class Customers(BaseSDK):
     async def create_async(
         self,
         *,
-        customer: Union[models.CustomerInput, models.CustomerInputTypedDict],
         raw: Optional[bool] = False,
         service_id: Optional[str] = None,
+        display_id: OptionalNullable[str] = UNSET,
+        display_name: OptionalNullable[str] = UNSET,
+        company_name: OptionalNullable[str] = UNSET,
+        company_id: OptionalNullable[str] = UNSET,
+        title: OptionalNullable[str] = UNSET,
+        first_name: OptionalNullable[str] = UNSET,
+        middle_name: OptionalNullable[str] = UNSET,
+        last_name: OptionalNullable[str] = UNSET,
+        suffix: OptionalNullable[str] = UNSET,
+        individual: OptionalNullable[bool] = UNSET,
+        project: OptionalNullable[bool] = UNSET,
+        addresses: Optional[
+            Union[List[models.Address], List[models.AddressTypedDict]]
+        ] = None,
+        phone_numbers: Optional[
+            Union[List[models.PhoneNumber], List[models.PhoneNumberTypedDict]]
+        ] = None,
+        emails: Optional[Union[List[models.Email], List[models.EmailTypedDict]]] = None,
+        websites: Optional[
+            Union[List[models.Website], List[models.WebsiteTypedDict]]
+        ] = None,
+        bank_accounts: Optional[
+            Union[List[models.BankAccount], List[models.BankAccountTypedDict]]
+        ] = None,
+        notes: OptionalNullable[str] = UNSET,
+        tax_rate: Optional[
+            Union[models.LinkedTaxRateInput, models.LinkedTaxRateInputTypedDict]
+        ] = None,
+        tax_number: OptionalNullable[str] = UNSET,
+        currency: OptionalNullable[models.Currency] = UNSET,
+        account: OptionalNullable[
+            Union[
+                models.LinkedLedgerAccountInput,
+                models.LinkedLedgerAccountInputTypedDict,
+            ]
+        ] = UNSET,
+        parent: OptionalNullable[
+            Union[models.LinkedParentCustomer, models.LinkedParentCustomerTypedDict]
+        ] = UNSET,
+        status: OptionalNullable[models.CustomerStatusStatus] = UNSET,
+        payment_method: OptionalNullable[str] = UNSET,
+        channel: OptionalNullable[str] = UNSET,
+        row_version: OptionalNullable[str] = UNSET,
+        pass_through: Optional[
+            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.AccountingCustomersAddResponse:
         r"""Create Customer
 
         Create Customer
 
-        :param customer:
         :param raw: Include raw response. Mostly used for debugging purposes
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param display_id: Display ID
+        :param display_name: Display name
+        :param company_name: The name of the company.
+        :param company_id: The company or subsidiary id the transaction belongs to
+        :param title: The job title of the person.
+        :param first_name: The first name of the person.
+        :param middle_name: Middle name of the person.
+        :param last_name: The last name of the person.
+        :param suffix:
+        :param individual: Is this an individual or business customer
+        :param project: If true, indicates this is a Project.
+        :param addresses:
+        :param phone_numbers:
+        :param emails:
+        :param websites:
+        :param bank_accounts:
+        :param notes: Some notes about this customer
+        :param tax_rate:
+        :param tax_number:
+        :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
+        :param account:
+        :param parent: The parent customer this entity is linked to.
+        :param status: Customer status
+        :param payment_method: Payment method used for the transaction, such as cash, credit card, bank transfer, or check
+        :param channel: The channel through which the transaction is processed.
+        :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
+        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -386,7 +684,51 @@ class Customers(BaseSDK):
         request = models.AccountingCustomersAddRequest(
             raw=raw,
             service_id=service_id,
-            customer=utils.get_pydantic_model(customer, models.CustomerInput),
+            customer=models.CustomerInput(
+                display_id=display_id,
+                display_name=display_name,
+                company_name=company_name,
+                company_id=company_id,
+                title=title,
+                first_name=first_name,
+                middle_name=middle_name,
+                last_name=last_name,
+                suffix=suffix,
+                individual=individual,
+                project=project,
+                addresses=utils.get_pydantic_model(
+                    addresses, Optional[List[models.Address]]
+                ),
+                phone_numbers=utils.get_pydantic_model(
+                    phone_numbers, Optional[List[models.PhoneNumber]]
+                ),
+                emails=utils.get_pydantic_model(emails, Optional[List[models.Email]]),
+                websites=utils.get_pydantic_model(
+                    websites, Optional[List[models.Website]]
+                ),
+                bank_accounts=utils.get_pydantic_model(
+                    bank_accounts, Optional[List[models.BankAccount]]
+                ),
+                notes=notes,
+                tax_rate=utils.get_pydantic_model(
+                    tax_rate, Optional[models.LinkedTaxRateInput]
+                ),
+                tax_number=tax_number,
+                currency=currency,
+                account=utils.get_pydantic_model(
+                    account, OptionalNullable[models.LinkedLedgerAccountInput]
+                ),
+                parent=utils.get_pydantic_model(
+                    parent, OptionalNullable[models.LinkedParentCustomer]
+                ),
+                status=status,
+                payment_method=payment_method,
+                channel=channel,
+                row_version=row_version,
+                pass_through=utils.get_pydantic_model(
+                    pass_through, Optional[List[models.PassThroughBody]]
+                ),
+            ),
         )
 
         req = self.build_request_async(
@@ -400,6 +742,7 @@ class Customers(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.AccountingCustomersAddGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -483,6 +826,7 @@ class Customers(BaseSDK):
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.AccountingCustomersOneResponse:
         r"""Get Customer
 
@@ -495,6 +839,7 @@ class Customers(BaseSDK):
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -522,6 +867,7 @@ class Customers(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.AccountingCustomersOneGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -602,6 +948,7 @@ class Customers(BaseSDK):
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.AccountingCustomersOneResponse:
         r"""Get Customer
 
@@ -614,6 +961,7 @@ class Customers(BaseSDK):
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -641,6 +989,7 @@ class Customers(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.AccountingCustomersOneGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -715,24 +1064,97 @@ class Customers(BaseSDK):
         self,
         *,
         id: str,
-        customer: Union[models.CustomerInput, models.CustomerInputTypedDict],
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
+        display_id: OptionalNullable[str] = UNSET,
+        display_name: OptionalNullable[str] = UNSET,
+        company_name: OptionalNullable[str] = UNSET,
+        company_id: OptionalNullable[str] = UNSET,
+        title: OptionalNullable[str] = UNSET,
+        first_name: OptionalNullable[str] = UNSET,
+        middle_name: OptionalNullable[str] = UNSET,
+        last_name: OptionalNullable[str] = UNSET,
+        suffix: OptionalNullable[str] = UNSET,
+        individual: OptionalNullable[bool] = UNSET,
+        project: OptionalNullable[bool] = UNSET,
+        addresses: Optional[
+            Union[List[models.Address], List[models.AddressTypedDict]]
+        ] = None,
+        phone_numbers: Optional[
+            Union[List[models.PhoneNumber], List[models.PhoneNumberTypedDict]]
+        ] = None,
+        emails: Optional[Union[List[models.Email], List[models.EmailTypedDict]]] = None,
+        websites: Optional[
+            Union[List[models.Website], List[models.WebsiteTypedDict]]
+        ] = None,
+        bank_accounts: Optional[
+            Union[List[models.BankAccount], List[models.BankAccountTypedDict]]
+        ] = None,
+        notes: OptionalNullable[str] = UNSET,
+        tax_rate: Optional[
+            Union[models.LinkedTaxRateInput, models.LinkedTaxRateInputTypedDict]
+        ] = None,
+        tax_number: OptionalNullable[str] = UNSET,
+        currency: OptionalNullable[models.Currency] = UNSET,
+        account: OptionalNullable[
+            Union[
+                models.LinkedLedgerAccountInput,
+                models.LinkedLedgerAccountInputTypedDict,
+            ]
+        ] = UNSET,
+        parent: OptionalNullable[
+            Union[models.LinkedParentCustomer, models.LinkedParentCustomerTypedDict]
+        ] = UNSET,
+        status: OptionalNullable[models.CustomerStatusStatus] = UNSET,
+        payment_method: OptionalNullable[str] = UNSET,
+        channel: OptionalNullable[str] = UNSET,
+        row_version: OptionalNullable[str] = UNSET,
+        pass_through: Optional[
+            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.AccountingCustomersUpdateResponse:
         r"""Update Customer
 
         Update Customer
 
         :param id: ID of the record you are acting upon.
-        :param customer:
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param display_id: Display ID
+        :param display_name: Display name
+        :param company_name: The name of the company.
+        :param company_id: The company or subsidiary id the transaction belongs to
+        :param title: The job title of the person.
+        :param first_name: The first name of the person.
+        :param middle_name: Middle name of the person.
+        :param last_name: The last name of the person.
+        :param suffix:
+        :param individual: Is this an individual or business customer
+        :param project: If true, indicates this is a Project.
+        :param addresses:
+        :param phone_numbers:
+        :param emails:
+        :param websites:
+        :param bank_accounts:
+        :param notes: Some notes about this customer
+        :param tax_rate:
+        :param tax_number:
+        :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
+        :param account:
+        :param parent: The parent customer this entity is linked to.
+        :param status: Customer status
+        :param payment_method: Payment method used for the transaction, such as cash, credit card, bank transfer, or check
+        :param channel: The channel through which the transaction is processed.
+        :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
+        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -746,7 +1168,51 @@ class Customers(BaseSDK):
             id=id,
             service_id=service_id,
             raw=raw,
-            customer=utils.get_pydantic_model(customer, models.CustomerInput),
+            customer=models.CustomerInput(
+                display_id=display_id,
+                display_name=display_name,
+                company_name=company_name,
+                company_id=company_id,
+                title=title,
+                first_name=first_name,
+                middle_name=middle_name,
+                last_name=last_name,
+                suffix=suffix,
+                individual=individual,
+                project=project,
+                addresses=utils.get_pydantic_model(
+                    addresses, Optional[List[models.Address]]
+                ),
+                phone_numbers=utils.get_pydantic_model(
+                    phone_numbers, Optional[List[models.PhoneNumber]]
+                ),
+                emails=utils.get_pydantic_model(emails, Optional[List[models.Email]]),
+                websites=utils.get_pydantic_model(
+                    websites, Optional[List[models.Website]]
+                ),
+                bank_accounts=utils.get_pydantic_model(
+                    bank_accounts, Optional[List[models.BankAccount]]
+                ),
+                notes=notes,
+                tax_rate=utils.get_pydantic_model(
+                    tax_rate, Optional[models.LinkedTaxRateInput]
+                ),
+                tax_number=tax_number,
+                currency=currency,
+                account=utils.get_pydantic_model(
+                    account, OptionalNullable[models.LinkedLedgerAccountInput]
+                ),
+                parent=utils.get_pydantic_model(
+                    parent, OptionalNullable[models.LinkedParentCustomer]
+                ),
+                status=status,
+                payment_method=payment_method,
+                channel=channel,
+                row_version=row_version,
+                pass_through=utils.get_pydantic_model(
+                    pass_through, Optional[List[models.PassThroughBody]]
+                ),
+            ),
         )
 
         req = self.build_request(
@@ -760,6 +1226,7 @@ class Customers(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.AccountingCustomersUpdateGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -837,24 +1304,97 @@ class Customers(BaseSDK):
         self,
         *,
         id: str,
-        customer: Union[models.CustomerInput, models.CustomerInputTypedDict],
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
+        display_id: OptionalNullable[str] = UNSET,
+        display_name: OptionalNullable[str] = UNSET,
+        company_name: OptionalNullable[str] = UNSET,
+        company_id: OptionalNullable[str] = UNSET,
+        title: OptionalNullable[str] = UNSET,
+        first_name: OptionalNullable[str] = UNSET,
+        middle_name: OptionalNullable[str] = UNSET,
+        last_name: OptionalNullable[str] = UNSET,
+        suffix: OptionalNullable[str] = UNSET,
+        individual: OptionalNullable[bool] = UNSET,
+        project: OptionalNullable[bool] = UNSET,
+        addresses: Optional[
+            Union[List[models.Address], List[models.AddressTypedDict]]
+        ] = None,
+        phone_numbers: Optional[
+            Union[List[models.PhoneNumber], List[models.PhoneNumberTypedDict]]
+        ] = None,
+        emails: Optional[Union[List[models.Email], List[models.EmailTypedDict]]] = None,
+        websites: Optional[
+            Union[List[models.Website], List[models.WebsiteTypedDict]]
+        ] = None,
+        bank_accounts: Optional[
+            Union[List[models.BankAccount], List[models.BankAccountTypedDict]]
+        ] = None,
+        notes: OptionalNullable[str] = UNSET,
+        tax_rate: Optional[
+            Union[models.LinkedTaxRateInput, models.LinkedTaxRateInputTypedDict]
+        ] = None,
+        tax_number: OptionalNullable[str] = UNSET,
+        currency: OptionalNullable[models.Currency] = UNSET,
+        account: OptionalNullable[
+            Union[
+                models.LinkedLedgerAccountInput,
+                models.LinkedLedgerAccountInputTypedDict,
+            ]
+        ] = UNSET,
+        parent: OptionalNullable[
+            Union[models.LinkedParentCustomer, models.LinkedParentCustomerTypedDict]
+        ] = UNSET,
+        status: OptionalNullable[models.CustomerStatusStatus] = UNSET,
+        payment_method: OptionalNullable[str] = UNSET,
+        channel: OptionalNullable[str] = UNSET,
+        row_version: OptionalNullable[str] = UNSET,
+        pass_through: Optional[
+            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.AccountingCustomersUpdateResponse:
         r"""Update Customer
 
         Update Customer
 
         :param id: ID of the record you are acting upon.
-        :param customer:
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param display_id: Display ID
+        :param display_name: Display name
+        :param company_name: The name of the company.
+        :param company_id: The company or subsidiary id the transaction belongs to
+        :param title: The job title of the person.
+        :param first_name: The first name of the person.
+        :param middle_name: Middle name of the person.
+        :param last_name: The last name of the person.
+        :param suffix:
+        :param individual: Is this an individual or business customer
+        :param project: If true, indicates this is a Project.
+        :param addresses:
+        :param phone_numbers:
+        :param emails:
+        :param websites:
+        :param bank_accounts:
+        :param notes: Some notes about this customer
+        :param tax_rate:
+        :param tax_number:
+        :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
+        :param account:
+        :param parent: The parent customer this entity is linked to.
+        :param status: Customer status
+        :param payment_method: Payment method used for the transaction, such as cash, credit card, bank transfer, or check
+        :param channel: The channel through which the transaction is processed.
+        :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
+        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -868,7 +1408,51 @@ class Customers(BaseSDK):
             id=id,
             service_id=service_id,
             raw=raw,
-            customer=utils.get_pydantic_model(customer, models.CustomerInput),
+            customer=models.CustomerInput(
+                display_id=display_id,
+                display_name=display_name,
+                company_name=company_name,
+                company_id=company_id,
+                title=title,
+                first_name=first_name,
+                middle_name=middle_name,
+                last_name=last_name,
+                suffix=suffix,
+                individual=individual,
+                project=project,
+                addresses=utils.get_pydantic_model(
+                    addresses, Optional[List[models.Address]]
+                ),
+                phone_numbers=utils.get_pydantic_model(
+                    phone_numbers, Optional[List[models.PhoneNumber]]
+                ),
+                emails=utils.get_pydantic_model(emails, Optional[List[models.Email]]),
+                websites=utils.get_pydantic_model(
+                    websites, Optional[List[models.Website]]
+                ),
+                bank_accounts=utils.get_pydantic_model(
+                    bank_accounts, Optional[List[models.BankAccount]]
+                ),
+                notes=notes,
+                tax_rate=utils.get_pydantic_model(
+                    tax_rate, Optional[models.LinkedTaxRateInput]
+                ),
+                tax_number=tax_number,
+                currency=currency,
+                account=utils.get_pydantic_model(
+                    account, OptionalNullable[models.LinkedLedgerAccountInput]
+                ),
+                parent=utils.get_pydantic_model(
+                    parent, OptionalNullable[models.LinkedParentCustomer]
+                ),
+                status=status,
+                payment_method=payment_method,
+                channel=channel,
+                row_version=row_version,
+                pass_through=utils.get_pydantic_model(
+                    pass_through, Optional[List[models.PassThroughBody]]
+                ),
+            ),
         )
 
         req = self.build_request_async(
@@ -882,6 +1466,7 @@ class Customers(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.AccountingCustomersUpdateGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -964,6 +1549,7 @@ class Customers(BaseSDK):
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.AccountingCustomersDeleteResponse:
         r"""Delete Customer
 
@@ -975,6 +1561,7 @@ class Customers(BaseSDK):
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -1001,6 +1588,7 @@ class Customers(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.AccountingCustomersDeleteGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -1080,6 +1668,7 @@ class Customers(BaseSDK):
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.AccountingCustomersDeleteResponse:
         r"""Delete Customer
 
@@ -1091,6 +1680,7 @@ class Customers(BaseSDK):
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -1117,6 +1707,7 @@ class Customers(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.AccountingCustomersDeleteGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,

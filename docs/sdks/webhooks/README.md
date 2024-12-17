@@ -26,11 +26,13 @@ with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
+
     res = apideck.webhook.webhooks.list()
 
-    if res is not None:
-        # handle response
-        pass
+    while res is not None:
+        # Handle items
+
+        res = res.next()
 
 ```
 
@@ -73,29 +75,27 @@ with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
-    res = apideck.webhook.webhooks.create(request={
-        "unified_api": apideck_unify.UnifiedAPIID.CRM,
-        "status": apideck_unify.Status.ENABLED,
-        "delivery_url": "https://example.com/my/webhook/endpoint",
-        "events": [
-            apideck_unify.WebhookEventType.VAULT_CONNECTION_CREATED,
-            apideck_unify.WebhookEventType.VAULT_CONNECTION_UPDATED,
-        ],
-        "description": "A description",
-    })
 
-    if res is not None:
-        # handle response
-        pass
+    res = apideck.webhook.webhooks.create(unified_api=apideck_unify.UnifiedAPIID.CRM, status=apideck_unify.Status.ENABLED, delivery_url="https://example.com/my/webhook/endpoint", events=[
+        apideck_unify.WebhookEventType.VAULT_CONNECTION_CREATED,
+        apideck_unify.WebhookEventType.VAULT_CONNECTION_UPDATED,
+    ], description="A description")
+
+    # Handle response
+    print(res)
 
 ```
 
 ### Parameters
 
-| Parameter                                                           | Type                                                                | Required                                                            | Description                                                         |
-| ------------------------------------------------------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------------- |
-| `request`                                                           | [models.CreateWebhookRequest](../../models/createwebhookrequest.md) | :heavy_check_mark:                                                  | N/A                                                                 |
-| `retries`                                                           | [Optional[utils.RetryConfig]](../../models/utils/retryconfig.md)    | :heavy_minus_sign:                                                  | Configuration to override the default retry behavior of the client. |
+| Parameter                                                                                    | Type                                                                                         | Required                                                                                     | Description                                                                                  | Example                                                                                      |
+| -------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| `unified_api`                                                                                | [models.UnifiedAPIID](../../models/unifiedapiid.md)                                          | :heavy_check_mark:                                                                           | Name of Apideck Unified API                                                                  | crm                                                                                          |
+| `status`                                                                                     | [models.Status](../../models/status.md)                                                      | :heavy_check_mark:                                                                           | The status of the webhook.                                                                   | enabled                                                                                      |
+| `delivery_url`                                                                               | *str*                                                                                        | :heavy_check_mark:                                                                           | The delivery url of the webhook endpoint.                                                    | https://example.com/my/webhook/endpoint                                                      |
+| `events`                                                                                     | List[[models.WebhookEventType](../../models/webhookeventtype.md)]                            | :heavy_check_mark:                                                                           | The list of subscribed events for this webhook. [`*`] indicates that all events are enabled. | [<br/>"vault.connection.created",<br/>"vault.connection.updated"<br/>]                       |
+| `description`                                                                                | *OptionalNullable[str]*                                                                      | :heavy_minus_sign:                                                                           | A description of the object.                                                                 | A description                                                                                |
+| `retries`                                                                                    | [Optional[utils.RetryConfig]](../../models/utils/retryconfig.md)                             | :heavy_minus_sign:                                                                           | Configuration to override the default retry behavior of the client.                          |                                                                                              |
 
 ### Response
 
@@ -127,11 +127,11 @@ with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
+
     res = apideck.webhook.webhooks.get(id="<id>")
 
-    if res is not None:
-        # handle response
-        pass
+    # Handle response
+    print(res)
 
 ```
 
@@ -173,29 +173,27 @@ with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
-    res = apideck.webhook.webhooks.update(id="<id>", update_webhook_request={
-        "description": "A description",
-        "status": apideck_unify.Status.ENABLED,
-        "delivery_url": "https://example.com/my/webhook/endpoint",
-        "events": [
-            apideck_unify.WebhookEventType.VAULT_CONNECTION_CREATED,
-            apideck_unify.WebhookEventType.VAULT_CONNECTION_UPDATED,
-        ],
-    })
 
-    if res is not None:
-        # handle response
-        pass
+    res = apideck.webhook.webhooks.update(id="<id>", description="A description", status=apideck_unify.Status.ENABLED, delivery_url="https://example.com/my/webhook/endpoint", events=[
+        apideck_unify.WebhookEventType.VAULT_CONNECTION_CREATED,
+        apideck_unify.WebhookEventType.VAULT_CONNECTION_UPDATED,
+    ])
+
+    # Handle response
+    print(res)
 
 ```
 
 ### Parameters
 
-| Parameter                                                                                          | Type                                                                                               | Required                                                                                           | Description                                                                                        |
-| -------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
-| `id`                                                                                               | *str*                                                                                              | :heavy_check_mark:                                                                                 | JWT Webhook token that represents the unifiedApi and applicationId associated to the event source. |
-| `update_webhook_request`                                                                           | [models.UpdateWebhookRequest](../../models/updatewebhookrequest.md)                                | :heavy_check_mark:                                                                                 | N/A                                                                                                |
-| `retries`                                                                                          | [Optional[utils.RetryConfig]](../../models/utils/retryconfig.md)                                   | :heavy_minus_sign:                                                                                 | Configuration to override the default retry behavior of the client.                                |
+| Parameter                                                                                          | Type                                                                                               | Required                                                                                           | Description                                                                                        | Example                                                                                            |
+| -------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| `id`                                                                                               | *str*                                                                                              | :heavy_check_mark:                                                                                 | JWT Webhook token that represents the unifiedApi and applicationId associated to the event source. |                                                                                                    |
+| `description`                                                                                      | *OptionalNullable[str]*                                                                            | :heavy_minus_sign:                                                                                 | A description of the object.                                                                       | A description                                                                                      |
+| `status`                                                                                           | [Optional[models.Status]](../../models/status.md)                                                  | :heavy_minus_sign:                                                                                 | The status of the webhook.                                                                         | enabled                                                                                            |
+| `delivery_url`                                                                                     | *Optional[str]*                                                                                    | :heavy_minus_sign:                                                                                 | The delivery url of the webhook endpoint.                                                          | https://example.com/my/webhook/endpoint                                                            |
+| `events`                                                                                           | List[[models.WebhookEventType](../../models/webhookeventtype.md)]                                  | :heavy_minus_sign:                                                                                 | The list of subscribed events for this webhook. [`*`] indicates that all events are enabled.       | [<br/>"vault.connection.created",<br/>"vault.connection.updated"<br/>]                             |
+| `retries`                                                                                          | [Optional[utils.RetryConfig]](../../models/utils/retryconfig.md)                                   | :heavy_minus_sign:                                                                                 | Configuration to override the default retry behavior of the client.                                |                                                                                                    |
 
 ### Response
 
@@ -227,11 +225,11 @@ with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
+
     res = apideck.webhook.webhooks.delete(id="<id>")
 
-    if res is not None:
-        # handle response
-        pass
+    # Handle response
+    print(res)
 
 ```
 

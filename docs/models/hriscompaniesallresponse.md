@@ -1,17 +1,8 @@
 # HrisCompaniesAllResponse
 
 
-## Supported Types
+## Fields
 
-### `models.GetHrisCompaniesResponse`
-
-```python
-value: models.GetHrisCompaniesResponse = /* values here */
-```
-
-### `models.UnexpectedErrorResponse`
-
-```python
-value: models.UnexpectedErrorResponse = /* values here */
-```
-
+| Field                                                                                | Type                                                                                 | Required                                                                             | Description                                                                          |
+| ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ |
+| `result`                                                                             | [models.HrisCompaniesAllResponseResult](../models/hriscompaniesallresponseresult.md) | :heavy_check_mark:                                                                   | N/A                                                                                  |

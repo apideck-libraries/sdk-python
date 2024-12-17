@@ -3,30 +3,49 @@
 from .basesdk import BaseSDK
 from apideck_unify import models, utils
 from apideck_unify._hooks import HookContext
-from apideck_unify.types import BaseModel, OptionalNullable, UNSET
+from apideck_unify.types import Nullable, OptionalNullable, UNSET
 from apideck_unify.utils import get_security_from_env
-from typing import Any, Optional, Union, cast
+from jsonpath import JSONPath
+from typing import Any, Dict, List, Mapping, Optional, Union
 
 
 class Activities(BaseSDK):
     def list(
         self,
         *,
-        request: Union[
-            models.CrmActivitiesAllRequest, models.CrmActivitiesAllRequestTypedDict
-        ] = models.CrmActivitiesAllRequest(),
+        raw: Optional[bool] = False,
+        service_id: Optional[str] = None,
+        cursor: OptionalNullable[str] = UNSET,
+        limit: Optional[int] = 20,
+        filter_: Optional[
+            Union[models.ActivitiesFilter, models.ActivitiesFilterTypedDict]
+        ] = None,
+        sort: Optional[
+            Union[models.ActivitiesSort, models.ActivitiesSortTypedDict]
+        ] = None,
+        pass_through: Optional[Dict[str, Any]] = None,
+        fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
-    ) -> models.CrmActivitiesAllResponse:
+        http_headers: Optional[Mapping[str, str]] = None,
+    ) -> Optional[models.CrmActivitiesAllResponse]:
         r"""List activities
 
         List activities
 
-        :param request: The request object to send.
+        :param raw: Include raw response. Mostly used for debugging purposes
+        :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
+        :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
+        :param filter_: Apply filters
+        :param sort: Apply sorting
+        :param pass_through: Optional unmapped key/values that will be passed through to downstream as query parameters. Ie: ?pass_through[search]=leads becomes ?search=leads
+        :param fields: The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -36,9 +55,18 @@ class Activities(BaseSDK):
         if server_url is not None:
             base_url = server_url
 
-        if not isinstance(request, BaseModel):
-            request = utils.unmarshal(request, models.CrmActivitiesAllRequest)
-        request = cast(models.CrmActivitiesAllRequest, request)
+        request = models.CrmActivitiesAllRequest(
+            raw=raw,
+            service_id=service_id,
+            cursor=cursor,
+            limit=limit,
+            filter_=utils.get_pydantic_model(
+                filter_, Optional[models.ActivitiesFilter]
+            ),
+            sort=utils.get_pydantic_model(sort, Optional[models.ActivitiesSort]),
+            pass_through=pass_through,
+            fields=fields,
+        )
 
         req = self.build_request(
             method="GET",
@@ -51,6 +79,7 @@ class Activities(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.CrmActivitiesAllGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -84,9 +113,34 @@ class Activities(BaseSDK):
             retry_config=retry_config,
         )
 
+        def next_func() -> Optional[models.CrmActivitiesAllResponse]:
+            body = utils.unmarshal_json(http_res.text, Dict[Any, Any])
+            next_cursor = JSONPath("$.meta.cursors.next").parse(body)
+
+            if len(next_cursor) == 0:
+                return None
+            next_cursor = next_cursor[0]
+
+            return self.list(
+                raw=raw,
+                service_id=service_id,
+                cursor=next_cursor,
+                limit=limit,
+                filter_=filter_,
+                sort=sort,
+                pass_through=pass_through,
+                fields=fields,
+                retries=retries,
+            )
+
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.GetActivitiesResponse)
+            return models.CrmActivitiesAllResponse(
+                result=utils.unmarshal_json(
+                    http_res.text, models.GetActivitiesResponse
+                ),
+                next=next_func,
+            )
         if utils.match_response(http_res, "400", "application/json"):
             data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
             raise models.BadRequestResponse(data=data)
@@ -110,7 +164,12 @@ class Activities(BaseSDK):
                 "API error occurred", http_res.status_code, http_res_text, http_res
             )
         if utils.match_response(http_res, "default", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UnexpectedErrorResponse)
+            return models.CrmActivitiesAllResponse(
+                result=utils.unmarshal_json(
+                    http_res.text, models.UnexpectedErrorResponse
+                ),
+                next=next_func,
+            )
 
         content_type = http_res.headers.get("Content-Type")
         http_res_text = utils.stream_to_text(http_res)
@@ -124,21 +183,39 @@ class Activities(BaseSDK):
     async def list_async(
         self,
         *,
-        request: Union[
-            models.CrmActivitiesAllRequest, models.CrmActivitiesAllRequestTypedDict
-        ] = models.CrmActivitiesAllRequest(),
+        raw: Optional[bool] = False,
+        service_id: Optional[str] = None,
+        cursor: OptionalNullable[str] = UNSET,
+        limit: Optional[int] = 20,
+        filter_: Optional[
+            Union[models.ActivitiesFilter, models.ActivitiesFilterTypedDict]
+        ] = None,
+        sort: Optional[
+            Union[models.ActivitiesSort, models.ActivitiesSortTypedDict]
+        ] = None,
+        pass_through: Optional[Dict[str, Any]] = None,
+        fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
-    ) -> models.CrmActivitiesAllResponse:
+        http_headers: Optional[Mapping[str, str]] = None,
+    ) -> Optional[models.CrmActivitiesAllResponse]:
         r"""List activities
 
         List activities
 
-        :param request: The request object to send.
+        :param raw: Include raw response. Mostly used for debugging purposes
+        :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
+        :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
+        :param filter_: Apply filters
+        :param sort: Apply sorting
+        :param pass_through: Optional unmapped key/values that will be passed through to downstream as query parameters. Ie: ?pass_through[search]=leads becomes ?search=leads
+        :param fields: The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -148,9 +225,18 @@ class Activities(BaseSDK):
         if server_url is not None:
             base_url = server_url
 
-        if not isinstance(request, BaseModel):
-            request = utils.unmarshal(request, models.CrmActivitiesAllRequest)
-        request = cast(models.CrmActivitiesAllRequest, request)
+        request = models.CrmActivitiesAllRequest(
+            raw=raw,
+            service_id=service_id,
+            cursor=cursor,
+            limit=limit,
+            filter_=utils.get_pydantic_model(
+                filter_, Optional[models.ActivitiesFilter]
+            ),
+            sort=utils.get_pydantic_model(sort, Optional[models.ActivitiesSort]),
+            pass_through=pass_through,
+            fields=fields,
+        )
 
         req = self.build_request_async(
             method="GET",
@@ -163,6 +249,7 @@ class Activities(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.CrmActivitiesAllGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -196,9 +283,34 @@ class Activities(BaseSDK):
             retry_config=retry_config,
         )
 
+        def next_func() -> Optional[models.CrmActivitiesAllResponse]:
+            body = utils.unmarshal_json(http_res.text, Dict[Any, Any])
+            next_cursor = JSONPath("$.meta.cursors.next").parse(body)
+
+            if len(next_cursor) == 0:
+                return None
+            next_cursor = next_cursor[0]
+
+            return self.list(
+                raw=raw,
+                service_id=service_id,
+                cursor=next_cursor,
+                limit=limit,
+                filter_=filter_,
+                sort=sort,
+                pass_through=pass_through,
+                fields=fields,
+                retries=retries,
+            )
+
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.GetActivitiesResponse)
+            return models.CrmActivitiesAllResponse(
+                result=utils.unmarshal_json(
+                    http_res.text, models.GetActivitiesResponse
+                ),
+                next=next_func,
+            )
         if utils.match_response(http_res, "400", "application/json"):
             data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
             raise models.BadRequestResponse(data=data)
@@ -222,7 +334,12 @@ class Activities(BaseSDK):
                 "API error occurred", http_res.status_code, http_res_text, http_res
             )
         if utils.match_response(http_res, "default", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UnexpectedErrorResponse)
+            return models.CrmActivitiesAllResponse(
+                result=utils.unmarshal_json(
+                    http_res.text, models.UnexpectedErrorResponse
+                ),
+                next=next_func,
+            )
 
         content_type = http_res.headers.get("Content-Type")
         http_res_text = await utils.stream_to_text_async(http_res)
@@ -236,23 +353,122 @@ class Activities(BaseSDK):
     def create(
         self,
         *,
-        activity: Union[models.ActivityInput, models.ActivityInputTypedDict],
+        type_: Nullable[models.ActivityType],
         raw: Optional[bool] = False,
         service_id: Optional[str] = None,
+        activity_datetime: OptionalNullable[str] = UNSET,
+        duration_seconds: OptionalNullable[int] = UNSET,
+        user_id: OptionalNullable[str] = UNSET,
+        account_id: OptionalNullable[str] = UNSET,
+        contact_id: OptionalNullable[str] = UNSET,
+        company_id: OptionalNullable[str] = UNSET,
+        opportunity_id: OptionalNullable[str] = UNSET,
+        lead_id: OptionalNullable[str] = UNSET,
+        owner_id: OptionalNullable[str] = UNSET,
+        campaign_id: OptionalNullable[str] = UNSET,
+        case_id: OptionalNullable[str] = UNSET,
+        asset_id: OptionalNullable[str] = UNSET,
+        contract_id: OptionalNullable[str] = UNSET,
+        product_id: OptionalNullable[str] = UNSET,
+        solution_id: OptionalNullable[str] = UNSET,
+        custom_object_id: OptionalNullable[str] = UNSET,
+        title: OptionalNullable[str] = UNSET,
+        description: OptionalNullable[str] = UNSET,
+        note: OptionalNullable[str] = UNSET,
+        location: OptionalNullable[str] = UNSET,
+        location_address: Optional[
+            Union[models.Address, models.AddressTypedDict]
+        ] = None,
+        all_day_event: OptionalNullable[bool] = UNSET,
+        private: OptionalNullable[bool] = UNSET,
+        group_event: OptionalNullable[bool] = UNSET,
+        event_sub_type: OptionalNullable[str] = UNSET,
+        group_event_type: OptionalNullable[str] = UNSET,
+        child: OptionalNullable[bool] = UNSET,
+        archived: OptionalNullable[bool] = UNSET,
+        deleted: OptionalNullable[bool] = UNSET,
+        show_as: OptionalNullable[models.ShowAs] = UNSET,
+        done: OptionalNullable[bool] = UNSET,
+        start_datetime: OptionalNullable[str] = UNSET,
+        end_datetime: OptionalNullable[str] = UNSET,
+        activity_date: OptionalNullable[str] = UNSET,
+        end_date: OptionalNullable[str] = UNSET,
+        recurrent: Optional[bool] = None,
+        reminder_datetime: OptionalNullable[str] = UNSET,
+        reminder_set: OptionalNullable[bool] = UNSET,
+        video_conference_url: OptionalNullable[str] = UNSET,
+        video_conference_id: OptionalNullable[str] = UNSET,
+        custom_fields: Optional[
+            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+        ] = None,
+        attendees: Optional[
+            Union[
+                List[models.ActivityAttendeeInput],
+                List[models.ActivityAttendeeInputTypedDict],
+            ]
+        ] = None,
+        pass_through: Optional[
+            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.CrmActivitiesAddResponse:
         r"""Create activity
 
         Create activity
 
-        :param activity:
+        :param type: The type of the activity
         :param raw: Include raw response. Mostly used for debugging purposes
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param activity_datetime: The date and time of the activity
+        :param duration_seconds: The duration of the activity in seconds
+        :param user_id: The user related to the activity
+        :param account_id: The account related to the activity
+        :param contact_id: The contact related to the activity
+        :param company_id: The company related to the activity
+        :param opportunity_id: The opportunity related to the activity
+        :param lead_id: The lead related to the activity
+        :param owner_id: The owner of the activity
+        :param campaign_id: The campaign related to the activity
+        :param case_id: The case related to the activity
+        :param asset_id: The asset related to the activity
+        :param contract_id: The contract related to the activity
+        :param product_id: The product related to the activity
+        :param solution_id: The solution related to the activity
+        :param custom_object_id: The custom object related to the activity
+        :param title: The title of the activity
+        :param description: A description of the activity
+        :param note: An internal note about the activity
+        :param location: The location of the activity
+        :param location_address:
+        :param all_day_event: Whether the Activity is an all day event or not
+        :param private: Whether the Activity is private or not
+        :param group_event: Whether the Activity is a group event or not
+        :param event_sub_type: The sub type of the group event
+        :param group_event_type: The type of the group event
+        :param child: Whether the activity is a child of another activity or not
+        :param archived: Whether the activity is archived or not
+        :param deleted: Whether the activity is deleted or not
+        :param show_as:
+        :param done: Whether the Activity is done or not
+        :param start_datetime: The start date and time of the activity
+        :param end_datetime: The end date and time of the activity
+        :param activity_date: The date of the activity
+        :param end_date: The end date of the activity
+        :param recurrent: Whether the activity is recurrent or not
+        :param reminder_datetime: The date and time of the reminder
+        :param reminder_set: Whether the reminder is set or not
+        :param video_conference_url: The URL of the video conference
+        :param video_conference_id: The ID of the video conference
+        :param custom_fields: Custom fields of the activity
+        :param attendees:
+        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -265,7 +481,60 @@ class Activities(BaseSDK):
         request = models.CrmActivitiesAddRequest(
             raw=raw,
             service_id=service_id,
-            activity=utils.get_pydantic_model(activity, models.ActivityInput),
+            activity=models.ActivityInput(
+                activity_datetime=activity_datetime,
+                duration_seconds=duration_seconds,
+                user_id=user_id,
+                account_id=account_id,
+                contact_id=contact_id,
+                company_id=company_id,
+                opportunity_id=opportunity_id,
+                lead_id=lead_id,
+                owner_id=owner_id,
+                campaign_id=campaign_id,
+                case_id=case_id,
+                asset_id=asset_id,
+                contract_id=contract_id,
+                product_id=product_id,
+                solution_id=solution_id,
+                custom_object_id=custom_object_id,
+                type=type_,
+                title=title,
+                description=description,
+                note=note,
+                location=location,
+                location_address=utils.get_pydantic_model(
+                    location_address, Optional[models.Address]
+                ),
+                all_day_event=all_day_event,
+                private=private,
+                group_event=group_event,
+                event_sub_type=event_sub_type,
+                group_event_type=group_event_type,
+                child=child,
+                archived=archived,
+                deleted=deleted,
+                show_as=show_as,
+                done=done,
+                start_datetime=start_datetime,
+                end_datetime=end_datetime,
+                activity_date=activity_date,
+                end_date=end_date,
+                recurrent=recurrent,
+                reminder_datetime=reminder_datetime,
+                reminder_set=reminder_set,
+                video_conference_url=video_conference_url,
+                video_conference_id=video_conference_id,
+                custom_fields=utils.get_pydantic_model(
+                    custom_fields, Optional[List[models.CustomField]]
+                ),
+                attendees=utils.get_pydantic_model(
+                    attendees, Optional[List[models.ActivityAttendeeInput]]
+                ),
+                pass_through=utils.get_pydantic_model(
+                    pass_through, Optional[List[models.PassThroughBody]]
+                ),
+            ),
         )
 
         req = self.build_request(
@@ -279,6 +548,7 @@ class Activities(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.CrmActivitiesAddGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -355,23 +625,122 @@ class Activities(BaseSDK):
     async def create_async(
         self,
         *,
-        activity: Union[models.ActivityInput, models.ActivityInputTypedDict],
+        type_: Nullable[models.ActivityType],
         raw: Optional[bool] = False,
         service_id: Optional[str] = None,
+        activity_datetime: OptionalNullable[str] = UNSET,
+        duration_seconds: OptionalNullable[int] = UNSET,
+        user_id: OptionalNullable[str] = UNSET,
+        account_id: OptionalNullable[str] = UNSET,
+        contact_id: OptionalNullable[str] = UNSET,
+        company_id: OptionalNullable[str] = UNSET,
+        opportunity_id: OptionalNullable[str] = UNSET,
+        lead_id: OptionalNullable[str] = UNSET,
+        owner_id: OptionalNullable[str] = UNSET,
+        campaign_id: OptionalNullable[str] = UNSET,
+        case_id: OptionalNullable[str] = UNSET,
+        asset_id: OptionalNullable[str] = UNSET,
+        contract_id: OptionalNullable[str] = UNSET,
+        product_id: OptionalNullable[str] = UNSET,
+        solution_id: OptionalNullable[str] = UNSET,
+        custom_object_id: OptionalNullable[str] = UNSET,
+        title: OptionalNullable[str] = UNSET,
+        description: OptionalNullable[str] = UNSET,
+        note: OptionalNullable[str] = UNSET,
+        location: OptionalNullable[str] = UNSET,
+        location_address: Optional[
+            Union[models.Address, models.AddressTypedDict]
+        ] = None,
+        all_day_event: OptionalNullable[bool] = UNSET,
+        private: OptionalNullable[bool] = UNSET,
+        group_event: OptionalNullable[bool] = UNSET,
+        event_sub_type: OptionalNullable[str] = UNSET,
+        group_event_type: OptionalNullable[str] = UNSET,
+        child: OptionalNullable[bool] = UNSET,
+        archived: OptionalNullable[bool] = UNSET,
+        deleted: OptionalNullable[bool] = UNSET,
+        show_as: OptionalNullable[models.ShowAs] = UNSET,
+        done: OptionalNullable[bool] = UNSET,
+        start_datetime: OptionalNullable[str] = UNSET,
+        end_datetime: OptionalNullable[str] = UNSET,
+        activity_date: OptionalNullable[str] = UNSET,
+        end_date: OptionalNullable[str] = UNSET,
+        recurrent: Optional[bool] = None,
+        reminder_datetime: OptionalNullable[str] = UNSET,
+        reminder_set: OptionalNullable[bool] = UNSET,
+        video_conference_url: OptionalNullable[str] = UNSET,
+        video_conference_id: OptionalNullable[str] = UNSET,
+        custom_fields: Optional[
+            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+        ] = None,
+        attendees: Optional[
+            Union[
+                List[models.ActivityAttendeeInput],
+                List[models.ActivityAttendeeInputTypedDict],
+            ]
+        ] = None,
+        pass_through: Optional[
+            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.CrmActivitiesAddResponse:
         r"""Create activity
 
         Create activity
 
-        :param activity:
+        :param type: The type of the activity
         :param raw: Include raw response. Mostly used for debugging purposes
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param activity_datetime: The date and time of the activity
+        :param duration_seconds: The duration of the activity in seconds
+        :param user_id: The user related to the activity
+        :param account_id: The account related to the activity
+        :param contact_id: The contact related to the activity
+        :param company_id: The company related to the activity
+        :param opportunity_id: The opportunity related to the activity
+        :param lead_id: The lead related to the activity
+        :param owner_id: The owner of the activity
+        :param campaign_id: The campaign related to the activity
+        :param case_id: The case related to the activity
+        :param asset_id: The asset related to the activity
+        :param contract_id: The contract related to the activity
+        :param product_id: The product related to the activity
+        :param solution_id: The solution related to the activity
+        :param custom_object_id: The custom object related to the activity
+        :param title: The title of the activity
+        :param description: A description of the activity
+        :param note: An internal note about the activity
+        :param location: The location of the activity
+        :param location_address:
+        :param all_day_event: Whether the Activity is an all day event or not
+        :param private: Whether the Activity is private or not
+        :param group_event: Whether the Activity is a group event or not
+        :param event_sub_type: The sub type of the group event
+        :param group_event_type: The type of the group event
+        :param child: Whether the activity is a child of another activity or not
+        :param archived: Whether the activity is archived or not
+        :param deleted: Whether the activity is deleted or not
+        :param show_as:
+        :param done: Whether the Activity is done or not
+        :param start_datetime: The start date and time of the activity
+        :param end_datetime: The end date and time of the activity
+        :param activity_date: The date of the activity
+        :param end_date: The end date of the activity
+        :param recurrent: Whether the activity is recurrent or not
+        :param reminder_datetime: The date and time of the reminder
+        :param reminder_set: Whether the reminder is set or not
+        :param video_conference_url: The URL of the video conference
+        :param video_conference_id: The ID of the video conference
+        :param custom_fields: Custom fields of the activity
+        :param attendees:
+        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -384,7 +753,60 @@ class Activities(BaseSDK):
         request = models.CrmActivitiesAddRequest(
             raw=raw,
             service_id=service_id,
-            activity=utils.get_pydantic_model(activity, models.ActivityInput),
+            activity=models.ActivityInput(
+                activity_datetime=activity_datetime,
+                duration_seconds=duration_seconds,
+                user_id=user_id,
+                account_id=account_id,
+                contact_id=contact_id,
+                company_id=company_id,
+                opportunity_id=opportunity_id,
+                lead_id=lead_id,
+                owner_id=owner_id,
+                campaign_id=campaign_id,
+                case_id=case_id,
+                asset_id=asset_id,
+                contract_id=contract_id,
+                product_id=product_id,
+                solution_id=solution_id,
+                custom_object_id=custom_object_id,
+                type=type_,
+                title=title,
+                description=description,
+                note=note,
+                location=location,
+                location_address=utils.get_pydantic_model(
+                    location_address, Optional[models.Address]
+                ),
+                all_day_event=all_day_event,
+                private=private,
+                group_event=group_event,
+                event_sub_type=event_sub_type,
+                group_event_type=group_event_type,
+                child=child,
+                archived=archived,
+                deleted=deleted,
+                show_as=show_as,
+                done=done,
+                start_datetime=start_datetime,
+                end_datetime=end_datetime,
+                activity_date=activity_date,
+                end_date=end_date,
+                recurrent=recurrent,
+                reminder_datetime=reminder_datetime,
+                reminder_set=reminder_set,
+                video_conference_url=video_conference_url,
+                video_conference_id=video_conference_id,
+                custom_fields=utils.get_pydantic_model(
+                    custom_fields, Optional[List[models.CustomField]]
+                ),
+                attendees=utils.get_pydantic_model(
+                    attendees, Optional[List[models.ActivityAttendeeInput]]
+                ),
+                pass_through=utils.get_pydantic_model(
+                    pass_through, Optional[List[models.PassThroughBody]]
+                ),
+            ),
         )
 
         req = self.build_request_async(
@@ -398,6 +820,7 @@ class Activities(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.CrmActivitiesAddGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -481,6 +904,7 @@ class Activities(BaseSDK):
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.CrmActivitiesOneResponse:
         r"""Get activity
 
@@ -493,6 +917,7 @@ class Activities(BaseSDK):
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -520,6 +945,7 @@ class Activities(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.CrmActivitiesOneGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -600,6 +1026,7 @@ class Activities(BaseSDK):
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.CrmActivitiesOneResponse:
         r"""Get activity
 
@@ -612,6 +1039,7 @@ class Activities(BaseSDK):
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -639,6 +1067,7 @@ class Activities(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.CrmActivitiesOneGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -713,24 +1142,123 @@ class Activities(BaseSDK):
         self,
         *,
         id: str,
-        activity: Union[models.ActivityInput, models.ActivityInputTypedDict],
+        type_: Nullable[models.ActivityType],
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
+        activity_datetime: OptionalNullable[str] = UNSET,
+        duration_seconds: OptionalNullable[int] = UNSET,
+        user_id: OptionalNullable[str] = UNSET,
+        account_id: OptionalNullable[str] = UNSET,
+        contact_id: OptionalNullable[str] = UNSET,
+        company_id: OptionalNullable[str] = UNSET,
+        opportunity_id: OptionalNullable[str] = UNSET,
+        lead_id: OptionalNullable[str] = UNSET,
+        owner_id: OptionalNullable[str] = UNSET,
+        campaign_id: OptionalNullable[str] = UNSET,
+        case_id: OptionalNullable[str] = UNSET,
+        asset_id: OptionalNullable[str] = UNSET,
+        contract_id: OptionalNullable[str] = UNSET,
+        product_id: OptionalNullable[str] = UNSET,
+        solution_id: OptionalNullable[str] = UNSET,
+        custom_object_id: OptionalNullable[str] = UNSET,
+        title: OptionalNullable[str] = UNSET,
+        description: OptionalNullable[str] = UNSET,
+        note: OptionalNullable[str] = UNSET,
+        location: OptionalNullable[str] = UNSET,
+        location_address: Optional[
+            Union[models.Address, models.AddressTypedDict]
+        ] = None,
+        all_day_event: OptionalNullable[bool] = UNSET,
+        private: OptionalNullable[bool] = UNSET,
+        group_event: OptionalNullable[bool] = UNSET,
+        event_sub_type: OptionalNullable[str] = UNSET,
+        group_event_type: OptionalNullable[str] = UNSET,
+        child: OptionalNullable[bool] = UNSET,
+        archived: OptionalNullable[bool] = UNSET,
+        deleted: OptionalNullable[bool] = UNSET,
+        show_as: OptionalNullable[models.ShowAs] = UNSET,
+        done: OptionalNullable[bool] = UNSET,
+        start_datetime: OptionalNullable[str] = UNSET,
+        end_datetime: OptionalNullable[str] = UNSET,
+        activity_date: OptionalNullable[str] = UNSET,
+        end_date: OptionalNullable[str] = UNSET,
+        recurrent: Optional[bool] = None,
+        reminder_datetime: OptionalNullable[str] = UNSET,
+        reminder_set: OptionalNullable[bool] = UNSET,
+        video_conference_url: OptionalNullable[str] = UNSET,
+        video_conference_id: OptionalNullable[str] = UNSET,
+        custom_fields: Optional[
+            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+        ] = None,
+        attendees: Optional[
+            Union[
+                List[models.ActivityAttendeeInput],
+                List[models.ActivityAttendeeInputTypedDict],
+            ]
+        ] = None,
+        pass_through: Optional[
+            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.CrmActivitiesUpdateResponse:
         r"""Update activity
 
         Update activity
 
         :param id: ID of the record you are acting upon.
-        :param activity:
+        :param type: The type of the activity
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param activity_datetime: The date and time of the activity
+        :param duration_seconds: The duration of the activity in seconds
+        :param user_id: The user related to the activity
+        :param account_id: The account related to the activity
+        :param contact_id: The contact related to the activity
+        :param company_id: The company related to the activity
+        :param opportunity_id: The opportunity related to the activity
+        :param lead_id: The lead related to the activity
+        :param owner_id: The owner of the activity
+        :param campaign_id: The campaign related to the activity
+        :param case_id: The case related to the activity
+        :param asset_id: The asset related to the activity
+        :param contract_id: The contract related to the activity
+        :param product_id: The product related to the activity
+        :param solution_id: The solution related to the activity
+        :param custom_object_id: The custom object related to the activity
+        :param title: The title of the activity
+        :param description: A description of the activity
+        :param note: An internal note about the activity
+        :param location: The location of the activity
+        :param location_address:
+        :param all_day_event: Whether the Activity is an all day event or not
+        :param private: Whether the Activity is private or not
+        :param group_event: Whether the Activity is a group event or not
+        :param event_sub_type: The sub type of the group event
+        :param group_event_type: The type of the group event
+        :param child: Whether the activity is a child of another activity or not
+        :param archived: Whether the activity is archived or not
+        :param deleted: Whether the activity is deleted or not
+        :param show_as:
+        :param done: Whether the Activity is done or not
+        :param start_datetime: The start date and time of the activity
+        :param end_datetime: The end date and time of the activity
+        :param activity_date: The date of the activity
+        :param end_date: The end date of the activity
+        :param recurrent: Whether the activity is recurrent or not
+        :param reminder_datetime: The date and time of the reminder
+        :param reminder_set: Whether the reminder is set or not
+        :param video_conference_url: The URL of the video conference
+        :param video_conference_id: The ID of the video conference
+        :param custom_fields: Custom fields of the activity
+        :param attendees:
+        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -744,7 +1272,60 @@ class Activities(BaseSDK):
             id=id,
             service_id=service_id,
             raw=raw,
-            activity=utils.get_pydantic_model(activity, models.ActivityInput),
+            activity=models.ActivityInput(
+                activity_datetime=activity_datetime,
+                duration_seconds=duration_seconds,
+                user_id=user_id,
+                account_id=account_id,
+                contact_id=contact_id,
+                company_id=company_id,
+                opportunity_id=opportunity_id,
+                lead_id=lead_id,
+                owner_id=owner_id,
+                campaign_id=campaign_id,
+                case_id=case_id,
+                asset_id=asset_id,
+                contract_id=contract_id,
+                product_id=product_id,
+                solution_id=solution_id,
+                custom_object_id=custom_object_id,
+                type=type_,
+                title=title,
+                description=description,
+                note=note,
+                location=location,
+                location_address=utils.get_pydantic_model(
+                    location_address, Optional[models.Address]
+                ),
+                all_day_event=all_day_event,
+                private=private,
+                group_event=group_event,
+                event_sub_type=event_sub_type,
+                group_event_type=group_event_type,
+                child=child,
+                archived=archived,
+                deleted=deleted,
+                show_as=show_as,
+                done=done,
+                start_datetime=start_datetime,
+                end_datetime=end_datetime,
+                activity_date=activity_date,
+                end_date=end_date,
+                recurrent=recurrent,
+                reminder_datetime=reminder_datetime,
+                reminder_set=reminder_set,
+                video_conference_url=video_conference_url,
+                video_conference_id=video_conference_id,
+                custom_fields=utils.get_pydantic_model(
+                    custom_fields, Optional[List[models.CustomField]]
+                ),
+                attendees=utils.get_pydantic_model(
+                    attendees, Optional[List[models.ActivityAttendeeInput]]
+                ),
+                pass_through=utils.get_pydantic_model(
+                    pass_through, Optional[List[models.PassThroughBody]]
+                ),
+            ),
         )
 
         req = self.build_request(
@@ -758,6 +1339,7 @@ class Activities(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.CrmActivitiesUpdateGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -835,24 +1417,123 @@ class Activities(BaseSDK):
         self,
         *,
         id: str,
-        activity: Union[models.ActivityInput, models.ActivityInputTypedDict],
+        type_: Nullable[models.ActivityType],
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
+        activity_datetime: OptionalNullable[str] = UNSET,
+        duration_seconds: OptionalNullable[int] = UNSET,
+        user_id: OptionalNullable[str] = UNSET,
+        account_id: OptionalNullable[str] = UNSET,
+        contact_id: OptionalNullable[str] = UNSET,
+        company_id: OptionalNullable[str] = UNSET,
+        opportunity_id: OptionalNullable[str] = UNSET,
+        lead_id: OptionalNullable[str] = UNSET,
+        owner_id: OptionalNullable[str] = UNSET,
+        campaign_id: OptionalNullable[str] = UNSET,
+        case_id: OptionalNullable[str] = UNSET,
+        asset_id: OptionalNullable[str] = UNSET,
+        contract_id: OptionalNullable[str] = UNSET,
+        product_id: OptionalNullable[str] = UNSET,
+        solution_id: OptionalNullable[str] = UNSET,
+        custom_object_id: OptionalNullable[str] = UNSET,
+        title: OptionalNullable[str] = UNSET,
+        description: OptionalNullable[str] = UNSET,
+        note: OptionalNullable[str] = UNSET,
+        location: OptionalNullable[str] = UNSET,
+        location_address: Optional[
+            Union[models.Address, models.AddressTypedDict]
+        ] = None,
+        all_day_event: OptionalNullable[bool] = UNSET,
+        private: OptionalNullable[bool] = UNSET,
+        group_event: OptionalNullable[bool] = UNSET,
+        event_sub_type: OptionalNullable[str] = UNSET,
+        group_event_type: OptionalNullable[str] = UNSET,
+        child: OptionalNullable[bool] = UNSET,
+        archived: OptionalNullable[bool] = UNSET,
+        deleted: OptionalNullable[bool] = UNSET,
+        show_as: OptionalNullable[models.ShowAs] = UNSET,
+        done: OptionalNullable[bool] = UNSET,
+        start_datetime: OptionalNullable[str] = UNSET,
+        end_datetime: OptionalNullable[str] = UNSET,
+        activity_date: OptionalNullable[str] = UNSET,
+        end_date: OptionalNullable[str] = UNSET,
+        recurrent: Optional[bool] = None,
+        reminder_datetime: OptionalNullable[str] = UNSET,
+        reminder_set: OptionalNullable[bool] = UNSET,
+        video_conference_url: OptionalNullable[str] = UNSET,
+        video_conference_id: OptionalNullable[str] = UNSET,
+        custom_fields: Optional[
+            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+        ] = None,
+        attendees: Optional[
+            Union[
+                List[models.ActivityAttendeeInput],
+                List[models.ActivityAttendeeInputTypedDict],
+            ]
+        ] = None,
+        pass_through: Optional[
+            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.CrmActivitiesUpdateResponse:
         r"""Update activity
 
         Update activity
 
         :param id: ID of the record you are acting upon.
-        :param activity:
+        :param type: The type of the activity
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param activity_datetime: The date and time of the activity
+        :param duration_seconds: The duration of the activity in seconds
+        :param user_id: The user related to the activity
+        :param account_id: The account related to the activity
+        :param contact_id: The contact related to the activity
+        :param company_id: The company related to the activity
+        :param opportunity_id: The opportunity related to the activity
+        :param lead_id: The lead related to the activity
+        :param owner_id: The owner of the activity
+        :param campaign_id: The campaign related to the activity
+        :param case_id: The case related to the activity
+        :param asset_id: The asset related to the activity
+        :param contract_id: The contract related to the activity
+        :param product_id: The product related to the activity
+        :param solution_id: The solution related to the activity
+        :param custom_object_id: The custom object related to the activity
+        :param title: The title of the activity
+        :param description: A description of the activity
+        :param note: An internal note about the activity
+        :param location: The location of the activity
+        :param location_address:
+        :param all_day_event: Whether the Activity is an all day event or not
+        :param private: Whether the Activity is private or not
+        :param group_event: Whether the Activity is a group event or not
+        :param event_sub_type: The sub type of the group event
+        :param group_event_type: The type of the group event
+        :param child: Whether the activity is a child of another activity or not
+        :param archived: Whether the activity is archived or not
+        :param deleted: Whether the activity is deleted or not
+        :param show_as:
+        :param done: Whether the Activity is done or not
+        :param start_datetime: The start date and time of the activity
+        :param end_datetime: The end date and time of the activity
+        :param activity_date: The date of the activity
+        :param end_date: The end date of the activity
+        :param recurrent: Whether the activity is recurrent or not
+        :param reminder_datetime: The date and time of the reminder
+        :param reminder_set: Whether the reminder is set or not
+        :param video_conference_url: The URL of the video conference
+        :param video_conference_id: The ID of the video conference
+        :param custom_fields: Custom fields of the activity
+        :param attendees:
+        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -866,7 +1547,60 @@ class Activities(BaseSDK):
             id=id,
             service_id=service_id,
             raw=raw,
-            activity=utils.get_pydantic_model(activity, models.ActivityInput),
+            activity=models.ActivityInput(
+                activity_datetime=activity_datetime,
+                duration_seconds=duration_seconds,
+                user_id=user_id,
+                account_id=account_id,
+                contact_id=contact_id,
+                company_id=company_id,
+                opportunity_id=opportunity_id,
+                lead_id=lead_id,
+                owner_id=owner_id,
+                campaign_id=campaign_id,
+                case_id=case_id,
+                asset_id=asset_id,
+                contract_id=contract_id,
+                product_id=product_id,
+                solution_id=solution_id,
+                custom_object_id=custom_object_id,
+                type=type_,
+                title=title,
+                description=description,
+                note=note,
+                location=location,
+                location_address=utils.get_pydantic_model(
+                    location_address, Optional[models.Address]
+                ),
+                all_day_event=all_day_event,
+                private=private,
+                group_event=group_event,
+                event_sub_type=event_sub_type,
+                group_event_type=group_event_type,
+                child=child,
+                archived=archived,
+                deleted=deleted,
+                show_as=show_as,
+                done=done,
+                start_datetime=start_datetime,
+                end_datetime=end_datetime,
+                activity_date=activity_date,
+                end_date=end_date,
+                recurrent=recurrent,
+                reminder_datetime=reminder_datetime,
+                reminder_set=reminder_set,
+                video_conference_url=video_conference_url,
+                video_conference_id=video_conference_id,
+                custom_fields=utils.get_pydantic_model(
+                    custom_fields, Optional[List[models.CustomField]]
+                ),
+                attendees=utils.get_pydantic_model(
+                    attendees, Optional[List[models.ActivityAttendeeInput]]
+                ),
+                pass_through=utils.get_pydantic_model(
+                    pass_through, Optional[List[models.PassThroughBody]]
+                ),
+            ),
         )
 
         req = self.build_request_async(
@@ -880,6 +1614,7 @@ class Activities(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.CrmActivitiesUpdateGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -962,6 +1697,7 @@ class Activities(BaseSDK):
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.CrmActivitiesDeleteResponse:
         r"""Delete activity
 
@@ -973,6 +1709,7 @@ class Activities(BaseSDK):
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -999,6 +1736,7 @@ class Activities(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.CrmActivitiesDeleteGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -1078,6 +1816,7 @@ class Activities(BaseSDK):
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.CrmActivitiesDeleteResponse:
         r"""Delete activity
 
@@ -1089,6 +1828,7 @@ class Activities(BaseSDK):
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -1115,6 +1855,7 @@ class Activities(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.CrmActivitiesDeleteGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,

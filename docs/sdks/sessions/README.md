@@ -27,6 +27,7 @@ with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
+
     res = apideck.vault.sessions.create(request={
         "consumer_metadata": {
             "account_name": "SpaceX",
@@ -66,9 +67,8 @@ with Apideck(
         },
     })
 
-    if res is not None:
-        # handle response
-        pass
+    # Handle response
+    print(res)
 
 ```
 
@@ -76,7 +76,7 @@ with Apideck(
 
 | Parameter                                                           | Type                                                                | Required                                                            | Description                                                         |
 | ------------------------------------------------------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------------- |
-| `request`                                                           | [Optional[models.Session]](../../models/session.md)                 | :heavy_minus_sign:                                                  | Additional redirect uri and/or consumer metadata                    |
+| `request`                                                           | [models.Session](../../models/session.md)                           | :heavy_check_mark:                                                  | The request object to use for the request.                          |
 | `retries`                                                           | [Optional[utils.RetryConfig]](../../models/utils/retryconfig.md)    | :heavy_minus_sign:                                                  | Configuration to override the default retry behavior of the client. |
 
 ### Response

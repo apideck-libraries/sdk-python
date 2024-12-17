@@ -1,17 +1,8 @@
 # WebhookEventLogsAllResponse
 
 
-## Supported Types
+## Fields
 
-### `models.GetWebhookEventLogsResponse`
-
-```python
-value: models.GetWebhookEventLogsResponse = /* values here */
-```
-
-### `models.UnexpectedErrorResponse`
-
-```python
-value: models.UnexpectedErrorResponse = /* values here */
-```
-
+| Field                                                                                      | Type                                                                                       | Required                                                                                   | Description                                                                                |
+| ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------ |
+| `result`                                                                                   | [models.WebhookEventLogsAllResponseResult](../models/webhookeventlogsallresponseresult.md) | :heavy_check_mark:                                                                         | N/A                                                                                        |

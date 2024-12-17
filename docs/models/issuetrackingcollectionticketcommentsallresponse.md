@@ -1,17 +1,8 @@
 # IssueTrackingCollectionTicketCommentsAllResponse
 
 
-## Supported Types
+## Fields
 
-### `models.GetCommentsResponse`
-
-```python
-value: models.GetCommentsResponse = /* values here */
-```
-
-### `models.UnexpectedErrorResponse`
-
-```python
-value: models.UnexpectedErrorResponse = /* values here */
-```
-
+| Field                                                                                                                                | Type                                                                                                                                 | Required                                                                                                                             | Description                                                                                                                          |
+| ------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------ |
+| `result`                                                                                                                             | [models.IssueTrackingCollectionTicketCommentsAllResponseResult](../models/issuetrackingcollectionticketcommentsallresponseresult.md) | :heavy_check_mark:                                                                                                                   | N/A                                                                                                                                  |

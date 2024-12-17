@@ -21,7 +21,7 @@ from apideck_unify.utils import (
 )
 import pydantic
 from pydantic import model_serializer
-from typing import Optional, Union
+from typing import Callable, Optional, Union
 from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
 
 
@@ -145,13 +145,23 @@ class IssueTrackingCollectionTicketCommentsOneRequest(BaseModel):
         return m
 
 
-IssueTrackingCollectionTicketCommentsOneResponseTypedDict = TypeAliasType(
-    "IssueTrackingCollectionTicketCommentsOneResponseTypedDict",
+IssueTrackingCollectionTicketCommentsOneResponseResultTypedDict = TypeAliasType(
+    "IssueTrackingCollectionTicketCommentsOneResponseResultTypedDict",
     Union[GetCommentResponseTypedDict, UnexpectedErrorResponseTypedDict],
 )
 
 
-IssueTrackingCollectionTicketCommentsOneResponse = TypeAliasType(
-    "IssueTrackingCollectionTicketCommentsOneResponse",
+IssueTrackingCollectionTicketCommentsOneResponseResult = TypeAliasType(
+    "IssueTrackingCollectionTicketCommentsOneResponseResult",
     Union[GetCommentResponse, UnexpectedErrorResponse],
 )
+
+
+class IssueTrackingCollectionTicketCommentsOneResponseTypedDict(TypedDict):
+    result: IssueTrackingCollectionTicketCommentsOneResponseResultTypedDict
+
+
+class IssueTrackingCollectionTicketCommentsOneResponse(BaseModel):
+    next: Callable[[], Optional[IssueTrackingCollectionTicketCommentsOneResponse]]
+
+    result: IssueTrackingCollectionTicketCommentsOneResponseResult

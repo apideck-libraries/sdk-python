@@ -1,17 +1,8 @@
 # CrmContactsAllResponse
 
 
-## Supported Types
+## Fields
 
-### `models.GetContactsResponse`
-
-```python
-value: models.GetContactsResponse = /* values here */
-```
-
-### `models.UnexpectedErrorResponse`
-
-```python
-value: models.UnexpectedErrorResponse = /* values here */
-```
-
+| Field                                                                            | Type                                                                             | Required                                                                         | Description                                                                      |
+| -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| `result`                                                                         | [models.CrmContactsAllResponseResult](../models/crmcontactsallresponseresult.md) | :heavy_check_mark:                                                               | N/A                                                                              |

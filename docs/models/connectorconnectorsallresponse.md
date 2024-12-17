@@ -1,17 +1,8 @@
 # ConnectorConnectorsAllResponse
 
 
-## Supported Types
+## Fields
 
-### `models.GetConnectorsResponse`
-
-```python
-value: models.GetConnectorsResponse = /* values here */
-```
-
-### `models.UnexpectedErrorResponse`
-
-```python
-value: models.UnexpectedErrorResponse = /* values here */
-```
-
+| Field                                                                                            | Type                                                                                             | Required                                                                                         | Description                                                                                      |
+| ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------ |
+| `result`                                                                                         | [models.ConnectorConnectorsAllResponseResult](../models/connectorconnectorsallresponseresult.md) | :heavy_check_mark:                                                                               | N/A                                                                                              |

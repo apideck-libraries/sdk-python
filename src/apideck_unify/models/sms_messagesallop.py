@@ -16,7 +16,7 @@ from apideck_unify.types import (
 from apideck_unify.utils import FieldMetadata, HeaderMetadata, QueryParamMetadata
 import pydantic
 from pydantic import model_serializer
-from typing import Optional, Union
+from typing import Callable, Optional, Union
 from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
 
 
@@ -119,12 +119,22 @@ class SmsMessagesAllRequest(BaseModel):
         return m
 
 
-SmsMessagesAllResponseTypedDict = TypeAliasType(
-    "SmsMessagesAllResponseTypedDict",
+SmsMessagesAllResponseResultTypedDict = TypeAliasType(
+    "SmsMessagesAllResponseResultTypedDict",
     Union[UnexpectedErrorResponseTypedDict, GetMessagesResponseTypedDict],
 )
 
 
-SmsMessagesAllResponse = TypeAliasType(
-    "SmsMessagesAllResponse", Union[UnexpectedErrorResponse, GetMessagesResponse]
+SmsMessagesAllResponseResult = TypeAliasType(
+    "SmsMessagesAllResponseResult", Union[UnexpectedErrorResponse, GetMessagesResponse]
 )
+
+
+class SmsMessagesAllResponseTypedDict(TypedDict):
+    result: SmsMessagesAllResponseResultTypedDict
+
+
+class SmsMessagesAllResponse(BaseModel):
+    next: Callable[[], Optional[SmsMessagesAllResponse]]
+
+    result: SmsMessagesAllResponseResult

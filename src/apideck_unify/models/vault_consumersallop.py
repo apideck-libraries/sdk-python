@@ -16,7 +16,7 @@ from apideck_unify.types import (
 from apideck_unify.utils import FieldMetadata, HeaderMetadata, QueryParamMetadata
 import pydantic
 from pydantic import model_serializer
-from typing import Optional, Union
+from typing import Callable, Optional, Union
 from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
 
 
@@ -85,12 +85,23 @@ class VaultConsumersAllRequest(BaseModel):
         return m
 
 
-VaultConsumersAllResponseTypedDict = TypeAliasType(
-    "VaultConsumersAllResponseTypedDict",
+VaultConsumersAllResponseResultTypedDict = TypeAliasType(
+    "VaultConsumersAllResponseResultTypedDict",
     Union[GetConsumersResponseTypedDict, UnexpectedErrorResponseTypedDict],
 )
 
 
-VaultConsumersAllResponse = TypeAliasType(
-    "VaultConsumersAllResponse", Union[GetConsumersResponse, UnexpectedErrorResponse]
+VaultConsumersAllResponseResult = TypeAliasType(
+    "VaultConsumersAllResponseResult",
+    Union[GetConsumersResponse, UnexpectedErrorResponse],
 )
+
+
+class VaultConsumersAllResponseTypedDict(TypedDict):
+    result: VaultConsumersAllResponseResultTypedDict
+
+
+class VaultConsumersAllResponse(BaseModel):
+    next: Callable[[], Optional[VaultConsumersAllResponse]]
+
+    result: VaultConsumersAllResponseResult

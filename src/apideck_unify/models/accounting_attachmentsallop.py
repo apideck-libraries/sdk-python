@@ -25,7 +25,7 @@ from apideck_unify.utils import (
 )
 import pydantic
 from pydantic import model_serializer
-from typing import Optional, Union
+from typing import Callable, Optional, Union
 from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
 
 
@@ -143,13 +143,23 @@ class AccountingAttachmentsAllRequest(BaseModel):
         return m
 
 
-AccountingAttachmentsAllResponseTypedDict = TypeAliasType(
-    "AccountingAttachmentsAllResponseTypedDict",
+AccountingAttachmentsAllResponseResultTypedDict = TypeAliasType(
+    "AccountingAttachmentsAllResponseResultTypedDict",
     Union[UnexpectedErrorResponseTypedDict, GetAttachmentsResponseTypedDict],
 )
 
 
-AccountingAttachmentsAllResponse = TypeAliasType(
-    "AccountingAttachmentsAllResponse",
+AccountingAttachmentsAllResponseResult = TypeAliasType(
+    "AccountingAttachmentsAllResponseResult",
     Union[UnexpectedErrorResponse, GetAttachmentsResponse],
 )
+
+
+class AccountingAttachmentsAllResponseTypedDict(TypedDict):
+    result: AccountingAttachmentsAllResponseResultTypedDict
+
+
+class AccountingAttachmentsAllResponse(BaseModel):
+    next: Callable[[], Optional[AccountingAttachmentsAllResponse]]
+
+    result: AccountingAttachmentsAllResponseResult

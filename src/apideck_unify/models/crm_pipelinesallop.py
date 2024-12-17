@@ -16,7 +16,7 @@ from apideck_unify.types import (
 from apideck_unify.utils import FieldMetadata, HeaderMetadata, QueryParamMetadata
 import pydantic
 from pydantic import model_serializer
-from typing import Any, Dict, Optional, Union
+from typing import Any, Callable, Dict, Optional, Union
 from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
 
 
@@ -134,12 +134,23 @@ class CrmPipelinesAllRequest(BaseModel):
         return m
 
 
-CrmPipelinesAllResponseTypedDict = TypeAliasType(
-    "CrmPipelinesAllResponseTypedDict",
+CrmPipelinesAllResponseResultTypedDict = TypeAliasType(
+    "CrmPipelinesAllResponseResultTypedDict",
     Union[UnexpectedErrorResponseTypedDict, GetPipelinesResponseTypedDict],
 )
 
 
-CrmPipelinesAllResponse = TypeAliasType(
-    "CrmPipelinesAllResponse", Union[UnexpectedErrorResponse, GetPipelinesResponse]
+CrmPipelinesAllResponseResult = TypeAliasType(
+    "CrmPipelinesAllResponseResult",
+    Union[UnexpectedErrorResponse, GetPipelinesResponse],
 )
+
+
+class CrmPipelinesAllResponseTypedDict(TypedDict):
+    result: CrmPipelinesAllResponseResultTypedDict
+
+
+class CrmPipelinesAllResponse(BaseModel):
+    next: Callable[[], Optional[CrmPipelinesAllResponse]]
+
+    result: CrmPipelinesAllResponseResult

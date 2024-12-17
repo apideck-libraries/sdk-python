@@ -3,31 +3,46 @@
 from .basesdk import BaseSDK
 from apideck_unify import models, utils
 from apideck_unify._hooks import HookContext
-from apideck_unify.types import BaseModel, OptionalNullable, UNSET
+from apideck_unify.types import OptionalNullable, UNSET
 from apideck_unify.utils import get_security_from_env
-from typing import Any, Optional, Union, cast
+from datetime import date
+from jsonpath import JSONPath
+from typing import Any, Dict, List, Mapping, Optional, Union
 
 
 class InvoiceItems(BaseSDK):
     def list(
         self,
         *,
-        request: Union[
-            models.AccountingInvoiceItemsAllRequest,
-            models.AccountingInvoiceItemsAllRequestTypedDict,
-        ] = models.AccountingInvoiceItemsAllRequest(),
+        raw: Optional[bool] = False,
+        service_id: Optional[str] = None,
+        cursor: OptionalNullable[str] = UNSET,
+        limit: Optional[int] = 20,
+        filter_: Optional[
+            Union[models.InvoiceItemsFilter, models.InvoiceItemsFilterTypedDict]
+        ] = None,
+        pass_through: Optional[Dict[str, Any]] = None,
+        fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
-    ) -> models.AccountingInvoiceItemsAllResponse:
+        http_headers: Optional[Mapping[str, str]] = None,
+    ) -> Optional[models.AccountingInvoiceItemsAllResponse]:
         r"""List Invoice Items
 
         List Invoice Items
 
-        :param request: The request object to send.
+        :param raw: Include raw response. Mostly used for debugging purposes
+        :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
+        :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
+        :param filter_: Apply filters
+        :param pass_through: Optional unmapped key/values that will be passed through to downstream as query parameters. Ie: ?pass_through[search]=leads becomes ?search=leads
+        :param fields: The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -37,9 +52,17 @@ class InvoiceItems(BaseSDK):
         if server_url is not None:
             base_url = server_url
 
-        if not isinstance(request, BaseModel):
-            request = utils.unmarshal(request, models.AccountingInvoiceItemsAllRequest)
-        request = cast(models.AccountingInvoiceItemsAllRequest, request)
+        request = models.AccountingInvoiceItemsAllRequest(
+            raw=raw,
+            service_id=service_id,
+            cursor=cursor,
+            limit=limit,
+            filter_=utils.get_pydantic_model(
+                filter_, Optional[models.InvoiceItemsFilter]
+            ),
+            pass_through=pass_through,
+            fields=fields,
+        )
 
         req = self.build_request(
             method="GET",
@@ -52,6 +75,7 @@ class InvoiceItems(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.AccountingInvoiceItemsAllGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -85,9 +109,33 @@ class InvoiceItems(BaseSDK):
             retry_config=retry_config,
         )
 
+        def next_func() -> Optional[models.AccountingInvoiceItemsAllResponse]:
+            body = utils.unmarshal_json(http_res.text, Dict[Any, Any])
+            next_cursor = JSONPath("$.meta.cursors.next").parse(body)
+
+            if len(next_cursor) == 0:
+                return None
+            next_cursor = next_cursor[0]
+
+            return self.list(
+                raw=raw,
+                service_id=service_id,
+                cursor=next_cursor,
+                limit=limit,
+                filter_=filter_,
+                pass_through=pass_through,
+                fields=fields,
+                retries=retries,
+            )
+
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.GetInvoiceItemsResponse)
+            return models.AccountingInvoiceItemsAllResponse(
+                result=utils.unmarshal_json(
+                    http_res.text, models.GetInvoiceItemsResponse
+                ),
+                next=next_func,
+            )
         if utils.match_response(http_res, "400", "application/json"):
             data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
             raise models.BadRequestResponse(data=data)
@@ -111,7 +159,12 @@ class InvoiceItems(BaseSDK):
                 "API error occurred", http_res.status_code, http_res_text, http_res
             )
         if utils.match_response(http_res, "default", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UnexpectedErrorResponse)
+            return models.AccountingInvoiceItemsAllResponse(
+                result=utils.unmarshal_json(
+                    http_res.text, models.UnexpectedErrorResponse
+                ),
+                next=next_func,
+            )
 
         content_type = http_res.headers.get("Content-Type")
         http_res_text = utils.stream_to_text(http_res)
@@ -125,22 +178,35 @@ class InvoiceItems(BaseSDK):
     async def list_async(
         self,
         *,
-        request: Union[
-            models.AccountingInvoiceItemsAllRequest,
-            models.AccountingInvoiceItemsAllRequestTypedDict,
-        ] = models.AccountingInvoiceItemsAllRequest(),
+        raw: Optional[bool] = False,
+        service_id: Optional[str] = None,
+        cursor: OptionalNullable[str] = UNSET,
+        limit: Optional[int] = 20,
+        filter_: Optional[
+            Union[models.InvoiceItemsFilter, models.InvoiceItemsFilterTypedDict]
+        ] = None,
+        pass_through: Optional[Dict[str, Any]] = None,
+        fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
-    ) -> models.AccountingInvoiceItemsAllResponse:
+        http_headers: Optional[Mapping[str, str]] = None,
+    ) -> Optional[models.AccountingInvoiceItemsAllResponse]:
         r"""List Invoice Items
 
         List Invoice Items
 
-        :param request: The request object to send.
+        :param raw: Include raw response. Mostly used for debugging purposes
+        :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
+        :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
+        :param filter_: Apply filters
+        :param pass_through: Optional unmapped key/values that will be passed through to downstream as query parameters. Ie: ?pass_through[search]=leads becomes ?search=leads
+        :param fields: The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -150,9 +216,17 @@ class InvoiceItems(BaseSDK):
         if server_url is not None:
             base_url = server_url
 
-        if not isinstance(request, BaseModel):
-            request = utils.unmarshal(request, models.AccountingInvoiceItemsAllRequest)
-        request = cast(models.AccountingInvoiceItemsAllRequest, request)
+        request = models.AccountingInvoiceItemsAllRequest(
+            raw=raw,
+            service_id=service_id,
+            cursor=cursor,
+            limit=limit,
+            filter_=utils.get_pydantic_model(
+                filter_, Optional[models.InvoiceItemsFilter]
+            ),
+            pass_through=pass_through,
+            fields=fields,
+        )
 
         req = self.build_request_async(
             method="GET",
@@ -165,6 +239,7 @@ class InvoiceItems(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.AccountingInvoiceItemsAllGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -198,9 +273,33 @@ class InvoiceItems(BaseSDK):
             retry_config=retry_config,
         )
 
+        def next_func() -> Optional[models.AccountingInvoiceItemsAllResponse]:
+            body = utils.unmarshal_json(http_res.text, Dict[Any, Any])
+            next_cursor = JSONPath("$.meta.cursors.next").parse(body)
+
+            if len(next_cursor) == 0:
+                return None
+            next_cursor = next_cursor[0]
+
+            return self.list(
+                raw=raw,
+                service_id=service_id,
+                cursor=next_cursor,
+                limit=limit,
+                filter_=filter_,
+                pass_through=pass_through,
+                fields=fields,
+                retries=retries,
+            )
+
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.GetInvoiceItemsResponse)
+            return models.AccountingInvoiceItemsAllResponse(
+                result=utils.unmarshal_json(
+                    http_res.text, models.GetInvoiceItemsResponse
+                ),
+                next=next_func,
+            )
         if utils.match_response(http_res, "400", "application/json"):
             data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
             raise models.BadRequestResponse(data=data)
@@ -224,7 +323,12 @@ class InvoiceItems(BaseSDK):
                 "API error occurred", http_res.status_code, http_res_text, http_res
             )
         if utils.match_response(http_res, "default", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UnexpectedErrorResponse)
+            return models.AccountingInvoiceItemsAllResponse(
+                result=utils.unmarshal_json(
+                    http_res.text, models.UnexpectedErrorResponse
+                ),
+                next=next_func,
+            )
 
         content_type = http_res.headers.get("Content-Type")
         http_res_text = await utils.stream_to_text_async(http_res)
@@ -238,23 +342,101 @@ class InvoiceItems(BaseSDK):
     def create(
         self,
         *,
-        invoice_item: Union[models.InvoiceItemInput, models.InvoiceItemInputTypedDict],
         raw: Optional[bool] = False,
         service_id: Optional[str] = None,
+        name: OptionalNullable[str] = UNSET,
+        description: OptionalNullable[str] = UNSET,
+        code: OptionalNullable[str] = UNSET,
+        sold: OptionalNullable[bool] = UNSET,
+        purchased: OptionalNullable[bool] = UNSET,
+        tracked: OptionalNullable[bool] = UNSET,
+        taxable: OptionalNullable[bool] = UNSET,
+        inventory_date: OptionalNullable[date] = UNSET,
+        type_: OptionalNullable[models.InvoiceItemTypeType] = UNSET,
+        sales_details: Optional[
+            Union[
+                models.InvoiceItemSalesDetails, models.InvoiceItemSalesDetailsTypedDict
+            ]
+        ] = None,
+        purchase_details: Optional[
+            Union[
+                models.InvoiceItemPurchaseDetails,
+                models.InvoiceItemPurchaseDetailsTypedDict,
+            ]
+        ] = None,
+        quantity: OptionalNullable[float] = UNSET,
+        unit_price: OptionalNullable[float] = UNSET,
+        asset_account: OptionalNullable[
+            Union[
+                models.LinkedLedgerAccountInput,
+                models.LinkedLedgerAccountInputTypedDict,
+            ]
+        ] = UNSET,
+        income_account: OptionalNullable[
+            Union[
+                models.LinkedLedgerAccountInput,
+                models.LinkedLedgerAccountInputTypedDict,
+            ]
+        ] = UNSET,
+        expense_account: OptionalNullable[
+            Union[
+                models.LinkedLedgerAccountInput,
+                models.LinkedLedgerAccountInputTypedDict,
+            ]
+        ] = UNSET,
+        tracking_category: OptionalNullable[
+            Union[
+                models.DeprecatedLinkedTrackingCategory,
+                models.DeprecatedLinkedTrackingCategoryTypedDict,
+            ]
+        ] = UNSET,
+        tracking_categories: OptionalNullable[
+            Union[
+                List[models.LinkedTrackingCategory],
+                List[models.LinkedTrackingCategoryTypedDict],
+            ]
+        ] = UNSET,
+        active: OptionalNullable[bool] = UNSET,
+        row_version: OptionalNullable[str] = UNSET,
+        pass_through: Optional[
+            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.AccountingInvoiceItemsAddResponse:
         r"""Create Invoice Item
 
         Create Invoice Item
 
-        :param invoice_item:
         :param raw: Include raw response. Mostly used for debugging purposes
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param name: Item name
+        :param description: A short description of the item
+        :param code: User defined item code
+        :param sold: Item will be available on sales transactions
+        :param purchased: Item is available for purchase transactions
+        :param tracked: Item is inventoried
+        :param taxable: If true, transactions for this item are taxable
+        :param inventory_date: The date of opening balance if inventory item is tracked - YYYY-MM-DD.
+        :param type: Item type
+        :param sales_details:
+        :param purchase_details:
+        :param quantity:
+        :param unit_price:
+        :param asset_account:
+        :param income_account:
+        :param expense_account:
+        :param tracking_category:
+        :param tracking_categories: A list of linked tracking categories.
+        :param active:
+        :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
+        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -267,8 +449,46 @@ class InvoiceItems(BaseSDK):
         request = models.AccountingInvoiceItemsAddRequest(
             raw=raw,
             service_id=service_id,
-            invoice_item=utils.get_pydantic_model(
-                invoice_item, models.InvoiceItemInput
+            invoice_item=models.InvoiceItemInput(
+                name=name,
+                description=description,
+                code=code,
+                sold=sold,
+                purchased=purchased,
+                tracked=tracked,
+                taxable=taxable,
+                inventory_date=inventory_date,
+                type=type_,
+                sales_details=utils.get_pydantic_model(
+                    sales_details, Optional[models.InvoiceItemSalesDetails]
+                ),
+                purchase_details=utils.get_pydantic_model(
+                    purchase_details, Optional[models.InvoiceItemPurchaseDetails]
+                ),
+                quantity=quantity,
+                unit_price=unit_price,
+                asset_account=utils.get_pydantic_model(
+                    asset_account, OptionalNullable[models.LinkedLedgerAccountInput]
+                ),
+                income_account=utils.get_pydantic_model(
+                    income_account, OptionalNullable[models.LinkedLedgerAccountInput]
+                ),
+                expense_account=utils.get_pydantic_model(
+                    expense_account, OptionalNullable[models.LinkedLedgerAccountInput]
+                ),
+                tracking_category=utils.get_pydantic_model(
+                    tracking_category,
+                    OptionalNullable[models.DeprecatedLinkedTrackingCategory],
+                ),
+                tracking_categories=utils.get_pydantic_model(
+                    tracking_categories,
+                    OptionalNullable[List[models.LinkedTrackingCategory]],
+                ),
+                active=active,
+                row_version=row_version,
+                pass_through=utils.get_pydantic_model(
+                    pass_through, Optional[List[models.PassThroughBody]]
+                ),
             ),
         )
 
@@ -283,6 +503,7 @@ class InvoiceItems(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.AccountingInvoiceItemsAddGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -359,23 +580,101 @@ class InvoiceItems(BaseSDK):
     async def create_async(
         self,
         *,
-        invoice_item: Union[models.InvoiceItemInput, models.InvoiceItemInputTypedDict],
         raw: Optional[bool] = False,
         service_id: Optional[str] = None,
+        name: OptionalNullable[str] = UNSET,
+        description: OptionalNullable[str] = UNSET,
+        code: OptionalNullable[str] = UNSET,
+        sold: OptionalNullable[bool] = UNSET,
+        purchased: OptionalNullable[bool] = UNSET,
+        tracked: OptionalNullable[bool] = UNSET,
+        taxable: OptionalNullable[bool] = UNSET,
+        inventory_date: OptionalNullable[date] = UNSET,
+        type_: OptionalNullable[models.InvoiceItemTypeType] = UNSET,
+        sales_details: Optional[
+            Union[
+                models.InvoiceItemSalesDetails, models.InvoiceItemSalesDetailsTypedDict
+            ]
+        ] = None,
+        purchase_details: Optional[
+            Union[
+                models.InvoiceItemPurchaseDetails,
+                models.InvoiceItemPurchaseDetailsTypedDict,
+            ]
+        ] = None,
+        quantity: OptionalNullable[float] = UNSET,
+        unit_price: OptionalNullable[float] = UNSET,
+        asset_account: OptionalNullable[
+            Union[
+                models.LinkedLedgerAccountInput,
+                models.LinkedLedgerAccountInputTypedDict,
+            ]
+        ] = UNSET,
+        income_account: OptionalNullable[
+            Union[
+                models.LinkedLedgerAccountInput,
+                models.LinkedLedgerAccountInputTypedDict,
+            ]
+        ] = UNSET,
+        expense_account: OptionalNullable[
+            Union[
+                models.LinkedLedgerAccountInput,
+                models.LinkedLedgerAccountInputTypedDict,
+            ]
+        ] = UNSET,
+        tracking_category: OptionalNullable[
+            Union[
+                models.DeprecatedLinkedTrackingCategory,
+                models.DeprecatedLinkedTrackingCategoryTypedDict,
+            ]
+        ] = UNSET,
+        tracking_categories: OptionalNullable[
+            Union[
+                List[models.LinkedTrackingCategory],
+                List[models.LinkedTrackingCategoryTypedDict],
+            ]
+        ] = UNSET,
+        active: OptionalNullable[bool] = UNSET,
+        row_version: OptionalNullable[str] = UNSET,
+        pass_through: Optional[
+            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.AccountingInvoiceItemsAddResponse:
         r"""Create Invoice Item
 
         Create Invoice Item
 
-        :param invoice_item:
         :param raw: Include raw response. Mostly used for debugging purposes
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param name: Item name
+        :param description: A short description of the item
+        :param code: User defined item code
+        :param sold: Item will be available on sales transactions
+        :param purchased: Item is available for purchase transactions
+        :param tracked: Item is inventoried
+        :param taxable: If true, transactions for this item are taxable
+        :param inventory_date: The date of opening balance if inventory item is tracked - YYYY-MM-DD.
+        :param type: Item type
+        :param sales_details:
+        :param purchase_details:
+        :param quantity:
+        :param unit_price:
+        :param asset_account:
+        :param income_account:
+        :param expense_account:
+        :param tracking_category:
+        :param tracking_categories: A list of linked tracking categories.
+        :param active:
+        :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
+        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -388,8 +687,46 @@ class InvoiceItems(BaseSDK):
         request = models.AccountingInvoiceItemsAddRequest(
             raw=raw,
             service_id=service_id,
-            invoice_item=utils.get_pydantic_model(
-                invoice_item, models.InvoiceItemInput
+            invoice_item=models.InvoiceItemInput(
+                name=name,
+                description=description,
+                code=code,
+                sold=sold,
+                purchased=purchased,
+                tracked=tracked,
+                taxable=taxable,
+                inventory_date=inventory_date,
+                type=type_,
+                sales_details=utils.get_pydantic_model(
+                    sales_details, Optional[models.InvoiceItemSalesDetails]
+                ),
+                purchase_details=utils.get_pydantic_model(
+                    purchase_details, Optional[models.InvoiceItemPurchaseDetails]
+                ),
+                quantity=quantity,
+                unit_price=unit_price,
+                asset_account=utils.get_pydantic_model(
+                    asset_account, OptionalNullable[models.LinkedLedgerAccountInput]
+                ),
+                income_account=utils.get_pydantic_model(
+                    income_account, OptionalNullable[models.LinkedLedgerAccountInput]
+                ),
+                expense_account=utils.get_pydantic_model(
+                    expense_account, OptionalNullable[models.LinkedLedgerAccountInput]
+                ),
+                tracking_category=utils.get_pydantic_model(
+                    tracking_category,
+                    OptionalNullable[models.DeprecatedLinkedTrackingCategory],
+                ),
+                tracking_categories=utils.get_pydantic_model(
+                    tracking_categories,
+                    OptionalNullable[List[models.LinkedTrackingCategory]],
+                ),
+                active=active,
+                row_version=row_version,
+                pass_through=utils.get_pydantic_model(
+                    pass_through, Optional[List[models.PassThroughBody]]
+                ),
             ),
         )
 
@@ -404,6 +741,7 @@ class InvoiceItems(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.AccountingInvoiceItemsAddGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -480,22 +818,31 @@ class InvoiceItems(BaseSDK):
     def get(
         self,
         *,
-        request: Union[
-            models.AccountingInvoiceItemsOneRequest,
-            models.AccountingInvoiceItemsOneRequestTypedDict,
-        ],
+        id: str,
+        service_id: Optional[str] = None,
+        raw: Optional[bool] = False,
+        fields: OptionalNullable[str] = UNSET,
+        filter_: Optional[
+            Union[models.InvoiceItemFilter, models.InvoiceItemFilterTypedDict]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.AccountingInvoiceItemsOneResponse:
         r"""Get Invoice Item
 
         Get Invoice Item
 
-        :param request: The request object to send.
+        :param id: ID of the record you are acting upon.
+        :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param raw: Include raw response. Mostly used for debugging purposes
+        :param fields: The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded.
+        :param filter_: Apply filters
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -505,9 +852,15 @@ class InvoiceItems(BaseSDK):
         if server_url is not None:
             base_url = server_url
 
-        if not isinstance(request, BaseModel):
-            request = utils.unmarshal(request, models.AccountingInvoiceItemsOneRequest)
-        request = cast(models.AccountingInvoiceItemsOneRequest, request)
+        request = models.AccountingInvoiceItemsOneRequest(
+            id=id,
+            service_id=service_id,
+            raw=raw,
+            fields=fields,
+            filter_=utils.get_pydantic_model(
+                filter_, Optional[models.InvoiceItemFilter]
+            ),
+        )
 
         req = self.build_request(
             method="GET",
@@ -520,6 +873,7 @@ class InvoiceItems(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.AccountingInvoiceItemsOneGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -593,22 +947,31 @@ class InvoiceItems(BaseSDK):
     async def get_async(
         self,
         *,
-        request: Union[
-            models.AccountingInvoiceItemsOneRequest,
-            models.AccountingInvoiceItemsOneRequestTypedDict,
-        ],
+        id: str,
+        service_id: Optional[str] = None,
+        raw: Optional[bool] = False,
+        fields: OptionalNullable[str] = UNSET,
+        filter_: Optional[
+            Union[models.InvoiceItemFilter, models.InvoiceItemFilterTypedDict]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.AccountingInvoiceItemsOneResponse:
         r"""Get Invoice Item
 
         Get Invoice Item
 
-        :param request: The request object to send.
+        :param id: ID of the record you are acting upon.
+        :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param raw: Include raw response. Mostly used for debugging purposes
+        :param fields: The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded.
+        :param filter_: Apply filters
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -618,9 +981,15 @@ class InvoiceItems(BaseSDK):
         if server_url is not None:
             base_url = server_url
 
-        if not isinstance(request, BaseModel):
-            request = utils.unmarshal(request, models.AccountingInvoiceItemsOneRequest)
-        request = cast(models.AccountingInvoiceItemsOneRequest, request)
+        request = models.AccountingInvoiceItemsOneRequest(
+            id=id,
+            service_id=service_id,
+            raw=raw,
+            fields=fields,
+            filter_=utils.get_pydantic_model(
+                filter_, Optional[models.InvoiceItemFilter]
+            ),
+        )
 
         req = self.build_request_async(
             method="GET",
@@ -633,6 +1002,7 @@ class InvoiceItems(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.AccountingInvoiceItemsOneGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -707,24 +1077,102 @@ class InvoiceItems(BaseSDK):
         self,
         *,
         id: str,
-        invoice_item: Union[models.InvoiceItemInput, models.InvoiceItemInputTypedDict],
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
+        name: OptionalNullable[str] = UNSET,
+        description: OptionalNullable[str] = UNSET,
+        code: OptionalNullable[str] = UNSET,
+        sold: OptionalNullable[bool] = UNSET,
+        purchased: OptionalNullable[bool] = UNSET,
+        tracked: OptionalNullable[bool] = UNSET,
+        taxable: OptionalNullable[bool] = UNSET,
+        inventory_date: OptionalNullable[date] = UNSET,
+        type_: OptionalNullable[models.InvoiceItemTypeType] = UNSET,
+        sales_details: Optional[
+            Union[
+                models.InvoiceItemSalesDetails, models.InvoiceItemSalesDetailsTypedDict
+            ]
+        ] = None,
+        purchase_details: Optional[
+            Union[
+                models.InvoiceItemPurchaseDetails,
+                models.InvoiceItemPurchaseDetailsTypedDict,
+            ]
+        ] = None,
+        quantity: OptionalNullable[float] = UNSET,
+        unit_price: OptionalNullable[float] = UNSET,
+        asset_account: OptionalNullable[
+            Union[
+                models.LinkedLedgerAccountInput,
+                models.LinkedLedgerAccountInputTypedDict,
+            ]
+        ] = UNSET,
+        income_account: OptionalNullable[
+            Union[
+                models.LinkedLedgerAccountInput,
+                models.LinkedLedgerAccountInputTypedDict,
+            ]
+        ] = UNSET,
+        expense_account: OptionalNullable[
+            Union[
+                models.LinkedLedgerAccountInput,
+                models.LinkedLedgerAccountInputTypedDict,
+            ]
+        ] = UNSET,
+        tracking_category: OptionalNullable[
+            Union[
+                models.DeprecatedLinkedTrackingCategory,
+                models.DeprecatedLinkedTrackingCategoryTypedDict,
+            ]
+        ] = UNSET,
+        tracking_categories: OptionalNullable[
+            Union[
+                List[models.LinkedTrackingCategory],
+                List[models.LinkedTrackingCategoryTypedDict],
+            ]
+        ] = UNSET,
+        active: OptionalNullable[bool] = UNSET,
+        row_version: OptionalNullable[str] = UNSET,
+        pass_through: Optional[
+            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.AccountingInvoiceItemsUpdateResponse:
         r"""Update Invoice Item
 
         Update Invoice Item
 
         :param id: ID of the record you are acting upon.
-        :param invoice_item:
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param name: Item name
+        :param description: A short description of the item
+        :param code: User defined item code
+        :param sold: Item will be available on sales transactions
+        :param purchased: Item is available for purchase transactions
+        :param tracked: Item is inventoried
+        :param taxable: If true, transactions for this item are taxable
+        :param inventory_date: The date of opening balance if inventory item is tracked - YYYY-MM-DD.
+        :param type: Item type
+        :param sales_details:
+        :param purchase_details:
+        :param quantity:
+        :param unit_price:
+        :param asset_account:
+        :param income_account:
+        :param expense_account:
+        :param tracking_category:
+        :param tracking_categories: A list of linked tracking categories.
+        :param active:
+        :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
+        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -738,8 +1186,46 @@ class InvoiceItems(BaseSDK):
             id=id,
             service_id=service_id,
             raw=raw,
-            invoice_item=utils.get_pydantic_model(
-                invoice_item, models.InvoiceItemInput
+            invoice_item=models.InvoiceItemInput(
+                name=name,
+                description=description,
+                code=code,
+                sold=sold,
+                purchased=purchased,
+                tracked=tracked,
+                taxable=taxable,
+                inventory_date=inventory_date,
+                type=type_,
+                sales_details=utils.get_pydantic_model(
+                    sales_details, Optional[models.InvoiceItemSalesDetails]
+                ),
+                purchase_details=utils.get_pydantic_model(
+                    purchase_details, Optional[models.InvoiceItemPurchaseDetails]
+                ),
+                quantity=quantity,
+                unit_price=unit_price,
+                asset_account=utils.get_pydantic_model(
+                    asset_account, OptionalNullable[models.LinkedLedgerAccountInput]
+                ),
+                income_account=utils.get_pydantic_model(
+                    income_account, OptionalNullable[models.LinkedLedgerAccountInput]
+                ),
+                expense_account=utils.get_pydantic_model(
+                    expense_account, OptionalNullable[models.LinkedLedgerAccountInput]
+                ),
+                tracking_category=utils.get_pydantic_model(
+                    tracking_category,
+                    OptionalNullable[models.DeprecatedLinkedTrackingCategory],
+                ),
+                tracking_categories=utils.get_pydantic_model(
+                    tracking_categories,
+                    OptionalNullable[List[models.LinkedTrackingCategory]],
+                ),
+                active=active,
+                row_version=row_version,
+                pass_through=utils.get_pydantic_model(
+                    pass_through, Optional[List[models.PassThroughBody]]
+                ),
             ),
         )
 
@@ -754,6 +1240,7 @@ class InvoiceItems(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.AccountingInvoiceItemsUpdateGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -833,24 +1320,102 @@ class InvoiceItems(BaseSDK):
         self,
         *,
         id: str,
-        invoice_item: Union[models.InvoiceItemInput, models.InvoiceItemInputTypedDict],
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
+        name: OptionalNullable[str] = UNSET,
+        description: OptionalNullable[str] = UNSET,
+        code: OptionalNullable[str] = UNSET,
+        sold: OptionalNullable[bool] = UNSET,
+        purchased: OptionalNullable[bool] = UNSET,
+        tracked: OptionalNullable[bool] = UNSET,
+        taxable: OptionalNullable[bool] = UNSET,
+        inventory_date: OptionalNullable[date] = UNSET,
+        type_: OptionalNullable[models.InvoiceItemTypeType] = UNSET,
+        sales_details: Optional[
+            Union[
+                models.InvoiceItemSalesDetails, models.InvoiceItemSalesDetailsTypedDict
+            ]
+        ] = None,
+        purchase_details: Optional[
+            Union[
+                models.InvoiceItemPurchaseDetails,
+                models.InvoiceItemPurchaseDetailsTypedDict,
+            ]
+        ] = None,
+        quantity: OptionalNullable[float] = UNSET,
+        unit_price: OptionalNullable[float] = UNSET,
+        asset_account: OptionalNullable[
+            Union[
+                models.LinkedLedgerAccountInput,
+                models.LinkedLedgerAccountInputTypedDict,
+            ]
+        ] = UNSET,
+        income_account: OptionalNullable[
+            Union[
+                models.LinkedLedgerAccountInput,
+                models.LinkedLedgerAccountInputTypedDict,
+            ]
+        ] = UNSET,
+        expense_account: OptionalNullable[
+            Union[
+                models.LinkedLedgerAccountInput,
+                models.LinkedLedgerAccountInputTypedDict,
+            ]
+        ] = UNSET,
+        tracking_category: OptionalNullable[
+            Union[
+                models.DeprecatedLinkedTrackingCategory,
+                models.DeprecatedLinkedTrackingCategoryTypedDict,
+            ]
+        ] = UNSET,
+        tracking_categories: OptionalNullable[
+            Union[
+                List[models.LinkedTrackingCategory],
+                List[models.LinkedTrackingCategoryTypedDict],
+            ]
+        ] = UNSET,
+        active: OptionalNullable[bool] = UNSET,
+        row_version: OptionalNullable[str] = UNSET,
+        pass_through: Optional[
+            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.AccountingInvoiceItemsUpdateResponse:
         r"""Update Invoice Item
 
         Update Invoice Item
 
         :param id: ID of the record you are acting upon.
-        :param invoice_item:
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param name: Item name
+        :param description: A short description of the item
+        :param code: User defined item code
+        :param sold: Item will be available on sales transactions
+        :param purchased: Item is available for purchase transactions
+        :param tracked: Item is inventoried
+        :param taxable: If true, transactions for this item are taxable
+        :param inventory_date: The date of opening balance if inventory item is tracked - YYYY-MM-DD.
+        :param type: Item type
+        :param sales_details:
+        :param purchase_details:
+        :param quantity:
+        :param unit_price:
+        :param asset_account:
+        :param income_account:
+        :param expense_account:
+        :param tracking_category:
+        :param tracking_categories: A list of linked tracking categories.
+        :param active:
+        :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
+        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -864,8 +1429,46 @@ class InvoiceItems(BaseSDK):
             id=id,
             service_id=service_id,
             raw=raw,
-            invoice_item=utils.get_pydantic_model(
-                invoice_item, models.InvoiceItemInput
+            invoice_item=models.InvoiceItemInput(
+                name=name,
+                description=description,
+                code=code,
+                sold=sold,
+                purchased=purchased,
+                tracked=tracked,
+                taxable=taxable,
+                inventory_date=inventory_date,
+                type=type_,
+                sales_details=utils.get_pydantic_model(
+                    sales_details, Optional[models.InvoiceItemSalesDetails]
+                ),
+                purchase_details=utils.get_pydantic_model(
+                    purchase_details, Optional[models.InvoiceItemPurchaseDetails]
+                ),
+                quantity=quantity,
+                unit_price=unit_price,
+                asset_account=utils.get_pydantic_model(
+                    asset_account, OptionalNullable[models.LinkedLedgerAccountInput]
+                ),
+                income_account=utils.get_pydantic_model(
+                    income_account, OptionalNullable[models.LinkedLedgerAccountInput]
+                ),
+                expense_account=utils.get_pydantic_model(
+                    expense_account, OptionalNullable[models.LinkedLedgerAccountInput]
+                ),
+                tracking_category=utils.get_pydantic_model(
+                    tracking_category,
+                    OptionalNullable[models.DeprecatedLinkedTrackingCategory],
+                ),
+                tracking_categories=utils.get_pydantic_model(
+                    tracking_categories,
+                    OptionalNullable[List[models.LinkedTrackingCategory]],
+                ),
+                active=active,
+                row_version=row_version,
+                pass_through=utils.get_pydantic_model(
+                    pass_through, Optional[List[models.PassThroughBody]]
+                ),
             ),
         )
 
@@ -880,6 +1483,7 @@ class InvoiceItems(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.AccountingInvoiceItemsUpdateGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -964,6 +1568,7 @@ class InvoiceItems(BaseSDK):
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.AccountingInvoiceItemsDeleteResponse:
         r"""Delete Invoice Item
 
@@ -975,6 +1580,7 @@ class InvoiceItems(BaseSDK):
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -1001,6 +1607,7 @@ class InvoiceItems(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.AccountingInvoiceItemsDeleteGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -1080,6 +1687,7 @@ class InvoiceItems(BaseSDK):
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.AccountingInvoiceItemsDeleteResponse:
         r"""Delete Invoice Item
 
@@ -1091,6 +1699,7 @@ class InvoiceItems(BaseSDK):
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -1117,6 +1726,7 @@ class InvoiceItems(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.AccountingInvoiceItemsDeleteGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,

@@ -3,30 +3,48 @@
 from .basesdk import BaseSDK
 from apideck_unify import models, utils
 from apideck_unify._hooks import HookContext
-from apideck_unify.types import BaseModel, OptionalNullable, UNSET
+from apideck_unify.types import OptionalNullable, UNSET
 from apideck_unify.utils import get_security_from_env
-from typing import Any, Optional, Union, cast
+from datetime import date
+from jsonpath import JSONPath
+from typing import Any, Dict, List, Mapping, Optional, Union
 
 
 class Bills(BaseSDK):
     def list(
         self,
         *,
-        request: Union[
-            models.AccountingBillsAllRequest, models.AccountingBillsAllRequestTypedDict
-        ] = models.AccountingBillsAllRequest(),
+        raw: Optional[bool] = False,
+        service_id: Optional[str] = None,
+        cursor: OptionalNullable[str] = UNSET,
+        limit: Optional[int] = 20,
+        filter_: Optional[
+            Union[models.BillsFilter, models.BillsFilterTypedDict]
+        ] = None,
+        sort: Optional[Union[models.BillsSort, models.BillsSortTypedDict]] = None,
+        pass_through: Optional[Dict[str, Any]] = None,
+        fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
-    ) -> models.AccountingBillsAllResponse:
+        http_headers: Optional[Mapping[str, str]] = None,
+    ) -> Optional[models.AccountingBillsAllResponse]:
         r"""List Bills
 
         List Bills
 
-        :param request: The request object to send.
+        :param raw: Include raw response. Mostly used for debugging purposes
+        :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
+        :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
+        :param filter_: Apply filters
+        :param sort: Apply sorting
+        :param pass_through: Optional unmapped key/values that will be passed through to downstream as query parameters. Ie: ?pass_through[search]=leads becomes ?search=leads
+        :param fields: The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -36,9 +54,16 @@ class Bills(BaseSDK):
         if server_url is not None:
             base_url = server_url
 
-        if not isinstance(request, BaseModel):
-            request = utils.unmarshal(request, models.AccountingBillsAllRequest)
-        request = cast(models.AccountingBillsAllRequest, request)
+        request = models.AccountingBillsAllRequest(
+            raw=raw,
+            service_id=service_id,
+            cursor=cursor,
+            limit=limit,
+            filter_=utils.get_pydantic_model(filter_, Optional[models.BillsFilter]),
+            sort=utils.get_pydantic_model(sort, Optional[models.BillsSort]),
+            pass_through=pass_through,
+            fields=fields,
+        )
 
         req = self.build_request(
             method="GET",
@@ -51,6 +76,7 @@ class Bills(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.AccountingBillsAllGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -84,9 +110,32 @@ class Bills(BaseSDK):
             retry_config=retry_config,
         )
 
+        def next_func() -> Optional[models.AccountingBillsAllResponse]:
+            body = utils.unmarshal_json(http_res.text, Dict[Any, Any])
+            next_cursor = JSONPath("$.meta.cursors.next").parse(body)
+
+            if len(next_cursor) == 0:
+                return None
+            next_cursor = next_cursor[0]
+
+            return self.list(
+                raw=raw,
+                service_id=service_id,
+                cursor=next_cursor,
+                limit=limit,
+                filter_=filter_,
+                sort=sort,
+                pass_through=pass_through,
+                fields=fields,
+                retries=retries,
+            )
+
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.GetBillsResponse)
+            return models.AccountingBillsAllResponse(
+                result=utils.unmarshal_json(http_res.text, models.GetBillsResponse),
+                next=next_func,
+            )
         if utils.match_response(http_res, "400", "application/json"):
             data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
             raise models.BadRequestResponse(data=data)
@@ -110,7 +159,12 @@ class Bills(BaseSDK):
                 "API error occurred", http_res.status_code, http_res_text, http_res
             )
         if utils.match_response(http_res, "default", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UnexpectedErrorResponse)
+            return models.AccountingBillsAllResponse(
+                result=utils.unmarshal_json(
+                    http_res.text, models.UnexpectedErrorResponse
+                ),
+                next=next_func,
+            )
 
         content_type = http_res.headers.get("Content-Type")
         http_res_text = utils.stream_to_text(http_res)
@@ -124,21 +178,37 @@ class Bills(BaseSDK):
     async def list_async(
         self,
         *,
-        request: Union[
-            models.AccountingBillsAllRequest, models.AccountingBillsAllRequestTypedDict
-        ] = models.AccountingBillsAllRequest(),
+        raw: Optional[bool] = False,
+        service_id: Optional[str] = None,
+        cursor: OptionalNullable[str] = UNSET,
+        limit: Optional[int] = 20,
+        filter_: Optional[
+            Union[models.BillsFilter, models.BillsFilterTypedDict]
+        ] = None,
+        sort: Optional[Union[models.BillsSort, models.BillsSortTypedDict]] = None,
+        pass_through: Optional[Dict[str, Any]] = None,
+        fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
-    ) -> models.AccountingBillsAllResponse:
+        http_headers: Optional[Mapping[str, str]] = None,
+    ) -> Optional[models.AccountingBillsAllResponse]:
         r"""List Bills
 
         List Bills
 
-        :param request: The request object to send.
+        :param raw: Include raw response. Mostly used for debugging purposes
+        :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
+        :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
+        :param filter_: Apply filters
+        :param sort: Apply sorting
+        :param pass_through: Optional unmapped key/values that will be passed through to downstream as query parameters. Ie: ?pass_through[search]=leads becomes ?search=leads
+        :param fields: The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -148,9 +218,16 @@ class Bills(BaseSDK):
         if server_url is not None:
             base_url = server_url
 
-        if not isinstance(request, BaseModel):
-            request = utils.unmarshal(request, models.AccountingBillsAllRequest)
-        request = cast(models.AccountingBillsAllRequest, request)
+        request = models.AccountingBillsAllRequest(
+            raw=raw,
+            service_id=service_id,
+            cursor=cursor,
+            limit=limit,
+            filter_=utils.get_pydantic_model(filter_, Optional[models.BillsFilter]),
+            sort=utils.get_pydantic_model(sort, Optional[models.BillsSort]),
+            pass_through=pass_through,
+            fields=fields,
+        )
 
         req = self.build_request_async(
             method="GET",
@@ -163,6 +240,7 @@ class Bills(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.AccountingBillsAllGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -196,9 +274,32 @@ class Bills(BaseSDK):
             retry_config=retry_config,
         )
 
+        def next_func() -> Optional[models.AccountingBillsAllResponse]:
+            body = utils.unmarshal_json(http_res.text, Dict[Any, Any])
+            next_cursor = JSONPath("$.meta.cursors.next").parse(body)
+
+            if len(next_cursor) == 0:
+                return None
+            next_cursor = next_cursor[0]
+
+            return self.list(
+                raw=raw,
+                service_id=service_id,
+                cursor=next_cursor,
+                limit=limit,
+                filter_=filter_,
+                sort=sort,
+                pass_through=pass_through,
+                fields=fields,
+                retries=retries,
+            )
+
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.GetBillsResponse)
+            return models.AccountingBillsAllResponse(
+                result=utils.unmarshal_json(http_res.text, models.GetBillsResponse),
+                next=next_func,
+            )
         if utils.match_response(http_res, "400", "application/json"):
             data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
             raise models.BadRequestResponse(data=data)
@@ -222,7 +323,12 @@ class Bills(BaseSDK):
                 "API error occurred", http_res.status_code, http_res_text, http_res
             )
         if utils.match_response(http_res, "default", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UnexpectedErrorResponse)
+            return models.AccountingBillsAllResponse(
+                result=utils.unmarshal_json(
+                    http_res.text, models.UnexpectedErrorResponse
+                ),
+                next=next_func,
+            )
 
         content_type = http_res.headers.get("Content-Type")
         http_res_text = await utils.stream_to_text_async(http_res)
@@ -236,23 +342,107 @@ class Bills(BaseSDK):
     def create(
         self,
         *,
-        bill: Union[models.BillInput, models.BillInputTypedDict],
         raw: Optional[bool] = False,
         service_id: Optional[str] = None,
+        bill_number: OptionalNullable[str] = UNSET,
+        supplier: OptionalNullable[
+            Union[models.LinkedSupplierInput, models.LinkedSupplierInputTypedDict]
+        ] = UNSET,
+        company_id: OptionalNullable[str] = UNSET,
+        currency: OptionalNullable[models.Currency] = UNSET,
+        currency_rate: OptionalNullable[float] = UNSET,
+        tax_inclusive: OptionalNullable[bool] = UNSET,
+        bill_date: Optional[date] = None,
+        due_date: Optional[date] = None,
+        paid_date: OptionalNullable[date] = UNSET,
+        po_number: OptionalNullable[str] = UNSET,
+        reference: OptionalNullable[str] = UNSET,
+        line_items: Optional[
+            Union[
+                List[models.BillLineItemInput], List[models.BillLineItemInputTypedDict]
+            ]
+        ] = None,
+        terms: OptionalNullable[str] = UNSET,
+        balance: OptionalNullable[float] = UNSET,
+        deposit: OptionalNullable[float] = UNSET,
+        sub_total: OptionalNullable[float] = UNSET,
+        total_tax: OptionalNullable[float] = UNSET,
+        total: OptionalNullable[float] = UNSET,
+        tax_code: OptionalNullable[str] = UNSET,
+        notes: OptionalNullable[str] = UNSET,
+        status: OptionalNullable[models.BillStatus] = UNSET,
+        ledger_account: OptionalNullable[
+            Union[
+                models.LinkedLedgerAccountInput,
+                models.LinkedLedgerAccountInputTypedDict,
+            ]
+        ] = UNSET,
+        payment_method: OptionalNullable[str] = UNSET,
+        channel: OptionalNullable[str] = UNSET,
+        language: OptionalNullable[str] = UNSET,
+        accounting_by_row: OptionalNullable[bool] = UNSET,
+        bank_account: Optional[
+            Union[models.BankAccount, models.BankAccountTypedDict]
+        ] = None,
+        discount_percentage: OptionalNullable[float] = UNSET,
+        tracking_categories: OptionalNullable[
+            Union[
+                List[models.LinkedTrackingCategory],
+                List[models.LinkedTrackingCategoryTypedDict],
+            ]
+        ] = UNSET,
+        row_version: OptionalNullable[str] = UNSET,
+        pass_through: Optional[
+            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+        ] = None,
+        accounting_period: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.AccountingBillsAddResponse:
         r"""Create Bill
 
         Create Bill
 
-        :param bill:
         :param raw: Include raw response. Mostly used for debugging purposes
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param bill_number: Reference to supplier bill number
+        :param supplier: The supplier this entity is linked to.
+        :param company_id: The company or subsidiary id the transaction belongs to
+        :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
+        :param currency_rate: Currency Exchange Rate at the time entity was recorded/generated.
+        :param tax_inclusive: Amounts are including tax
+        :param bill_date: Date bill was issued - YYYY-MM-DD.
+        :param due_date: The due date is the date on which a payment is scheduled to be received - YYYY-MM-DD.
+        :param paid_date: The paid date is the date on which a payment was sent to the supplier - YYYY-MM-DD.
+        :param po_number: A PO Number uniquely identifies a purchase order and is generally defined by the buyer. The buyer will match the PO number in the invoice to the Purchase Order.
+        :param reference: Optional bill reference.
+        :param line_items:
+        :param terms: Terms of payment.
+        :param balance: Balance of bill due.
+        :param deposit: Amount of deposit made to this bill.
+        :param sub_total: Sub-total amount, normally before tax.
+        :param total_tax: Total tax amount applied to this bill.
+        :param total: Total amount of bill, including tax.
+        :param tax_code: Applicable tax id/code override if tax is not supplied on a line item basis.
+        :param notes:
+        :param status: Invoice status
+        :param ledger_account:
+        :param payment_method: Payment method used for the transaction, such as cash, credit card, bank transfer, or check
+        :param channel: The channel through which the transaction is processed.
+        :param language: language code according to ISO 639-1. For the United States - EN
+        :param accounting_by_row: Indicates if accounting by row is used (true) or not (false). Accounting by row means that a separate ledger transaction is created for each row.
+        :param bank_account:
+        :param discount_percentage: Discount percentage applied to this transaction.
+        :param tracking_categories: A list of linked tracking categories.
+        :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
+        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
+        :param accounting_period: Accounting period
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -265,7 +455,53 @@ class Bills(BaseSDK):
         request = models.AccountingBillsAddRequest(
             raw=raw,
             service_id=service_id,
-            bill=utils.get_pydantic_model(bill, models.BillInput),
+            bill=models.BillInput(
+                bill_number=bill_number,
+                supplier=utils.get_pydantic_model(
+                    supplier, OptionalNullable[models.LinkedSupplierInput]
+                ),
+                company_id=company_id,
+                currency=currency,
+                currency_rate=currency_rate,
+                tax_inclusive=tax_inclusive,
+                bill_date=bill_date,
+                due_date=due_date,
+                paid_date=paid_date,
+                po_number=po_number,
+                reference=reference,
+                line_items=utils.get_pydantic_model(
+                    line_items, Optional[List[models.BillLineItemInput]]
+                ),
+                terms=terms,
+                balance=balance,
+                deposit=deposit,
+                sub_total=sub_total,
+                total_tax=total_tax,
+                total=total,
+                tax_code=tax_code,
+                notes=notes,
+                status=status,
+                ledger_account=utils.get_pydantic_model(
+                    ledger_account, OptionalNullable[models.LinkedLedgerAccountInput]
+                ),
+                payment_method=payment_method,
+                channel=channel,
+                language=language,
+                accounting_by_row=accounting_by_row,
+                bank_account=utils.get_pydantic_model(
+                    bank_account, Optional[models.BankAccount]
+                ),
+                discount_percentage=discount_percentage,
+                tracking_categories=utils.get_pydantic_model(
+                    tracking_categories,
+                    OptionalNullable[List[models.LinkedTrackingCategory]],
+                ),
+                row_version=row_version,
+                pass_through=utils.get_pydantic_model(
+                    pass_through, Optional[List[models.PassThroughBody]]
+                ),
+                accounting_period=accounting_period,
+            ),
         )
 
         req = self.build_request(
@@ -279,6 +515,7 @@ class Bills(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.AccountingBillsAddGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -355,23 +592,107 @@ class Bills(BaseSDK):
     async def create_async(
         self,
         *,
-        bill: Union[models.BillInput, models.BillInputTypedDict],
         raw: Optional[bool] = False,
         service_id: Optional[str] = None,
+        bill_number: OptionalNullable[str] = UNSET,
+        supplier: OptionalNullable[
+            Union[models.LinkedSupplierInput, models.LinkedSupplierInputTypedDict]
+        ] = UNSET,
+        company_id: OptionalNullable[str] = UNSET,
+        currency: OptionalNullable[models.Currency] = UNSET,
+        currency_rate: OptionalNullable[float] = UNSET,
+        tax_inclusive: OptionalNullable[bool] = UNSET,
+        bill_date: Optional[date] = None,
+        due_date: Optional[date] = None,
+        paid_date: OptionalNullable[date] = UNSET,
+        po_number: OptionalNullable[str] = UNSET,
+        reference: OptionalNullable[str] = UNSET,
+        line_items: Optional[
+            Union[
+                List[models.BillLineItemInput], List[models.BillLineItemInputTypedDict]
+            ]
+        ] = None,
+        terms: OptionalNullable[str] = UNSET,
+        balance: OptionalNullable[float] = UNSET,
+        deposit: OptionalNullable[float] = UNSET,
+        sub_total: OptionalNullable[float] = UNSET,
+        total_tax: OptionalNullable[float] = UNSET,
+        total: OptionalNullable[float] = UNSET,
+        tax_code: OptionalNullable[str] = UNSET,
+        notes: OptionalNullable[str] = UNSET,
+        status: OptionalNullable[models.BillStatus] = UNSET,
+        ledger_account: OptionalNullable[
+            Union[
+                models.LinkedLedgerAccountInput,
+                models.LinkedLedgerAccountInputTypedDict,
+            ]
+        ] = UNSET,
+        payment_method: OptionalNullable[str] = UNSET,
+        channel: OptionalNullable[str] = UNSET,
+        language: OptionalNullable[str] = UNSET,
+        accounting_by_row: OptionalNullable[bool] = UNSET,
+        bank_account: Optional[
+            Union[models.BankAccount, models.BankAccountTypedDict]
+        ] = None,
+        discount_percentage: OptionalNullable[float] = UNSET,
+        tracking_categories: OptionalNullable[
+            Union[
+                List[models.LinkedTrackingCategory],
+                List[models.LinkedTrackingCategoryTypedDict],
+            ]
+        ] = UNSET,
+        row_version: OptionalNullable[str] = UNSET,
+        pass_through: Optional[
+            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+        ] = None,
+        accounting_period: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.AccountingBillsAddResponse:
         r"""Create Bill
 
         Create Bill
 
-        :param bill:
         :param raw: Include raw response. Mostly used for debugging purposes
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param bill_number: Reference to supplier bill number
+        :param supplier: The supplier this entity is linked to.
+        :param company_id: The company or subsidiary id the transaction belongs to
+        :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
+        :param currency_rate: Currency Exchange Rate at the time entity was recorded/generated.
+        :param tax_inclusive: Amounts are including tax
+        :param bill_date: Date bill was issued - YYYY-MM-DD.
+        :param due_date: The due date is the date on which a payment is scheduled to be received - YYYY-MM-DD.
+        :param paid_date: The paid date is the date on which a payment was sent to the supplier - YYYY-MM-DD.
+        :param po_number: A PO Number uniquely identifies a purchase order and is generally defined by the buyer. The buyer will match the PO number in the invoice to the Purchase Order.
+        :param reference: Optional bill reference.
+        :param line_items:
+        :param terms: Terms of payment.
+        :param balance: Balance of bill due.
+        :param deposit: Amount of deposit made to this bill.
+        :param sub_total: Sub-total amount, normally before tax.
+        :param total_tax: Total tax amount applied to this bill.
+        :param total: Total amount of bill, including tax.
+        :param tax_code: Applicable tax id/code override if tax is not supplied on a line item basis.
+        :param notes:
+        :param status: Invoice status
+        :param ledger_account:
+        :param payment_method: Payment method used for the transaction, such as cash, credit card, bank transfer, or check
+        :param channel: The channel through which the transaction is processed.
+        :param language: language code according to ISO 639-1. For the United States - EN
+        :param accounting_by_row: Indicates if accounting by row is used (true) or not (false). Accounting by row means that a separate ledger transaction is created for each row.
+        :param bank_account:
+        :param discount_percentage: Discount percentage applied to this transaction.
+        :param tracking_categories: A list of linked tracking categories.
+        :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
+        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
+        :param accounting_period: Accounting period
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -384,7 +705,53 @@ class Bills(BaseSDK):
         request = models.AccountingBillsAddRequest(
             raw=raw,
             service_id=service_id,
-            bill=utils.get_pydantic_model(bill, models.BillInput),
+            bill=models.BillInput(
+                bill_number=bill_number,
+                supplier=utils.get_pydantic_model(
+                    supplier, OptionalNullable[models.LinkedSupplierInput]
+                ),
+                company_id=company_id,
+                currency=currency,
+                currency_rate=currency_rate,
+                tax_inclusive=tax_inclusive,
+                bill_date=bill_date,
+                due_date=due_date,
+                paid_date=paid_date,
+                po_number=po_number,
+                reference=reference,
+                line_items=utils.get_pydantic_model(
+                    line_items, Optional[List[models.BillLineItemInput]]
+                ),
+                terms=terms,
+                balance=balance,
+                deposit=deposit,
+                sub_total=sub_total,
+                total_tax=total_tax,
+                total=total,
+                tax_code=tax_code,
+                notes=notes,
+                status=status,
+                ledger_account=utils.get_pydantic_model(
+                    ledger_account, OptionalNullable[models.LinkedLedgerAccountInput]
+                ),
+                payment_method=payment_method,
+                channel=channel,
+                language=language,
+                accounting_by_row=accounting_by_row,
+                bank_account=utils.get_pydantic_model(
+                    bank_account, Optional[models.BankAccount]
+                ),
+                discount_percentage=discount_percentage,
+                tracking_categories=utils.get_pydantic_model(
+                    tracking_categories,
+                    OptionalNullable[List[models.LinkedTrackingCategory]],
+                ),
+                row_version=row_version,
+                pass_through=utils.get_pydantic_model(
+                    pass_through, Optional[List[models.PassThroughBody]]
+                ),
+                accounting_period=accounting_period,
+            ),
         )
 
         req = self.build_request_async(
@@ -398,6 +765,7 @@ class Bills(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.AccountingBillsAddGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -481,6 +849,7 @@ class Bills(BaseSDK):
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.AccountingBillsOneResponse:
         r"""Get Bill
 
@@ -493,6 +862,7 @@ class Bills(BaseSDK):
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -520,6 +890,7 @@ class Bills(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.AccountingBillsOneGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -600,6 +971,7 @@ class Bills(BaseSDK):
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.AccountingBillsOneResponse:
         r"""Get Bill
 
@@ -612,6 +984,7 @@ class Bills(BaseSDK):
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -639,6 +1012,7 @@ class Bills(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.AccountingBillsOneGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -713,24 +1087,108 @@ class Bills(BaseSDK):
         self,
         *,
         id: str,
-        bill: Union[models.BillInput, models.BillInputTypedDict],
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
+        bill_number: OptionalNullable[str] = UNSET,
+        supplier: OptionalNullable[
+            Union[models.LinkedSupplierInput, models.LinkedSupplierInputTypedDict]
+        ] = UNSET,
+        company_id: OptionalNullable[str] = UNSET,
+        currency: OptionalNullable[models.Currency] = UNSET,
+        currency_rate: OptionalNullable[float] = UNSET,
+        tax_inclusive: OptionalNullable[bool] = UNSET,
+        bill_date: Optional[date] = None,
+        due_date: Optional[date] = None,
+        paid_date: OptionalNullable[date] = UNSET,
+        po_number: OptionalNullable[str] = UNSET,
+        reference: OptionalNullable[str] = UNSET,
+        line_items: Optional[
+            Union[
+                List[models.BillLineItemInput], List[models.BillLineItemInputTypedDict]
+            ]
+        ] = None,
+        terms: OptionalNullable[str] = UNSET,
+        balance: OptionalNullable[float] = UNSET,
+        deposit: OptionalNullable[float] = UNSET,
+        sub_total: OptionalNullable[float] = UNSET,
+        total_tax: OptionalNullable[float] = UNSET,
+        total: OptionalNullable[float] = UNSET,
+        tax_code: OptionalNullable[str] = UNSET,
+        notes: OptionalNullable[str] = UNSET,
+        status: OptionalNullable[models.BillStatus] = UNSET,
+        ledger_account: OptionalNullable[
+            Union[
+                models.LinkedLedgerAccountInput,
+                models.LinkedLedgerAccountInputTypedDict,
+            ]
+        ] = UNSET,
+        payment_method: OptionalNullable[str] = UNSET,
+        channel: OptionalNullable[str] = UNSET,
+        language: OptionalNullable[str] = UNSET,
+        accounting_by_row: OptionalNullable[bool] = UNSET,
+        bank_account: Optional[
+            Union[models.BankAccount, models.BankAccountTypedDict]
+        ] = None,
+        discount_percentage: OptionalNullable[float] = UNSET,
+        tracking_categories: OptionalNullable[
+            Union[
+                List[models.LinkedTrackingCategory],
+                List[models.LinkedTrackingCategoryTypedDict],
+            ]
+        ] = UNSET,
+        row_version: OptionalNullable[str] = UNSET,
+        pass_through: Optional[
+            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+        ] = None,
+        accounting_period: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.AccountingBillsUpdateResponse:
         r"""Update Bill
 
         Update Bill
 
         :param id: ID of the record you are acting upon.
-        :param bill:
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param bill_number: Reference to supplier bill number
+        :param supplier: The supplier this entity is linked to.
+        :param company_id: The company or subsidiary id the transaction belongs to
+        :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
+        :param currency_rate: Currency Exchange Rate at the time entity was recorded/generated.
+        :param tax_inclusive: Amounts are including tax
+        :param bill_date: Date bill was issued - YYYY-MM-DD.
+        :param due_date: The due date is the date on which a payment is scheduled to be received - YYYY-MM-DD.
+        :param paid_date: The paid date is the date on which a payment was sent to the supplier - YYYY-MM-DD.
+        :param po_number: A PO Number uniquely identifies a purchase order and is generally defined by the buyer. The buyer will match the PO number in the invoice to the Purchase Order.
+        :param reference: Optional bill reference.
+        :param line_items:
+        :param terms: Terms of payment.
+        :param balance: Balance of bill due.
+        :param deposit: Amount of deposit made to this bill.
+        :param sub_total: Sub-total amount, normally before tax.
+        :param total_tax: Total tax amount applied to this bill.
+        :param total: Total amount of bill, including tax.
+        :param tax_code: Applicable tax id/code override if tax is not supplied on a line item basis.
+        :param notes:
+        :param status: Invoice status
+        :param ledger_account:
+        :param payment_method: Payment method used for the transaction, such as cash, credit card, bank transfer, or check
+        :param channel: The channel through which the transaction is processed.
+        :param language: language code according to ISO 639-1. For the United States - EN
+        :param accounting_by_row: Indicates if accounting by row is used (true) or not (false). Accounting by row means that a separate ledger transaction is created for each row.
+        :param bank_account:
+        :param discount_percentage: Discount percentage applied to this transaction.
+        :param tracking_categories: A list of linked tracking categories.
+        :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
+        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
+        :param accounting_period: Accounting period
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -744,7 +1202,53 @@ class Bills(BaseSDK):
             id=id,
             service_id=service_id,
             raw=raw,
-            bill=utils.get_pydantic_model(bill, models.BillInput),
+            bill=models.BillInput(
+                bill_number=bill_number,
+                supplier=utils.get_pydantic_model(
+                    supplier, OptionalNullable[models.LinkedSupplierInput]
+                ),
+                company_id=company_id,
+                currency=currency,
+                currency_rate=currency_rate,
+                tax_inclusive=tax_inclusive,
+                bill_date=bill_date,
+                due_date=due_date,
+                paid_date=paid_date,
+                po_number=po_number,
+                reference=reference,
+                line_items=utils.get_pydantic_model(
+                    line_items, Optional[List[models.BillLineItemInput]]
+                ),
+                terms=terms,
+                balance=balance,
+                deposit=deposit,
+                sub_total=sub_total,
+                total_tax=total_tax,
+                total=total,
+                tax_code=tax_code,
+                notes=notes,
+                status=status,
+                ledger_account=utils.get_pydantic_model(
+                    ledger_account, OptionalNullable[models.LinkedLedgerAccountInput]
+                ),
+                payment_method=payment_method,
+                channel=channel,
+                language=language,
+                accounting_by_row=accounting_by_row,
+                bank_account=utils.get_pydantic_model(
+                    bank_account, Optional[models.BankAccount]
+                ),
+                discount_percentage=discount_percentage,
+                tracking_categories=utils.get_pydantic_model(
+                    tracking_categories,
+                    OptionalNullable[List[models.LinkedTrackingCategory]],
+                ),
+                row_version=row_version,
+                pass_through=utils.get_pydantic_model(
+                    pass_through, Optional[List[models.PassThroughBody]]
+                ),
+                accounting_period=accounting_period,
+            ),
         )
 
         req = self.build_request(
@@ -758,6 +1262,7 @@ class Bills(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.AccountingBillsUpdateGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -835,24 +1340,108 @@ class Bills(BaseSDK):
         self,
         *,
         id: str,
-        bill: Union[models.BillInput, models.BillInputTypedDict],
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
+        bill_number: OptionalNullable[str] = UNSET,
+        supplier: OptionalNullable[
+            Union[models.LinkedSupplierInput, models.LinkedSupplierInputTypedDict]
+        ] = UNSET,
+        company_id: OptionalNullable[str] = UNSET,
+        currency: OptionalNullable[models.Currency] = UNSET,
+        currency_rate: OptionalNullable[float] = UNSET,
+        tax_inclusive: OptionalNullable[bool] = UNSET,
+        bill_date: Optional[date] = None,
+        due_date: Optional[date] = None,
+        paid_date: OptionalNullable[date] = UNSET,
+        po_number: OptionalNullable[str] = UNSET,
+        reference: OptionalNullable[str] = UNSET,
+        line_items: Optional[
+            Union[
+                List[models.BillLineItemInput], List[models.BillLineItemInputTypedDict]
+            ]
+        ] = None,
+        terms: OptionalNullable[str] = UNSET,
+        balance: OptionalNullable[float] = UNSET,
+        deposit: OptionalNullable[float] = UNSET,
+        sub_total: OptionalNullable[float] = UNSET,
+        total_tax: OptionalNullable[float] = UNSET,
+        total: OptionalNullable[float] = UNSET,
+        tax_code: OptionalNullable[str] = UNSET,
+        notes: OptionalNullable[str] = UNSET,
+        status: OptionalNullable[models.BillStatus] = UNSET,
+        ledger_account: OptionalNullable[
+            Union[
+                models.LinkedLedgerAccountInput,
+                models.LinkedLedgerAccountInputTypedDict,
+            ]
+        ] = UNSET,
+        payment_method: OptionalNullable[str] = UNSET,
+        channel: OptionalNullable[str] = UNSET,
+        language: OptionalNullable[str] = UNSET,
+        accounting_by_row: OptionalNullable[bool] = UNSET,
+        bank_account: Optional[
+            Union[models.BankAccount, models.BankAccountTypedDict]
+        ] = None,
+        discount_percentage: OptionalNullable[float] = UNSET,
+        tracking_categories: OptionalNullable[
+            Union[
+                List[models.LinkedTrackingCategory],
+                List[models.LinkedTrackingCategoryTypedDict],
+            ]
+        ] = UNSET,
+        row_version: OptionalNullable[str] = UNSET,
+        pass_through: Optional[
+            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+        ] = None,
+        accounting_period: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.AccountingBillsUpdateResponse:
         r"""Update Bill
 
         Update Bill
 
         :param id: ID of the record you are acting upon.
-        :param bill:
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param bill_number: Reference to supplier bill number
+        :param supplier: The supplier this entity is linked to.
+        :param company_id: The company or subsidiary id the transaction belongs to
+        :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
+        :param currency_rate: Currency Exchange Rate at the time entity was recorded/generated.
+        :param tax_inclusive: Amounts are including tax
+        :param bill_date: Date bill was issued - YYYY-MM-DD.
+        :param due_date: The due date is the date on which a payment is scheduled to be received - YYYY-MM-DD.
+        :param paid_date: The paid date is the date on which a payment was sent to the supplier - YYYY-MM-DD.
+        :param po_number: A PO Number uniquely identifies a purchase order and is generally defined by the buyer. The buyer will match the PO number in the invoice to the Purchase Order.
+        :param reference: Optional bill reference.
+        :param line_items:
+        :param terms: Terms of payment.
+        :param balance: Balance of bill due.
+        :param deposit: Amount of deposit made to this bill.
+        :param sub_total: Sub-total amount, normally before tax.
+        :param total_tax: Total tax amount applied to this bill.
+        :param total: Total amount of bill, including tax.
+        :param tax_code: Applicable tax id/code override if tax is not supplied on a line item basis.
+        :param notes:
+        :param status: Invoice status
+        :param ledger_account:
+        :param payment_method: Payment method used for the transaction, such as cash, credit card, bank transfer, or check
+        :param channel: The channel through which the transaction is processed.
+        :param language: language code according to ISO 639-1. For the United States - EN
+        :param accounting_by_row: Indicates if accounting by row is used (true) or not (false). Accounting by row means that a separate ledger transaction is created for each row.
+        :param bank_account:
+        :param discount_percentage: Discount percentage applied to this transaction.
+        :param tracking_categories: A list of linked tracking categories.
+        :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
+        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
+        :param accounting_period: Accounting period
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -866,7 +1455,53 @@ class Bills(BaseSDK):
             id=id,
             service_id=service_id,
             raw=raw,
-            bill=utils.get_pydantic_model(bill, models.BillInput),
+            bill=models.BillInput(
+                bill_number=bill_number,
+                supplier=utils.get_pydantic_model(
+                    supplier, OptionalNullable[models.LinkedSupplierInput]
+                ),
+                company_id=company_id,
+                currency=currency,
+                currency_rate=currency_rate,
+                tax_inclusive=tax_inclusive,
+                bill_date=bill_date,
+                due_date=due_date,
+                paid_date=paid_date,
+                po_number=po_number,
+                reference=reference,
+                line_items=utils.get_pydantic_model(
+                    line_items, Optional[List[models.BillLineItemInput]]
+                ),
+                terms=terms,
+                balance=balance,
+                deposit=deposit,
+                sub_total=sub_total,
+                total_tax=total_tax,
+                total=total,
+                tax_code=tax_code,
+                notes=notes,
+                status=status,
+                ledger_account=utils.get_pydantic_model(
+                    ledger_account, OptionalNullable[models.LinkedLedgerAccountInput]
+                ),
+                payment_method=payment_method,
+                channel=channel,
+                language=language,
+                accounting_by_row=accounting_by_row,
+                bank_account=utils.get_pydantic_model(
+                    bank_account, Optional[models.BankAccount]
+                ),
+                discount_percentage=discount_percentage,
+                tracking_categories=utils.get_pydantic_model(
+                    tracking_categories,
+                    OptionalNullable[List[models.LinkedTrackingCategory]],
+                ),
+                row_version=row_version,
+                pass_through=utils.get_pydantic_model(
+                    pass_through, Optional[List[models.PassThroughBody]]
+                ),
+                accounting_period=accounting_period,
+            ),
         )
 
         req = self.build_request_async(
@@ -880,6 +1515,7 @@ class Bills(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.AccountingBillsUpdateGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -962,6 +1598,7 @@ class Bills(BaseSDK):
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.AccountingBillsDeleteResponse:
         r"""Delete Bill
 
@@ -973,6 +1610,7 @@ class Bills(BaseSDK):
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -999,6 +1637,7 @@ class Bills(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.AccountingBillsDeleteGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -1078,6 +1717,7 @@ class Bills(BaseSDK):
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.AccountingBillsDeleteResponse:
         r"""Delete Bill
 
@@ -1089,6 +1729,7 @@ class Bills(BaseSDK):
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -1115,6 +1756,7 @@ class Bills(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.AccountingBillsDeleteGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,

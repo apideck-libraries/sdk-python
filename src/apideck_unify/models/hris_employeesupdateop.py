@@ -47,7 +47,7 @@ class HrisEmployeesUpdateGlobals(BaseModel):
 
 
 class HrisEmployeesUpdateRequestTypedDict(TypedDict):
-    id: str
+    id_param: str
     r"""ID of the record you are acting upon."""
     employee: EmployeeInputTypedDict
     service_id: NotRequired[str]
@@ -57,8 +57,10 @@ class HrisEmployeesUpdateRequestTypedDict(TypedDict):
 
 
 class HrisEmployeesUpdateRequest(BaseModel):
-    id: Annotated[
-        str, FieldMetadata(path=PathParamMetadata(style="simple", explode=False))
+    id_param: Annotated[
+        str,
+        pydantic.Field(alias="id"),
+        FieldMetadata(path=PathParamMetadata(style="simple", explode=False)),
     ]
     r"""ID of the record you are acting upon."""
 

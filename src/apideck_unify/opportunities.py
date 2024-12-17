@@ -3,31 +3,50 @@
 from .basesdk import BaseSDK
 from apideck_unify import models, utils
 from apideck_unify._hooks import HookContext
-from apideck_unify.types import BaseModel, OptionalNullable, UNSET
+from apideck_unify.types import Nullable, OptionalNullable, UNSET
 from apideck_unify.utils import get_security_from_env
-from typing import Any, Optional, Union, cast
+from datetime import date, datetime
+from jsonpath import JSONPath
+from typing import Any, Dict, List, Mapping, Optional, Union
 
 
 class Opportunities(BaseSDK):
     def list(
         self,
         *,
-        request: Union[
-            models.CrmOpportunitiesAllRequest,
-            models.CrmOpportunitiesAllRequestTypedDict,
-        ] = models.CrmOpportunitiesAllRequest(),
+        raw: Optional[bool] = False,
+        service_id: Optional[str] = None,
+        cursor: OptionalNullable[str] = UNSET,
+        limit: Optional[int] = 20,
+        filter_: Optional[
+            Union[models.OpportunitiesFilter, models.OpportunitiesFilterTypedDict]
+        ] = None,
+        sort: Optional[
+            Union[models.OpportunitiesSort, models.OpportunitiesSortTypedDict]
+        ] = None,
+        pass_through: Optional[Dict[str, Any]] = None,
+        fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
-    ) -> models.CrmOpportunitiesAllResponse:
+        http_headers: Optional[Mapping[str, str]] = None,
+    ) -> Optional[models.CrmOpportunitiesAllResponse]:
         r"""List opportunities
 
         List opportunities
 
-        :param request: The request object to send.
+        :param raw: Include raw response. Mostly used for debugging purposes
+        :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
+        :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
+        :param filter_: Apply filters
+        :param sort: Apply sorting
+        :param pass_through: Optional unmapped key/values that will be passed through to downstream as query parameters. Ie: ?pass_through[search]=leads becomes ?search=leads
+        :param fields: The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -37,9 +56,18 @@ class Opportunities(BaseSDK):
         if server_url is not None:
             base_url = server_url
 
-        if not isinstance(request, BaseModel):
-            request = utils.unmarshal(request, models.CrmOpportunitiesAllRequest)
-        request = cast(models.CrmOpportunitiesAllRequest, request)
+        request = models.CrmOpportunitiesAllRequest(
+            raw=raw,
+            service_id=service_id,
+            cursor=cursor,
+            limit=limit,
+            filter_=utils.get_pydantic_model(
+                filter_, Optional[models.OpportunitiesFilter]
+            ),
+            sort=utils.get_pydantic_model(sort, Optional[models.OpportunitiesSort]),
+            pass_through=pass_through,
+            fields=fields,
+        )
 
         req = self.build_request(
             method="GET",
@@ -52,6 +80,7 @@ class Opportunities(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.CrmOpportunitiesAllGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -85,9 +114,34 @@ class Opportunities(BaseSDK):
             retry_config=retry_config,
         )
 
+        def next_func() -> Optional[models.CrmOpportunitiesAllResponse]:
+            body = utils.unmarshal_json(http_res.text, Dict[Any, Any])
+            next_cursor = JSONPath("$.meta.cursors.next").parse(body)
+
+            if len(next_cursor) == 0:
+                return None
+            next_cursor = next_cursor[0]
+
+            return self.list(
+                raw=raw,
+                service_id=service_id,
+                cursor=next_cursor,
+                limit=limit,
+                filter_=filter_,
+                sort=sort,
+                pass_through=pass_through,
+                fields=fields,
+                retries=retries,
+            )
+
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.GetOpportunitiesResponse)
+            return models.CrmOpportunitiesAllResponse(
+                result=utils.unmarshal_json(
+                    http_res.text, models.GetOpportunitiesResponse
+                ),
+                next=next_func,
+            )
         if utils.match_response(http_res, "400", "application/json"):
             data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
             raise models.BadRequestResponse(data=data)
@@ -111,7 +165,12 @@ class Opportunities(BaseSDK):
                 "API error occurred", http_res.status_code, http_res_text, http_res
             )
         if utils.match_response(http_res, "default", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UnexpectedErrorResponse)
+            return models.CrmOpportunitiesAllResponse(
+                result=utils.unmarshal_json(
+                    http_res.text, models.UnexpectedErrorResponse
+                ),
+                next=next_func,
+            )
 
         content_type = http_res.headers.get("Content-Type")
         http_res_text = utils.stream_to_text(http_res)
@@ -125,22 +184,39 @@ class Opportunities(BaseSDK):
     async def list_async(
         self,
         *,
-        request: Union[
-            models.CrmOpportunitiesAllRequest,
-            models.CrmOpportunitiesAllRequestTypedDict,
-        ] = models.CrmOpportunitiesAllRequest(),
+        raw: Optional[bool] = False,
+        service_id: Optional[str] = None,
+        cursor: OptionalNullable[str] = UNSET,
+        limit: Optional[int] = 20,
+        filter_: Optional[
+            Union[models.OpportunitiesFilter, models.OpportunitiesFilterTypedDict]
+        ] = None,
+        sort: Optional[
+            Union[models.OpportunitiesSort, models.OpportunitiesSortTypedDict]
+        ] = None,
+        pass_through: Optional[Dict[str, Any]] = None,
+        fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
-    ) -> models.CrmOpportunitiesAllResponse:
+        http_headers: Optional[Mapping[str, str]] = None,
+    ) -> Optional[models.CrmOpportunitiesAllResponse]:
         r"""List opportunities
 
         List opportunities
 
-        :param request: The request object to send.
+        :param raw: Include raw response. Mostly used for debugging purposes
+        :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
+        :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
+        :param filter_: Apply filters
+        :param sort: Apply sorting
+        :param pass_through: Optional unmapped key/values that will be passed through to downstream as query parameters. Ie: ?pass_through[search]=leads becomes ?search=leads
+        :param fields: The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -150,9 +226,18 @@ class Opportunities(BaseSDK):
         if server_url is not None:
             base_url = server_url
 
-        if not isinstance(request, BaseModel):
-            request = utils.unmarshal(request, models.CrmOpportunitiesAllRequest)
-        request = cast(models.CrmOpportunitiesAllRequest, request)
+        request = models.CrmOpportunitiesAllRequest(
+            raw=raw,
+            service_id=service_id,
+            cursor=cursor,
+            limit=limit,
+            filter_=utils.get_pydantic_model(
+                filter_, Optional[models.OpportunitiesFilter]
+            ),
+            sort=utils.get_pydantic_model(sort, Optional[models.OpportunitiesSort]),
+            pass_through=pass_through,
+            fields=fields,
+        )
 
         req = self.build_request_async(
             method="GET",
@@ -165,6 +250,7 @@ class Opportunities(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.CrmOpportunitiesAllGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -198,9 +284,34 @@ class Opportunities(BaseSDK):
             retry_config=retry_config,
         )
 
+        def next_func() -> Optional[models.CrmOpportunitiesAllResponse]:
+            body = utils.unmarshal_json(http_res.text, Dict[Any, Any])
+            next_cursor = JSONPath("$.meta.cursors.next").parse(body)
+
+            if len(next_cursor) == 0:
+                return None
+            next_cursor = next_cursor[0]
+
+            return self.list(
+                raw=raw,
+                service_id=service_id,
+                cursor=next_cursor,
+                limit=limit,
+                filter_=filter_,
+                sort=sort,
+                pass_through=pass_through,
+                fields=fields,
+                retries=retries,
+            )
+
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.GetOpportunitiesResponse)
+            return models.CrmOpportunitiesAllResponse(
+                result=utils.unmarshal_json(
+                    http_res.text, models.GetOpportunitiesResponse
+                ),
+                next=next_func,
+            )
         if utils.match_response(http_res, "400", "application/json"):
             data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
             raise models.BadRequestResponse(data=data)
@@ -224,7 +335,12 @@ class Opportunities(BaseSDK):
                 "API error occurred", http_res.status_code, http_res_text, http_res
             )
         if utils.match_response(http_res, "default", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UnexpectedErrorResponse)
+            return models.CrmOpportunitiesAllResponse(
+                result=utils.unmarshal_json(
+                    http_res.text, models.UnexpectedErrorResponse
+                ),
+                next=next_func,
+            )
 
         content_type = http_res.headers.get("Content-Type")
         http_res_text = await utils.stream_to_text_async(http_res)
@@ -238,23 +354,85 @@ class Opportunities(BaseSDK):
     def create(
         self,
         *,
-        opportunity: Union[models.OpportunityInput, models.OpportunityInputTypedDict],
+        title: str,
+        primary_contact_id: Nullable[str],
         raw: Optional[bool] = False,
         service_id: Optional[str] = None,
+        description: OptionalNullable[str] = UNSET,
+        type_: OptionalNullable[str] = UNSET,
+        monetary_amount: OptionalNullable[float] = UNSET,
+        currency: OptionalNullable[models.Currency] = UNSET,
+        win_probability: OptionalNullable[float] = UNSET,
+        close_date: OptionalNullable[date] = UNSET,
+        loss_reason_id: OptionalNullable[str] = UNSET,
+        loss_reason: OptionalNullable[str] = UNSET,
+        won_reason_id: OptionalNullable[str] = UNSET,
+        won_reason: OptionalNullable[str] = UNSET,
+        pipeline_id: OptionalNullable[str] = UNSET,
+        pipeline_stage_id: OptionalNullable[str] = UNSET,
+        source_id: OptionalNullable[str] = UNSET,
+        lead_id: OptionalNullable[str] = UNSET,
+        lead_source: OptionalNullable[str] = UNSET,
+        contact_id: OptionalNullable[str] = UNSET,
+        contact_ids: Optional[List[str]] = None,
+        company_id: OptionalNullable[str] = UNSET,
+        company_name: OptionalNullable[str] = UNSET,
+        owner_id: OptionalNullable[str] = UNSET,
+        priority: OptionalNullable[str] = UNSET,
+        status: OptionalNullable[str] = UNSET,
+        status_id: OptionalNullable[str] = UNSET,
+        tags: OptionalNullable[List[str]] = UNSET,
+        custom_fields: Optional[
+            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+        ] = None,
+        stage_last_changed_at: OptionalNullable[datetime] = UNSET,
+        pass_through: Optional[
+            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.CrmOpportunitiesAddResponse:
         r"""Create opportunity
 
         Create opportunity
 
-        :param opportunity:
+        :param title: The title or name of the opportunity.
+        :param primary_contact_id: The unique identifier of the primary contact associated with the opportunity.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param description: A description of the opportunity.
+        :param type: The type of the opportunity
+        :param monetary_amount: The monetary value associated with the opportunity
+        :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
+        :param win_probability: The probability of winning the opportunity, expressed as a percentage.
+        :param close_date: The actual closing date for the opportunity. If close_date is null, the opportunity is not closed yet.
+        :param loss_reason_id: The unique identifier of the reason why the opportunity was lost.
+        :param loss_reason: The reason why the opportunity was lost.
+        :param won_reason_id: The unique identifier of the reason why the opportunity was won.
+        :param won_reason: The reason why the opportunity was won.
+        :param pipeline_id: The unique identifier of the pipeline associated with the opportunity
+        :param pipeline_stage_id: The unique identifier of the stage in the pipeline associated with the opportunity.
+        :param source_id: The unique identifier of the source of the opportunity.
+        :param lead_id: The unique identifier of the lead associated with the opportunity.
+        :param lead_source: The source of the lead associated with the opportunity.
+        :param contact_id: The unique identifier of the contact associated with the opportunity.
+        :param contact_ids: An array of unique identifiers of all contacts associated with the opportunity.
+        :param company_id: The unique identifier of the company associated with the opportunity.
+        :param company_name: The name of the company associated with the opportunity.
+        :param owner_id: The unique identifier of the user who owns the opportunity.
+        :param priority: The priority level of the opportunity.
+        :param status: The current status of the opportunity.
+        :param status_id: The unique identifier of the current status of the opportunity.
+        :param tags:
+        :param custom_fields:
+        :param stage_last_changed_at: The date and time when the stage of the opportunity was last changed.
+        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -267,7 +445,41 @@ class Opportunities(BaseSDK):
         request = models.CrmOpportunitiesAddRequest(
             raw=raw,
             service_id=service_id,
-            opportunity=utils.get_pydantic_model(opportunity, models.OpportunityInput),
+            opportunity=models.OpportunityInput(
+                title=title,
+                primary_contact_id=primary_contact_id,
+                description=description,
+                type=type_,
+                monetary_amount=monetary_amount,
+                currency=currency,
+                win_probability=win_probability,
+                close_date=close_date,
+                loss_reason_id=loss_reason_id,
+                loss_reason=loss_reason,
+                won_reason_id=won_reason_id,
+                won_reason=won_reason,
+                pipeline_id=pipeline_id,
+                pipeline_stage_id=pipeline_stage_id,
+                source_id=source_id,
+                lead_id=lead_id,
+                lead_source=lead_source,
+                contact_id=contact_id,
+                contact_ids=contact_ids,
+                company_id=company_id,
+                company_name=company_name,
+                owner_id=owner_id,
+                priority=priority,
+                status=status,
+                status_id=status_id,
+                tags=tags,
+                custom_fields=utils.get_pydantic_model(
+                    custom_fields, Optional[List[models.CustomField]]
+                ),
+                stage_last_changed_at=stage_last_changed_at,
+                pass_through=utils.get_pydantic_model(
+                    pass_through, Optional[List[models.PassThroughBody]]
+                ),
+            ),
         )
 
         req = self.build_request(
@@ -281,6 +493,7 @@ class Opportunities(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.CrmOpportunitiesAddGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -357,23 +570,85 @@ class Opportunities(BaseSDK):
     async def create_async(
         self,
         *,
-        opportunity: Union[models.OpportunityInput, models.OpportunityInputTypedDict],
+        title: str,
+        primary_contact_id: Nullable[str],
         raw: Optional[bool] = False,
         service_id: Optional[str] = None,
+        description: OptionalNullable[str] = UNSET,
+        type_: OptionalNullable[str] = UNSET,
+        monetary_amount: OptionalNullable[float] = UNSET,
+        currency: OptionalNullable[models.Currency] = UNSET,
+        win_probability: OptionalNullable[float] = UNSET,
+        close_date: OptionalNullable[date] = UNSET,
+        loss_reason_id: OptionalNullable[str] = UNSET,
+        loss_reason: OptionalNullable[str] = UNSET,
+        won_reason_id: OptionalNullable[str] = UNSET,
+        won_reason: OptionalNullable[str] = UNSET,
+        pipeline_id: OptionalNullable[str] = UNSET,
+        pipeline_stage_id: OptionalNullable[str] = UNSET,
+        source_id: OptionalNullable[str] = UNSET,
+        lead_id: OptionalNullable[str] = UNSET,
+        lead_source: OptionalNullable[str] = UNSET,
+        contact_id: OptionalNullable[str] = UNSET,
+        contact_ids: Optional[List[str]] = None,
+        company_id: OptionalNullable[str] = UNSET,
+        company_name: OptionalNullable[str] = UNSET,
+        owner_id: OptionalNullable[str] = UNSET,
+        priority: OptionalNullable[str] = UNSET,
+        status: OptionalNullable[str] = UNSET,
+        status_id: OptionalNullable[str] = UNSET,
+        tags: OptionalNullable[List[str]] = UNSET,
+        custom_fields: Optional[
+            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+        ] = None,
+        stage_last_changed_at: OptionalNullable[datetime] = UNSET,
+        pass_through: Optional[
+            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.CrmOpportunitiesAddResponse:
         r"""Create opportunity
 
         Create opportunity
 
-        :param opportunity:
+        :param title: The title or name of the opportunity.
+        :param primary_contact_id: The unique identifier of the primary contact associated with the opportunity.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param description: A description of the opportunity.
+        :param type: The type of the opportunity
+        :param monetary_amount: The monetary value associated with the opportunity
+        :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
+        :param win_probability: The probability of winning the opportunity, expressed as a percentage.
+        :param close_date: The actual closing date for the opportunity. If close_date is null, the opportunity is not closed yet.
+        :param loss_reason_id: The unique identifier of the reason why the opportunity was lost.
+        :param loss_reason: The reason why the opportunity was lost.
+        :param won_reason_id: The unique identifier of the reason why the opportunity was won.
+        :param won_reason: The reason why the opportunity was won.
+        :param pipeline_id: The unique identifier of the pipeline associated with the opportunity
+        :param pipeline_stage_id: The unique identifier of the stage in the pipeline associated with the opportunity.
+        :param source_id: The unique identifier of the source of the opportunity.
+        :param lead_id: The unique identifier of the lead associated with the opportunity.
+        :param lead_source: The source of the lead associated with the opportunity.
+        :param contact_id: The unique identifier of the contact associated with the opportunity.
+        :param contact_ids: An array of unique identifiers of all contacts associated with the opportunity.
+        :param company_id: The unique identifier of the company associated with the opportunity.
+        :param company_name: The name of the company associated with the opportunity.
+        :param owner_id: The unique identifier of the user who owns the opportunity.
+        :param priority: The priority level of the opportunity.
+        :param status: The current status of the opportunity.
+        :param status_id: The unique identifier of the current status of the opportunity.
+        :param tags:
+        :param custom_fields:
+        :param stage_last_changed_at: The date and time when the stage of the opportunity was last changed.
+        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -386,7 +661,41 @@ class Opportunities(BaseSDK):
         request = models.CrmOpportunitiesAddRequest(
             raw=raw,
             service_id=service_id,
-            opportunity=utils.get_pydantic_model(opportunity, models.OpportunityInput),
+            opportunity=models.OpportunityInput(
+                title=title,
+                primary_contact_id=primary_contact_id,
+                description=description,
+                type=type_,
+                monetary_amount=monetary_amount,
+                currency=currency,
+                win_probability=win_probability,
+                close_date=close_date,
+                loss_reason_id=loss_reason_id,
+                loss_reason=loss_reason,
+                won_reason_id=won_reason_id,
+                won_reason=won_reason,
+                pipeline_id=pipeline_id,
+                pipeline_stage_id=pipeline_stage_id,
+                source_id=source_id,
+                lead_id=lead_id,
+                lead_source=lead_source,
+                contact_id=contact_id,
+                contact_ids=contact_ids,
+                company_id=company_id,
+                company_name=company_name,
+                owner_id=owner_id,
+                priority=priority,
+                status=status,
+                status_id=status_id,
+                tags=tags,
+                custom_fields=utils.get_pydantic_model(
+                    custom_fields, Optional[List[models.CustomField]]
+                ),
+                stage_last_changed_at=stage_last_changed_at,
+                pass_through=utils.get_pydantic_model(
+                    pass_through, Optional[List[models.PassThroughBody]]
+                ),
+            ),
         )
 
         req = self.build_request_async(
@@ -400,6 +709,7 @@ class Opportunities(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.CrmOpportunitiesAddGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -483,6 +793,7 @@ class Opportunities(BaseSDK):
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.CrmOpportunitiesOneResponse:
         r"""Get opportunity
 
@@ -495,6 +806,7 @@ class Opportunities(BaseSDK):
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -522,6 +834,7 @@ class Opportunities(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.CrmOpportunitiesOneGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -602,6 +915,7 @@ class Opportunities(BaseSDK):
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.CrmOpportunitiesOneResponse:
         r"""Get opportunity
 
@@ -614,6 +928,7 @@ class Opportunities(BaseSDK):
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -641,6 +956,7 @@ class Opportunities(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.CrmOpportunitiesOneGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -715,24 +1031,86 @@ class Opportunities(BaseSDK):
         self,
         *,
         id: str,
-        opportunity: Union[models.OpportunityInput, models.OpportunityInputTypedDict],
+        title: str,
+        primary_contact_id: Nullable[str],
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
+        description: OptionalNullable[str] = UNSET,
+        type_: OptionalNullable[str] = UNSET,
+        monetary_amount: OptionalNullable[float] = UNSET,
+        currency: OptionalNullable[models.Currency] = UNSET,
+        win_probability: OptionalNullable[float] = UNSET,
+        close_date: OptionalNullable[date] = UNSET,
+        loss_reason_id: OptionalNullable[str] = UNSET,
+        loss_reason: OptionalNullable[str] = UNSET,
+        won_reason_id: OptionalNullable[str] = UNSET,
+        won_reason: OptionalNullable[str] = UNSET,
+        pipeline_id: OptionalNullable[str] = UNSET,
+        pipeline_stage_id: OptionalNullable[str] = UNSET,
+        source_id: OptionalNullable[str] = UNSET,
+        lead_id: OptionalNullable[str] = UNSET,
+        lead_source: OptionalNullable[str] = UNSET,
+        contact_id: OptionalNullable[str] = UNSET,
+        contact_ids: Optional[List[str]] = None,
+        company_id: OptionalNullable[str] = UNSET,
+        company_name: OptionalNullable[str] = UNSET,
+        owner_id: OptionalNullable[str] = UNSET,
+        priority: OptionalNullable[str] = UNSET,
+        status: OptionalNullable[str] = UNSET,
+        status_id: OptionalNullable[str] = UNSET,
+        tags: OptionalNullable[List[str]] = UNSET,
+        custom_fields: Optional[
+            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+        ] = None,
+        stage_last_changed_at: OptionalNullable[datetime] = UNSET,
+        pass_through: Optional[
+            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.CrmOpportunitiesUpdateResponse:
         r"""Update opportunity
 
         Update opportunity
 
         :param id: ID of the record you are acting upon.
-        :param opportunity:
+        :param title: The title or name of the opportunity.
+        :param primary_contact_id: The unique identifier of the primary contact associated with the opportunity.
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param description: A description of the opportunity.
+        :param type: The type of the opportunity
+        :param monetary_amount: The monetary value associated with the opportunity
+        :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
+        :param win_probability: The probability of winning the opportunity, expressed as a percentage.
+        :param close_date: The actual closing date for the opportunity. If close_date is null, the opportunity is not closed yet.
+        :param loss_reason_id: The unique identifier of the reason why the opportunity was lost.
+        :param loss_reason: The reason why the opportunity was lost.
+        :param won_reason_id: The unique identifier of the reason why the opportunity was won.
+        :param won_reason: The reason why the opportunity was won.
+        :param pipeline_id: The unique identifier of the pipeline associated with the opportunity
+        :param pipeline_stage_id: The unique identifier of the stage in the pipeline associated with the opportunity.
+        :param source_id: The unique identifier of the source of the opportunity.
+        :param lead_id: The unique identifier of the lead associated with the opportunity.
+        :param lead_source: The source of the lead associated with the opportunity.
+        :param contact_id: The unique identifier of the contact associated with the opportunity.
+        :param contact_ids: An array of unique identifiers of all contacts associated with the opportunity.
+        :param company_id: The unique identifier of the company associated with the opportunity.
+        :param company_name: The name of the company associated with the opportunity.
+        :param owner_id: The unique identifier of the user who owns the opportunity.
+        :param priority: The priority level of the opportunity.
+        :param status: The current status of the opportunity.
+        :param status_id: The unique identifier of the current status of the opportunity.
+        :param tags:
+        :param custom_fields:
+        :param stage_last_changed_at: The date and time when the stage of the opportunity was last changed.
+        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -746,7 +1124,41 @@ class Opportunities(BaseSDK):
             id=id,
             service_id=service_id,
             raw=raw,
-            opportunity=utils.get_pydantic_model(opportunity, models.OpportunityInput),
+            opportunity=models.OpportunityInput(
+                title=title,
+                primary_contact_id=primary_contact_id,
+                description=description,
+                type=type_,
+                monetary_amount=monetary_amount,
+                currency=currency,
+                win_probability=win_probability,
+                close_date=close_date,
+                loss_reason_id=loss_reason_id,
+                loss_reason=loss_reason,
+                won_reason_id=won_reason_id,
+                won_reason=won_reason,
+                pipeline_id=pipeline_id,
+                pipeline_stage_id=pipeline_stage_id,
+                source_id=source_id,
+                lead_id=lead_id,
+                lead_source=lead_source,
+                contact_id=contact_id,
+                contact_ids=contact_ids,
+                company_id=company_id,
+                company_name=company_name,
+                owner_id=owner_id,
+                priority=priority,
+                status=status,
+                status_id=status_id,
+                tags=tags,
+                custom_fields=utils.get_pydantic_model(
+                    custom_fields, Optional[List[models.CustomField]]
+                ),
+                stage_last_changed_at=stage_last_changed_at,
+                pass_through=utils.get_pydantic_model(
+                    pass_through, Optional[List[models.PassThroughBody]]
+                ),
+            ),
         )
 
         req = self.build_request(
@@ -760,6 +1172,7 @@ class Opportunities(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.CrmOpportunitiesUpdateGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -837,24 +1250,86 @@ class Opportunities(BaseSDK):
         self,
         *,
         id: str,
-        opportunity: Union[models.OpportunityInput, models.OpportunityInputTypedDict],
+        title: str,
+        primary_contact_id: Nullable[str],
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
+        description: OptionalNullable[str] = UNSET,
+        type_: OptionalNullable[str] = UNSET,
+        monetary_amount: OptionalNullable[float] = UNSET,
+        currency: OptionalNullable[models.Currency] = UNSET,
+        win_probability: OptionalNullable[float] = UNSET,
+        close_date: OptionalNullable[date] = UNSET,
+        loss_reason_id: OptionalNullable[str] = UNSET,
+        loss_reason: OptionalNullable[str] = UNSET,
+        won_reason_id: OptionalNullable[str] = UNSET,
+        won_reason: OptionalNullable[str] = UNSET,
+        pipeline_id: OptionalNullable[str] = UNSET,
+        pipeline_stage_id: OptionalNullable[str] = UNSET,
+        source_id: OptionalNullable[str] = UNSET,
+        lead_id: OptionalNullable[str] = UNSET,
+        lead_source: OptionalNullable[str] = UNSET,
+        contact_id: OptionalNullable[str] = UNSET,
+        contact_ids: Optional[List[str]] = None,
+        company_id: OptionalNullable[str] = UNSET,
+        company_name: OptionalNullable[str] = UNSET,
+        owner_id: OptionalNullable[str] = UNSET,
+        priority: OptionalNullable[str] = UNSET,
+        status: OptionalNullable[str] = UNSET,
+        status_id: OptionalNullable[str] = UNSET,
+        tags: OptionalNullable[List[str]] = UNSET,
+        custom_fields: Optional[
+            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+        ] = None,
+        stage_last_changed_at: OptionalNullable[datetime] = UNSET,
+        pass_through: Optional[
+            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.CrmOpportunitiesUpdateResponse:
         r"""Update opportunity
 
         Update opportunity
 
         :param id: ID of the record you are acting upon.
-        :param opportunity:
+        :param title: The title or name of the opportunity.
+        :param primary_contact_id: The unique identifier of the primary contact associated with the opportunity.
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param description: A description of the opportunity.
+        :param type: The type of the opportunity
+        :param monetary_amount: The monetary value associated with the opportunity
+        :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
+        :param win_probability: The probability of winning the opportunity, expressed as a percentage.
+        :param close_date: The actual closing date for the opportunity. If close_date is null, the opportunity is not closed yet.
+        :param loss_reason_id: The unique identifier of the reason why the opportunity was lost.
+        :param loss_reason: The reason why the opportunity was lost.
+        :param won_reason_id: The unique identifier of the reason why the opportunity was won.
+        :param won_reason: The reason why the opportunity was won.
+        :param pipeline_id: The unique identifier of the pipeline associated with the opportunity
+        :param pipeline_stage_id: The unique identifier of the stage in the pipeline associated with the opportunity.
+        :param source_id: The unique identifier of the source of the opportunity.
+        :param lead_id: The unique identifier of the lead associated with the opportunity.
+        :param lead_source: The source of the lead associated with the opportunity.
+        :param contact_id: The unique identifier of the contact associated with the opportunity.
+        :param contact_ids: An array of unique identifiers of all contacts associated with the opportunity.
+        :param company_id: The unique identifier of the company associated with the opportunity.
+        :param company_name: The name of the company associated with the opportunity.
+        :param owner_id: The unique identifier of the user who owns the opportunity.
+        :param priority: The priority level of the opportunity.
+        :param status: The current status of the opportunity.
+        :param status_id: The unique identifier of the current status of the opportunity.
+        :param tags:
+        :param custom_fields:
+        :param stage_last_changed_at: The date and time when the stage of the opportunity was last changed.
+        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -868,7 +1343,41 @@ class Opportunities(BaseSDK):
             id=id,
             service_id=service_id,
             raw=raw,
-            opportunity=utils.get_pydantic_model(opportunity, models.OpportunityInput),
+            opportunity=models.OpportunityInput(
+                title=title,
+                primary_contact_id=primary_contact_id,
+                description=description,
+                type=type_,
+                monetary_amount=monetary_amount,
+                currency=currency,
+                win_probability=win_probability,
+                close_date=close_date,
+                loss_reason_id=loss_reason_id,
+                loss_reason=loss_reason,
+                won_reason_id=won_reason_id,
+                won_reason=won_reason,
+                pipeline_id=pipeline_id,
+                pipeline_stage_id=pipeline_stage_id,
+                source_id=source_id,
+                lead_id=lead_id,
+                lead_source=lead_source,
+                contact_id=contact_id,
+                contact_ids=contact_ids,
+                company_id=company_id,
+                company_name=company_name,
+                owner_id=owner_id,
+                priority=priority,
+                status=status,
+                status_id=status_id,
+                tags=tags,
+                custom_fields=utils.get_pydantic_model(
+                    custom_fields, Optional[List[models.CustomField]]
+                ),
+                stage_last_changed_at=stage_last_changed_at,
+                pass_through=utils.get_pydantic_model(
+                    pass_through, Optional[List[models.PassThroughBody]]
+                ),
+            ),
         )
 
         req = self.build_request_async(
@@ -882,6 +1391,7 @@ class Opportunities(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.CrmOpportunitiesUpdateGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -964,6 +1474,7 @@ class Opportunities(BaseSDK):
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.CrmOpportunitiesDeleteResponse:
         r"""Delete opportunity
 
@@ -975,6 +1486,7 @@ class Opportunities(BaseSDK):
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -1001,6 +1513,7 @@ class Opportunities(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.CrmOpportunitiesDeleteGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -1080,6 +1593,7 @@ class Opportunities(BaseSDK):
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.CrmOpportunitiesDeleteResponse:
         r"""Delete opportunity
 
@@ -1091,6 +1605,7 @@ class Opportunities(BaseSDK):
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -1117,6 +1632,7 @@ class Opportunities(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.CrmOpportunitiesDeleteGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,

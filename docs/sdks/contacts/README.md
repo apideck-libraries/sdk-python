@@ -27,37 +27,40 @@ with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
-    res = apideck.crm.contacts.list(request={
-        "service_id": "salesforce",
-        "filter_": {
-            "first_name": "Elon",
-            "last_name": "Musk",
-            "email": "elon@tesla.com",
-            "company_id": "12345",
-            "owner_id": "12345",
-        },
-        "sort": {
-            "by": apideck_unify.ContactsSortBy.CREATED_AT,
-            "direction": apideck_unify.SortDirection.DESC,
-        },
-        "pass_through": {
-            "search": "San Francisco",
-        },
-        "fields": "id,updated_at",
-    })
 
-    if res is not None:
-        # handle response
-        pass
+    res = apideck.crm.contacts.list(service_id="salesforce", filter_={
+        "first_name": "Elon",
+        "last_name": "Musk",
+        "email": "elon@tesla.com",
+        "company_id": "12345",
+        "owner_id": "12345",
+    }, sort={
+        "by": apideck_unify.ContactsSortBy.CREATED_AT,
+        "direction": apideck_unify.SortDirection.DESC,
+    }, pass_through={
+        "search": "San Francisco",
+    }, fields="id,updated_at")
+
+    while res is not None:
+        # Handle items
+
+        res = res.next()
 
 ```
 
 ### Parameters
 
-| Parameter                                                             | Type                                                                  | Required                                                              | Description                                                           |
-| --------------------------------------------------------------------- | --------------------------------------------------------------------- | --------------------------------------------------------------------- | --------------------------------------------------------------------- |
-| `request`                                                             | [models.CrmContactsAllRequest](../../models/crmcontactsallrequest.md) | :heavy_check_mark:                                                    | The request object to use for the request.                            |
-| `retries`                                                             | [Optional[utils.RetryConfig]](../../models/utils/retryconfig.md)      | :heavy_minus_sign:                                                    | Configuration to override the default retry behavior of the client.   |
+| Parameter                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       | Type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            | Required                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | Example                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `raw`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           | *Optional[bool]*                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | :heavy_minus_sign:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Include raw response. Mostly used for debugging purposes                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| `service_id`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | *Optional[str]*                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | :heavy_minus_sign:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | salesforce                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| `cursor`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | *OptionalNullable[str]*                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | :heavy_minus_sign:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| `limit`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | *Optional[int]*                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | :heavy_minus_sign:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Number of results to return. Minimum 1, Maximum 200, Default 20                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| `filter_`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       | [Optional[models.ContactsFilter]](../../models/contactsfilter.md)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | :heavy_minus_sign:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Apply filters                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | {<br/>"first_name": "Elon",<br/>"last_name": "Musk",<br/>"email": "elon@tesla.com",<br/>"company_id": "12345",<br/>"owner_id": "12345"<br/>}                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| `sort`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          | [Optional[models.ContactsSort]](../../models/contactssort.md)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | :heavy_minus_sign:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Apply sorting                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | {<br/>"by": "created_at",<br/>"direction": "desc"<br/>}                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| `pass_through`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  | Dict[str, *Any*]                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | :heavy_minus_sign:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Optional unmapped key/values that will be passed through to downstream as query parameters. Ie: ?pass_through[search]=leads becomes ?search=leads                                                                                                                                                                                                                                                                                                                                                                                                                                                               | {<br/>"search": "San Francisco"<br/>}                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| `fields`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | *OptionalNullable[str]*                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | :heavy_minus_sign:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields "name", "email" and "addresses.city". If any other fields are available, they will be excluded. | id,updated_at                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| `retries`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       | [Optional[utils.RetryConfig]](../../models/utils/retryconfig.md)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | :heavy_minus_sign:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Configuration to override the default retry behavior of the client.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 
 ### Response
 
@@ -90,239 +93,238 @@ with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
-    res = apideck.crm.contacts.create(contact={
-        "name": "Elon Musk",
-        "owner_id": "54321",
-        "type": apideck_unify.ContactType.PERSONAL,
-        "company_id": "23456",
-        "company_name": "23456",
-        "lead_id": "34567",
-        "first_name": "Elon",
-        "middle_name": "D.",
-        "last_name": "Musk",
-        "prefix": "Mr.",
-        "suffix": "PhD",
-        "title": "CEO",
-        "department": "Engineering",
-        "language": "EN",
-        "gender": apideck_unify.ContactGender.FEMALE,
-        "birthday": "2000-08-12",
-        "photo_url": "https://unavatar.io/elon-musk",
-        "lead_source": "Cold Call",
-        "fax": "+12129876543",
-        "description": "Internal champion",
-        "current_balance": 10.5,
-        "status": "open",
-        "active": True,
-        "websites": [
-            {
-                "url": "http://example.com",
-                "id": "12345",
-                "type": apideck_unify.WebsiteType.PRIMARY,
-            },
-        ],
-        "addresses": [
-            {
-                "id": "123",
-                "type": apideck_unify.Type.PRIMARY,
-                "string": "25 Spring Street, Blackburn, VIC 3130",
-                "name": "HQ US",
-                "line1": "Main street",
-                "line2": "apt #",
-                "line3": "Suite #",
-                "line4": "delivery instructions",
-                "street_number": "25",
-                "city": "San Francisco",
-                "state": "CA",
-                "postal_code": "94104",
-                "country": "US",
-                "latitude": "40.759211",
-                "longitude": "-73.984638",
-                "county": "Santa Clara",
-                "contact_name": "Elon Musk",
-                "salutation": "Mr",
-                "phone_number": "111-111-1111",
-                "fax": "122-111-1111",
-                "email": "elon@musk.com",
-                "website": "https://elonmusk.com",
-                "notes": "Address notes or delivery instructions.",
-                "row_version": "1-12345",
-            },
-            {
-                "id": "123",
-                "type": apideck_unify.Type.PRIMARY,
-                "string": "25 Spring Street, Blackburn, VIC 3130",
-                "name": "HQ US",
-                "line1": "Main street",
-                "line2": "apt #",
-                "line3": "Suite #",
-                "line4": "delivery instructions",
-                "street_number": "25",
-                "city": "San Francisco",
-                "state": "CA",
-                "postal_code": "94104",
-                "country": "US",
-                "latitude": "40.759211",
-                "longitude": "-73.984638",
-                "county": "Santa Clara",
-                "contact_name": "Elon Musk",
-                "salutation": "Mr",
-                "phone_number": "111-111-1111",
-                "fax": "122-111-1111",
-                "email": "elon@musk.com",
-                "website": "https://elonmusk.com",
-                "notes": "Address notes or delivery instructions.",
-                "row_version": "1-12345",
-            },
-        ],
-        "social_links": [
-            {
-                "url": "https://www.twitter.com/apideck",
-                "id": "12345",
-                "type": "twitter",
-            },
-        ],
-        "phone_numbers": [
-            {
-                "number": "111-111-1111",
-                "id": "12345",
-                "country_code": "1",
-                "area_code": "323",
-                "extension": "105",
-                "type": apideck_unify.PhoneNumberType.PRIMARY,
-            },
-        ],
-        "emails": [
-            {
-                "email": "elon@musk.com",
-                "id": "123",
-                "type": apideck_unify.EmailType.PRIMARY,
-            },
-        ],
-        "email_domain": "gmail.com",
-        "custom_fields": [
-            {
-                "id": "2389328923893298",
-                "name": "employee_level",
-                "description": "Employee Level",
-                "value": {},
-            },
-            {
-                "id": "2389328923893298",
-                "name": "employee_level",
-                "description": "Employee Level",
-                "value": 10,
-            },
-            {
-                "id": "2389328923893298",
-                "name": "employee_level",
-                "description": "Employee Level",
-                "value": "Uses Salesforce and Marketo",
-            },
-        ],
-        "tags": [
-            "New",
-        ],
-        "opportunity_ids": [
-            "12345",
-        ],
-        "pass_through": [
-            {
-                "service_id": "<id>",
-                "extend_paths": [
-                    {
-                        "path": "$.nested.property",
-                        "value": {
-                            "TaxClassificationRef": {
-                                "value": "EUC-99990201-V1-00020000",
-                            },
-                        },
-                    },
-                    {
-                        "path": "$.nested.property",
-                        "value": {
-                            "TaxClassificationRef": {
-                                "value": "EUC-99990201-V1-00020000",
-                            },
-                        },
-                    },
-                    {
-                        "path": "$.nested.property",
-                        "value": {
-                            "TaxClassificationRef": {
-                                "value": "EUC-99990201-V1-00020000",
-                            },
-                        },
-                    },
-                ],
-            },
-            {
-                "service_id": "<id>",
-                "extend_paths": [
-                    {
-                        "path": "$.nested.property",
-                        "value": {
-                            "TaxClassificationRef": {
-                                "value": "EUC-99990201-V1-00020000",
-                            },
-                        },
-                    },
-                    {
-                        "path": "$.nested.property",
-                        "value": {
-                            "TaxClassificationRef": {
-                                "value": "EUC-99990201-V1-00020000",
-                            },
-                        },
-                    },
-                ],
-            },
-            {
-                "service_id": "<id>",
-                "extend_paths": [
-                    {
-                        "path": "$.nested.property",
-                        "value": {
-                            "TaxClassificationRef": {
-                                "value": "EUC-99990201-V1-00020000",
-                            },
-                        },
-                    },
-                    {
-                        "path": "$.nested.property",
-                        "value": {
-                            "TaxClassificationRef": {
-                                "value": "EUC-99990201-V1-00020000",
-                            },
-                        },
-                    },
-                    {
-                        "path": "$.nested.property",
-                        "value": {
-                            "TaxClassificationRef": {
-                                "value": "EUC-99990201-V1-00020000",
-                            },
-                        },
-                    },
-                ],
-            },
-        ],
-    }, service_id="salesforce")
 
-    if res is not None:
-        # handle response
-        pass
+    res = apideck.crm.contacts.create(name="Elon Musk", service_id="salesforce", owner_id="54321", type_=apideck_unify.ContactType.PERSONAL, company_id="23456", company_name="23456", lead_id="34567", first_name="Elon", middle_name="D.", last_name="Musk", prefix="Mr.", suffix="PhD", title="CEO", department="Engineering", language="EN", gender=apideck_unify.ContactGender.FEMALE, birthday="2000-08-12", photo_url="https://unavatar.io/elon-musk", lead_source="Cold Call", fax="+12129876543", description="Internal champion", current_balance=10.5, status="open", active=True, websites=[
+        {
+            "url": "http://example.com",
+            "id": "12345",
+            "type": apideck_unify.WebsiteType.PRIMARY,
+        },
+    ], addresses=[
+        {
+            "id": "123",
+            "type": apideck_unify.Type.PRIMARY,
+            "string": "25 Spring Street, Blackburn, VIC 3130",
+            "name": "HQ US",
+            "line1": "Main street",
+            "line2": "apt #",
+            "line3": "Suite #",
+            "line4": "delivery instructions",
+            "street_number": "25",
+            "city": "San Francisco",
+            "state": "CA",
+            "postal_code": "94104",
+            "country": "US",
+            "latitude": "40.759211",
+            "longitude": "-73.984638",
+            "county": "Santa Clara",
+            "contact_name": "Elon Musk",
+            "salutation": "Mr",
+            "phone_number": "111-111-1111",
+            "fax": "122-111-1111",
+            "email": "elon@musk.com",
+            "website": "https://elonmusk.com",
+            "notes": "Address notes or delivery instructions.",
+            "row_version": "1-12345",
+        },
+        {
+            "id": "123",
+            "type": apideck_unify.Type.PRIMARY,
+            "string": "25 Spring Street, Blackburn, VIC 3130",
+            "name": "HQ US",
+            "line1": "Main street",
+            "line2": "apt #",
+            "line3": "Suite #",
+            "line4": "delivery instructions",
+            "street_number": "25",
+            "city": "San Francisco",
+            "state": "CA",
+            "postal_code": "94104",
+            "country": "US",
+            "latitude": "40.759211",
+            "longitude": "-73.984638",
+            "county": "Santa Clara",
+            "contact_name": "Elon Musk",
+            "salutation": "Mr",
+            "phone_number": "111-111-1111",
+            "fax": "122-111-1111",
+            "email": "elon@musk.com",
+            "website": "https://elonmusk.com",
+            "notes": "Address notes or delivery instructions.",
+            "row_version": "1-12345",
+        },
+    ], social_links=[
+        {
+            "url": "https://www.twitter.com/apideck",
+            "id": "12345",
+            "type": "twitter",
+        },
+    ], phone_numbers=[
+        {
+            "number": "111-111-1111",
+            "id": "12345",
+            "country_code": "1",
+            "area_code": "323",
+            "extension": "105",
+            "type": apideck_unify.PhoneNumberType.PRIMARY,
+        },
+    ], emails=[
+        {
+            "email": "elon@musk.com",
+            "id": "123",
+            "type": apideck_unify.EmailType.PRIMARY,
+        },
+    ], email_domain="gmail.com", custom_fields=[
+        {
+            "id": "2389328923893298",
+            "name": "employee_level",
+            "description": "Employee Level",
+            "value": {},
+        },
+        {
+            "id": "2389328923893298",
+            "name": "employee_level",
+            "description": "Employee Level",
+            "value": 10,
+        },
+        {
+            "id": "2389328923893298",
+            "name": "employee_level",
+            "description": "Employee Level",
+            "value": "Uses Salesforce and Marketo",
+        },
+    ], tags=[
+        "New",
+    ], opportunity_ids=[
+        "12345",
+    ], pass_through=[
+        {
+            "service_id": "<id>",
+            "extend_paths": [
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
+            ],
+        },
+        {
+            "service_id": "<id>",
+            "extend_paths": [
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
+            ],
+        },
+        {
+            "service_id": "<id>",
+            "extend_paths": [
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
+            ],
+        },
+    ])
+
+    # Handle response
+    print(res)
 
 ```
 
 ### Parameters
 
-| Parameter                                                                                                                                     | Type                                                                                                                                          | Required                                                                                                                                      | Description                                                                                                                                   | Example                                                                                                                                       |
-| --------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| `contact`                                                                                                                                     | [models.ContactInput](../../models/contactinput.md)                                                                                           | :heavy_check_mark:                                                                                                                            | N/A                                                                                                                                           |                                                                                                                                               |
-| `raw`                                                                                                                                         | *Optional[bool]*                                                                                                                              | :heavy_minus_sign:                                                                                                                            | Include raw response. Mostly used for debugging purposes                                                                                      |                                                                                                                                               |
-| `service_id`                                                                                                                                  | *Optional[str]*                                                                                                                               | :heavy_minus_sign:                                                                                                                            | Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API. | salesforce                                                                                                                                    |
-| `retries`                                                                                                                                     | [Optional[utils.RetryConfig]](../../models/utils/retryconfig.md)                                                                              | :heavy_minus_sign:                                                                                                                            | Configuration to override the default retry behavior of the client.                                                                           |                                                                                                                                               |
+| Parameter                                                                                                                                               | Type                                                                                                                                                    | Required                                                                                                                                                | Description                                                                                                                                             | Example                                                                                                                                                 |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `name`                                                                                                                                                  | *Nullable[str]*                                                                                                                                         | :heavy_check_mark:                                                                                                                                      | Full name of the contact.                                                                                                                               | Elon Musk                                                                                                                                               |
+| `raw`                                                                                                                                                   | *Optional[bool]*                                                                                                                                        | :heavy_minus_sign:                                                                                                                                      | Include raw response. Mostly used for debugging purposes                                                                                                |                                                                                                                                                         |
+| `service_id`                                                                                                                                            | *Optional[str]*                                                                                                                                         | :heavy_minus_sign:                                                                                                                                      | Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.           | salesforce                                                                                                                                              |
+| `owner_id`                                                                                                                                              | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | The owner of the contact.                                                                                                                               | 54321                                                                                                                                                   |
+| `type`                                                                                                                                                  | [OptionalNullable[models.ContactType]](../../models/contacttype.md)                                                                                     | :heavy_minus_sign:                                                                                                                                      | The type of the contact.                                                                                                                                | personal                                                                                                                                                |
+| `company_id`                                                                                                                                            | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | The company the contact is associated with.                                                                                                             | 23456                                                                                                                                                   |
+| `company_name`                                                                                                                                          | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | The name of the company the contact is associated with.                                                                                                 | 23456                                                                                                                                                   |
+| `lead_id`                                                                                                                                               | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | The lead the contact is associated with.                                                                                                                | 34567                                                                                                                                                   |
+| `first_name`                                                                                                                                            | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | The first name of the contact.                                                                                                                          | Elon                                                                                                                                                    |
+| `middle_name`                                                                                                                                           | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | The middle name of the contact.                                                                                                                         | D.                                                                                                                                                      |
+| `last_name`                                                                                                                                             | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | The last name of the contact.                                                                                                                           | Musk                                                                                                                                                    |
+| `prefix`                                                                                                                                                | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | The prefix of the contact.                                                                                                                              | Mr.                                                                                                                                                     |
+| `suffix`                                                                                                                                                | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | The suffix of the contact.                                                                                                                              | PhD                                                                                                                                                     |
+| `title`                                                                                                                                                 | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | The job title of the contact.                                                                                                                           | CEO                                                                                                                                                     |
+| `department`                                                                                                                                            | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | The department of the contact.                                                                                                                          | Engineering                                                                                                                                             |
+| `language`                                                                                                                                              | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | language code according to ISO 639-1. For the United States - EN                                                                                        | EN                                                                                                                                                      |
+| `gender`                                                                                                                                                | [OptionalNullable[models.ContactGender]](../../models/contactgender.md)                                                                                 | :heavy_minus_sign:                                                                                                                                      | The gender of the contact.                                                                                                                              | female                                                                                                                                                  |
+| `birthday`                                                                                                                                              | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | The birthday of the contact.                                                                                                                            | 2000-08-12                                                                                                                                              |
+| `image`                                                                                                                                                 | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | : warning: ** DEPRECATED **: This will be removed in a future release, please migrate away from it as soon as possible.                                 | https://unavatar.io/elon-musk                                                                                                                           |
+| `photo_url`                                                                                                                                             | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | The URL of the photo of a person.                                                                                                                       | https://unavatar.io/elon-musk                                                                                                                           |
+| `lead_source`                                                                                                                                           | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | The lead source of the contact.                                                                                                                         | Cold Call                                                                                                                                               |
+| `fax`                                                                                                                                                   | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | The fax number of the contact.                                                                                                                          | +12129876543                                                                                                                                            |
+| `description`                                                                                                                                           | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | The description of the contact.                                                                                                                         | Internal champion                                                                                                                                       |
+| `current_balance`                                                                                                                                       | *OptionalNullable[float]*                                                                                                                               | :heavy_minus_sign:                                                                                                                                      | The current balance of the contact.                                                                                                                     | 10.5                                                                                                                                                    |
+| `status`                                                                                                                                                | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | The status of the contact.                                                                                                                              | open                                                                                                                                                    |
+| `active`                                                                                                                                                | *OptionalNullable[bool]*                                                                                                                                | :heavy_minus_sign:                                                                                                                                      | The active status of the contact.                                                                                                                       | true                                                                                                                                                    |
+| `websites`                                                                                                                                              | List[[models.Website](../../models/website.md)]                                                                                                         | :heavy_minus_sign:                                                                                                                                      | N/A                                                                                                                                                     |                                                                                                                                                         |
+| `addresses`                                                                                                                                             | List[[models.Address](../../models/address.md)]                                                                                                         | :heavy_minus_sign:                                                                                                                                      | N/A                                                                                                                                                     |                                                                                                                                                         |
+| `social_links`                                                                                                                                          | List[[models.SocialLink](../../models/sociallink.md)]                                                                                                   | :heavy_minus_sign:                                                                                                                                      | N/A                                                                                                                                                     |                                                                                                                                                         |
+| `phone_numbers`                                                                                                                                         | List[[models.PhoneNumber](../../models/phonenumber.md)]                                                                                                 | :heavy_minus_sign:                                                                                                                                      | N/A                                                                                                                                                     |                                                                                                                                                         |
+| `emails`                                                                                                                                                | List[[models.Email](../../models/email.md)]                                                                                                             | :heavy_minus_sign:                                                                                                                                      | N/A                                                                                                                                                     |                                                                                                                                                         |
+| `email_domain`                                                                                                                                          | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | N/A                                                                                                                                                     | gmail.com                                                                                                                                               |
+| `custom_fields`                                                                                                                                         | List[[models.CustomField](../../models/customfield.md)]                                                                                                 | :heavy_minus_sign:                                                                                                                                      | N/A                                                                                                                                                     |                                                                                                                                                         |
+| `tags`                                                                                                                                                  | List[*str*]                                                                                                                                             | :heavy_minus_sign:                                                                                                                                      | N/A                                                                                                                                                     | [<br/>"New"<br/>]                                                                                                                                       |
+| `opportunity_ids`                                                                                                                                       | List[*str*]                                                                                                                                             | :heavy_minus_sign:                                                                                                                                      | The opportunity ids of the contact.                                                                                                                     |                                                                                                                                                         |
+| `pass_through`                                                                                                                                          | List[[models.PassThroughBody](../../models/passthroughbody.md)]                                                                                         | :heavy_minus_sign:                                                                                                                                      | The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources. |                                                                                                                                                         |
+| `retries`                                                                                                                                               | [Optional[utils.RetryConfig]](../../models/utils/retryconfig.md)                                                                                        | :heavy_minus_sign:                                                                                                                                      | Configuration to override the default retry behavior of the client.                                                                                     |                                                                                                                                                         |
 
 ### Response
 
@@ -354,31 +356,30 @@ with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
-    res = apideck.crm.contacts.get(request={
-        "id": "<id>",
-        "service_id": "salesforce",
-        "fields": "id,updated_at",
-        "filter_": {
-            "first_name": "Elon",
-            "last_name": "Musk",
-            "email": "elon@tesla.com",
-            "company_id": "12345",
-            "owner_id": "12345",
-        },
+
+    res = apideck.crm.contacts.get(id="<id>", service_id="salesforce", fields="id,updated_at", filter_={
+        "first_name": "Elon",
+        "last_name": "Musk",
+        "email": "elon@tesla.com",
+        "company_id": "12345",
+        "owner_id": "12345",
     })
 
-    if res is not None:
-        # handle response
-        pass
+    # Handle response
+    print(res)
 
 ```
 
 ### Parameters
 
-| Parameter                                                             | Type                                                                  | Required                                                              | Description                                                           |
-| --------------------------------------------------------------------- | --------------------------------------------------------------------- | --------------------------------------------------------------------- | --------------------------------------------------------------------- |
-| `request`                                                             | [models.CrmContactsOneRequest](../../models/crmcontactsonerequest.md) | :heavy_check_mark:                                                    | The request object to use for the request.                            |
-| `retries`                                                             | [Optional[utils.RetryConfig]](../../models/utils/retryconfig.md)      | :heavy_minus_sign:                                                    | Configuration to override the default retry behavior of the client.   |
+| Parameter                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       | Type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            | Required                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | Example                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `id`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            | *str*                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           | :heavy_check_mark:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | ID of the record you are acting upon.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| `service_id`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | *Optional[str]*                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | :heavy_minus_sign:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | salesforce                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| `raw`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           | *Optional[bool]*                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | :heavy_minus_sign:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Include raw response. Mostly used for debugging purposes                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| `fields`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | *OptionalNullable[str]*                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | :heavy_minus_sign:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields "name", "email" and "addresses.city". If any other fields are available, they will be excluded. | id,updated_at                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| `filter_`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       | [Optional[models.ContactsFilter]](../../models/contactsfilter.md)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | :heavy_minus_sign:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Apply filters                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | {<br/>"first_name": "Elon",<br/>"last_name": "Musk",<br/>"email": "elon@tesla.com",<br/>"company_id": "12345",<br/>"owner_id": "12345"<br/>}                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| `retries`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       | [Optional[utils.RetryConfig]](../../models/utils/retryconfig.md)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | :heavy_minus_sign:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Configuration to override the default retry behavior of the client.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 
 ### Response
 
@@ -411,219 +412,218 @@ with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
-    res = apideck.crm.contacts.update(id="<id>", contact={
-        "name": "Elon Musk",
-        "owner_id": "54321",
-        "type": apideck_unify.ContactType.PERSONAL,
-        "company_id": "23456",
-        "company_name": "23456",
-        "lead_id": "34567",
-        "first_name": "Elon",
-        "middle_name": "D.",
-        "last_name": "Musk",
-        "prefix": "Mr.",
-        "suffix": "PhD",
-        "title": "CEO",
-        "department": "Engineering",
-        "language": "EN",
-        "gender": apideck_unify.ContactGender.FEMALE,
-        "birthday": "2000-08-12",
-        "photo_url": "https://unavatar.io/elon-musk",
-        "lead_source": "Cold Call",
-        "fax": "+12129876543",
-        "description": "Internal champion",
-        "current_balance": 10.5,
-        "status": "open",
-        "active": True,
-        "websites": [
-            {
-                "url": "http://example.com",
-                "id": "12345",
-                "type": apideck_unify.WebsiteType.PRIMARY,
-            },
-            {
-                "url": "http://example.com",
-                "id": "12345",
-                "type": apideck_unify.WebsiteType.PRIMARY,
-            },
-            {
-                "url": "http://example.com",
-                "id": "12345",
-                "type": apideck_unify.WebsiteType.PRIMARY,
-            },
-        ],
-        "addresses": [
-            {
-                "id": "123",
-                "type": apideck_unify.Type.PRIMARY,
-                "string": "25 Spring Street, Blackburn, VIC 3130",
-                "name": "HQ US",
-                "line1": "Main street",
-                "line2": "apt #",
-                "line3": "Suite #",
-                "line4": "delivery instructions",
-                "street_number": "25",
-                "city": "San Francisco",
-                "state": "CA",
-                "postal_code": "94104",
-                "country": "US",
-                "latitude": "40.759211",
-                "longitude": "-73.984638",
-                "county": "Santa Clara",
-                "contact_name": "Elon Musk",
-                "salutation": "Mr",
-                "phone_number": "111-111-1111",
-                "fax": "122-111-1111",
-                "email": "elon@musk.com",
-                "website": "https://elonmusk.com",
-                "notes": "Address notes or delivery instructions.",
-                "row_version": "1-12345",
-            },
-            {
-                "id": "123",
-                "type": apideck_unify.Type.PRIMARY,
-                "string": "25 Spring Street, Blackburn, VIC 3130",
-                "name": "HQ US",
-                "line1": "Main street",
-                "line2": "apt #",
-                "line3": "Suite #",
-                "line4": "delivery instructions",
-                "street_number": "25",
-                "city": "San Francisco",
-                "state": "CA",
-                "postal_code": "94104",
-                "country": "US",
-                "latitude": "40.759211",
-                "longitude": "-73.984638",
-                "county": "Santa Clara",
-                "contact_name": "Elon Musk",
-                "salutation": "Mr",
-                "phone_number": "111-111-1111",
-                "fax": "122-111-1111",
-                "email": "elon@musk.com",
-                "website": "https://elonmusk.com",
-                "notes": "Address notes or delivery instructions.",
-                "row_version": "1-12345",
-            },
-        ],
-        "social_links": [
-            {
-                "url": "https://www.twitter.com/apideck",
-                "id": "12345",
-                "type": "twitter",
-            },
-        ],
-        "phone_numbers": [
-            {
-                "number": "111-111-1111",
-                "id": "12345",
-                "country_code": "1",
-                "area_code": "323",
-                "extension": "105",
-                "type": apideck_unify.PhoneNumberType.PRIMARY,
-            },
-            {
-                "number": "111-111-1111",
-                "id": "12345",
-                "country_code": "1",
-                "area_code": "323",
-                "extension": "105",
-                "type": apideck_unify.PhoneNumberType.PRIMARY,
-            },
-            {
-                "number": "111-111-1111",
-                "id": "12345",
-                "country_code": "1",
-                "area_code": "323",
-                "extension": "105",
-                "type": apideck_unify.PhoneNumberType.PRIMARY,
-            },
-        ],
-        "emails": [
-            {
-                "email": "elon@musk.com",
-                "id": "123",
-                "type": apideck_unify.EmailType.PRIMARY,
-            },
-            {
-                "email": "elon@musk.com",
-                "id": "123",
-                "type": apideck_unify.EmailType.PRIMARY,
-            },
-        ],
-        "email_domain": "gmail.com",
-        "custom_fields": [
-            {
-                "id": "2389328923893298",
-                "name": "employee_level",
-                "description": "Employee Level",
-                "value": {},
-            },
-        ],
-        "tags": [
-            "New",
-        ],
-        "opportunity_ids": [
-            "12345",
-        ],
-        "pass_through": [
-            {
-                "service_id": "<id>",
-                "extend_paths": [
-                    {
-                        "path": "$.nested.property",
-                        "value": {
-                            "TaxClassificationRef": {
-                                "value": "EUC-99990201-V1-00020000",
-                            },
-                        },
-                    },
-                ],
-            },
-            {
-                "service_id": "<id>",
-                "extend_paths": [
-                    {
-                        "path": "$.nested.property",
-                        "value": {
-                            "TaxClassificationRef": {
-                                "value": "EUC-99990201-V1-00020000",
-                            },
-                        },
-                    },
-                ],
-            },
-            {
-                "service_id": "<id>",
-                "extend_paths": [
-                    {
-                        "path": "$.nested.property",
-                        "value": {
-                            "TaxClassificationRef": {
-                                "value": "EUC-99990201-V1-00020000",
-                            },
-                        },
-                    },
-                ],
-            },
-        ],
-    }, service_id="salesforce")
 
-    if res is not None:
-        # handle response
-        pass
+    res = apideck.crm.contacts.update(id="<id>", name="Elon Musk", service_id="salesforce", owner_id="54321", type_=apideck_unify.ContactType.PERSONAL, company_id="23456", company_name="23456", lead_id="34567", first_name="Elon", middle_name="D.", last_name="Musk", prefix="Mr.", suffix="PhD", title="CEO", department="Engineering", language="EN", gender=apideck_unify.ContactGender.FEMALE, birthday="2000-08-12", photo_url="https://unavatar.io/elon-musk", lead_source="Cold Call", fax="+12129876543", description="Internal champion", current_balance=10.5, status="open", active=True, websites=[
+        {
+            "url": "http://example.com",
+            "id": "12345",
+            "type": apideck_unify.WebsiteType.PRIMARY,
+        },
+        {
+            "url": "http://example.com",
+            "id": "12345",
+            "type": apideck_unify.WebsiteType.PRIMARY,
+        },
+        {
+            "url": "http://example.com",
+            "id": "12345",
+            "type": apideck_unify.WebsiteType.PRIMARY,
+        },
+    ], addresses=[
+        {
+            "id": "123",
+            "type": apideck_unify.Type.PRIMARY,
+            "string": "25 Spring Street, Blackburn, VIC 3130",
+            "name": "HQ US",
+            "line1": "Main street",
+            "line2": "apt #",
+            "line3": "Suite #",
+            "line4": "delivery instructions",
+            "street_number": "25",
+            "city": "San Francisco",
+            "state": "CA",
+            "postal_code": "94104",
+            "country": "US",
+            "latitude": "40.759211",
+            "longitude": "-73.984638",
+            "county": "Santa Clara",
+            "contact_name": "Elon Musk",
+            "salutation": "Mr",
+            "phone_number": "111-111-1111",
+            "fax": "122-111-1111",
+            "email": "elon@musk.com",
+            "website": "https://elonmusk.com",
+            "notes": "Address notes or delivery instructions.",
+            "row_version": "1-12345",
+        },
+        {
+            "id": "123",
+            "type": apideck_unify.Type.PRIMARY,
+            "string": "25 Spring Street, Blackburn, VIC 3130",
+            "name": "HQ US",
+            "line1": "Main street",
+            "line2": "apt #",
+            "line3": "Suite #",
+            "line4": "delivery instructions",
+            "street_number": "25",
+            "city": "San Francisco",
+            "state": "CA",
+            "postal_code": "94104",
+            "country": "US",
+            "latitude": "40.759211",
+            "longitude": "-73.984638",
+            "county": "Santa Clara",
+            "contact_name": "Elon Musk",
+            "salutation": "Mr",
+            "phone_number": "111-111-1111",
+            "fax": "122-111-1111",
+            "email": "elon@musk.com",
+            "website": "https://elonmusk.com",
+            "notes": "Address notes or delivery instructions.",
+            "row_version": "1-12345",
+        },
+    ], social_links=[
+        {
+            "url": "https://www.twitter.com/apideck",
+            "id": "12345",
+            "type": "twitter",
+        },
+    ], phone_numbers=[
+        {
+            "number": "111-111-1111",
+            "id": "12345",
+            "country_code": "1",
+            "area_code": "323",
+            "extension": "105",
+            "type": apideck_unify.PhoneNumberType.PRIMARY,
+        },
+        {
+            "number": "111-111-1111",
+            "id": "12345",
+            "country_code": "1",
+            "area_code": "323",
+            "extension": "105",
+            "type": apideck_unify.PhoneNumberType.PRIMARY,
+        },
+        {
+            "number": "111-111-1111",
+            "id": "12345",
+            "country_code": "1",
+            "area_code": "323",
+            "extension": "105",
+            "type": apideck_unify.PhoneNumberType.PRIMARY,
+        },
+    ], emails=[
+        {
+            "email": "elon@musk.com",
+            "id": "123",
+            "type": apideck_unify.EmailType.PRIMARY,
+        },
+        {
+            "email": "elon@musk.com",
+            "id": "123",
+            "type": apideck_unify.EmailType.PRIMARY,
+        },
+    ], email_domain="gmail.com", custom_fields=[
+        {
+            "id": "2389328923893298",
+            "name": "employee_level",
+            "description": "Employee Level",
+            "value": {},
+        },
+    ], tags=[
+        "New",
+    ], opportunity_ids=[
+        "12345",
+    ], pass_through=[
+        {
+            "service_id": "<id>",
+            "extend_paths": [
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
+            ],
+        },
+        {
+            "service_id": "<id>",
+            "extend_paths": [
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
+            ],
+        },
+        {
+            "service_id": "<id>",
+            "extend_paths": [
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
+            ],
+        },
+    ])
+
+    # Handle response
+    print(res)
 
 ```
 
 ### Parameters
 
-| Parameter                                                                                                                                     | Type                                                                                                                                          | Required                                                                                                                                      | Description                                                                                                                                   | Example                                                                                                                                       |
-| --------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| `id`                                                                                                                                          | *str*                                                                                                                                         | :heavy_check_mark:                                                                                                                            | ID of the record you are acting upon.                                                                                                         |                                                                                                                                               |
-| `contact`                                                                                                                                     | [models.ContactInput](../../models/contactinput.md)                                                                                           | :heavy_check_mark:                                                                                                                            | N/A                                                                                                                                           |                                                                                                                                               |
-| `service_id`                                                                                                                                  | *Optional[str]*                                                                                                                               | :heavy_minus_sign:                                                                                                                            | Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API. | salesforce                                                                                                                                    |
-| `raw`                                                                                                                                         | *Optional[bool]*                                                                                                                              | :heavy_minus_sign:                                                                                                                            | Include raw response. Mostly used for debugging purposes                                                                                      |                                                                                                                                               |
-| `retries`                                                                                                                                     | [Optional[utils.RetryConfig]](../../models/utils/retryconfig.md)                                                                              | :heavy_minus_sign:                                                                                                                            | Configuration to override the default retry behavior of the client.                                                                           |                                                                                                                                               |
+| Parameter                                                                                                                                               | Type                                                                                                                                                    | Required                                                                                                                                                | Description                                                                                                                                             | Example                                                                                                                                                 |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `id`                                                                                                                                                    | *str*                                                                                                                                                   | :heavy_check_mark:                                                                                                                                      | ID of the record you are acting upon.                                                                                                                   |                                                                                                                                                         |
+| `name`                                                                                                                                                  | *Nullable[str]*                                                                                                                                         | :heavy_check_mark:                                                                                                                                      | Full name of the contact.                                                                                                                               | Elon Musk                                                                                                                                               |
+| `service_id`                                                                                                                                            | *Optional[str]*                                                                                                                                         | :heavy_minus_sign:                                                                                                                                      | Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.           | salesforce                                                                                                                                              |
+| `raw`                                                                                                                                                   | *Optional[bool]*                                                                                                                                        | :heavy_minus_sign:                                                                                                                                      | Include raw response. Mostly used for debugging purposes                                                                                                |                                                                                                                                                         |
+| `owner_id`                                                                                                                                              | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | The owner of the contact.                                                                                                                               | 54321                                                                                                                                                   |
+| `type`                                                                                                                                                  | [OptionalNullable[models.ContactType]](../../models/contacttype.md)                                                                                     | :heavy_minus_sign:                                                                                                                                      | The type of the contact.                                                                                                                                | personal                                                                                                                                                |
+| `company_id`                                                                                                                                            | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | The company the contact is associated with.                                                                                                             | 23456                                                                                                                                                   |
+| `company_name`                                                                                                                                          | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | The name of the company the contact is associated with.                                                                                                 | 23456                                                                                                                                                   |
+| `lead_id`                                                                                                                                               | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | The lead the contact is associated with.                                                                                                                | 34567                                                                                                                                                   |
+| `first_name`                                                                                                                                            | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | The first name of the contact.                                                                                                                          | Elon                                                                                                                                                    |
+| `middle_name`                                                                                                                                           | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | The middle name of the contact.                                                                                                                         | D.                                                                                                                                                      |
+| `last_name`                                                                                                                                             | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | The last name of the contact.                                                                                                                           | Musk                                                                                                                                                    |
+| `prefix`                                                                                                                                                | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | The prefix of the contact.                                                                                                                              | Mr.                                                                                                                                                     |
+| `suffix`                                                                                                                                                | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | The suffix of the contact.                                                                                                                              | PhD                                                                                                                                                     |
+| `title`                                                                                                                                                 | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | The job title of the contact.                                                                                                                           | CEO                                                                                                                                                     |
+| `department`                                                                                                                                            | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | The department of the contact.                                                                                                                          | Engineering                                                                                                                                             |
+| `language`                                                                                                                                              | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | language code according to ISO 639-1. For the United States - EN                                                                                        | EN                                                                                                                                                      |
+| `gender`                                                                                                                                                | [OptionalNullable[models.ContactGender]](../../models/contactgender.md)                                                                                 | :heavy_minus_sign:                                                                                                                                      | The gender of the contact.                                                                                                                              | female                                                                                                                                                  |
+| `birthday`                                                                                                                                              | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | The birthday of the contact.                                                                                                                            | 2000-08-12                                                                                                                                              |
+| `image`                                                                                                                                                 | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | : warning: ** DEPRECATED **: This will be removed in a future release, please migrate away from it as soon as possible.                                 | https://unavatar.io/elon-musk                                                                                                                           |
+| `photo_url`                                                                                                                                             | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | The URL of the photo of a person.                                                                                                                       | https://unavatar.io/elon-musk                                                                                                                           |
+| `lead_source`                                                                                                                                           | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | The lead source of the contact.                                                                                                                         | Cold Call                                                                                                                                               |
+| `fax`                                                                                                                                                   | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | The fax number of the contact.                                                                                                                          | +12129876543                                                                                                                                            |
+| `description`                                                                                                                                           | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | The description of the contact.                                                                                                                         | Internal champion                                                                                                                                       |
+| `current_balance`                                                                                                                                       | *OptionalNullable[float]*                                                                                                                               | :heavy_minus_sign:                                                                                                                                      | The current balance of the contact.                                                                                                                     | 10.5                                                                                                                                                    |
+| `status`                                                                                                                                                | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | The status of the contact.                                                                                                                              | open                                                                                                                                                    |
+| `active`                                                                                                                                                | *OptionalNullable[bool]*                                                                                                                                | :heavy_minus_sign:                                                                                                                                      | The active status of the contact.                                                                                                                       | true                                                                                                                                                    |
+| `websites`                                                                                                                                              | List[[models.Website](../../models/website.md)]                                                                                                         | :heavy_minus_sign:                                                                                                                                      | N/A                                                                                                                                                     |                                                                                                                                                         |
+| `addresses`                                                                                                                                             | List[[models.Address](../../models/address.md)]                                                                                                         | :heavy_minus_sign:                                                                                                                                      | N/A                                                                                                                                                     |                                                                                                                                                         |
+| `social_links`                                                                                                                                          | List[[models.SocialLink](../../models/sociallink.md)]                                                                                                   | :heavy_minus_sign:                                                                                                                                      | N/A                                                                                                                                                     |                                                                                                                                                         |
+| `phone_numbers`                                                                                                                                         | List[[models.PhoneNumber](../../models/phonenumber.md)]                                                                                                 | :heavy_minus_sign:                                                                                                                                      | N/A                                                                                                                                                     |                                                                                                                                                         |
+| `emails`                                                                                                                                                | List[[models.Email](../../models/email.md)]                                                                                                             | :heavy_minus_sign:                                                                                                                                      | N/A                                                                                                                                                     |                                                                                                                                                         |
+| `email_domain`                                                                                                                                          | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | N/A                                                                                                                                                     | gmail.com                                                                                                                                               |
+| `custom_fields`                                                                                                                                         | List[[models.CustomField](../../models/customfield.md)]                                                                                                 | :heavy_minus_sign:                                                                                                                                      | N/A                                                                                                                                                     |                                                                                                                                                         |
+| `tags`                                                                                                                                                  | List[*str*]                                                                                                                                             | :heavy_minus_sign:                                                                                                                                      | N/A                                                                                                                                                     | [<br/>"New"<br/>]                                                                                                                                       |
+| `opportunity_ids`                                                                                                                                       | List[*str*]                                                                                                                                             | :heavy_minus_sign:                                                                                                                                      | The opportunity ids of the contact.                                                                                                                     |                                                                                                                                                         |
+| `pass_through`                                                                                                                                          | List[[models.PassThroughBody](../../models/passthroughbody.md)]                                                                                         | :heavy_minus_sign:                                                                                                                                      | The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources. |                                                                                                                                                         |
+| `retries`                                                                                                                                               | [Optional[utils.RetryConfig]](../../models/utils/retryconfig.md)                                                                                        | :heavy_minus_sign:                                                                                                                                      | Configuration to override the default retry behavior of the client.                                                                                     |                                                                                                                                                         |
 
 ### Response
 
@@ -655,11 +655,11 @@ with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
+
     res = apideck.crm.contacts.delete(id="<id>", service_id="salesforce")
 
-    if res is not None:
-        # handle response
-        pass
+    # Handle response
+    print(res)
 
 ```
 

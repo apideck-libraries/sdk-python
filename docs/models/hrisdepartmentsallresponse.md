@@ -1,17 +1,8 @@
 # HrisDepartmentsAllResponse
 
 
-## Supported Types
+## Fields
 
-### `models.GetDepartmentsResponse`
-
-```python
-value: models.GetDepartmentsResponse = /* values here */
-```
-
-### `models.UnexpectedErrorResponse`
-
-```python
-value: models.UnexpectedErrorResponse = /* values here */
-```
-
+| Field                                                                                    | Type                                                                                     | Required                                                                                 | Description                                                                              |
+| ---------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| `result`                                                                                 | [models.HrisDepartmentsAllResponseResult](../models/hrisdepartmentsallresponseresult.md) | :heavy_check_mark:                                                                       | N/A                                                                                      |

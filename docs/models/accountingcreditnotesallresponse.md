@@ -1,17 +1,8 @@
 # AccountingCreditNotesAllResponse
 
 
-## Supported Types
+## Fields
 
-### `models.GetCreditNotesResponse`
-
-```python
-value: models.GetCreditNotesResponse = /* values here */
-```
-
-### `models.UnexpectedErrorResponse`
-
-```python
-value: models.UnexpectedErrorResponse = /* values here */
-```
-
+| Field                                                                                                | Type                                                                                                 | Required                                                                                             | Description                                                                                          |
+| ---------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| `result`                                                                                             | [models.AccountingCreditNotesAllResponseResult](../models/accountingcreditnotesallresponseresult.md) | :heavy_check_mark:                                                                                   | N/A                                                                                                  |

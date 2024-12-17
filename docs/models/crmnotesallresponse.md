@@ -1,17 +1,8 @@
 # CrmNotesAllResponse
 
 
-## Supported Types
+## Fields
 
-### `models.GetNotesResponse`
-
-```python
-value: models.GetNotesResponse = /* values here */
-```
-
-### `models.UnexpectedErrorResponse`
-
-```python
-value: models.UnexpectedErrorResponse = /* values here */
-```
-
+| Field                                                                      | Type                                                                       | Required                                                                   | Description                                                                |
+| -------------------------------------------------------------------------- | -------------------------------------------------------------------------- | -------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| `result`                                                                   | [models.CrmNotesAllResponseResult](../models/crmnotesallresponseresult.md) | :heavy_check_mark:                                                         | N/A                                                                        |

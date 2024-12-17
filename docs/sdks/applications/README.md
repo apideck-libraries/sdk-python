@@ -26,25 +26,28 @@ with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
-    res = apideck.ats.applications.list(request={
-        "service_id": "salesforce",
-        "pass_through": {
-            "search": "San Francisco",
-        },
+
+    res = apideck.ats.applications.list(service_id="salesforce", pass_through={
+        "search": "San Francisco",
     })
 
-    if res is not None:
-        # handle response
-        pass
+    while res is not None:
+        # Handle items
+
+        res = res.next()
 
 ```
 
 ### Parameters
 
-| Parameter                                                                     | Type                                                                          | Required                                                                      | Description                                                                   |
-| ----------------------------------------------------------------------------- | ----------------------------------------------------------------------------- | ----------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
-| `request`                                                                     | [models.AtsApplicationsAllRequest](../../models/atsapplicationsallrequest.md) | :heavy_check_mark:                                                            | The request object to use for the request.                                    |
-| `retries`                                                                     | [Optional[utils.RetryConfig]](../../models/utils/retryconfig.md)              | :heavy_minus_sign:                                                            | Configuration to override the default retry behavior of the client.           |
+| Parameter                                                                                                                                         | Type                                                                                                                                              | Required                                                                                                                                          | Description                                                                                                                                       | Example                                                                                                                                           |
+| ------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `raw`                                                                                                                                             | *Optional[bool]*                                                                                                                                  | :heavy_minus_sign:                                                                                                                                | Include raw response. Mostly used for debugging purposes                                                                                          |                                                                                                                                                   |
+| `service_id`                                                                                                                                      | *Optional[str]*                                                                                                                                   | :heavy_minus_sign:                                                                                                                                | Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.     | salesforce                                                                                                                                        |
+| `cursor`                                                                                                                                          | *OptionalNullable[str]*                                                                                                                           | :heavy_minus_sign:                                                                                                                                | Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.                                  |                                                                                                                                                   |
+| `pass_through`                                                                                                                                    | Dict[str, *Any*]                                                                                                                                  | :heavy_minus_sign:                                                                                                                                | Optional unmapped key/values that will be passed through to downstream as query parameters. Ie: ?pass_through[search]=leads becomes ?search=leads | {<br/>"search": "San Francisco"<br/>}                                                                                                             |
+| `limit`                                                                                                                                           | *Optional[int]*                                                                                                                                   | :heavy_minus_sign:                                                                                                                                | Number of results to return. Minimum 1, Maximum 200, Default 20                                                                                   |                                                                                                                                                   |
+| `retries`                                                                                                                                         | [Optional[utils.RetryConfig]](../../models/utils/retryconfig.md)                                                                                  | :heavy_minus_sign:                                                                                                                                | Configuration to override the default retry behavior of the client.                                                                               |                                                                                                                                                   |
 
 ### Response
 
@@ -77,53 +80,51 @@ with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
-    res = apideck.ats.applications.create(application={
-        "applicant_id": "12345",
-        "job_id": "12345",
-        "status": apideck_unify.ApplicationStatus.OPEN,
-        "stage": {
-            "id": "12345",
-            "name": "12345",
-        },
-        "pass_through": [
-            {
-                "service_id": "<id>",
-                "extend_paths": [
-                    {
-                        "path": "$.nested.property",
-                        "value": {
-                            "TaxClassificationRef": {
-                                "value": "EUC-99990201-V1-00020000",
-                            },
-                        },
-                    },
-                    {
-                        "path": "$.nested.property",
-                        "value": {
-                            "TaxClassificationRef": {
-                                "value": "EUC-99990201-V1-00020000",
-                            },
-                        },
-                    },
-                ],
-            },
-        ],
-    }, service_id="salesforce")
 
-    if res is not None:
-        # handle response
-        pass
+    res = apideck.ats.applications.create(applicant_id="12345", job_id="12345", service_id="salesforce", status=apideck_unify.ApplicationStatus.OPEN, stage={
+        "id": "12345",
+        "name": "12345",
+    }, pass_through=[
+        {
+            "service_id": "<id>",
+            "extend_paths": [
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
+            ],
+        },
+    ])
+
+    # Handle response
+    print(res)
 
 ```
 
 ### Parameters
 
-| Parameter                                                                                                                                     | Type                                                                                                                                          | Required                                                                                                                                      | Description                                                                                                                                   | Example                                                                                                                                       |
-| --------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| `application`                                                                                                                                 | [models.ApplicationInput](../../models/applicationinput.md)                                                                                   | :heavy_check_mark:                                                                                                                            | N/A                                                                                                                                           |                                                                                                                                               |
-| `raw`                                                                                                                                         | *Optional[bool]*                                                                                                                              | :heavy_minus_sign:                                                                                                                            | Include raw response. Mostly used for debugging purposes                                                                                      |                                                                                                                                               |
-| `service_id`                                                                                                                                  | *Optional[str]*                                                                                                                               | :heavy_minus_sign:                                                                                                                            | Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API. | salesforce                                                                                                                                    |
-| `retries`                                                                                                                                     | [Optional[utils.RetryConfig]](../../models/utils/retryconfig.md)                                                                              | :heavy_minus_sign:                                                                                                                            | Configuration to override the default retry behavior of the client.                                                                           |                                                                                                                                               |
+| Parameter                                                                                                                                               | Type                                                                                                                                                    | Required                                                                                                                                                | Description                                                                                                                                             | Example                                                                                                                                                 |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `applicant_id`                                                                                                                                          | *Nullable[str]*                                                                                                                                         | :heavy_check_mark:                                                                                                                                      | N/A                                                                                                                                                     | 12345                                                                                                                                                   |
+| `job_id`                                                                                                                                                | *Nullable[str]*                                                                                                                                         | :heavy_check_mark:                                                                                                                                      | N/A                                                                                                                                                     | 12345                                                                                                                                                   |
+| `raw`                                                                                                                                                   | *Optional[bool]*                                                                                                                                        | :heavy_minus_sign:                                                                                                                                      | Include raw response. Mostly used for debugging purposes                                                                                                |                                                                                                                                                         |
+| `service_id`                                                                                                                                            | *Optional[str]*                                                                                                                                         | :heavy_minus_sign:                                                                                                                                      | Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.           | salesforce                                                                                                                                              |
+| `status`                                                                                                                                                | [OptionalNullable[models.ApplicationStatus]](../../models/applicationstatus.md)                                                                         | :heavy_minus_sign:                                                                                                                                      | N/A                                                                                                                                                     | open                                                                                                                                                    |
+| `stage`                                                                                                                                                 | [Optional[models.Stage]](../../models/stage.md)                                                                                                         | :heavy_minus_sign:                                                                                                                                      | N/A                                                                                                                                                     |                                                                                                                                                         |
+| `pass_through`                                                                                                                                          | List[[models.PassThroughBody](../../models/passthroughbody.md)]                                                                                         | :heavy_minus_sign:                                                                                                                                      | The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources. |                                                                                                                                                         |
+| `retries`                                                                                                                                               | [Optional[utils.RetryConfig]](../../models/utils/retryconfig.md)                                                                                        | :heavy_minus_sign:                                                                                                                                      | Configuration to override the default retry behavior of the client.                                                                                     |                                                                                                                                                         |
 
 ### Response
 
@@ -155,11 +156,11 @@ with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
+
     res = apideck.ats.applications.get(id="<id>", service_id="salesforce")
 
-    if res is not None:
-        # handle response
-        pass
+    # Handle response
+    print(res)
 
 ```
 
@@ -203,96 +204,94 @@ with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
-    res = apideck.ats.applications.update(id="<id>", application={
-        "applicant_id": "12345",
-        "job_id": "12345",
-        "status": apideck_unify.ApplicationStatus.OPEN,
-        "stage": {
-            "id": "12345",
-            "name": "12345",
-        },
-        "pass_through": [
-            {
-                "service_id": "<id>",
-                "extend_paths": [
-                    {
-                        "path": "$.nested.property",
-                        "value": {
-                            "TaxClassificationRef": {
-                                "value": "EUC-99990201-V1-00020000",
-                            },
-                        },
-                    },
-                    {
-                        "path": "$.nested.property",
-                        "value": {
-                            "TaxClassificationRef": {
-                                "value": "EUC-99990201-V1-00020000",
-                            },
-                        },
-                    },
-                ],
-            },
-            {
-                "service_id": "<id>",
-                "extend_paths": [
-                    {
-                        "path": "$.nested.property",
-                        "value": {
-                            "TaxClassificationRef": {
-                                "value": "EUC-99990201-V1-00020000",
-                            },
-                        },
-                    },
-                ],
-            },
-            {
-                "service_id": "<id>",
-                "extend_paths": [
-                    {
-                        "path": "$.nested.property",
-                        "value": {
-                            "TaxClassificationRef": {
-                                "value": "EUC-99990201-V1-00020000",
-                            },
-                        },
-                    },
-                    {
-                        "path": "$.nested.property",
-                        "value": {
-                            "TaxClassificationRef": {
-                                "value": "EUC-99990201-V1-00020000",
-                            },
-                        },
-                    },
-                    {
-                        "path": "$.nested.property",
-                        "value": {
-                            "TaxClassificationRef": {
-                                "value": "EUC-99990201-V1-00020000",
-                            },
-                        },
-                    },
-                ],
-            },
-        ],
-    }, service_id="salesforce")
 
-    if res is not None:
-        # handle response
-        pass
+    res = apideck.ats.applications.update(id="<id>", applicant_id="12345", job_id="12345", service_id="salesforce", status=apideck_unify.ApplicationStatus.OPEN, stage={
+        "id": "12345",
+        "name": "12345",
+    }, pass_through=[
+        {
+            "service_id": "<id>",
+            "extend_paths": [
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
+            ],
+        },
+        {
+            "service_id": "<id>",
+            "extend_paths": [
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
+            ],
+        },
+        {
+            "service_id": "<id>",
+            "extend_paths": [
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
+            ],
+        },
+    ])
+
+    # Handle response
+    print(res)
 
 ```
 
 ### Parameters
 
-| Parameter                                                                                                                                     | Type                                                                                                                                          | Required                                                                                                                                      | Description                                                                                                                                   | Example                                                                                                                                       |
-| --------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| `id`                                                                                                                                          | *str*                                                                                                                                         | :heavy_check_mark:                                                                                                                            | ID of the record you are acting upon.                                                                                                         |                                                                                                                                               |
-| `application`                                                                                                                                 | [models.ApplicationInput](../../models/applicationinput.md)                                                                                   | :heavy_check_mark:                                                                                                                            | N/A                                                                                                                                           |                                                                                                                                               |
-| `service_id`                                                                                                                                  | *Optional[str]*                                                                                                                               | :heavy_minus_sign:                                                                                                                            | Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API. | salesforce                                                                                                                                    |
-| `raw`                                                                                                                                         | *Optional[bool]*                                                                                                                              | :heavy_minus_sign:                                                                                                                            | Include raw response. Mostly used for debugging purposes                                                                                      |                                                                                                                                               |
-| `retries`                                                                                                                                     | [Optional[utils.RetryConfig]](../../models/utils/retryconfig.md)                                                                              | :heavy_minus_sign:                                                                                                                            | Configuration to override the default retry behavior of the client.                                                                           |                                                                                                                                               |
+| Parameter                                                                                                                                               | Type                                                                                                                                                    | Required                                                                                                                                                | Description                                                                                                                                             | Example                                                                                                                                                 |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `id`                                                                                                                                                    | *str*                                                                                                                                                   | :heavy_check_mark:                                                                                                                                      | ID of the record you are acting upon.                                                                                                                   |                                                                                                                                                         |
+| `applicant_id`                                                                                                                                          | *Nullable[str]*                                                                                                                                         | :heavy_check_mark:                                                                                                                                      | N/A                                                                                                                                                     | 12345                                                                                                                                                   |
+| `job_id`                                                                                                                                                | *Nullable[str]*                                                                                                                                         | :heavy_check_mark:                                                                                                                                      | N/A                                                                                                                                                     | 12345                                                                                                                                                   |
+| `service_id`                                                                                                                                            | *Optional[str]*                                                                                                                                         | :heavy_minus_sign:                                                                                                                                      | Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.           | salesforce                                                                                                                                              |
+| `raw`                                                                                                                                                   | *Optional[bool]*                                                                                                                                        | :heavy_minus_sign:                                                                                                                                      | Include raw response. Mostly used for debugging purposes                                                                                                |                                                                                                                                                         |
+| `status`                                                                                                                                                | [OptionalNullable[models.ApplicationStatus]](../../models/applicationstatus.md)                                                                         | :heavy_minus_sign:                                                                                                                                      | N/A                                                                                                                                                     | open                                                                                                                                                    |
+| `stage`                                                                                                                                                 | [Optional[models.Stage]](../../models/stage.md)                                                                                                         | :heavy_minus_sign:                                                                                                                                      | N/A                                                                                                                                                     |                                                                                                                                                         |
+| `pass_through`                                                                                                                                          | List[[models.PassThroughBody](../../models/passthroughbody.md)]                                                                                         | :heavy_minus_sign:                                                                                                                                      | The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources. |                                                                                                                                                         |
+| `retries`                                                                                                                                               | [Optional[utils.RetryConfig]](../../models/utils/retryconfig.md)                                                                                        | :heavy_minus_sign:                                                                                                                                      | Configuration to override the default retry behavior of the client.                                                                                     |                                                                                                                                                         |
 
 ### Response
 
@@ -324,11 +323,11 @@ with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
+
     res = apideck.ats.applications.delete(id="<id>", service_id="salesforce")
 
-    if res is not None:
-        # handle response
-        pass
+    # Handle response
+    print(res)
 
 ```
 

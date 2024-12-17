@@ -1,17 +1,8 @@
 # AtsApplicationsAllResponse
 
 
-## Supported Types
+## Fields
 
-### `models.GetApplicationsResponse`
-
-```python
-value: models.GetApplicationsResponse = /* values here */
-```
-
-### `models.UnexpectedErrorResponse`
-
-```python
-value: models.UnexpectedErrorResponse = /* values here */
-```
-
+| Field                                                                                    | Type                                                                                     | Required                                                                                 | Description                                                                              |
+| ---------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| `result`                                                                                 | [models.AtsApplicationsAllResponseResult](../models/atsapplicationsallresponseresult.md) | :heavy_check_mark:                                                                       | N/A                                                                                      |

@@ -21,7 +21,7 @@ from apideck_unify.types import (
 from apideck_unify.utils import FieldMetadata, HeaderMetadata, QueryParamMetadata
 import pydantic
 from pydantic import model_serializer
-from typing import Any, Dict, Optional, Union
+from typing import Any, Callable, Dict, Optional, Union
 from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
 
 
@@ -158,13 +158,23 @@ class EcommerceOrdersAllRequest(BaseModel):
         return m
 
 
-EcommerceOrdersAllResponseTypedDict = TypeAliasType(
-    "EcommerceOrdersAllResponseTypedDict",
+EcommerceOrdersAllResponseResultTypedDict = TypeAliasType(
+    "EcommerceOrdersAllResponseResultTypedDict",
     Union[UnexpectedErrorResponseTypedDict, GetEcommerceOrdersResponseTypedDict],
 )
 
 
-EcommerceOrdersAllResponse = TypeAliasType(
-    "EcommerceOrdersAllResponse",
+EcommerceOrdersAllResponseResult = TypeAliasType(
+    "EcommerceOrdersAllResponseResult",
     Union[UnexpectedErrorResponse, GetEcommerceOrdersResponse],
 )
+
+
+class EcommerceOrdersAllResponseTypedDict(TypedDict):
+    result: EcommerceOrdersAllResponseResultTypedDict
+
+
+class EcommerceOrdersAllResponse(BaseModel):
+    next: Callable[[], Optional[EcommerceOrdersAllResponse]]
+
+    result: EcommerceOrdersAllResponseResult

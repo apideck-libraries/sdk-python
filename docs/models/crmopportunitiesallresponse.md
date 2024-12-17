@@ -1,17 +1,8 @@
 # CrmOpportunitiesAllResponse
 
 
-## Supported Types
+## Fields
 
-### `models.GetOpportunitiesResponse`
-
-```python
-value: models.GetOpportunitiesResponse = /* values here */
-```
-
-### `models.UnexpectedErrorResponse`
-
-```python
-value: models.UnexpectedErrorResponse = /* values here */
-```
-
+| Field                                                                                      | Type                                                                                       | Required                                                                                   | Description                                                                                |
+| ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------ |
+| `result`                                                                                   | [models.CrmOpportunitiesAllResponseResult](../models/crmopportunitiesallresponseresult.md) | :heavy_check_mark:                                                                         | N/A                                                                                        |

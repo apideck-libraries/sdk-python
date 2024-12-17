@@ -1,17 +1,8 @@
 # EcommerceProductsAllResponse
 
 
-## Supported Types
+## Fields
 
-### `models.GetProductsResponse`
-
-```python
-value: models.GetProductsResponse = /* values here */
-```
-
-### `models.UnexpectedErrorResponse`
-
-```python
-value: models.UnexpectedErrorResponse = /* values here */
-```
-
+| Field                                                                                        | Type                                                                                         | Required                                                                                     | Description                                                                                  |
+| -------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| `result`                                                                                     | [models.EcommerceProductsAllResponseResult](../models/ecommerceproductsallresponseresult.md) | :heavy_check_mark:                                                                           | N/A                                                                                          |

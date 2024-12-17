@@ -1,17 +1,8 @@
 # CrmUsersAllResponse
 
 
-## Supported Types
+## Fields
 
-### `models.GetUsersResponse`
-
-```python
-value: models.GetUsersResponse = /* values here */
-```
-
-### `models.UnexpectedErrorResponse`
-
-```python
-value: models.UnexpectedErrorResponse = /* values here */
-```
-
+| Field                                                                      | Type                                                                       | Required                                                                   | Description                                                                |
+| -------------------------------------------------------------------------- | -------------------------------------------------------------------------- | -------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| `result`                                                                   | [models.CrmUsersAllResponseResult](../models/crmusersallresponseresult.md) | :heavy_check_mark:                                                         | N/A                                                                        |

@@ -23,6 +23,7 @@ with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
+
     res = apideck.accounting.balance_sheet.get(service_id="salesforce", pass_through={
         "search": "San Francisco",
     }, filter_={
@@ -32,9 +33,8 @@ with Apideck(
         "period_type": apideck_unify.PeriodType.MONTH,
     })
 
-    if res is not None:
-        # handle response
-        pass
+    # Handle response
+    print(res)
 
 ```
 

@@ -3,9 +3,11 @@
 from .basesdk import BaseSDK
 from apideck_unify import models, utils
 from apideck_unify._hooks import HookContext
-from apideck_unify.types import OptionalNullable, UNSET
+from apideck_unify.types import Nullable, OptionalNullable, UNSET
 from apideck_unify.utils import get_security_from_env
-from typing import Any, Optional, Union
+from datetime import datetime
+from jsonpath import JSONPath
+from typing import Any, Dict, List, Mapping, Optional, Union
 
 
 class Expenses(BaseSDK):
@@ -19,7 +21,8 @@ class Expenses(BaseSDK):
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
-    ) -> models.AccountingExpensesAllResponse:
+        http_headers: Optional[Mapping[str, str]] = None,
+    ) -> Optional[models.AccountingExpensesAllResponse]:
         r"""List Expenses
 
         List Expenses
@@ -31,6 +34,7 @@ class Expenses(BaseSDK):
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -58,6 +62,7 @@ class Expenses(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.AccountingExpensesAllGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -91,9 +96,28 @@ class Expenses(BaseSDK):
             retry_config=retry_config,
         )
 
+        def next_func() -> Optional[models.AccountingExpensesAllResponse]:
+            body = utils.unmarshal_json(http_res.text, Dict[Any, Any])
+            next_cursor = JSONPath("$.meta.cursors.next").parse(body)
+
+            if len(next_cursor) == 0:
+                return None
+            next_cursor = next_cursor[0]
+
+            return self.list(
+                raw=raw,
+                service_id=service_id,
+                cursor=next_cursor,
+                limit=limit,
+                retries=retries,
+            )
+
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.GetExpensesResponse)
+            return models.AccountingExpensesAllResponse(
+                result=utils.unmarshal_json(http_res.text, models.GetExpensesResponse),
+                next=next_func,
+            )
         if utils.match_response(http_res, "400", "application/json"):
             data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
             raise models.BadRequestResponse(data=data)
@@ -117,7 +141,12 @@ class Expenses(BaseSDK):
                 "API error occurred", http_res.status_code, http_res_text, http_res
             )
         if utils.match_response(http_res, "default", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UnexpectedErrorResponse)
+            return models.AccountingExpensesAllResponse(
+                result=utils.unmarshal_json(
+                    http_res.text, models.UnexpectedErrorResponse
+                ),
+                next=next_func,
+            )
 
         content_type = http_res.headers.get("Content-Type")
         http_res_text = utils.stream_to_text(http_res)
@@ -138,7 +167,8 @@ class Expenses(BaseSDK):
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
-    ) -> models.AccountingExpensesAllResponse:
+        http_headers: Optional[Mapping[str, str]] = None,
+    ) -> Optional[models.AccountingExpensesAllResponse]:
         r"""List Expenses
 
         List Expenses
@@ -150,6 +180,7 @@ class Expenses(BaseSDK):
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -177,6 +208,7 @@ class Expenses(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.AccountingExpensesAllGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -210,9 +242,28 @@ class Expenses(BaseSDK):
             retry_config=retry_config,
         )
 
+        def next_func() -> Optional[models.AccountingExpensesAllResponse]:
+            body = utils.unmarshal_json(http_res.text, Dict[Any, Any])
+            next_cursor = JSONPath("$.meta.cursors.next").parse(body)
+
+            if len(next_cursor) == 0:
+                return None
+            next_cursor = next_cursor[0]
+
+            return self.list(
+                raw=raw,
+                service_id=service_id,
+                cursor=next_cursor,
+                limit=limit,
+                retries=retries,
+            )
+
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.GetExpensesResponse)
+            return models.AccountingExpensesAllResponse(
+                result=utils.unmarshal_json(http_res.text, models.GetExpensesResponse),
+                next=next_func,
+            )
         if utils.match_response(http_res, "400", "application/json"):
             data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
             raise models.BadRequestResponse(data=data)
@@ -236,7 +287,12 @@ class Expenses(BaseSDK):
                 "API error occurred", http_res.status_code, http_res_text, http_res
             )
         if utils.match_response(http_res, "default", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UnexpectedErrorResponse)
+            return models.AccountingExpensesAllResponse(
+                result=utils.unmarshal_json(
+                    http_res.text, models.UnexpectedErrorResponse
+                ),
+                next=next_func,
+            )
 
         content_type = http_res.headers.get("Content-Type")
         http_res_text = await utils.stream_to_text_async(http_res)
@@ -250,23 +306,68 @@ class Expenses(BaseSDK):
     def create(
         self,
         *,
-        expense: Union[models.ExpenseInput, models.ExpenseInputTypedDict],
+        transaction_date: Nullable[datetime],
+        account_id: str,
+        line_items: Union[
+            List[models.ExpenseLineItemInput],
+            List[models.ExpenseLineItemInputTypedDict],
+        ],
         raw: Optional[bool] = False,
         service_id: Optional[str] = None,
+        number: OptionalNullable[str] = UNSET,
+        customer_id: Optional[str] = None,
+        supplier_id: Optional[str] = None,
+        company_id: OptionalNullable[str] = UNSET,
+        department_id: Optional[str] = None,
+        payment_type: OptionalNullable[models.ExpensePaymentType] = UNSET,
+        currency: OptionalNullable[models.Currency] = UNSET,
+        currency_rate: OptionalNullable[float] = UNSET,
+        type_: OptionalNullable[models.ExpenseType] = UNSET,
+        memo: OptionalNullable[str] = UNSET,
+        tax_rate: Optional[
+            Union[models.LinkedTaxRateInput, models.LinkedTaxRateInputTypedDict]
+        ] = None,
+        total_amount: OptionalNullable[float] = UNSET,
+        custom_fields: Optional[
+            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+        ] = None,
+        row_version: OptionalNullable[str] = UNSET,
+        pass_through: Optional[
+            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.AccountingExpensesAddResponse:
         r"""Create Expense
 
         Create Expense
 
-        :param expense:
+        :param transaction_date: The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD
+        :param account_id: The unique identifier for the ledger account that this expense should be credited to.
+        :param line_items: Expense line items linked to this expense.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param number: Number.
+        :param customer_id: The ID of the customer this entity is linked to. Used for expenses that should be marked as billable to customers.
+        :param supplier_id: The ID of the supplier this entity is linked to.
+        :param company_id: The company or subsidiary id the transaction belongs to
+        :param department_id: The ID of the department this expense is linked to.
+        :param payment_type: The type of payment for the expense.
+        :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
+        :param currency_rate: Currency Exchange Rate at the time entity was recorded/generated.
+        :param type: The type of expense.
+        :param memo: The memo of the expense.
+        :param tax_rate:
+        :param total_amount: The total amount of the expense line item.
+        :param custom_fields:
+        :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
+        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -279,7 +380,34 @@ class Expenses(BaseSDK):
         request = models.AccountingExpensesAddRequest(
             raw=raw,
             service_id=service_id,
-            expense=utils.get_pydantic_model(expense, models.ExpenseInput),
+            expense=models.ExpenseInput(
+                number=number,
+                transaction_date=transaction_date,
+                account_id=account_id,
+                customer_id=customer_id,
+                supplier_id=supplier_id,
+                company_id=company_id,
+                department_id=department_id,
+                payment_type=payment_type,
+                currency=currency,
+                currency_rate=currency_rate,
+                type=type_,
+                memo=memo,
+                tax_rate=utils.get_pydantic_model(
+                    tax_rate, Optional[models.LinkedTaxRateInput]
+                ),
+                total_amount=total_amount,
+                line_items=utils.get_pydantic_model(
+                    line_items, List[models.ExpenseLineItemInput]
+                ),
+                custom_fields=utils.get_pydantic_model(
+                    custom_fields, Optional[List[models.CustomField]]
+                ),
+                row_version=row_version,
+                pass_through=utils.get_pydantic_model(
+                    pass_through, Optional[List[models.PassThroughBody]]
+                ),
+            ),
         )
 
         req = self.build_request(
@@ -293,6 +421,7 @@ class Expenses(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.AccountingExpensesAddGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -369,23 +498,68 @@ class Expenses(BaseSDK):
     async def create_async(
         self,
         *,
-        expense: Union[models.ExpenseInput, models.ExpenseInputTypedDict],
+        transaction_date: Nullable[datetime],
+        account_id: str,
+        line_items: Union[
+            List[models.ExpenseLineItemInput],
+            List[models.ExpenseLineItemInputTypedDict],
+        ],
         raw: Optional[bool] = False,
         service_id: Optional[str] = None,
+        number: OptionalNullable[str] = UNSET,
+        customer_id: Optional[str] = None,
+        supplier_id: Optional[str] = None,
+        company_id: OptionalNullable[str] = UNSET,
+        department_id: Optional[str] = None,
+        payment_type: OptionalNullable[models.ExpensePaymentType] = UNSET,
+        currency: OptionalNullable[models.Currency] = UNSET,
+        currency_rate: OptionalNullable[float] = UNSET,
+        type_: OptionalNullable[models.ExpenseType] = UNSET,
+        memo: OptionalNullable[str] = UNSET,
+        tax_rate: Optional[
+            Union[models.LinkedTaxRateInput, models.LinkedTaxRateInputTypedDict]
+        ] = None,
+        total_amount: OptionalNullable[float] = UNSET,
+        custom_fields: Optional[
+            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+        ] = None,
+        row_version: OptionalNullable[str] = UNSET,
+        pass_through: Optional[
+            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.AccountingExpensesAddResponse:
         r"""Create Expense
 
         Create Expense
 
-        :param expense:
+        :param transaction_date: The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD
+        :param account_id: The unique identifier for the ledger account that this expense should be credited to.
+        :param line_items: Expense line items linked to this expense.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param number: Number.
+        :param customer_id: The ID of the customer this entity is linked to. Used for expenses that should be marked as billable to customers.
+        :param supplier_id: The ID of the supplier this entity is linked to.
+        :param company_id: The company or subsidiary id the transaction belongs to
+        :param department_id: The ID of the department this expense is linked to.
+        :param payment_type: The type of payment for the expense.
+        :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
+        :param currency_rate: Currency Exchange Rate at the time entity was recorded/generated.
+        :param type: The type of expense.
+        :param memo: The memo of the expense.
+        :param tax_rate:
+        :param total_amount: The total amount of the expense line item.
+        :param custom_fields:
+        :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
+        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -398,7 +572,34 @@ class Expenses(BaseSDK):
         request = models.AccountingExpensesAddRequest(
             raw=raw,
             service_id=service_id,
-            expense=utils.get_pydantic_model(expense, models.ExpenseInput),
+            expense=models.ExpenseInput(
+                number=number,
+                transaction_date=transaction_date,
+                account_id=account_id,
+                customer_id=customer_id,
+                supplier_id=supplier_id,
+                company_id=company_id,
+                department_id=department_id,
+                payment_type=payment_type,
+                currency=currency,
+                currency_rate=currency_rate,
+                type=type_,
+                memo=memo,
+                tax_rate=utils.get_pydantic_model(
+                    tax_rate, Optional[models.LinkedTaxRateInput]
+                ),
+                total_amount=total_amount,
+                line_items=utils.get_pydantic_model(
+                    line_items, List[models.ExpenseLineItemInput]
+                ),
+                custom_fields=utils.get_pydantic_model(
+                    custom_fields, Optional[List[models.CustomField]]
+                ),
+                row_version=row_version,
+                pass_through=utils.get_pydantic_model(
+                    pass_through, Optional[List[models.PassThroughBody]]
+                ),
+            ),
         )
 
         req = self.build_request_async(
@@ -412,6 +613,7 @@ class Expenses(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.AccountingExpensesAddGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -494,6 +696,7 @@ class Expenses(BaseSDK):
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.AccountingExpensesOneResponse:
         r"""Get Expense
 
@@ -505,6 +708,7 @@ class Expenses(BaseSDK):
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -531,6 +735,7 @@ class Expenses(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.AccountingExpensesOneGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -610,6 +815,7 @@ class Expenses(BaseSDK):
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.AccountingExpensesOneResponse:
         r"""Get Expense
 
@@ -621,6 +827,7 @@ class Expenses(BaseSDK):
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -647,6 +854,7 @@ class Expenses(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.AccountingExpensesOneGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -721,24 +929,69 @@ class Expenses(BaseSDK):
         self,
         *,
         id: str,
-        expense: Union[models.ExpenseInput, models.ExpenseInputTypedDict],
+        transaction_date: Nullable[datetime],
+        account_id: str,
+        line_items: Union[
+            List[models.ExpenseLineItemInput],
+            List[models.ExpenseLineItemInputTypedDict],
+        ],
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
+        number: OptionalNullable[str] = UNSET,
+        customer_id: Optional[str] = None,
+        supplier_id: Optional[str] = None,
+        company_id: OptionalNullable[str] = UNSET,
+        department_id: Optional[str] = None,
+        payment_type: OptionalNullable[models.ExpensePaymentType] = UNSET,
+        currency: OptionalNullable[models.Currency] = UNSET,
+        currency_rate: OptionalNullable[float] = UNSET,
+        type_: OptionalNullable[models.ExpenseType] = UNSET,
+        memo: OptionalNullable[str] = UNSET,
+        tax_rate: Optional[
+            Union[models.LinkedTaxRateInput, models.LinkedTaxRateInputTypedDict]
+        ] = None,
+        total_amount: OptionalNullable[float] = UNSET,
+        custom_fields: Optional[
+            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+        ] = None,
+        row_version: OptionalNullable[str] = UNSET,
+        pass_through: Optional[
+            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.AccountingExpensesUpdateResponse:
         r"""Update Expense
 
         Update Expense
 
         :param id: ID of the record you are acting upon.
-        :param expense:
+        :param transaction_date: The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD
+        :param account_id: The unique identifier for the ledger account that this expense should be credited to.
+        :param line_items: Expense line items linked to this expense.
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param number: Number.
+        :param customer_id: The ID of the customer this entity is linked to. Used for expenses that should be marked as billable to customers.
+        :param supplier_id: The ID of the supplier this entity is linked to.
+        :param company_id: The company or subsidiary id the transaction belongs to
+        :param department_id: The ID of the department this expense is linked to.
+        :param payment_type: The type of payment for the expense.
+        :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
+        :param currency_rate: Currency Exchange Rate at the time entity was recorded/generated.
+        :param type: The type of expense.
+        :param memo: The memo of the expense.
+        :param tax_rate:
+        :param total_amount: The total amount of the expense line item.
+        :param custom_fields:
+        :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
+        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -752,7 +1005,34 @@ class Expenses(BaseSDK):
             id=id,
             service_id=service_id,
             raw=raw,
-            expense=utils.get_pydantic_model(expense, models.ExpenseInput),
+            expense=models.ExpenseInput(
+                number=number,
+                transaction_date=transaction_date,
+                account_id=account_id,
+                customer_id=customer_id,
+                supplier_id=supplier_id,
+                company_id=company_id,
+                department_id=department_id,
+                payment_type=payment_type,
+                currency=currency,
+                currency_rate=currency_rate,
+                type=type_,
+                memo=memo,
+                tax_rate=utils.get_pydantic_model(
+                    tax_rate, Optional[models.LinkedTaxRateInput]
+                ),
+                total_amount=total_amount,
+                line_items=utils.get_pydantic_model(
+                    line_items, List[models.ExpenseLineItemInput]
+                ),
+                custom_fields=utils.get_pydantic_model(
+                    custom_fields, Optional[List[models.CustomField]]
+                ),
+                row_version=row_version,
+                pass_through=utils.get_pydantic_model(
+                    pass_through, Optional[List[models.PassThroughBody]]
+                ),
+            ),
         )
 
         req = self.build_request(
@@ -766,6 +1046,7 @@ class Expenses(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.AccountingExpensesUpdateGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -843,24 +1124,69 @@ class Expenses(BaseSDK):
         self,
         *,
         id: str,
-        expense: Union[models.ExpenseInput, models.ExpenseInputTypedDict],
+        transaction_date: Nullable[datetime],
+        account_id: str,
+        line_items: Union[
+            List[models.ExpenseLineItemInput],
+            List[models.ExpenseLineItemInputTypedDict],
+        ],
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
+        number: OptionalNullable[str] = UNSET,
+        customer_id: Optional[str] = None,
+        supplier_id: Optional[str] = None,
+        company_id: OptionalNullable[str] = UNSET,
+        department_id: Optional[str] = None,
+        payment_type: OptionalNullable[models.ExpensePaymentType] = UNSET,
+        currency: OptionalNullable[models.Currency] = UNSET,
+        currency_rate: OptionalNullable[float] = UNSET,
+        type_: OptionalNullable[models.ExpenseType] = UNSET,
+        memo: OptionalNullable[str] = UNSET,
+        tax_rate: Optional[
+            Union[models.LinkedTaxRateInput, models.LinkedTaxRateInputTypedDict]
+        ] = None,
+        total_amount: OptionalNullable[float] = UNSET,
+        custom_fields: Optional[
+            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+        ] = None,
+        row_version: OptionalNullable[str] = UNSET,
+        pass_through: Optional[
+            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.AccountingExpensesUpdateResponse:
         r"""Update Expense
 
         Update Expense
 
         :param id: ID of the record you are acting upon.
-        :param expense:
+        :param transaction_date: The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD
+        :param account_id: The unique identifier for the ledger account that this expense should be credited to.
+        :param line_items: Expense line items linked to this expense.
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param number: Number.
+        :param customer_id: The ID of the customer this entity is linked to. Used for expenses that should be marked as billable to customers.
+        :param supplier_id: The ID of the supplier this entity is linked to.
+        :param company_id: The company or subsidiary id the transaction belongs to
+        :param department_id: The ID of the department this expense is linked to.
+        :param payment_type: The type of payment for the expense.
+        :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
+        :param currency_rate: Currency Exchange Rate at the time entity was recorded/generated.
+        :param type: The type of expense.
+        :param memo: The memo of the expense.
+        :param tax_rate:
+        :param total_amount: The total amount of the expense line item.
+        :param custom_fields:
+        :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
+        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -874,7 +1200,34 @@ class Expenses(BaseSDK):
             id=id,
             service_id=service_id,
             raw=raw,
-            expense=utils.get_pydantic_model(expense, models.ExpenseInput),
+            expense=models.ExpenseInput(
+                number=number,
+                transaction_date=transaction_date,
+                account_id=account_id,
+                customer_id=customer_id,
+                supplier_id=supplier_id,
+                company_id=company_id,
+                department_id=department_id,
+                payment_type=payment_type,
+                currency=currency,
+                currency_rate=currency_rate,
+                type=type_,
+                memo=memo,
+                tax_rate=utils.get_pydantic_model(
+                    tax_rate, Optional[models.LinkedTaxRateInput]
+                ),
+                total_amount=total_amount,
+                line_items=utils.get_pydantic_model(
+                    line_items, List[models.ExpenseLineItemInput]
+                ),
+                custom_fields=utils.get_pydantic_model(
+                    custom_fields, Optional[List[models.CustomField]]
+                ),
+                row_version=row_version,
+                pass_through=utils.get_pydantic_model(
+                    pass_through, Optional[List[models.PassThroughBody]]
+                ),
+            ),
         )
 
         req = self.build_request_async(
@@ -888,6 +1241,7 @@ class Expenses(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.AccountingExpensesUpdateGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -970,6 +1324,7 @@ class Expenses(BaseSDK):
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.AccountingExpensesDeleteResponse:
         r"""Delete Expense
 
@@ -981,6 +1336,7 @@ class Expenses(BaseSDK):
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -1007,6 +1363,7 @@ class Expenses(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.AccountingExpensesDeleteGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -1086,6 +1443,7 @@ class Expenses(BaseSDK):
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.AccountingExpensesDeleteResponse:
         r"""Delete Expense
 
@@ -1097,6 +1455,7 @@ class Expenses(BaseSDK):
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -1123,6 +1482,7 @@ class Expenses(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.AccountingExpensesDeleteGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,

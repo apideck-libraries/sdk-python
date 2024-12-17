@@ -1,17 +1,8 @@
 # VaultLogsAllResponse
 
 
-## Supported Types
+## Fields
 
-### `models.GetLogsResponse`
-
-```python
-value: models.GetLogsResponse = /* values here */
-```
-
-### `models.UnexpectedErrorResponse`
-
-```python
-value: models.UnexpectedErrorResponse = /* values here */
-```
-
+| Field                                                                        | Type                                                                         | Required                                                                     | Description                                                                  |
+| ---------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| `result`                                                                     | [models.VaultLogsAllResponseResult](../models/vaultlogsallresponseresult.md) | :heavy_check_mark:                                                           | N/A                                                                          |

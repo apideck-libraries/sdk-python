@@ -3,9 +3,9 @@
 from .basesdk import BaseSDK
 from apideck_unify import models, utils
 from apideck_unify._hooks import HookContext
-from apideck_unify.types import OptionalNullable, UNSET
+from apideck_unify.types import BaseModel, OptionalNullable, UNSET
 from apideck_unify.utils import get_security_from_env
-from typing import Any, Optional, Union
+from typing import Any, Mapping, Optional, Union, cast
 
 
 class Sessions(BaseSDK):
@@ -16,6 +16,7 @@ class Sessions(BaseSDK):
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.VaultSessionsCreateResponse:
         r"""Create Session
 
@@ -29,6 +30,7 @@ class Sessions(BaseSDK):
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -38,9 +40,9 @@ class Sessions(BaseSDK):
         if server_url is not None:
             base_url = server_url
 
-        request = models.Session(
-            request=utils.get_pydantic_model(request, Optional[models.Session]),
-        )
+        if not isinstance(request, BaseModel):
+            request = utils.unmarshal(request, Optional[models.Session])
+        request = cast(Optional[models.Session], request)
 
         req = self.build_request(
             method="POST",
@@ -53,6 +55,7 @@ class Sessions(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.VaultSessionsCreateGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -133,6 +136,7 @@ class Sessions(BaseSDK):
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.VaultSessionsCreateResponse:
         r"""Create Session
 
@@ -146,6 +150,7 @@ class Sessions(BaseSDK):
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -155,9 +160,9 @@ class Sessions(BaseSDK):
         if server_url is not None:
             base_url = server_url
 
-        request = models.Session(
-            request=utils.get_pydantic_model(request, Optional[models.Session]),
-        )
+        if not isinstance(request, BaseModel):
+            request = utils.unmarshal(request, Optional[models.Session])
+        request = cast(Optional[models.Session], request)
 
         req = self.build_request_async(
             method="POST",
@@ -170,6 +175,7 @@ class Sessions(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.VaultSessionsCreateGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,

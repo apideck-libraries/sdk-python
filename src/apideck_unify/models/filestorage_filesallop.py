@@ -18,7 +18,7 @@ from apideck_unify.types import (
 from apideck_unify.utils import FieldMetadata, HeaderMetadata, QueryParamMetadata
 import pydantic
 from pydantic import model_serializer
-from typing import Any, Dict, Optional, Union
+from typing import Any, Callable, Dict, Optional, Union
 from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
 
 
@@ -155,12 +155,23 @@ class FileStorageFilesAllRequest(BaseModel):
         return m
 
 
-FileStorageFilesAllResponseTypedDict = TypeAliasType(
-    "FileStorageFilesAllResponseTypedDict",
+FileStorageFilesAllResponseResultTypedDict = TypeAliasType(
+    "FileStorageFilesAllResponseResultTypedDict",
     Union[UnexpectedErrorResponseTypedDict, GetFilesResponseTypedDict],
 )
 
 
-FileStorageFilesAllResponse = TypeAliasType(
-    "FileStorageFilesAllResponse", Union[UnexpectedErrorResponse, GetFilesResponse]
+FileStorageFilesAllResponseResult = TypeAliasType(
+    "FileStorageFilesAllResponseResult",
+    Union[UnexpectedErrorResponse, GetFilesResponse],
 )
+
+
+class FileStorageFilesAllResponseTypedDict(TypedDict):
+    result: FileStorageFilesAllResponseResultTypedDict
+
+
+class FileStorageFilesAllResponse(BaseModel):
+    next: Callable[[], Optional[FileStorageFilesAllResponse]]
+
+    result: FileStorageFilesAllResponseResult

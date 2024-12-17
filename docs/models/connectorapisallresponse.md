@@ -1,17 +1,8 @@
 # ConnectorApisAllResponse
 
 
-## Supported Types
+## Fields
 
-### `models.GetApisResponse`
-
-```python
-value: models.GetApisResponse = /* values here */
-```
-
-### `models.UnexpectedErrorResponse`
-
-```python
-value: models.UnexpectedErrorResponse = /* values here */
-```
-
+| Field                                                                                | Type                                                                                 | Required                                                                             | Description                                                                          |
+| ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ |
+| `result`                                                                             | [models.ConnectorApisAllResponseResult](../models/connectorapisallresponseresult.md) | :heavy_check_mark:                                                                   | N/A                                                                                  |

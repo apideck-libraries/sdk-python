@@ -3,35 +3,44 @@
 from .basesdk import BaseSDK
 from apideck_unify import models, utils
 from apideck_unify._hooks import HookContext
-from apideck_unify.types import BaseModel, OptionalNullable, UNSET
+from apideck_unify.types import Nullable, OptionalNullable, UNSET
 from apideck_unify.utils import get_security_from_env
-from typing import Any, Optional, Union, cast
+from typing import Any, List, Mapping, Optional, Union
 
 
 class UploadSessions(BaseSDK):
     def create(
         self,
         *,
-        create_upload_session_request: Union[
-            models.CreateUploadSessionRequest,
-            models.CreateUploadSessionRequestTypedDict,
-        ],
+        name: str,
+        parent_folder_id: str,
+        size: Nullable[int],
         raw: Optional[bool] = False,
         service_id: Optional[str] = None,
+        drive_id: Optional[str] = None,
+        pass_through: Optional[
+            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.FileStorageUploadSessionsAddResponse:
         r"""Start Upload Session
 
         Start an Upload Session. Upload sessions are used to upload large files, use the [Upload File](#operation/filesUpload) endpoint to upload smaller files (up to 100MB). Note that the base URL is upload.apideck.com instead of unify.apideck.com. For more information on uploads, refer to the [file upload guide](/guides/file-upload).
 
-        :param create_upload_session_request:
+        :param name: The name of the file.
+        :param parent_folder_id: The parent folder to create the new file within. This can be an ID or a path depending on the downstream folder. Please see the connector section below to see downstream specific gotchas.
+        :param size: The size of the file in bytes
         :param raw: Include raw response. Mostly used for debugging purposes
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param drive_id: ID of the drive to upload to.
+        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -46,8 +55,14 @@ class UploadSessions(BaseSDK):
         request = models.FileStorageUploadSessionsAddRequest(
             raw=raw,
             service_id=service_id,
-            create_upload_session_request=utils.get_pydantic_model(
-                create_upload_session_request, models.CreateUploadSessionRequest
+            create_upload_session_request=models.CreateUploadSessionRequest(
+                name=name,
+                parent_folder_id=parent_folder_id,
+                drive_id=drive_id,
+                size=size,
+                pass_through=utils.get_pydantic_model(
+                    pass_through, Optional[List[models.PassThroughBody]]
+                ),
             ),
         )
 
@@ -62,6 +77,7 @@ class UploadSessions(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.FileStorageUploadSessionsAddGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -144,26 +160,35 @@ class UploadSessions(BaseSDK):
     async def create_async(
         self,
         *,
-        create_upload_session_request: Union[
-            models.CreateUploadSessionRequest,
-            models.CreateUploadSessionRequestTypedDict,
-        ],
+        name: str,
+        parent_folder_id: str,
+        size: Nullable[int],
         raw: Optional[bool] = False,
         service_id: Optional[str] = None,
+        drive_id: Optional[str] = None,
+        pass_through: Optional[
+            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.FileStorageUploadSessionsAddResponse:
         r"""Start Upload Session
 
         Start an Upload Session. Upload sessions are used to upload large files, use the [Upload File](#operation/filesUpload) endpoint to upload smaller files (up to 100MB). Note that the base URL is upload.apideck.com instead of unify.apideck.com. For more information on uploads, refer to the [file upload guide](/guides/file-upload).
 
-        :param create_upload_session_request:
+        :param name: The name of the file.
+        :param parent_folder_id: The parent folder to create the new file within. This can be an ID or a path depending on the downstream folder. Please see the connector section below to see downstream specific gotchas.
+        :param size: The size of the file in bytes
         :param raw: Include raw response. Mostly used for debugging purposes
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param drive_id: ID of the drive to upload to.
+        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -178,8 +203,14 @@ class UploadSessions(BaseSDK):
         request = models.FileStorageUploadSessionsAddRequest(
             raw=raw,
             service_id=service_id,
-            create_upload_session_request=utils.get_pydantic_model(
-                create_upload_session_request, models.CreateUploadSessionRequest
+            create_upload_session_request=models.CreateUploadSessionRequest(
+                name=name,
+                parent_folder_id=parent_folder_id,
+                drive_id=drive_id,
+                size=size,
+                pass_through=utils.get_pydantic_model(
+                    pass_through, Optional[List[models.PassThroughBody]]
+                ),
             ),
         )
 
@@ -194,6 +225,7 @@ class UploadSessions(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.FileStorageUploadSessionsAddGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -283,6 +315,7 @@ class UploadSessions(BaseSDK):
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.FileStorageUploadSessionsOneResponse:
         r"""Get Upload Session
 
@@ -295,6 +328,7 @@ class UploadSessions(BaseSDK):
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -324,6 +358,7 @@ class UploadSessions(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.FileStorageUploadSessionsOneGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -404,6 +439,7 @@ class UploadSessions(BaseSDK):
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.FileStorageUploadSessionsOneResponse:
         r"""Get Upload Session
 
@@ -416,6 +452,7 @@ class UploadSessions(BaseSDK):
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -445,6 +482,7 @@ class UploadSessions(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.FileStorageUploadSessionsOneGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -524,6 +562,7 @@ class UploadSessions(BaseSDK):
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.FileStorageUploadSessionsDeleteResponse:
         r"""Abort Upload Session
 
@@ -535,6 +574,7 @@ class UploadSessions(BaseSDK):
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -561,6 +601,7 @@ class UploadSessions(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.FileStorageUploadSessionsDeleteGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -642,6 +683,7 @@ class UploadSessions(BaseSDK):
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.FileStorageUploadSessionsDeleteResponse:
         r"""Abort Upload Session
 
@@ -653,6 +695,7 @@ class UploadSessions(BaseSDK):
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -679,6 +722,7 @@ class UploadSessions(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.FileStorageUploadSessionsDeleteGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -754,22 +798,34 @@ class UploadSessions(BaseSDK):
     def finish(
         self,
         *,
-        request: Union[
-            models.FileStorageUploadSessionsFinishRequest,
-            models.FileStorageUploadSessionsFinishRequestTypedDict,
-        ],
+        id: str,
+        raw: Optional[bool] = False,
+        service_id: Optional[str] = None,
+        digest: Optional[str] = None,
+        request_body: Optional[
+            Union[
+                models.FileStorageUploadSessionsFinishRequestBody,
+                models.FileStorageUploadSessionsFinishRequestBodyTypedDict,
+            ]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.FileStorageUploadSessionsFinishResponse:
         r"""Finish Upload Session
 
         Finish Upload Session. Only call this endpoint after all File parts have been uploaded to [Upload part of File](#operation/uploadSessionsUpload). Note that the base URL is upload.apideck.com instead of unify.apideck.com. For more information on uploads, refer to the [file upload guide](/guides/file-upload).
 
-        :param request: The request object to send.
+        :param id: ID of the record you are acting upon.
+        :param raw: Include raw response. Mostly used for debugging purposes
+        :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param digest: The RFC3230 message digest of the uploaded part. Only required for the Box connector. More information on the Box API docs [here](https://developer.box.com/reference/put-files-upload-sessions-id/#param-digest)
+        :param request_body:
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -781,11 +837,16 @@ class UploadSessions(BaseSDK):
         else:
             base_url = models.FILE_STORAGE_UPLOAD_SESSIONS_FINISH_OP_SERVERS[0]
 
-        if not isinstance(request, BaseModel):
-            request = utils.unmarshal(
-                request, models.FileStorageUploadSessionsFinishRequest
-            )
-        request = cast(models.FileStorageUploadSessionsFinishRequest, request)
+        request = models.FileStorageUploadSessionsFinishRequest(
+            id=id,
+            raw=raw,
+            service_id=service_id,
+            digest=digest,
+            request_body=utils.get_pydantic_model(
+                request_body,
+                Optional[models.FileStorageUploadSessionsFinishRequestBody],
+            ),
+        )
 
         req = self.build_request(
             method="POST",
@@ -798,6 +859,7 @@ class UploadSessions(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.FileStorageUploadSessionsFinishGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -878,22 +940,34 @@ class UploadSessions(BaseSDK):
     async def finish_async(
         self,
         *,
-        request: Union[
-            models.FileStorageUploadSessionsFinishRequest,
-            models.FileStorageUploadSessionsFinishRequestTypedDict,
-        ],
+        id: str,
+        raw: Optional[bool] = False,
+        service_id: Optional[str] = None,
+        digest: Optional[str] = None,
+        request_body: Optional[
+            Union[
+                models.FileStorageUploadSessionsFinishRequestBody,
+                models.FileStorageUploadSessionsFinishRequestBodyTypedDict,
+            ]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.FileStorageUploadSessionsFinishResponse:
         r"""Finish Upload Session
 
         Finish Upload Session. Only call this endpoint after all File parts have been uploaded to [Upload part of File](#operation/uploadSessionsUpload). Note that the base URL is upload.apideck.com instead of unify.apideck.com. For more information on uploads, refer to the [file upload guide](/guides/file-upload).
 
-        :param request: The request object to send.
+        :param id: ID of the record you are acting upon.
+        :param raw: Include raw response. Mostly used for debugging purposes
+        :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param digest: The RFC3230 message digest of the uploaded part. Only required for the Box connector. More information on the Box API docs [here](https://developer.box.com/reference/put-files-upload-sessions-id/#param-digest)
+        :param request_body:
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -905,11 +979,16 @@ class UploadSessions(BaseSDK):
         else:
             base_url = models.FILE_STORAGE_UPLOAD_SESSIONS_FINISH_OP_SERVERS[0]
 
-        if not isinstance(request, BaseModel):
-            request = utils.unmarshal(
-                request, models.FileStorageUploadSessionsFinishRequest
-            )
-        request = cast(models.FileStorageUploadSessionsFinishRequest, request)
+        request = models.FileStorageUploadSessionsFinishRequest(
+            id=id,
+            raw=raw,
+            service_id=service_id,
+            digest=digest,
+            request_body=utils.get_pydantic_model(
+                request_body,
+                Optional[models.FileStorageUploadSessionsFinishRequestBody],
+            ),
+        )
 
         req = self.build_request_async(
             method="POST",
@@ -922,6 +1001,7 @@ class UploadSessions(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.FileStorageUploadSessionsFinishGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,

@@ -1,17 +1,8 @@
 # AccountingDepartmentsAllResponse
 
 
-## Supported Types
+## Fields
 
-### `models.GetAccountingDepartmentsResponse`
-
-```python
-value: models.GetAccountingDepartmentsResponse = /* values here */
-```
-
-### `models.UnexpectedErrorResponse`
-
-```python
-value: models.UnexpectedErrorResponse = /* values here */
-```
-
+| Field                                                                                                | Type                                                                                                 | Required                                                                                             | Description                                                                                          |
+| ---------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| `result`                                                                                             | [models.AccountingDepartmentsAllResponseResult](../models/accountingdepartmentsallresponseresult.md) | :heavy_check_mark:                                                                                   | N/A                                                                                                  |

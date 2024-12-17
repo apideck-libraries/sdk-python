@@ -18,7 +18,7 @@ from apideck_unify.types import (
 from apideck_unify.utils import FieldMetadata, HeaderMetadata, QueryParamMetadata
 import pydantic
 from pydantic import model_serializer
-from typing import Any, Dict, Optional, Union
+from typing import Any, Callable, Dict, Optional, Union
 from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
 
 
@@ -155,13 +155,23 @@ class AccountingCustomersAllRequest(BaseModel):
         return m
 
 
-AccountingCustomersAllResponseTypedDict = TypeAliasType(
-    "AccountingCustomersAllResponseTypedDict",
+AccountingCustomersAllResponseResultTypedDict = TypeAliasType(
+    "AccountingCustomersAllResponseResultTypedDict",
     Union[UnexpectedErrorResponseTypedDict, GetCustomersResponseTypedDict],
 )
 
 
-AccountingCustomersAllResponse = TypeAliasType(
-    "AccountingCustomersAllResponse",
+AccountingCustomersAllResponseResult = TypeAliasType(
+    "AccountingCustomersAllResponseResult",
     Union[UnexpectedErrorResponse, GetCustomersResponse],
 )
+
+
+class AccountingCustomersAllResponseTypedDict(TypedDict):
+    result: AccountingCustomersAllResponseResultTypedDict
+
+
+class AccountingCustomersAllResponse(BaseModel):
+    next: Callable[[], Optional[AccountingCustomersAllResponse]]
+
+    result: AccountingCustomersAllResponseResult

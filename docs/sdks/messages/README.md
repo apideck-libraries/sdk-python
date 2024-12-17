@@ -26,23 +26,26 @@ with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
-    res = apideck.sms.messages.list(request={
-        "service_id": "salesforce",
-        "fields": "id,updated_at",
-    })
 
-    if res is not None:
-        # handle response
-        pass
+    res = apideck.sms.messages.list(service_id="salesforce", fields="id,updated_at")
+
+    while res is not None:
+        # Handle items
+
+        res = res.next()
 
 ```
 
 ### Parameters
 
-| Parameter                                                             | Type                                                                  | Required                                                              | Description                                                           |
-| --------------------------------------------------------------------- | --------------------------------------------------------------------- | --------------------------------------------------------------------- | --------------------------------------------------------------------- |
-| `request`                                                             | [models.SmsMessagesAllRequest](../../models/smsmessagesallrequest.md) | :heavy_check_mark:                                                    | The request object to use for the request.                            |
-| `retries`                                                             | [Optional[utils.RetryConfig]](../../models/utils/retryconfig.md)      | :heavy_minus_sign:                                                    | Configuration to override the default retry behavior of the client.   |
+| Parameter                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       | Type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            | Required                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | Example                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `raw`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           | *Optional[bool]*                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | :heavy_minus_sign:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Include raw response. Mostly used for debugging purposes                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| `service_id`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | *Optional[str]*                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | :heavy_minus_sign:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | salesforce                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| `cursor`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | *OptionalNullable[str]*                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | :heavy_minus_sign:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| `limit`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | *Optional[int]*                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | :heavy_minus_sign:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Number of results to return. Minimum 1, Maximum 200, Default 20                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| `fields`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | *OptionalNullable[str]*                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | :heavy_minus_sign:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields "name", "email" and "addresses.city". If any other fields are available, they will be excluded. | id,updated_at                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| `retries`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       | [Optional[utils.RetryConfig]](../../models/utils/retryconfig.md)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | :heavy_minus_sign:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Configuration to override the default retry behavior of the client.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 
 ### Response
 
@@ -76,55 +79,53 @@ with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
-    res = apideck.sms.messages.create(message={
-        "from_": "+15017122661",
-        "to": "+15017122662",
-        "body": "Hi! How are you doing?",
-        "subject": "Picture",
-        "type": apideck_unify.MessageType.SMS,
-        "scheduled_at": dateutil.parser.isoparse("2020-09-30T07:43:32.000Z"),
-        "webhook_url": "https://unify.apideck.com/webhook/webhooks/eyz329dkffdl4949/x/sms",
-        "reference": "CUST001",
-        "messaging_service_id": "123456",
-        "pass_through": [
-            {
-                "service_id": "<id>",
-                "extend_paths": [
-                    {
-                        "path": "$.nested.property",
-                        "value": {
-                            "TaxClassificationRef": {
-                                "value": "EUC-99990201-V1-00020000",
-                            },
-                        },
-                    },
-                    {
-                        "path": "$.nested.property",
-                        "value": {
-                            "TaxClassificationRef": {
-                                "value": "EUC-99990201-V1-00020000",
-                            },
-                        },
-                    },
-                ],
-            },
-        ],
-    }, service_id="salesforce")
 
-    if res is not None:
-        # handle response
-        pass
+    res = apideck.sms.messages.create(from_="+15017122661", to="+15017122662", body="Hi! How are you doing?", service_id="salesforce", subject="Picture", type_=apideck_unify.MessageType.SMS, scheduled_at=dateutil.parser.isoparse("2020-09-30T07:43:32.000Z"), webhook_url="https://unify.apideck.com/webhook/webhooks/eyz329dkffdl4949/x/sms", reference="CUST001", messaging_service_id="123456", pass_through=[
+        {
+            "service_id": "<id>",
+            "extend_paths": [
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
+            ],
+        },
+    ])
+
+    # Handle response
+    print(res)
 
 ```
 
 ### Parameters
 
-| Parameter                                                                                                                                     | Type                                                                                                                                          | Required                                                                                                                                      | Description                                                                                                                                   | Example                                                                                                                                       |
-| --------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| `message`                                                                                                                                     | [models.MessageInput](../../models/messageinput.md)                                                                                           | :heavy_check_mark:                                                                                                                            | N/A                                                                                                                                           |                                                                                                                                               |
-| `raw`                                                                                                                                         | *Optional[bool]*                                                                                                                              | :heavy_minus_sign:                                                                                                                            | Include raw response. Mostly used for debugging purposes                                                                                      |                                                                                                                                               |
-| `service_id`                                                                                                                                  | *Optional[str]*                                                                                                                               | :heavy_minus_sign:                                                                                                                            | Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API. | salesforce                                                                                                                                    |
-| `retries`                                                                                                                                     | [Optional[utils.RetryConfig]](../../models/utils/retryconfig.md)                                                                              | :heavy_minus_sign:                                                                                                                            | Configuration to override the default retry behavior of the client.                                                                           |                                                                                                                                               |
+| Parameter                                                                                                                                               | Type                                                                                                                                                    | Required                                                                                                                                                | Description                                                                                                                                             | Example                                                                                                                                                 |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `from_`                                                                                                                                                 | *str*                                                                                                                                                   | :heavy_check_mark:                                                                                                                                      | The phone number that initiated the message.                                                                                                            | +15017122661                                                                                                                                            |
+| `to`                                                                                                                                                    | *str*                                                                                                                                                   | :heavy_check_mark:                                                                                                                                      | The phone number that received the message.                                                                                                             | +15017122662                                                                                                                                            |
+| `body`                                                                                                                                                  | *str*                                                                                                                                                   | :heavy_check_mark:                                                                                                                                      | The message text.                                                                                                                                       | Hi! How are you doing?                                                                                                                                  |
+| `raw`                                                                                                                                                   | *Optional[bool]*                                                                                                                                        | :heavy_minus_sign:                                                                                                                                      | Include raw response. Mostly used for debugging purposes                                                                                                |                                                                                                                                                         |
+| `service_id`                                                                                                                                            | *Optional[str]*                                                                                                                                         | :heavy_minus_sign:                                                                                                                                      | Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.           | salesforce                                                                                                                                              |
+| `subject`                                                                                                                                               | *Optional[str]*                                                                                                                                         | :heavy_minus_sign:                                                                                                                                      | N/A                                                                                                                                                     | Picture                                                                                                                                                 |
+| `type`                                                                                                                                                  | [Optional[models.MessageType]](../../models/messagetype.md)                                                                                             | :heavy_minus_sign:                                                                                                                                      | Set to sms for SMS messages and mms for MMS messages.                                                                                                   | sms                                                                                                                                                     |
+| `scheduled_at`                                                                                                                                          | [date](https://docs.python.org/3/library/datetime.html#date-objects)                                                                                    | :heavy_minus_sign:                                                                                                                                      | The scheduled date and time of the message.                                                                                                             | 2020-09-30T07:43:32.000Z                                                                                                                                |
+| `webhook_url`                                                                                                                                           | *Optional[str]*                                                                                                                                         | :heavy_minus_sign:                                                                                                                                      | Define a webhook to receive delivery notifications.                                                                                                     | https://unify.apideck.com/webhook/webhooks/eyz329dkffdl4949/x/sms                                                                                       |
+| `reference`                                                                                                                                             | *Optional[str]*                                                                                                                                         | :heavy_minus_sign:                                                                                                                                      | A client reference.                                                                                                                                     | CUST001                                                                                                                                                 |
+| `messaging_service_id`                                                                                                                                  | *Optional[str]*                                                                                                                                         | :heavy_minus_sign:                                                                                                                                      | The ID of the Messaging Service used with the message. In case of Plivo this links to the Powerpack ID.                                                 | 123456                                                                                                                                                  |
+| `pass_through`                                                                                                                                          | List[[models.PassThroughBody](../../models/passthroughbody.md)]                                                                                         | :heavy_minus_sign:                                                                                                                                      | The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources. |                                                                                                                                                         |
+| `retries`                                                                                                                                               | [Optional[utils.RetryConfig]](../../models/utils/retryconfig.md)                                                                                        | :heavy_minus_sign:                                                                                                                                      | Configuration to override the default retry behavior of the client.                                                                                     |                                                                                                                                                         |
 
 ### Response
 
@@ -156,11 +157,11 @@ with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
+
     res = apideck.sms.messages.get(id="<id>", service_id="salesforce", fields="id,updated_at")
 
-    if res is not None:
-        # handle response
-        pass
+    # Handle response
+    print(res)
 
 ```
 
@@ -206,98 +207,96 @@ with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
-    res = apideck.sms.messages.update(id="<id>", message={
-        "from_": "+15017122661",
-        "to": "+15017122662",
-        "body": "Hi! How are you doing?",
-        "subject": "Picture",
-        "type": apideck_unify.MessageType.SMS,
-        "scheduled_at": dateutil.parser.isoparse("2020-09-30T07:43:32.000Z"),
-        "webhook_url": "https://unify.apideck.com/webhook/webhooks/eyz329dkffdl4949/x/sms",
-        "reference": "CUST001",
-        "messaging_service_id": "123456",
-        "pass_through": [
-            {
-                "service_id": "<id>",
-                "extend_paths": [
-                    {
-                        "path": "$.nested.property",
-                        "value": {
-                            "TaxClassificationRef": {
-                                "value": "EUC-99990201-V1-00020000",
-                            },
-                        },
-                    },
-                    {
-                        "path": "$.nested.property",
-                        "value": {
-                            "TaxClassificationRef": {
-                                "value": "EUC-99990201-V1-00020000",
-                            },
-                        },
-                    },
-                ],
-            },
-            {
-                "service_id": "<id>",
-                "extend_paths": [
-                    {
-                        "path": "$.nested.property",
-                        "value": {
-                            "TaxClassificationRef": {
-                                "value": "EUC-99990201-V1-00020000",
-                            },
-                        },
-                    },
-                ],
-            },
-            {
-                "service_id": "<id>",
-                "extend_paths": [
-                    {
-                        "path": "$.nested.property",
-                        "value": {
-                            "TaxClassificationRef": {
-                                "value": "EUC-99990201-V1-00020000",
-                            },
-                        },
-                    },
-                    {
-                        "path": "$.nested.property",
-                        "value": {
-                            "TaxClassificationRef": {
-                                "value": "EUC-99990201-V1-00020000",
-                            },
-                        },
-                    },
-                    {
-                        "path": "$.nested.property",
-                        "value": {
-                            "TaxClassificationRef": {
-                                "value": "EUC-99990201-V1-00020000",
-                            },
-                        },
-                    },
-                ],
-            },
-        ],
-    }, service_id="salesforce")
 
-    if res is not None:
-        # handle response
-        pass
+    res = apideck.sms.messages.update(id="<id>", from_="+15017122661", to="+15017122662", body="Hi! How are you doing?", service_id="salesforce", subject="Picture", type_=apideck_unify.MessageType.SMS, scheduled_at=dateutil.parser.isoparse("2020-09-30T07:43:32.000Z"), webhook_url="https://unify.apideck.com/webhook/webhooks/eyz329dkffdl4949/x/sms", reference="CUST001", messaging_service_id="123456", pass_through=[
+        {
+            "service_id": "<id>",
+            "extend_paths": [
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
+            ],
+        },
+        {
+            "service_id": "<id>",
+            "extend_paths": [
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
+            ],
+        },
+        {
+            "service_id": "<id>",
+            "extend_paths": [
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
+            ],
+        },
+    ])
+
+    # Handle response
+    print(res)
 
 ```
 
 ### Parameters
 
-| Parameter                                                                                                                                     | Type                                                                                                                                          | Required                                                                                                                                      | Description                                                                                                                                   | Example                                                                                                                                       |
-| --------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| `id`                                                                                                                                          | *str*                                                                                                                                         | :heavy_check_mark:                                                                                                                            | ID of the record you are acting upon.                                                                                                         |                                                                                                                                               |
-| `message`                                                                                                                                     | [models.MessageInput](../../models/messageinput.md)                                                                                           | :heavy_check_mark:                                                                                                                            | N/A                                                                                                                                           |                                                                                                                                               |
-| `service_id`                                                                                                                                  | *Optional[str]*                                                                                                                               | :heavy_minus_sign:                                                                                                                            | Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API. | salesforce                                                                                                                                    |
-| `raw`                                                                                                                                         | *Optional[bool]*                                                                                                                              | :heavy_minus_sign:                                                                                                                            | Include raw response. Mostly used for debugging purposes                                                                                      |                                                                                                                                               |
-| `retries`                                                                                                                                     | [Optional[utils.RetryConfig]](../../models/utils/retryconfig.md)                                                                              | :heavy_minus_sign:                                                                                                                            | Configuration to override the default retry behavior of the client.                                                                           |                                                                                                                                               |
+| Parameter                                                                                                                                               | Type                                                                                                                                                    | Required                                                                                                                                                | Description                                                                                                                                             | Example                                                                                                                                                 |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `id`                                                                                                                                                    | *str*                                                                                                                                                   | :heavy_check_mark:                                                                                                                                      | ID of the record you are acting upon.                                                                                                                   |                                                                                                                                                         |
+| `from_`                                                                                                                                                 | *str*                                                                                                                                                   | :heavy_check_mark:                                                                                                                                      | The phone number that initiated the message.                                                                                                            | +15017122661                                                                                                                                            |
+| `to`                                                                                                                                                    | *str*                                                                                                                                                   | :heavy_check_mark:                                                                                                                                      | The phone number that received the message.                                                                                                             | +15017122662                                                                                                                                            |
+| `body`                                                                                                                                                  | *str*                                                                                                                                                   | :heavy_check_mark:                                                                                                                                      | The message text.                                                                                                                                       | Hi! How are you doing?                                                                                                                                  |
+| `service_id`                                                                                                                                            | *Optional[str]*                                                                                                                                         | :heavy_minus_sign:                                                                                                                                      | Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.           | salesforce                                                                                                                                              |
+| `raw`                                                                                                                                                   | *Optional[bool]*                                                                                                                                        | :heavy_minus_sign:                                                                                                                                      | Include raw response. Mostly used for debugging purposes                                                                                                |                                                                                                                                                         |
+| `subject`                                                                                                                                               | *Optional[str]*                                                                                                                                         | :heavy_minus_sign:                                                                                                                                      | N/A                                                                                                                                                     | Picture                                                                                                                                                 |
+| `type`                                                                                                                                                  | [Optional[models.MessageType]](../../models/messagetype.md)                                                                                             | :heavy_minus_sign:                                                                                                                                      | Set to sms for SMS messages and mms for MMS messages.                                                                                                   | sms                                                                                                                                                     |
+| `scheduled_at`                                                                                                                                          | [date](https://docs.python.org/3/library/datetime.html#date-objects)                                                                                    | :heavy_minus_sign:                                                                                                                                      | The scheduled date and time of the message.                                                                                                             | 2020-09-30T07:43:32.000Z                                                                                                                                |
+| `webhook_url`                                                                                                                                           | *Optional[str]*                                                                                                                                         | :heavy_minus_sign:                                                                                                                                      | Define a webhook to receive delivery notifications.                                                                                                     | https://unify.apideck.com/webhook/webhooks/eyz329dkffdl4949/x/sms                                                                                       |
+| `reference`                                                                                                                                             | *Optional[str]*                                                                                                                                         | :heavy_minus_sign:                                                                                                                                      | A client reference.                                                                                                                                     | CUST001                                                                                                                                                 |
+| `messaging_service_id`                                                                                                                                  | *Optional[str]*                                                                                                                                         | :heavy_minus_sign:                                                                                                                                      | The ID of the Messaging Service used with the message. In case of Plivo this links to the Powerpack ID.                                                 | 123456                                                                                                                                                  |
+| `pass_through`                                                                                                                                          | List[[models.PassThroughBody](../../models/passthroughbody.md)]                                                                                         | :heavy_minus_sign:                                                                                                                                      | The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources. |                                                                                                                                                         |
+| `retries`                                                                                                                                               | [Optional[utils.RetryConfig]](../../models/utils/retryconfig.md)                                                                                        | :heavy_minus_sign:                                                                                                                                      | Configuration to override the default retry behavior of the client.                                                                                     |                                                                                                                                                         |
 
 ### Response
 
@@ -329,11 +328,11 @@ with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
+
     res = apideck.sms.messages.delete(id="<id>", service_id="salesforce")
 
-    if res is not None:
-        # handle response
-        pass
+    # Handle response
+    print(res)
 
 ```
 

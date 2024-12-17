@@ -3,30 +3,50 @@
 from .basesdk import BaseSDK
 from apideck_unify import models, utils
 from apideck_unify._hooks import HookContext
-from apideck_unify.types import BaseModel, OptionalNullable, UNSET
+from apideck_unify.types import OptionalNullable, UNSET
 from apideck_unify.utils import get_security_from_env
-from typing import Any, Optional, Union, cast
+from datetime import date
+from jsonpath import JSONPath
+from typing import Any, Dict, List, Mapping, Optional, Union
 
 
 class Employees(BaseSDK):
     def list(
         self,
         *,
-        request: Union[
-            models.HrisEmployeesAllRequest, models.HrisEmployeesAllRequestTypedDict
-        ] = models.HrisEmployeesAllRequest(),
+        raw: Optional[bool] = False,
+        service_id: Optional[str] = None,
+        cursor: OptionalNullable[str] = UNSET,
+        limit: Optional[int] = 20,
+        filter_: Optional[
+            Union[models.EmployeesFilter, models.EmployeesFilterTypedDict]
+        ] = None,
+        sort: Optional[
+            Union[models.EmployeesSort, models.EmployeesSortTypedDict]
+        ] = None,
+        pass_through: Optional[Dict[str, Any]] = None,
+        fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
-    ) -> models.HrisEmployeesAllResponse:
+        http_headers: Optional[Mapping[str, str]] = None,
+    ) -> Optional[models.HrisEmployeesAllResponse]:
         r"""List Employees
 
         Apideck operates as a stateless Unified API, which means that the list endpoint only provides a portion of the employee model. This is due to the fact that most HRIS systems do not readily provide all data in every call. However, you can access the complete employee model through an employee detail call.
 
-        :param request: The request object to send.
+        :param raw: Include raw response. Mostly used for debugging purposes
+        :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
+        :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
+        :param filter_: Apply filters
+        :param sort: Apply sorting
+        :param pass_through: Optional unmapped key/values that will be passed through to downstream as query parameters. Ie: ?pass_through[search]=leads becomes ?search=leads
+        :param fields: The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -36,9 +56,16 @@ class Employees(BaseSDK):
         if server_url is not None:
             base_url = server_url
 
-        if not isinstance(request, BaseModel):
-            request = utils.unmarshal(request, models.HrisEmployeesAllRequest)
-        request = cast(models.HrisEmployeesAllRequest, request)
+        request = models.HrisEmployeesAllRequest(
+            raw=raw,
+            service_id=service_id,
+            cursor=cursor,
+            limit=limit,
+            filter_=utils.get_pydantic_model(filter_, Optional[models.EmployeesFilter]),
+            sort=utils.get_pydantic_model(sort, Optional[models.EmployeesSort]),
+            pass_through=pass_through,
+            fields=fields,
+        )
 
         req = self.build_request(
             method="GET",
@@ -51,6 +78,7 @@ class Employees(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.HrisEmployeesAllGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -84,9 +112,32 @@ class Employees(BaseSDK):
             retry_config=retry_config,
         )
 
+        def next_func() -> Optional[models.HrisEmployeesAllResponse]:
+            body = utils.unmarshal_json(http_res.text, Dict[Any, Any])
+            next_cursor = JSONPath("$.meta.cursors.next").parse(body)
+
+            if len(next_cursor) == 0:
+                return None
+            next_cursor = next_cursor[0]
+
+            return self.list(
+                raw=raw,
+                service_id=service_id,
+                cursor=next_cursor,
+                limit=limit,
+                filter_=filter_,
+                sort=sort,
+                pass_through=pass_through,
+                fields=fields,
+                retries=retries,
+            )
+
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.GetEmployeesResponse)
+            return models.HrisEmployeesAllResponse(
+                result=utils.unmarshal_json(http_res.text, models.GetEmployeesResponse),
+                next=next_func,
+            )
         if utils.match_response(http_res, "400", "application/json"):
             data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
             raise models.BadRequestResponse(data=data)
@@ -110,7 +161,12 @@ class Employees(BaseSDK):
                 "API error occurred", http_res.status_code, http_res_text, http_res
             )
         if utils.match_response(http_res, "default", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UnexpectedErrorResponse)
+            return models.HrisEmployeesAllResponse(
+                result=utils.unmarshal_json(
+                    http_res.text, models.UnexpectedErrorResponse
+                ),
+                next=next_func,
+            )
 
         content_type = http_res.headers.get("Content-Type")
         http_res_text = utils.stream_to_text(http_res)
@@ -124,21 +180,39 @@ class Employees(BaseSDK):
     async def list_async(
         self,
         *,
-        request: Union[
-            models.HrisEmployeesAllRequest, models.HrisEmployeesAllRequestTypedDict
-        ] = models.HrisEmployeesAllRequest(),
+        raw: Optional[bool] = False,
+        service_id: Optional[str] = None,
+        cursor: OptionalNullable[str] = UNSET,
+        limit: Optional[int] = 20,
+        filter_: Optional[
+            Union[models.EmployeesFilter, models.EmployeesFilterTypedDict]
+        ] = None,
+        sort: Optional[
+            Union[models.EmployeesSort, models.EmployeesSortTypedDict]
+        ] = None,
+        pass_through: Optional[Dict[str, Any]] = None,
+        fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
-    ) -> models.HrisEmployeesAllResponse:
+        http_headers: Optional[Mapping[str, str]] = None,
+    ) -> Optional[models.HrisEmployeesAllResponse]:
         r"""List Employees
 
         Apideck operates as a stateless Unified API, which means that the list endpoint only provides a portion of the employee model. This is due to the fact that most HRIS systems do not readily provide all data in every call. However, you can access the complete employee model through an employee detail call.
 
-        :param request: The request object to send.
+        :param raw: Include raw response. Mostly used for debugging purposes
+        :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
+        :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
+        :param filter_: Apply filters
+        :param sort: Apply sorting
+        :param pass_through: Optional unmapped key/values that will be passed through to downstream as query parameters. Ie: ?pass_through[search]=leads becomes ?search=leads
+        :param fields: The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -148,9 +222,16 @@ class Employees(BaseSDK):
         if server_url is not None:
             base_url = server_url
 
-        if not isinstance(request, BaseModel):
-            request = utils.unmarshal(request, models.HrisEmployeesAllRequest)
-        request = cast(models.HrisEmployeesAllRequest, request)
+        request = models.HrisEmployeesAllRequest(
+            raw=raw,
+            service_id=service_id,
+            cursor=cursor,
+            limit=limit,
+            filter_=utils.get_pydantic_model(filter_, Optional[models.EmployeesFilter]),
+            sort=utils.get_pydantic_model(sort, Optional[models.EmployeesSort]),
+            pass_through=pass_through,
+            fields=fields,
+        )
 
         req = self.build_request_async(
             method="GET",
@@ -163,6 +244,7 @@ class Employees(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.HrisEmployeesAllGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -196,9 +278,32 @@ class Employees(BaseSDK):
             retry_config=retry_config,
         )
 
+        def next_func() -> Optional[models.HrisEmployeesAllResponse]:
+            body = utils.unmarshal_json(http_res.text, Dict[Any, Any])
+            next_cursor = JSONPath("$.meta.cursors.next").parse(body)
+
+            if len(next_cursor) == 0:
+                return None
+            next_cursor = next_cursor[0]
+
+            return self.list(
+                raw=raw,
+                service_id=service_id,
+                cursor=next_cursor,
+                limit=limit,
+                filter_=filter_,
+                sort=sort,
+                pass_through=pass_through,
+                fields=fields,
+                retries=retries,
+            )
+
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.GetEmployeesResponse)
+            return models.HrisEmployeesAllResponse(
+                result=utils.unmarshal_json(http_res.text, models.GetEmployeesResponse),
+                next=next_func,
+            )
         if utils.match_response(http_res, "400", "application/json"):
             data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
             raise models.BadRequestResponse(data=data)
@@ -222,7 +327,12 @@ class Employees(BaseSDK):
                 "API error occurred", http_res.status_code, http_res_text, http_res
             )
         if utils.match_response(http_res, "default", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UnexpectedErrorResponse)
+            return models.HrisEmployeesAllResponse(
+                result=utils.unmarshal_json(
+                    http_res.text, models.UnexpectedErrorResponse
+                ),
+                next=next_func,
+            )
 
         content_type = http_res.headers.get("Content-Type")
         http_res_text = await utils.stream_to_text_async(http_res)
@@ -236,23 +346,170 @@ class Employees(BaseSDK):
     def create(
         self,
         *,
-        employee: Union[models.EmployeeInput, models.EmployeeInputTypedDict],
         raw: Optional[bool] = False,
         service_id: Optional[str] = None,
+        id: OptionalNullable[str] = UNSET,
+        first_name: OptionalNullable[str] = UNSET,
+        last_name: OptionalNullable[str] = UNSET,
+        middle_name: OptionalNullable[str] = UNSET,
+        display_name: OptionalNullable[str] = UNSET,
+        preferred_name: OptionalNullable[str] = UNSET,
+        initials: OptionalNullable[str] = UNSET,
+        salutation: OptionalNullable[str] = UNSET,
+        title: OptionalNullable[str] = UNSET,
+        marital_status: OptionalNullable[str] = UNSET,
+        partner: Optional[
+            Union[models.PersonInput, models.PersonInputTypedDict]
+        ] = None,
+        division: OptionalNullable[str] = UNSET,
+        division_id: OptionalNullable[str] = UNSET,
+        department: OptionalNullable[str] = UNSET,
+        department_id: OptionalNullable[str] = UNSET,
+        department_name: OptionalNullable[str] = UNSET,
+        team: OptionalNullable[Union[models.Team, models.TeamTypedDict]] = UNSET,
+        company_id: OptionalNullable[str] = UNSET,
+        company_name: OptionalNullable[str] = UNSET,
+        employment_start_date: OptionalNullable[str] = UNSET,
+        employment_end_date: OptionalNullable[str] = UNSET,
+        leaving_reason: OptionalNullable[models.LeavingReason] = UNSET,
+        employee_number: OptionalNullable[str] = UNSET,
+        employment_status: OptionalNullable[models.EmploymentStatus] = UNSET,
+        employment_role: Optional[
+            Union[models.EmploymentRole, models.EmploymentRoleTypedDict]
+        ] = None,
+        ethnicity: OptionalNullable[str] = UNSET,
+        manager: Optional[Union[models.Manager, models.ManagerTypedDict]] = None,
+        direct_reports: OptionalNullable[List[str]] = UNSET,
+        social_security_number: OptionalNullable[str] = UNSET,
+        birthday: OptionalNullable[date] = UNSET,
+        deceased_on: OptionalNullable[date] = UNSET,
+        country_of_birth: OptionalNullable[str] = UNSET,
+        description: OptionalNullable[str] = UNSET,
+        gender: OptionalNullable[models.Gender] = UNSET,
+        pronouns: OptionalNullable[str] = UNSET,
+        preferred_language: OptionalNullable[str] = UNSET,
+        languages: Optional[List[str]] = None,
+        nationalities: Optional[List[str]] = None,
+        photo_url: OptionalNullable[str] = UNSET,
+        timezone: OptionalNullable[str] = UNSET,
+        source: OptionalNullable[str] = UNSET,
+        source_id: OptionalNullable[str] = UNSET,
+        record_url: OptionalNullable[str] = UNSET,
+        jobs: OptionalNullable[
+            Union[List[models.EmployeeJobInput], List[models.EmployeeJobInputTypedDict]]
+        ] = UNSET,
+        compensations: OptionalNullable[
+            Union[
+                List[models.EmployeeCompensationInput],
+                List[models.EmployeeCompensationInputTypedDict],
+            ]
+        ] = UNSET,
+        works_remote: OptionalNullable[bool] = UNSET,
+        addresses: Optional[
+            Union[List[models.Address], List[models.AddressTypedDict]]
+        ] = None,
+        phone_numbers: Optional[
+            Union[List[models.PhoneNumber], List[models.PhoneNumberTypedDict]]
+        ] = None,
+        emails: Optional[Union[List[models.Email], List[models.EmailTypedDict]]] = None,
+        custom_fields: Optional[
+            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+        ] = None,
+        social_links: Optional[
+            Union[List[models.SocialLink], List[models.SocialLinkTypedDict]]
+        ] = None,
+        bank_accounts: Optional[
+            Union[List[models.BankAccount], List[models.BankAccountTypedDict]]
+        ] = None,
+        tax_code: OptionalNullable[str] = UNSET,
+        tax_id: OptionalNullable[str] = UNSET,
+        dietary_preference: OptionalNullable[str] = UNSET,
+        food_allergies: OptionalNullable[List[str]] = UNSET,
+        probation_period: Optional[
+            Union[models.ProbationPeriod, models.ProbationPeriodTypedDict]
+        ] = None,
+        tags: OptionalNullable[List[str]] = UNSET,
+        row_version: OptionalNullable[str] = UNSET,
+        deleted: OptionalNullable[bool] = UNSET,
+        pass_through: Optional[
+            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.HrisEmployeesAddResponse:
         r"""Create Employee
 
         Create Employee
 
-        :param employee:
         :param raw: Include raw response. Mostly used for debugging purposes
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param id: A unique identifier for an object.
+        :param first_name: The first name of the person.
+        :param last_name: The last name of the person.
+        :param middle_name: Middle name of the person.
+        :param display_name: The name used to display the employee, often a combination of their first and last names.
+        :param preferred_name: The name the employee prefers to be addressed by, which may be different from their legal name.
+        :param initials: The initials of the person, usually derived from their first, middle, and last names.
+        :param salutation: A formal salutation for the person. For example, 'Mr', 'Mrs'
+        :param title: The job title of the person.
+        :param marital_status: The marital status of the employee.
+        :param partner:
+        :param division: The division the person is currently in. Usually a collection of departments or teams or regions.
+        :param division_id: Unique identifier of the division this employee belongs to.
+        :param department: The department the person is currently in. [Deprecated](https://developers.apideck.com/changelog) in favor of the dedicated department_id and department_name field.
+        :param department_id: Unique identifier of the department ID this employee belongs to.
+        :param department_name: Name of the department this employee belongs to.
+        :param team: The team the person is currently in.
+        :param company_id: The unique identifier of the company.
+        :param company_name: The name of the company.
+        :param employment_start_date: A Start Date is the date that the employee started working at the company
+        :param employment_end_date: An End Date is the date that the employee ended working at the company
+        :param leaving_reason: The reason because the employment ended.
+        :param employee_number: An Employee Number, Employee ID or Employee Code, is a unique number that has been assigned to each individual staff member within a company.
+        :param employment_status: The employment status of the employee, indicating whether they are currently employed, inactive, terminated, or in another status.
+        :param employment_role:
+        :param ethnicity: The ethnicity of the employee
+        :param manager:
+        :param direct_reports: Direct reports is an array of ids that reflect the individuals in an organizational hierarchy who are directly supervised by this specific employee.
+        :param social_security_number: A unique identifier assigned by the government. This field is considered sensitive information and may be subject to special security and privacy restrictions.
+        :param birthday: The date of birth of the person.
+        :param deceased_on: The date the person deceased.
+        :param country_of_birth: Country code according to ISO 3166-1 alpha-2.
+        :param description: A description of the object.
+        :param gender: The gender represents the gender identity of a person.
+        :param pronouns: The preferred pronouns of the person.
+        :param preferred_language: language code according to ISO 639-1. For the United States - EN
+        :param languages:
+        :param nationalities:
+        :param photo_url: The URL of the photo of a person.
+        :param timezone: The time zone related to the resource. The value is a string containing a standard time zone identifier, e.g. Europe/London.
+        :param source: When the employee is imported as a new hire, this field indicates what system (e.g. the name of the ATS) this employee was imported from.
+        :param source_id: Unique identifier of the employee in the system this employee was imported from (e.g. the ID in the ATS).
+        :param record_url:
+        :param jobs:
+        :param compensations:
+        :param works_remote: Indicates if the employee works from a remote location.
+        :param addresses:
+        :param phone_numbers:
+        :param emails:
+        :param custom_fields:
+        :param social_links:
+        :param bank_accounts:
+        :param tax_code:
+        :param tax_id:
+        :param dietary_preference: Indicate the employee's dietary preference.
+        :param food_allergies: Indicate the employee's food allergies.
+        :param probation_period:
+        :param tags:
+        :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
+        :param deleted: Flag to indicate if the object is deleted.
+        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -265,7 +522,90 @@ class Employees(BaseSDK):
         request = models.HrisEmployeesAddRequest(
             raw=raw,
             service_id=service_id,
-            employee=utils.get_pydantic_model(employee, models.EmployeeInput),
+            employee=models.EmployeeInput(
+                id=id,
+                first_name=first_name,
+                last_name=last_name,
+                middle_name=middle_name,
+                display_name=display_name,
+                preferred_name=preferred_name,
+                initials=initials,
+                salutation=salutation,
+                title=title,
+                marital_status=marital_status,
+                partner=utils.get_pydantic_model(partner, Optional[models.PersonInput]),
+                division=division,
+                division_id=division_id,
+                department=department,
+                department_id=department_id,
+                department_name=department_name,
+                team=utils.get_pydantic_model(team, OptionalNullable[models.Team]),
+                company_id=company_id,
+                company_name=company_name,
+                employment_start_date=employment_start_date,
+                employment_end_date=employment_end_date,
+                leaving_reason=leaving_reason,
+                employee_number=employee_number,
+                employment_status=employment_status,
+                employment_role=utils.get_pydantic_model(
+                    employment_role, Optional[models.EmploymentRole]
+                ),
+                ethnicity=ethnicity,
+                manager=utils.get_pydantic_model(manager, Optional[models.Manager]),
+                direct_reports=direct_reports,
+                social_security_number=social_security_number,
+                birthday=birthday,
+                deceased_on=deceased_on,
+                country_of_birth=country_of_birth,
+                description=description,
+                gender=gender,
+                pronouns=pronouns,
+                preferred_language=preferred_language,
+                languages=languages,
+                nationalities=nationalities,
+                photo_url=photo_url,
+                timezone=timezone,
+                source=source,
+                source_id=source_id,
+                record_url=record_url,
+                jobs=utils.get_pydantic_model(
+                    jobs, OptionalNullable[List[models.EmployeeJobInput]]
+                ),
+                compensations=utils.get_pydantic_model(
+                    compensations,
+                    OptionalNullable[List[models.EmployeeCompensationInput]],
+                ),
+                works_remote=works_remote,
+                addresses=utils.get_pydantic_model(
+                    addresses, Optional[List[models.Address]]
+                ),
+                phone_numbers=utils.get_pydantic_model(
+                    phone_numbers, Optional[List[models.PhoneNumber]]
+                ),
+                emails=utils.get_pydantic_model(emails, Optional[List[models.Email]]),
+                custom_fields=utils.get_pydantic_model(
+                    custom_fields, Optional[List[models.CustomField]]
+                ),
+                social_links=utils.get_pydantic_model(
+                    social_links, Optional[List[models.SocialLink]]
+                ),
+                bank_accounts=utils.get_pydantic_model(
+                    bank_accounts, Optional[List[models.BankAccount]]
+                ),
+                tax_code=tax_code,
+                tax_id=tax_id,
+                dietary_preference=dietary_preference,
+                food_allergies=food_allergies,
+                probation_period=utils.get_pydantic_model(
+                    probation_period, Optional[models.ProbationPeriod]
+                ),
+                tags=tags,
+                row_version=row_version,
+                deleted=deleted,
+                pass_through=utils.get_pydantic_model(
+                    pass_through, Optional[List[models.PassThroughBody]]
+                ),
+            ),
         )
 
         req = self.build_request(
@@ -279,6 +619,7 @@ class Employees(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.HrisEmployeesAddGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -355,23 +696,170 @@ class Employees(BaseSDK):
     async def create_async(
         self,
         *,
-        employee: Union[models.EmployeeInput, models.EmployeeInputTypedDict],
         raw: Optional[bool] = False,
         service_id: Optional[str] = None,
+        id: OptionalNullable[str] = UNSET,
+        first_name: OptionalNullable[str] = UNSET,
+        last_name: OptionalNullable[str] = UNSET,
+        middle_name: OptionalNullable[str] = UNSET,
+        display_name: OptionalNullable[str] = UNSET,
+        preferred_name: OptionalNullable[str] = UNSET,
+        initials: OptionalNullable[str] = UNSET,
+        salutation: OptionalNullable[str] = UNSET,
+        title: OptionalNullable[str] = UNSET,
+        marital_status: OptionalNullable[str] = UNSET,
+        partner: Optional[
+            Union[models.PersonInput, models.PersonInputTypedDict]
+        ] = None,
+        division: OptionalNullable[str] = UNSET,
+        division_id: OptionalNullable[str] = UNSET,
+        department: OptionalNullable[str] = UNSET,
+        department_id: OptionalNullable[str] = UNSET,
+        department_name: OptionalNullable[str] = UNSET,
+        team: OptionalNullable[Union[models.Team, models.TeamTypedDict]] = UNSET,
+        company_id: OptionalNullable[str] = UNSET,
+        company_name: OptionalNullable[str] = UNSET,
+        employment_start_date: OptionalNullable[str] = UNSET,
+        employment_end_date: OptionalNullable[str] = UNSET,
+        leaving_reason: OptionalNullable[models.LeavingReason] = UNSET,
+        employee_number: OptionalNullable[str] = UNSET,
+        employment_status: OptionalNullable[models.EmploymentStatus] = UNSET,
+        employment_role: Optional[
+            Union[models.EmploymentRole, models.EmploymentRoleTypedDict]
+        ] = None,
+        ethnicity: OptionalNullable[str] = UNSET,
+        manager: Optional[Union[models.Manager, models.ManagerTypedDict]] = None,
+        direct_reports: OptionalNullable[List[str]] = UNSET,
+        social_security_number: OptionalNullable[str] = UNSET,
+        birthday: OptionalNullable[date] = UNSET,
+        deceased_on: OptionalNullable[date] = UNSET,
+        country_of_birth: OptionalNullable[str] = UNSET,
+        description: OptionalNullable[str] = UNSET,
+        gender: OptionalNullable[models.Gender] = UNSET,
+        pronouns: OptionalNullable[str] = UNSET,
+        preferred_language: OptionalNullable[str] = UNSET,
+        languages: Optional[List[str]] = None,
+        nationalities: Optional[List[str]] = None,
+        photo_url: OptionalNullable[str] = UNSET,
+        timezone: OptionalNullable[str] = UNSET,
+        source: OptionalNullable[str] = UNSET,
+        source_id: OptionalNullable[str] = UNSET,
+        record_url: OptionalNullable[str] = UNSET,
+        jobs: OptionalNullable[
+            Union[List[models.EmployeeJobInput], List[models.EmployeeJobInputTypedDict]]
+        ] = UNSET,
+        compensations: OptionalNullable[
+            Union[
+                List[models.EmployeeCompensationInput],
+                List[models.EmployeeCompensationInputTypedDict],
+            ]
+        ] = UNSET,
+        works_remote: OptionalNullable[bool] = UNSET,
+        addresses: Optional[
+            Union[List[models.Address], List[models.AddressTypedDict]]
+        ] = None,
+        phone_numbers: Optional[
+            Union[List[models.PhoneNumber], List[models.PhoneNumberTypedDict]]
+        ] = None,
+        emails: Optional[Union[List[models.Email], List[models.EmailTypedDict]]] = None,
+        custom_fields: Optional[
+            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+        ] = None,
+        social_links: Optional[
+            Union[List[models.SocialLink], List[models.SocialLinkTypedDict]]
+        ] = None,
+        bank_accounts: Optional[
+            Union[List[models.BankAccount], List[models.BankAccountTypedDict]]
+        ] = None,
+        tax_code: OptionalNullable[str] = UNSET,
+        tax_id: OptionalNullable[str] = UNSET,
+        dietary_preference: OptionalNullable[str] = UNSET,
+        food_allergies: OptionalNullable[List[str]] = UNSET,
+        probation_period: Optional[
+            Union[models.ProbationPeriod, models.ProbationPeriodTypedDict]
+        ] = None,
+        tags: OptionalNullable[List[str]] = UNSET,
+        row_version: OptionalNullable[str] = UNSET,
+        deleted: OptionalNullable[bool] = UNSET,
+        pass_through: Optional[
+            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.HrisEmployeesAddResponse:
         r"""Create Employee
 
         Create Employee
 
-        :param employee:
         :param raw: Include raw response. Mostly used for debugging purposes
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param id: A unique identifier for an object.
+        :param first_name: The first name of the person.
+        :param last_name: The last name of the person.
+        :param middle_name: Middle name of the person.
+        :param display_name: The name used to display the employee, often a combination of their first and last names.
+        :param preferred_name: The name the employee prefers to be addressed by, which may be different from their legal name.
+        :param initials: The initials of the person, usually derived from their first, middle, and last names.
+        :param salutation: A formal salutation for the person. For example, 'Mr', 'Mrs'
+        :param title: The job title of the person.
+        :param marital_status: The marital status of the employee.
+        :param partner:
+        :param division: The division the person is currently in. Usually a collection of departments or teams or regions.
+        :param division_id: Unique identifier of the division this employee belongs to.
+        :param department: The department the person is currently in. [Deprecated](https://developers.apideck.com/changelog) in favor of the dedicated department_id and department_name field.
+        :param department_id: Unique identifier of the department ID this employee belongs to.
+        :param department_name: Name of the department this employee belongs to.
+        :param team: The team the person is currently in.
+        :param company_id: The unique identifier of the company.
+        :param company_name: The name of the company.
+        :param employment_start_date: A Start Date is the date that the employee started working at the company
+        :param employment_end_date: An End Date is the date that the employee ended working at the company
+        :param leaving_reason: The reason because the employment ended.
+        :param employee_number: An Employee Number, Employee ID or Employee Code, is a unique number that has been assigned to each individual staff member within a company.
+        :param employment_status: The employment status of the employee, indicating whether they are currently employed, inactive, terminated, or in another status.
+        :param employment_role:
+        :param ethnicity: The ethnicity of the employee
+        :param manager:
+        :param direct_reports: Direct reports is an array of ids that reflect the individuals in an organizational hierarchy who are directly supervised by this specific employee.
+        :param social_security_number: A unique identifier assigned by the government. This field is considered sensitive information and may be subject to special security and privacy restrictions.
+        :param birthday: The date of birth of the person.
+        :param deceased_on: The date the person deceased.
+        :param country_of_birth: Country code according to ISO 3166-1 alpha-2.
+        :param description: A description of the object.
+        :param gender: The gender represents the gender identity of a person.
+        :param pronouns: The preferred pronouns of the person.
+        :param preferred_language: language code according to ISO 639-1. For the United States - EN
+        :param languages:
+        :param nationalities:
+        :param photo_url: The URL of the photo of a person.
+        :param timezone: The time zone related to the resource. The value is a string containing a standard time zone identifier, e.g. Europe/London.
+        :param source: When the employee is imported as a new hire, this field indicates what system (e.g. the name of the ATS) this employee was imported from.
+        :param source_id: Unique identifier of the employee in the system this employee was imported from (e.g. the ID in the ATS).
+        :param record_url:
+        :param jobs:
+        :param compensations:
+        :param works_remote: Indicates if the employee works from a remote location.
+        :param addresses:
+        :param phone_numbers:
+        :param emails:
+        :param custom_fields:
+        :param social_links:
+        :param bank_accounts:
+        :param tax_code:
+        :param tax_id:
+        :param dietary_preference: Indicate the employee's dietary preference.
+        :param food_allergies: Indicate the employee's food allergies.
+        :param probation_period:
+        :param tags:
+        :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
+        :param deleted: Flag to indicate if the object is deleted.
+        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -384,7 +872,90 @@ class Employees(BaseSDK):
         request = models.HrisEmployeesAddRequest(
             raw=raw,
             service_id=service_id,
-            employee=utils.get_pydantic_model(employee, models.EmployeeInput),
+            employee=models.EmployeeInput(
+                id=id,
+                first_name=first_name,
+                last_name=last_name,
+                middle_name=middle_name,
+                display_name=display_name,
+                preferred_name=preferred_name,
+                initials=initials,
+                salutation=salutation,
+                title=title,
+                marital_status=marital_status,
+                partner=utils.get_pydantic_model(partner, Optional[models.PersonInput]),
+                division=division,
+                division_id=division_id,
+                department=department,
+                department_id=department_id,
+                department_name=department_name,
+                team=utils.get_pydantic_model(team, OptionalNullable[models.Team]),
+                company_id=company_id,
+                company_name=company_name,
+                employment_start_date=employment_start_date,
+                employment_end_date=employment_end_date,
+                leaving_reason=leaving_reason,
+                employee_number=employee_number,
+                employment_status=employment_status,
+                employment_role=utils.get_pydantic_model(
+                    employment_role, Optional[models.EmploymentRole]
+                ),
+                ethnicity=ethnicity,
+                manager=utils.get_pydantic_model(manager, Optional[models.Manager]),
+                direct_reports=direct_reports,
+                social_security_number=social_security_number,
+                birthday=birthday,
+                deceased_on=deceased_on,
+                country_of_birth=country_of_birth,
+                description=description,
+                gender=gender,
+                pronouns=pronouns,
+                preferred_language=preferred_language,
+                languages=languages,
+                nationalities=nationalities,
+                photo_url=photo_url,
+                timezone=timezone,
+                source=source,
+                source_id=source_id,
+                record_url=record_url,
+                jobs=utils.get_pydantic_model(
+                    jobs, OptionalNullable[List[models.EmployeeJobInput]]
+                ),
+                compensations=utils.get_pydantic_model(
+                    compensations,
+                    OptionalNullable[List[models.EmployeeCompensationInput]],
+                ),
+                works_remote=works_remote,
+                addresses=utils.get_pydantic_model(
+                    addresses, Optional[List[models.Address]]
+                ),
+                phone_numbers=utils.get_pydantic_model(
+                    phone_numbers, Optional[List[models.PhoneNumber]]
+                ),
+                emails=utils.get_pydantic_model(emails, Optional[List[models.Email]]),
+                custom_fields=utils.get_pydantic_model(
+                    custom_fields, Optional[List[models.CustomField]]
+                ),
+                social_links=utils.get_pydantic_model(
+                    social_links, Optional[List[models.SocialLink]]
+                ),
+                bank_accounts=utils.get_pydantic_model(
+                    bank_accounts, Optional[List[models.BankAccount]]
+                ),
+                tax_code=tax_code,
+                tax_id=tax_id,
+                dietary_preference=dietary_preference,
+                food_allergies=food_allergies,
+                probation_period=utils.get_pydantic_model(
+                    probation_period, Optional[models.ProbationPeriod]
+                ),
+                tags=tags,
+                row_version=row_version,
+                deleted=deleted,
+                pass_through=utils.get_pydantic_model(
+                    pass_through, Optional[List[models.PassThroughBody]]
+                ),
+            ),
         )
 
         req = self.build_request_async(
@@ -398,6 +969,7 @@ class Employees(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.HrisEmployeesAddGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -474,21 +1046,33 @@ class Employees(BaseSDK):
     def get(
         self,
         *,
-        request: Union[
-            models.HrisEmployeesOneRequest, models.HrisEmployeesOneRequestTypedDict
-        ],
+        id: str,
+        service_id: Optional[str] = None,
+        raw: Optional[bool] = False,
+        fields: OptionalNullable[str] = UNSET,
+        filter_: Optional[
+            Union[models.EmployeesOneFilter, models.EmployeesOneFilterTypedDict]
+        ] = None,
+        pass_through: Optional[Dict[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.HrisEmployeesOneResponse:
         r"""Get Employee
 
         Get Employee
 
-        :param request: The request object to send.
+        :param id: ID of the record you are acting upon.
+        :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param raw: Include raw response. Mostly used for debugging purposes
+        :param fields: The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded.
+        :param filter_: Apply filters
+        :param pass_through: Optional unmapped key/values that will be passed through to downstream as query parameters. Ie: ?pass_through[search]=leads becomes ?search=leads
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -498,9 +1082,16 @@ class Employees(BaseSDK):
         if server_url is not None:
             base_url = server_url
 
-        if not isinstance(request, BaseModel):
-            request = utils.unmarshal(request, models.HrisEmployeesOneRequest)
-        request = cast(models.HrisEmployeesOneRequest, request)
+        request = models.HrisEmployeesOneRequest(
+            id=id,
+            service_id=service_id,
+            raw=raw,
+            fields=fields,
+            filter_=utils.get_pydantic_model(
+                filter_, Optional[models.EmployeesOneFilter]
+            ),
+            pass_through=pass_through,
+        )
 
         req = self.build_request(
             method="GET",
@@ -513,6 +1104,7 @@ class Employees(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.HrisEmployeesOneGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -586,21 +1178,33 @@ class Employees(BaseSDK):
     async def get_async(
         self,
         *,
-        request: Union[
-            models.HrisEmployeesOneRequest, models.HrisEmployeesOneRequestTypedDict
-        ],
+        id: str,
+        service_id: Optional[str] = None,
+        raw: Optional[bool] = False,
+        fields: OptionalNullable[str] = UNSET,
+        filter_: Optional[
+            Union[models.EmployeesOneFilter, models.EmployeesOneFilterTypedDict]
+        ] = None,
+        pass_through: Optional[Dict[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.HrisEmployeesOneResponse:
         r"""Get Employee
 
         Get Employee
 
-        :param request: The request object to send.
+        :param id: ID of the record you are acting upon.
+        :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param raw: Include raw response. Mostly used for debugging purposes
+        :param fields: The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded.
+        :param filter_: Apply filters
+        :param pass_through: Optional unmapped key/values that will be passed through to downstream as query parameters. Ie: ?pass_through[search]=leads becomes ?search=leads
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -610,9 +1214,16 @@ class Employees(BaseSDK):
         if server_url is not None:
             base_url = server_url
 
-        if not isinstance(request, BaseModel):
-            request = utils.unmarshal(request, models.HrisEmployeesOneRequest)
-        request = cast(models.HrisEmployeesOneRequest, request)
+        request = models.HrisEmployeesOneRequest(
+            id=id,
+            service_id=service_id,
+            raw=raw,
+            fields=fields,
+            filter_=utils.get_pydantic_model(
+                filter_, Optional[models.EmployeesOneFilter]
+            ),
+            pass_through=pass_through,
+        )
 
         req = self.build_request_async(
             method="GET",
@@ -625,6 +1236,7 @@ class Employees(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.HrisEmployeesOneGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -698,25 +1310,172 @@ class Employees(BaseSDK):
     def update(
         self,
         *,
-        id: str,
-        employee: Union[models.EmployeeInput, models.EmployeeInputTypedDict],
+        id_param: str,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
+        id: OptionalNullable[str] = UNSET,
+        first_name: OptionalNullable[str] = UNSET,
+        last_name: OptionalNullable[str] = UNSET,
+        middle_name: OptionalNullable[str] = UNSET,
+        display_name: OptionalNullable[str] = UNSET,
+        preferred_name: OptionalNullable[str] = UNSET,
+        initials: OptionalNullable[str] = UNSET,
+        salutation: OptionalNullable[str] = UNSET,
+        title: OptionalNullable[str] = UNSET,
+        marital_status: OptionalNullable[str] = UNSET,
+        partner: Optional[
+            Union[models.PersonInput, models.PersonInputTypedDict]
+        ] = None,
+        division: OptionalNullable[str] = UNSET,
+        division_id: OptionalNullable[str] = UNSET,
+        department: OptionalNullable[str] = UNSET,
+        department_id: OptionalNullable[str] = UNSET,
+        department_name: OptionalNullable[str] = UNSET,
+        team: OptionalNullable[Union[models.Team, models.TeamTypedDict]] = UNSET,
+        company_id: OptionalNullable[str] = UNSET,
+        company_name: OptionalNullable[str] = UNSET,
+        employment_start_date: OptionalNullable[str] = UNSET,
+        employment_end_date: OptionalNullable[str] = UNSET,
+        leaving_reason: OptionalNullable[models.LeavingReason] = UNSET,
+        employee_number: OptionalNullable[str] = UNSET,
+        employment_status: OptionalNullable[models.EmploymentStatus] = UNSET,
+        employment_role: Optional[
+            Union[models.EmploymentRole, models.EmploymentRoleTypedDict]
+        ] = None,
+        ethnicity: OptionalNullable[str] = UNSET,
+        manager: Optional[Union[models.Manager, models.ManagerTypedDict]] = None,
+        direct_reports: OptionalNullable[List[str]] = UNSET,
+        social_security_number: OptionalNullable[str] = UNSET,
+        birthday: OptionalNullable[date] = UNSET,
+        deceased_on: OptionalNullable[date] = UNSET,
+        country_of_birth: OptionalNullable[str] = UNSET,
+        description: OptionalNullable[str] = UNSET,
+        gender: OptionalNullable[models.Gender] = UNSET,
+        pronouns: OptionalNullable[str] = UNSET,
+        preferred_language: OptionalNullable[str] = UNSET,
+        languages: Optional[List[str]] = None,
+        nationalities: Optional[List[str]] = None,
+        photo_url: OptionalNullable[str] = UNSET,
+        timezone: OptionalNullable[str] = UNSET,
+        source: OptionalNullable[str] = UNSET,
+        source_id: OptionalNullable[str] = UNSET,
+        record_url: OptionalNullable[str] = UNSET,
+        jobs: OptionalNullable[
+            Union[List[models.EmployeeJobInput], List[models.EmployeeJobInputTypedDict]]
+        ] = UNSET,
+        compensations: OptionalNullable[
+            Union[
+                List[models.EmployeeCompensationInput],
+                List[models.EmployeeCompensationInputTypedDict],
+            ]
+        ] = UNSET,
+        works_remote: OptionalNullable[bool] = UNSET,
+        addresses: Optional[
+            Union[List[models.Address], List[models.AddressTypedDict]]
+        ] = None,
+        phone_numbers: Optional[
+            Union[List[models.PhoneNumber], List[models.PhoneNumberTypedDict]]
+        ] = None,
+        emails: Optional[Union[List[models.Email], List[models.EmailTypedDict]]] = None,
+        custom_fields: Optional[
+            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+        ] = None,
+        social_links: Optional[
+            Union[List[models.SocialLink], List[models.SocialLinkTypedDict]]
+        ] = None,
+        bank_accounts: Optional[
+            Union[List[models.BankAccount], List[models.BankAccountTypedDict]]
+        ] = None,
+        tax_code: OptionalNullable[str] = UNSET,
+        tax_id: OptionalNullable[str] = UNSET,
+        dietary_preference: OptionalNullable[str] = UNSET,
+        food_allergies: OptionalNullable[List[str]] = UNSET,
+        probation_period: Optional[
+            Union[models.ProbationPeriod, models.ProbationPeriodTypedDict]
+        ] = None,
+        tags: OptionalNullable[List[str]] = UNSET,
+        row_version: OptionalNullable[str] = UNSET,
+        deleted: OptionalNullable[bool] = UNSET,
+        pass_through: Optional[
+            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.HrisEmployeesUpdateResponse:
         r"""Update Employee
 
         Update Employee
 
-        :param id: ID of the record you are acting upon.
-        :param employee:
+        :param id_param: ID of the record you are acting upon.
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param id: A unique identifier for an object.
+        :param first_name: The first name of the person.
+        :param last_name: The last name of the person.
+        :param middle_name: Middle name of the person.
+        :param display_name: The name used to display the employee, often a combination of their first and last names.
+        :param preferred_name: The name the employee prefers to be addressed by, which may be different from their legal name.
+        :param initials: The initials of the person, usually derived from their first, middle, and last names.
+        :param salutation: A formal salutation for the person. For example, 'Mr', 'Mrs'
+        :param title: The job title of the person.
+        :param marital_status: The marital status of the employee.
+        :param partner:
+        :param division: The division the person is currently in. Usually a collection of departments or teams or regions.
+        :param division_id: Unique identifier of the division this employee belongs to.
+        :param department: The department the person is currently in. [Deprecated](https://developers.apideck.com/changelog) in favor of the dedicated department_id and department_name field.
+        :param department_id: Unique identifier of the department ID this employee belongs to.
+        :param department_name: Name of the department this employee belongs to.
+        :param team: The team the person is currently in.
+        :param company_id: The unique identifier of the company.
+        :param company_name: The name of the company.
+        :param employment_start_date: A Start Date is the date that the employee started working at the company
+        :param employment_end_date: An End Date is the date that the employee ended working at the company
+        :param leaving_reason: The reason because the employment ended.
+        :param employee_number: An Employee Number, Employee ID or Employee Code, is a unique number that has been assigned to each individual staff member within a company.
+        :param employment_status: The employment status of the employee, indicating whether they are currently employed, inactive, terminated, or in another status.
+        :param employment_role:
+        :param ethnicity: The ethnicity of the employee
+        :param manager:
+        :param direct_reports: Direct reports is an array of ids that reflect the individuals in an organizational hierarchy who are directly supervised by this specific employee.
+        :param social_security_number: A unique identifier assigned by the government. This field is considered sensitive information and may be subject to special security and privacy restrictions.
+        :param birthday: The date of birth of the person.
+        :param deceased_on: The date the person deceased.
+        :param country_of_birth: Country code according to ISO 3166-1 alpha-2.
+        :param description: A description of the object.
+        :param gender: The gender represents the gender identity of a person.
+        :param pronouns: The preferred pronouns of the person.
+        :param preferred_language: language code according to ISO 639-1. For the United States - EN
+        :param languages:
+        :param nationalities:
+        :param photo_url: The URL of the photo of a person.
+        :param timezone: The time zone related to the resource. The value is a string containing a standard time zone identifier, e.g. Europe/London.
+        :param source: When the employee is imported as a new hire, this field indicates what system (e.g. the name of the ATS) this employee was imported from.
+        :param source_id: Unique identifier of the employee in the system this employee was imported from (e.g. the ID in the ATS).
+        :param record_url:
+        :param jobs:
+        :param compensations:
+        :param works_remote: Indicates if the employee works from a remote location.
+        :param addresses:
+        :param phone_numbers:
+        :param emails:
+        :param custom_fields:
+        :param social_links:
+        :param bank_accounts:
+        :param tax_code:
+        :param tax_id:
+        :param dietary_preference: Indicate the employee's dietary preference.
+        :param food_allergies: Indicate the employee's food allergies.
+        :param probation_period:
+        :param tags:
+        :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
+        :param deleted: Flag to indicate if the object is deleted.
+        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -727,10 +1486,93 @@ class Employees(BaseSDK):
             base_url = server_url
 
         request = models.HrisEmployeesUpdateRequest(
-            id=id,
+            id_param=id_param,
             service_id=service_id,
             raw=raw,
-            employee=utils.get_pydantic_model(employee, models.EmployeeInput),
+            employee=models.EmployeeInput(
+                id=id,
+                first_name=first_name,
+                last_name=last_name,
+                middle_name=middle_name,
+                display_name=display_name,
+                preferred_name=preferred_name,
+                initials=initials,
+                salutation=salutation,
+                title=title,
+                marital_status=marital_status,
+                partner=utils.get_pydantic_model(partner, Optional[models.PersonInput]),
+                division=division,
+                division_id=division_id,
+                department=department,
+                department_id=department_id,
+                department_name=department_name,
+                team=utils.get_pydantic_model(team, OptionalNullable[models.Team]),
+                company_id=company_id,
+                company_name=company_name,
+                employment_start_date=employment_start_date,
+                employment_end_date=employment_end_date,
+                leaving_reason=leaving_reason,
+                employee_number=employee_number,
+                employment_status=employment_status,
+                employment_role=utils.get_pydantic_model(
+                    employment_role, Optional[models.EmploymentRole]
+                ),
+                ethnicity=ethnicity,
+                manager=utils.get_pydantic_model(manager, Optional[models.Manager]),
+                direct_reports=direct_reports,
+                social_security_number=social_security_number,
+                birthday=birthday,
+                deceased_on=deceased_on,
+                country_of_birth=country_of_birth,
+                description=description,
+                gender=gender,
+                pronouns=pronouns,
+                preferred_language=preferred_language,
+                languages=languages,
+                nationalities=nationalities,
+                photo_url=photo_url,
+                timezone=timezone,
+                source=source,
+                source_id=source_id,
+                record_url=record_url,
+                jobs=utils.get_pydantic_model(
+                    jobs, OptionalNullable[List[models.EmployeeJobInput]]
+                ),
+                compensations=utils.get_pydantic_model(
+                    compensations,
+                    OptionalNullable[List[models.EmployeeCompensationInput]],
+                ),
+                works_remote=works_remote,
+                addresses=utils.get_pydantic_model(
+                    addresses, Optional[List[models.Address]]
+                ),
+                phone_numbers=utils.get_pydantic_model(
+                    phone_numbers, Optional[List[models.PhoneNumber]]
+                ),
+                emails=utils.get_pydantic_model(emails, Optional[List[models.Email]]),
+                custom_fields=utils.get_pydantic_model(
+                    custom_fields, Optional[List[models.CustomField]]
+                ),
+                social_links=utils.get_pydantic_model(
+                    social_links, Optional[List[models.SocialLink]]
+                ),
+                bank_accounts=utils.get_pydantic_model(
+                    bank_accounts, Optional[List[models.BankAccount]]
+                ),
+                tax_code=tax_code,
+                tax_id=tax_id,
+                dietary_preference=dietary_preference,
+                food_allergies=food_allergies,
+                probation_period=utils.get_pydantic_model(
+                    probation_period, Optional[models.ProbationPeriod]
+                ),
+                tags=tags,
+                row_version=row_version,
+                deleted=deleted,
+                pass_through=utils.get_pydantic_model(
+                    pass_through, Optional[List[models.PassThroughBody]]
+                ),
+            ),
         )
 
         req = self.build_request(
@@ -744,6 +1586,7 @@ class Employees(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.HrisEmployeesUpdateGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -820,25 +1663,172 @@ class Employees(BaseSDK):
     async def update_async(
         self,
         *,
-        id: str,
-        employee: Union[models.EmployeeInput, models.EmployeeInputTypedDict],
+        id_param: str,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
+        id: OptionalNullable[str] = UNSET,
+        first_name: OptionalNullable[str] = UNSET,
+        last_name: OptionalNullable[str] = UNSET,
+        middle_name: OptionalNullable[str] = UNSET,
+        display_name: OptionalNullable[str] = UNSET,
+        preferred_name: OptionalNullable[str] = UNSET,
+        initials: OptionalNullable[str] = UNSET,
+        salutation: OptionalNullable[str] = UNSET,
+        title: OptionalNullable[str] = UNSET,
+        marital_status: OptionalNullable[str] = UNSET,
+        partner: Optional[
+            Union[models.PersonInput, models.PersonInputTypedDict]
+        ] = None,
+        division: OptionalNullable[str] = UNSET,
+        division_id: OptionalNullable[str] = UNSET,
+        department: OptionalNullable[str] = UNSET,
+        department_id: OptionalNullable[str] = UNSET,
+        department_name: OptionalNullable[str] = UNSET,
+        team: OptionalNullable[Union[models.Team, models.TeamTypedDict]] = UNSET,
+        company_id: OptionalNullable[str] = UNSET,
+        company_name: OptionalNullable[str] = UNSET,
+        employment_start_date: OptionalNullable[str] = UNSET,
+        employment_end_date: OptionalNullable[str] = UNSET,
+        leaving_reason: OptionalNullable[models.LeavingReason] = UNSET,
+        employee_number: OptionalNullable[str] = UNSET,
+        employment_status: OptionalNullable[models.EmploymentStatus] = UNSET,
+        employment_role: Optional[
+            Union[models.EmploymentRole, models.EmploymentRoleTypedDict]
+        ] = None,
+        ethnicity: OptionalNullable[str] = UNSET,
+        manager: Optional[Union[models.Manager, models.ManagerTypedDict]] = None,
+        direct_reports: OptionalNullable[List[str]] = UNSET,
+        social_security_number: OptionalNullable[str] = UNSET,
+        birthday: OptionalNullable[date] = UNSET,
+        deceased_on: OptionalNullable[date] = UNSET,
+        country_of_birth: OptionalNullable[str] = UNSET,
+        description: OptionalNullable[str] = UNSET,
+        gender: OptionalNullable[models.Gender] = UNSET,
+        pronouns: OptionalNullable[str] = UNSET,
+        preferred_language: OptionalNullable[str] = UNSET,
+        languages: Optional[List[str]] = None,
+        nationalities: Optional[List[str]] = None,
+        photo_url: OptionalNullable[str] = UNSET,
+        timezone: OptionalNullable[str] = UNSET,
+        source: OptionalNullable[str] = UNSET,
+        source_id: OptionalNullable[str] = UNSET,
+        record_url: OptionalNullable[str] = UNSET,
+        jobs: OptionalNullable[
+            Union[List[models.EmployeeJobInput], List[models.EmployeeJobInputTypedDict]]
+        ] = UNSET,
+        compensations: OptionalNullable[
+            Union[
+                List[models.EmployeeCompensationInput],
+                List[models.EmployeeCompensationInputTypedDict],
+            ]
+        ] = UNSET,
+        works_remote: OptionalNullable[bool] = UNSET,
+        addresses: Optional[
+            Union[List[models.Address], List[models.AddressTypedDict]]
+        ] = None,
+        phone_numbers: Optional[
+            Union[List[models.PhoneNumber], List[models.PhoneNumberTypedDict]]
+        ] = None,
+        emails: Optional[Union[List[models.Email], List[models.EmailTypedDict]]] = None,
+        custom_fields: Optional[
+            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+        ] = None,
+        social_links: Optional[
+            Union[List[models.SocialLink], List[models.SocialLinkTypedDict]]
+        ] = None,
+        bank_accounts: Optional[
+            Union[List[models.BankAccount], List[models.BankAccountTypedDict]]
+        ] = None,
+        tax_code: OptionalNullable[str] = UNSET,
+        tax_id: OptionalNullable[str] = UNSET,
+        dietary_preference: OptionalNullable[str] = UNSET,
+        food_allergies: OptionalNullable[List[str]] = UNSET,
+        probation_period: Optional[
+            Union[models.ProbationPeriod, models.ProbationPeriodTypedDict]
+        ] = None,
+        tags: OptionalNullable[List[str]] = UNSET,
+        row_version: OptionalNullable[str] = UNSET,
+        deleted: OptionalNullable[bool] = UNSET,
+        pass_through: Optional[
+            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.HrisEmployeesUpdateResponse:
         r"""Update Employee
 
         Update Employee
 
-        :param id: ID of the record you are acting upon.
-        :param employee:
+        :param id_param: ID of the record you are acting upon.
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param id: A unique identifier for an object.
+        :param first_name: The first name of the person.
+        :param last_name: The last name of the person.
+        :param middle_name: Middle name of the person.
+        :param display_name: The name used to display the employee, often a combination of their first and last names.
+        :param preferred_name: The name the employee prefers to be addressed by, which may be different from their legal name.
+        :param initials: The initials of the person, usually derived from their first, middle, and last names.
+        :param salutation: A formal salutation for the person. For example, 'Mr', 'Mrs'
+        :param title: The job title of the person.
+        :param marital_status: The marital status of the employee.
+        :param partner:
+        :param division: The division the person is currently in. Usually a collection of departments or teams or regions.
+        :param division_id: Unique identifier of the division this employee belongs to.
+        :param department: The department the person is currently in. [Deprecated](https://developers.apideck.com/changelog) in favor of the dedicated department_id and department_name field.
+        :param department_id: Unique identifier of the department ID this employee belongs to.
+        :param department_name: Name of the department this employee belongs to.
+        :param team: The team the person is currently in.
+        :param company_id: The unique identifier of the company.
+        :param company_name: The name of the company.
+        :param employment_start_date: A Start Date is the date that the employee started working at the company
+        :param employment_end_date: An End Date is the date that the employee ended working at the company
+        :param leaving_reason: The reason because the employment ended.
+        :param employee_number: An Employee Number, Employee ID or Employee Code, is a unique number that has been assigned to each individual staff member within a company.
+        :param employment_status: The employment status of the employee, indicating whether they are currently employed, inactive, terminated, or in another status.
+        :param employment_role:
+        :param ethnicity: The ethnicity of the employee
+        :param manager:
+        :param direct_reports: Direct reports is an array of ids that reflect the individuals in an organizational hierarchy who are directly supervised by this specific employee.
+        :param social_security_number: A unique identifier assigned by the government. This field is considered sensitive information and may be subject to special security and privacy restrictions.
+        :param birthday: The date of birth of the person.
+        :param deceased_on: The date the person deceased.
+        :param country_of_birth: Country code according to ISO 3166-1 alpha-2.
+        :param description: A description of the object.
+        :param gender: The gender represents the gender identity of a person.
+        :param pronouns: The preferred pronouns of the person.
+        :param preferred_language: language code according to ISO 639-1. For the United States - EN
+        :param languages:
+        :param nationalities:
+        :param photo_url: The URL of the photo of a person.
+        :param timezone: The time zone related to the resource. The value is a string containing a standard time zone identifier, e.g. Europe/London.
+        :param source: When the employee is imported as a new hire, this field indicates what system (e.g. the name of the ATS) this employee was imported from.
+        :param source_id: Unique identifier of the employee in the system this employee was imported from (e.g. the ID in the ATS).
+        :param record_url:
+        :param jobs:
+        :param compensations:
+        :param works_remote: Indicates if the employee works from a remote location.
+        :param addresses:
+        :param phone_numbers:
+        :param emails:
+        :param custom_fields:
+        :param social_links:
+        :param bank_accounts:
+        :param tax_code:
+        :param tax_id:
+        :param dietary_preference: Indicate the employee's dietary preference.
+        :param food_allergies: Indicate the employee's food allergies.
+        :param probation_period:
+        :param tags:
+        :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
+        :param deleted: Flag to indicate if the object is deleted.
+        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -849,10 +1839,93 @@ class Employees(BaseSDK):
             base_url = server_url
 
         request = models.HrisEmployeesUpdateRequest(
-            id=id,
+            id_param=id_param,
             service_id=service_id,
             raw=raw,
-            employee=utils.get_pydantic_model(employee, models.EmployeeInput),
+            employee=models.EmployeeInput(
+                id=id,
+                first_name=first_name,
+                last_name=last_name,
+                middle_name=middle_name,
+                display_name=display_name,
+                preferred_name=preferred_name,
+                initials=initials,
+                salutation=salutation,
+                title=title,
+                marital_status=marital_status,
+                partner=utils.get_pydantic_model(partner, Optional[models.PersonInput]),
+                division=division,
+                division_id=division_id,
+                department=department,
+                department_id=department_id,
+                department_name=department_name,
+                team=utils.get_pydantic_model(team, OptionalNullable[models.Team]),
+                company_id=company_id,
+                company_name=company_name,
+                employment_start_date=employment_start_date,
+                employment_end_date=employment_end_date,
+                leaving_reason=leaving_reason,
+                employee_number=employee_number,
+                employment_status=employment_status,
+                employment_role=utils.get_pydantic_model(
+                    employment_role, Optional[models.EmploymentRole]
+                ),
+                ethnicity=ethnicity,
+                manager=utils.get_pydantic_model(manager, Optional[models.Manager]),
+                direct_reports=direct_reports,
+                social_security_number=social_security_number,
+                birthday=birthday,
+                deceased_on=deceased_on,
+                country_of_birth=country_of_birth,
+                description=description,
+                gender=gender,
+                pronouns=pronouns,
+                preferred_language=preferred_language,
+                languages=languages,
+                nationalities=nationalities,
+                photo_url=photo_url,
+                timezone=timezone,
+                source=source,
+                source_id=source_id,
+                record_url=record_url,
+                jobs=utils.get_pydantic_model(
+                    jobs, OptionalNullable[List[models.EmployeeJobInput]]
+                ),
+                compensations=utils.get_pydantic_model(
+                    compensations,
+                    OptionalNullable[List[models.EmployeeCompensationInput]],
+                ),
+                works_remote=works_remote,
+                addresses=utils.get_pydantic_model(
+                    addresses, Optional[List[models.Address]]
+                ),
+                phone_numbers=utils.get_pydantic_model(
+                    phone_numbers, Optional[List[models.PhoneNumber]]
+                ),
+                emails=utils.get_pydantic_model(emails, Optional[List[models.Email]]),
+                custom_fields=utils.get_pydantic_model(
+                    custom_fields, Optional[List[models.CustomField]]
+                ),
+                social_links=utils.get_pydantic_model(
+                    social_links, Optional[List[models.SocialLink]]
+                ),
+                bank_accounts=utils.get_pydantic_model(
+                    bank_accounts, Optional[List[models.BankAccount]]
+                ),
+                tax_code=tax_code,
+                tax_id=tax_id,
+                dietary_preference=dietary_preference,
+                food_allergies=food_allergies,
+                probation_period=utils.get_pydantic_model(
+                    probation_period, Optional[models.ProbationPeriod]
+                ),
+                tags=tags,
+                row_version=row_version,
+                deleted=deleted,
+                pass_through=utils.get_pydantic_model(
+                    pass_through, Optional[List[models.PassThroughBody]]
+                ),
+            ),
         )
 
         req = self.build_request_async(
@@ -866,6 +1939,7 @@ class Employees(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.HrisEmployeesUpdateGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -948,6 +2022,7 @@ class Employees(BaseSDK):
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.HrisEmployeesDeleteResponse:
         r"""Delete Employee
 
@@ -959,6 +2034,7 @@ class Employees(BaseSDK):
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -985,6 +2061,7 @@ class Employees(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.HrisEmployeesDeleteGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -1064,6 +2141,7 @@ class Employees(BaseSDK):
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.HrisEmployeesDeleteResponse:
         r"""Delete Employee
 
@@ -1075,6 +2153,7 @@ class Employees(BaseSDK):
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -1101,6 +2180,7 @@ class Employees(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.HrisEmployeesDeleteGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,

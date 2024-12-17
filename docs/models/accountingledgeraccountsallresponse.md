@@ -1,17 +1,8 @@
 # AccountingLedgerAccountsAllResponse
 
 
-## Supported Types
+## Fields
 
-### `models.GetLedgerAccountsResponse`
-
-```python
-value: models.GetLedgerAccountsResponse = /* values here */
-```
-
-### `models.UnexpectedErrorResponse`
-
-```python
-value: models.UnexpectedErrorResponse = /* values here */
-```
-
+| Field                                                                                                      | Type                                                                                                       | Required                                                                                                   | Description                                                                                                |
+| ---------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| `result`                                                                                                   | [models.AccountingLedgerAccountsAllResponseResult](../models/accountingledgeraccountsallresponseresult.md) | :heavy_check_mark:                                                                                         | N/A                                                                                                        |

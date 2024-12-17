@@ -26,26 +26,29 @@ with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
-    res = apideck.accounting.locations.list(request={
-        "service_id": "salesforce",
-        "fields": "id,updated_at",
-        "filter_": {
-            "subsidiary": "1",
-        },
+
+    res = apideck.accounting.locations.list(service_id="salesforce", fields="id,updated_at", filter_={
+        "subsidiary": "1",
     })
 
-    if res is not None:
-        # handle response
-        pass
+    while res is not None:
+        # Handle items
+
+        res = res.next()
 
 ```
 
 ### Parameters
 
-| Parameter                                                                             | Type                                                                                  | Required                                                                              | Description                                                                           |
-| ------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
-| `request`                                                                             | [models.AccountingLocationsAllRequest](../../models/accountinglocationsallrequest.md) | :heavy_check_mark:                                                                    | The request object to use for the request.                                            |
-| `retries`                                                                             | [Optional[utils.RetryConfig]](../../models/utils/retryconfig.md)                      | :heavy_minus_sign:                                                                    | Configuration to override the default retry behavior of the client.                   |
+| Parameter                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       | Type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            | Required                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | Example                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `raw`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           | *Optional[bool]*                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | :heavy_minus_sign:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Include raw response. Mostly used for debugging purposes                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| `service_id`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | *Optional[str]*                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | :heavy_minus_sign:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | salesforce                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| `cursor`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | *OptionalNullable[str]*                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | :heavy_minus_sign:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| `limit`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | *Optional[int]*                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | :heavy_minus_sign:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Number of results to return. Minimum 1, Maximum 200, Default 20                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| `fields`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | *OptionalNullable[str]*                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | :heavy_minus_sign:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields "name", "email" and "addresses.city". If any other fields are available, they will be excluded. | id,updated_at                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| `filter_`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       | [Optional[models.AccountingLocationsFilter]](../../models/accountinglocationsfilter.md)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | :heavy_minus_sign:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Apply filters                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | {<br/>"subsidiary": "1"<br/>}                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| `retries`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       | [Optional[utils.RetryConfig]](../../models/utils/retryconfig.md)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | :heavy_minus_sign:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Configuration to override the default retry behavior of the client.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 
 ### Response
 
@@ -78,79 +81,77 @@ with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
-    res = apideck.accounting.locations.create(accounting_location={
-        "parent_id": "12345",
-        "company_name": "SpaceX",
-        "display_name": "11 UT - South Jordan",
-        "status": apideck_unify.LocationStatus.ACTIVE,
-        "addresses": [
-            {
-                "id": "123",
-                "type": apideck_unify.Type.PRIMARY,
-                "string": "25 Spring Street, Blackburn, VIC 3130",
-                "name": "HQ US",
-                "line1": "Main street",
-                "line2": "apt #",
-                "line3": "Suite #",
-                "line4": "delivery instructions",
-                "street_number": "25",
-                "city": "San Francisco",
-                "state": "CA",
-                "postal_code": "94104",
-                "country": "US",
-                "latitude": "40.759211",
-                "longitude": "-73.984638",
-                "county": "Santa Clara",
-                "contact_name": "Elon Musk",
-                "salutation": "Mr",
-                "phone_number": "111-111-1111",
-                "fax": "122-111-1111",
-                "email": "elon@musk.com",
-                "website": "https://elonmusk.com",
-                "notes": "Address notes or delivery instructions.",
-                "row_version": "1-12345",
-            },
-        ],
-        "subsidiaries": [
-            {
-                "name": "SpaceX",
-            },
-            {
-                "name": "SpaceX",
-            },
-        ],
-        "row_version": "1-12345",
-        "pass_through": [
-            {
-                "service_id": "<id>",
-                "extend_paths": [
-                    {
-                        "path": "$.nested.property",
-                        "value": {
-                            "TaxClassificationRef": {
-                                "value": "EUC-99990201-V1-00020000",
-                            },
+
+    res = apideck.accounting.locations.create(service_id="salesforce", parent_id="12345", company_name="SpaceX", display_name="11 UT - South Jordan", status=apideck_unify.LocationStatus.ACTIVE, addresses=[
+        {
+            "id": "123",
+            "type": apideck_unify.Type.PRIMARY,
+            "string": "25 Spring Street, Blackburn, VIC 3130",
+            "name": "HQ US",
+            "line1": "Main street",
+            "line2": "apt #",
+            "line3": "Suite #",
+            "line4": "delivery instructions",
+            "street_number": "25",
+            "city": "San Francisco",
+            "state": "CA",
+            "postal_code": "94104",
+            "country": "US",
+            "latitude": "40.759211",
+            "longitude": "-73.984638",
+            "county": "Santa Clara",
+            "contact_name": "Elon Musk",
+            "salutation": "Mr",
+            "phone_number": "111-111-1111",
+            "fax": "122-111-1111",
+            "email": "elon@musk.com",
+            "website": "https://elonmusk.com",
+            "notes": "Address notes or delivery instructions.",
+            "row_version": "1-12345",
+        },
+    ], subsidiaries=[
+        {
+            "name": "SpaceX",
+        },
+        {
+            "name": "SpaceX",
+        },
+    ], row_version="1-12345", pass_through=[
+        {
+            "service_id": "<id>",
+            "extend_paths": [
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
                         },
                     },
-                ],
-            },
-        ],
-    }, service_id="salesforce")
+                },
+            ],
+        },
+    ])
 
-    if res is not None:
-        # handle response
-        pass
+    # Handle response
+    print(res)
 
 ```
 
 ### Parameters
 
-| Parameter                                                                                                                                     | Type                                                                                                                                          | Required                                                                                                                                      | Description                                                                                                                                   | Example                                                                                                                                       |
-| --------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| `accounting_location`                                                                                                                         | [models.AccountingLocationInput](../../models/accountinglocationinput.md)                                                                     | :heavy_check_mark:                                                                                                                            | N/A                                                                                                                                           |                                                                                                                                               |
-| `raw`                                                                                                                                         | *Optional[bool]*                                                                                                                              | :heavy_minus_sign:                                                                                                                            | Include raw response. Mostly used for debugging purposes                                                                                      |                                                                                                                                               |
-| `service_id`                                                                                                                                  | *Optional[str]*                                                                                                                               | :heavy_minus_sign:                                                                                                                            | Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API. | salesforce                                                                                                                                    |
-| `retries`                                                                                                                                     | [Optional[utils.RetryConfig]](../../models/utils/retryconfig.md)                                                                              | :heavy_minus_sign:                                                                                                                            | Configuration to override the default retry behavior of the client.                                                                           |                                                                                                                                               |
+| Parameter                                                                                                                                               | Type                                                                                                                                                    | Required                                                                                                                                                | Description                                                                                                                                             | Example                                                                                                                                                 |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `raw`                                                                                                                                                   | *Optional[bool]*                                                                                                                                        | :heavy_minus_sign:                                                                                                                                      | Include raw response. Mostly used for debugging purposes                                                                                                |                                                                                                                                                         |
+| `service_id`                                                                                                                                            | *Optional[str]*                                                                                                                                         | :heavy_minus_sign:                                                                                                                                      | Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.           | salesforce                                                                                                                                              |
+| `parent_id`                                                                                                                                             | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | A unique identifier for an object.                                                                                                                      | 12345                                                                                                                                                   |
+| `company_name`                                                                                                                                          | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | The name of the company.                                                                                                                                | SpaceX                                                                                                                                                  |
+| `display_name`                                                                                                                                          | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | The display name of the location.                                                                                                                       | 11 UT - South Jordan                                                                                                                                    |
+| `status`                                                                                                                                                | [Optional[models.LocationStatus]](../../models/locationstatus.md)                                                                                       | :heavy_minus_sign:                                                                                                                                      | Based on the status some functionality is enabled or disabled.                                                                                          | active                                                                                                                                                  |
+| `addresses`                                                                                                                                             | List[[models.Address](../../models/address.md)]                                                                                                         | :heavy_minus_sign:                                                                                                                                      | N/A                                                                                                                                                     |                                                                                                                                                         |
+| `subsidiaries`                                                                                                                                          | List[[models.SubsidiaryReferenceInput](../../models/subsidiaryreferenceinput.md)]                                                                       | :heavy_minus_sign:                                                                                                                                      | N/A                                                                                                                                                     |                                                                                                                                                         |
+| `row_version`                                                                                                                                           | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.              | 1-12345                                                                                                                                                 |
+| `pass_through`                                                                                                                                          | List[[models.PassThroughBody](../../models/passthroughbody.md)]                                                                                         | :heavy_minus_sign:                                                                                                                                      | The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources. |                                                                                                                                                         |
+| `retries`                                                                                                                                               | [Optional[utils.RetryConfig]](../../models/utils/retryconfig.md)                                                                                        | :heavy_minus_sign:                                                                                                                                      | Configuration to override the default retry behavior of the client.                                                                                     |                                                                                                                                                         |
 
 ### Response
 
@@ -182,11 +183,11 @@ with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
+
     res = apideck.accounting.locations.get(id="<id>", service_id="salesforce", fields="id,updated_at")
 
-    if res is not None:
-        # handle response
-        pass
+    # Handle response
+    print(res)
 
 ```
 
@@ -231,148 +232,146 @@ with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
-    res = apideck.accounting.locations.update(id="<id>", accounting_location={
-        "parent_id": "12345",
-        "company_name": "SpaceX",
-        "display_name": "11 UT - South Jordan",
-        "status": apideck_unify.LocationStatus.ACTIVE,
-        "addresses": [
-            {
-                "id": "123",
-                "type": apideck_unify.Type.PRIMARY,
-                "string": "25 Spring Street, Blackburn, VIC 3130",
-                "name": "HQ US",
-                "line1": "Main street",
-                "line2": "apt #",
-                "line3": "Suite #",
-                "line4": "delivery instructions",
-                "street_number": "25",
-                "city": "San Francisco",
-                "state": "CA",
-                "postal_code": "94104",
-                "country": "US",
-                "latitude": "40.759211",
-                "longitude": "-73.984638",
-                "county": "Santa Clara",
-                "contact_name": "Elon Musk",
-                "salutation": "Mr",
-                "phone_number": "111-111-1111",
-                "fax": "122-111-1111",
-                "email": "elon@musk.com",
-                "website": "https://elonmusk.com",
-                "notes": "Address notes or delivery instructions.",
-                "row_version": "1-12345",
-            },
-            {
-                "id": "123",
-                "type": apideck_unify.Type.PRIMARY,
-                "string": "25 Spring Street, Blackburn, VIC 3130",
-                "name": "HQ US",
-                "line1": "Main street",
-                "line2": "apt #",
-                "line3": "Suite #",
-                "line4": "delivery instructions",
-                "street_number": "25",
-                "city": "San Francisco",
-                "state": "CA",
-                "postal_code": "94104",
-                "country": "US",
-                "latitude": "40.759211",
-                "longitude": "-73.984638",
-                "county": "Santa Clara",
-                "contact_name": "Elon Musk",
-                "salutation": "Mr",
-                "phone_number": "111-111-1111",
-                "fax": "122-111-1111",
-                "email": "elon@musk.com",
-                "website": "https://elonmusk.com",
-                "notes": "Address notes or delivery instructions.",
-                "row_version": "1-12345",
-            },
-            {
-                "id": "123",
-                "type": apideck_unify.Type.PRIMARY,
-                "string": "25 Spring Street, Blackburn, VIC 3130",
-                "name": "HQ US",
-                "line1": "Main street",
-                "line2": "apt #",
-                "line3": "Suite #",
-                "line4": "delivery instructions",
-                "street_number": "25",
-                "city": "San Francisco",
-                "state": "CA",
-                "postal_code": "94104",
-                "country": "US",
-                "latitude": "40.759211",
-                "longitude": "-73.984638",
-                "county": "Santa Clara",
-                "contact_name": "Elon Musk",
-                "salutation": "Mr",
-                "phone_number": "111-111-1111",
-                "fax": "122-111-1111",
-                "email": "elon@musk.com",
-                "website": "https://elonmusk.com",
-                "notes": "Address notes or delivery instructions.",
-                "row_version": "1-12345",
-            },
-        ],
-        "subsidiaries": [
-            {
-                "name": "SpaceX",
-            },
-            {
-                "name": "SpaceX",
-            },
-        ],
-        "row_version": "1-12345",
-        "pass_through": [
-            {
-                "service_id": "<id>",
-                "extend_paths": [
-                    {
-                        "path": "$.nested.property",
-                        "value": {
-                            "TaxClassificationRef": {
-                                "value": "EUC-99990201-V1-00020000",
-                            },
-                        },
-                    },
-                    {
-                        "path": "$.nested.property",
-                        "value": {
-                            "TaxClassificationRef": {
-                                "value": "EUC-99990201-V1-00020000",
-                            },
-                        },
-                    },
-                    {
-                        "path": "$.nested.property",
-                        "value": {
-                            "TaxClassificationRef": {
-                                "value": "EUC-99990201-V1-00020000",
-                            },
-                        },
-                    },
-                ],
-            },
-        ],
-    }, service_id="salesforce")
 
-    if res is not None:
-        # handle response
-        pass
+    res = apideck.accounting.locations.update(id="<id>", service_id="salesforce", parent_id="12345", company_name="SpaceX", display_name="11 UT - South Jordan", status=apideck_unify.LocationStatus.ACTIVE, addresses=[
+        {
+            "id": "123",
+            "type": apideck_unify.Type.PRIMARY,
+            "string": "25 Spring Street, Blackburn, VIC 3130",
+            "name": "HQ US",
+            "line1": "Main street",
+            "line2": "apt #",
+            "line3": "Suite #",
+            "line4": "delivery instructions",
+            "street_number": "25",
+            "city": "San Francisco",
+            "state": "CA",
+            "postal_code": "94104",
+            "country": "US",
+            "latitude": "40.759211",
+            "longitude": "-73.984638",
+            "county": "Santa Clara",
+            "contact_name": "Elon Musk",
+            "salutation": "Mr",
+            "phone_number": "111-111-1111",
+            "fax": "122-111-1111",
+            "email": "elon@musk.com",
+            "website": "https://elonmusk.com",
+            "notes": "Address notes or delivery instructions.",
+            "row_version": "1-12345",
+        },
+        {
+            "id": "123",
+            "type": apideck_unify.Type.PRIMARY,
+            "string": "25 Spring Street, Blackburn, VIC 3130",
+            "name": "HQ US",
+            "line1": "Main street",
+            "line2": "apt #",
+            "line3": "Suite #",
+            "line4": "delivery instructions",
+            "street_number": "25",
+            "city": "San Francisco",
+            "state": "CA",
+            "postal_code": "94104",
+            "country": "US",
+            "latitude": "40.759211",
+            "longitude": "-73.984638",
+            "county": "Santa Clara",
+            "contact_name": "Elon Musk",
+            "salutation": "Mr",
+            "phone_number": "111-111-1111",
+            "fax": "122-111-1111",
+            "email": "elon@musk.com",
+            "website": "https://elonmusk.com",
+            "notes": "Address notes or delivery instructions.",
+            "row_version": "1-12345",
+        },
+        {
+            "id": "123",
+            "type": apideck_unify.Type.PRIMARY,
+            "string": "25 Spring Street, Blackburn, VIC 3130",
+            "name": "HQ US",
+            "line1": "Main street",
+            "line2": "apt #",
+            "line3": "Suite #",
+            "line4": "delivery instructions",
+            "street_number": "25",
+            "city": "San Francisco",
+            "state": "CA",
+            "postal_code": "94104",
+            "country": "US",
+            "latitude": "40.759211",
+            "longitude": "-73.984638",
+            "county": "Santa Clara",
+            "contact_name": "Elon Musk",
+            "salutation": "Mr",
+            "phone_number": "111-111-1111",
+            "fax": "122-111-1111",
+            "email": "elon@musk.com",
+            "website": "https://elonmusk.com",
+            "notes": "Address notes or delivery instructions.",
+            "row_version": "1-12345",
+        },
+    ], subsidiaries=[
+        {
+            "name": "SpaceX",
+        },
+        {
+            "name": "SpaceX",
+        },
+    ], row_version="1-12345", pass_through=[
+        {
+            "service_id": "<id>",
+            "extend_paths": [
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
+            ],
+        },
+    ])
+
+    # Handle response
+    print(res)
 
 ```
 
 ### Parameters
 
-| Parameter                                                                                                                                     | Type                                                                                                                                          | Required                                                                                                                                      | Description                                                                                                                                   | Example                                                                                                                                       |
-| --------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| `id`                                                                                                                                          | *str*                                                                                                                                         | :heavy_check_mark:                                                                                                                            | ID of the record you are acting upon.                                                                                                         |                                                                                                                                               |
-| `accounting_location`                                                                                                                         | [models.AccountingLocationInput](../../models/accountinglocationinput.md)                                                                     | :heavy_check_mark:                                                                                                                            | N/A                                                                                                                                           |                                                                                                                                               |
-| `service_id`                                                                                                                                  | *Optional[str]*                                                                                                                               | :heavy_minus_sign:                                                                                                                            | Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API. | salesforce                                                                                                                                    |
-| `raw`                                                                                                                                         | *Optional[bool]*                                                                                                                              | :heavy_minus_sign:                                                                                                                            | Include raw response. Mostly used for debugging purposes                                                                                      |                                                                                                                                               |
-| `retries`                                                                                                                                     | [Optional[utils.RetryConfig]](../../models/utils/retryconfig.md)                                                                              | :heavy_minus_sign:                                                                                                                            | Configuration to override the default retry behavior of the client.                                                                           |                                                                                                                                               |
+| Parameter                                                                                                                                               | Type                                                                                                                                                    | Required                                                                                                                                                | Description                                                                                                                                             | Example                                                                                                                                                 |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `id`                                                                                                                                                    | *str*                                                                                                                                                   | :heavy_check_mark:                                                                                                                                      | ID of the record you are acting upon.                                                                                                                   |                                                                                                                                                         |
+| `service_id`                                                                                                                                            | *Optional[str]*                                                                                                                                         | :heavy_minus_sign:                                                                                                                                      | Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.           | salesforce                                                                                                                                              |
+| `raw`                                                                                                                                                   | *Optional[bool]*                                                                                                                                        | :heavy_minus_sign:                                                                                                                                      | Include raw response. Mostly used for debugging purposes                                                                                                |                                                                                                                                                         |
+| `parent_id`                                                                                                                                             | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | A unique identifier for an object.                                                                                                                      | 12345                                                                                                                                                   |
+| `company_name`                                                                                                                                          | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | The name of the company.                                                                                                                                | SpaceX                                                                                                                                                  |
+| `display_name`                                                                                                                                          | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | The display name of the location.                                                                                                                       | 11 UT - South Jordan                                                                                                                                    |
+| `status`                                                                                                                                                | [Optional[models.LocationStatus]](../../models/locationstatus.md)                                                                                       | :heavy_minus_sign:                                                                                                                                      | Based on the status some functionality is enabled or disabled.                                                                                          | active                                                                                                                                                  |
+| `addresses`                                                                                                                                             | List[[models.Address](../../models/address.md)]                                                                                                         | :heavy_minus_sign:                                                                                                                                      | N/A                                                                                                                                                     |                                                                                                                                                         |
+| `subsidiaries`                                                                                                                                          | List[[models.SubsidiaryReferenceInput](../../models/subsidiaryreferenceinput.md)]                                                                       | :heavy_minus_sign:                                                                                                                                      | N/A                                                                                                                                                     |                                                                                                                                                         |
+| `row_version`                                                                                                                                           | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.              | 1-12345                                                                                                                                                 |
+| `pass_through`                                                                                                                                          | List[[models.PassThroughBody](../../models/passthroughbody.md)]                                                                                         | :heavy_minus_sign:                                                                                                                                      | The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources. |                                                                                                                                                         |
+| `retries`                                                                                                                                               | [Optional[utils.RetryConfig]](../../models/utils/retryconfig.md)                                                                                        | :heavy_minus_sign:                                                                                                                                      | Configuration to override the default retry behavior of the client.                                                                                     |                                                                                                                                                         |
 
 ### Response
 
@@ -404,11 +403,11 @@ with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
+
     res = apideck.accounting.locations.delete(id="<id>", service_id="salesforce")
 
-    if res is not None:
-        # handle response
-        pass
+    # Handle response
+    print(res)
 
 ```
 

@@ -1,17 +1,8 @@
 # CrmCompaniesAllResponse
 
 
-## Supported Types
+## Fields
 
-### `models.GetCompaniesResponse`
-
-```python
-value: models.GetCompaniesResponse = /* values here */
-```
-
-### `models.UnexpectedErrorResponse`
-
-```python
-value: models.UnexpectedErrorResponse = /* values here */
-```
-
+| Field                                                                              | Type                                                                               | Required                                                                           | Description                                                                        |
+| ---------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| `result`                                                                           | [models.CrmCompaniesAllResponseResult](../models/crmcompaniesallresponseresult.md) | :heavy_check_mark:                                                                 | N/A                                                                                |

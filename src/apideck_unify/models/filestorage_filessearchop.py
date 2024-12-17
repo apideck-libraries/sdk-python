@@ -54,7 +54,7 @@ class FileStorageFilesSearchRequestTypedDict(TypedDict):
     files_search: FilesSearchTypedDict
     service_id: NotRequired[str]
     r"""Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API."""
-    pass_through: NotRequired[Dict[str, Any]]
+    pass_through_param: NotRequired[Dict[str, Any]]
     r"""Optional unmapped key/values that will be passed through to downstream as query parameters. Ie: ?pass_through[search]=leads becomes ?search=leads"""
     fields: NotRequired[Nullable[str]]
     r"""The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded."""
@@ -79,8 +79,9 @@ class FileStorageFilesSearchRequest(BaseModel):
     ] = None
     r"""Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API."""
 
-    pass_through: Annotated[
+    pass_through_param: Annotated[
         Optional[Dict[str, Any]],
+        pydantic.Field(alias="pass_through"),
         FieldMetadata(query=QueryParamMetadata(style="deepObject", explode=True)),
     ] = None
     r"""Optional unmapped key/values that will be passed through to downstream as query parameters. Ie: ?pass_through[search]=leads becomes ?search=leads"""
@@ -114,7 +115,7 @@ class FileStorageFilesSearchRequest(BaseModel):
     def serialize_model(self, handler):
         optional_fields = [
             "serviceId",
-            "pass_through",
+            "pass_through_param",
             "fields",
             "cursor",
             "limit",

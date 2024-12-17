@@ -1,17 +1,8 @@
 # AccountingExpensesAllResponse
 
 
-## Supported Types
+## Fields
 
-### `models.GetExpensesResponse`
-
-```python
-value: models.GetExpensesResponse = /* values here */
-```
-
-### `models.UnexpectedErrorResponse`
-
-```python
-value: models.UnexpectedErrorResponse = /* values here */
-```
-
+| Field                                                                                          | Type                                                                                           | Required                                                                                       | Description                                                                                    |
+| ---------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| `result`                                                                                       | [models.AccountingExpensesAllResponseResult](../models/accountingexpensesallresponseresult.md) | :heavy_check_mark:                                                                             | N/A                                                                                            |

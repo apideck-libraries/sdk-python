@@ -26,28 +26,26 @@ with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
-    res = apideck.vault.consumers.create(request={
-        "consumer_id": "test_consumer_id",
-        "metadata": {
-            "account_name": "SpaceX",
-            "user_name": "Elon Musk",
-            "email": "elon@musk.com",
-            "image": "https://www.spacex.com/static/images/share.jpg",
-        },
+
+    res = apideck.vault.consumers.create(consumer_id="test_consumer_id", metadata={
+        "account_name": "SpaceX",
+        "user_name": "Elon Musk",
+        "email": "elon@musk.com",
+        "image": "https://www.spacex.com/static/images/share.jpg",
     })
 
-    if res is not None:
-        # handle response
-        pass
+    # Handle response
+    print(res)
 
 ```
 
 ### Parameters
 
-| Parameter                                                           | Type                                                                | Required                                                            | Description                                                         |
-| ------------------------------------------------------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------------- |
-| `request`                                                           | [models.ConsumerInput](../../models/consumerinput.md)               | :heavy_check_mark:                                                  | N/A                                                                 |
-| `retries`                                                           | [Optional[utils.RetryConfig]](../../models/utils/retryconfig.md)    | :heavy_minus_sign:                                                  | Configuration to override the default retry behavior of the client. |
+| Parameter                                                                                                                                                                                                                                                                                             | Type                                                                                                                                                                                                                                                                                                  | Required                                                                                                                                                                                                                                                                                              | Description                                                                                                                                                                                                                                                                                           | Example                                                                                                                                                                                                                                                                                               |
+| ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `consumer_id`                                                                                                                                                                                                                                                                                         | *str*                                                                                                                                                                                                                                                                                                 | :heavy_check_mark:                                                                                                                                                                                                                                                                                    | Unique consumer identifier. You can freely choose a consumer ID yourself. Most of the time, this is an ID of your internal data model that represents a user or account in your system (for example account:12345). If the consumer doesn't exist yet, Vault will upsert a consumer based on your ID. | test_consumer_id                                                                                                                                                                                                                                                                                      |
+| `metadata`                                                                                                                                                                                                                                                                                            | [Optional[models.ConsumerMetadata]](../../models/consumermetadata.md)                                                                                                                                                                                                                                 | :heavy_minus_sign:                                                                                                                                                                                                                                                                                    | The metadata of the consumer. This is used to display the consumer in the sidebar. This is optional, but recommended.                                                                                                                                                                                 |                                                                                                                                                                                                                                                                                                       |
+| `retries`                                                                                                                                                                                                                                                                                             | [Optional[utils.RetryConfig]](../../models/utils/retryconfig.md)                                                                                                                                                                                                                                      | :heavy_minus_sign:                                                                                                                                                                                                                                                                                    | Configuration to override the default retry behavior of the client.                                                                                                                                                                                                                                   |                                                                                                                                                                                                                                                                                                       |
 
 ### Response
 
@@ -80,11 +78,13 @@ with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
+
     res = apideck.vault.consumers.list()
 
-    if res is not None:
-        # handle response
-        pass
+    while res is not None:
+        # Handle items
+
+        res = res.next()
 
 ```
 
@@ -127,11 +127,11 @@ with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
+
     res = apideck.vault.consumers.get(consumer_id="test_user_id")
 
-    if res is not None:
-        # handle response
-        pass
+    # Handle response
+    print(res)
 
 ```
 
@@ -172,28 +172,26 @@ with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
-    res = apideck.vault.consumers.update(consumer_id="test_user_id", update_consumer_request={
-        "metadata": {
-            "account_name": "SpaceX",
-            "user_name": "Elon Musk",
-            "email": "elon@musk.com",
-            "image": "https://www.spacex.com/static/images/share.jpg",
-        },
+
+    res = apideck.vault.consumers.update(consumer_id="test_user_id", metadata={
+        "account_name": "SpaceX",
+        "user_name": "Elon Musk",
+        "email": "elon@musk.com",
+        "image": "https://www.spacex.com/static/images/share.jpg",
     })
 
-    if res is not None:
-        # handle response
-        pass
+    # Handle response
+    print(res)
 
 ```
 
 ### Parameters
 
-| Parameter                                                             | Type                                                                  | Required                                                              | Description                                                           | Example                                                               |
-| --------------------------------------------------------------------- | --------------------------------------------------------------------- | --------------------------------------------------------------------- | --------------------------------------------------------------------- | --------------------------------------------------------------------- |
-| `consumer_id`                                                         | *str*                                                                 | :heavy_check_mark:                                                    | ID of the consumer to return                                          | test_user_id                                                          |
-| `update_consumer_request`                                             | [models.UpdateConsumerRequest](../../models/updateconsumerrequest.md) | :heavy_check_mark:                                                    | N/A                                                                   |                                                                       |
-| `retries`                                                             | [Optional[utils.RetryConfig]](../../models/utils/retryconfig.md)      | :heavy_minus_sign:                                                    | Configuration to override the default retry behavior of the client.   |                                                                       |
+| Parameter                                                                                                             | Type                                                                                                                  | Required                                                                                                              | Description                                                                                                           | Example                                                                                                               |
+| --------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| `consumer_id`                                                                                                         | *str*                                                                                                                 | :heavy_check_mark:                                                                                                    | ID of the consumer to return                                                                                          | test_user_id                                                                                                          |
+| `metadata`                                                                                                            | [Optional[models.ConsumerMetadata]](../../models/consumermetadata.md)                                                 | :heavy_minus_sign:                                                                                                    | The metadata of the consumer. This is used to display the consumer in the sidebar. This is optional, but recommended. |                                                                                                                       |
+| `retries`                                                                                                             | [Optional[utils.RetryConfig]](../../models/utils/retryconfig.md)                                                      | :heavy_minus_sign:                                                                                                    | Configuration to override the default retry behavior of the client.                                                   |                                                                                                                       |
 
 ### Response
 
@@ -225,11 +223,11 @@ with Apideck(
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
+
     res = apideck.vault.consumers.delete(consumer_id="test_user_id")
 
-    if res is not None:
-        # handle response
-        pass
+    # Handle response
+    print(res)
 
 ```
 

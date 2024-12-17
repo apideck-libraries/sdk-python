@@ -20,7 +20,7 @@ from apideck_unify.types import (
 from apideck_unify.utils import FieldMetadata, HeaderMetadata, QueryParamMetadata
 import pydantic
 from pydantic import model_serializer
-from typing import Any, Dict, Optional, Union
+from typing import Any, Callable, Dict, Optional, Union
 from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
 
 
@@ -147,13 +147,23 @@ class IssueTrackingCollectionsAllRequest(BaseModel):
         return m
 
 
-IssueTrackingCollectionsAllResponseTypedDict = TypeAliasType(
-    "IssueTrackingCollectionsAllResponseTypedDict",
+IssueTrackingCollectionsAllResponseResultTypedDict = TypeAliasType(
+    "IssueTrackingCollectionsAllResponseResultTypedDict",
     Union[UnexpectedErrorResponseTypedDict, GetCollectionsResponseTypedDict],
 )
 
 
-IssueTrackingCollectionsAllResponse = TypeAliasType(
-    "IssueTrackingCollectionsAllResponse",
+IssueTrackingCollectionsAllResponseResult = TypeAliasType(
+    "IssueTrackingCollectionsAllResponseResult",
     Union[UnexpectedErrorResponse, GetCollectionsResponse],
 )
+
+
+class IssueTrackingCollectionsAllResponseTypedDict(TypedDict):
+    result: IssueTrackingCollectionsAllResponseResultTypedDict
+
+
+class IssueTrackingCollectionsAllResponse(BaseModel):
+    next: Callable[[], Optional[IssueTrackingCollectionsAllResponse]]
+
+    result: IssueTrackingCollectionsAllResponseResult

@@ -3,30 +3,41 @@
 from .basesdk import BaseSDK
 from apideck_unify import models, utils
 from apideck_unify._hooks import HookContext
-from apideck_unify.types import BaseModel, OptionalNullable, UNSET
+from apideck_unify.types import Nullable, OptionalNullable, UNSET
 from apideck_unify.utils import get_security_from_env
-from typing import Any, Optional, Union, cast
+from jsonpath import JSONPath
+from typing import Any, Dict, List, Mapping, Optional, Union
 
 
 class ApideckCompanies(BaseSDK):
     def list(
         self,
         *,
-        request: Union[
-            models.HrisCompaniesAllRequest, models.HrisCompaniesAllRequestTypedDict
-        ] = models.HrisCompaniesAllRequest(),
+        raw: Optional[bool] = False,
+        service_id: Optional[str] = None,
+        cursor: OptionalNullable[str] = UNSET,
+        limit: Optional[int] = 20,
+        pass_through: Optional[Dict[str, Any]] = None,
+        fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
-    ) -> models.HrisCompaniesAllResponse:
+        http_headers: Optional[Mapping[str, str]] = None,
+    ) -> Optional[models.HrisCompaniesAllResponse]:
         r"""List Companies
 
         List Companies
 
-        :param request: The request object to send.
+        :param raw: Include raw response. Mostly used for debugging purposes
+        :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
+        :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
+        :param pass_through: Optional unmapped key/values that will be passed through to downstream as query parameters. Ie: ?pass_through[search]=leads becomes ?search=leads
+        :param fields: The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -36,9 +47,14 @@ class ApideckCompanies(BaseSDK):
         if server_url is not None:
             base_url = server_url
 
-        if not isinstance(request, BaseModel):
-            request = utils.unmarshal(request, models.HrisCompaniesAllRequest)
-        request = cast(models.HrisCompaniesAllRequest, request)
+        request = models.HrisCompaniesAllRequest(
+            raw=raw,
+            service_id=service_id,
+            cursor=cursor,
+            limit=limit,
+            pass_through=pass_through,
+            fields=fields,
+        )
 
         req = self.build_request(
             method="GET",
@@ -51,6 +67,7 @@ class ApideckCompanies(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.HrisCompaniesAllGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -84,9 +101,32 @@ class ApideckCompanies(BaseSDK):
             retry_config=retry_config,
         )
 
+        def next_func() -> Optional[models.HrisCompaniesAllResponse]:
+            body = utils.unmarshal_json(http_res.text, Dict[Any, Any])
+            next_cursor = JSONPath("$.meta.cursors.next").parse(body)
+
+            if len(next_cursor) == 0:
+                return None
+            next_cursor = next_cursor[0]
+
+            return self.list(
+                raw=raw,
+                service_id=service_id,
+                cursor=next_cursor,
+                limit=limit,
+                pass_through=pass_through,
+                fields=fields,
+                retries=retries,
+            )
+
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.GetHrisCompaniesResponse)
+            return models.HrisCompaniesAllResponse(
+                result=utils.unmarshal_json(
+                    http_res.text, models.GetHrisCompaniesResponse
+                ),
+                next=next_func,
+            )
         if utils.match_response(http_res, "400", "application/json"):
             data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
             raise models.BadRequestResponse(data=data)
@@ -110,7 +150,12 @@ class ApideckCompanies(BaseSDK):
                 "API error occurred", http_res.status_code, http_res_text, http_res
             )
         if utils.match_response(http_res, "default", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UnexpectedErrorResponse)
+            return models.HrisCompaniesAllResponse(
+                result=utils.unmarshal_json(
+                    http_res.text, models.UnexpectedErrorResponse
+                ),
+                next=next_func,
+            )
 
         content_type = http_res.headers.get("Content-Type")
         http_res_text = utils.stream_to_text(http_res)
@@ -124,21 +169,31 @@ class ApideckCompanies(BaseSDK):
     async def list_async(
         self,
         *,
-        request: Union[
-            models.HrisCompaniesAllRequest, models.HrisCompaniesAllRequestTypedDict
-        ] = models.HrisCompaniesAllRequest(),
+        raw: Optional[bool] = False,
+        service_id: Optional[str] = None,
+        cursor: OptionalNullable[str] = UNSET,
+        limit: Optional[int] = 20,
+        pass_through: Optional[Dict[str, Any]] = None,
+        fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
-    ) -> models.HrisCompaniesAllResponse:
+        http_headers: Optional[Mapping[str, str]] = None,
+    ) -> Optional[models.HrisCompaniesAllResponse]:
         r"""List Companies
 
         List Companies
 
-        :param request: The request object to send.
+        :param raw: Include raw response. Mostly used for debugging purposes
+        :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
+        :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
+        :param pass_through: Optional unmapped key/values that will be passed through to downstream as query parameters. Ie: ?pass_through[search]=leads becomes ?search=leads
+        :param fields: The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -148,9 +203,14 @@ class ApideckCompanies(BaseSDK):
         if server_url is not None:
             base_url = server_url
 
-        if not isinstance(request, BaseModel):
-            request = utils.unmarshal(request, models.HrisCompaniesAllRequest)
-        request = cast(models.HrisCompaniesAllRequest, request)
+        request = models.HrisCompaniesAllRequest(
+            raw=raw,
+            service_id=service_id,
+            cursor=cursor,
+            limit=limit,
+            pass_through=pass_through,
+            fields=fields,
+        )
 
         req = self.build_request_async(
             method="GET",
@@ -163,6 +223,7 @@ class ApideckCompanies(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.HrisCompaniesAllGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -196,9 +257,32 @@ class ApideckCompanies(BaseSDK):
             retry_config=retry_config,
         )
 
+        def next_func() -> Optional[models.HrisCompaniesAllResponse]:
+            body = utils.unmarshal_json(http_res.text, Dict[Any, Any])
+            next_cursor = JSONPath("$.meta.cursors.next").parse(body)
+
+            if len(next_cursor) == 0:
+                return None
+            next_cursor = next_cursor[0]
+
+            return self.list(
+                raw=raw,
+                service_id=service_id,
+                cursor=next_cursor,
+                limit=limit,
+                pass_through=pass_through,
+                fields=fields,
+                retries=retries,
+            )
+
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.GetHrisCompaniesResponse)
+            return models.HrisCompaniesAllResponse(
+                result=utils.unmarshal_json(
+                    http_res.text, models.GetHrisCompaniesResponse
+                ),
+                next=next_func,
+            )
         if utils.match_response(http_res, "400", "application/json"):
             data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
             raise models.BadRequestResponse(data=data)
@@ -222,7 +306,12 @@ class ApideckCompanies(BaseSDK):
                 "API error occurred", http_res.status_code, http_res_text, http_res
             )
         if utils.match_response(http_res, "default", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UnexpectedErrorResponse)
+            return models.HrisCompaniesAllResponse(
+                result=utils.unmarshal_json(
+                    http_res.text, models.UnexpectedErrorResponse
+                ),
+                next=next_func,
+            )
 
         content_type = http_res.headers.get("Content-Type")
         http_res_text = await utils.stream_to_text_async(http_res)
@@ -236,23 +325,55 @@ class ApideckCompanies(BaseSDK):
     def create(
         self,
         *,
-        hris_company: Union[models.HrisCompanyInput, models.HrisCompanyInputTypedDict],
+        legal_name: Nullable[str],
         raw: Optional[bool] = False,
         service_id: Optional[str] = None,
+        display_name: OptionalNullable[str] = UNSET,
+        subdomain: OptionalNullable[str] = UNSET,
+        status: Optional[models.HrisCompanyStatus] = None,
+        company_number: OptionalNullable[str] = UNSET,
+        currency: OptionalNullable[models.Currency] = UNSET,
+        addresses: Optional[
+            Union[List[models.Address], List[models.AddressTypedDict]]
+        ] = None,
+        phone_numbers: Optional[
+            Union[List[models.PhoneNumber], List[models.PhoneNumberTypedDict]]
+        ] = None,
+        emails: Optional[Union[List[models.Email], List[models.EmailTypedDict]]] = None,
+        websites: Optional[
+            Union[List[models.Website], List[models.WebsiteTypedDict]]
+        ] = None,
+        debtor_id: OptionalNullable[str] = UNSET,
+        pass_through: Optional[
+            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.HrisCompaniesAddResponse:
         r"""Create Company
 
         Create Company
 
-        :param hris_company:
+        :param legal_name:
         :param raw: Include raw response. Mostly used for debugging purposes
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param display_name:
+        :param subdomain:
+        :param status:
+        :param company_number: An Company Number, Company ID or Company Code, is a unique number that has been assigned to each company.
+        :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
+        :param addresses:
+        :param phone_numbers:
+        :param emails:
+        :param websites:
+        :param debtor_id:
+        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -265,8 +386,27 @@ class ApideckCompanies(BaseSDK):
         request = models.HrisCompaniesAddRequest(
             raw=raw,
             service_id=service_id,
-            hris_company=utils.get_pydantic_model(
-                hris_company, models.HrisCompanyInput
+            hris_company=models.HrisCompanyInput(
+                legal_name=legal_name,
+                display_name=display_name,
+                subdomain=subdomain,
+                status=status,
+                company_number=company_number,
+                currency=currency,
+                addresses=utils.get_pydantic_model(
+                    addresses, Optional[List[models.Address]]
+                ),
+                phone_numbers=utils.get_pydantic_model(
+                    phone_numbers, Optional[List[models.PhoneNumber]]
+                ),
+                emails=utils.get_pydantic_model(emails, Optional[List[models.Email]]),
+                websites=utils.get_pydantic_model(
+                    websites, Optional[List[models.Website]]
+                ),
+                debtor_id=debtor_id,
+                pass_through=utils.get_pydantic_model(
+                    pass_through, Optional[List[models.PassThroughBody]]
+                ),
             ),
         )
 
@@ -281,6 +421,7 @@ class ApideckCompanies(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.HrisCompaniesAddGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -357,23 +498,55 @@ class ApideckCompanies(BaseSDK):
     async def create_async(
         self,
         *,
-        hris_company: Union[models.HrisCompanyInput, models.HrisCompanyInputTypedDict],
+        legal_name: Nullable[str],
         raw: Optional[bool] = False,
         service_id: Optional[str] = None,
+        display_name: OptionalNullable[str] = UNSET,
+        subdomain: OptionalNullable[str] = UNSET,
+        status: Optional[models.HrisCompanyStatus] = None,
+        company_number: OptionalNullable[str] = UNSET,
+        currency: OptionalNullable[models.Currency] = UNSET,
+        addresses: Optional[
+            Union[List[models.Address], List[models.AddressTypedDict]]
+        ] = None,
+        phone_numbers: Optional[
+            Union[List[models.PhoneNumber], List[models.PhoneNumberTypedDict]]
+        ] = None,
+        emails: Optional[Union[List[models.Email], List[models.EmailTypedDict]]] = None,
+        websites: Optional[
+            Union[List[models.Website], List[models.WebsiteTypedDict]]
+        ] = None,
+        debtor_id: OptionalNullable[str] = UNSET,
+        pass_through: Optional[
+            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.HrisCompaniesAddResponse:
         r"""Create Company
 
         Create Company
 
-        :param hris_company:
+        :param legal_name:
         :param raw: Include raw response. Mostly used for debugging purposes
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param display_name:
+        :param subdomain:
+        :param status:
+        :param company_number: An Company Number, Company ID or Company Code, is a unique number that has been assigned to each company.
+        :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
+        :param addresses:
+        :param phone_numbers:
+        :param emails:
+        :param websites:
+        :param debtor_id:
+        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -386,8 +559,27 @@ class ApideckCompanies(BaseSDK):
         request = models.HrisCompaniesAddRequest(
             raw=raw,
             service_id=service_id,
-            hris_company=utils.get_pydantic_model(
-                hris_company, models.HrisCompanyInput
+            hris_company=models.HrisCompanyInput(
+                legal_name=legal_name,
+                display_name=display_name,
+                subdomain=subdomain,
+                status=status,
+                company_number=company_number,
+                currency=currency,
+                addresses=utils.get_pydantic_model(
+                    addresses, Optional[List[models.Address]]
+                ),
+                phone_numbers=utils.get_pydantic_model(
+                    phone_numbers, Optional[List[models.PhoneNumber]]
+                ),
+                emails=utils.get_pydantic_model(emails, Optional[List[models.Email]]),
+                websites=utils.get_pydantic_model(
+                    websites, Optional[List[models.Website]]
+                ),
+                debtor_id=debtor_id,
+                pass_through=utils.get_pydantic_model(
+                    pass_through, Optional[List[models.PassThroughBody]]
+                ),
             ),
         )
 
@@ -402,6 +594,7 @@ class ApideckCompanies(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.HrisCompaniesAddGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -485,6 +678,7 @@ class ApideckCompanies(BaseSDK):
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.HrisCompaniesOneResponse:
         r"""Get Company
 
@@ -497,6 +691,7 @@ class ApideckCompanies(BaseSDK):
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -524,6 +719,7 @@ class ApideckCompanies(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.HrisCompaniesOneGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -604,6 +800,7 @@ class ApideckCompanies(BaseSDK):
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.HrisCompaniesOneResponse:
         r"""Get Company
 
@@ -616,6 +813,7 @@ class ApideckCompanies(BaseSDK):
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -643,6 +841,7 @@ class ApideckCompanies(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.HrisCompaniesOneGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -717,24 +916,56 @@ class ApideckCompanies(BaseSDK):
         self,
         *,
         id: str,
-        hris_company: Union[models.HrisCompanyInput, models.HrisCompanyInputTypedDict],
+        legal_name: Nullable[str],
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
+        display_name: OptionalNullable[str] = UNSET,
+        subdomain: OptionalNullable[str] = UNSET,
+        status: Optional[models.HrisCompanyStatus] = None,
+        company_number: OptionalNullable[str] = UNSET,
+        currency: OptionalNullable[models.Currency] = UNSET,
+        addresses: Optional[
+            Union[List[models.Address], List[models.AddressTypedDict]]
+        ] = None,
+        phone_numbers: Optional[
+            Union[List[models.PhoneNumber], List[models.PhoneNumberTypedDict]]
+        ] = None,
+        emails: Optional[Union[List[models.Email], List[models.EmailTypedDict]]] = None,
+        websites: Optional[
+            Union[List[models.Website], List[models.WebsiteTypedDict]]
+        ] = None,
+        debtor_id: OptionalNullable[str] = UNSET,
+        pass_through: Optional[
+            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.HrisCompaniesUpdateResponse:
         r"""Update Company
 
         Update Company
 
         :param id: ID of the record you are acting upon.
-        :param hris_company:
+        :param legal_name:
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param display_name:
+        :param subdomain:
+        :param status:
+        :param company_number: An Company Number, Company ID or Company Code, is a unique number that has been assigned to each company.
+        :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
+        :param addresses:
+        :param phone_numbers:
+        :param emails:
+        :param websites:
+        :param debtor_id:
+        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -748,8 +979,27 @@ class ApideckCompanies(BaseSDK):
             id=id,
             service_id=service_id,
             raw=raw,
-            hris_company=utils.get_pydantic_model(
-                hris_company, models.HrisCompanyInput
+            hris_company=models.HrisCompanyInput(
+                legal_name=legal_name,
+                display_name=display_name,
+                subdomain=subdomain,
+                status=status,
+                company_number=company_number,
+                currency=currency,
+                addresses=utils.get_pydantic_model(
+                    addresses, Optional[List[models.Address]]
+                ),
+                phone_numbers=utils.get_pydantic_model(
+                    phone_numbers, Optional[List[models.PhoneNumber]]
+                ),
+                emails=utils.get_pydantic_model(emails, Optional[List[models.Email]]),
+                websites=utils.get_pydantic_model(
+                    websites, Optional[List[models.Website]]
+                ),
+                debtor_id=debtor_id,
+                pass_through=utils.get_pydantic_model(
+                    pass_through, Optional[List[models.PassThroughBody]]
+                ),
             ),
         )
 
@@ -764,6 +1014,7 @@ class ApideckCompanies(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.HrisCompaniesUpdateGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -841,24 +1092,56 @@ class ApideckCompanies(BaseSDK):
         self,
         *,
         id: str,
-        hris_company: Union[models.HrisCompanyInput, models.HrisCompanyInputTypedDict],
+        legal_name: Nullable[str],
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
+        display_name: OptionalNullable[str] = UNSET,
+        subdomain: OptionalNullable[str] = UNSET,
+        status: Optional[models.HrisCompanyStatus] = None,
+        company_number: OptionalNullable[str] = UNSET,
+        currency: OptionalNullable[models.Currency] = UNSET,
+        addresses: Optional[
+            Union[List[models.Address], List[models.AddressTypedDict]]
+        ] = None,
+        phone_numbers: Optional[
+            Union[List[models.PhoneNumber], List[models.PhoneNumberTypedDict]]
+        ] = None,
+        emails: Optional[Union[List[models.Email], List[models.EmailTypedDict]]] = None,
+        websites: Optional[
+            Union[List[models.Website], List[models.WebsiteTypedDict]]
+        ] = None,
+        debtor_id: OptionalNullable[str] = UNSET,
+        pass_through: Optional[
+            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.HrisCompaniesUpdateResponse:
         r"""Update Company
 
         Update Company
 
         :param id: ID of the record you are acting upon.
-        :param hris_company:
+        :param legal_name:
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param display_name:
+        :param subdomain:
+        :param status:
+        :param company_number: An Company Number, Company ID or Company Code, is a unique number that has been assigned to each company.
+        :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
+        :param addresses:
+        :param phone_numbers:
+        :param emails:
+        :param websites:
+        :param debtor_id:
+        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -872,8 +1155,27 @@ class ApideckCompanies(BaseSDK):
             id=id,
             service_id=service_id,
             raw=raw,
-            hris_company=utils.get_pydantic_model(
-                hris_company, models.HrisCompanyInput
+            hris_company=models.HrisCompanyInput(
+                legal_name=legal_name,
+                display_name=display_name,
+                subdomain=subdomain,
+                status=status,
+                company_number=company_number,
+                currency=currency,
+                addresses=utils.get_pydantic_model(
+                    addresses, Optional[List[models.Address]]
+                ),
+                phone_numbers=utils.get_pydantic_model(
+                    phone_numbers, Optional[List[models.PhoneNumber]]
+                ),
+                emails=utils.get_pydantic_model(emails, Optional[List[models.Email]]),
+                websites=utils.get_pydantic_model(
+                    websites, Optional[List[models.Website]]
+                ),
+                debtor_id=debtor_id,
+                pass_through=utils.get_pydantic_model(
+                    pass_through, Optional[List[models.PassThroughBody]]
+                ),
             ),
         )
 
@@ -888,6 +1190,7 @@ class ApideckCompanies(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.HrisCompaniesUpdateGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -970,6 +1273,7 @@ class ApideckCompanies(BaseSDK):
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.HrisCompaniesDeleteResponse:
         r"""Delete Company
 
@@ -981,6 +1285,7 @@ class ApideckCompanies(BaseSDK):
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -1007,6 +1312,7 @@ class ApideckCompanies(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.HrisCompaniesDeleteGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -1086,6 +1392,7 @@ class ApideckCompanies(BaseSDK):
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.HrisCompaniesDeleteResponse:
         r"""Delete Company
 
@@ -1097,6 +1404,7 @@ class ApideckCompanies(BaseSDK):
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -1123,6 +1431,7 @@ class ApideckCompanies(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.HrisCompaniesDeleteGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,

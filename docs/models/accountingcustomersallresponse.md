@@ -1,17 +1,8 @@
 # AccountingCustomersAllResponse
 
 
-## Supported Types
+## Fields
 
-### `models.GetCustomersResponse`
-
-```python
-value: models.GetCustomersResponse = /* values here */
-```
-
-### `models.UnexpectedErrorResponse`
-
-```python
-value: models.UnexpectedErrorResponse = /* values here */
-```
-
+| Field                                                                                            | Type                                                                                             | Required                                                                                         | Description                                                                                      |
+| ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------ |
+| `result`                                                                                         | [models.AccountingCustomersAllResponseResult](../models/accountingcustomersallresponseresult.md) | :heavy_check_mark:                                                                               | N/A                                                                                              |

@@ -3,31 +3,45 @@
 from .basesdk import BaseSDK
 from apideck_unify import models, utils
 from apideck_unify._hooks import HookContext
-from apideck_unify.types import BaseModel, OptionalNullable, UNSET
+from apideck_unify.types import OptionalNullable, UNSET
 from apideck_unify.utils import get_security_from_env
-from typing import Any, Optional, Union, cast
+from jsonpath import JSONPath
+from typing import Any, Dict, List, Mapping, Optional, Union
 
 
 class TimeOffRequests(BaseSDK):
     def list(
         self,
         *,
-        request: Union[
-            models.HrisTimeOffRequestsAllRequest,
-            models.HrisTimeOffRequestsAllRequestTypedDict,
-        ] = models.HrisTimeOffRequestsAllRequest(),
+        raw: Optional[bool] = False,
+        service_id: Optional[str] = None,
+        cursor: OptionalNullable[str] = UNSET,
+        limit: Optional[int] = 20,
+        filter_: Optional[
+            Union[models.TimeOffRequestsFilter, models.TimeOffRequestsFilterTypedDict]
+        ] = None,
+        pass_through: Optional[Dict[str, Any]] = None,
+        fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
-    ) -> models.HrisTimeOffRequestsAllResponse:
+        http_headers: Optional[Mapping[str, str]] = None,
+    ) -> Optional[models.HrisTimeOffRequestsAllResponse]:
         r"""List Time Off Requests
 
         List Time Off Requests
 
-        :param request: The request object to send.
+        :param raw: Include raw response. Mostly used for debugging purposes
+        :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
+        :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
+        :param filter_: Apply filters
+        :param pass_through: Optional unmapped key/values that will be passed through to downstream as query parameters. Ie: ?pass_through[search]=leads becomes ?search=leads
+        :param fields: The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -37,9 +51,17 @@ class TimeOffRequests(BaseSDK):
         if server_url is not None:
             base_url = server_url
 
-        if not isinstance(request, BaseModel):
-            request = utils.unmarshal(request, models.HrisTimeOffRequestsAllRequest)
-        request = cast(models.HrisTimeOffRequestsAllRequest, request)
+        request = models.HrisTimeOffRequestsAllRequest(
+            raw=raw,
+            service_id=service_id,
+            cursor=cursor,
+            limit=limit,
+            filter_=utils.get_pydantic_model(
+                filter_, Optional[models.TimeOffRequestsFilter]
+            ),
+            pass_through=pass_through,
+            fields=fields,
+        )
 
         req = self.build_request(
             method="GET",
@@ -52,6 +74,7 @@ class TimeOffRequests(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.HrisTimeOffRequestsAllGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -85,10 +108,32 @@ class TimeOffRequests(BaseSDK):
             retry_config=retry_config,
         )
 
+        def next_func() -> Optional[models.HrisTimeOffRequestsAllResponse]:
+            body = utils.unmarshal_json(http_res.text, Dict[Any, Any])
+            next_cursor = JSONPath("$.meta.cursors.next").parse(body)
+
+            if len(next_cursor) == 0:
+                return None
+            next_cursor = next_cursor[0]
+
+            return self.list(
+                raw=raw,
+                service_id=service_id,
+                cursor=next_cursor,
+                limit=limit,
+                filter_=filter_,
+                pass_through=pass_through,
+                fields=fields,
+                retries=retries,
+            )
+
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return utils.unmarshal_json(
-                http_res.text, models.GetTimeOffRequestsResponse
+            return models.HrisTimeOffRequestsAllResponse(
+                result=utils.unmarshal_json(
+                    http_res.text, models.GetTimeOffRequestsResponse
+                ),
+                next=next_func,
             )
         if utils.match_response(http_res, "400", "application/json"):
             data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
@@ -113,7 +158,12 @@ class TimeOffRequests(BaseSDK):
                 "API error occurred", http_res.status_code, http_res_text, http_res
             )
         if utils.match_response(http_res, "default", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UnexpectedErrorResponse)
+            return models.HrisTimeOffRequestsAllResponse(
+                result=utils.unmarshal_json(
+                    http_res.text, models.UnexpectedErrorResponse
+                ),
+                next=next_func,
+            )
 
         content_type = http_res.headers.get("Content-Type")
         http_res_text = utils.stream_to_text(http_res)
@@ -127,22 +177,35 @@ class TimeOffRequests(BaseSDK):
     async def list_async(
         self,
         *,
-        request: Union[
-            models.HrisTimeOffRequestsAllRequest,
-            models.HrisTimeOffRequestsAllRequestTypedDict,
-        ] = models.HrisTimeOffRequestsAllRequest(),
+        raw: Optional[bool] = False,
+        service_id: Optional[str] = None,
+        cursor: OptionalNullable[str] = UNSET,
+        limit: Optional[int] = 20,
+        filter_: Optional[
+            Union[models.TimeOffRequestsFilter, models.TimeOffRequestsFilterTypedDict]
+        ] = None,
+        pass_through: Optional[Dict[str, Any]] = None,
+        fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
-    ) -> models.HrisTimeOffRequestsAllResponse:
+        http_headers: Optional[Mapping[str, str]] = None,
+    ) -> Optional[models.HrisTimeOffRequestsAllResponse]:
         r"""List Time Off Requests
 
         List Time Off Requests
 
-        :param request: The request object to send.
+        :param raw: Include raw response. Mostly used for debugging purposes
+        :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
+        :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
+        :param filter_: Apply filters
+        :param pass_through: Optional unmapped key/values that will be passed through to downstream as query parameters. Ie: ?pass_through[search]=leads becomes ?search=leads
+        :param fields: The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -152,9 +215,17 @@ class TimeOffRequests(BaseSDK):
         if server_url is not None:
             base_url = server_url
 
-        if not isinstance(request, BaseModel):
-            request = utils.unmarshal(request, models.HrisTimeOffRequestsAllRequest)
-        request = cast(models.HrisTimeOffRequestsAllRequest, request)
+        request = models.HrisTimeOffRequestsAllRequest(
+            raw=raw,
+            service_id=service_id,
+            cursor=cursor,
+            limit=limit,
+            filter_=utils.get_pydantic_model(
+                filter_, Optional[models.TimeOffRequestsFilter]
+            ),
+            pass_through=pass_through,
+            fields=fields,
+        )
 
         req = self.build_request_async(
             method="GET",
@@ -167,6 +238,7 @@ class TimeOffRequests(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.HrisTimeOffRequestsAllGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -200,10 +272,32 @@ class TimeOffRequests(BaseSDK):
             retry_config=retry_config,
         )
 
+        def next_func() -> Optional[models.HrisTimeOffRequestsAllResponse]:
+            body = utils.unmarshal_json(http_res.text, Dict[Any, Any])
+            next_cursor = JSONPath("$.meta.cursors.next").parse(body)
+
+            if len(next_cursor) == 0:
+                return None
+            next_cursor = next_cursor[0]
+
+            return self.list(
+                raw=raw,
+                service_id=service_id,
+                cursor=next_cursor,
+                limit=limit,
+                filter_=filter_,
+                pass_through=pass_through,
+                fields=fields,
+                retries=retries,
+            )
+
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return utils.unmarshal_json(
-                http_res.text, models.GetTimeOffRequestsResponse
+            return models.HrisTimeOffRequestsAllResponse(
+                result=utils.unmarshal_json(
+                    http_res.text, models.GetTimeOffRequestsResponse
+                ),
+                next=next_func,
             )
         if utils.match_response(http_res, "400", "application/json"):
             data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
@@ -228,7 +322,12 @@ class TimeOffRequests(BaseSDK):
                 "API error occurred", http_res.status_code, http_res_text, http_res
             )
         if utils.match_response(http_res, "default", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UnexpectedErrorResponse)
+            return models.HrisTimeOffRequestsAllResponse(
+                result=utils.unmarshal_json(
+                    http_res.text, models.UnexpectedErrorResponse
+                ),
+                next=next_func,
+            )
 
         content_type = http_res.headers.get("Content-Type")
         http_res_text = await utils.stream_to_text_async(http_res)
@@ -242,25 +341,55 @@ class TimeOffRequests(BaseSDK):
     def create(
         self,
         *,
-        time_off_request: Union[
-            models.TimeOffRequestInput, models.TimeOffRequestInputTypedDict
-        ],
         raw: Optional[bool] = False,
         service_id: Optional[str] = None,
+        employee_id: OptionalNullable[str] = UNSET,
+        policy_id: OptionalNullable[str] = UNSET,
+        status: OptionalNullable[models.TimeOffRequestStatusStatus] = UNSET,
+        description: OptionalNullable[str] = UNSET,
+        start_date: OptionalNullable[str] = UNSET,
+        end_date: OptionalNullable[str] = UNSET,
+        request_date: OptionalNullable[str] = UNSET,
+        request_type: OptionalNullable[models.RequestType] = UNSET,
+        approval_date: OptionalNullable[str] = UNSET,
+        units: OptionalNullable[models.Units] = UNSET,
+        amount: OptionalNullable[float] = UNSET,
+        day_part: OptionalNullable[str] = UNSET,
+        notes: Optional[Union[models.NotesModel, models.NotesModelTypedDict]] = None,
+        pass_through: Optional[
+            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+        ] = None,
+        policy_type: Optional[str] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.HrisTimeOffRequestsAddResponse:
         r"""Create Time Off Request
 
         Create Time Off Request
 
-        :param time_off_request:
         :param raw: Include raw response. Mostly used for debugging purposes
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param employee_id: ID of the employee
+        :param policy_id: ID of the policy
+        :param status: The status of the time off request.
+        :param description: Description of the time off request.
+        :param start_date: The start date of the time off request.
+        :param end_date: The end date of the time off request.
+        :param request_date: The date the request was made.
+        :param request_type: The type of request
+        :param approval_date: The date the request was approved
+        :param units: The unit of time off requested. Possible values include: `hours`, `days`, or `other`.
+        :param amount: The amount of time off requested.
+        :param day_part: The day part of the time off request.
+        :param notes:
+        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
+        :param policy_type: The policy type of the time off request
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -273,8 +402,24 @@ class TimeOffRequests(BaseSDK):
         request = models.HrisTimeOffRequestsAddRequest(
             raw=raw,
             service_id=service_id,
-            time_off_request=utils.get_pydantic_model(
-                time_off_request, models.TimeOffRequestInput
+            time_off_request=models.TimeOffRequestInput(
+                employee_id=employee_id,
+                policy_id=policy_id,
+                status=status,
+                description=description,
+                start_date=start_date,
+                end_date=end_date,
+                request_date=request_date,
+                request_type=request_type,
+                approval_date=approval_date,
+                units=units,
+                amount=amount,
+                day_part=day_part,
+                notes=utils.get_pydantic_model(notes, Optional[models.NotesModel]),
+                pass_through=utils.get_pydantic_model(
+                    pass_through, Optional[List[models.PassThroughBody]]
+                ),
+                policy_type=policy_type,
             ),
         )
 
@@ -289,6 +434,7 @@ class TimeOffRequests(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.HrisTimeOffRequestsAddGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -371,25 +517,55 @@ class TimeOffRequests(BaseSDK):
     async def create_async(
         self,
         *,
-        time_off_request: Union[
-            models.TimeOffRequestInput, models.TimeOffRequestInputTypedDict
-        ],
         raw: Optional[bool] = False,
         service_id: Optional[str] = None,
+        employee_id: OptionalNullable[str] = UNSET,
+        policy_id: OptionalNullable[str] = UNSET,
+        status: OptionalNullable[models.TimeOffRequestStatusStatus] = UNSET,
+        description: OptionalNullable[str] = UNSET,
+        start_date: OptionalNullable[str] = UNSET,
+        end_date: OptionalNullable[str] = UNSET,
+        request_date: OptionalNullable[str] = UNSET,
+        request_type: OptionalNullable[models.RequestType] = UNSET,
+        approval_date: OptionalNullable[str] = UNSET,
+        units: OptionalNullable[models.Units] = UNSET,
+        amount: OptionalNullable[float] = UNSET,
+        day_part: OptionalNullable[str] = UNSET,
+        notes: Optional[Union[models.NotesModel, models.NotesModelTypedDict]] = None,
+        pass_through: Optional[
+            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+        ] = None,
+        policy_type: Optional[str] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.HrisTimeOffRequestsAddResponse:
         r"""Create Time Off Request
 
         Create Time Off Request
 
-        :param time_off_request:
         :param raw: Include raw response. Mostly used for debugging purposes
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param employee_id: ID of the employee
+        :param policy_id: ID of the policy
+        :param status: The status of the time off request.
+        :param description: Description of the time off request.
+        :param start_date: The start date of the time off request.
+        :param end_date: The end date of the time off request.
+        :param request_date: The date the request was made.
+        :param request_type: The type of request
+        :param approval_date: The date the request was approved
+        :param units: The unit of time off requested. Possible values include: `hours`, `days`, or `other`.
+        :param amount: The amount of time off requested.
+        :param day_part: The day part of the time off request.
+        :param notes:
+        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
+        :param policy_type: The policy type of the time off request
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -402,8 +578,24 @@ class TimeOffRequests(BaseSDK):
         request = models.HrisTimeOffRequestsAddRequest(
             raw=raw,
             service_id=service_id,
-            time_off_request=utils.get_pydantic_model(
-                time_off_request, models.TimeOffRequestInput
+            time_off_request=models.TimeOffRequestInput(
+                employee_id=employee_id,
+                policy_id=policy_id,
+                status=status,
+                description=description,
+                start_date=start_date,
+                end_date=end_date,
+                request_date=request_date,
+                request_type=request_type,
+                approval_date=approval_date,
+                units=units,
+                amount=amount,
+                day_part=day_part,
+                notes=utils.get_pydantic_model(notes, Optional[models.NotesModel]),
+                pass_through=utils.get_pydantic_model(
+                    pass_through, Optional[List[models.PassThroughBody]]
+                ),
+                policy_type=policy_type,
             ),
         )
 
@@ -418,6 +610,7 @@ class TimeOffRequests(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.HrisTimeOffRequestsAddGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -500,22 +693,29 @@ class TimeOffRequests(BaseSDK):
     def get(
         self,
         *,
-        request: Union[
-            models.HrisTimeOffRequestsOneRequest,
-            models.HrisTimeOffRequestsOneRequestTypedDict,
-        ],
+        id: str,
+        employee_id: str,
+        service_id: Optional[str] = None,
+        raw: Optional[bool] = False,
+        fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.HrisTimeOffRequestsOneResponse:
         r"""Get Time Off Request
 
         Get Time Off Request
 
-        :param request: The request object to send.
+        :param id: ID of the record you are acting upon.
+        :param employee_id: ID of the employee you are acting upon.
+        :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param raw: Include raw response. Mostly used for debugging purposes
+        :param fields: The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -525,9 +725,13 @@ class TimeOffRequests(BaseSDK):
         if server_url is not None:
             base_url = server_url
 
-        if not isinstance(request, BaseModel):
-            request = utils.unmarshal(request, models.HrisTimeOffRequestsOneRequest)
-        request = cast(models.HrisTimeOffRequestsOneRequest, request)
+        request = models.HrisTimeOffRequestsOneRequest(
+            id=id,
+            service_id=service_id,
+            raw=raw,
+            fields=fields,
+            employee_id=employee_id,
+        )
 
         req = self.build_request(
             method="GET",
@@ -540,6 +744,7 @@ class TimeOffRequests(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.HrisTimeOffRequestsOneGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -613,22 +818,29 @@ class TimeOffRequests(BaseSDK):
     async def get_async(
         self,
         *,
-        request: Union[
-            models.HrisTimeOffRequestsOneRequest,
-            models.HrisTimeOffRequestsOneRequestTypedDict,
-        ],
+        id: str,
+        employee_id: str,
+        service_id: Optional[str] = None,
+        raw: Optional[bool] = False,
+        fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.HrisTimeOffRequestsOneResponse:
         r"""Get Time Off Request
 
         Get Time Off Request
 
-        :param request: The request object to send.
+        :param id: ID of the record you are acting upon.
+        :param employee_id: ID of the employee you are acting upon.
+        :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param raw: Include raw response. Mostly used for debugging purposes
+        :param fields: The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -638,9 +850,13 @@ class TimeOffRequests(BaseSDK):
         if server_url is not None:
             base_url = server_url
 
-        if not isinstance(request, BaseModel):
-            request = utils.unmarshal(request, models.HrisTimeOffRequestsOneRequest)
-        request = cast(models.HrisTimeOffRequestsOneRequest, request)
+        request = models.HrisTimeOffRequestsOneRequest(
+            id=id,
+            service_id=service_id,
+            raw=raw,
+            fields=fields,
+            employee_id=employee_id,
+        )
 
         req = self.build_request_async(
             method="GET",
@@ -653,6 +869,7 @@ class TimeOffRequests(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.HrisTimeOffRequestsOneGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -726,22 +943,59 @@ class TimeOffRequests(BaseSDK):
     def update(
         self,
         *,
-        request: Union[
-            models.HrisTimeOffRequestsUpdateRequest,
-            models.HrisTimeOffRequestsUpdateRequestTypedDict,
-        ],
+        id: str,
+        employee_id_param: str,
+        service_id: Optional[str] = None,
+        raw: Optional[bool] = False,
+        employee_id: OptionalNullable[str] = UNSET,
+        policy_id: OptionalNullable[str] = UNSET,
+        status: OptionalNullable[models.TimeOffRequestStatusStatus] = UNSET,
+        description: OptionalNullable[str] = UNSET,
+        start_date: OptionalNullable[str] = UNSET,
+        end_date: OptionalNullable[str] = UNSET,
+        request_date: OptionalNullable[str] = UNSET,
+        request_type: OptionalNullable[models.RequestType] = UNSET,
+        approval_date: OptionalNullable[str] = UNSET,
+        units: OptionalNullable[models.Units] = UNSET,
+        amount: OptionalNullable[float] = UNSET,
+        day_part: OptionalNullable[str] = UNSET,
+        notes: Optional[Union[models.NotesModel, models.NotesModelTypedDict]] = None,
+        pass_through: Optional[
+            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+        ] = None,
+        policy_type: Optional[str] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.HrisTimeOffRequestsUpdateResponse:
         r"""Update Time Off Request
 
         Update Time Off Request
 
-        :param request: The request object to send.
+        :param id: ID of the record you are acting upon.
+        :param employee_id_param: ID of the employee you are acting upon.
+        :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param raw: Include raw response. Mostly used for debugging purposes
+        :param employee_id: ID of the employee
+        :param policy_id: ID of the policy
+        :param status: The status of the time off request.
+        :param description: Description of the time off request.
+        :param start_date: The start date of the time off request.
+        :param end_date: The end date of the time off request.
+        :param request_date: The date the request was made.
+        :param request_type: The type of request
+        :param approval_date: The date the request was approved
+        :param units: The unit of time off requested. Possible values include: `hours`, `days`, or `other`.
+        :param amount: The amount of time off requested.
+        :param day_part: The day part of the time off request.
+        :param notes:
+        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
+        :param policy_type: The policy type of the time off request
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -751,9 +1005,31 @@ class TimeOffRequests(BaseSDK):
         if server_url is not None:
             base_url = server_url
 
-        if not isinstance(request, BaseModel):
-            request = utils.unmarshal(request, models.HrisTimeOffRequestsUpdateRequest)
-        request = cast(models.HrisTimeOffRequestsUpdateRequest, request)
+        request = models.HrisTimeOffRequestsUpdateRequest(
+            id=id,
+            service_id=service_id,
+            raw=raw,
+            employee_id_param=employee_id_param,
+            time_off_request=models.TimeOffRequestInput(
+                employee_id=employee_id,
+                policy_id=policy_id,
+                status=status,
+                description=description,
+                start_date=start_date,
+                end_date=end_date,
+                request_date=request_date,
+                request_type=request_type,
+                approval_date=approval_date,
+                units=units,
+                amount=amount,
+                day_part=day_part,
+                notes=utils.get_pydantic_model(notes, Optional[models.NotesModel]),
+                pass_through=utils.get_pydantic_model(
+                    pass_through, Optional[List[models.PassThroughBody]]
+                ),
+                policy_type=policy_type,
+            ),
+        )
 
         req = self.build_request(
             method="PATCH",
@@ -766,6 +1042,7 @@ class TimeOffRequests(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.HrisTimeOffRequestsUpdateGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -848,22 +1125,59 @@ class TimeOffRequests(BaseSDK):
     async def update_async(
         self,
         *,
-        request: Union[
-            models.HrisTimeOffRequestsUpdateRequest,
-            models.HrisTimeOffRequestsUpdateRequestTypedDict,
-        ],
+        id: str,
+        employee_id_param: str,
+        service_id: Optional[str] = None,
+        raw: Optional[bool] = False,
+        employee_id: OptionalNullable[str] = UNSET,
+        policy_id: OptionalNullable[str] = UNSET,
+        status: OptionalNullable[models.TimeOffRequestStatusStatus] = UNSET,
+        description: OptionalNullable[str] = UNSET,
+        start_date: OptionalNullable[str] = UNSET,
+        end_date: OptionalNullable[str] = UNSET,
+        request_date: OptionalNullable[str] = UNSET,
+        request_type: OptionalNullable[models.RequestType] = UNSET,
+        approval_date: OptionalNullable[str] = UNSET,
+        units: OptionalNullable[models.Units] = UNSET,
+        amount: OptionalNullable[float] = UNSET,
+        day_part: OptionalNullable[str] = UNSET,
+        notes: Optional[Union[models.NotesModel, models.NotesModelTypedDict]] = None,
+        pass_through: Optional[
+            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+        ] = None,
+        policy_type: Optional[str] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.HrisTimeOffRequestsUpdateResponse:
         r"""Update Time Off Request
 
         Update Time Off Request
 
-        :param request: The request object to send.
+        :param id: ID of the record you are acting upon.
+        :param employee_id_param: ID of the employee you are acting upon.
+        :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param raw: Include raw response. Mostly used for debugging purposes
+        :param employee_id: ID of the employee
+        :param policy_id: ID of the policy
+        :param status: The status of the time off request.
+        :param description: Description of the time off request.
+        :param start_date: The start date of the time off request.
+        :param end_date: The end date of the time off request.
+        :param request_date: The date the request was made.
+        :param request_type: The type of request
+        :param approval_date: The date the request was approved
+        :param units: The unit of time off requested. Possible values include: `hours`, `days`, or `other`.
+        :param amount: The amount of time off requested.
+        :param day_part: The day part of the time off request.
+        :param notes:
+        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
+        :param policy_type: The policy type of the time off request
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -873,9 +1187,31 @@ class TimeOffRequests(BaseSDK):
         if server_url is not None:
             base_url = server_url
 
-        if not isinstance(request, BaseModel):
-            request = utils.unmarshal(request, models.HrisTimeOffRequestsUpdateRequest)
-        request = cast(models.HrisTimeOffRequestsUpdateRequest, request)
+        request = models.HrisTimeOffRequestsUpdateRequest(
+            id=id,
+            service_id=service_id,
+            raw=raw,
+            employee_id_param=employee_id_param,
+            time_off_request=models.TimeOffRequestInput(
+                employee_id=employee_id,
+                policy_id=policy_id,
+                status=status,
+                description=description,
+                start_date=start_date,
+                end_date=end_date,
+                request_date=request_date,
+                request_type=request_type,
+                approval_date=approval_date,
+                units=units,
+                amount=amount,
+                day_part=day_part,
+                notes=utils.get_pydantic_model(notes, Optional[models.NotesModel]),
+                pass_through=utils.get_pydantic_model(
+                    pass_through, Optional[List[models.PassThroughBody]]
+                ),
+                policy_type=policy_type,
+            ),
+        )
 
         req = self.build_request_async(
             method="PATCH",
@@ -888,6 +1224,7 @@ class TimeOffRequests(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.HrisTimeOffRequestsUpdateGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -977,6 +1314,7 @@ class TimeOffRequests(BaseSDK):
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.HrisTimeOffRequestsDeleteResponse:
         r"""Delete Time Off Request
 
@@ -989,6 +1327,7 @@ class TimeOffRequests(BaseSDK):
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -1016,6 +1355,7 @@ class TimeOffRequests(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.HrisTimeOffRequestsDeleteGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -1098,6 +1438,7 @@ class TimeOffRequests(BaseSDK):
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.HrisTimeOffRequestsDeleteResponse:
         r"""Delete Time Off Request
 
@@ -1110,6 +1451,7 @@ class TimeOffRequests(BaseSDK):
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -1137,6 +1479,7 @@ class TimeOffRequests(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.HrisTimeOffRequestsDeleteGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,

@@ -3,30 +3,41 @@
 from .basesdk import BaseSDK
 from apideck_unify import models, utils
 from apideck_unify._hooks import HookContext
-from apideck_unify.types import BaseModel, OptionalNullable, UNSET
+from apideck_unify.types import OptionalNullable, UNSET
 from apideck_unify.utils import get_security_from_env
-from typing import Any, Optional, Union, cast
+from jsonpath import JSONPath
+from typing import Any, Dict, List, Mapping, Optional, Union
 
 
 class Users(BaseSDK):
     def list(
         self,
         *,
-        request: Union[
-            models.CrmUsersAllRequest, models.CrmUsersAllRequestTypedDict
-        ] = models.CrmUsersAllRequest(),
+        raw: Optional[bool] = False,
+        service_id: Optional[str] = None,
+        cursor: OptionalNullable[str] = UNSET,
+        limit: Optional[int] = 20,
+        pass_through: Optional[Dict[str, Any]] = None,
+        fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
-    ) -> models.CrmUsersAllResponse:
+        http_headers: Optional[Mapping[str, str]] = None,
+    ) -> Optional[models.CrmUsersAllResponse]:
         r"""List users
 
         List users
 
-        :param request: The request object to send.
+        :param raw: Include raw response. Mostly used for debugging purposes
+        :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
+        :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
+        :param pass_through: Optional unmapped key/values that will be passed through to downstream as query parameters. Ie: ?pass_through[search]=leads becomes ?search=leads
+        :param fields: The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -36,9 +47,14 @@ class Users(BaseSDK):
         if server_url is not None:
             base_url = server_url
 
-        if not isinstance(request, BaseModel):
-            request = utils.unmarshal(request, models.CrmUsersAllRequest)
-        request = cast(models.CrmUsersAllRequest, request)
+        request = models.CrmUsersAllRequest(
+            raw=raw,
+            service_id=service_id,
+            cursor=cursor,
+            limit=limit,
+            pass_through=pass_through,
+            fields=fields,
+        )
 
         req = self.build_request(
             method="GET",
@@ -51,6 +67,7 @@ class Users(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.CrmUsersAllGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -84,9 +101,30 @@ class Users(BaseSDK):
             retry_config=retry_config,
         )
 
+        def next_func() -> Optional[models.CrmUsersAllResponse]:
+            body = utils.unmarshal_json(http_res.text, Dict[Any, Any])
+            next_cursor = JSONPath("$.meta.cursors.next").parse(body)
+
+            if len(next_cursor) == 0:
+                return None
+            next_cursor = next_cursor[0]
+
+            return self.list(
+                raw=raw,
+                service_id=service_id,
+                cursor=next_cursor,
+                limit=limit,
+                pass_through=pass_through,
+                fields=fields,
+                retries=retries,
+            )
+
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.GetUsersResponse)
+            return models.CrmUsersAllResponse(
+                result=utils.unmarshal_json(http_res.text, models.GetUsersResponse),
+                next=next_func,
+            )
         if utils.match_response(http_res, "400", "application/json"):
             data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
             raise models.BadRequestResponse(data=data)
@@ -110,7 +148,12 @@ class Users(BaseSDK):
                 "API error occurred", http_res.status_code, http_res_text, http_res
             )
         if utils.match_response(http_res, "default", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UnexpectedErrorResponse)
+            return models.CrmUsersAllResponse(
+                result=utils.unmarshal_json(
+                    http_res.text, models.UnexpectedErrorResponse
+                ),
+                next=next_func,
+            )
 
         content_type = http_res.headers.get("Content-Type")
         http_res_text = utils.stream_to_text(http_res)
@@ -124,21 +167,31 @@ class Users(BaseSDK):
     async def list_async(
         self,
         *,
-        request: Union[
-            models.CrmUsersAllRequest, models.CrmUsersAllRequestTypedDict
-        ] = models.CrmUsersAllRequest(),
+        raw: Optional[bool] = False,
+        service_id: Optional[str] = None,
+        cursor: OptionalNullable[str] = UNSET,
+        limit: Optional[int] = 20,
+        pass_through: Optional[Dict[str, Any]] = None,
+        fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
-    ) -> models.CrmUsersAllResponse:
+        http_headers: Optional[Mapping[str, str]] = None,
+    ) -> Optional[models.CrmUsersAllResponse]:
         r"""List users
 
         List users
 
-        :param request: The request object to send.
+        :param raw: Include raw response. Mostly used for debugging purposes
+        :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
+        :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
+        :param pass_through: Optional unmapped key/values that will be passed through to downstream as query parameters. Ie: ?pass_through[search]=leads becomes ?search=leads
+        :param fields: The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -148,9 +201,14 @@ class Users(BaseSDK):
         if server_url is not None:
             base_url = server_url
 
-        if not isinstance(request, BaseModel):
-            request = utils.unmarshal(request, models.CrmUsersAllRequest)
-        request = cast(models.CrmUsersAllRequest, request)
+        request = models.CrmUsersAllRequest(
+            raw=raw,
+            service_id=service_id,
+            cursor=cursor,
+            limit=limit,
+            pass_through=pass_through,
+            fields=fields,
+        )
 
         req = self.build_request_async(
             method="GET",
@@ -163,6 +221,7 @@ class Users(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.CrmUsersAllGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -196,9 +255,30 @@ class Users(BaseSDK):
             retry_config=retry_config,
         )
 
+        def next_func() -> Optional[models.CrmUsersAllResponse]:
+            body = utils.unmarshal_json(http_res.text, Dict[Any, Any])
+            next_cursor = JSONPath("$.meta.cursors.next").parse(body)
+
+            if len(next_cursor) == 0:
+                return None
+            next_cursor = next_cursor[0]
+
+            return self.list(
+                raw=raw,
+                service_id=service_id,
+                cursor=next_cursor,
+                limit=limit,
+                pass_through=pass_through,
+                fields=fields,
+                retries=retries,
+            )
+
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.GetUsersResponse)
+            return models.CrmUsersAllResponse(
+                result=utils.unmarshal_json(http_res.text, models.GetUsersResponse),
+                next=next_func,
+            )
         if utils.match_response(http_res, "400", "application/json"):
             data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
             raise models.BadRequestResponse(data=data)
@@ -222,7 +302,12 @@ class Users(BaseSDK):
                 "API error occurred", http_res.status_code, http_res_text, http_res
             )
         if utils.match_response(http_res, "default", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UnexpectedErrorResponse)
+            return models.CrmUsersAllResponse(
+                result=utils.unmarshal_json(
+                    http_res.text, models.UnexpectedErrorResponse
+                ),
+                next=next_func,
+            )
 
         content_type = http_res.headers.get("Content-Type")
         http_res_text = await utils.stream_to_text_async(http_res)
@@ -236,23 +321,65 @@ class Users(BaseSDK):
     def create(
         self,
         *,
-        user: Union[models.UserInput, models.UserInputTypedDict],
+        emails: Union[List[models.Email], List[models.EmailTypedDict]],
         raw: Optional[bool] = False,
         service_id: Optional[str] = None,
+        parent_id: OptionalNullable[str] = UNSET,
+        username: OptionalNullable[str] = UNSET,
+        first_name: OptionalNullable[str] = UNSET,
+        last_name: OptionalNullable[str] = UNSET,
+        title: OptionalNullable[str] = UNSET,
+        division: OptionalNullable[str] = UNSET,
+        department: OptionalNullable[str] = UNSET,
+        company_name: OptionalNullable[str] = UNSET,
+        employee_number: OptionalNullable[str] = UNSET,
+        description: OptionalNullable[str] = UNSET,
+        image: OptionalNullable[str] = UNSET,
+        language: OptionalNullable[str] = UNSET,
+        status: OptionalNullable[str] = UNSET,
+        password: OptionalNullable[str] = UNSET,
+        addresses: Optional[
+            Union[List[models.Address], List[models.AddressTypedDict]]
+        ] = None,
+        phone_numbers: Optional[
+            Union[List[models.PhoneNumber], List[models.PhoneNumberTypedDict]]
+        ] = None,
+        pass_through: Optional[
+            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.CrmUsersAddResponse:
         r"""Create user
 
         Create user
 
-        :param user:
+        :param emails:
         :param raw: Include raw response. Mostly used for debugging purposes
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param parent_id: The parent user id
+        :param username: The username of the user
+        :param first_name: The first name of the person.
+        :param last_name: The last name of the person.
+        :param title: The job title of the person.
+        :param division: The division the person is currently in. Usually a collection of departments or teams or regions.
+        :param department: The department the person is currently in. [Deprecated](https://developers.apideck.com/changelog) in favor of the dedicated department_id and department_name field.
+        :param company_name: The name of the company.
+        :param employee_number: An Employee Number, Employee ID or Employee Code, is a unique number that has been assigned to each individual staff member within a company.
+        :param description: A description of the object.
+        :param image: The URL of the user's avatar
+        :param language: language code according to ISO 639-1. For the United States - EN
+        :param status: The status of the user
+        :param password: The password of the user
+        :param addresses:
+        :param phone_numbers:
+        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -265,7 +392,32 @@ class Users(BaseSDK):
         request = models.CrmUsersAddRequest(
             raw=raw,
             service_id=service_id,
-            user=utils.get_pydantic_model(user, models.UserInput),
+            user=models.UserInput(
+                parent_id=parent_id,
+                username=username,
+                first_name=first_name,
+                last_name=last_name,
+                title=title,
+                division=division,
+                department=department,
+                company_name=company_name,
+                employee_number=employee_number,
+                description=description,
+                image=image,
+                language=language,
+                status=status,
+                password=password,
+                addresses=utils.get_pydantic_model(
+                    addresses, Optional[List[models.Address]]
+                ),
+                phone_numbers=utils.get_pydantic_model(
+                    phone_numbers, Optional[List[models.PhoneNumber]]
+                ),
+                emails=utils.get_pydantic_model(emails, List[models.Email]),
+                pass_through=utils.get_pydantic_model(
+                    pass_through, Optional[List[models.PassThroughBody]]
+                ),
+            ),
         )
 
         req = self.build_request(
@@ -279,6 +431,7 @@ class Users(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.CrmUsersAddGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -355,23 +508,65 @@ class Users(BaseSDK):
     async def create_async(
         self,
         *,
-        user: Union[models.UserInput, models.UserInputTypedDict],
+        emails: Union[List[models.Email], List[models.EmailTypedDict]],
         raw: Optional[bool] = False,
         service_id: Optional[str] = None,
+        parent_id: OptionalNullable[str] = UNSET,
+        username: OptionalNullable[str] = UNSET,
+        first_name: OptionalNullable[str] = UNSET,
+        last_name: OptionalNullable[str] = UNSET,
+        title: OptionalNullable[str] = UNSET,
+        division: OptionalNullable[str] = UNSET,
+        department: OptionalNullable[str] = UNSET,
+        company_name: OptionalNullable[str] = UNSET,
+        employee_number: OptionalNullable[str] = UNSET,
+        description: OptionalNullable[str] = UNSET,
+        image: OptionalNullable[str] = UNSET,
+        language: OptionalNullable[str] = UNSET,
+        status: OptionalNullable[str] = UNSET,
+        password: OptionalNullable[str] = UNSET,
+        addresses: Optional[
+            Union[List[models.Address], List[models.AddressTypedDict]]
+        ] = None,
+        phone_numbers: Optional[
+            Union[List[models.PhoneNumber], List[models.PhoneNumberTypedDict]]
+        ] = None,
+        pass_through: Optional[
+            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.CrmUsersAddResponse:
         r"""Create user
 
         Create user
 
-        :param user:
+        :param emails:
         :param raw: Include raw response. Mostly used for debugging purposes
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param parent_id: The parent user id
+        :param username: The username of the user
+        :param first_name: The first name of the person.
+        :param last_name: The last name of the person.
+        :param title: The job title of the person.
+        :param division: The division the person is currently in. Usually a collection of departments or teams or regions.
+        :param department: The department the person is currently in. [Deprecated](https://developers.apideck.com/changelog) in favor of the dedicated department_id and department_name field.
+        :param company_name: The name of the company.
+        :param employee_number: An Employee Number, Employee ID or Employee Code, is a unique number that has been assigned to each individual staff member within a company.
+        :param description: A description of the object.
+        :param image: The URL of the user's avatar
+        :param language: language code according to ISO 639-1. For the United States - EN
+        :param status: The status of the user
+        :param password: The password of the user
+        :param addresses:
+        :param phone_numbers:
+        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -384,7 +579,32 @@ class Users(BaseSDK):
         request = models.CrmUsersAddRequest(
             raw=raw,
             service_id=service_id,
-            user=utils.get_pydantic_model(user, models.UserInput),
+            user=models.UserInput(
+                parent_id=parent_id,
+                username=username,
+                first_name=first_name,
+                last_name=last_name,
+                title=title,
+                division=division,
+                department=department,
+                company_name=company_name,
+                employee_number=employee_number,
+                description=description,
+                image=image,
+                language=language,
+                status=status,
+                password=password,
+                addresses=utils.get_pydantic_model(
+                    addresses, Optional[List[models.Address]]
+                ),
+                phone_numbers=utils.get_pydantic_model(
+                    phone_numbers, Optional[List[models.PhoneNumber]]
+                ),
+                emails=utils.get_pydantic_model(emails, List[models.Email]),
+                pass_through=utils.get_pydantic_model(
+                    pass_through, Optional[List[models.PassThroughBody]]
+                ),
+            ),
         )
 
         req = self.build_request_async(
@@ -398,6 +618,7 @@ class Users(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.CrmUsersAddGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -481,6 +702,7 @@ class Users(BaseSDK):
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.CrmUsersOneResponse:
         r"""Get user
 
@@ -493,6 +715,7 @@ class Users(BaseSDK):
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -520,6 +743,7 @@ class Users(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.CrmUsersOneGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -600,6 +824,7 @@ class Users(BaseSDK):
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.CrmUsersOneResponse:
         r"""Get user
 
@@ -612,6 +837,7 @@ class Users(BaseSDK):
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -639,6 +865,7 @@ class Users(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.CrmUsersOneGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -713,24 +940,66 @@ class Users(BaseSDK):
         self,
         *,
         id: str,
-        user: Union[models.UserInput, models.UserInputTypedDict],
+        emails: Union[List[models.Email], List[models.EmailTypedDict]],
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
+        parent_id: OptionalNullable[str] = UNSET,
+        username: OptionalNullable[str] = UNSET,
+        first_name: OptionalNullable[str] = UNSET,
+        last_name: OptionalNullable[str] = UNSET,
+        title: OptionalNullable[str] = UNSET,
+        division: OptionalNullable[str] = UNSET,
+        department: OptionalNullable[str] = UNSET,
+        company_name: OptionalNullable[str] = UNSET,
+        employee_number: OptionalNullable[str] = UNSET,
+        description: OptionalNullable[str] = UNSET,
+        image: OptionalNullable[str] = UNSET,
+        language: OptionalNullable[str] = UNSET,
+        status: OptionalNullable[str] = UNSET,
+        password: OptionalNullable[str] = UNSET,
+        addresses: Optional[
+            Union[List[models.Address], List[models.AddressTypedDict]]
+        ] = None,
+        phone_numbers: Optional[
+            Union[List[models.PhoneNumber], List[models.PhoneNumberTypedDict]]
+        ] = None,
+        pass_through: Optional[
+            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.CrmUsersUpdateResponse:
         r"""Update user
 
         Update user
 
         :param id: ID of the record you are acting upon.
-        :param user:
+        :param emails:
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param parent_id: The parent user id
+        :param username: The username of the user
+        :param first_name: The first name of the person.
+        :param last_name: The last name of the person.
+        :param title: The job title of the person.
+        :param division: The division the person is currently in. Usually a collection of departments or teams or regions.
+        :param department: The department the person is currently in. [Deprecated](https://developers.apideck.com/changelog) in favor of the dedicated department_id and department_name field.
+        :param company_name: The name of the company.
+        :param employee_number: An Employee Number, Employee ID or Employee Code, is a unique number that has been assigned to each individual staff member within a company.
+        :param description: A description of the object.
+        :param image: The URL of the user's avatar
+        :param language: language code according to ISO 639-1. For the United States - EN
+        :param status: The status of the user
+        :param password: The password of the user
+        :param addresses:
+        :param phone_numbers:
+        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -744,7 +1013,32 @@ class Users(BaseSDK):
             id=id,
             service_id=service_id,
             raw=raw,
-            user=utils.get_pydantic_model(user, models.UserInput),
+            user=models.UserInput(
+                parent_id=parent_id,
+                username=username,
+                first_name=first_name,
+                last_name=last_name,
+                title=title,
+                division=division,
+                department=department,
+                company_name=company_name,
+                employee_number=employee_number,
+                description=description,
+                image=image,
+                language=language,
+                status=status,
+                password=password,
+                addresses=utils.get_pydantic_model(
+                    addresses, Optional[List[models.Address]]
+                ),
+                phone_numbers=utils.get_pydantic_model(
+                    phone_numbers, Optional[List[models.PhoneNumber]]
+                ),
+                emails=utils.get_pydantic_model(emails, List[models.Email]),
+                pass_through=utils.get_pydantic_model(
+                    pass_through, Optional[List[models.PassThroughBody]]
+                ),
+            ),
         )
 
         req = self.build_request(
@@ -758,6 +1052,7 @@ class Users(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.CrmUsersUpdateGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -835,24 +1130,66 @@ class Users(BaseSDK):
         self,
         *,
         id: str,
-        user: Union[models.UserInput, models.UserInputTypedDict],
+        emails: Union[List[models.Email], List[models.EmailTypedDict]],
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
+        parent_id: OptionalNullable[str] = UNSET,
+        username: OptionalNullable[str] = UNSET,
+        first_name: OptionalNullable[str] = UNSET,
+        last_name: OptionalNullable[str] = UNSET,
+        title: OptionalNullable[str] = UNSET,
+        division: OptionalNullable[str] = UNSET,
+        department: OptionalNullable[str] = UNSET,
+        company_name: OptionalNullable[str] = UNSET,
+        employee_number: OptionalNullable[str] = UNSET,
+        description: OptionalNullable[str] = UNSET,
+        image: OptionalNullable[str] = UNSET,
+        language: OptionalNullable[str] = UNSET,
+        status: OptionalNullable[str] = UNSET,
+        password: OptionalNullable[str] = UNSET,
+        addresses: Optional[
+            Union[List[models.Address], List[models.AddressTypedDict]]
+        ] = None,
+        phone_numbers: Optional[
+            Union[List[models.PhoneNumber], List[models.PhoneNumberTypedDict]]
+        ] = None,
+        pass_through: Optional[
+            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.CrmUsersUpdateResponse:
         r"""Update user
 
         Update user
 
         :param id: ID of the record you are acting upon.
-        :param user:
+        :param emails:
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param parent_id: The parent user id
+        :param username: The username of the user
+        :param first_name: The first name of the person.
+        :param last_name: The last name of the person.
+        :param title: The job title of the person.
+        :param division: The division the person is currently in. Usually a collection of departments or teams or regions.
+        :param department: The department the person is currently in. [Deprecated](https://developers.apideck.com/changelog) in favor of the dedicated department_id and department_name field.
+        :param company_name: The name of the company.
+        :param employee_number: An Employee Number, Employee ID or Employee Code, is a unique number that has been assigned to each individual staff member within a company.
+        :param description: A description of the object.
+        :param image: The URL of the user's avatar
+        :param language: language code according to ISO 639-1. For the United States - EN
+        :param status: The status of the user
+        :param password: The password of the user
+        :param addresses:
+        :param phone_numbers:
+        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -866,7 +1203,32 @@ class Users(BaseSDK):
             id=id,
             service_id=service_id,
             raw=raw,
-            user=utils.get_pydantic_model(user, models.UserInput),
+            user=models.UserInput(
+                parent_id=parent_id,
+                username=username,
+                first_name=first_name,
+                last_name=last_name,
+                title=title,
+                division=division,
+                department=department,
+                company_name=company_name,
+                employee_number=employee_number,
+                description=description,
+                image=image,
+                language=language,
+                status=status,
+                password=password,
+                addresses=utils.get_pydantic_model(
+                    addresses, Optional[List[models.Address]]
+                ),
+                phone_numbers=utils.get_pydantic_model(
+                    phone_numbers, Optional[List[models.PhoneNumber]]
+                ),
+                emails=utils.get_pydantic_model(emails, List[models.Email]),
+                pass_through=utils.get_pydantic_model(
+                    pass_through, Optional[List[models.PassThroughBody]]
+                ),
+            ),
         )
 
         req = self.build_request_async(
@@ -880,6 +1242,7 @@ class Users(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.CrmUsersUpdateGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -962,6 +1325,7 @@ class Users(BaseSDK):
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.CrmUsersDeleteResponse:
         r"""Delete user
 
@@ -973,6 +1337,7 @@ class Users(BaseSDK):
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -999,6 +1364,7 @@ class Users(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.CrmUsersDeleteGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -1078,6 +1444,7 @@ class Users(BaseSDK):
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.CrmUsersDeleteResponse:
         r"""Delete user
 
@@ -1089,6 +1456,7 @@ class Users(BaseSDK):
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -1115,6 +1483,7 @@ class Users(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.CrmUsersDeleteGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,

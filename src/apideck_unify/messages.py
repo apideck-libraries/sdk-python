@@ -3,30 +3,40 @@
 from .basesdk import BaseSDK
 from apideck_unify import models, utils
 from apideck_unify._hooks import HookContext
-from apideck_unify.types import BaseModel, OptionalNullable, UNSET
+from apideck_unify.types import OptionalNullable, UNSET
 from apideck_unify.utils import get_security_from_env
-from typing import Any, Optional, Union, cast
+from datetime import datetime
+from jsonpath import JSONPath
+from typing import Any, Dict, List, Mapping, Optional, Union
 
 
 class Messages(BaseSDK):
     def list(
         self,
         *,
-        request: Union[
-            models.SmsMessagesAllRequest, models.SmsMessagesAllRequestTypedDict
-        ] = models.SmsMessagesAllRequest(),
+        raw: Optional[bool] = False,
+        service_id: Optional[str] = None,
+        cursor: OptionalNullable[str] = UNSET,
+        limit: Optional[int] = 20,
+        fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
-    ) -> models.SmsMessagesAllResponse:
+        http_headers: Optional[Mapping[str, str]] = None,
+    ) -> Optional[models.SmsMessagesAllResponse]:
         r"""List Messages
 
         List Messages
 
-        :param request: The request object to send.
+        :param raw: Include raw response. Mostly used for debugging purposes
+        :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
+        :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
+        :param fields: The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -36,9 +46,13 @@ class Messages(BaseSDK):
         if server_url is not None:
             base_url = server_url
 
-        if not isinstance(request, BaseModel):
-            request = utils.unmarshal(request, models.SmsMessagesAllRequest)
-        request = cast(models.SmsMessagesAllRequest, request)
+        request = models.SmsMessagesAllRequest(
+            raw=raw,
+            service_id=service_id,
+            cursor=cursor,
+            limit=limit,
+            fields=fields,
+        )
 
         req = self.build_request(
             method="GET",
@@ -51,6 +65,7 @@ class Messages(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.SmsMessagesAllGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -84,9 +99,29 @@ class Messages(BaseSDK):
             retry_config=retry_config,
         )
 
+        def next_func() -> Optional[models.SmsMessagesAllResponse]:
+            body = utils.unmarshal_json(http_res.text, Dict[Any, Any])
+            next_cursor = JSONPath("$.meta.cursors.next").parse(body)
+
+            if len(next_cursor) == 0:
+                return None
+            next_cursor = next_cursor[0]
+
+            return self.list(
+                raw=raw,
+                service_id=service_id,
+                cursor=next_cursor,
+                limit=limit,
+                fields=fields,
+                retries=retries,
+            )
+
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.GetMessagesResponse)
+            return models.SmsMessagesAllResponse(
+                result=utils.unmarshal_json(http_res.text, models.GetMessagesResponse),
+                next=next_func,
+            )
         if utils.match_response(http_res, "400", "application/json"):
             data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
             raise models.BadRequestResponse(data=data)
@@ -110,7 +145,12 @@ class Messages(BaseSDK):
                 "API error occurred", http_res.status_code, http_res_text, http_res
             )
         if utils.match_response(http_res, "default", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UnexpectedErrorResponse)
+            return models.SmsMessagesAllResponse(
+                result=utils.unmarshal_json(
+                    http_res.text, models.UnexpectedErrorResponse
+                ),
+                next=next_func,
+            )
 
         content_type = http_res.headers.get("Content-Type")
         http_res_text = utils.stream_to_text(http_res)
@@ -124,21 +164,29 @@ class Messages(BaseSDK):
     async def list_async(
         self,
         *,
-        request: Union[
-            models.SmsMessagesAllRequest, models.SmsMessagesAllRequestTypedDict
-        ] = models.SmsMessagesAllRequest(),
+        raw: Optional[bool] = False,
+        service_id: Optional[str] = None,
+        cursor: OptionalNullable[str] = UNSET,
+        limit: Optional[int] = 20,
+        fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
-    ) -> models.SmsMessagesAllResponse:
+        http_headers: Optional[Mapping[str, str]] = None,
+    ) -> Optional[models.SmsMessagesAllResponse]:
         r"""List Messages
 
         List Messages
 
-        :param request: The request object to send.
+        :param raw: Include raw response. Mostly used for debugging purposes
+        :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
+        :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
+        :param fields: The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -148,9 +196,13 @@ class Messages(BaseSDK):
         if server_url is not None:
             base_url = server_url
 
-        if not isinstance(request, BaseModel):
-            request = utils.unmarshal(request, models.SmsMessagesAllRequest)
-        request = cast(models.SmsMessagesAllRequest, request)
+        request = models.SmsMessagesAllRequest(
+            raw=raw,
+            service_id=service_id,
+            cursor=cursor,
+            limit=limit,
+            fields=fields,
+        )
 
         req = self.build_request_async(
             method="GET",
@@ -163,6 +215,7 @@ class Messages(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.SmsMessagesAllGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -196,9 +249,29 @@ class Messages(BaseSDK):
             retry_config=retry_config,
         )
 
+        def next_func() -> Optional[models.SmsMessagesAllResponse]:
+            body = utils.unmarshal_json(http_res.text, Dict[Any, Any])
+            next_cursor = JSONPath("$.meta.cursors.next").parse(body)
+
+            if len(next_cursor) == 0:
+                return None
+            next_cursor = next_cursor[0]
+
+            return self.list(
+                raw=raw,
+                service_id=service_id,
+                cursor=next_cursor,
+                limit=limit,
+                fields=fields,
+                retries=retries,
+            )
+
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.GetMessagesResponse)
+            return models.SmsMessagesAllResponse(
+                result=utils.unmarshal_json(http_res.text, models.GetMessagesResponse),
+                next=next_func,
+            )
         if utils.match_response(http_res, "400", "application/json"):
             data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
             raise models.BadRequestResponse(data=data)
@@ -222,7 +295,12 @@ class Messages(BaseSDK):
                 "API error occurred", http_res.status_code, http_res_text, http_res
             )
         if utils.match_response(http_res, "default", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UnexpectedErrorResponse)
+            return models.SmsMessagesAllResponse(
+                result=utils.unmarshal_json(
+                    http_res.text, models.UnexpectedErrorResponse
+                ),
+                next=next_func,
+            )
 
         content_type = http_res.headers.get("Content-Type")
         http_res_text = await utils.stream_to_text_async(http_res)
@@ -236,23 +314,45 @@ class Messages(BaseSDK):
     def create(
         self,
         *,
-        message: Union[models.MessageInput, models.MessageInputTypedDict],
+        from_: str,
+        to: str,
+        body: str,
         raw: Optional[bool] = False,
         service_id: Optional[str] = None,
+        subject: Optional[str] = None,
+        type_: Optional[models.MessageType] = None,
+        scheduled_at: Optional[datetime] = None,
+        webhook_url: Optional[str] = None,
+        reference: Optional[str] = None,
+        messaging_service_id: Optional[str] = None,
+        pass_through: Optional[
+            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.SmsMessagesAddResponse:
         r"""Create Message
 
         Create Message
 
-        :param message:
+        :param from_: The phone number that initiated the message.
+        :param to: The phone number that received the message.
+        :param body: The message text.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param subject:
+        :param type: Set to sms for SMS messages and mms for MMS messages.
+        :param scheduled_at: The scheduled date and time of the message.
+        :param webhook_url: Define a webhook to receive delivery notifications.
+        :param reference: A client reference.
+        :param messaging_service_id: The ID of the Messaging Service used with the message. In case of Plivo this links to the Powerpack ID.
+        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -265,7 +365,20 @@ class Messages(BaseSDK):
         request = models.SmsMessagesAddRequest(
             raw=raw,
             service_id=service_id,
-            message=utils.get_pydantic_model(message, models.MessageInput),
+            message=models.MessageInput(
+                from_=from_,
+                to=to,
+                subject=subject,
+                body=body,
+                type=type_,
+                scheduled_at=scheduled_at,
+                webhook_url=webhook_url,
+                reference=reference,
+                messaging_service_id=messaging_service_id,
+                pass_through=utils.get_pydantic_model(
+                    pass_through, Optional[List[models.PassThroughBody]]
+                ),
+            ),
         )
 
         req = self.build_request(
@@ -279,6 +392,7 @@ class Messages(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.SmsMessagesAddGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -355,23 +469,45 @@ class Messages(BaseSDK):
     async def create_async(
         self,
         *,
-        message: Union[models.MessageInput, models.MessageInputTypedDict],
+        from_: str,
+        to: str,
+        body: str,
         raw: Optional[bool] = False,
         service_id: Optional[str] = None,
+        subject: Optional[str] = None,
+        type_: Optional[models.MessageType] = None,
+        scheduled_at: Optional[datetime] = None,
+        webhook_url: Optional[str] = None,
+        reference: Optional[str] = None,
+        messaging_service_id: Optional[str] = None,
+        pass_through: Optional[
+            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.SmsMessagesAddResponse:
         r"""Create Message
 
         Create Message
 
-        :param message:
+        :param from_: The phone number that initiated the message.
+        :param to: The phone number that received the message.
+        :param body: The message text.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param subject:
+        :param type: Set to sms for SMS messages and mms for MMS messages.
+        :param scheduled_at: The scheduled date and time of the message.
+        :param webhook_url: Define a webhook to receive delivery notifications.
+        :param reference: A client reference.
+        :param messaging_service_id: The ID of the Messaging Service used with the message. In case of Plivo this links to the Powerpack ID.
+        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -384,7 +520,20 @@ class Messages(BaseSDK):
         request = models.SmsMessagesAddRequest(
             raw=raw,
             service_id=service_id,
-            message=utils.get_pydantic_model(message, models.MessageInput),
+            message=models.MessageInput(
+                from_=from_,
+                to=to,
+                subject=subject,
+                body=body,
+                type=type_,
+                scheduled_at=scheduled_at,
+                webhook_url=webhook_url,
+                reference=reference,
+                messaging_service_id=messaging_service_id,
+                pass_through=utils.get_pydantic_model(
+                    pass_through, Optional[List[models.PassThroughBody]]
+                ),
+            ),
         )
 
         req = self.build_request_async(
@@ -398,6 +547,7 @@ class Messages(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.SmsMessagesAddGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -481,6 +631,7 @@ class Messages(BaseSDK):
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.SmsMessagesOneResponse:
         r"""Get Message
 
@@ -493,6 +644,7 @@ class Messages(BaseSDK):
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -520,6 +672,7 @@ class Messages(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.SmsMessagesOneGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -600,6 +753,7 @@ class Messages(BaseSDK):
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.SmsMessagesOneResponse:
         r"""Get Message
 
@@ -612,6 +766,7 @@ class Messages(BaseSDK):
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -639,6 +794,7 @@ class Messages(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.SmsMessagesOneGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -713,24 +869,46 @@ class Messages(BaseSDK):
         self,
         *,
         id: str,
-        message: Union[models.MessageInput, models.MessageInputTypedDict],
+        from_: str,
+        to: str,
+        body: str,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
+        subject: Optional[str] = None,
+        type_: Optional[models.MessageType] = None,
+        scheduled_at: Optional[datetime] = None,
+        webhook_url: Optional[str] = None,
+        reference: Optional[str] = None,
+        messaging_service_id: Optional[str] = None,
+        pass_through: Optional[
+            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.SmsMessagesUpdateResponse:
         r"""Update Message
 
         Update Message
 
         :param id: ID of the record you are acting upon.
-        :param message:
+        :param from_: The phone number that initiated the message.
+        :param to: The phone number that received the message.
+        :param body: The message text.
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param subject:
+        :param type: Set to sms for SMS messages and mms for MMS messages.
+        :param scheduled_at: The scheduled date and time of the message.
+        :param webhook_url: Define a webhook to receive delivery notifications.
+        :param reference: A client reference.
+        :param messaging_service_id: The ID of the Messaging Service used with the message. In case of Plivo this links to the Powerpack ID.
+        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -744,7 +922,20 @@ class Messages(BaseSDK):
             id=id,
             service_id=service_id,
             raw=raw,
-            message=utils.get_pydantic_model(message, models.MessageInput),
+            message=models.MessageInput(
+                from_=from_,
+                to=to,
+                subject=subject,
+                body=body,
+                type=type_,
+                scheduled_at=scheduled_at,
+                webhook_url=webhook_url,
+                reference=reference,
+                messaging_service_id=messaging_service_id,
+                pass_through=utils.get_pydantic_model(
+                    pass_through, Optional[List[models.PassThroughBody]]
+                ),
+            ),
         )
 
         req = self.build_request(
@@ -758,6 +949,7 @@ class Messages(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.SmsMessagesUpdateGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -835,24 +1027,46 @@ class Messages(BaseSDK):
         self,
         *,
         id: str,
-        message: Union[models.MessageInput, models.MessageInputTypedDict],
+        from_: str,
+        to: str,
+        body: str,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
+        subject: Optional[str] = None,
+        type_: Optional[models.MessageType] = None,
+        scheduled_at: Optional[datetime] = None,
+        webhook_url: Optional[str] = None,
+        reference: Optional[str] = None,
+        messaging_service_id: Optional[str] = None,
+        pass_through: Optional[
+            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.SmsMessagesUpdateResponse:
         r"""Update Message
 
         Update Message
 
         :param id: ID of the record you are acting upon.
-        :param message:
+        :param from_: The phone number that initiated the message.
+        :param to: The phone number that received the message.
+        :param body: The message text.
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param subject:
+        :param type: Set to sms for SMS messages and mms for MMS messages.
+        :param scheduled_at: The scheduled date and time of the message.
+        :param webhook_url: Define a webhook to receive delivery notifications.
+        :param reference: A client reference.
+        :param messaging_service_id: The ID of the Messaging Service used with the message. In case of Plivo this links to the Powerpack ID.
+        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -866,7 +1080,20 @@ class Messages(BaseSDK):
             id=id,
             service_id=service_id,
             raw=raw,
-            message=utils.get_pydantic_model(message, models.MessageInput),
+            message=models.MessageInput(
+                from_=from_,
+                to=to,
+                subject=subject,
+                body=body,
+                type=type_,
+                scheduled_at=scheduled_at,
+                webhook_url=webhook_url,
+                reference=reference,
+                messaging_service_id=messaging_service_id,
+                pass_through=utils.get_pydantic_model(
+                    pass_through, Optional[List[models.PassThroughBody]]
+                ),
+            ),
         )
 
         req = self.build_request_async(
@@ -880,6 +1107,7 @@ class Messages(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.SmsMessagesUpdateGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -962,6 +1190,7 @@ class Messages(BaseSDK):
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.SmsMessagesDeleteResponse:
         r"""Delete Message
 
@@ -973,6 +1202,7 @@ class Messages(BaseSDK):
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -999,6 +1229,7 @@ class Messages(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.SmsMessagesDeleteGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -1078,6 +1309,7 @@ class Messages(BaseSDK):
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.SmsMessagesDeleteResponse:
         r"""Delete Message
 
@@ -1089,6 +1321,7 @@ class Messages(BaseSDK):
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -1115,6 +1348,7 @@ class Messages(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.SmsMessagesDeleteGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,

@@ -1,17 +1,8 @@
 # CrmLeadsAllResponse
 
 
-## Supported Types
+## Fields
 
-### `models.GetLeadsResponse`
-
-```python
-value: models.GetLeadsResponse = /* values here */
-```
-
-### `models.UnexpectedErrorResponse`
-
-```python
-value: models.UnexpectedErrorResponse = /* values here */
-```
-
+| Field                                                                      | Type                                                                       | Required                                                                   | Description                                                                |
+| -------------------------------------------------------------------------- | -------------------------------------------------------------------------- | -------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| `result`                                                                   | [models.CrmLeadsAllResponseResult](../models/crmleadsallresponseresult.md) | :heavy_check_mark:                                                         | N/A                                                                        |

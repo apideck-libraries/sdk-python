@@ -3,31 +3,50 @@
 from .basesdk import BaseSDK
 from apideck_unify import models, utils
 from apideck_unify._hooks import HookContext
-from apideck_unify.types import BaseModel, OptionalNullable, UNSET
+from apideck_unify.types import OptionalNullable, UNSET
 from apideck_unify.utils import get_security_from_env
-from typing import Any, Optional, Union, cast
+from datetime import datetime
+from jsonpath import JSONPath
+from typing import Any, Dict, List, Mapping, Optional, Union
 
 
 class CollectionTickets(BaseSDK):
     def list(
         self,
         *,
-        request: Union[
-            models.IssueTrackingCollectionTicketsAllRequest,
-            models.IssueTrackingCollectionTicketsAllRequestTypedDict,
-        ],
+        collection_id: str,
+        raw: Optional[bool] = False,
+        service_id: Optional[str] = None,
+        cursor: OptionalNullable[str] = UNSET,
+        limit: Optional[int] = 20,
+        sort: Optional[Union[models.TicketsSort, models.TicketsSortTypedDict]] = None,
+        filter_: Optional[
+            Union[models.IssuesFilter, models.IssuesFilterTypedDict]
+        ] = None,
+        pass_through: Optional[Dict[str, Any]] = None,
+        fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
-    ) -> models.IssueTrackingCollectionTicketsAllResponse:
+        http_headers: Optional[Mapping[str, str]] = None,
+    ) -> Optional[models.IssueTrackingCollectionTicketsAllResponse]:
         r"""List Tickets
 
         List Tickets
 
-        :param request: The request object to send.
+        :param collection_id: The collection ID
+        :param raw: Include raw response. Mostly used for debugging purposes
+        :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
+        :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
+        :param sort: Apply sorting
+        :param filter_: Apply filters
+        :param pass_through: Optional unmapped key/values that will be passed through to downstream as query parameters. Ie: ?pass_through[search]=leads becomes ?search=leads
+        :param fields: The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -37,11 +56,17 @@ class CollectionTickets(BaseSDK):
         if server_url is not None:
             base_url = server_url
 
-        if not isinstance(request, BaseModel):
-            request = utils.unmarshal(
-                request, models.IssueTrackingCollectionTicketsAllRequest
-            )
-        request = cast(models.IssueTrackingCollectionTicketsAllRequest, request)
+        request = models.IssueTrackingCollectionTicketsAllRequest(
+            raw=raw,
+            service_id=service_id,
+            cursor=cursor,
+            limit=limit,
+            collection_id=collection_id,
+            sort=utils.get_pydantic_model(sort, Optional[models.TicketsSort]),
+            filter_=utils.get_pydantic_model(filter_, Optional[models.IssuesFilter]),
+            pass_through=pass_through,
+            fields=fields,
+        )
 
         req = self.build_request(
             method="GET",
@@ -54,6 +79,7 @@ class CollectionTickets(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.IssueTrackingCollectionTicketsAllGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -87,9 +113,33 @@ class CollectionTickets(BaseSDK):
             retry_config=retry_config,
         )
 
+        def next_func() -> Optional[models.IssueTrackingCollectionTicketsAllResponse]:
+            body = utils.unmarshal_json(http_res.text, Dict[Any, Any])
+            next_cursor = JSONPath("$.meta.cursors.next").parse(body)
+
+            if len(next_cursor) == 0:
+                return None
+            next_cursor = next_cursor[0]
+
+            return self.list(
+                collection_id=collection_id,
+                raw=raw,
+                service_id=service_id,
+                cursor=next_cursor,
+                limit=limit,
+                sort=sort,
+                filter_=filter_,
+                pass_through=pass_through,
+                fields=fields,
+                retries=retries,
+            )
+
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.GetTicketsResponse)
+            return models.IssueTrackingCollectionTicketsAllResponse(
+                result=utils.unmarshal_json(http_res.text, models.GetTicketsResponse),
+                next=next_func,
+            )
         if utils.match_response(http_res, "400", "application/json"):
             data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
             raise models.BadRequestResponse(data=data)
@@ -113,7 +163,12 @@ class CollectionTickets(BaseSDK):
                 "API error occurred", http_res.status_code, http_res_text, http_res
             )
         if utils.match_response(http_res, "default", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UnexpectedErrorResponse)
+            return models.IssueTrackingCollectionTicketsAllResponse(
+                result=utils.unmarshal_json(
+                    http_res.text, models.UnexpectedErrorResponse
+                ),
+                next=next_func,
+            )
 
         content_type = http_res.headers.get("Content-Type")
         http_res_text = utils.stream_to_text(http_res)
@@ -127,22 +182,39 @@ class CollectionTickets(BaseSDK):
     async def list_async(
         self,
         *,
-        request: Union[
-            models.IssueTrackingCollectionTicketsAllRequest,
-            models.IssueTrackingCollectionTicketsAllRequestTypedDict,
-        ],
+        collection_id: str,
+        raw: Optional[bool] = False,
+        service_id: Optional[str] = None,
+        cursor: OptionalNullable[str] = UNSET,
+        limit: Optional[int] = 20,
+        sort: Optional[Union[models.TicketsSort, models.TicketsSortTypedDict]] = None,
+        filter_: Optional[
+            Union[models.IssuesFilter, models.IssuesFilterTypedDict]
+        ] = None,
+        pass_through: Optional[Dict[str, Any]] = None,
+        fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
-    ) -> models.IssueTrackingCollectionTicketsAllResponse:
+        http_headers: Optional[Mapping[str, str]] = None,
+    ) -> Optional[models.IssueTrackingCollectionTicketsAllResponse]:
         r"""List Tickets
 
         List Tickets
 
-        :param request: The request object to send.
+        :param collection_id: The collection ID
+        :param raw: Include raw response. Mostly used for debugging purposes
+        :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
+        :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
+        :param sort: Apply sorting
+        :param filter_: Apply filters
+        :param pass_through: Optional unmapped key/values that will be passed through to downstream as query parameters. Ie: ?pass_through[search]=leads becomes ?search=leads
+        :param fields: The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -152,11 +224,17 @@ class CollectionTickets(BaseSDK):
         if server_url is not None:
             base_url = server_url
 
-        if not isinstance(request, BaseModel):
-            request = utils.unmarshal(
-                request, models.IssueTrackingCollectionTicketsAllRequest
-            )
-        request = cast(models.IssueTrackingCollectionTicketsAllRequest, request)
+        request = models.IssueTrackingCollectionTicketsAllRequest(
+            raw=raw,
+            service_id=service_id,
+            cursor=cursor,
+            limit=limit,
+            collection_id=collection_id,
+            sort=utils.get_pydantic_model(sort, Optional[models.TicketsSort]),
+            filter_=utils.get_pydantic_model(filter_, Optional[models.IssuesFilter]),
+            pass_through=pass_through,
+            fields=fields,
+        )
 
         req = self.build_request_async(
             method="GET",
@@ -169,6 +247,7 @@ class CollectionTickets(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.IssueTrackingCollectionTicketsAllGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -202,9 +281,33 @@ class CollectionTickets(BaseSDK):
             retry_config=retry_config,
         )
 
+        def next_func() -> Optional[models.IssueTrackingCollectionTicketsAllResponse]:
+            body = utils.unmarshal_json(http_res.text, Dict[Any, Any])
+            next_cursor = JSONPath("$.meta.cursors.next").parse(body)
+
+            if len(next_cursor) == 0:
+                return None
+            next_cursor = next_cursor[0]
+
+            return self.list(
+                collection_id=collection_id,
+                raw=raw,
+                service_id=service_id,
+                cursor=next_cursor,
+                limit=limit,
+                sort=sort,
+                filter_=filter_,
+                pass_through=pass_through,
+                fields=fields,
+                retries=retries,
+            )
+
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.GetTicketsResponse)
+            return models.IssueTrackingCollectionTicketsAllResponse(
+                result=utils.unmarshal_json(http_res.text, models.GetTicketsResponse),
+                next=next_func,
+            )
         if utils.match_response(http_res, "400", "application/json"):
             data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
             raise models.BadRequestResponse(data=data)
@@ -228,7 +331,12 @@ class CollectionTickets(BaseSDK):
                 "API error occurred", http_res.status_code, http_res_text, http_res
             )
         if utils.match_response(http_res, "default", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UnexpectedErrorResponse)
+            return models.IssueTrackingCollectionTicketsAllResponse(
+                result=utils.unmarshal_json(
+                    http_res.text, models.UnexpectedErrorResponse
+                ),
+                next=next_func,
+            )
 
         content_type = http_res.headers.get("Content-Type")
         http_res_text = await utils.stream_to_text_async(http_res)
@@ -243,24 +351,53 @@ class CollectionTickets(BaseSDK):
         self,
         *,
         collection_id: str,
-        ticket: Union[models.TicketInput, models.TicketInputTypedDict],
         raw: Optional[bool] = False,
         service_id: Optional[str] = None,
+        parent_id: OptionalNullable[str] = UNSET,
+        type_: OptionalNullable[str] = UNSET,
+        subject: OptionalNullable[str] = UNSET,
+        description: OptionalNullable[str] = UNSET,
+        status: OptionalNullable[str] = UNSET,
+        priority: OptionalNullable[models.Priority] = UNSET,
+        assignees: Optional[
+            Union[List[models.AssigneeInput], List[models.AssigneeInputTypedDict]]
+        ] = None,
+        due_date: OptionalNullable[datetime] = UNSET,
+        tags: Optional[
+            Union[
+                List[models.CollectionTagInput],
+                List[models.CollectionTagInputTypedDict],
+            ]
+        ] = None,
+        pass_through: Optional[
+            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.IssueTrackingCollectionTicketsAddResponse:
         r"""Create Ticket
 
         Create Ticket
 
         :param collection_id: The collection ID
-        :param ticket:
         :param raw: Include raw response. Mostly used for debugging purposes
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param parent_id: The ticket's parent ID
+        :param type: The ticket's type
+        :param subject: Subject of the ticket
+        :param description: The ticket's description. HTML version of description is mapped if supported by the third-party platform
+        :param status: The current status of the ticket. Possible values include: open, in_progress, closed, or - in cases where there is no clear mapping - the original value passed through.
+        :param priority: Priority of the ticket
+        :param assignees:
+        :param due_date: Due date of the ticket
+        :param tags:
+        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -274,7 +411,24 @@ class CollectionTickets(BaseSDK):
             raw=raw,
             service_id=service_id,
             collection_id=collection_id,
-            ticket=utils.get_pydantic_model(ticket, models.TicketInput),
+            ticket=models.TicketInput(
+                parent_id=parent_id,
+                type=type_,
+                subject=subject,
+                description=description,
+                status=status,
+                priority=priority,
+                assignees=utils.get_pydantic_model(
+                    assignees, Optional[List[models.AssigneeInput]]
+                ),
+                due_date=due_date,
+                tags=utils.get_pydantic_model(
+                    tags, Optional[List[models.CollectionTagInput]]
+                ),
+                pass_through=utils.get_pydantic_model(
+                    pass_through, Optional[List[models.PassThroughBody]]
+                ),
+            ),
         )
 
         req = self.build_request(
@@ -288,6 +442,7 @@ class CollectionTickets(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.IssueTrackingCollectionTicketsAddGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -365,24 +520,53 @@ class CollectionTickets(BaseSDK):
         self,
         *,
         collection_id: str,
-        ticket: Union[models.TicketInput, models.TicketInputTypedDict],
         raw: Optional[bool] = False,
         service_id: Optional[str] = None,
+        parent_id: OptionalNullable[str] = UNSET,
+        type_: OptionalNullable[str] = UNSET,
+        subject: OptionalNullable[str] = UNSET,
+        description: OptionalNullable[str] = UNSET,
+        status: OptionalNullable[str] = UNSET,
+        priority: OptionalNullable[models.Priority] = UNSET,
+        assignees: Optional[
+            Union[List[models.AssigneeInput], List[models.AssigneeInputTypedDict]]
+        ] = None,
+        due_date: OptionalNullable[datetime] = UNSET,
+        tags: Optional[
+            Union[
+                List[models.CollectionTagInput],
+                List[models.CollectionTagInputTypedDict],
+            ]
+        ] = None,
+        pass_through: Optional[
+            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.IssueTrackingCollectionTicketsAddResponse:
         r"""Create Ticket
 
         Create Ticket
 
         :param collection_id: The collection ID
-        :param ticket:
         :param raw: Include raw response. Mostly used for debugging purposes
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param parent_id: The ticket's parent ID
+        :param type: The ticket's type
+        :param subject: Subject of the ticket
+        :param description: The ticket's description. HTML version of description is mapped if supported by the third-party platform
+        :param status: The current status of the ticket. Possible values include: open, in_progress, closed, or - in cases where there is no clear mapping - the original value passed through.
+        :param priority: Priority of the ticket
+        :param assignees:
+        :param due_date: Due date of the ticket
+        :param tags:
+        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -396,7 +580,24 @@ class CollectionTickets(BaseSDK):
             raw=raw,
             service_id=service_id,
             collection_id=collection_id,
-            ticket=utils.get_pydantic_model(ticket, models.TicketInput),
+            ticket=models.TicketInput(
+                parent_id=parent_id,
+                type=type_,
+                subject=subject,
+                description=description,
+                status=status,
+                priority=priority,
+                assignees=utils.get_pydantic_model(
+                    assignees, Optional[List[models.AssigneeInput]]
+                ),
+                due_date=due_date,
+                tags=utils.get_pydantic_model(
+                    tags, Optional[List[models.CollectionTagInput]]
+                ),
+                pass_through=utils.get_pydantic_model(
+                    pass_through, Optional[List[models.PassThroughBody]]
+                ),
+            ),
         )
 
         req = self.build_request_async(
@@ -410,6 +611,7 @@ class CollectionTickets(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.IssueTrackingCollectionTicketsAddGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -486,22 +688,29 @@ class CollectionTickets(BaseSDK):
     def get(
         self,
         *,
-        request: Union[
-            models.IssueTrackingCollectionTicketsOneRequest,
-            models.IssueTrackingCollectionTicketsOneRequestTypedDict,
-        ],
+        ticket_id: str,
+        collection_id: str,
+        service_id: Optional[str] = None,
+        raw: Optional[bool] = False,
+        fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.IssueTrackingCollectionTicketsOneResponse:
         r"""Get Ticket
 
         Get Ticket
 
-        :param request: The request object to send.
+        :param ticket_id: ID of the ticket you are acting upon.
+        :param collection_id: The collection ID
+        :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param raw: Include raw response. Mostly used for debugging purposes
+        :param fields: The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -511,11 +720,13 @@ class CollectionTickets(BaseSDK):
         if server_url is not None:
             base_url = server_url
 
-        if not isinstance(request, BaseModel):
-            request = utils.unmarshal(
-                request, models.IssueTrackingCollectionTicketsOneRequest
-            )
-        request = cast(models.IssueTrackingCollectionTicketsOneRequest, request)
+        request = models.IssueTrackingCollectionTicketsOneRequest(
+            ticket_id=ticket_id,
+            service_id=service_id,
+            raw=raw,
+            collection_id=collection_id,
+            fields=fields,
+        )
 
         req = self.build_request(
             method="GET",
@@ -528,6 +739,7 @@ class CollectionTickets(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.IssueTrackingCollectionTicketsOneGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -601,22 +813,29 @@ class CollectionTickets(BaseSDK):
     async def get_async(
         self,
         *,
-        request: Union[
-            models.IssueTrackingCollectionTicketsOneRequest,
-            models.IssueTrackingCollectionTicketsOneRequestTypedDict,
-        ],
+        ticket_id: str,
+        collection_id: str,
+        service_id: Optional[str] = None,
+        raw: Optional[bool] = False,
+        fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.IssueTrackingCollectionTicketsOneResponse:
         r"""Get Ticket
 
         Get Ticket
 
-        :param request: The request object to send.
+        :param ticket_id: ID of the ticket you are acting upon.
+        :param collection_id: The collection ID
+        :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param raw: Include raw response. Mostly used for debugging purposes
+        :param fields: The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -626,11 +845,13 @@ class CollectionTickets(BaseSDK):
         if server_url is not None:
             base_url = server_url
 
-        if not isinstance(request, BaseModel):
-            request = utils.unmarshal(
-                request, models.IssueTrackingCollectionTicketsOneRequest
-            )
-        request = cast(models.IssueTrackingCollectionTicketsOneRequest, request)
+        request = models.IssueTrackingCollectionTicketsOneRequest(
+            ticket_id=ticket_id,
+            service_id=service_id,
+            raw=raw,
+            collection_id=collection_id,
+            fields=fields,
+        )
 
         req = self.build_request_async(
             method="GET",
@@ -643,6 +864,7 @@ class CollectionTickets(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.IssueTrackingCollectionTicketsOneGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -716,22 +938,56 @@ class CollectionTickets(BaseSDK):
     def update(
         self,
         *,
-        request: Union[
-            models.IssueTrackingCollectionTicketsUpdateRequest,
-            models.IssueTrackingCollectionTicketsUpdateRequestTypedDict,
-        ],
+        ticket_id: str,
+        collection_id: str,
+        service_id: Optional[str] = None,
+        raw: Optional[bool] = False,
+        parent_id: OptionalNullable[str] = UNSET,
+        type_: OptionalNullable[str] = UNSET,
+        subject: OptionalNullable[str] = UNSET,
+        description: OptionalNullable[str] = UNSET,
+        status: OptionalNullable[str] = UNSET,
+        priority: OptionalNullable[models.Priority] = UNSET,
+        assignees: Optional[
+            Union[List[models.AssigneeInput], List[models.AssigneeInputTypedDict]]
+        ] = None,
+        due_date: OptionalNullable[datetime] = UNSET,
+        tags: Optional[
+            Union[
+                List[models.CollectionTagInput],
+                List[models.CollectionTagInputTypedDict],
+            ]
+        ] = None,
+        pass_through: Optional[
+            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.IssueTrackingCollectionTicketsUpdateResponse:
         r"""Update Ticket
 
         Update Ticket
 
-        :param request: The request object to send.
+        :param ticket_id: ID of the ticket you are acting upon.
+        :param collection_id: The collection ID
+        :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param raw: Include raw response. Mostly used for debugging purposes
+        :param parent_id: The ticket's parent ID
+        :param type: The ticket's type
+        :param subject: Subject of the ticket
+        :param description: The ticket's description. HTML version of description is mapped if supported by the third-party platform
+        :param status: The current status of the ticket. Possible values include: open, in_progress, closed, or - in cases where there is no clear mapping - the original value passed through.
+        :param priority: Priority of the ticket
+        :param assignees:
+        :param due_date: Due date of the ticket
+        :param tags:
+        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -741,11 +997,30 @@ class CollectionTickets(BaseSDK):
         if server_url is not None:
             base_url = server_url
 
-        if not isinstance(request, BaseModel):
-            request = utils.unmarshal(
-                request, models.IssueTrackingCollectionTicketsUpdateRequest
-            )
-        request = cast(models.IssueTrackingCollectionTicketsUpdateRequest, request)
+        request = models.IssueTrackingCollectionTicketsUpdateRequest(
+            ticket_id=ticket_id,
+            service_id=service_id,
+            raw=raw,
+            collection_id=collection_id,
+            ticket=models.TicketInput(
+                parent_id=parent_id,
+                type=type_,
+                subject=subject,
+                description=description,
+                status=status,
+                priority=priority,
+                assignees=utils.get_pydantic_model(
+                    assignees, Optional[List[models.AssigneeInput]]
+                ),
+                due_date=due_date,
+                tags=utils.get_pydantic_model(
+                    tags, Optional[List[models.CollectionTagInput]]
+                ),
+                pass_through=utils.get_pydantic_model(
+                    pass_through, Optional[List[models.PassThroughBody]]
+                ),
+            ),
+        )
 
         req = self.build_request(
             method="PATCH",
@@ -758,6 +1033,7 @@ class CollectionTickets(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.IssueTrackingCollectionTicketsUpdateGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -834,22 +1110,56 @@ class CollectionTickets(BaseSDK):
     async def update_async(
         self,
         *,
-        request: Union[
-            models.IssueTrackingCollectionTicketsUpdateRequest,
-            models.IssueTrackingCollectionTicketsUpdateRequestTypedDict,
-        ],
+        ticket_id: str,
+        collection_id: str,
+        service_id: Optional[str] = None,
+        raw: Optional[bool] = False,
+        parent_id: OptionalNullable[str] = UNSET,
+        type_: OptionalNullable[str] = UNSET,
+        subject: OptionalNullable[str] = UNSET,
+        description: OptionalNullable[str] = UNSET,
+        status: OptionalNullable[str] = UNSET,
+        priority: OptionalNullable[models.Priority] = UNSET,
+        assignees: Optional[
+            Union[List[models.AssigneeInput], List[models.AssigneeInputTypedDict]]
+        ] = None,
+        due_date: OptionalNullable[datetime] = UNSET,
+        tags: Optional[
+            Union[
+                List[models.CollectionTagInput],
+                List[models.CollectionTagInputTypedDict],
+            ]
+        ] = None,
+        pass_through: Optional[
+            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.IssueTrackingCollectionTicketsUpdateResponse:
         r"""Update Ticket
 
         Update Ticket
 
-        :param request: The request object to send.
+        :param ticket_id: ID of the ticket you are acting upon.
+        :param collection_id: The collection ID
+        :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param raw: Include raw response. Mostly used for debugging purposes
+        :param parent_id: The ticket's parent ID
+        :param type: The ticket's type
+        :param subject: Subject of the ticket
+        :param description: The ticket's description. HTML version of description is mapped if supported by the third-party platform
+        :param status: The current status of the ticket. Possible values include: open, in_progress, closed, or - in cases where there is no clear mapping - the original value passed through.
+        :param priority: Priority of the ticket
+        :param assignees:
+        :param due_date: Due date of the ticket
+        :param tags:
+        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -859,11 +1169,30 @@ class CollectionTickets(BaseSDK):
         if server_url is not None:
             base_url = server_url
 
-        if not isinstance(request, BaseModel):
-            request = utils.unmarshal(
-                request, models.IssueTrackingCollectionTicketsUpdateRequest
-            )
-        request = cast(models.IssueTrackingCollectionTicketsUpdateRequest, request)
+        request = models.IssueTrackingCollectionTicketsUpdateRequest(
+            ticket_id=ticket_id,
+            service_id=service_id,
+            raw=raw,
+            collection_id=collection_id,
+            ticket=models.TicketInput(
+                parent_id=parent_id,
+                type=type_,
+                subject=subject,
+                description=description,
+                status=status,
+                priority=priority,
+                assignees=utils.get_pydantic_model(
+                    assignees, Optional[List[models.AssigneeInput]]
+                ),
+                due_date=due_date,
+                tags=utils.get_pydantic_model(
+                    tags, Optional[List[models.CollectionTagInput]]
+                ),
+                pass_through=utils.get_pydantic_model(
+                    pass_through, Optional[List[models.PassThroughBody]]
+                ),
+            ),
+        )
 
         req = self.build_request_async(
             method="PATCH",
@@ -876,6 +1205,7 @@ class CollectionTickets(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.IssueTrackingCollectionTicketsUpdateGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -959,6 +1289,7 @@ class CollectionTickets(BaseSDK):
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.IssueTrackingCollectionTicketsDeleteResponse:
         r"""Delete Ticket
 
@@ -971,6 +1302,7 @@ class CollectionTickets(BaseSDK):
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -998,6 +1330,7 @@ class CollectionTickets(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.IssueTrackingCollectionTicketsDeleteGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
@@ -1078,6 +1411,7 @@ class CollectionTickets(BaseSDK):
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.IssueTrackingCollectionTicketsDeleteResponse:
         r"""Delete Ticket
 
@@ -1090,6 +1424,7 @@ class CollectionTickets(BaseSDK):
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -1117,6 +1452,7 @@ class CollectionTickets(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            http_headers=http_headers,
             _globals=models.IssueTrackingCollectionTicketsDeleteGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,

@@ -1,17 +1,8 @@
 # FileStorageDrivesAllResponse
 
 
-## Supported Types
+## Fields
 
-### `models.GetDrivesResponse`
-
-```python
-value: models.GetDrivesResponse = /* values here */
-```
-
-### `models.UnexpectedErrorResponse`
-
-```python
-value: models.UnexpectedErrorResponse = /* values here */
-```
-
+| Field                                                                                        | Type                                                                                         | Required                                                                                     | Description                                                                                  |
+| -------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| `result`                                                                                     | [models.FileStorageDrivesAllResponseResult](../models/filestoragedrivesallresponseresult.md) | :heavy_check_mark:                                                                           | N/A                                                                                          |

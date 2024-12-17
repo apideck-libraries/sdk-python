@@ -6,7 +6,7 @@ from apideck_unify._hooks import HookContext
 from apideck_unify.types import OptionalNullable, UNSET
 from apideck_unify.utils import get_security_from_env
 from enum import Enum
-from typing import Any, Optional
+from typing import Any, Mapping, Optional
 
 
 class GetAcceptEnum(str, Enum):
@@ -24,6 +24,7 @@ class ConnectorDocs(BaseSDK):
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
         accept_header_override: Optional[GetAcceptEnum] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.ConnectorConnectorDocsOneResponse:
         r"""Get Connector Doc content
 
@@ -35,6 +36,7 @@ class ConnectorDocs(BaseSDK):
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
         :param accept_header_override: Override the default accept header for this method
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -62,6 +64,7 @@ class ConnectorDocs(BaseSDK):
             accept_header_value=accept_header_override.value
             if accept_header_override is not None
             else "application/json;q=1, text/markdown;q=0",
+            http_headers=http_headers,
             _globals=models.ConnectorConnectorDocsOneGlobals(
                 app_id=self.sdk_configuration.globals.app_id,
             ),
@@ -134,6 +137,7 @@ class ConnectorDocs(BaseSDK):
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
         accept_header_override: Optional[GetAcceptEnum] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.ConnectorConnectorDocsOneResponse:
         r"""Get Connector Doc content
 
@@ -145,6 +149,7 @@ class ConnectorDocs(BaseSDK):
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
         :param accept_header_override: Override the default accept header for this method
+        :param http_headers: Additional headers to set or replace on requests.
         """
         base_url = None
         url_variables = None
@@ -172,6 +177,7 @@ class ConnectorDocs(BaseSDK):
             accept_header_value=accept_header_override.value
             if accept_header_override is not None
             else "application/json;q=1, text/markdown;q=0",
+            http_headers=http_headers,
             _globals=models.ConnectorConnectorDocsOneGlobals(
                 app_id=self.sdk_configuration.globals.app_id,
             ),
