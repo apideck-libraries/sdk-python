@@ -56,7 +56,7 @@ class SharedLinks(BaseSDK):
             fields=fields,
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="GET",
             path="/file-storage/shared-links",
             base_url=base_url,
@@ -212,7 +212,7 @@ class SharedLinks(BaseSDK):
             fields=fields,
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="GET",
             path="/file-storage/shared-links",
             base_url=base_url,
@@ -377,7 +377,7 @@ class SharedLinks(BaseSDK):
             ),
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="POST",
             path="/file-storage/shared-links",
             base_url=base_url,
@@ -517,7 +517,7 @@ class SharedLinks(BaseSDK):
             ),
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="POST",
             path="/file-storage/shared-links",
             base_url=base_url,
@@ -642,7 +642,7 @@ class SharedLinks(BaseSDK):
             fields=fields,
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="GET",
             path="/file-storage/shared-links/{id}",
             base_url=base_url,
@@ -764,7 +764,7 @@ class SharedLinks(BaseSDK):
             fields=fields,
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="GET",
             path="/file-storage/shared-links/{id}",
             base_url=base_url,
@@ -904,7 +904,7 @@ class SharedLinks(BaseSDK):
             ),
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="PATCH",
             path="/file-storage/shared-links/{id}",
             base_url=base_url,
@@ -1047,7 +1047,7 @@ class SharedLinks(BaseSDK):
             ),
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="PATCH",
             path="/file-storage/shared-links/{id}",
             base_url=base_url,
@@ -1169,7 +1169,7 @@ class SharedLinks(BaseSDK):
             raw=raw,
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="DELETE",
             path="/file-storage/shared-links/{id}",
             base_url=base_url,
@@ -1288,7 +1288,7 @@ class SharedLinks(BaseSDK):
             raw=raw,
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="DELETE",
             path="/file-storage/shared-links/{id}",
             base_url=base_url,

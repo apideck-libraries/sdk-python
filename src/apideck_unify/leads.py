@@ -64,7 +64,7 @@ class Leads(BaseSDK):
             fields=fields,
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="GET",
             path="/crm/leads",
             base_url=base_url,
@@ -228,7 +228,7 @@ class Leads(BaseSDK):
             fields=fields,
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="GET",
             path="/crm/leads",
             base_url=base_url,
@@ -473,7 +473,7 @@ class Leads(BaseSDK):
             ),
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="POST",
             path="/crm/leads",
             base_url=base_url,
@@ -693,7 +693,7 @@ class Leads(BaseSDK):
             ),
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="POST",
             path="/crm/leads",
             base_url=base_url,
@@ -818,7 +818,7 @@ class Leads(BaseSDK):
             fields=fields,
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="GET",
             path="/crm/leads/{id}",
             base_url=base_url,
@@ -940,7 +940,7 @@ class Leads(BaseSDK):
             fields=fields,
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="GET",
             path="/crm/leads/{id}",
             base_url=base_url,
@@ -1160,7 +1160,7 @@ class Leads(BaseSDK):
             ),
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="PATCH",
             path="/crm/leads/{id}",
             base_url=base_url,
@@ -1383,7 +1383,7 @@ class Leads(BaseSDK):
             ),
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="PATCH",
             path="/crm/leads/{id}",
             base_url=base_url,
@@ -1505,7 +1505,7 @@ class Leads(BaseSDK):
             raw=raw,
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="DELETE",
             path="/crm/leads/{id}",
             base_url=base_url,
@@ -1624,7 +1624,7 @@ class Leads(BaseSDK):
             raw=raw,
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="DELETE",
             path="/crm/leads/{id}",
             base_url=base_url,

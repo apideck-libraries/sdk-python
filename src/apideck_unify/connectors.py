@@ -51,7 +51,7 @@ class Connectors(BaseSDK):
             ),
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="GET",
             path="/connector/connectors",
             base_url=base_url,
@@ -192,7 +192,7 @@ class Connectors(BaseSDK):
             ),
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="GET",
             path="/connector/connectors",
             base_url=base_url,
@@ -323,7 +323,7 @@ class Connectors(BaseSDK):
             id=id,
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="GET",
             path="/connector/connectors/{id}",
             base_url=base_url,
@@ -429,7 +429,7 @@ class Connectors(BaseSDK):
             id=id,
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="GET",
             path="/connector/connectors/{id}",
             base_url=base_url,

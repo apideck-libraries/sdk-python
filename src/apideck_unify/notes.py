@@ -56,7 +56,7 @@ class Notes(BaseSDK):
             fields=fields,
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="GET",
             path="/crm/notes",
             base_url=base_url,
@@ -210,7 +210,7 @@ class Notes(BaseSDK):
             fields=fields,
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="GET",
             path="/crm/notes",
             base_url=base_url,
@@ -385,7 +385,7 @@ class Notes(BaseSDK):
             ),
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="POST",
             path="/crm/notes",
             base_url=base_url,
@@ -537,7 +537,7 @@ class Notes(BaseSDK):
             ),
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="POST",
             path="/crm/notes",
             base_url=base_url,
@@ -662,7 +662,7 @@ class Notes(BaseSDK):
             fields=fields,
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="GET",
             path="/crm/notes/{id}",
             base_url=base_url,
@@ -784,7 +784,7 @@ class Notes(BaseSDK):
             fields=fields,
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="GET",
             path="/crm/notes/{id}",
             base_url=base_url,
@@ -936,7 +936,7 @@ class Notes(BaseSDK):
             ),
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="PATCH",
             path="/crm/notes/{id}",
             base_url=base_url,
@@ -1091,7 +1091,7 @@ class Notes(BaseSDK):
             ),
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="PATCH",
             path="/crm/notes/{id}",
             base_url=base_url,
@@ -1213,7 +1213,7 @@ class Notes(BaseSDK):
             raw=raw,
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="DELETE",
             path="/crm/notes/{id}",
             base_url=base_url,
@@ -1332,7 +1332,7 @@ class Notes(BaseSDK):
             raw=raw,
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="DELETE",
             path="/crm/notes/{id}",
             base_url=base_url,

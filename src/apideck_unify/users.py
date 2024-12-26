@@ -56,7 +56,7 @@ class Users(BaseSDK):
             fields=fields,
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="GET",
             path="/crm/users",
             base_url=base_url,
@@ -210,7 +210,7 @@ class Users(BaseSDK):
             fields=fields,
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="GET",
             path="/crm/users",
             base_url=base_url,
@@ -420,7 +420,7 @@ class Users(BaseSDK):
             ),
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="POST",
             path="/crm/users",
             base_url=base_url,
@@ -607,7 +607,7 @@ class Users(BaseSDK):
             ),
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="POST",
             path="/crm/users",
             base_url=base_url,
@@ -732,7 +732,7 @@ class Users(BaseSDK):
             fields=fields,
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="GET",
             path="/crm/users/{id}",
             base_url=base_url,
@@ -854,7 +854,7 @@ class Users(BaseSDK):
             fields=fields,
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="GET",
             path="/crm/users/{id}",
             base_url=base_url,
@@ -1041,7 +1041,7 @@ class Users(BaseSDK):
             ),
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="PATCH",
             path="/crm/users/{id}",
             base_url=base_url,
@@ -1231,7 +1231,7 @@ class Users(BaseSDK):
             ),
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="PATCH",
             path="/crm/users/{id}",
             base_url=base_url,
@@ -1353,7 +1353,7 @@ class Users(BaseSDK):
             raw=raw,
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="DELETE",
             path="/crm/users/{id}",
             base_url=base_url,
@@ -1472,7 +1472,7 @@ class Users(BaseSDK):
             raw=raw,
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="DELETE",
             path="/crm/users/{id}",
             base_url=base_url,

@@ -66,7 +66,7 @@ class Customers(BaseSDK):
             fields=fields,
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="GET",
             path="/accounting/customers",
             base_url=base_url,
@@ -232,7 +232,7 @@ class Customers(BaseSDK):
             fields=fields,
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="GET",
             path="/accounting/customers",
             base_url=base_url,
@@ -389,6 +389,9 @@ class Customers(BaseSDK):
         status: OptionalNullable[models.CustomerStatusStatus] = UNSET,
         payment_method: OptionalNullable[str] = UNSET,
         channel: OptionalNullable[str] = UNSET,
+        custom_fields: Optional[
+            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+        ] = None,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
@@ -429,6 +432,7 @@ class Customers(BaseSDK):
         :param status: Customer status
         :param payment_method: Payment method used for the transaction, such as cash, credit card, bank transfer, or check
         :param channel: The channel through which the transaction is processed.
+        :param custom_fields:
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
@@ -487,6 +491,9 @@ class Customers(BaseSDK):
                 status=status,
                 payment_method=payment_method,
                 channel=channel,
+                custom_fields=utils.get_pydantic_model(
+                    custom_fields, Optional[List[models.CustomField]]
+                ),
                 row_version=row_version,
                 pass_through=utils.get_pydantic_model(
                     pass_through, Optional[List[models.PassThroughBody]]
@@ -494,7 +501,7 @@ class Customers(BaseSDK):
             ),
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="POST",
             path="/accounting/customers",
             base_url=base_url,
@@ -626,6 +633,9 @@ class Customers(BaseSDK):
         status: OptionalNullable[models.CustomerStatusStatus] = UNSET,
         payment_method: OptionalNullable[str] = UNSET,
         channel: OptionalNullable[str] = UNSET,
+        custom_fields: Optional[
+            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+        ] = None,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
@@ -666,6 +676,7 @@ class Customers(BaseSDK):
         :param status: Customer status
         :param payment_method: Payment method used for the transaction, such as cash, credit card, bank transfer, or check
         :param channel: The channel through which the transaction is processed.
+        :param custom_fields:
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
@@ -724,6 +735,9 @@ class Customers(BaseSDK):
                 status=status,
                 payment_method=payment_method,
                 channel=channel,
+                custom_fields=utils.get_pydantic_model(
+                    custom_fields, Optional[List[models.CustomField]]
+                ),
                 row_version=row_version,
                 pass_through=utils.get_pydantic_model(
                     pass_through, Optional[List[models.PassThroughBody]]
@@ -731,7 +745,7 @@ class Customers(BaseSDK):
             ),
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="POST",
             path="/accounting/customers",
             base_url=base_url,
@@ -856,7 +870,7 @@ class Customers(BaseSDK):
             fields=fields,
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="GET",
             path="/accounting/customers/{id}",
             base_url=base_url,
@@ -978,7 +992,7 @@ class Customers(BaseSDK):
             fields=fields,
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="GET",
             path="/accounting/customers/{id}",
             base_url=base_url,
@@ -1108,6 +1122,9 @@ class Customers(BaseSDK):
         status: OptionalNullable[models.CustomerStatusStatus] = UNSET,
         payment_method: OptionalNullable[str] = UNSET,
         channel: OptionalNullable[str] = UNSET,
+        custom_fields: Optional[
+            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+        ] = None,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
@@ -1149,6 +1166,7 @@ class Customers(BaseSDK):
         :param status: Customer status
         :param payment_method: Payment method used for the transaction, such as cash, credit card, bank transfer, or check
         :param channel: The channel through which the transaction is processed.
+        :param custom_fields:
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
@@ -1208,6 +1226,9 @@ class Customers(BaseSDK):
                 status=status,
                 payment_method=payment_method,
                 channel=channel,
+                custom_fields=utils.get_pydantic_model(
+                    custom_fields, Optional[List[models.CustomField]]
+                ),
                 row_version=row_version,
                 pass_through=utils.get_pydantic_model(
                     pass_through, Optional[List[models.PassThroughBody]]
@@ -1215,7 +1236,7 @@ class Customers(BaseSDK):
             ),
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="PATCH",
             path="/accounting/customers/{id}",
             base_url=base_url,
@@ -1348,6 +1369,9 @@ class Customers(BaseSDK):
         status: OptionalNullable[models.CustomerStatusStatus] = UNSET,
         payment_method: OptionalNullable[str] = UNSET,
         channel: OptionalNullable[str] = UNSET,
+        custom_fields: Optional[
+            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+        ] = None,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
@@ -1389,6 +1413,7 @@ class Customers(BaseSDK):
         :param status: Customer status
         :param payment_method: Payment method used for the transaction, such as cash, credit card, bank transfer, or check
         :param channel: The channel through which the transaction is processed.
+        :param custom_fields:
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
@@ -1448,6 +1473,9 @@ class Customers(BaseSDK):
                 status=status,
                 payment_method=payment_method,
                 channel=channel,
+                custom_fields=utils.get_pydantic_model(
+                    custom_fields, Optional[List[models.CustomField]]
+                ),
                 row_version=row_version,
                 pass_through=utils.get_pydantic_model(
                     pass_through, Optional[List[models.PassThroughBody]]
@@ -1455,7 +1483,7 @@ class Customers(BaseSDK):
             ),
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="PATCH",
             path="/accounting/customers/{id}",
             base_url=base_url,
@@ -1577,7 +1605,7 @@ class Customers(BaseSDK):
             raw=raw,
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="DELETE",
             path="/accounting/customers/{id}",
             base_url=base_url,
@@ -1696,7 +1724,7 @@ class Customers(BaseSDK):
             raw=raw,
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="DELETE",
             path="/accounting/customers/{id}",
             base_url=base_url,

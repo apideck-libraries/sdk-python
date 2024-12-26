@@ -46,7 +46,7 @@ class ConnectorResources(BaseSDK):
             unified_api=unified_api,
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="GET",
             path="/connector/connectors/{id}/resources/{resource_id}",
             base_url=base_url,
@@ -160,7 +160,7 @@ class ConnectorResources(BaseSDK):
             unified_api=unified_api,
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="GET",
             path="/connector/connectors/{id}/resources/{resource_id}",
             base_url=base_url,

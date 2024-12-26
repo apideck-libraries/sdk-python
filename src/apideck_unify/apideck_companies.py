@@ -56,7 +56,7 @@ class ApideckCompanies(BaseSDK):
             fields=fields,
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="GET",
             path="/hris/companies",
             base_url=base_url,
@@ -212,7 +212,7 @@ class ApideckCompanies(BaseSDK):
             fields=fields,
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="GET",
             path="/hris/companies",
             base_url=base_url,
@@ -410,7 +410,7 @@ class ApideckCompanies(BaseSDK):
             ),
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="POST",
             path="/hris/companies",
             base_url=base_url,
@@ -583,7 +583,7 @@ class ApideckCompanies(BaseSDK):
             ),
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="POST",
             path="/hris/companies",
             base_url=base_url,
@@ -708,7 +708,7 @@ class ApideckCompanies(BaseSDK):
             fields=fields,
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="GET",
             path="/hris/companies/{id}",
             base_url=base_url,
@@ -830,7 +830,7 @@ class ApideckCompanies(BaseSDK):
             fields=fields,
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="GET",
             path="/hris/companies/{id}",
             base_url=base_url,
@@ -1003,7 +1003,7 @@ class ApideckCompanies(BaseSDK):
             ),
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="PATCH",
             path="/hris/companies/{id}",
             base_url=base_url,
@@ -1179,7 +1179,7 @@ class ApideckCompanies(BaseSDK):
             ),
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="PATCH",
             path="/hris/companies/{id}",
             base_url=base_url,
@@ -1301,7 +1301,7 @@ class ApideckCompanies(BaseSDK):
             raw=raw,
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="DELETE",
             path="/hris/companies/{id}",
             base_url=base_url,
@@ -1420,7 +1420,7 @@ class ApideckCompanies(BaseSDK):
             raw=raw,
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="DELETE",
             path="/hris/companies/{id}",
             base_url=base_url,

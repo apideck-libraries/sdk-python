@@ -47,7 +47,7 @@ class Apis(BaseSDK):
             filter_=utils.get_pydantic_model(filter_, Optional[models.ApisFilter]),
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="GET",
             path="/connector/apis",
             base_url=base_url,
@@ -182,7 +182,7 @@ class Apis(BaseSDK):
             filter_=utils.get_pydantic_model(filter_, Optional[models.ApisFilter]),
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="GET",
             path="/connector/apis",
             base_url=base_url,
@@ -311,7 +311,7 @@ class Apis(BaseSDK):
             id=id,
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="GET",
             path="/connector/apis/{id}",
             base_url=base_url,
@@ -417,7 +417,7 @@ class Apis(BaseSDK):
             id=id,
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="GET",
             path="/connector/apis/{id}",
             base_url=base_url,

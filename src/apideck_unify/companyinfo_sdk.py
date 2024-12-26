@@ -46,7 +46,7 @@ class CompanyInfoSDK(BaseSDK):
             fields=fields,
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="GET",
             path="/accounting/company-info",
             base_url=base_url,
@@ -165,7 +165,7 @@ class CompanyInfoSDK(BaseSDK):
             fields=fields,
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="GET",
             path="/accounting/company-info",
             base_url=base_url,

@@ -67,7 +67,7 @@ class Employees(BaseSDK):
             fields=fields,
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="GET",
             path="/hris/employees",
             base_url=base_url,
@@ -233,7 +233,7 @@ class Employees(BaseSDK):
             fields=fields,
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="GET",
             path="/hris/employees",
             base_url=base_url,
@@ -608,7 +608,7 @@ class Employees(BaseSDK):
             ),
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="POST",
             path="/hris/employees",
             base_url=base_url,
@@ -958,7 +958,7 @@ class Employees(BaseSDK):
             ),
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="POST",
             path="/hris/employees",
             base_url=base_url,
@@ -1093,7 +1093,7 @@ class Employees(BaseSDK):
             pass_through=pass_through,
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="GET",
             path="/hris/employees/{id}",
             base_url=base_url,
@@ -1225,7 +1225,7 @@ class Employees(BaseSDK):
             pass_through=pass_through,
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="GET",
             path="/hris/employees/{id}",
             base_url=base_url,
@@ -1575,7 +1575,7 @@ class Employees(BaseSDK):
             ),
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="PATCH",
             path="/hris/employees/{id}",
             base_url=base_url,
@@ -1928,7 +1928,7 @@ class Employees(BaseSDK):
             ),
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="PATCH",
             path="/hris/employees/{id}",
             base_url=base_url,
@@ -2050,7 +2050,7 @@ class Employees(BaseSDK):
             raw=raw,
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="DELETE",
             path="/hris/employees/{id}",
             base_url=base_url,
@@ -2169,7 +2169,7 @@ class Employees(BaseSDK):
             raw=raw,
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="DELETE",
             path="/hris/employees/{id}",
             base_url=base_url,

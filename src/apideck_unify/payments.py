@@ -65,7 +65,7 @@ class Payments(BaseSDK):
             fields=fields,
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="GET",
             path="/accounting/payments",
             base_url=base_url,
@@ -229,7 +229,7 @@ class Payments(BaseSDK):
             fields=fields,
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="GET",
             path="/accounting/payments",
             base_url=base_url,
@@ -488,7 +488,7 @@ class Payments(BaseSDK):
             ),
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="POST",
             path="/accounting/payments",
             base_url=base_url,
@@ -722,7 +722,7 @@ class Payments(BaseSDK):
             ),
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="POST",
             path="/accounting/payments",
             base_url=base_url,
@@ -847,7 +847,7 @@ class Payments(BaseSDK):
             fields=fields,
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="GET",
             path="/accounting/payments/{id}",
             base_url=base_url,
@@ -969,7 +969,7 @@ class Payments(BaseSDK):
             fields=fields,
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="GET",
             path="/accounting/payments/{id}",
             base_url=base_url,
@@ -1203,7 +1203,7 @@ class Payments(BaseSDK):
             ),
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="PATCH",
             path="/accounting/payments/{id}",
             base_url=base_url,
@@ -1440,7 +1440,7 @@ class Payments(BaseSDK):
             ),
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="PATCH",
             path="/accounting/payments/{id}",
             base_url=base_url,
@@ -1562,7 +1562,7 @@ class Payments(BaseSDK):
             raw=raw,
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="DELETE",
             path="/accounting/payments/{id}",
             base_url=base_url,
@@ -1681,7 +1681,7 @@ class Payments(BaseSDK):
             raw=raw,
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="DELETE",
             path="/accounting/payments/{id}",
             base_url=base_url,

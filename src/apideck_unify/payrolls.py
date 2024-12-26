@@ -54,7 +54,7 @@ class Payrolls(BaseSDK):
             fields=fields,
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="GET",
             path="/hris/payrolls",
             base_url=base_url,
@@ -181,7 +181,7 @@ class Payrolls(BaseSDK):
             fields=fields,
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="GET",
             path="/hris/payrolls",
             base_url=base_url,
@@ -303,7 +303,7 @@ class Payrolls(BaseSDK):
             fields=fields,
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="GET",
             path="/hris/payrolls/{payroll_id}",
             base_url=base_url,
@@ -425,7 +425,7 @@ class Payrolls(BaseSDK):
             fields=fields,
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="GET",
             path="/hris/payrolls/{payroll_id}",
             base_url=base_url,
