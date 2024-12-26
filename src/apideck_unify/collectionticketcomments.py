@@ -65,7 +65,7 @@ class CollectionTicketComments(BaseSDK):
             fields=fields,
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="GET",
             path="/issue-tracking/collections/{collection_id}/tickets/{ticket_id}/comments",
             base_url=base_url,
@@ -233,7 +233,7 @@ class CollectionTicketComments(BaseSDK):
             fields=fields,
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="GET",
             path="/issue-tracking/collections/{collection_id}/tickets/{ticket_id}/comments",
             base_url=base_url,
@@ -398,7 +398,7 @@ class CollectionTicketComments(BaseSDK):
             ),
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="POST",
             path="/issue-tracking/collections/{collection_id}/tickets/{ticket_id}/comments",
             base_url=base_url,
@@ -539,7 +539,7 @@ class CollectionTicketComments(BaseSDK):
             ),
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="POST",
             path="/issue-tracking/collections/{collection_id}/tickets/{ticket_id}/comments",
             base_url=base_url,
@@ -680,7 +680,7 @@ class CollectionTicketComments(BaseSDK):
             fields=fields,
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="GET",
             path="/issue-tracking/collections/{collection_id}/tickets/{ticket_id}/comments/{id}",
             base_url=base_url,
@@ -844,7 +844,7 @@ class CollectionTicketComments(BaseSDK):
             fields=fields,
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="GET",
             path="/issue-tracking/collections/{collection_id}/tickets/{ticket_id}/comments/{id}",
             base_url=base_url,
@@ -1011,7 +1011,7 @@ class CollectionTicketComments(BaseSDK):
             ),
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="PATCH",
             path="/issue-tracking/collections/{collection_id}/tickets/{ticket_id}/comments/{id}",
             base_url=base_url,
@@ -1155,7 +1155,7 @@ class CollectionTicketComments(BaseSDK):
             ),
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="PATCH",
             path="/issue-tracking/collections/{collection_id}/tickets/{ticket_id}/comments/{id}",
             base_url=base_url,
@@ -1287,7 +1287,7 @@ class CollectionTicketComments(BaseSDK):
             ticket_id=ticket_id,
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="DELETE",
             path="/issue-tracking/collections/{collection_id}/tickets/{ticket_id}/comments/{id}",
             base_url=base_url,
@@ -1412,7 +1412,7 @@ class CollectionTicketComments(BaseSDK):
             ticket_id=ticket_id,
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="DELETE",
             path="/issue-tracking/collections/{collection_id}/tickets/{ticket_id}/comments/{id}",
             base_url=base_url,

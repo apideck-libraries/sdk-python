@@ -75,7 +75,7 @@ class Files(BaseSDK):
             fields=fields,
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="GET",
             path="/file-storage/files",
             base_url=base_url,
@@ -239,7 +239,7 @@ class Files(BaseSDK):
             fields=fields,
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="GET",
             path="/file-storage/files",
             base_url=base_url,
@@ -412,7 +412,7 @@ class Files(BaseSDK):
             ),
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="POST",
             path="/file-storage/files/search",
             base_url=base_url,
@@ -560,7 +560,7 @@ class Files(BaseSDK):
             ),
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="POST",
             path="/file-storage/files/search",
             base_url=base_url,
@@ -685,7 +685,7 @@ class Files(BaseSDK):
             fields=fields,
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="GET",
             path="/file-storage/files/{id}",
             base_url=base_url,
@@ -807,7 +807,7 @@ class Files(BaseSDK):
             fields=fields,
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="GET",
             path="/file-storage/files/{id}",
             base_url=base_url,
@@ -944,7 +944,7 @@ class Files(BaseSDK):
             ),
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="PATCH",
             path="/file-storage/files/{id}",
             base_url=base_url,
@@ -1088,7 +1088,7 @@ class Files(BaseSDK):
             ),
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="PATCH",
             path="/file-storage/files/{id}",
             base_url=base_url,
@@ -1214,7 +1214,7 @@ class Files(BaseSDK):
             raw=raw,
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="DELETE",
             path="/file-storage/files/{id}",
             base_url=base_url,
@@ -1333,7 +1333,7 @@ class Files(BaseSDK):
             raw=raw,
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="DELETE",
             path="/file-storage/files/{id}",
             base_url=base_url,
@@ -1454,7 +1454,7 @@ class Files(BaseSDK):
             fields=fields,
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="GET",
             path="/file-storage/files/{id}/download",
             base_url=base_url,
@@ -1586,7 +1586,7 @@ class Files(BaseSDK):
             fields=fields,
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="GET",
             path="/file-storage/files/{id}/download",
             base_url=base_url,
@@ -1721,7 +1721,7 @@ class Files(BaseSDK):
             file_format=file_format,
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="GET",
             path="/file-storage/files/{id}/export",
             base_url=base_url,
@@ -1856,7 +1856,7 @@ class Files(BaseSDK):
             file_format=file_format,
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="GET",
             path="/file-storage/files/{id}/export",
             base_url=base_url,

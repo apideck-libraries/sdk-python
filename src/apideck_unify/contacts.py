@@ -64,7 +64,7 @@ class Contacts(BaseSDK):
             fields=fields,
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="GET",
             path="/crm/contacts",
             base_url=base_url,
@@ -228,7 +228,7 @@ class Contacts(BaseSDK):
             fields=fields,
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="GET",
             path="/crm/contacts",
             base_url=base_url,
@@ -500,7 +500,7 @@ class Contacts(BaseSDK):
             ),
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="POST",
             path="/crm/contacts",
             base_url=base_url,
@@ -747,7 +747,7 @@ class Contacts(BaseSDK):
             ),
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="POST",
             path="/crm/contacts",
             base_url=base_url,
@@ -877,7 +877,7 @@ class Contacts(BaseSDK):
             filter_=utils.get_pydantic_model(filter_, Optional[models.ContactsFilter]),
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="GET",
             path="/crm/contacts/{id}",
             base_url=base_url,
@@ -1004,7 +1004,7 @@ class Contacts(BaseSDK):
             filter_=utils.get_pydantic_model(filter_, Optional[models.ContactsFilter]),
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="GET",
             path="/crm/contacts/{id}",
             base_url=base_url,
@@ -1251,7 +1251,7 @@ class Contacts(BaseSDK):
             ),
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="PATCH",
             path="/crm/contacts/{id}",
             base_url=base_url,
@@ -1501,7 +1501,7 @@ class Contacts(BaseSDK):
             ),
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="PATCH",
             path="/crm/contacts/{id}",
             base_url=base_url,
@@ -1623,7 +1623,7 @@ class Contacts(BaseSDK):
             raw=raw,
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="DELETE",
             path="/crm/contacts/{id}",
             base_url=base_url,
@@ -1742,7 +1742,7 @@ class Contacts(BaseSDK):
             raw=raw,
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="DELETE",
             path="/crm/contacts/{id}",
             base_url=base_url,

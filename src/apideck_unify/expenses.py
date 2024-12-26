@@ -51,7 +51,7 @@ class Expenses(BaseSDK):
             limit=limit,
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="GET",
             path="/accounting/expenses",
             base_url=base_url,
@@ -197,7 +197,7 @@ class Expenses(BaseSDK):
             limit=limit,
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="GET",
             path="/accounting/expenses",
             base_url=base_url,
@@ -410,7 +410,7 @@ class Expenses(BaseSDK):
             ),
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="POST",
             path="/accounting/expenses",
             base_url=base_url,
@@ -602,7 +602,7 @@ class Expenses(BaseSDK):
             ),
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="POST",
             path="/accounting/expenses",
             base_url=base_url,
@@ -724,7 +724,7 @@ class Expenses(BaseSDK):
             raw=raw,
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="GET",
             path="/accounting/expenses/{id}",
             base_url=base_url,
@@ -843,7 +843,7 @@ class Expenses(BaseSDK):
             raw=raw,
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="GET",
             path="/accounting/expenses/{id}",
             base_url=base_url,
@@ -1035,7 +1035,7 @@ class Expenses(BaseSDK):
             ),
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="PATCH",
             path="/accounting/expenses/{id}",
             base_url=base_url,
@@ -1230,7 +1230,7 @@ class Expenses(BaseSDK):
             ),
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="PATCH",
             path="/accounting/expenses/{id}",
             base_url=base_url,
@@ -1352,7 +1352,7 @@ class Expenses(BaseSDK):
             raw=raw,
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="DELETE",
             path="/accounting/expenses/{id}",
             base_url=base_url,
@@ -1471,7 +1471,7 @@ class Expenses(BaseSDK):
             raw=raw,
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="DELETE",
             path="/accounting/expenses/{id}",
             base_url=base_url,

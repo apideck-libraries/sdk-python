@@ -67,7 +67,7 @@ class Companies(BaseSDK):
             fields=fields,
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="GET",
             path="/crm/companies",
             base_url=base_url,
@@ -233,7 +233,7 @@ class Companies(BaseSDK):
             fields=fields,
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="GET",
             path="/crm/companies",
             base_url=base_url,
@@ -507,7 +507,7 @@ class Companies(BaseSDK):
             ),
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="POST",
             path="/crm/companies",
             base_url=base_url,
@@ -756,7 +756,7 @@ class Companies(BaseSDK):
             ),
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="POST",
             path="/crm/companies",
             base_url=base_url,
@@ -881,7 +881,7 @@ class Companies(BaseSDK):
             fields=fields,
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="GET",
             path="/crm/companies/{id}",
             base_url=base_url,
@@ -1003,7 +1003,7 @@ class Companies(BaseSDK):
             fields=fields,
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="GET",
             path="/crm/companies/{id}",
             base_url=base_url,
@@ -1252,7 +1252,7 @@ class Companies(BaseSDK):
             ),
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="PATCH",
             path="/crm/companies/{id}",
             base_url=base_url,
@@ -1504,7 +1504,7 @@ class Companies(BaseSDK):
             ),
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="PATCH",
             path="/crm/companies/{id}",
             base_url=base_url,
@@ -1626,7 +1626,7 @@ class Companies(BaseSDK):
             service_id=service_id,
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="DELETE",
             path="/crm/companies/{id}",
             base_url=base_url,
@@ -1745,7 +1745,7 @@ class Companies(BaseSDK):
             service_id=service_id,
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="DELETE",
             path="/crm/companies/{id}",
             base_url=base_url,

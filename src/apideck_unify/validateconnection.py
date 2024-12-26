@@ -59,7 +59,7 @@ class ValidateConnection(BaseSDK):
             ),
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="POST",
             path="/vault/connections/{unified_api}/{service_id}/validate",
             base_url=base_url,
@@ -200,7 +200,7 @@ class ValidateConnection(BaseSDK):
             ),
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="POST",
             path="/vault/connections/{unified_api}/{service_id}/validate",
             base_url=base_url,

@@ -59,7 +59,7 @@ class CollectionTags(BaseSDK):
             fields=fields,
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="GET",
             path="/issue-tracking/collections/{collection_id}/tags",
             base_url=base_url,
@@ -219,7 +219,7 @@ class CollectionTags(BaseSDK):
             fields=fields,
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="GET",
             path="/issue-tracking/collections/{collection_id}/tags",
             base_url=base_url,

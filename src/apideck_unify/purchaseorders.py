@@ -66,7 +66,7 @@ class PurchaseOrders(BaseSDK):
             sort=utils.get_pydantic_model(sort, Optional[models.PurchaseOrdersSort]),
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="GET",
             path="/accounting/purchase-orders",
             base_url=base_url,
@@ -232,7 +232,7 @@ class PurchaseOrders(BaseSDK):
             sort=utils.get_pydantic_model(sort, Optional[models.PurchaseOrdersSort]),
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="GET",
             path="/accounting/purchase-orders",
             base_url=base_url,
@@ -504,7 +504,7 @@ class PurchaseOrders(BaseSDK):
             ),
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="POST",
             path="/accounting/purchase-orders",
             base_url=base_url,
@@ -752,7 +752,7 @@ class PurchaseOrders(BaseSDK):
             ),
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="POST",
             path="/accounting/purchase-orders",
             base_url=base_url,
@@ -876,7 +876,7 @@ class PurchaseOrders(BaseSDK):
             raw=raw,
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="GET",
             path="/accounting/purchase-orders/{id}",
             base_url=base_url,
@@ -995,7 +995,7 @@ class PurchaseOrders(BaseSDK):
             raw=raw,
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="GET",
             path="/accounting/purchase-orders/{id}",
             base_url=base_url,
@@ -1241,7 +1241,7 @@ class PurchaseOrders(BaseSDK):
             ),
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="PATCH",
             path="/accounting/purchase-orders/{id}",
             base_url=base_url,
@@ -1492,7 +1492,7 @@ class PurchaseOrders(BaseSDK):
             ),
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="PATCH",
             path="/accounting/purchase-orders/{id}",
             base_url=base_url,
@@ -1616,7 +1616,7 @@ class PurchaseOrders(BaseSDK):
             raw=raw,
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="DELETE",
             path="/accounting/purchase-orders/{id}",
             base_url=base_url,
@@ -1737,7 +1737,7 @@ class PurchaseOrders(BaseSDK):
             raw=raw,
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="DELETE",
             path="/accounting/purchase-orders/{id}",
             base_url=base_url,

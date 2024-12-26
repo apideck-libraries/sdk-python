@@ -53,7 +53,7 @@ class Subsidiaries(BaseSDK):
             fields=fields,
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="GET",
             path="/accounting/subsidiaries",
             base_url=base_url,
@@ -205,7 +205,7 @@ class Subsidiaries(BaseSDK):
             fields=fields,
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="GET",
             path="/accounting/subsidiaries",
             base_url=base_url,
@@ -369,7 +369,7 @@ class Subsidiaries(BaseSDK):
             ),
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="POST",
             path="/accounting/subsidiaries",
             base_url=base_url,
@@ -509,7 +509,7 @@ class Subsidiaries(BaseSDK):
             ),
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="POST",
             path="/accounting/subsidiaries",
             base_url=base_url,
@@ -634,7 +634,7 @@ class Subsidiaries(BaseSDK):
             fields=fields,
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="GET",
             path="/accounting/subsidiaries/{id}",
             base_url=base_url,
@@ -756,7 +756,7 @@ class Subsidiaries(BaseSDK):
             fields=fields,
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="GET",
             path="/accounting/subsidiaries/{id}",
             base_url=base_url,
@@ -896,7 +896,7 @@ class Subsidiaries(BaseSDK):
             ),
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="PATCH",
             path="/accounting/subsidiaries/{id}",
             base_url=base_url,
@@ -1039,7 +1039,7 @@ class Subsidiaries(BaseSDK):
             ),
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="PATCH",
             path="/accounting/subsidiaries/{id}",
             base_url=base_url,
@@ -1161,7 +1161,7 @@ class Subsidiaries(BaseSDK):
             raw=raw,
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="DELETE",
             path="/accounting/subsidiaries/{id}",
             base_url=base_url,
@@ -1280,7 +1280,7 @@ class Subsidiaries(BaseSDK):
             raw=raw,
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="DELETE",
             path="/accounting/subsidiaries/{id}",
             base_url=base_url,

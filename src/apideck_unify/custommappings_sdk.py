@@ -43,7 +43,7 @@ class CustomMappingsSDK(BaseSDK):
             service_id=service_id,
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="GET",
             path="/vault/custom-mappings/{unified_api}/{service_id}",
             base_url=base_url,
@@ -159,7 +159,7 @@ class CustomMappingsSDK(BaseSDK):
             service_id=service_id,
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="GET",
             path="/vault/custom-mappings/{unified_api}/{service_id}",
             base_url=base_url,

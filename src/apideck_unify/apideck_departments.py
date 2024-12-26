@@ -56,7 +56,7 @@ class ApideckDepartments(BaseSDK):
             fields=fields,
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="GET",
             path="/hris/departments",
             base_url=base_url,
@@ -212,7 +212,7 @@ class ApideckDepartments(BaseSDK):
             fields=fields,
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="GET",
             path="/hris/departments",
             base_url=base_url,
@@ -374,7 +374,7 @@ class ApideckDepartments(BaseSDK):
             ),
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="POST",
             path="/hris/departments",
             base_url=base_url,
@@ -511,7 +511,7 @@ class ApideckDepartments(BaseSDK):
             ),
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="POST",
             path="/hris/departments",
             base_url=base_url,
@@ -636,7 +636,7 @@ class ApideckDepartments(BaseSDK):
             fields=fields,
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="GET",
             path="/hris/departments/{id}",
             base_url=base_url,
@@ -758,7 +758,7 @@ class ApideckDepartments(BaseSDK):
             fields=fields,
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="GET",
             path="/hris/departments/{id}",
             base_url=base_url,
@@ -895,7 +895,7 @@ class ApideckDepartments(BaseSDK):
             ),
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="PATCH",
             path="/hris/departments/{id}",
             base_url=base_url,
@@ -1035,7 +1035,7 @@ class ApideckDepartments(BaseSDK):
             ),
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="PATCH",
             path="/hris/departments/{id}",
             base_url=base_url,
@@ -1157,7 +1157,7 @@ class ApideckDepartments(BaseSDK):
             raw=raw,
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="DELETE",
             path="/hris/departments/{id}",
             base_url=base_url,
@@ -1276,7 +1276,7 @@ class ApideckDepartments(BaseSDK):
             raw=raw,
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="DELETE",
             path="/hris/departments/{id}",
             base_url=base_url,

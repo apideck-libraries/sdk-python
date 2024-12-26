@@ -1,12 +1,12 @@
 lockVersion: 2.0.0
 id: fca0ac3a-5f4e-452c-bbc7-2311afa8da40
 management:
-  docChecksum: 2c1240637436833a37fb51eb9386a22d
+  docChecksum: 6dd669a4ae28bd0ae2174e9d4cff4aba
   docVersion: 10.9.0
-  speakeasyVersion: 1.455.7
-  generationVersion: 2.480.1
-  releaseVersion: 0.2.0
-  configChecksum: 7b169bf0238b9fbdb0efd6204f997851
+  speakeasyVersion: 1.460.2
+  generationVersion: 2.484.0
+  releaseVersion: 0.2.1
+  configChecksum: 83fca60594a447eae7966b3a0c1e597d
   repoURL: https://github.com/apideck-libraries/sdk-python.git
   installationURL: https://github.com/apideck-libraries/sdk-python.git
   published: true
@@ -36,9 +36,9 @@ features:
     inputOutputModels: 3.0.0
     methodArguments: 1.0.2
     methodServerURLs: 3.1.0
-    nameOverrides: 3.0.0
+    nameOverrides: 3.0.1
     nullables: 1.0.0
-    pagination: 3.0.1
+    pagination: 3.0.2
     responseFormat: 1.0.1
     retries: 3.0.2
     sdkHooks: 1.0.0
@@ -8960,7 +8960,7 @@ examples:
         "422":
           application/json: {"status_code": 422, "error": "Unprocessable Entity", "type_name": "InvalidStateError", "message": "Invalid State", "detail": "Unprocessable request, please verify your request headers and body.", "ref": "https://developers.apideck.com/errors#invalidstateerror"}
         default:
-          application/json: {"status_code": 400, "error": "Bad Request", "type_name": "RequestHeadersValidationError", "message": "Invalid Params", "detail": {"missing": [{"x-apideck-consumer-id": "required"}]}, "ref": "https://developers.apideck.com/errors#unauthorizederror"}
+          application/json: {"status_code": 400, "error": "Bad Request", "type_name": "RequestHeadersValidationError", "message": "Invalid Params", "detail": "Missing Header: x-apideck-consumer-id", "ref": "https://developers.apideck.com/errors#unauthorizederror"}
   vault.validateConnectionState:
     "":
       parameters:
@@ -8982,7 +8982,7 @@ examples:
         "404":
           application/json: {"status_code": 404, "error": "Not Found", "type_name": "EntityNotFoundError", "message": "Unknown Widget", "detail": "Could not find widget with id: '123'", "ref": "https://developers.apideck.com/errors#entitynotfounderror"}
         "422":
-          application/json: {"status_code": 422, "error": "Unprocessable Entity", "type_name": "InvalidStateError", "message": "Invalid State", "detail": {"error": "Unprocessable", "message": "Unprocessable request, please verify your request headers and body."}, "ref": "https://developers.apideck.com/errors#invalidstateerror"}
+          application/json: {"status_code": 422, "error": "Unprocessable Entity", "type_name": "InvalidStateError", "message": "Invalid State", "detail": "Unprocessable request, please verify your request headers and body.", "ref": "https://developers.apideck.com/errors#invalidstateerror"}
         default:
           application/json: {"status_code": 400, "error": "Bad Request", "type_name": "RequestHeadersValidationError", "message": "Invalid Params", "detail": {"missing": [{"x-apideck-consumer-id": "required"}]}, "ref": "https://developers.apideck.com/errors#unauthorizederror"}
   vault.createCallbackState:
@@ -9008,7 +9008,7 @@ examples:
         "404":
           application/json: {"status_code": 404, "error": "Not Found", "type_name": "EntityNotFoundError", "message": "Unknown Widget", "detail": "Could not find widget with id: '123'", "ref": "https://developers.apideck.com/errors#entitynotfounderror"}
         "422":
-          application/json: {"status_code": 422, "error": "Unprocessable Entity", "type_name": "InvalidStateError", "message": "Invalid State", "detail": {"error": "Unprocessable", "message": "Unprocessable request, please verify your request headers and body."}, "ref": "https://developers.apideck.com/errors#invalidstateerror"}
+          application/json: {"status_code": 422, "error": "Unprocessable Entity", "type_name": "InvalidStateError", "message": "Invalid State", "detail": "Unprocessable request, please verify your request headers and body.", "ref": "https://developers.apideck.com/errors#invalidstateerror"}
         default:
           application/json: {"status_code": 400, "error": "Bad Request", "type_name": "RequestHeadersValidationError", "message": "Invalid Params", "detail": {"missing": [{"x-apideck-consumer-id": "required"}]}, "ref": "https://developers.apideck.com/errors#unauthorizederror"}
   vault.connectionSettingsAll:

@@ -52,7 +52,7 @@ class EmployeeSchedulesSDK(BaseSDK):
             fields=fields,
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="GET",
             path="/hris/schedules/employees/{employee_id}",
             base_url=base_url,
@@ -179,7 +179,7 @@ class EmployeeSchedulesSDK(BaseSDK):
             fields=fields,
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="GET",
             path="/hris/schedules/employees/{employee_id}",
             base_url=base_url,

@@ -64,7 +64,7 @@ class Applicants(BaseSDK):
             fields=fields,
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="GET",
             path="/ats/applicants",
             base_url=base_url,
@@ -228,7 +228,7 @@ class Applicants(BaseSDK):
             fields=fields,
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="GET",
             path="/ats/applicants",
             base_url=base_url,
@@ -492,7 +492,7 @@ class Applicants(BaseSDK):
             ),
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="POST",
             path="/ats/applicants",
             base_url=base_url,
@@ -730,7 +730,7 @@ class Applicants(BaseSDK):
             ),
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="POST",
             path="/ats/applicants",
             base_url=base_url,
@@ -855,7 +855,7 @@ class Applicants(BaseSDK):
             fields=fields,
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="GET",
             path="/ats/applicants/{id}",
             base_url=base_url,
@@ -977,7 +977,7 @@ class Applicants(BaseSDK):
             fields=fields,
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="GET",
             path="/ats/applicants/{id}",
             base_url=base_url,
@@ -1215,7 +1215,7 @@ class Applicants(BaseSDK):
             ),
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="PATCH",
             path="/ats/applicants/{id}",
             base_url=base_url,
@@ -1456,7 +1456,7 @@ class Applicants(BaseSDK):
             ),
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="PATCH",
             path="/ats/applicants/{id}",
             base_url=base_url,
@@ -1578,7 +1578,7 @@ class Applicants(BaseSDK):
             raw=raw,
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="DELETE",
             path="/ats/applicants/{id}",
             base_url=base_url,
@@ -1697,7 +1697,7 @@ class Applicants(BaseSDK):
             raw=raw,
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="DELETE",
             path="/ats/applicants/{id}",
             base_url=base_url,

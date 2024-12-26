@@ -69,7 +69,7 @@ class CreditNotes(BaseSDK):
             fields=fields,
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="GET",
             path="/accounting/credit-notes",
             base_url=base_url,
@@ -239,7 +239,7 @@ class CreditNotes(BaseSDK):
             fields=fields,
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="GET",
             path="/accounting/credit-notes",
             base_url=base_url,
@@ -517,7 +517,7 @@ class CreditNotes(BaseSDK):
             ),
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="POST",
             path="/accounting/credit-notes",
             base_url=base_url,
@@ -768,7 +768,7 @@ class CreditNotes(BaseSDK):
             ),
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="POST",
             path="/accounting/credit-notes",
             base_url=base_url,
@@ -893,7 +893,7 @@ class CreditNotes(BaseSDK):
             fields=fields,
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="GET",
             path="/accounting/credit-notes/{id}",
             base_url=base_url,
@@ -1015,7 +1015,7 @@ class CreditNotes(BaseSDK):
             fields=fields,
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="GET",
             path="/accounting/credit-notes/{id}",
             base_url=base_url,
@@ -1266,7 +1266,7 @@ class CreditNotes(BaseSDK):
             ),
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="PATCH",
             path="/accounting/credit-notes/{id}",
             base_url=base_url,
@@ -1520,7 +1520,7 @@ class CreditNotes(BaseSDK):
             ),
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="PATCH",
             path="/accounting/credit-notes/{id}",
             base_url=base_url,
@@ -1642,7 +1642,7 @@ class CreditNotes(BaseSDK):
             raw=raw,
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="DELETE",
             path="/accounting/credit-notes/{id}",
             base_url=base_url,
@@ -1761,7 +1761,7 @@ class CreditNotes(BaseSDK):
             raw=raw,
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="DELETE",
             path="/accounting/credit-notes/{id}",
             base_url=base_url,

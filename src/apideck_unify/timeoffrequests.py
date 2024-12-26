@@ -63,7 +63,7 @@ class TimeOffRequests(BaseSDK):
             fields=fields,
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="GET",
             path="/hris/time-off-requests",
             base_url=base_url,
@@ -227,7 +227,7 @@ class TimeOffRequests(BaseSDK):
             fields=fields,
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="GET",
             path="/hris/time-off-requests",
             base_url=base_url,
@@ -423,7 +423,7 @@ class TimeOffRequests(BaseSDK):
             ),
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="POST",
             path="/hris/time-off-requests",
             base_url=base_url,
@@ -599,7 +599,7 @@ class TimeOffRequests(BaseSDK):
             ),
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="POST",
             path="/hris/time-off-requests",
             base_url=base_url,
@@ -733,7 +733,7 @@ class TimeOffRequests(BaseSDK):
             employee_id=employee_id,
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="GET",
             path="/hris/time-off-requests/employees/{employee_id}/time-off-requests/{id}",
             base_url=base_url,
@@ -858,7 +858,7 @@ class TimeOffRequests(BaseSDK):
             employee_id=employee_id,
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="GET",
             path="/hris/time-off-requests/employees/{employee_id}/time-off-requests/{id}",
             base_url=base_url,
@@ -1031,7 +1031,7 @@ class TimeOffRequests(BaseSDK):
             ),
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="PATCH",
             path="/hris/time-off-requests/employees/{employee_id}/time-off-requests/{id}",
             base_url=base_url,
@@ -1213,7 +1213,7 @@ class TimeOffRequests(BaseSDK):
             ),
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="PATCH",
             path="/hris/time-off-requests/employees/{employee_id}/time-off-requests/{id}",
             base_url=base_url,
@@ -1344,7 +1344,7 @@ class TimeOffRequests(BaseSDK):
             employee_id=employee_id,
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="DELETE",
             path="/hris/time-off-requests/employees/{employee_id}/time-off-requests/{id}",
             base_url=base_url,
@@ -1468,7 +1468,7 @@ class TimeOffRequests(BaseSDK):
             employee_id=employee_id,
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="DELETE",
             path="/hris/time-off-requests/employees/{employee_id}/time-off-requests/{id}",
             base_url=base_url,

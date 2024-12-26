@@ -69,7 +69,7 @@ class LedgerAccounts(BaseSDK):
             fields=fields,
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="GET",
             path="/accounting/ledger-accounts",
             base_url=base_url,
@@ -239,7 +239,7 @@ class LedgerAccounts(BaseSDK):
             fields=fields,
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="GET",
             path="/accounting/ledger-accounts",
             base_url=base_url,
@@ -485,7 +485,7 @@ class LedgerAccounts(BaseSDK):
             ),
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="POST",
             path="/accounting/ledger-accounts",
             base_url=base_url,
@@ -706,7 +706,7 @@ class LedgerAccounts(BaseSDK):
             ),
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="POST",
             path="/accounting/ledger-accounts",
             base_url=base_url,
@@ -833,7 +833,7 @@ class LedgerAccounts(BaseSDK):
             fields=fields,
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="GET",
             path="/accounting/ledger-accounts/{id}",
             base_url=base_url,
@@ -955,7 +955,7 @@ class LedgerAccounts(BaseSDK):
             fields=fields,
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="GET",
             path="/accounting/ledger-accounts/{id}",
             base_url=base_url,
@@ -1174,7 +1174,7 @@ class LedgerAccounts(BaseSDK):
             ),
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="PATCH",
             path="/accounting/ledger-accounts/{id}",
             base_url=base_url,
@@ -1398,7 +1398,7 @@ class LedgerAccounts(BaseSDK):
             ),
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="PATCH",
             path="/accounting/ledger-accounts/{id}",
             base_url=base_url,
@@ -1522,7 +1522,7 @@ class LedgerAccounts(BaseSDK):
             raw=raw,
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="DELETE",
             path="/accounting/ledger-accounts/{id}",
             base_url=base_url,
@@ -1643,7 +1643,7 @@ class LedgerAccounts(BaseSDK):
             raw=raw,
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="DELETE",
             path="/accounting/ledger-accounts/{id}",
             base_url=base_url,

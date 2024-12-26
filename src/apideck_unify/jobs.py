@@ -56,7 +56,7 @@ class Jobs(BaseSDK):
             fields=fields,
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="GET",
             path="/ats/jobs",
             base_url=base_url,
@@ -210,7 +210,7 @@ class Jobs(BaseSDK):
             fields=fields,
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="GET",
             path="/ats/jobs",
             base_url=base_url,
@@ -358,7 +358,7 @@ class Jobs(BaseSDK):
             fields=fields,
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="GET",
             path="/ats/jobs/{id}",
             base_url=base_url,
@@ -480,7 +480,7 @@ class Jobs(BaseSDK):
             fields=fields,
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="GET",
             path="/ats/jobs/{id}",
             base_url=base_url,

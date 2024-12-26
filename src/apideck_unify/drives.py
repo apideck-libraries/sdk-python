@@ -58,7 +58,7 @@ class Drives(BaseSDK):
             fields=fields,
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="GET",
             path="/file-storage/drives",
             base_url=base_url,
@@ -214,7 +214,7 @@ class Drives(BaseSDK):
             fields=fields,
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="GET",
             path="/file-storage/drives",
             base_url=base_url,
@@ -371,7 +371,7 @@ class Drives(BaseSDK):
             ),
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="POST",
             path="/file-storage/drives",
             base_url=base_url,
@@ -505,7 +505,7 @@ class Drives(BaseSDK):
             ),
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="POST",
             path="/file-storage/drives",
             base_url=base_url,
@@ -630,7 +630,7 @@ class Drives(BaseSDK):
             fields=fields,
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="GET",
             path="/file-storage/drives/{id}",
             base_url=base_url,
@@ -752,7 +752,7 @@ class Drives(BaseSDK):
             fields=fields,
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="GET",
             path="/file-storage/drives/{id}",
             base_url=base_url,
@@ -886,7 +886,7 @@ class Drives(BaseSDK):
             ),
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="PATCH",
             path="/file-storage/drives/{id}",
             base_url=base_url,
@@ -1023,7 +1023,7 @@ class Drives(BaseSDK):
             ),
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="PATCH",
             path="/file-storage/drives/{id}",
             base_url=base_url,
@@ -1145,7 +1145,7 @@ class Drives(BaseSDK):
             raw=raw,
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="DELETE",
             path="/file-storage/drives/{id}",
             base_url=base_url,
@@ -1264,7 +1264,7 @@ class Drives(BaseSDK):
             raw=raw,
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="DELETE",
             path="/file-storage/drives/{id}",
             base_url=base_url,

@@ -44,7 +44,7 @@ class Webhooks(BaseSDK):
             limit=limit,
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="GET",
             path="/webhook/webhooks",
             base_url=base_url,
@@ -181,7 +181,7 @@ class Webhooks(BaseSDK):
             limit=limit,
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="GET",
             path="/webhook/webhooks",
             base_url=base_url,
@@ -327,7 +327,7 @@ class Webhooks(BaseSDK):
             events=events,
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="POST",
             path="/webhook/webhooks",
             base_url=base_url,
@@ -454,7 +454,7 @@ class Webhooks(BaseSDK):
             events=events,
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="POST",
             path="/webhook/webhooks",
             base_url=base_url,
@@ -569,7 +569,7 @@ class Webhooks(BaseSDK):
             id=id,
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="GET",
             path="/webhook/webhooks/{id}",
             base_url=base_url,
@@ -681,7 +681,7 @@ class Webhooks(BaseSDK):
             id=id,
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="GET",
             path="/webhook/webhooks/{id}",
             base_url=base_url,
@@ -807,7 +807,7 @@ class Webhooks(BaseSDK):
             ),
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="PATCH",
             path="/webhook/webhooks/{id}",
             base_url=base_url,
@@ -940,7 +940,7 @@ class Webhooks(BaseSDK):
             ),
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="PATCH",
             path="/webhook/webhooks/{id}",
             base_url=base_url,
@@ -1059,7 +1059,7 @@ class Webhooks(BaseSDK):
             id=id,
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="DELETE",
             path="/webhook/webhooks/{id}",
             base_url=base_url,
@@ -1171,7 +1171,7 @@ class Webhooks(BaseSDK):
             id=id,
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="DELETE",
             path="/webhook/webhooks/{id}",
             base_url=base_url,

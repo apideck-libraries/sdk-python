@@ -46,7 +46,7 @@ class Connections(BaseSDK):
             configured=configured,
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="GET",
             path="/vault/connections",
             base_url=base_url,
@@ -165,7 +165,7 @@ class Connections(BaseSDK):
             configured=configured,
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="GET",
             path="/vault/connections",
             base_url=base_url,
@@ -281,7 +281,7 @@ class Connections(BaseSDK):
             unified_api=unified_api,
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="GET",
             path="/vault/connections/{unified_api}/{service_id}",
             base_url=base_url,
@@ -397,7 +397,7 @@ class Connections(BaseSDK):
             unified_api=unified_api,
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="GET",
             path="/vault/connections/{unified_api}/{service_id}",
             base_url=base_url,
@@ -544,7 +544,7 @@ class Connections(BaseSDK):
             ),
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="PATCH",
             path="/vault/connections/{unified_api}/{service_id}",
             base_url=base_url,
@@ -694,7 +694,7 @@ class Connections(BaseSDK):
             ),
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="PATCH",
             path="/vault/connections/{unified_api}/{service_id}",
             base_url=base_url,
@@ -813,7 +813,7 @@ class Connections(BaseSDK):
             unified_api=unified_api,
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="DELETE",
             path="/vault/connections/{unified_api}/{service_id}",
             base_url=base_url,
@@ -929,7 +929,7 @@ class Connections(BaseSDK):
             unified_api=unified_api,
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="DELETE",
             path="/vault/connections/{unified_api}/{service_id}",
             base_url=base_url,
@@ -1068,7 +1068,7 @@ class Connections(BaseSDK):
             ),
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="POST",
             path="/vault/connections/{unified_api}/{service_id}/import",
             base_url=base_url,
@@ -1214,7 +1214,7 @@ class Connections(BaseSDK):
             ),
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="POST",
             path="/vault/connections/{unified_api}/{service_id}/import",
             base_url=base_url,
@@ -1353,7 +1353,7 @@ class Connections(BaseSDK):
             ),
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="POST",
             path="/vault/connections/{unified_api}/{service_id}/token",
             base_url=base_url,
@@ -1492,7 +1492,7 @@ class Connections(BaseSDK):
             ),
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="POST",
             path="/vault/connections/{unified_api}/{service_id}/token",
             base_url=base_url,

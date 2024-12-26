@@ -48,7 +48,7 @@ class Consumers(BaseSDK):
             ),
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="POST",
             path="/vault/consumers",
             base_url=base_url,
@@ -170,7 +170,7 @@ class Consumers(BaseSDK):
             ),
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="POST",
             path="/vault/consumers",
             base_url=base_url,
@@ -289,7 +289,7 @@ class Consumers(BaseSDK):
             limit=limit,
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="GET",
             path="/vault/consumers",
             base_url=base_url,
@@ -427,7 +427,7 @@ class Consumers(BaseSDK):
             limit=limit,
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="GET",
             path="/vault/consumers",
             base_url=base_url,
@@ -562,7 +562,7 @@ class Consumers(BaseSDK):
             consumer_id=consumer_id,
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="GET",
             path="/vault/consumers/{consumer_id}",
             base_url=base_url,
@@ -675,7 +675,7 @@ class Consumers(BaseSDK):
             consumer_id=consumer_id,
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="GET",
             path="/vault/consumers/{consumer_id}",
             base_url=base_url,
@@ -796,7 +796,7 @@ class Consumers(BaseSDK):
             ),
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="PATCH",
             path="/vault/consumers/{consumer_id}",
             base_url=base_url,
@@ -924,7 +924,7 @@ class Consumers(BaseSDK):
             ),
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="PATCH",
             path="/vault/consumers/{consumer_id}",
             base_url=base_url,
@@ -1043,7 +1043,7 @@ class Consumers(BaseSDK):
             consumer_id=consumer_id,
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="DELETE",
             path="/vault/consumers/{consumer_id}",
             base_url=base_url,
@@ -1155,7 +1155,7 @@ class Consumers(BaseSDK):
             consumer_id=consumer_id,
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="DELETE",
             path="/vault/consumers/{consumer_id}",
             base_url=base_url,

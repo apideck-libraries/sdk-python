@@ -62,7 +62,7 @@ class TaxRates(BaseSDK):
             fields=fields,
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="GET",
             path="/accounting/tax-rates",
             base_url=base_url,
@@ -223,7 +223,7 @@ class TaxRates(BaseSDK):
             fields=fields,
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="GET",
             path="/accounting/tax-rates",
             base_url=base_url,
@@ -361,6 +361,9 @@ class TaxRates(BaseSDK):
                 List[models.SubsidiariesModel], List[models.SubsidiariesModelTypedDict]
             ]
         ] = None,
+        custom_fields: Optional[
+            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -388,6 +391,7 @@ class TaxRates(BaseSDK):
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param subsidiaries: The subsidiaries this belongs to.
+        :param custom_fields:
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -427,10 +431,13 @@ class TaxRates(BaseSDK):
                 subsidiaries=utils.get_pydantic_model(
                     subsidiaries, Optional[List[models.SubsidiariesModel]]
                 ),
+                custom_fields=utils.get_pydantic_model(
+                    custom_fields, Optional[List[models.CustomField]]
+                ),
             ),
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="POST",
             path="/accounting/tax-rates",
             base_url=base_url,
@@ -544,6 +551,9 @@ class TaxRates(BaseSDK):
                 List[models.SubsidiariesModel], List[models.SubsidiariesModelTypedDict]
             ]
         ] = None,
+        custom_fields: Optional[
+            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -571,6 +581,7 @@ class TaxRates(BaseSDK):
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param subsidiaries: The subsidiaries this belongs to.
+        :param custom_fields:
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -610,10 +621,13 @@ class TaxRates(BaseSDK):
                 subsidiaries=utils.get_pydantic_model(
                     subsidiaries, Optional[List[models.SubsidiariesModel]]
                 ),
+                custom_fields=utils.get_pydantic_model(
+                    custom_fields, Optional[List[models.CustomField]]
+                ),
             ),
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="POST",
             path="/accounting/tax-rates",
             base_url=base_url,
@@ -739,7 +753,7 @@ class TaxRates(BaseSDK):
             fields=fields,
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="GET",
             path="/accounting/tax-rates/{id}",
             base_url=base_url,
@@ -862,7 +876,7 @@ class TaxRates(BaseSDK):
             fields=fields,
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="GET",
             path="/accounting/tax-rates/{id}",
             base_url=base_url,
@@ -974,6 +988,9 @@ class TaxRates(BaseSDK):
                 List[models.SubsidiariesModel], List[models.SubsidiariesModelTypedDict]
             ]
         ] = None,
+        custom_fields: Optional[
+            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -1002,6 +1019,7 @@ class TaxRates(BaseSDK):
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param subsidiaries: The subsidiaries this belongs to.
+        :param custom_fields:
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -1042,10 +1060,13 @@ class TaxRates(BaseSDK):
                 subsidiaries=utils.get_pydantic_model(
                     subsidiaries, Optional[List[models.SubsidiariesModel]]
                 ),
+                custom_fields=utils.get_pydantic_model(
+                    custom_fields, Optional[List[models.CustomField]]
+                ),
             ),
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="PATCH",
             path="/accounting/tax-rates/{id}",
             base_url=base_url,
@@ -1160,6 +1181,9 @@ class TaxRates(BaseSDK):
                 List[models.SubsidiariesModel], List[models.SubsidiariesModelTypedDict]
             ]
         ] = None,
+        custom_fields: Optional[
+            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -1188,6 +1212,7 @@ class TaxRates(BaseSDK):
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param subsidiaries: The subsidiaries this belongs to.
+        :param custom_fields:
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -1228,10 +1253,13 @@ class TaxRates(BaseSDK):
                 subsidiaries=utils.get_pydantic_model(
                     subsidiaries, Optional[List[models.SubsidiariesModel]]
                 ),
+                custom_fields=utils.get_pydantic_model(
+                    custom_fields, Optional[List[models.CustomField]]
+                ),
             ),
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="PATCH",
             path="/accounting/tax-rates/{id}",
             base_url=base_url,
@@ -1353,7 +1381,7 @@ class TaxRates(BaseSDK):
             raw=raw,
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="DELETE",
             path="/accounting/tax-rates/{id}",
             base_url=base_url,
@@ -1472,7 +1500,7 @@ class TaxRates(BaseSDK):
             raw=raw,
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="DELETE",
             path="/accounting/tax-rates/{id}",
             base_url=base_url,

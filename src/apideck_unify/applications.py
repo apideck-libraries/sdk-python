@@ -53,7 +53,7 @@ class Applications(BaseSDK):
             limit=limit,
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="GET",
             path="/ats/applications",
             base_url=base_url,
@@ -205,7 +205,7 @@ class Applications(BaseSDK):
             limit=limit,
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="GET",
             path="/ats/applications",
             base_url=base_url,
@@ -369,7 +369,7 @@ class Applications(BaseSDK):
             ),
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="POST",
             path="/ats/applications",
             base_url=base_url,
@@ -509,7 +509,7 @@ class Applications(BaseSDK):
             ),
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="POST",
             path="/ats/applications",
             base_url=base_url,
@@ -631,7 +631,7 @@ class Applications(BaseSDK):
             raw=raw,
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="GET",
             path="/ats/applications/{id}",
             base_url=base_url,
@@ -750,7 +750,7 @@ class Applications(BaseSDK):
             raw=raw,
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="GET",
             path="/ats/applications/{id}",
             base_url=base_url,
@@ -890,7 +890,7 @@ class Applications(BaseSDK):
             ),
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="PATCH",
             path="/ats/applications/{id}",
             base_url=base_url,
@@ -1033,7 +1033,7 @@ class Applications(BaseSDK):
             ),
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="PATCH",
             path="/ats/applications/{id}",
             base_url=base_url,
@@ -1155,7 +1155,7 @@ class Applications(BaseSDK):
             raw=raw,
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="DELETE",
             path="/ats/applications/{id}",
             base_url=base_url,
@@ -1274,7 +1274,7 @@ class Applications(BaseSDK):
             raw=raw,
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="DELETE",
             path="/ats/applications/{id}",
             base_url=base_url,

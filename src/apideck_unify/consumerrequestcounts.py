@@ -47,7 +47,7 @@ class ConsumerRequestCounts(BaseSDK):
             end_datetime=end_datetime,
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="GET",
             path="/vault/consumers/{consumer_id}/stats",
             base_url=base_url,
@@ -168,7 +168,7 @@ class ConsumerRequestCounts(BaseSDK):
             end_datetime=end_datetime,
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="GET",
             path="/vault/consumers/{consumer_id}/stats",
             base_url=base_url,

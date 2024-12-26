@@ -4,6 +4,7 @@ from __future__ import annotations
 from .address import Address, AddressTypedDict
 from .bankaccount import BankAccount, BankAccountTypedDict
 from .currency import Currency
+from .customfield import CustomField, CustomFieldTypedDict
 from .custommappings import CustomMappings, CustomMappingsTypedDict
 from .email import Email, EmailTypedDict
 from .linkedledgeraccount import LinkedLedgerAccount, LinkedLedgerAccountTypedDict
@@ -87,6 +88,7 @@ class CustomerTypedDict(TypedDict):
     r"""Payment method used for the transaction, such as cash, credit card, bank transfer, or check"""
     channel: NotRequired[Nullable[str]]
     r"""The channel through which the transaction is processed."""
+    custom_fields: NotRequired[List[CustomFieldTypedDict]]
     custom_mappings: NotRequired[Nullable[CustomMappingsTypedDict]]
     r"""When custom mappings are configured on the resource, the result is included here."""
     updated_by: NotRequired[Nullable[str]]
@@ -176,6 +178,8 @@ class Customer(BaseModel):
     channel: OptionalNullable[str] = UNSET
     r"""The channel through which the transaction is processed."""
 
+    custom_fields: Optional[List[CustomField]] = None
+
     custom_mappings: OptionalNullable[CustomMappings] = UNSET
     r"""When custom mappings are configured on the resource, the result is included here."""
 
@@ -226,6 +230,7 @@ class Customer(BaseModel):
             "status",
             "payment_method",
             "channel",
+            "custom_fields",
             "custom_mappings",
             "updated_by",
             "created_by",
@@ -331,6 +336,7 @@ class CustomerInputTypedDict(TypedDict):
     r"""Payment method used for the transaction, such as cash, credit card, bank transfer, or check"""
     channel: NotRequired[Nullable[str]]
     r"""The channel through which the transaction is processed."""
+    custom_fields: NotRequired[List[CustomFieldTypedDict]]
     row_version: NotRequired[Nullable[str]]
     r"""A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object."""
     pass_through: NotRequired[List[PassThroughBodyTypedDict]]
@@ -404,6 +410,8 @@ class CustomerInput(BaseModel):
     channel: OptionalNullable[str] = UNSET
     r"""The channel through which the transaction is processed."""
 
+    custom_fields: Optional[List[CustomField]] = None
+
     row_version: OptionalNullable[str] = UNSET
     r"""A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object."""
 
@@ -438,6 +446,7 @@ class CustomerInput(BaseModel):
             "status",
             "payment_method",
             "channel",
+            "custom_fields",
             "row_version",
             "pass_through",
         ]

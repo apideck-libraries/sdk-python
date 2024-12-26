@@ -49,7 +49,7 @@ class ConnectionCustomMappings(BaseSDK):
             resource_id=resource_id,
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="GET",
             path="/vault/connections/{unified_api}/{service_id}/{resource}/custom-mappings",
             base_url=base_url,
@@ -171,7 +171,7 @@ class ConnectionCustomMappings(BaseSDK):
             resource_id=resource_id,
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="GET",
             path="/vault/connections/{unified_api}/{service_id}/{resource}/custom-mappings",
             base_url=base_url,

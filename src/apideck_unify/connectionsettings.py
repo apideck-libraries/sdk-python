@@ -47,7 +47,7 @@ class ConnectionSettings(BaseSDK):
             resource=resource,
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="GET",
             path="/vault/connections/{unified_api}/{service_id}/{resource}/config",
             base_url=base_url,
@@ -167,7 +167,7 @@ class ConnectionSettings(BaseSDK):
             resource=resource,
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="GET",
             path="/vault/connections/{unified_api}/{service_id}/{resource}/config",
             base_url=base_url,
@@ -317,7 +317,7 @@ class ConnectionSettings(BaseSDK):
             ),
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="PATCH",
             path="/vault/connections/{unified_api}/{service_id}/{resource}/config",
             base_url=base_url,
@@ -470,7 +470,7 @@ class ConnectionSettings(BaseSDK):
             ),
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="PATCH",
             path="/vault/connections/{unified_api}/{service_id}/{resource}/config",
             base_url=base_url,

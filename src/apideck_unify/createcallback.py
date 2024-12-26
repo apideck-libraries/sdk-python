@@ -49,7 +49,7 @@ class CreateCallback(BaseSDK):
             ),
         )
 
-        req = self.build_request(
+        req = self._build_request(
             method="POST",
             path="/vault/connections/{unified_api}/{service_id}/callback-state",
             base_url=base_url,
@@ -180,7 +180,7 @@ class CreateCallback(BaseSDK):
             ),
         )
 
-        req = self.build_request_async(
+        req = self._build_request_async(
             method="POST",
             path="/vault/connections/{unified_api}/{service_id}/callback-state",
             base_url=base_url,
