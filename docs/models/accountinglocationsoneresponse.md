@@ -1,17 +1,10 @@
 # AccountingLocationsOneResponse
 
 
-## Supported Types
+## Fields
 
-### `models.GetAccountingLocationResponse`
-
-```python
-value: models.GetAccountingLocationResponse = /* values here */
-```
-
-### `models.UnexpectedErrorResponse`
-
-```python
-value: models.UnexpectedErrorResponse = /* values here */
-```
-
+| Field                                                                                        | Type                                                                                         | Required                                                                                     | Description                                                                                  |
+| -------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| `http_meta`                                                                                  | [models.HTTPMetadata](../models/httpmetadata.md)                                             | :heavy_check_mark:                                                                           | N/A                                                                                          |
+| `get_accounting_location_response`                                                           | [Optional[models.GetAccountingLocationResponse]](../models/getaccountinglocationresponse.md) | :heavy_minus_sign:                                                                           | Location                                                                                     |
+| `unexpected_error_response`                                                                  | [Optional[models.UnexpectedErrorResponse]](../models/unexpectederrorresponse.md)             | :heavy_minus_sign:                                                                           | Unexpected error                                                                             |

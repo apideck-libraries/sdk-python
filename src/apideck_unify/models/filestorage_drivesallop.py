@@ -3,6 +3,7 @@
 from __future__ import annotations
 from .drivesfilter import DrivesFilter, DrivesFilterTypedDict
 from .getdrivesresponse import GetDrivesResponse, GetDrivesResponseTypedDict
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -17,8 +18,8 @@ from apideck_unify.types import (
 from apideck_unify.utils import FieldMetadata, HeaderMetadata, QueryParamMetadata
 import pydantic
 from pydantic import model_serializer
-from typing import Callable, Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Callable, Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class FileStorageDrivesAllGlobalsTypedDict(TypedDict):
@@ -129,23 +130,21 @@ class FileStorageDrivesAllRequest(BaseModel):
         return m
 
 
-FileStorageDrivesAllResponseResultTypedDict = TypeAliasType(
-    "FileStorageDrivesAllResponseResultTypedDict",
-    Union[UnexpectedErrorResponseTypedDict, GetDrivesResponseTypedDict],
-)
-
-
-FileStorageDrivesAllResponseResult = TypeAliasType(
-    "FileStorageDrivesAllResponseResult",
-    Union[UnexpectedErrorResponse, GetDrivesResponse],
-)
-
-
 class FileStorageDrivesAllResponseTypedDict(TypedDict):
-    result: FileStorageDrivesAllResponseResultTypedDict
+    http_meta: HTTPMetadataTypedDict
+    get_drives_response: NotRequired[GetDrivesResponseTypedDict]
+    r"""Drives"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
 class FileStorageDrivesAllResponse(BaseModel):
     next: Callable[[], Optional[FileStorageDrivesAllResponse]]
 
-    result: FileStorageDrivesAllResponseResult
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    get_drives_response: Optional[GetDrivesResponse] = None
+    r"""Drives"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

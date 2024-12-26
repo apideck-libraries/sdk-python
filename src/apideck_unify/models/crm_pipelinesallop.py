@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 from .getpipelinesresponse import GetPipelinesResponse, GetPipelinesResponseTypedDict
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -16,8 +17,8 @@ from apideck_unify.types import (
 from apideck_unify.utils import FieldMetadata, HeaderMetadata, QueryParamMetadata
 import pydantic
 from pydantic import model_serializer
-from typing import Any, Callable, Dict, Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Any, Callable, Dict, Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class CrmPipelinesAllGlobalsTypedDict(TypedDict):
@@ -134,23 +135,21 @@ class CrmPipelinesAllRequest(BaseModel):
         return m
 
 
-CrmPipelinesAllResponseResultTypedDict = TypeAliasType(
-    "CrmPipelinesAllResponseResultTypedDict",
-    Union[UnexpectedErrorResponseTypedDict, GetPipelinesResponseTypedDict],
-)
-
-
-CrmPipelinesAllResponseResult = TypeAliasType(
-    "CrmPipelinesAllResponseResult",
-    Union[UnexpectedErrorResponse, GetPipelinesResponse],
-)
-
-
 class CrmPipelinesAllResponseTypedDict(TypedDict):
-    result: CrmPipelinesAllResponseResultTypedDict
+    http_meta: HTTPMetadataTypedDict
+    get_pipelines_response: NotRequired[GetPipelinesResponseTypedDict]
+    r"""Pipelines"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
 class CrmPipelinesAllResponse(BaseModel):
     next: Callable[[], Optional[CrmPipelinesAllResponse]]
 
-    result: CrmPipelinesAllResponseResult
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    get_pipelines_response: Optional[GetPipelinesResponse] = None
+    r"""Pipelines"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

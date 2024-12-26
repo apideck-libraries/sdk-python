@@ -76,8 +76,10 @@ with Apideck(
 
     res = apideck.connector.apis.get(id="<id>")
 
+    assert res.get_api_response is not None
+
     # Handle response
-    print(res)
+    print(res.get_api_response)
 
 ```
 

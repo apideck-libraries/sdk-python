@@ -122,9 +122,10 @@ class TrackingCategories(BaseSDK):
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingTrackingCategoriesAllResponse(
-                result=utils.unmarshal_json(
-                    http_res.text, models.GetTrackingCategoriesResponse
+                get_tracking_categories_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.GetTrackingCategoriesResponse]
                 ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
             )
         if utils.match_response(http_res, "400", "application/json"):
@@ -151,9 +152,10 @@ class TrackingCategories(BaseSDK):
             )
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingTrackingCategoriesAllResponse(
-                result=utils.unmarshal_json(
-                    http_res.text, models.UnexpectedErrorResponse
+                unexpected_error_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.UnexpectedErrorResponse]
                 ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
             )
 
@@ -278,9 +280,10 @@ class TrackingCategories(BaseSDK):
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingTrackingCategoriesAllResponse(
-                result=utils.unmarshal_json(
-                    http_res.text, models.GetTrackingCategoriesResponse
+                get_tracking_categories_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.GetTrackingCategoriesResponse]
                 ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
             )
         if utils.match_response(http_res, "400", "application/json"):
@@ -307,9 +310,10 @@ class TrackingCategories(BaseSDK):
             )
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingTrackingCategoriesAllResponse(
-                result=utils.unmarshal_json(
-                    http_res.text, models.UnexpectedErrorResponse
+                unexpected_error_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.UnexpectedErrorResponse]
                 ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
             )
 
@@ -444,8 +448,11 @@ class TrackingCategories(BaseSDK):
 
         data: Any = None
         if utils.match_response(http_res, "201", "application/json"):
-            return utils.unmarshal_json(
-                http_res.text, models.CreateTrackingCategoryResponse
+            return models.AccountingTrackingCategoriesAddResponse(
+                create_tracking_category_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.CreateTrackingCategoryResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
             )
         if utils.match_response(http_res, "400", "application/json"):
             data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
@@ -470,7 +477,12 @@ class TrackingCategories(BaseSDK):
                 "API error occurred", http_res.status_code, http_res_text, http_res
             )
         if utils.match_response(http_res, "default", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UnexpectedErrorResponse)
+            return models.AccountingTrackingCategoriesAddResponse(
+                unexpected_error_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.UnexpectedErrorResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
 
         content_type = http_res.headers.get("Content-Type")
         http_res_text = utils.stream_to_text(http_res)
@@ -603,8 +615,11 @@ class TrackingCategories(BaseSDK):
 
         data: Any = None
         if utils.match_response(http_res, "201", "application/json"):
-            return utils.unmarshal_json(
-                http_res.text, models.CreateTrackingCategoryResponse
+            return models.AccountingTrackingCategoriesAddResponse(
+                create_tracking_category_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.CreateTrackingCategoryResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
             )
         if utils.match_response(http_res, "400", "application/json"):
             data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
@@ -629,7 +644,12 @@ class TrackingCategories(BaseSDK):
                 "API error occurred", http_res.status_code, http_res_text, http_res
             )
         if utils.match_response(http_res, "default", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UnexpectedErrorResponse)
+            return models.AccountingTrackingCategoriesAddResponse(
+                unexpected_error_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.UnexpectedErrorResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
 
         content_type = http_res.headers.get("Content-Type")
         http_res_text = await utils.stream_to_text_async(http_res)
@@ -727,8 +747,11 @@ class TrackingCategories(BaseSDK):
 
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return utils.unmarshal_json(
-                http_res.text, models.GetTrackingCategoryResponse
+            return models.AccountingTrackingCategoriesOneResponse(
+                get_tracking_category_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.GetTrackingCategoryResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
             )
         if utils.match_response(http_res, "400", "application/json"):
             data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
@@ -753,7 +776,12 @@ class TrackingCategories(BaseSDK):
                 "API error occurred", http_res.status_code, http_res_text, http_res
             )
         if utils.match_response(http_res, "default", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UnexpectedErrorResponse)
+            return models.AccountingTrackingCategoriesOneResponse(
+                unexpected_error_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.UnexpectedErrorResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
 
         content_type = http_res.headers.get("Content-Type")
         http_res_text = utils.stream_to_text(http_res)
@@ -851,8 +879,11 @@ class TrackingCategories(BaseSDK):
 
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return utils.unmarshal_json(
-                http_res.text, models.GetTrackingCategoryResponse
+            return models.AccountingTrackingCategoriesOneResponse(
+                get_tracking_category_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.GetTrackingCategoryResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
             )
         if utils.match_response(http_res, "400", "application/json"):
             data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
@@ -877,7 +908,12 @@ class TrackingCategories(BaseSDK):
                 "API error occurred", http_res.status_code, http_res_text, http_res
             )
         if utils.match_response(http_res, "default", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UnexpectedErrorResponse)
+            return models.AccountingTrackingCategoriesOneResponse(
+                unexpected_error_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.UnexpectedErrorResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
 
         content_type = http_res.headers.get("Content-Type")
         http_res_text = await utils.stream_to_text_async(http_res)
@@ -1013,8 +1049,11 @@ class TrackingCategories(BaseSDK):
 
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return utils.unmarshal_json(
-                http_res.text, models.UpdateTrackingCategoryResponse
+            return models.AccountingTrackingCategoriesUpdateResponse(
+                update_tracking_category_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.UpdateTrackingCategoryResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
             )
         if utils.match_response(http_res, "400", "application/json"):
             data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
@@ -1039,7 +1078,12 @@ class TrackingCategories(BaseSDK):
                 "API error occurred", http_res.status_code, http_res_text, http_res
             )
         if utils.match_response(http_res, "default", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UnexpectedErrorResponse)
+            return models.AccountingTrackingCategoriesUpdateResponse(
+                unexpected_error_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.UnexpectedErrorResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
 
         content_type = http_res.headers.get("Content-Type")
         http_res_text = utils.stream_to_text(http_res)
@@ -1175,8 +1219,11 @@ class TrackingCategories(BaseSDK):
 
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return utils.unmarshal_json(
-                http_res.text, models.UpdateTrackingCategoryResponse
+            return models.AccountingTrackingCategoriesUpdateResponse(
+                update_tracking_category_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.UpdateTrackingCategoryResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
             )
         if utils.match_response(http_res, "400", "application/json"):
             data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
@@ -1201,7 +1248,12 @@ class TrackingCategories(BaseSDK):
                 "API error occurred", http_res.status_code, http_res_text, http_res
             )
         if utils.match_response(http_res, "default", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UnexpectedErrorResponse)
+            return models.AccountingTrackingCategoriesUpdateResponse(
+                unexpected_error_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.UnexpectedErrorResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
 
         content_type = http_res.headers.get("Content-Type")
         http_res_text = await utils.stream_to_text_async(http_res)
@@ -1296,8 +1348,11 @@ class TrackingCategories(BaseSDK):
 
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return utils.unmarshal_json(
-                http_res.text, models.DeleteTrackingCategoryResponse
+            return models.AccountingTrackingCategoriesDeleteResponse(
+                delete_tracking_category_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.DeleteTrackingCategoryResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
             )
         if utils.match_response(http_res, "400", "application/json"):
             data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
@@ -1322,7 +1377,12 @@ class TrackingCategories(BaseSDK):
                 "API error occurred", http_res.status_code, http_res_text, http_res
             )
         if utils.match_response(http_res, "default", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UnexpectedErrorResponse)
+            return models.AccountingTrackingCategoriesDeleteResponse(
+                unexpected_error_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.UnexpectedErrorResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
 
         content_type = http_res.headers.get("Content-Type")
         http_res_text = utils.stream_to_text(http_res)
@@ -1417,8 +1477,11 @@ class TrackingCategories(BaseSDK):
 
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return utils.unmarshal_json(
-                http_res.text, models.DeleteTrackingCategoryResponse
+            return models.AccountingTrackingCategoriesDeleteResponse(
+                delete_tracking_category_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.DeleteTrackingCategoryResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
             )
         if utils.match_response(http_res, "400", "application/json"):
             data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
@@ -1443,7 +1506,12 @@ class TrackingCategories(BaseSDK):
                 "API error occurred", http_res.status_code, http_res_text, http_res
             )
         if utils.match_response(http_res, "default", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UnexpectedErrorResponse)
+            return models.AccountingTrackingCategoriesDeleteResponse(
+                unexpected_error_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.UnexpectedErrorResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
 
         content_type = http_res.headers.get("Content-Type")
         http_res_text = await utils.stream_to_text_async(http_res)

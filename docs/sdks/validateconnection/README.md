@@ -31,8 +31,10 @@ with Apideck(
 
     res = apideck.vault.validate_connection.state(service_id="pipedrive", unified_api="crm")
 
+    assert res.validate_connection_state_response is not None
+
     # Handle response
-    print(res)
+    print(res.validate_connection_state_response)
 
 ```
 

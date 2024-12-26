@@ -5,6 +5,7 @@ from .getemployeepayrollsresponse import (
     GetEmployeePayrollsResponse,
     GetEmployeePayrollsResponseTypedDict,
 )
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .payrollsfilter import PayrollsFilter, PayrollsFilterTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
@@ -25,8 +26,8 @@ from apideck_unify.utils import (
 )
 import pydantic
 from pydantic import model_serializer
-from typing import Any, Dict, Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Any, Dict, Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class HrisEmployeePayrollsAllGlobalsTypedDict(TypedDict):
@@ -136,13 +137,19 @@ class HrisEmployeePayrollsAllRequest(BaseModel):
         return m
 
 
-HrisEmployeePayrollsAllResponseTypedDict = TypeAliasType(
-    "HrisEmployeePayrollsAllResponseTypedDict",
-    Union[GetEmployeePayrollsResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
+class HrisEmployeePayrollsAllResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    get_employee_payrolls_response: NotRequired[GetEmployeePayrollsResponseTypedDict]
+    r"""EmployeePayrolls"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-HrisEmployeePayrollsAllResponse = TypeAliasType(
-    "HrisEmployeePayrollsAllResponse",
-    Union[GetEmployeePayrollsResponse, UnexpectedErrorResponse],
-)
+class HrisEmployeePayrollsAllResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    get_employee_payrolls_response: Optional[GetEmployeePayrollsResponse] = None
+    r"""EmployeePayrolls"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

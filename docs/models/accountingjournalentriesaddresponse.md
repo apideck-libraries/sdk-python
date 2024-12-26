@@ -1,17 +1,10 @@
 # AccountingJournalEntriesAddResponse
 
 
-## Supported Types
+## Fields
 
-### `models.CreateJournalEntryResponse`
-
-```python
-value: models.CreateJournalEntryResponse = /* values here */
-```
-
-### `models.UnexpectedErrorResponse`
-
-```python
-value: models.UnexpectedErrorResponse = /* values here */
-```
-
+| Field                                                                                  | Type                                                                                   | Required                                                                               | Description                                                                            |
+| -------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| `http_meta`                                                                            | [models.HTTPMetadata](../models/httpmetadata.md)                                       | :heavy_check_mark:                                                                     | N/A                                                                                    |
+| `create_journal_entry_response`                                                        | [Optional[models.CreateJournalEntryResponse]](../models/createjournalentryresponse.md) | :heavy_minus_sign:                                                                     | JournalEntries                                                                         |
+| `unexpected_error_response`                                                            | [Optional[models.UnexpectedErrorResponse]](../models/unexpectederrorresponse.md)       | :heavy_minus_sign:                                                                     | Unexpected error                                                                       |

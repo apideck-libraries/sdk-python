@@ -5,6 +5,7 @@ from .deletesubsidiaryresponse import (
     DeleteSubsidiaryResponse,
     DeleteSubsidiaryResponseTypedDict,
 )
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -17,8 +18,8 @@ from apideck_unify.utils import (
     QueryParamMetadata,
 )
 import pydantic
-from typing import Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class AccountingSubsidiariesDeleteGlobalsTypedDict(TypedDict):
@@ -73,13 +74,19 @@ class AccountingSubsidiariesDeleteRequest(BaseModel):
     r"""Include raw response. Mostly used for debugging purposes"""
 
 
-AccountingSubsidiariesDeleteResponseTypedDict = TypeAliasType(
-    "AccountingSubsidiariesDeleteResponseTypedDict",
-    Union[DeleteSubsidiaryResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
+class AccountingSubsidiariesDeleteResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    delete_subsidiary_response: NotRequired[DeleteSubsidiaryResponseTypedDict]
+    r"""Subsidiarys"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-AccountingSubsidiariesDeleteResponse = TypeAliasType(
-    "AccountingSubsidiariesDeleteResponse",
-    Union[DeleteSubsidiaryResponse, UnexpectedErrorResponse],
-)
+class AccountingSubsidiariesDeleteResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    delete_subsidiary_response: Optional[DeleteSubsidiaryResponse] = None
+    r"""Subsidiarys"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

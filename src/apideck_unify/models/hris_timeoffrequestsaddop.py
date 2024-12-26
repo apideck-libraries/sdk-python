@@ -5,6 +5,7 @@ from .createtimeoffrequestresponse import (
     CreateTimeOffRequestResponse,
     CreateTimeOffRequestResponseTypedDict,
 )
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .timeoffrequest import TimeOffRequestInput, TimeOffRequestInputTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
@@ -18,8 +19,8 @@ from apideck_unify.utils import (
     RequestMetadata,
 )
 import pydantic
-from typing import Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class HrisTimeOffRequestsAddGlobalsTypedDict(TypedDict):
@@ -73,13 +74,19 @@ class HrisTimeOffRequestsAddRequest(BaseModel):
     r"""Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API."""
 
 
-HrisTimeOffRequestsAddResponseTypedDict = TypeAliasType(
-    "HrisTimeOffRequestsAddResponseTypedDict",
-    Union[CreateTimeOffRequestResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
+class HrisTimeOffRequestsAddResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    create_time_off_request_response: NotRequired[CreateTimeOffRequestResponseTypedDict]
+    r"""TimeOffRequests"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-HrisTimeOffRequestsAddResponse = TypeAliasType(
-    "HrisTimeOffRequestsAddResponse",
-    Union[CreateTimeOffRequestResponse, UnexpectedErrorResponse],
-)
+class HrisTimeOffRequestsAddResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    create_time_off_request_response: Optional[CreateTimeOffRequestResponse] = None
+    r"""TimeOffRequests"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

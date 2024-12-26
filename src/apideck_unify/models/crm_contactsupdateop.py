@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 from .contact import ContactInput, ContactInputTypedDict
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -16,8 +17,8 @@ from apideck_unify.utils import (
     RequestMetadata,
 )
 import pydantic
-from typing import Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class CrmContactsUpdateGlobalsTypedDict(TypedDict):
@@ -78,12 +79,19 @@ class CrmContactsUpdateRequest(BaseModel):
     r"""Include raw response. Mostly used for debugging purposes"""
 
 
-CrmContactsUpdateResponseTypedDict = TypeAliasType(
-    "CrmContactsUpdateResponseTypedDict",
-    Union[UpdateContactResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
+class CrmContactsUpdateResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    update_contact_response: NotRequired[UpdateContactResponseTypedDict]
+    r"""Contact updated"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-CrmContactsUpdateResponse = TypeAliasType(
-    "CrmContactsUpdateResponse", Union[UpdateContactResponse, UnexpectedErrorResponse]
-)
+class CrmContactsUpdateResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    update_contact_response: Optional[UpdateContactResponse] = None
+    r"""Contact updated"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

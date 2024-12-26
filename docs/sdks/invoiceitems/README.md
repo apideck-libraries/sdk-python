@@ -150,8 +150,10 @@ with Apideck(
         },
     ])
 
+    assert res.create_invoice_item_response is not None
+
     # Handle response
-    print(res)
+    print(res.create_invoice_item_response)
 
 ```
 
@@ -220,8 +222,10 @@ with Apideck(
         "type": apideck_unify.InvoiceItemFilterInvoiceItemType.SERVICE,
     })
 
+    assert res.get_invoice_item_response is not None
+
     # Handle response
-    print(res)
+    print(res.get_invoice_item_response)
 
 ```
 
@@ -355,8 +359,10 @@ with Apideck(
         },
     ])
 
+    assert res.update_invoice_items_response is not None
+
     # Handle response
-    print(res)
+    print(res.update_invoice_items_response)
 
 ```
 
@@ -423,8 +429,10 @@ with Apideck(
 
     res = apideck.accounting.invoice_items.delete(id="<id>", service_id="salesforce")
 
+    assert res.delete_tax_rate_response is not None
+
     # Handle response
-    print(res)
+    print(res.delete_tax_rate_response)
 
 ```
 

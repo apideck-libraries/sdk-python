@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 from .getmessagesresponse import GetMessagesResponse, GetMessagesResponseTypedDict
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -16,8 +17,8 @@ from apideck_unify.types import (
 from apideck_unify.utils import FieldMetadata, HeaderMetadata, QueryParamMetadata
 import pydantic
 from pydantic import model_serializer
-from typing import Callable, Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Callable, Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class SmsMessagesAllGlobalsTypedDict(TypedDict):
@@ -119,22 +120,21 @@ class SmsMessagesAllRequest(BaseModel):
         return m
 
 
-SmsMessagesAllResponseResultTypedDict = TypeAliasType(
-    "SmsMessagesAllResponseResultTypedDict",
-    Union[UnexpectedErrorResponseTypedDict, GetMessagesResponseTypedDict],
-)
-
-
-SmsMessagesAllResponseResult = TypeAliasType(
-    "SmsMessagesAllResponseResult", Union[UnexpectedErrorResponse, GetMessagesResponse]
-)
-
-
 class SmsMessagesAllResponseTypedDict(TypedDict):
-    result: SmsMessagesAllResponseResultTypedDict
+    http_meta: HTTPMetadataTypedDict
+    get_messages_response: NotRequired[GetMessagesResponseTypedDict]
+    r"""Messages"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
 class SmsMessagesAllResponse(BaseModel):
     next: Callable[[], Optional[SmsMessagesAllResponse]]
 
-    result: SmsMessagesAllResponseResult
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    get_messages_response: Optional[GetMessagesResponse] = None
+    r"""Messages"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

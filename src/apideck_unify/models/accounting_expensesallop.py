@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 from .getexpensesresponse import GetExpensesResponse, GetExpensesResponseTypedDict
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -16,8 +17,8 @@ from apideck_unify.types import (
 from apideck_unify.utils import FieldMetadata, HeaderMetadata, QueryParamMetadata
 import pydantic
 from pydantic import model_serializer
-from typing import Callable, Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Callable, Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class AccountingExpensesAllGlobalsTypedDict(TypedDict):
@@ -111,23 +112,21 @@ class AccountingExpensesAllRequest(BaseModel):
         return m
 
 
-AccountingExpensesAllResponseResultTypedDict = TypeAliasType(
-    "AccountingExpensesAllResponseResultTypedDict",
-    Union[UnexpectedErrorResponseTypedDict, GetExpensesResponseTypedDict],
-)
-
-
-AccountingExpensesAllResponseResult = TypeAliasType(
-    "AccountingExpensesAllResponseResult",
-    Union[UnexpectedErrorResponse, GetExpensesResponse],
-)
-
-
 class AccountingExpensesAllResponseTypedDict(TypedDict):
-    result: AccountingExpensesAllResponseResultTypedDict
+    http_meta: HTTPMetadataTypedDict
+    get_expenses_response: NotRequired[GetExpensesResponseTypedDict]
+    r"""Expenses"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
 class AccountingExpensesAllResponse(BaseModel):
     next: Callable[[], Optional[AccountingExpensesAllResponse]]
 
-    result: AccountingExpensesAllResponseResult
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    get_expenses_response: Optional[GetExpensesResponse] = None
+    r"""Expenses"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

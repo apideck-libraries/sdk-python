@@ -5,6 +5,7 @@ from .getcollectiontagsresponse import (
     GetCollectionTagsResponse,
     GetCollectionTagsResponseTypedDict,
 )
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -24,8 +25,8 @@ from apideck_unify.utils import (
 )
 import pydantic
 from pydantic import model_serializer
-from typing import Any, Callable, Dict, Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Any, Callable, Dict, Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class IssueTrackingCollectionTagsAllGlobalsTypedDict(TypedDict):
@@ -149,23 +150,21 @@ class IssueTrackingCollectionTagsAllRequest(BaseModel):
         return m
 
 
-IssueTrackingCollectionTagsAllResponseResultTypedDict = TypeAliasType(
-    "IssueTrackingCollectionTagsAllResponseResultTypedDict",
-    Union[UnexpectedErrorResponseTypedDict, GetCollectionTagsResponseTypedDict],
-)
-
-
-IssueTrackingCollectionTagsAllResponseResult = TypeAliasType(
-    "IssueTrackingCollectionTagsAllResponseResult",
-    Union[UnexpectedErrorResponse, GetCollectionTagsResponse],
-)
-
-
 class IssueTrackingCollectionTagsAllResponseTypedDict(TypedDict):
-    result: IssueTrackingCollectionTagsAllResponseResultTypedDict
+    http_meta: HTTPMetadataTypedDict
+    get_collection_tags_response: NotRequired[GetCollectionTagsResponseTypedDict]
+    r"""List Tags"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
 class IssueTrackingCollectionTagsAllResponse(BaseModel):
     next: Callable[[], Optional[IssueTrackingCollectionTagsAllResponse]]
 
-    result: IssueTrackingCollectionTagsAllResponseResult
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    get_collection_tags_response: Optional[GetCollectionTagsResponse] = None
+    r"""List Tags"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

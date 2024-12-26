@@ -5,6 +5,7 @@ from .accountingdepartment import (
     AccountingDepartmentInput,
     AccountingDepartmentInputTypedDict,
 )
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -22,8 +23,8 @@ from apideck_unify.utils import (
     RequestMetadata,
 )
 import pydantic
-from typing import Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class AccountingDepartmentsUpdateGlobalsTypedDict(TypedDict):
@@ -84,15 +85,23 @@ class AccountingDepartmentsUpdateRequest(BaseModel):
     r"""Include raw response. Mostly used for debugging purposes"""
 
 
-AccountingDepartmentsUpdateResponseTypedDict = TypeAliasType(
-    "AccountingDepartmentsUpdateResponseTypedDict",
-    Union[
-        UpdateAccountingDepartmentResponseTypedDict, UnexpectedErrorResponseTypedDict
-    ],
-)
+class AccountingDepartmentsUpdateResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    update_accounting_department_response: NotRequired[
+        UpdateAccountingDepartmentResponseTypedDict
+    ]
+    r"""Department"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-AccountingDepartmentsUpdateResponse = TypeAliasType(
-    "AccountingDepartmentsUpdateResponse",
-    Union[UpdateAccountingDepartmentResponse, UnexpectedErrorResponse],
-)
+class AccountingDepartmentsUpdateResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    update_accounting_department_response: Optional[
+        UpdateAccountingDepartmentResponse
+    ] = None
+    r"""Department"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

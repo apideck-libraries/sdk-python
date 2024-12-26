@@ -122,7 +122,10 @@ class Jobs(BaseSDK):
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AtsJobsAllResponse(
-                result=utils.unmarshal_json(http_res.text, models.GetJobsResponse),
+                get_jobs_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.GetJobsResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
             )
         if utils.match_response(http_res, "400", "application/json"):
@@ -149,9 +152,10 @@ class Jobs(BaseSDK):
             )
         if utils.match_response(http_res, "default", "application/json"):
             return models.AtsJobsAllResponse(
-                result=utils.unmarshal_json(
-                    http_res.text, models.UnexpectedErrorResponse
+                unexpected_error_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.UnexpectedErrorResponse]
                 ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
             )
 
@@ -276,7 +280,10 @@ class Jobs(BaseSDK):
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AtsJobsAllResponse(
-                result=utils.unmarshal_json(http_res.text, models.GetJobsResponse),
+                get_jobs_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.GetJobsResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
             )
         if utils.match_response(http_res, "400", "application/json"):
@@ -303,9 +310,10 @@ class Jobs(BaseSDK):
             )
         if utils.match_response(http_res, "default", "application/json"):
             return models.AtsJobsAllResponse(
-                result=utils.unmarshal_json(
-                    http_res.text, models.UnexpectedErrorResponse
+                unexpected_error_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.UnexpectedErrorResponse]
                 ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
             )
 
@@ -405,7 +413,12 @@ class Jobs(BaseSDK):
 
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.GetJobResponse)
+            return models.AtsJobsOneResponse(
+                get_job_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.GetJobResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
         if utils.match_response(http_res, "400", "application/json"):
             data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
             raise models.BadRequestResponse(data=data)
@@ -429,7 +442,12 @@ class Jobs(BaseSDK):
                 "API error occurred", http_res.status_code, http_res_text, http_res
             )
         if utils.match_response(http_res, "default", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UnexpectedErrorResponse)
+            return models.AtsJobsOneResponse(
+                unexpected_error_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.UnexpectedErrorResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
 
         content_type = http_res.headers.get("Content-Type")
         http_res_text = utils.stream_to_text(http_res)
@@ -527,7 +545,12 @@ class Jobs(BaseSDK):
 
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.GetJobResponse)
+            return models.AtsJobsOneResponse(
+                get_job_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.GetJobResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
         if utils.match_response(http_res, "400", "application/json"):
             data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
             raise models.BadRequestResponse(data=data)
@@ -551,7 +574,12 @@ class Jobs(BaseSDK):
                 "API error occurred", http_res.status_code, http_res_text, http_res
             )
         if utils.match_response(http_res, "default", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UnexpectedErrorResponse)
+            return models.AtsJobsOneResponse(
+                unexpected_error_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.UnexpectedErrorResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
 
         content_type = http_res.headers.get("Content-Type")
         http_res_text = await utils.stream_to_text_async(http_res)

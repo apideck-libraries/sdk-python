@@ -4,6 +4,7 @@ from __future__ import annotations
 from .companiesfilter import CompaniesFilter, CompaniesFilterTypedDict
 from .companiessort import CompaniesSort, CompaniesSortTypedDict
 from .getcompaniesresponse import GetCompaniesResponse, GetCompaniesResponseTypedDict
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -18,8 +19,8 @@ from apideck_unify.types import (
 from apideck_unify.utils import FieldMetadata, HeaderMetadata, QueryParamMetadata
 import pydantic
 from pydantic import model_serializer
-from typing import Any, Callable, Dict, Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Any, Callable, Dict, Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class CrmCompaniesAllGlobalsTypedDict(TypedDict):
@@ -155,23 +156,21 @@ class CrmCompaniesAllRequest(BaseModel):
         return m
 
 
-CrmCompaniesAllResponseResultTypedDict = TypeAliasType(
-    "CrmCompaniesAllResponseResultTypedDict",
-    Union[UnexpectedErrorResponseTypedDict, GetCompaniesResponseTypedDict],
-)
-
-
-CrmCompaniesAllResponseResult = TypeAliasType(
-    "CrmCompaniesAllResponseResult",
-    Union[UnexpectedErrorResponse, GetCompaniesResponse],
-)
-
-
 class CrmCompaniesAllResponseTypedDict(TypedDict):
-    result: CrmCompaniesAllResponseResultTypedDict
+    http_meta: HTTPMetadataTypedDict
+    get_companies_response: NotRequired[GetCompaniesResponseTypedDict]
+    r"""Companies"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
 class CrmCompaniesAllResponse(BaseModel):
     next: Callable[[], Optional[CrmCompaniesAllResponse]]
 
-    result: CrmCompaniesAllResponseResult
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    get_companies_response: Optional[GetCompaniesResponse] = None
+    r"""Companies"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

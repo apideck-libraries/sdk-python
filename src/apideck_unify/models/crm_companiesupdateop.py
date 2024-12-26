@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 from .company import CompanyInput, CompanyInputTypedDict
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -16,8 +17,8 @@ from apideck_unify.utils import (
     RequestMetadata,
 )
 import pydantic
-from typing import Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class CrmCompaniesUpdateGlobalsTypedDict(TypedDict):
@@ -78,12 +79,19 @@ class CrmCompaniesUpdateRequest(BaseModel):
     r"""Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API."""
 
 
-CrmCompaniesUpdateResponseTypedDict = TypeAliasType(
-    "CrmCompaniesUpdateResponseTypedDict",
-    Union[UpdateCompanyResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
+class CrmCompaniesUpdateResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    update_company_response: NotRequired[UpdateCompanyResponseTypedDict]
+    r"""Company updated"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-CrmCompaniesUpdateResponse = TypeAliasType(
-    "CrmCompaniesUpdateResponse", Union[UpdateCompanyResponse, UnexpectedErrorResponse]
-)
+class CrmCompaniesUpdateResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    update_company_response: Optional[UpdateCompanyResponse] = None
+    r"""Company updated"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

@@ -5,6 +5,7 @@ from .getapplicationsresponse import (
     GetApplicationsResponse,
     GetApplicationsResponseTypedDict,
 )
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -19,8 +20,8 @@ from apideck_unify.types import (
 from apideck_unify.utils import FieldMetadata, HeaderMetadata, QueryParamMetadata
 import pydantic
 from pydantic import model_serializer
-from typing import Any, Callable, Dict, Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Any, Callable, Dict, Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class AtsApplicationsAllGlobalsTypedDict(TypedDict):
@@ -122,23 +123,21 @@ class AtsApplicationsAllRequest(BaseModel):
         return m
 
 
-AtsApplicationsAllResponseResultTypedDict = TypeAliasType(
-    "AtsApplicationsAllResponseResultTypedDict",
-    Union[UnexpectedErrorResponseTypedDict, GetApplicationsResponseTypedDict],
-)
-
-
-AtsApplicationsAllResponseResult = TypeAliasType(
-    "AtsApplicationsAllResponseResult",
-    Union[UnexpectedErrorResponse, GetApplicationsResponse],
-)
-
-
 class AtsApplicationsAllResponseTypedDict(TypedDict):
-    result: AtsApplicationsAllResponseResultTypedDict
+    http_meta: HTTPMetadataTypedDict
+    get_applications_response: NotRequired[GetApplicationsResponseTypedDict]
+    r"""Applications"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
 class AtsApplicationsAllResponse(BaseModel):
     next: Callable[[], Optional[AtsApplicationsAllResponse]]
 
-    result: AtsApplicationsAllResponseResult
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    get_applications_response: Optional[GetApplicationsResponse] = None
+    r"""Applications"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

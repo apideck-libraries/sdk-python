@@ -5,6 +5,7 @@ from .deletetimeoffrequestresponse import (
     DeleteTimeOffRequestResponse,
     DeleteTimeOffRequestResponseTypedDict,
 )
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -17,8 +18,8 @@ from apideck_unify.utils import (
     QueryParamMetadata,
 )
 import pydantic
-from typing import Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class HrisTimeOffRequestsDeleteGlobalsTypedDict(TypedDict):
@@ -80,13 +81,19 @@ class HrisTimeOffRequestsDeleteRequest(BaseModel):
     r"""Include raw response. Mostly used for debugging purposes"""
 
 
-HrisTimeOffRequestsDeleteResponseTypedDict = TypeAliasType(
-    "HrisTimeOffRequestsDeleteResponseTypedDict",
-    Union[DeleteTimeOffRequestResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
+class HrisTimeOffRequestsDeleteResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    delete_time_off_request_response: NotRequired[DeleteTimeOffRequestResponseTypedDict]
+    r"""TimeOffRequests"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-HrisTimeOffRequestsDeleteResponse = TypeAliasType(
-    "HrisTimeOffRequestsDeleteResponse",
-    Union[DeleteTimeOffRequestResponse, UnexpectedErrorResponse],
-)
+class HrisTimeOffRequestsDeleteResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    delete_time_off_request_response: Optional[DeleteTimeOffRequestResponse] = None
+    r"""TimeOffRequests"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

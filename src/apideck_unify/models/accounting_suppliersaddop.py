@@ -5,6 +5,7 @@ from .createsupplierresponse import (
     CreateSupplierResponse,
     CreateSupplierResponseTypedDict,
 )
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .supplier import SupplierInput, SupplierInputTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
@@ -18,8 +19,8 @@ from apideck_unify.utils import (
     RequestMetadata,
 )
 import pydantic
-from typing import Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class AccountingSuppliersAddGlobalsTypedDict(TypedDict):
@@ -73,13 +74,19 @@ class AccountingSuppliersAddRequest(BaseModel):
     r"""Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API."""
 
 
-AccountingSuppliersAddResponseTypedDict = TypeAliasType(
-    "AccountingSuppliersAddResponseTypedDict",
-    Union[CreateSupplierResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
+class AccountingSuppliersAddResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    create_supplier_response: NotRequired[CreateSupplierResponseTypedDict]
+    r"""Supplier created"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-AccountingSuppliersAddResponse = TypeAliasType(
-    "AccountingSuppliersAddResponse",
-    Union[CreateSupplierResponse, UnexpectedErrorResponse],
-)
+class AccountingSuppliersAddResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    create_supplier_response: Optional[CreateSupplierResponse] = None
+    r"""Supplier created"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

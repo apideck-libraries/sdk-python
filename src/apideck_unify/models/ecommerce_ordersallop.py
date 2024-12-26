@@ -6,6 +6,7 @@ from .getecommerceordersresponse import (
     GetEcommerceOrdersResponse,
     GetEcommerceOrdersResponseTypedDict,
 )
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .orderssort import OrdersSort, OrdersSortTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
@@ -21,8 +22,8 @@ from apideck_unify.types import (
 from apideck_unify.utils import FieldMetadata, HeaderMetadata, QueryParamMetadata
 import pydantic
 from pydantic import model_serializer
-from typing import Any, Callable, Dict, Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Any, Callable, Dict, Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class EcommerceOrdersAllGlobalsTypedDict(TypedDict):
@@ -158,23 +159,21 @@ class EcommerceOrdersAllRequest(BaseModel):
         return m
 
 
-EcommerceOrdersAllResponseResultTypedDict = TypeAliasType(
-    "EcommerceOrdersAllResponseResultTypedDict",
-    Union[UnexpectedErrorResponseTypedDict, GetEcommerceOrdersResponseTypedDict],
-)
-
-
-EcommerceOrdersAllResponseResult = TypeAliasType(
-    "EcommerceOrdersAllResponseResult",
-    Union[UnexpectedErrorResponse, GetEcommerceOrdersResponse],
-)
-
-
 class EcommerceOrdersAllResponseTypedDict(TypedDict):
-    result: EcommerceOrdersAllResponseResultTypedDict
+    http_meta: HTTPMetadataTypedDict
+    get_ecommerce_orders_response: NotRequired[GetEcommerceOrdersResponseTypedDict]
+    r"""Orders"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
 class EcommerceOrdersAllResponse(BaseModel):
     next: Callable[[], Optional[EcommerceOrdersAllResponse]]
 
-    result: EcommerceOrdersAllResponseResult
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    get_ecommerce_orders_response: Optional[GetEcommerceOrdersResponse] = None
+    r"""Orders"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

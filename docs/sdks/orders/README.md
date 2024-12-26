@@ -91,8 +91,10 @@ with Apideck(
 
     res = apideck.ecommerce.orders.get(id="<id>", service_id="salesforce", fields="id,updated_at")
 
+    assert res.get_ecommerce_order_response is not None
+
     # Handle response
-    print(res)
+    print(res.get_ecommerce_order_response)
 
 ```
 

@@ -108,8 +108,10 @@ with Apideck(
         },
     ])
 
+    assert res.create_application_response is not None
+
     # Handle response
-    print(res)
+    print(res.create_application_response)
 
 ```
 
@@ -159,8 +161,10 @@ with Apideck(
 
     res = apideck.ats.applications.get(id="<id>", service_id="salesforce")
 
+    assert res.get_application_response is not None
+
     # Handle response
-    print(res)
+    print(res.get_application_response)
 
 ```
 
@@ -274,8 +278,10 @@ with Apideck(
         },
     ])
 
+    assert res.update_application_response is not None
+
     # Handle response
-    print(res)
+    print(res.update_application_response)
 
 ```
 
@@ -326,8 +332,10 @@ with Apideck(
 
     res = apideck.ats.applications.delete(id="<id>", service_id="salesforce")
 
+    assert res.delete_application_response is not None
+
     # Handle response
-    print(res)
+    print(res.delete_application_response)
 
 ```
 

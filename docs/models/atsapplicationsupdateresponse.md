@@ -1,17 +1,10 @@
 # AtsApplicationsUpdateResponse
 
 
-## Supported Types
+## Fields
 
-### `models.UpdateApplicationResponse`
-
-```python
-value: models.UpdateApplicationResponse = /* values here */
-```
-
-### `models.UnexpectedErrorResponse`
-
-```python
-value: models.UnexpectedErrorResponse = /* values here */
-```
-
+| Field                                                                                | Type                                                                                 | Required                                                                             | Description                                                                          |
+| ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ |
+| `http_meta`                                                                          | [models.HTTPMetadata](../models/httpmetadata.md)                                     | :heavy_check_mark:                                                                   | N/A                                                                                  |
+| `update_application_response`                                                        | [Optional[models.UpdateApplicationResponse]](../models/updateapplicationresponse.md) | :heavy_minus_sign:                                                                   | Applications                                                                         |
+| `unexpected_error_response`                                                          | [Optional[models.UnexpectedErrorResponse]](../models/unexpectederrorresponse.md)     | :heavy_minus_sign:                                                                   | Unexpected error                                                                     |

@@ -5,6 +5,7 @@ from .gettrackingcategoriesresponse import (
     GetTrackingCategoriesResponse,
     GetTrackingCategoriesResponseTypedDict,
 )
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -19,8 +20,8 @@ from apideck_unify.types import (
 from apideck_unify.utils import FieldMetadata, HeaderMetadata, QueryParamMetadata
 import pydantic
 from pydantic import model_serializer
-from typing import Any, Callable, Dict, Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Any, Callable, Dict, Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class AccountingTrackingCategoriesAllGlobalsTypedDict(TypedDict):
@@ -137,23 +138,23 @@ class AccountingTrackingCategoriesAllRequest(BaseModel):
         return m
 
 
-AccountingTrackingCategoriesAllResponseResultTypedDict = TypeAliasType(
-    "AccountingTrackingCategoriesAllResponseResultTypedDict",
-    Union[UnexpectedErrorResponseTypedDict, GetTrackingCategoriesResponseTypedDict],
-)
-
-
-AccountingTrackingCategoriesAllResponseResult = TypeAliasType(
-    "AccountingTrackingCategoriesAllResponseResult",
-    Union[UnexpectedErrorResponse, GetTrackingCategoriesResponse],
-)
-
-
 class AccountingTrackingCategoriesAllResponseTypedDict(TypedDict):
-    result: AccountingTrackingCategoriesAllResponseResultTypedDict
+    http_meta: HTTPMetadataTypedDict
+    get_tracking_categories_response: NotRequired[
+        GetTrackingCategoriesResponseTypedDict
+    ]
+    r"""Tracking categories"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
 class AccountingTrackingCategoriesAllResponse(BaseModel):
     next: Callable[[], Optional[AccountingTrackingCategoriesAllResponse]]
 
-    result: AccountingTrackingCategoriesAllResponseResult
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    get_tracking_categories_response: Optional[GetTrackingCategoriesResponse] = None
+    r"""Tracking categories"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

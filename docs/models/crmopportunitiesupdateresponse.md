@@ -1,17 +1,10 @@
 # CrmOpportunitiesUpdateResponse
 
 
-## Supported Types
+## Fields
 
-### `models.UpdateOpportunityResponse`
-
-```python
-value: models.UpdateOpportunityResponse = /* values here */
-```
-
-### `models.UnexpectedErrorResponse`
-
-```python
-value: models.UnexpectedErrorResponse = /* values here */
-```
-
+| Field                                                                                | Type                                                                                 | Required                                                                             | Description                                                                          |
+| ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ |
+| `http_meta`                                                                          | [models.HTTPMetadata](../models/httpmetadata.md)                                     | :heavy_check_mark:                                                                   | N/A                                                                                  |
+| `update_opportunity_response`                                                        | [Optional[models.UpdateOpportunityResponse]](../models/updateopportunityresponse.md) | :heavy_minus_sign:                                                                   | Opportunity updated                                                                  |
+| `unexpected_error_response`                                                          | [Optional[models.UnexpectedErrorResponse]](../models/unexpectederrorresponse.md)     | :heavy_minus_sign:                                                                   | Unexpected error                                                                     |

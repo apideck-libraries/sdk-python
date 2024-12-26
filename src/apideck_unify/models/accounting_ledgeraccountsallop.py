@@ -5,6 +5,7 @@ from .getledgeraccountsresponse import (
     GetLedgerAccountsResponse,
     GetLedgerAccountsResponseTypedDict,
 )
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .ledgeraccountsfilter import LedgerAccountsFilter, LedgerAccountsFilterTypedDict
 from .ledgeraccountssort import LedgerAccountsSort, LedgerAccountsSortTypedDict
 from .unexpectederrorresponse import (
@@ -21,8 +22,8 @@ from apideck_unify.types import (
 from apideck_unify.utils import FieldMetadata, HeaderMetadata, QueryParamMetadata
 import pydantic
 from pydantic import model_serializer
-from typing import Any, Callable, Dict, Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Any, Callable, Dict, Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class AccountingLedgerAccountsAllGlobalsTypedDict(TypedDict):
@@ -158,23 +159,21 @@ class AccountingLedgerAccountsAllRequest(BaseModel):
         return m
 
 
-AccountingLedgerAccountsAllResponseResultTypedDict = TypeAliasType(
-    "AccountingLedgerAccountsAllResponseResultTypedDict",
-    Union[UnexpectedErrorResponseTypedDict, GetLedgerAccountsResponseTypedDict],
-)
-
-
-AccountingLedgerAccountsAllResponseResult = TypeAliasType(
-    "AccountingLedgerAccountsAllResponseResult",
-    Union[UnexpectedErrorResponse, GetLedgerAccountsResponse],
-)
-
-
 class AccountingLedgerAccountsAllResponseTypedDict(TypedDict):
-    result: AccountingLedgerAccountsAllResponseResultTypedDict
+    http_meta: HTTPMetadataTypedDict
+    get_ledger_accounts_response: NotRequired[GetLedgerAccountsResponseTypedDict]
+    r"""LedgerAccounts"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
 class AccountingLedgerAccountsAllResponse(BaseModel):
     next: Callable[[], Optional[AccountingLedgerAccountsAllResponse]]
 
-    result: AccountingLedgerAccountsAllResponseResult
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    get_ledger_accounts_response: Optional[GetLedgerAccountsResponse] = None
+    r"""LedgerAccounts"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

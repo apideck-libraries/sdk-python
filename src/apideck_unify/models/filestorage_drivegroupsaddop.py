@@ -6,6 +6,7 @@ from .createdrivegroupresponse import (
     CreateDriveGroupResponseTypedDict,
 )
 from .drivegroup_input import DriveGroupInput, DriveGroupInputTypedDict
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -18,8 +19,8 @@ from apideck_unify.utils import (
     RequestMetadata,
 )
 import pydantic
-from typing import Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class FileStorageDriveGroupsAddGlobalsTypedDict(TypedDict):
@@ -73,13 +74,19 @@ class FileStorageDriveGroupsAddRequest(BaseModel):
     r"""Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API."""
 
 
-FileStorageDriveGroupsAddResponseTypedDict = TypeAliasType(
-    "FileStorageDriveGroupsAddResponseTypedDict",
-    Union[CreateDriveGroupResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
+class FileStorageDriveGroupsAddResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    create_drive_group_response: NotRequired[CreateDriveGroupResponseTypedDict]
+    r"""DriveGroups"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-FileStorageDriveGroupsAddResponse = TypeAliasType(
-    "FileStorageDriveGroupsAddResponse",
-    Union[CreateDriveGroupResponse, UnexpectedErrorResponse],
-)
+class FileStorageDriveGroupsAddResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    create_drive_group_response: Optional[CreateDriveGroupResponse] = None
+    r"""DriveGroups"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

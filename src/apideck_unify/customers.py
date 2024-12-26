@@ -134,7 +134,10 @@ class Customers(BaseSDK):
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingCustomersAllResponse(
-                result=utils.unmarshal_json(http_res.text, models.GetCustomersResponse),
+                get_customers_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.GetCustomersResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
             )
         if utils.match_response(http_res, "400", "application/json"):
@@ -161,9 +164,10 @@ class Customers(BaseSDK):
             )
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingCustomersAllResponse(
-                result=utils.unmarshal_json(
-                    http_res.text, models.UnexpectedErrorResponse
+                unexpected_error_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.UnexpectedErrorResponse]
                 ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
             )
 
@@ -300,7 +304,10 @@ class Customers(BaseSDK):
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingCustomersAllResponse(
-                result=utils.unmarshal_json(http_res.text, models.GetCustomersResponse),
+                get_customers_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.GetCustomersResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
             )
         if utils.match_response(http_res, "400", "application/json"):
@@ -327,9 +334,10 @@ class Customers(BaseSDK):
             )
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingCustomersAllResponse(
-                result=utils.unmarshal_json(
-                    http_res.text, models.UnexpectedErrorResponse
+                unexpected_error_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.UnexpectedErrorResponse]
                 ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
             )
 
@@ -551,7 +559,12 @@ class Customers(BaseSDK):
 
         data: Any = None
         if utils.match_response(http_res, "201", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.CreateCustomerResponse)
+            return models.AccountingCustomersAddResponse(
+                create_customer_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.CreateCustomerResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
         if utils.match_response(http_res, "400", "application/json"):
             data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
             raise models.BadRequestResponse(data=data)
@@ -575,7 +588,12 @@ class Customers(BaseSDK):
                 "API error occurred", http_res.status_code, http_res_text, http_res
             )
         if utils.match_response(http_res, "default", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UnexpectedErrorResponse)
+            return models.AccountingCustomersAddResponse(
+                unexpected_error_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.UnexpectedErrorResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
 
         content_type = http_res.headers.get("Content-Type")
         http_res_text = utils.stream_to_text(http_res)
@@ -795,7 +813,12 @@ class Customers(BaseSDK):
 
         data: Any = None
         if utils.match_response(http_res, "201", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.CreateCustomerResponse)
+            return models.AccountingCustomersAddResponse(
+                create_customer_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.CreateCustomerResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
         if utils.match_response(http_res, "400", "application/json"):
             data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
             raise models.BadRequestResponse(data=data)
@@ -819,7 +842,12 @@ class Customers(BaseSDK):
                 "API error occurred", http_res.status_code, http_res_text, http_res
             )
         if utils.match_response(http_res, "default", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UnexpectedErrorResponse)
+            return models.AccountingCustomersAddResponse(
+                unexpected_error_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.UnexpectedErrorResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
 
         content_type = http_res.headers.get("Content-Type")
         http_res_text = await utils.stream_to_text_async(http_res)
@@ -917,7 +945,12 @@ class Customers(BaseSDK):
 
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.GetCustomerResponse)
+            return models.AccountingCustomersOneResponse(
+                get_customer_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.GetCustomerResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
         if utils.match_response(http_res, "400", "application/json"):
             data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
             raise models.BadRequestResponse(data=data)
@@ -941,7 +974,12 @@ class Customers(BaseSDK):
                 "API error occurred", http_res.status_code, http_res_text, http_res
             )
         if utils.match_response(http_res, "default", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UnexpectedErrorResponse)
+            return models.AccountingCustomersOneResponse(
+                unexpected_error_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.UnexpectedErrorResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
 
         content_type = http_res.headers.get("Content-Type")
         http_res_text = utils.stream_to_text(http_res)
@@ -1039,7 +1077,12 @@ class Customers(BaseSDK):
 
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.GetCustomerResponse)
+            return models.AccountingCustomersOneResponse(
+                get_customer_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.GetCustomerResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
         if utils.match_response(http_res, "400", "application/json"):
             data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
             raise models.BadRequestResponse(data=data)
@@ -1063,7 +1106,12 @@ class Customers(BaseSDK):
                 "API error occurred", http_res.status_code, http_res_text, http_res
             )
         if utils.match_response(http_res, "default", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UnexpectedErrorResponse)
+            return models.AccountingCustomersOneResponse(
+                unexpected_error_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.UnexpectedErrorResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
 
         content_type = http_res.headers.get("Content-Type")
         http_res_text = await utils.stream_to_text_async(http_res)
@@ -1286,7 +1334,12 @@ class Customers(BaseSDK):
 
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UpdateCustomerResponse)
+            return models.AccountingCustomersUpdateResponse(
+                update_customer_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.UpdateCustomerResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
         if utils.match_response(http_res, "400", "application/json"):
             data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
             raise models.BadRequestResponse(data=data)
@@ -1310,7 +1363,12 @@ class Customers(BaseSDK):
                 "API error occurred", http_res.status_code, http_res_text, http_res
             )
         if utils.match_response(http_res, "default", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UnexpectedErrorResponse)
+            return models.AccountingCustomersUpdateResponse(
+                unexpected_error_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.UnexpectedErrorResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
 
         content_type = http_res.headers.get("Content-Type")
         http_res_text = utils.stream_to_text(http_res)
@@ -1533,7 +1591,12 @@ class Customers(BaseSDK):
 
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UpdateCustomerResponse)
+            return models.AccountingCustomersUpdateResponse(
+                update_customer_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.UpdateCustomerResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
         if utils.match_response(http_res, "400", "application/json"):
             data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
             raise models.BadRequestResponse(data=data)
@@ -1557,7 +1620,12 @@ class Customers(BaseSDK):
                 "API error occurred", http_res.status_code, http_res_text, http_res
             )
         if utils.match_response(http_res, "default", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UnexpectedErrorResponse)
+            return models.AccountingCustomersUpdateResponse(
+                unexpected_error_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.UnexpectedErrorResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
 
         content_type = http_res.headers.get("Content-Type")
         http_res_text = await utils.stream_to_text_async(http_res)
@@ -1652,7 +1720,12 @@ class Customers(BaseSDK):
 
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.DeleteCustomerResponse)
+            return models.AccountingCustomersDeleteResponse(
+                delete_customer_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.DeleteCustomerResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
         if utils.match_response(http_res, "400", "application/json"):
             data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
             raise models.BadRequestResponse(data=data)
@@ -1676,7 +1749,12 @@ class Customers(BaseSDK):
                 "API error occurred", http_res.status_code, http_res_text, http_res
             )
         if utils.match_response(http_res, "default", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UnexpectedErrorResponse)
+            return models.AccountingCustomersDeleteResponse(
+                unexpected_error_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.UnexpectedErrorResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
 
         content_type = http_res.headers.get("Content-Type")
         http_res_text = utils.stream_to_text(http_res)
@@ -1771,7 +1849,12 @@ class Customers(BaseSDK):
 
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.DeleteCustomerResponse)
+            return models.AccountingCustomersDeleteResponse(
+                delete_customer_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.DeleteCustomerResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
         if utils.match_response(http_res, "400", "application/json"):
             data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
             raise models.BadRequestResponse(data=data)
@@ -1795,7 +1878,12 @@ class Customers(BaseSDK):
                 "API error occurred", http_res.status_code, http_res_text, http_res
             )
         if utils.match_response(http_res, "default", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UnexpectedErrorResponse)
+            return models.AccountingCustomersDeleteResponse(
+                unexpected_error_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.UnexpectedErrorResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
 
         content_type = http_res.headers.get("Content-Type")
         http_res_text = await utils.stream_to_text_async(http_res)

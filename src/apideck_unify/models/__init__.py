@@ -22,8 +22,6 @@ from .accounting_attachmentsallop import (
     AccountingAttachmentsAllRequest,
     AccountingAttachmentsAllRequestTypedDict,
     AccountingAttachmentsAllResponse,
-    AccountingAttachmentsAllResponseResult,
-    AccountingAttachmentsAllResponseResultTypedDict,
     AccountingAttachmentsAllResponseTypedDict,
 )
 from .accounting_attachmentsdeleteop import (
@@ -72,8 +70,6 @@ from .accounting_billpaymentsallop import (
     AccountingBillPaymentsAllRequest,
     AccountingBillPaymentsAllRequestTypedDict,
     AccountingBillPaymentsAllResponse,
-    AccountingBillPaymentsAllResponseResult,
-    AccountingBillPaymentsAllResponseResultTypedDict,
     AccountingBillPaymentsAllResponseTypedDict,
 )
 from .accounting_billpaymentsdeleteop import (
@@ -114,8 +110,6 @@ from .accounting_billsallop import (
     AccountingBillsAllRequest,
     AccountingBillsAllRequestTypedDict,
     AccountingBillsAllResponse,
-    AccountingBillsAllResponseResult,
-    AccountingBillsAllResponseResultTypedDict,
     AccountingBillsAllResponseTypedDict,
 )
 from .accounting_billsdeleteop import (
@@ -164,8 +158,6 @@ from .accounting_creditnotesallop import (
     AccountingCreditNotesAllRequest,
     AccountingCreditNotesAllRequestTypedDict,
     AccountingCreditNotesAllResponse,
-    AccountingCreditNotesAllResponseResult,
-    AccountingCreditNotesAllResponseResultTypedDict,
     AccountingCreditNotesAllResponseTypedDict,
 )
 from .accounting_creditnotesdeleteop import (
@@ -206,8 +198,6 @@ from .accounting_customersallop import (
     AccountingCustomersAllRequest,
     AccountingCustomersAllRequestTypedDict,
     AccountingCustomersAllResponse,
-    AccountingCustomersAllResponseResult,
-    AccountingCustomersAllResponseResultTypedDict,
     AccountingCustomersAllResponseTypedDict,
 )
 from .accounting_customersdeleteop import (
@@ -248,8 +238,6 @@ from .accounting_departmentsallop import (
     AccountingDepartmentsAllRequest,
     AccountingDepartmentsAllRequestTypedDict,
     AccountingDepartmentsAllResponse,
-    AccountingDepartmentsAllResponseResult,
-    AccountingDepartmentsAllResponseResultTypedDict,
     AccountingDepartmentsAllResponseTypedDict,
 )
 from .accounting_departmentsdeleteop import (
@@ -290,8 +278,6 @@ from .accounting_expensesallop import (
     AccountingExpensesAllRequest,
     AccountingExpensesAllRequestTypedDict,
     AccountingExpensesAllResponse,
-    AccountingExpensesAllResponseResult,
-    AccountingExpensesAllResponseResultTypedDict,
     AccountingExpensesAllResponseTypedDict,
 )
 from .accounting_expensesdeleteop import (
@@ -332,8 +318,6 @@ from .accounting_invoiceitemsallop import (
     AccountingInvoiceItemsAllRequest,
     AccountingInvoiceItemsAllRequestTypedDict,
     AccountingInvoiceItemsAllResponse,
-    AccountingInvoiceItemsAllResponseResult,
-    AccountingInvoiceItemsAllResponseResultTypedDict,
     AccountingInvoiceItemsAllResponseTypedDict,
 )
 from .accounting_invoiceitemsdeleteop import (
@@ -374,8 +358,6 @@ from .accounting_invoicesallop import (
     AccountingInvoicesAllRequest,
     AccountingInvoicesAllRequestTypedDict,
     AccountingInvoicesAllResponse,
-    AccountingInvoicesAllResponseResult,
-    AccountingInvoicesAllResponseResultTypedDict,
     AccountingInvoicesAllResponseTypedDict,
 )
 from .accounting_invoicesdeleteop import (
@@ -416,8 +398,6 @@ from .accounting_journalentriesallop import (
     AccountingJournalEntriesAllRequest,
     AccountingJournalEntriesAllRequestTypedDict,
     AccountingJournalEntriesAllResponse,
-    AccountingJournalEntriesAllResponseResult,
-    AccountingJournalEntriesAllResponseResultTypedDict,
     AccountingJournalEntriesAllResponseTypedDict,
 )
 from .accounting_journalentriesdeleteop import (
@@ -458,8 +438,6 @@ from .accounting_ledgeraccountsallop import (
     AccountingLedgerAccountsAllRequest,
     AccountingLedgerAccountsAllRequestTypedDict,
     AccountingLedgerAccountsAllResponse,
-    AccountingLedgerAccountsAllResponseResult,
-    AccountingLedgerAccountsAllResponseResultTypedDict,
     AccountingLedgerAccountsAllResponseTypedDict,
 )
 from .accounting_ledgeraccountsdeleteop import (
@@ -500,8 +478,6 @@ from .accounting_locationsallop import (
     AccountingLocationsAllRequest,
     AccountingLocationsAllRequestTypedDict,
     AccountingLocationsAllResponse,
-    AccountingLocationsAllResponseResult,
-    AccountingLocationsAllResponseResultTypedDict,
     AccountingLocationsAllResponseTypedDict,
 )
 from .accounting_locationsdeleteop import (
@@ -542,8 +518,6 @@ from .accounting_paymentsallop import (
     AccountingPaymentsAllRequest,
     AccountingPaymentsAllRequestTypedDict,
     AccountingPaymentsAllResponse,
-    AccountingPaymentsAllResponseResult,
-    AccountingPaymentsAllResponseResultTypedDict,
     AccountingPaymentsAllResponseTypedDict,
 )
 from .accounting_paymentsdeleteop import (
@@ -592,8 +566,6 @@ from .accounting_purchaseordersallop import (
     AccountingPurchaseOrdersAllRequest,
     AccountingPurchaseOrdersAllRequestTypedDict,
     AccountingPurchaseOrdersAllResponse,
-    AccountingPurchaseOrdersAllResponseResult,
-    AccountingPurchaseOrdersAllResponseResultTypedDict,
     AccountingPurchaseOrdersAllResponseTypedDict,
 )
 from .accounting_purchaseordersdeleteop import (
@@ -634,8 +606,6 @@ from .accounting_subsidiariesallop import (
     AccountingSubsidiariesAllRequest,
     AccountingSubsidiariesAllRequestTypedDict,
     AccountingSubsidiariesAllResponse,
-    AccountingSubsidiariesAllResponseResult,
-    AccountingSubsidiariesAllResponseResultTypedDict,
     AccountingSubsidiariesAllResponseTypedDict,
 )
 from .accounting_subsidiariesdeleteop import (
@@ -676,8 +646,6 @@ from .accounting_suppliersallop import (
     AccountingSuppliersAllRequest,
     AccountingSuppliersAllRequestTypedDict,
     AccountingSuppliersAllResponse,
-    AccountingSuppliersAllResponseResult,
-    AccountingSuppliersAllResponseResultTypedDict,
     AccountingSuppliersAllResponseTypedDict,
 )
 from .accounting_suppliersdeleteop import (
@@ -718,8 +686,6 @@ from .accounting_taxratesallop import (
     AccountingTaxRatesAllRequest,
     AccountingTaxRatesAllRequestTypedDict,
     AccountingTaxRatesAllResponse,
-    AccountingTaxRatesAllResponseResult,
-    AccountingTaxRatesAllResponseResultTypedDict,
     AccountingTaxRatesAllResponseTypedDict,
 )
 from .accounting_taxratesdeleteop import (
@@ -760,8 +726,6 @@ from .accounting_trackingcategoriesallop import (
     AccountingTrackingCategoriesAllRequest,
     AccountingTrackingCategoriesAllRequestTypedDict,
     AccountingTrackingCategoriesAllResponse,
-    AccountingTrackingCategoriesAllResponseResult,
-    AccountingTrackingCategoriesAllResponseResultTypedDict,
     AccountingTrackingCategoriesAllResponseTypedDict,
 )
 from .accounting_trackingcategoriesdeleteop import (
@@ -893,8 +857,6 @@ from .ats_applicantsallop import (
     AtsApplicantsAllRequest,
     AtsApplicantsAllRequestTypedDict,
     AtsApplicantsAllResponse,
-    AtsApplicantsAllResponseResult,
-    AtsApplicantsAllResponseResultTypedDict,
     AtsApplicantsAllResponseTypedDict,
 )
 from .ats_applicantsdeleteop import (
@@ -935,8 +897,6 @@ from .ats_applicationsallop import (
     AtsApplicationsAllRequest,
     AtsApplicationsAllRequestTypedDict,
     AtsApplicationsAllResponse,
-    AtsApplicationsAllResponseResult,
-    AtsApplicationsAllResponseResultTypedDict,
     AtsApplicationsAllResponseTypedDict,
 )
 from .ats_applicationsdeleteop import (
@@ -969,8 +929,6 @@ from .ats_jobsallop import (
     AtsJobsAllRequest,
     AtsJobsAllRequestTypedDict,
     AtsJobsAllResponse,
-    AtsJobsAllResponseResult,
-    AtsJobsAllResponseResultTypedDict,
     AtsJobsAllResponseTypedDict,
 )
 from .ats_jobsoneop import (
@@ -1140,8 +1098,6 @@ from .connector_apisallop import (
     ConnectorApisAllRequest,
     ConnectorApisAllRequestTypedDict,
     ConnectorApisAllResponse,
-    ConnectorApisAllResponseResult,
-    ConnectorApisAllResponseResultTypedDict,
     ConnectorApisAllResponseTypedDict,
 )
 from .connector_apisoneop import (
@@ -1174,8 +1130,6 @@ from .connector_connectorsallop import (
     ConnectorConnectorsAllRequest,
     ConnectorConnectorsAllRequestTypedDict,
     ConnectorConnectorsAllResponse,
-    ConnectorConnectorsAllResponseResult,
-    ConnectorConnectorsAllResponseResultTypedDict,
     ConnectorConnectorsAllResponseTypedDict,
 )
 from .connector_connectorsoneop import (
@@ -1389,8 +1343,6 @@ from .crm_activitiesallop import (
     CrmActivitiesAllRequest,
     CrmActivitiesAllRequestTypedDict,
     CrmActivitiesAllResponse,
-    CrmActivitiesAllResponseResult,
-    CrmActivitiesAllResponseResultTypedDict,
     CrmActivitiesAllResponseTypedDict,
 )
 from .crm_activitiesdeleteop import (
@@ -1431,8 +1383,6 @@ from .crm_companiesallop import (
     CrmCompaniesAllRequest,
     CrmCompaniesAllRequestTypedDict,
     CrmCompaniesAllResponse,
-    CrmCompaniesAllResponseResult,
-    CrmCompaniesAllResponseResultTypedDict,
     CrmCompaniesAllResponseTypedDict,
 )
 from .crm_companiesdeleteop import (
@@ -1473,8 +1423,6 @@ from .crm_contactsallop import (
     CrmContactsAllRequest,
     CrmContactsAllRequestTypedDict,
     CrmContactsAllResponse,
-    CrmContactsAllResponseResult,
-    CrmContactsAllResponseResultTypedDict,
     CrmContactsAllResponseTypedDict,
 )
 from .crm_contactsdeleteop import (
@@ -1515,8 +1463,6 @@ from .crm_leadsallop import (
     CrmLeadsAllRequest,
     CrmLeadsAllRequestTypedDict,
     CrmLeadsAllResponse,
-    CrmLeadsAllResponseResult,
-    CrmLeadsAllResponseResultTypedDict,
     CrmLeadsAllResponseTypedDict,
 )
 from .crm_leadsdeleteop import (
@@ -1557,8 +1503,6 @@ from .crm_notesallop import (
     CrmNotesAllRequest,
     CrmNotesAllRequestTypedDict,
     CrmNotesAllResponse,
-    CrmNotesAllResponseResult,
-    CrmNotesAllResponseResultTypedDict,
     CrmNotesAllResponseTypedDict,
 )
 from .crm_notesdeleteop import (
@@ -1599,8 +1543,6 @@ from .crm_opportunitiesallop import (
     CrmOpportunitiesAllRequest,
     CrmOpportunitiesAllRequestTypedDict,
     CrmOpportunitiesAllResponse,
-    CrmOpportunitiesAllResponseResult,
-    CrmOpportunitiesAllResponseResultTypedDict,
     CrmOpportunitiesAllResponseTypedDict,
 )
 from .crm_opportunitiesdeleteop import (
@@ -1641,8 +1583,6 @@ from .crm_pipelinesallop import (
     CrmPipelinesAllRequest,
     CrmPipelinesAllRequestTypedDict,
     CrmPipelinesAllResponse,
-    CrmPipelinesAllResponseResult,
-    CrmPipelinesAllResponseResultTypedDict,
     CrmPipelinesAllResponseTypedDict,
 )
 from .crm_pipelinesdeleteop import (
@@ -1683,8 +1623,6 @@ from .crm_usersallop import (
     CrmUsersAllRequest,
     CrmUsersAllRequestTypedDict,
     CrmUsersAllResponse,
-    CrmUsersAllResponseResult,
-    CrmUsersAllResponseResultTypedDict,
     CrmUsersAllResponseTypedDict,
 )
 from .crm_usersdeleteop import (
@@ -1885,8 +1823,6 @@ from .ecommerce_customersallop import (
     EcommerceCustomersAllRequest,
     EcommerceCustomersAllRequestTypedDict,
     EcommerceCustomersAllResponse,
-    EcommerceCustomersAllResponseResult,
-    EcommerceCustomersAllResponseResultTypedDict,
     EcommerceCustomersAllResponseTypedDict,
 )
 from .ecommerce_customersoneop import (
@@ -1903,8 +1839,6 @@ from .ecommerce_ordersallop import (
     EcommerceOrdersAllRequest,
     EcommerceOrdersAllRequestTypedDict,
     EcommerceOrdersAllResponse,
-    EcommerceOrdersAllResponseResult,
-    EcommerceOrdersAllResponseResultTypedDict,
     EcommerceOrdersAllResponseTypedDict,
 )
 from .ecommerce_ordersoneop import (
@@ -1921,8 +1855,6 @@ from .ecommerce_productsallop import (
     EcommerceProductsAllRequest,
     EcommerceProductsAllRequestTypedDict,
     EcommerceProductsAllResponse,
-    EcommerceProductsAllResponseResult,
-    EcommerceProductsAllResponseResultTypedDict,
     EcommerceProductsAllResponseTypedDict,
 )
 from .ecommerce_productsoneop import (
@@ -2054,8 +1986,6 @@ from .filestorage_drivegroupsallop import (
     FileStorageDriveGroupsAllRequest,
     FileStorageDriveGroupsAllRequestTypedDict,
     FileStorageDriveGroupsAllResponse,
-    FileStorageDriveGroupsAllResponseResult,
-    FileStorageDriveGroupsAllResponseResultTypedDict,
     FileStorageDriveGroupsAllResponseTypedDict,
 )
 from .filestorage_drivegroupsdeleteop import (
@@ -2096,8 +2026,6 @@ from .filestorage_drivesallop import (
     FileStorageDrivesAllRequest,
     FileStorageDrivesAllRequestTypedDict,
     FileStorageDrivesAllResponse,
-    FileStorageDrivesAllResponseResult,
-    FileStorageDrivesAllResponseResultTypedDict,
     FileStorageDrivesAllResponseTypedDict,
 )
 from .filestorage_drivesdeleteop import (
@@ -2130,8 +2058,6 @@ from .filestorage_filesallop import (
     FileStorageFilesAllRequest,
     FileStorageFilesAllRequestTypedDict,
     FileStorageFilesAllResponse,
-    FileStorageFilesAllResponseResult,
-    FileStorageFilesAllResponseResultTypedDict,
     FileStorageFilesAllResponseTypedDict,
 )
 from .filestorage_filesdeleteop import (
@@ -2236,8 +2162,6 @@ from .filestorage_sharedlinksallop import (
     FileStorageSharedLinksAllRequest,
     FileStorageSharedLinksAllRequestTypedDict,
     FileStorageSharedLinksAllResponse,
-    FileStorageSharedLinksAllResponseResult,
-    FileStorageSharedLinksAllResponseResultTypedDict,
     FileStorageSharedLinksAllResponseTypedDict,
 )
 from .filestorage_sharedlinksdeleteop import (
@@ -2609,8 +2533,6 @@ from .hris_companiesallop import (
     HrisCompaniesAllRequest,
     HrisCompaniesAllRequestTypedDict,
     HrisCompaniesAllResponse,
-    HrisCompaniesAllResponseResult,
-    HrisCompaniesAllResponseResultTypedDict,
     HrisCompaniesAllResponseTypedDict,
 )
 from .hris_companiesdeleteop import (
@@ -2651,8 +2573,6 @@ from .hris_departmentsallop import (
     HrisDepartmentsAllRequest,
     HrisDepartmentsAllRequestTypedDict,
     HrisDepartmentsAllResponse,
-    HrisDepartmentsAllResponseResult,
-    HrisDepartmentsAllResponseResultTypedDict,
     HrisDepartmentsAllResponseTypedDict,
 )
 from .hris_departmentsdeleteop import (
@@ -2709,8 +2629,6 @@ from .hris_employeesallop import (
     HrisEmployeesAllRequest,
     HrisEmployeesAllRequestTypedDict,
     HrisEmployeesAllResponse,
-    HrisEmployeesAllResponseResult,
-    HrisEmployeesAllResponseResultTypedDict,
     HrisEmployeesAllResponseTypedDict,
 )
 from .hris_employeeschedulesallop import (
@@ -2775,8 +2693,6 @@ from .hris_timeoffrequestsallop import (
     HrisTimeOffRequestsAllRequest,
     HrisTimeOffRequestsAllRequestTypedDict,
     HrisTimeOffRequestsAllResponse,
-    HrisTimeOffRequestsAllResponseResult,
-    HrisTimeOffRequestsAllResponseResultTypedDict,
     HrisTimeOffRequestsAllResponseTypedDict,
 )
 from .hris_timeoffrequestsdeleteop import (
@@ -2810,6 +2726,7 @@ from .hriscompany import (
     HrisCompanyStatus,
     HrisCompanyTypedDict,
 )
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .integrationstate import IntegrationState
 from .invoice import (
     Invoice,
@@ -2861,8 +2778,6 @@ from .issuetracking_collectionsallop import (
     IssueTrackingCollectionsAllRequest,
     IssueTrackingCollectionsAllRequestTypedDict,
     IssueTrackingCollectionsAllResponse,
-    IssueTrackingCollectionsAllResponseResult,
-    IssueTrackingCollectionsAllResponseResultTypedDict,
     IssueTrackingCollectionsAllResponseTypedDict,
 )
 from .issuetracking_collectionsoneop import (
@@ -2879,8 +2794,6 @@ from .issuetracking_collectiontagsallop import (
     IssueTrackingCollectionTagsAllRequest,
     IssueTrackingCollectionTagsAllRequestTypedDict,
     IssueTrackingCollectionTagsAllResponse,
-    IssueTrackingCollectionTagsAllResponseResult,
-    IssueTrackingCollectionTagsAllResponseResultTypedDict,
     IssueTrackingCollectionTagsAllResponseTypedDict,
 )
 from .issuetracking_collectionticketcommentsaddop import (
@@ -2897,8 +2810,6 @@ from .issuetracking_collectionticketcommentsallop import (
     IssueTrackingCollectionTicketCommentsAllRequest,
     IssueTrackingCollectionTicketCommentsAllRequestTypedDict,
     IssueTrackingCollectionTicketCommentsAllResponse,
-    IssueTrackingCollectionTicketCommentsAllResponseResult,
-    IssueTrackingCollectionTicketCommentsAllResponseResultTypedDict,
     IssueTrackingCollectionTicketCommentsAllResponseTypedDict,
 )
 from .issuetracking_collectionticketcommentsdeleteop import (
@@ -2915,8 +2826,6 @@ from .issuetracking_collectionticketcommentsoneop import (
     IssueTrackingCollectionTicketCommentsOneRequest,
     IssueTrackingCollectionTicketCommentsOneRequestTypedDict,
     IssueTrackingCollectionTicketCommentsOneResponse,
-    IssueTrackingCollectionTicketCommentsOneResponseResult,
-    IssueTrackingCollectionTicketCommentsOneResponseResultTypedDict,
     IssueTrackingCollectionTicketCommentsOneResponseTypedDict,
 )
 from .issuetracking_collectionticketcommentsupdateop import (
@@ -2941,8 +2850,6 @@ from .issuetracking_collectionticketsallop import (
     IssueTrackingCollectionTicketsAllRequest,
     IssueTrackingCollectionTicketsAllRequestTypedDict,
     IssueTrackingCollectionTicketsAllResponse,
-    IssueTrackingCollectionTicketsAllResponseResult,
-    IssueTrackingCollectionTicketsAllResponseResultTypedDict,
     IssueTrackingCollectionTicketsAllResponseTypedDict,
 )
 from .issuetracking_collectionticketsdeleteop import (
@@ -2975,8 +2882,6 @@ from .issuetracking_collectionusersallop import (
     IssueTrackingCollectionUsersAllRequest,
     IssueTrackingCollectionUsersAllRequestTypedDict,
     IssueTrackingCollectionUsersAllResponse,
-    IssueTrackingCollectionUsersAllResponseResult,
-    IssueTrackingCollectionUsersAllResponseResultTypedDict,
     IssueTrackingCollectionUsersAllResponseTypedDict,
 )
 from .issuetracking_collectionusersoneop import (
@@ -3240,8 +3145,6 @@ from .sms_messagesallop import (
     SmsMessagesAllRequest,
     SmsMessagesAllRequestTypedDict,
     SmsMessagesAllResponse,
-    SmsMessagesAllResponseResult,
-    SmsMessagesAllResponseResultTypedDict,
     SmsMessagesAllResponseTypedDict,
 )
 from .sms_messagesdeleteop import (
@@ -3510,6 +3413,8 @@ from .vault_connectionsdeleteop import (
     VaultConnectionsDeleteGlobalsTypedDict,
     VaultConnectionsDeleteRequest,
     VaultConnectionsDeleteRequestTypedDict,
+    VaultConnectionsDeleteResponse,
+    VaultConnectionsDeleteResponseTypedDict,
 )
 from .vault_connectionsettingsallop import (
     VaultConnectionSettingsAllGlobals,
@@ -3581,8 +3486,6 @@ from .vault_consumersallop import (
     VaultConsumersAllRequest,
     VaultConsumersAllRequestTypedDict,
     VaultConsumersAllResponse,
-    VaultConsumersAllResponseResult,
-    VaultConsumersAllResponseResultTypedDict,
     VaultConsumersAllResponseTypedDict,
 )
 from .vault_consumersdeleteop import (
@@ -3639,8 +3542,6 @@ from .vault_logsallop import (
     VaultLogsAllRequest,
     VaultLogsAllRequestTypedDict,
     VaultLogsAllResponse,
-    VaultLogsAllResponseResult,
-    VaultLogsAllResponseResultTypedDict,
     VaultLogsAllResponseTypedDict,
 )
 from .vault_sessionscreateop import (
@@ -3666,8 +3567,6 @@ from .webhook_eventlogsallop import (
     WebhookEventLogsAllRequest,
     WebhookEventLogsAllRequestTypedDict,
     WebhookEventLogsAllResponse,
-    WebhookEventLogsAllResponseResult,
-    WebhookEventLogsAllResponseResultTypedDict,
     WebhookEventLogsAllResponseTypedDict,
 )
 from .webhook_webhooksaddop import (
@@ -3682,8 +3581,6 @@ from .webhook_webhooksallop import (
     WebhookWebhooksAllRequest,
     WebhookWebhooksAllRequestTypedDict,
     WebhookWebhooksAllResponse,
-    WebhookWebhooksAllResponseResult,
-    WebhookWebhooksAllResponseResultTypedDict,
     WebhookWebhooksAllResponseTypedDict,
 )
 from .webhook_webhooksdeleteop import (
@@ -3771,8 +3668,6 @@ __all__ = [
     "AccountingAttachmentsAllRequest",
     "AccountingAttachmentsAllRequestTypedDict",
     "AccountingAttachmentsAllResponse",
-    "AccountingAttachmentsAllResponseResult",
-    "AccountingAttachmentsAllResponseResultTypedDict",
     "AccountingAttachmentsAllResponseTypedDict",
     "AccountingAttachmentsDeleteGlobals",
     "AccountingAttachmentsDeleteGlobalsTypedDict",
@@ -3809,8 +3704,6 @@ __all__ = [
     "AccountingBillPaymentsAllRequest",
     "AccountingBillPaymentsAllRequestTypedDict",
     "AccountingBillPaymentsAllResponse",
-    "AccountingBillPaymentsAllResponseResult",
-    "AccountingBillPaymentsAllResponseResultTypedDict",
     "AccountingBillPaymentsAllResponseTypedDict",
     "AccountingBillPaymentsDeleteGlobals",
     "AccountingBillPaymentsDeleteGlobalsTypedDict",
@@ -3841,8 +3734,6 @@ __all__ = [
     "AccountingBillsAllRequest",
     "AccountingBillsAllRequestTypedDict",
     "AccountingBillsAllResponse",
-    "AccountingBillsAllResponseResult",
-    "AccountingBillsAllResponseResultTypedDict",
     "AccountingBillsAllResponseTypedDict",
     "AccountingBillsDeleteGlobals",
     "AccountingBillsDeleteGlobalsTypedDict",
@@ -3879,8 +3770,6 @@ __all__ = [
     "AccountingCreditNotesAllRequest",
     "AccountingCreditNotesAllRequestTypedDict",
     "AccountingCreditNotesAllResponse",
-    "AccountingCreditNotesAllResponseResult",
-    "AccountingCreditNotesAllResponseResultTypedDict",
     "AccountingCreditNotesAllResponseTypedDict",
     "AccountingCreditNotesDeleteGlobals",
     "AccountingCreditNotesDeleteGlobalsTypedDict",
@@ -3911,8 +3800,6 @@ __all__ = [
     "AccountingCustomersAllRequest",
     "AccountingCustomersAllRequestTypedDict",
     "AccountingCustomersAllResponse",
-    "AccountingCustomersAllResponseResult",
-    "AccountingCustomersAllResponseResultTypedDict",
     "AccountingCustomersAllResponseTypedDict",
     "AccountingCustomersDeleteGlobals",
     "AccountingCustomersDeleteGlobalsTypedDict",
@@ -3947,8 +3834,6 @@ __all__ = [
     "AccountingDepartmentsAllRequest",
     "AccountingDepartmentsAllRequestTypedDict",
     "AccountingDepartmentsAllResponse",
-    "AccountingDepartmentsAllResponseResult",
-    "AccountingDepartmentsAllResponseResultTypedDict",
     "AccountingDepartmentsAllResponseTypedDict",
     "AccountingDepartmentsDeleteGlobals",
     "AccountingDepartmentsDeleteGlobalsTypedDict",
@@ -3981,8 +3866,6 @@ __all__ = [
     "AccountingExpensesAllRequest",
     "AccountingExpensesAllRequestTypedDict",
     "AccountingExpensesAllResponse",
-    "AccountingExpensesAllResponseResult",
-    "AccountingExpensesAllResponseResultTypedDict",
     "AccountingExpensesAllResponseTypedDict",
     "AccountingExpensesDeleteGlobals",
     "AccountingExpensesDeleteGlobalsTypedDict",
@@ -4013,8 +3896,6 @@ __all__ = [
     "AccountingInvoiceItemsAllRequest",
     "AccountingInvoiceItemsAllRequestTypedDict",
     "AccountingInvoiceItemsAllResponse",
-    "AccountingInvoiceItemsAllResponseResult",
-    "AccountingInvoiceItemsAllResponseResultTypedDict",
     "AccountingInvoiceItemsAllResponseTypedDict",
     "AccountingInvoiceItemsDeleteGlobals",
     "AccountingInvoiceItemsDeleteGlobalsTypedDict",
@@ -4045,8 +3926,6 @@ __all__ = [
     "AccountingInvoicesAllRequest",
     "AccountingInvoicesAllRequestTypedDict",
     "AccountingInvoicesAllResponse",
-    "AccountingInvoicesAllResponseResult",
-    "AccountingInvoicesAllResponseResultTypedDict",
     "AccountingInvoicesAllResponseTypedDict",
     "AccountingInvoicesDeleteGlobals",
     "AccountingInvoicesDeleteGlobalsTypedDict",
@@ -4077,8 +3956,6 @@ __all__ = [
     "AccountingJournalEntriesAllRequest",
     "AccountingJournalEntriesAllRequestTypedDict",
     "AccountingJournalEntriesAllResponse",
-    "AccountingJournalEntriesAllResponseResult",
-    "AccountingJournalEntriesAllResponseResultTypedDict",
     "AccountingJournalEntriesAllResponseTypedDict",
     "AccountingJournalEntriesDeleteGlobals",
     "AccountingJournalEntriesDeleteGlobalsTypedDict",
@@ -4109,8 +3986,6 @@ __all__ = [
     "AccountingLedgerAccountsAllRequest",
     "AccountingLedgerAccountsAllRequestTypedDict",
     "AccountingLedgerAccountsAllResponse",
-    "AccountingLedgerAccountsAllResponseResult",
-    "AccountingLedgerAccountsAllResponseResultTypedDict",
     "AccountingLedgerAccountsAllResponseTypedDict",
     "AccountingLedgerAccountsDeleteGlobals",
     "AccountingLedgerAccountsDeleteGlobalsTypedDict",
@@ -4145,8 +4020,6 @@ __all__ = [
     "AccountingLocationsAllRequest",
     "AccountingLocationsAllRequestTypedDict",
     "AccountingLocationsAllResponse",
-    "AccountingLocationsAllResponseResult",
-    "AccountingLocationsAllResponseResultTypedDict",
     "AccountingLocationsAllResponseTypedDict",
     "AccountingLocationsDeleteGlobals",
     "AccountingLocationsDeleteGlobalsTypedDict",
@@ -4179,8 +4052,6 @@ __all__ = [
     "AccountingPaymentsAllRequest",
     "AccountingPaymentsAllRequestTypedDict",
     "AccountingPaymentsAllResponse",
-    "AccountingPaymentsAllResponseResult",
-    "AccountingPaymentsAllResponseResultTypedDict",
     "AccountingPaymentsAllResponseTypedDict",
     "AccountingPaymentsDeleteGlobals",
     "AccountingPaymentsDeleteGlobalsTypedDict",
@@ -4217,8 +4088,6 @@ __all__ = [
     "AccountingPurchaseOrdersAllRequest",
     "AccountingPurchaseOrdersAllRequestTypedDict",
     "AccountingPurchaseOrdersAllResponse",
-    "AccountingPurchaseOrdersAllResponseResult",
-    "AccountingPurchaseOrdersAllResponseResultTypedDict",
     "AccountingPurchaseOrdersAllResponseTypedDict",
     "AccountingPurchaseOrdersDeleteGlobals",
     "AccountingPurchaseOrdersDeleteGlobalsTypedDict",
@@ -4249,8 +4118,6 @@ __all__ = [
     "AccountingSubsidiariesAllRequest",
     "AccountingSubsidiariesAllRequestTypedDict",
     "AccountingSubsidiariesAllResponse",
-    "AccountingSubsidiariesAllResponseResult",
-    "AccountingSubsidiariesAllResponseResultTypedDict",
     "AccountingSubsidiariesAllResponseTypedDict",
     "AccountingSubsidiariesDeleteGlobals",
     "AccountingSubsidiariesDeleteGlobalsTypedDict",
@@ -4281,8 +4148,6 @@ __all__ = [
     "AccountingSuppliersAllRequest",
     "AccountingSuppliersAllRequestTypedDict",
     "AccountingSuppliersAllResponse",
-    "AccountingSuppliersAllResponseResult",
-    "AccountingSuppliersAllResponseResultTypedDict",
     "AccountingSuppliersAllResponseTypedDict",
     "AccountingSuppliersDeleteGlobals",
     "AccountingSuppliersDeleteGlobalsTypedDict",
@@ -4313,8 +4178,6 @@ __all__ = [
     "AccountingTaxRatesAllRequest",
     "AccountingTaxRatesAllRequestTypedDict",
     "AccountingTaxRatesAllResponse",
-    "AccountingTaxRatesAllResponseResult",
-    "AccountingTaxRatesAllResponseResultTypedDict",
     "AccountingTaxRatesAllResponseTypedDict",
     "AccountingTaxRatesDeleteGlobals",
     "AccountingTaxRatesDeleteGlobalsTypedDict",
@@ -4345,8 +4208,6 @@ __all__ = [
     "AccountingTrackingCategoriesAllRequest",
     "AccountingTrackingCategoriesAllRequestTypedDict",
     "AccountingTrackingCategoriesAllResponse",
-    "AccountingTrackingCategoriesAllResponseResult",
-    "AccountingTrackingCategoriesAllResponseResultTypedDict",
     "AccountingTrackingCategoriesAllResponseTypedDict",
     "AccountingTrackingCategoriesDeleteGlobals",
     "AccountingTrackingCategoriesDeleteGlobalsTypedDict",
@@ -4428,8 +4289,6 @@ __all__ = [
     "AtsApplicantsAllRequest",
     "AtsApplicantsAllRequestTypedDict",
     "AtsApplicantsAllResponse",
-    "AtsApplicantsAllResponseResult",
-    "AtsApplicantsAllResponseResultTypedDict",
     "AtsApplicantsAllResponseTypedDict",
     "AtsApplicantsDeleteGlobals",
     "AtsApplicantsDeleteGlobalsTypedDict",
@@ -4460,8 +4319,6 @@ __all__ = [
     "AtsApplicationsAllRequest",
     "AtsApplicationsAllRequestTypedDict",
     "AtsApplicationsAllResponse",
-    "AtsApplicationsAllResponseResult",
-    "AtsApplicationsAllResponseResultTypedDict",
     "AtsApplicationsAllResponseTypedDict",
     "AtsApplicationsDeleteGlobals",
     "AtsApplicationsDeleteGlobalsTypedDict",
@@ -4486,8 +4343,6 @@ __all__ = [
     "AtsJobsAllRequest",
     "AtsJobsAllRequestTypedDict",
     "AtsJobsAllResponse",
-    "AtsJobsAllResponseResult",
-    "AtsJobsAllResponseResultTypedDict",
     "AtsJobsAllResponseTypedDict",
     "AtsJobsOneGlobals",
     "AtsJobsOneGlobalsTypedDict",
@@ -4629,8 +4484,6 @@ __all__ = [
     "ConnectorApisAllRequest",
     "ConnectorApisAllRequestTypedDict",
     "ConnectorApisAllResponse",
-    "ConnectorApisAllResponseResult",
-    "ConnectorApisAllResponseResultTypedDict",
     "ConnectorApisAllResponseTypedDict",
     "ConnectorApisOneGlobals",
     "ConnectorApisOneGlobalsTypedDict",
@@ -4656,8 +4509,6 @@ __all__ = [
     "ConnectorConnectorsAllRequest",
     "ConnectorConnectorsAllRequestTypedDict",
     "ConnectorConnectorsAllResponse",
-    "ConnectorConnectorsAllResponseResult",
-    "ConnectorConnectorsAllResponseResultTypedDict",
     "ConnectorConnectorsAllResponseTypedDict",
     "ConnectorConnectorsOneGlobals",
     "ConnectorConnectorsOneGlobalsTypedDict",
@@ -4832,8 +4683,6 @@ __all__ = [
     "CrmActivitiesAllRequest",
     "CrmActivitiesAllRequestTypedDict",
     "CrmActivitiesAllResponse",
-    "CrmActivitiesAllResponseResult",
-    "CrmActivitiesAllResponseResultTypedDict",
     "CrmActivitiesAllResponseTypedDict",
     "CrmActivitiesDeleteGlobals",
     "CrmActivitiesDeleteGlobalsTypedDict",
@@ -4864,8 +4713,6 @@ __all__ = [
     "CrmCompaniesAllRequest",
     "CrmCompaniesAllRequestTypedDict",
     "CrmCompaniesAllResponse",
-    "CrmCompaniesAllResponseResult",
-    "CrmCompaniesAllResponseResultTypedDict",
     "CrmCompaniesAllResponseTypedDict",
     "CrmCompaniesDeleteGlobals",
     "CrmCompaniesDeleteGlobalsTypedDict",
@@ -4896,8 +4743,6 @@ __all__ = [
     "CrmContactsAllRequest",
     "CrmContactsAllRequestTypedDict",
     "CrmContactsAllResponse",
-    "CrmContactsAllResponseResult",
-    "CrmContactsAllResponseResultTypedDict",
     "CrmContactsAllResponseTypedDict",
     "CrmContactsDeleteGlobals",
     "CrmContactsDeleteGlobalsTypedDict",
@@ -4928,8 +4773,6 @@ __all__ = [
     "CrmLeadsAllRequest",
     "CrmLeadsAllRequestTypedDict",
     "CrmLeadsAllResponse",
-    "CrmLeadsAllResponseResult",
-    "CrmLeadsAllResponseResultTypedDict",
     "CrmLeadsAllResponseTypedDict",
     "CrmLeadsDeleteGlobals",
     "CrmLeadsDeleteGlobalsTypedDict",
@@ -4960,8 +4803,6 @@ __all__ = [
     "CrmNotesAllRequest",
     "CrmNotesAllRequestTypedDict",
     "CrmNotesAllResponse",
-    "CrmNotesAllResponseResult",
-    "CrmNotesAllResponseResultTypedDict",
     "CrmNotesAllResponseTypedDict",
     "CrmNotesDeleteGlobals",
     "CrmNotesDeleteGlobalsTypedDict",
@@ -4992,8 +4833,6 @@ __all__ = [
     "CrmOpportunitiesAllRequest",
     "CrmOpportunitiesAllRequestTypedDict",
     "CrmOpportunitiesAllResponse",
-    "CrmOpportunitiesAllResponseResult",
-    "CrmOpportunitiesAllResponseResultTypedDict",
     "CrmOpportunitiesAllResponseTypedDict",
     "CrmOpportunitiesDeleteGlobals",
     "CrmOpportunitiesDeleteGlobalsTypedDict",
@@ -5024,8 +4863,6 @@ __all__ = [
     "CrmPipelinesAllRequest",
     "CrmPipelinesAllRequestTypedDict",
     "CrmPipelinesAllResponse",
-    "CrmPipelinesAllResponseResult",
-    "CrmPipelinesAllResponseResultTypedDict",
     "CrmPipelinesAllResponseTypedDict",
     "CrmPipelinesDeleteGlobals",
     "CrmPipelinesDeleteGlobalsTypedDict",
@@ -5056,8 +4893,6 @@ __all__ = [
     "CrmUsersAllRequest",
     "CrmUsersAllRequestTypedDict",
     "CrmUsersAllResponse",
-    "CrmUsersAllResponseResult",
-    "CrmUsersAllResponseResultTypedDict",
     "CrmUsersAllResponseTypedDict",
     "CrmUsersDeleteGlobals",
     "CrmUsersDeleteGlobalsTypedDict",
@@ -5231,8 +5066,6 @@ __all__ = [
     "EcommerceCustomersAllRequest",
     "EcommerceCustomersAllRequestTypedDict",
     "EcommerceCustomersAllResponse",
-    "EcommerceCustomersAllResponseResult",
-    "EcommerceCustomersAllResponseResultTypedDict",
     "EcommerceCustomersAllResponseTypedDict",
     "EcommerceCustomersFilter",
     "EcommerceCustomersFilterTypedDict",
@@ -5255,8 +5088,6 @@ __all__ = [
     "EcommerceOrdersAllRequest",
     "EcommerceOrdersAllRequestTypedDict",
     "EcommerceOrdersAllResponse",
-    "EcommerceOrdersAllResponseResult",
-    "EcommerceOrdersAllResponseResultTypedDict",
     "EcommerceOrdersAllResponseTypedDict",
     "EcommerceOrdersFilter",
     "EcommerceOrdersFilterTypedDict",
@@ -5281,8 +5112,6 @@ __all__ = [
     "EcommerceProductsAllRequest",
     "EcommerceProductsAllRequestTypedDict",
     "EcommerceProductsAllResponse",
-    "EcommerceProductsAllResponseResult",
-    "EcommerceProductsAllResponseResultTypedDict",
     "EcommerceProductsAllResponseTypedDict",
     "EcommerceProductsOneGlobals",
     "EcommerceProductsOneGlobalsTypedDict",
@@ -5365,8 +5194,6 @@ __all__ = [
     "FileStorageDriveGroupsAllRequest",
     "FileStorageDriveGroupsAllRequestTypedDict",
     "FileStorageDriveGroupsAllResponse",
-    "FileStorageDriveGroupsAllResponseResult",
-    "FileStorageDriveGroupsAllResponseResultTypedDict",
     "FileStorageDriveGroupsAllResponseTypedDict",
     "FileStorageDriveGroupsDeleteGlobals",
     "FileStorageDriveGroupsDeleteGlobalsTypedDict",
@@ -5397,8 +5224,6 @@ __all__ = [
     "FileStorageDrivesAllRequest",
     "FileStorageDrivesAllRequestTypedDict",
     "FileStorageDrivesAllResponse",
-    "FileStorageDrivesAllResponseResult",
-    "FileStorageDrivesAllResponseResultTypedDict",
     "FileStorageDrivesAllResponseTypedDict",
     "FileStorageDrivesDeleteGlobals",
     "FileStorageDrivesDeleteGlobalsTypedDict",
@@ -5423,8 +5248,6 @@ __all__ = [
     "FileStorageFilesAllRequest",
     "FileStorageFilesAllRequestTypedDict",
     "FileStorageFilesAllResponse",
-    "FileStorageFilesAllResponseResult",
-    "FileStorageFilesAllResponseResultTypedDict",
     "FileStorageFilesAllResponseTypedDict",
     "FileStorageFilesDeleteGlobals",
     "FileStorageFilesDeleteGlobalsTypedDict",
@@ -5503,8 +5326,6 @@ __all__ = [
     "FileStorageSharedLinksAllRequest",
     "FileStorageSharedLinksAllRequestTypedDict",
     "FileStorageSharedLinksAllResponse",
-    "FileStorageSharedLinksAllResponseResult",
-    "FileStorageSharedLinksAllResponseResultTypedDict",
     "FileStorageSharedLinksAllResponseTypedDict",
     "FileStorageSharedLinksDeleteGlobals",
     "FileStorageSharedLinksDeleteGlobalsTypedDict",
@@ -5819,6 +5640,8 @@ __all__ = [
     "GetWebhooksResponseTypedDict",
     "GrossProfit",
     "GrossProfitTypedDict",
+    "HTTPMetadata",
+    "HTTPMetadataTypedDict",
     "HrisCompaniesAddGlobals",
     "HrisCompaniesAddGlobalsTypedDict",
     "HrisCompaniesAddRequest",
@@ -5830,8 +5653,6 @@ __all__ = [
     "HrisCompaniesAllRequest",
     "HrisCompaniesAllRequestTypedDict",
     "HrisCompaniesAllResponse",
-    "HrisCompaniesAllResponseResult",
-    "HrisCompaniesAllResponseResultTypedDict",
     "HrisCompaniesAllResponseTypedDict",
     "HrisCompaniesDeleteGlobals",
     "HrisCompaniesDeleteGlobalsTypedDict",
@@ -5867,8 +5688,6 @@ __all__ = [
     "HrisDepartmentsAllRequest",
     "HrisDepartmentsAllRequestTypedDict",
     "HrisDepartmentsAllResponse",
-    "HrisDepartmentsAllResponseResult",
-    "HrisDepartmentsAllResponseResultTypedDict",
     "HrisDepartmentsAllResponseTypedDict",
     "HrisDepartmentsDeleteGlobals",
     "HrisDepartmentsDeleteGlobalsTypedDict",
@@ -5917,8 +5736,6 @@ __all__ = [
     "HrisEmployeesAllRequest",
     "HrisEmployeesAllRequestTypedDict",
     "HrisEmployeesAllResponse",
-    "HrisEmployeesAllResponseResult",
-    "HrisEmployeesAllResponseResultTypedDict",
     "HrisEmployeesAllResponseTypedDict",
     "HrisEmployeesDeleteGlobals",
     "HrisEmployeesDeleteGlobalsTypedDict",
@@ -5961,8 +5778,6 @@ __all__ = [
     "HrisTimeOffRequestsAllRequest",
     "HrisTimeOffRequestsAllRequestTypedDict",
     "HrisTimeOffRequestsAllResponse",
-    "HrisTimeOffRequestsAllResponseResult",
-    "HrisTimeOffRequestsAllResponseResultTypedDict",
     "HrisTimeOffRequestsAllResponseTypedDict",
     "HrisTimeOffRequestsDeleteGlobals",
     "HrisTimeOffRequestsDeleteGlobalsTypedDict",
@@ -6025,8 +5840,6 @@ __all__ = [
     "IssueTrackingCollectionTagsAllRequest",
     "IssueTrackingCollectionTagsAllRequestTypedDict",
     "IssueTrackingCollectionTagsAllResponse",
-    "IssueTrackingCollectionTagsAllResponseResult",
-    "IssueTrackingCollectionTagsAllResponseResultTypedDict",
     "IssueTrackingCollectionTagsAllResponseTypedDict",
     "IssueTrackingCollectionTicketCommentsAddGlobals",
     "IssueTrackingCollectionTicketCommentsAddGlobalsTypedDict",
@@ -6039,8 +5852,6 @@ __all__ = [
     "IssueTrackingCollectionTicketCommentsAllRequest",
     "IssueTrackingCollectionTicketCommentsAllRequestTypedDict",
     "IssueTrackingCollectionTicketCommentsAllResponse",
-    "IssueTrackingCollectionTicketCommentsAllResponseResult",
-    "IssueTrackingCollectionTicketCommentsAllResponseResultTypedDict",
     "IssueTrackingCollectionTicketCommentsAllResponseTypedDict",
     "IssueTrackingCollectionTicketCommentsDeleteGlobals",
     "IssueTrackingCollectionTicketCommentsDeleteGlobalsTypedDict",
@@ -6053,8 +5864,6 @@ __all__ = [
     "IssueTrackingCollectionTicketCommentsOneRequest",
     "IssueTrackingCollectionTicketCommentsOneRequestTypedDict",
     "IssueTrackingCollectionTicketCommentsOneResponse",
-    "IssueTrackingCollectionTicketCommentsOneResponseResult",
-    "IssueTrackingCollectionTicketCommentsOneResponseResultTypedDict",
     "IssueTrackingCollectionTicketCommentsOneResponseTypedDict",
     "IssueTrackingCollectionTicketCommentsUpdateGlobals",
     "IssueTrackingCollectionTicketCommentsUpdateGlobalsTypedDict",
@@ -6073,8 +5882,6 @@ __all__ = [
     "IssueTrackingCollectionTicketsAllRequest",
     "IssueTrackingCollectionTicketsAllRequestTypedDict",
     "IssueTrackingCollectionTicketsAllResponse",
-    "IssueTrackingCollectionTicketsAllResponseResult",
-    "IssueTrackingCollectionTicketsAllResponseResultTypedDict",
     "IssueTrackingCollectionTicketsAllResponseTypedDict",
     "IssueTrackingCollectionTicketsDeleteGlobals",
     "IssueTrackingCollectionTicketsDeleteGlobalsTypedDict",
@@ -6099,8 +5906,6 @@ __all__ = [
     "IssueTrackingCollectionUsersAllRequest",
     "IssueTrackingCollectionUsersAllRequestTypedDict",
     "IssueTrackingCollectionUsersAllResponse",
-    "IssueTrackingCollectionUsersAllResponseResult",
-    "IssueTrackingCollectionUsersAllResponseResultTypedDict",
     "IssueTrackingCollectionUsersAllResponseTypedDict",
     "IssueTrackingCollectionUsersOneGlobals",
     "IssueTrackingCollectionUsersOneGlobalsTypedDict",
@@ -6113,8 +5918,6 @@ __all__ = [
     "IssueTrackingCollectionsAllRequest",
     "IssueTrackingCollectionsAllRequestTypedDict",
     "IssueTrackingCollectionsAllResponse",
-    "IssueTrackingCollectionsAllResponseResult",
-    "IssueTrackingCollectionsAllResponseResultTypedDict",
     "IssueTrackingCollectionsAllResponseTypedDict",
     "IssueTrackingCollectionsOneGlobals",
     "IssueTrackingCollectionsOneGlobalsTypedDict",
@@ -6379,8 +6182,6 @@ __all__ = [
     "SmsMessagesAllRequest",
     "SmsMessagesAllRequestTypedDict",
     "SmsMessagesAllResponse",
-    "SmsMessagesAllResponseResult",
-    "SmsMessagesAllResponseResultTypedDict",
     "SmsMessagesAllResponseTypedDict",
     "SmsMessagesDeleteGlobals",
     "SmsMessagesDeleteGlobalsTypedDict",
@@ -6633,6 +6434,8 @@ __all__ = [
     "VaultConnectionsDeleteGlobalsTypedDict",
     "VaultConnectionsDeleteRequest",
     "VaultConnectionsDeleteRequestTypedDict",
+    "VaultConnectionsDeleteResponse",
+    "VaultConnectionsDeleteResponseTypedDict",
     "VaultConnectionsImportGlobals",
     "VaultConnectionsImportGlobalsTypedDict",
     "VaultConnectionsImportRequest",
@@ -6674,8 +6477,6 @@ __all__ = [
     "VaultConsumersAllRequest",
     "VaultConsumersAllRequestTypedDict",
     "VaultConsumersAllResponse",
-    "VaultConsumersAllResponseResult",
-    "VaultConsumersAllResponseResultTypedDict",
     "VaultConsumersAllResponseTypedDict",
     "VaultConsumersDeleteGlobals",
     "VaultConsumersDeleteGlobalsTypedDict",
@@ -6718,8 +6519,6 @@ __all__ = [
     "VaultLogsAllRequest",
     "VaultLogsAllRequestTypedDict",
     "VaultLogsAllResponse",
-    "VaultLogsAllResponseResult",
-    "VaultLogsAllResponseResultTypedDict",
     "VaultLogsAllResponseTypedDict",
     "VaultSessionsCreateGlobals",
     "VaultSessionsCreateGlobalsTypedDict",
@@ -6746,8 +6545,6 @@ __all__ = [
     "WebhookEventLogsAllRequest",
     "WebhookEventLogsAllRequestTypedDict",
     "WebhookEventLogsAllResponse",
-    "WebhookEventLogsAllResponseResult",
-    "WebhookEventLogsAllResponseResultTypedDict",
     "WebhookEventLogsAllResponseTypedDict",
     "WebhookEventLogsFilter",
     "WebhookEventLogsFilterService",
@@ -6770,8 +6567,6 @@ __all__ = [
     "WebhookWebhooksAllRequest",
     "WebhookWebhooksAllRequestTypedDict",
     "WebhookWebhooksAllResponse",
-    "WebhookWebhooksAllResponseResult",
-    "WebhookWebhooksAllResponseResultTypedDict",
     "WebhookWebhooksAllResponseTypedDict",
     "WebhookWebhooksDeleteGlobals",
     "WebhookWebhooksDeleteGlobalsTypedDict",

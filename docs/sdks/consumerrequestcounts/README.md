@@ -26,8 +26,10 @@ with Apideck(
 
     res = apideck.vault.consumer_request_counts.list(consumer_id="test_user_id", start_datetime="2021-05-01T12:00:00.000Z", end_datetime="2021-05-30T12:00:00.000Z")
 
+    assert res.consumer_request_counts_in_date_range_response is not None
+
     # Handle response
-    print(res)
+    print(res.consumer_request_counts_in_date_range_response)
 
 ```
 

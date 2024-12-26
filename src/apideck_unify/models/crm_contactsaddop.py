@@ -3,6 +3,7 @@
 from __future__ import annotations
 from .contact import ContactInput, ContactInputTypedDict
 from .createcontactresponse import CreateContactResponse, CreateContactResponseTypedDict
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -15,8 +16,8 @@ from apideck_unify.utils import (
     RequestMetadata,
 )
 import pydantic
-from typing import Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class CrmContactsAddGlobalsTypedDict(TypedDict):
@@ -70,12 +71,19 @@ class CrmContactsAddRequest(BaseModel):
     r"""Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API."""
 
 
-CrmContactsAddResponseTypedDict = TypeAliasType(
-    "CrmContactsAddResponseTypedDict",
-    Union[CreateContactResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
+class CrmContactsAddResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    create_contact_response: NotRequired[CreateContactResponseTypedDict]
+    r"""Contact created"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-CrmContactsAddResponse = TypeAliasType(
-    "CrmContactsAddResponse", Union[CreateContactResponse, UnexpectedErrorResponse]
-)
+class CrmContactsAddResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    create_contact_response: Optional[CreateContactResponse] = None
+    r"""Contact created"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

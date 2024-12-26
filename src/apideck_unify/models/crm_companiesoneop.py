@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 from .getcompanyresponse import GetCompanyResponse, GetCompanyResponseTypedDict
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -21,8 +22,8 @@ from apideck_unify.utils import (
 )
 import pydantic
 from pydantic import model_serializer
-from typing import Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class CrmCompaniesOneGlobalsTypedDict(TypedDict):
@@ -115,12 +116,19 @@ class CrmCompaniesOneRequest(BaseModel):
         return m
 
 
-CrmCompaniesOneResponseTypedDict = TypeAliasType(
-    "CrmCompaniesOneResponseTypedDict",
-    Union[GetCompanyResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
+class CrmCompaniesOneResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    get_company_response: NotRequired[GetCompanyResponseTypedDict]
+    r"""Company"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-CrmCompaniesOneResponse = TypeAliasType(
-    "CrmCompaniesOneResponse", Union[GetCompanyResponse, UnexpectedErrorResponse]
-)
+class CrmCompaniesOneResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    get_company_response: Optional[GetCompanyResponse] = None
+    r"""Company"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

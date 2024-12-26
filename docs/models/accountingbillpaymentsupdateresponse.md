@@ -1,17 +1,10 @@
 # AccountingBillPaymentsUpdateResponse
 
 
-## Supported Types
+## Fields
 
-### `models.UpdateBillPaymentResponse`
-
-```python
-value: models.UpdateBillPaymentResponse = /* values here */
-```
-
-### `models.UnexpectedErrorResponse`
-
-```python
-value: models.UnexpectedErrorResponse = /* values here */
-```
-
+| Field                                                                                | Type                                                                                 | Required                                                                             | Description                                                                          |
+| ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ |
+| `http_meta`                                                                          | [models.HTTPMetadata](../models/httpmetadata.md)                                     | :heavy_check_mark:                                                                   | N/A                                                                                  |
+| `update_bill_payment_response`                                                       | [Optional[models.UpdateBillPaymentResponse]](../models/updatebillpaymentresponse.md) | :heavy_minus_sign:                                                                   | Bill Payment updated                                                                 |
+| `unexpected_error_response`                                                          | [Optional[models.UnexpectedErrorResponse]](../models/unexpectederrorresponse.md)     | :heavy_minus_sign:                                                                   | Unexpected error                                                                     |

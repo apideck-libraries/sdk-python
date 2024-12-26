@@ -1,17 +1,10 @@
 # AccountingExpensesUpdateResponse
 
 
-## Supported Types
+## Fields
 
-### `models.UpdateExpenseResponse`
-
-```python
-value: models.UpdateExpenseResponse = /* values here */
-```
-
-### `models.UnexpectedErrorResponse`
-
-```python
-value: models.UnexpectedErrorResponse = /* values here */
-```
-
+| Field                                                                            | Type                                                                             | Required                                                                         | Description                                                                      |
+| -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| `http_meta`                                                                      | [models.HTTPMetadata](../models/httpmetadata.md)                                 | :heavy_check_mark:                                                               | N/A                                                                              |
+| `update_expense_response`                                                        | [Optional[models.UpdateExpenseResponse]](../models/updateexpenseresponse.md)     | :heavy_minus_sign:                                                               | Expenses                                                                         |
+| `unexpected_error_response`                                                      | [Optional[models.UnexpectedErrorResponse]](../models/unexpectederrorresponse.md) | :heavy_minus_sign:                                                               | Unexpected error                                                                 |

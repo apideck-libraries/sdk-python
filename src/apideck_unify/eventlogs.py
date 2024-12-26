@@ -113,9 +113,10 @@ class EventLogs(BaseSDK):
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.WebhookEventLogsAllResponse(
-                result=utils.unmarshal_json(
-                    http_res.text, models.GetWebhookEventLogsResponse
+                get_webhook_event_logs_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.GetWebhookEventLogsResponse]
                 ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
             )
         if utils.match_response(http_res, "400", "application/json"):
@@ -142,9 +143,10 @@ class EventLogs(BaseSDK):
             )
         if utils.match_response(http_res, "default", "application/json"):
             return models.WebhookEventLogsAllResponse(
-                result=utils.unmarshal_json(
-                    http_res.text, models.UnexpectedErrorResponse
+                unexpected_error_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.UnexpectedErrorResponse]
                 ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
             )
 
@@ -260,9 +262,10 @@ class EventLogs(BaseSDK):
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.WebhookEventLogsAllResponse(
-                result=utils.unmarshal_json(
-                    http_res.text, models.GetWebhookEventLogsResponse
+                get_webhook_event_logs_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.GetWebhookEventLogsResponse]
                 ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
             )
         if utils.match_response(http_res, "400", "application/json"):
@@ -289,9 +292,10 @@ class EventLogs(BaseSDK):
             )
         if utils.match_response(http_res, "default", "application/json"):
             return models.WebhookEventLogsAllResponse(
-                result=utils.unmarshal_json(
-                    http_res.text, models.UnexpectedErrorResponse
+                unexpected_error_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.UnexpectedErrorResponse]
                 ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
             )
 

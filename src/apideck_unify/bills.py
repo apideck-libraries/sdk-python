@@ -133,7 +133,10 @@ class Bills(BaseSDK):
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingBillsAllResponse(
-                result=utils.unmarshal_json(http_res.text, models.GetBillsResponse),
+                get_bills_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.GetBillsResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
             )
         if utils.match_response(http_res, "400", "application/json"):
@@ -160,9 +163,10 @@ class Bills(BaseSDK):
             )
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingBillsAllResponse(
-                result=utils.unmarshal_json(
-                    http_res.text, models.UnexpectedErrorResponse
+                unexpected_error_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.UnexpectedErrorResponse]
                 ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
             )
 
@@ -297,7 +301,10 @@ class Bills(BaseSDK):
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingBillsAllResponse(
-                result=utils.unmarshal_json(http_res.text, models.GetBillsResponse),
+                get_bills_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.GetBillsResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
             )
         if utils.match_response(http_res, "400", "application/json"):
@@ -324,9 +331,10 @@ class Bills(BaseSDK):
             )
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingBillsAllResponse(
-                result=utils.unmarshal_json(
-                    http_res.text, models.UnexpectedErrorResponse
+                unexpected_error_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.UnexpectedErrorResponse]
                 ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
             )
 
@@ -554,7 +562,12 @@ class Bills(BaseSDK):
 
         data: Any = None
         if utils.match_response(http_res, "201", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.CreateBillResponse)
+            return models.AccountingBillsAddResponse(
+                create_bill_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.CreateBillResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
         if utils.match_response(http_res, "400", "application/json"):
             data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
             raise models.BadRequestResponse(data=data)
@@ -578,7 +591,12 @@ class Bills(BaseSDK):
                 "API error occurred", http_res.status_code, http_res_text, http_res
             )
         if utils.match_response(http_res, "default", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UnexpectedErrorResponse)
+            return models.AccountingBillsAddResponse(
+                unexpected_error_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.UnexpectedErrorResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
 
         content_type = http_res.headers.get("Content-Type")
         http_res_text = utils.stream_to_text(http_res)
@@ -804,7 +822,12 @@ class Bills(BaseSDK):
 
         data: Any = None
         if utils.match_response(http_res, "201", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.CreateBillResponse)
+            return models.AccountingBillsAddResponse(
+                create_bill_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.CreateBillResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
         if utils.match_response(http_res, "400", "application/json"):
             data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
             raise models.BadRequestResponse(data=data)
@@ -828,7 +851,12 @@ class Bills(BaseSDK):
                 "API error occurred", http_res.status_code, http_res_text, http_res
             )
         if utils.match_response(http_res, "default", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UnexpectedErrorResponse)
+            return models.AccountingBillsAddResponse(
+                unexpected_error_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.UnexpectedErrorResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
 
         content_type = http_res.headers.get("Content-Type")
         http_res_text = await utils.stream_to_text_async(http_res)
@@ -926,7 +954,12 @@ class Bills(BaseSDK):
 
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.GetBillResponse)
+            return models.AccountingBillsOneResponse(
+                get_bill_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.GetBillResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
         if utils.match_response(http_res, "400", "application/json"):
             data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
             raise models.BadRequestResponse(data=data)
@@ -950,7 +983,12 @@ class Bills(BaseSDK):
                 "API error occurred", http_res.status_code, http_res_text, http_res
             )
         if utils.match_response(http_res, "default", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UnexpectedErrorResponse)
+            return models.AccountingBillsOneResponse(
+                unexpected_error_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.UnexpectedErrorResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
 
         content_type = http_res.headers.get("Content-Type")
         http_res_text = utils.stream_to_text(http_res)
@@ -1048,7 +1086,12 @@ class Bills(BaseSDK):
 
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.GetBillResponse)
+            return models.AccountingBillsOneResponse(
+                get_bill_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.GetBillResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
         if utils.match_response(http_res, "400", "application/json"):
             data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
             raise models.BadRequestResponse(data=data)
@@ -1072,7 +1115,12 @@ class Bills(BaseSDK):
                 "API error occurred", http_res.status_code, http_res_text, http_res
             )
         if utils.match_response(http_res, "default", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UnexpectedErrorResponse)
+            return models.AccountingBillsOneResponse(
+                unexpected_error_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.UnexpectedErrorResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
 
         content_type = http_res.headers.get("Content-Type")
         http_res_text = await utils.stream_to_text_async(http_res)
@@ -1301,7 +1349,12 @@ class Bills(BaseSDK):
 
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UpdateBillResponse)
+            return models.AccountingBillsUpdateResponse(
+                update_bill_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.UpdateBillResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
         if utils.match_response(http_res, "400", "application/json"):
             data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
             raise models.BadRequestResponse(data=data)
@@ -1325,7 +1378,12 @@ class Bills(BaseSDK):
                 "API error occurred", http_res.status_code, http_res_text, http_res
             )
         if utils.match_response(http_res, "default", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UnexpectedErrorResponse)
+            return models.AccountingBillsUpdateResponse(
+                unexpected_error_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.UnexpectedErrorResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
 
         content_type = http_res.headers.get("Content-Type")
         http_res_text = utils.stream_to_text(http_res)
@@ -1554,7 +1612,12 @@ class Bills(BaseSDK):
 
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UpdateBillResponse)
+            return models.AccountingBillsUpdateResponse(
+                update_bill_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.UpdateBillResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
         if utils.match_response(http_res, "400", "application/json"):
             data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
             raise models.BadRequestResponse(data=data)
@@ -1578,7 +1641,12 @@ class Bills(BaseSDK):
                 "API error occurred", http_res.status_code, http_res_text, http_res
             )
         if utils.match_response(http_res, "default", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UnexpectedErrorResponse)
+            return models.AccountingBillsUpdateResponse(
+                unexpected_error_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.UnexpectedErrorResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
 
         content_type = http_res.headers.get("Content-Type")
         http_res_text = await utils.stream_to_text_async(http_res)
@@ -1673,7 +1741,12 @@ class Bills(BaseSDK):
 
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.DeleteBillResponse)
+            return models.AccountingBillsDeleteResponse(
+                delete_bill_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.DeleteBillResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
         if utils.match_response(http_res, "400", "application/json"):
             data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
             raise models.BadRequestResponse(data=data)
@@ -1697,7 +1770,12 @@ class Bills(BaseSDK):
                 "API error occurred", http_res.status_code, http_res_text, http_res
             )
         if utils.match_response(http_res, "default", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UnexpectedErrorResponse)
+            return models.AccountingBillsDeleteResponse(
+                unexpected_error_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.UnexpectedErrorResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
 
         content_type = http_res.headers.get("Content-Type")
         http_res_text = utils.stream_to_text(http_res)
@@ -1792,7 +1870,12 @@ class Bills(BaseSDK):
 
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.DeleteBillResponse)
+            return models.AccountingBillsDeleteResponse(
+                delete_bill_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.DeleteBillResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
         if utils.match_response(http_res, "400", "application/json"):
             data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
             raise models.BadRequestResponse(data=data)
@@ -1816,7 +1899,12 @@ class Bills(BaseSDK):
                 "API error occurred", http_res.status_code, http_res_text, http_res
             )
         if utils.match_response(http_res, "default", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UnexpectedErrorResponse)
+            return models.AccountingBillsDeleteResponse(
+                unexpected_error_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.UnexpectedErrorResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
 
         content_type = http_res.headers.get("Content-Type")
         http_res_text = await utils.stream_to_text_async(http_res)

@@ -25,8 +25,10 @@ with Apideck(
 
     res = apideck.connector.api_resources.get(id="<id>", resource_id="<id>")
 
+    assert res.get_api_resource_response is not None
+
     # Handle response
-    print(res)
+    print(res.get_api_resource_response)
 
 ```
 

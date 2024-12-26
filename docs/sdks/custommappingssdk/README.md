@@ -25,8 +25,10 @@ with Apideck(
 
     res = apideck.vault.custom_mappings.list(unified_api="crm", service_id="pipedrive")
 
+    assert res.get_custom_mappings_response is not None
+
     # Handle response
-    print(res)
+    print(res.get_custom_mappings_response)
 
 ```
 

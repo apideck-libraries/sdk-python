@@ -67,8 +67,10 @@ with Apideck(
         },
     })
 
+    assert res.create_session_response is not None
+
     # Handle response
-    print(res)
+    print(res.create_session_response)
 
 ```
 

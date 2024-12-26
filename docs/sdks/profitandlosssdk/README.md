@@ -31,8 +31,10 @@ with Apideck(
         "search": "San Francisco",
     }, fields="id,updated_at")
 
+    assert res.get_profit_and_loss_response is not None
+
     # Handle response
-    print(res)
+    print(res.get_profit_and_loss_response)
 
 ```
 

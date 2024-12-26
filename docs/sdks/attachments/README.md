@@ -83,8 +83,10 @@ with Apideck(
 
     res = apideck.accounting.attachments.get(reference_type=apideck_unify.AttachmentReferenceType.INVOICE, reference_id="123456", id="<id>", service_id="salesforce", fields="id,updated_at")
 
+    assert res.get_attachment_response is not None
+
     # Handle response
-    print(res)
+    print(res.get_attachment_response)
 
 ```
 
@@ -134,8 +136,10 @@ with Apideck(
 
     res = apideck.accounting.attachments.delete(reference_type=apideck_unify.AttachmentReferenceType.INVOICE, reference_id="123456", id="<id>", service_id="salesforce")
 
+    assert res.delete_attachment_response is not None
+
     # Handle response
-    print(res)
+    print(res.delete_attachment_response)
 
 ```
 
@@ -184,8 +188,10 @@ with Apideck(
 
     res = apideck.accounting.attachments.download(reference_type=apideck_unify.AttachmentReferenceType.INVOICE, reference_id="123456", id="<id>", service_id="salesforce", fields="id,updated_at")
 
+    assert res.get_attachment_download_response is not None
+
     # Handle response
-    print(res)
+    print(res.get_attachment_download_response)
 
 ```
 

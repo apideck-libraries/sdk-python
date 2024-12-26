@@ -6,6 +6,7 @@ from .createapplicationresponse import (
     CreateApplicationResponse,
     CreateApplicationResponseTypedDict,
 )
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -18,8 +19,8 @@ from apideck_unify.utils import (
     RequestMetadata,
 )
 import pydantic
-from typing import Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class AtsApplicationsAddGlobalsTypedDict(TypedDict):
@@ -73,13 +74,19 @@ class AtsApplicationsAddRequest(BaseModel):
     r"""Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API."""
 
 
-AtsApplicationsAddResponseTypedDict = TypeAliasType(
-    "AtsApplicationsAddResponseTypedDict",
-    Union[CreateApplicationResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
+class AtsApplicationsAddResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    create_application_response: NotRequired[CreateApplicationResponseTypedDict]
+    r"""Applications"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-AtsApplicationsAddResponse = TypeAliasType(
-    "AtsApplicationsAddResponse",
-    Union[CreateApplicationResponse, UnexpectedErrorResponse],
-)
+class AtsApplicationsAddResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    create_application_response: Optional[CreateApplicationResponse] = None
+    r"""Applications"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

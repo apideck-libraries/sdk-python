@@ -120,8 +120,11 @@ class UploadSessions(BaseSDK):
 
         data: Any = None
         if utils.match_response(http_res, "201", "application/json"):
-            return utils.unmarshal_json(
-                http_res.text, models.CreateUploadSessionResponse
+            return models.FileStorageUploadSessionsAddResponse(
+                create_upload_session_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.CreateUploadSessionResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
             )
         if utils.match_response(http_res, "400", "application/json"):
             data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
@@ -146,7 +149,12 @@ class UploadSessions(BaseSDK):
                 "API error occurred", http_res.status_code, http_res_text, http_res
             )
         if utils.match_response(http_res, "default", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UnexpectedErrorResponse)
+            return models.FileStorageUploadSessionsAddResponse(
+                unexpected_error_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.UnexpectedErrorResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
 
         content_type = http_res.headers.get("Content-Type")
         http_res_text = utils.stream_to_text(http_res)
@@ -268,8 +276,11 @@ class UploadSessions(BaseSDK):
 
         data: Any = None
         if utils.match_response(http_res, "201", "application/json"):
-            return utils.unmarshal_json(
-                http_res.text, models.CreateUploadSessionResponse
+            return models.FileStorageUploadSessionsAddResponse(
+                create_upload_session_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.CreateUploadSessionResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
             )
         if utils.match_response(http_res, "400", "application/json"):
             data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
@@ -294,7 +305,12 @@ class UploadSessions(BaseSDK):
                 "API error occurred", http_res.status_code, http_res_text, http_res
             )
         if utils.match_response(http_res, "default", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UnexpectedErrorResponse)
+            return models.FileStorageUploadSessionsAddResponse(
+                unexpected_error_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.UnexpectedErrorResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
 
         content_type = http_res.headers.get("Content-Type")
         http_res_text = await utils.stream_to_text_async(http_res)
@@ -394,7 +410,12 @@ class UploadSessions(BaseSDK):
 
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.GetUploadSessionResponse)
+            return models.FileStorageUploadSessionsOneResponse(
+                get_upload_session_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.GetUploadSessionResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
         if utils.match_response(http_res, "400", "application/json"):
             data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
             raise models.BadRequestResponse(data=data)
@@ -418,7 +439,12 @@ class UploadSessions(BaseSDK):
                 "API error occurred", http_res.status_code, http_res_text, http_res
             )
         if utils.match_response(http_res, "default", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UnexpectedErrorResponse)
+            return models.FileStorageUploadSessionsOneResponse(
+                unexpected_error_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.UnexpectedErrorResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
 
         content_type = http_res.headers.get("Content-Type")
         http_res_text = utils.stream_to_text(http_res)
@@ -518,7 +544,12 @@ class UploadSessions(BaseSDK):
 
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.GetUploadSessionResponse)
+            return models.FileStorageUploadSessionsOneResponse(
+                get_upload_session_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.GetUploadSessionResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
         if utils.match_response(http_res, "400", "application/json"):
             data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
             raise models.BadRequestResponse(data=data)
@@ -542,7 +573,12 @@ class UploadSessions(BaseSDK):
                 "API error occurred", http_res.status_code, http_res_text, http_res
             )
         if utils.match_response(http_res, "default", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UnexpectedErrorResponse)
+            return models.FileStorageUploadSessionsOneResponse(
+                unexpected_error_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.UnexpectedErrorResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
 
         content_type = http_res.headers.get("Content-Type")
         http_res_text = await utils.stream_to_text_async(http_res)
@@ -637,8 +673,11 @@ class UploadSessions(BaseSDK):
 
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return utils.unmarshal_json(
-                http_res.text, models.DeleteUploadSessionResponse
+            return models.FileStorageUploadSessionsDeleteResponse(
+                delete_upload_session_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.DeleteUploadSessionResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
             )
         if utils.match_response(http_res, "400", "application/json"):
             data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
@@ -663,7 +702,12 @@ class UploadSessions(BaseSDK):
                 "API error occurred", http_res.status_code, http_res_text, http_res
             )
         if utils.match_response(http_res, "default", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UnexpectedErrorResponse)
+            return models.FileStorageUploadSessionsDeleteResponse(
+                unexpected_error_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.UnexpectedErrorResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
 
         content_type = http_res.headers.get("Content-Type")
         http_res_text = utils.stream_to_text(http_res)
@@ -758,8 +802,11 @@ class UploadSessions(BaseSDK):
 
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return utils.unmarshal_json(
-                http_res.text, models.DeleteUploadSessionResponse
+            return models.FileStorageUploadSessionsDeleteResponse(
+                delete_upload_session_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.DeleteUploadSessionResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
             )
         if utils.match_response(http_res, "400", "application/json"):
             data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
@@ -784,7 +831,12 @@ class UploadSessions(BaseSDK):
                 "API error occurred", http_res.status_code, http_res_text, http_res
             )
         if utils.match_response(http_res, "default", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UnexpectedErrorResponse)
+            return models.FileStorageUploadSessionsDeleteResponse(
+                unexpected_error_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.UnexpectedErrorResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
 
         content_type = http_res.headers.get("Content-Type")
         http_res_text = await utils.stream_to_text_async(http_res)
@@ -902,7 +954,12 @@ class UploadSessions(BaseSDK):
 
         data: Any = None
         if utils.match_response(http_res, "201", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.GetFileResponse)
+            return models.FileStorageUploadSessionsFinishResponse(
+                get_file_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.GetFileResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
         if utils.match_response(http_res, "400", "application/json"):
             data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
             raise models.BadRequestResponse(data=data)
@@ -926,7 +983,12 @@ class UploadSessions(BaseSDK):
                 "API error occurred", http_res.status_code, http_res_text, http_res
             )
         if utils.match_response(http_res, "default", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UnexpectedErrorResponse)
+            return models.FileStorageUploadSessionsFinishResponse(
+                unexpected_error_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.UnexpectedErrorResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
 
         content_type = http_res.headers.get("Content-Type")
         http_res_text = utils.stream_to_text(http_res)
@@ -1044,7 +1106,12 @@ class UploadSessions(BaseSDK):
 
         data: Any = None
         if utils.match_response(http_res, "201", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.GetFileResponse)
+            return models.FileStorageUploadSessionsFinishResponse(
+                get_file_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.GetFileResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
         if utils.match_response(http_res, "400", "application/json"):
             data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
             raise models.BadRequestResponse(data=data)
@@ -1068,7 +1135,12 @@ class UploadSessions(BaseSDK):
                 "API error occurred", http_res.status_code, http_res_text, http_res
             )
         if utils.match_response(http_res, "default", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UnexpectedErrorResponse)
+            return models.FileStorageUploadSessionsFinishResponse(
+                unexpected_error_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.UnexpectedErrorResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
 
         content_type = http_res.headers.get("Content-Type")
         http_res_text = await utils.stream_to_text_async(http_res)

@@ -1,17 +1,10 @@
 # AccountingInvoiceItemsUpdateResponse
 
 
-## Supported Types
+## Fields
 
-### `models.UpdateInvoiceItemsResponse`
-
-```python
-value: models.UpdateInvoiceItemsResponse = /* values here */
-```
-
-### `models.UnexpectedErrorResponse`
-
-```python
-value: models.UnexpectedErrorResponse = /* values here */
-```
-
+| Field                                                                                  | Type                                                                                   | Required                                                                               | Description                                                                            |
+| -------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| `http_meta`                                                                            | [models.HTTPMetadata](../models/httpmetadata.md)                                       | :heavy_check_mark:                                                                     | N/A                                                                                    |
+| `update_invoice_items_response`                                                        | [Optional[models.UpdateInvoiceItemsResponse]](../models/updateinvoiceitemsresponse.md) | :heavy_minus_sign:                                                                     | InvoiceItems                                                                           |
+| `unexpected_error_response`                                                            | [Optional[models.UnexpectedErrorResponse]](../models/unexpectederrorresponse.md)       | :heavy_minus_sign:                                                                     | Unexpected error                                                                       |

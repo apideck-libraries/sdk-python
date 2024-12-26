@@ -137,9 +137,10 @@ class CreditNotes(BaseSDK):
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingCreditNotesAllResponse(
-                result=utils.unmarshal_json(
-                    http_res.text, models.GetCreditNotesResponse
+                get_credit_notes_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.GetCreditNotesResponse]
                 ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
             )
         if utils.match_response(http_res, "400", "application/json"):
@@ -166,9 +167,10 @@ class CreditNotes(BaseSDK):
             )
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingCreditNotesAllResponse(
-                result=utils.unmarshal_json(
-                    http_res.text, models.UnexpectedErrorResponse
+                unexpected_error_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.UnexpectedErrorResponse]
                 ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
             )
 
@@ -307,9 +309,10 @@ class CreditNotes(BaseSDK):
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingCreditNotesAllResponse(
-                result=utils.unmarshal_json(
-                    http_res.text, models.GetCreditNotesResponse
+                get_credit_notes_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.GetCreditNotesResponse]
                 ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
             )
         if utils.match_response(http_res, "400", "application/json"):
@@ -336,9 +339,10 @@ class CreditNotes(BaseSDK):
             )
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingCreditNotesAllResponse(
-                result=utils.unmarshal_json(
-                    http_res.text, models.UnexpectedErrorResponse
+                unexpected_error_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.UnexpectedErrorResponse]
                 ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
             )
 
@@ -567,7 +571,12 @@ class CreditNotes(BaseSDK):
 
         data: Any = None
         if utils.match_response(http_res, "201", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.CreateCreditNoteResponse)
+            return models.AccountingCreditNotesAddResponse(
+                create_credit_note_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.CreateCreditNoteResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
         if utils.match_response(http_res, "400", "application/json"):
             data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
             raise models.BadRequestResponse(data=data)
@@ -591,7 +600,12 @@ class CreditNotes(BaseSDK):
                 "API error occurred", http_res.status_code, http_res_text, http_res
             )
         if utils.match_response(http_res, "default", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UnexpectedErrorResponse)
+            return models.AccountingCreditNotesAddResponse(
+                unexpected_error_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.UnexpectedErrorResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
 
         content_type = http_res.headers.get("Content-Type")
         http_res_text = utils.stream_to_text(http_res)
@@ -818,7 +832,12 @@ class CreditNotes(BaseSDK):
 
         data: Any = None
         if utils.match_response(http_res, "201", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.CreateCreditNoteResponse)
+            return models.AccountingCreditNotesAddResponse(
+                create_credit_note_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.CreateCreditNoteResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
         if utils.match_response(http_res, "400", "application/json"):
             data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
             raise models.BadRequestResponse(data=data)
@@ -842,7 +861,12 @@ class CreditNotes(BaseSDK):
                 "API error occurred", http_res.status_code, http_res_text, http_res
             )
         if utils.match_response(http_res, "default", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UnexpectedErrorResponse)
+            return models.AccountingCreditNotesAddResponse(
+                unexpected_error_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.UnexpectedErrorResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
 
         content_type = http_res.headers.get("Content-Type")
         http_res_text = await utils.stream_to_text_async(http_res)
@@ -940,7 +964,12 @@ class CreditNotes(BaseSDK):
 
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.GetCreditNoteResponse)
+            return models.AccountingCreditNotesOneResponse(
+                get_credit_note_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.GetCreditNoteResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
         if utils.match_response(http_res, "400", "application/json"):
             data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
             raise models.BadRequestResponse(data=data)
@@ -964,7 +993,12 @@ class CreditNotes(BaseSDK):
                 "API error occurred", http_res.status_code, http_res_text, http_res
             )
         if utils.match_response(http_res, "default", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UnexpectedErrorResponse)
+            return models.AccountingCreditNotesOneResponse(
+                unexpected_error_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.UnexpectedErrorResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
 
         content_type = http_res.headers.get("Content-Type")
         http_res_text = utils.stream_to_text(http_res)
@@ -1062,7 +1096,12 @@ class CreditNotes(BaseSDK):
 
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.GetCreditNoteResponse)
+            return models.AccountingCreditNotesOneResponse(
+                get_credit_note_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.GetCreditNoteResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
         if utils.match_response(http_res, "400", "application/json"):
             data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
             raise models.BadRequestResponse(data=data)
@@ -1086,7 +1125,12 @@ class CreditNotes(BaseSDK):
                 "API error occurred", http_res.status_code, http_res_text, http_res
             )
         if utils.match_response(http_res, "default", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UnexpectedErrorResponse)
+            return models.AccountingCreditNotesOneResponse(
+                unexpected_error_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.UnexpectedErrorResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
 
         content_type = http_res.headers.get("Content-Type")
         http_res_text = await utils.stream_to_text_async(http_res)
@@ -1316,7 +1360,12 @@ class CreditNotes(BaseSDK):
 
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UpdateCreditNoteResponse)
+            return models.AccountingCreditNotesUpdateResponse(
+                update_credit_note_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.UpdateCreditNoteResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
         if utils.match_response(http_res, "400", "application/json"):
             data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
             raise models.BadRequestResponse(data=data)
@@ -1340,7 +1389,12 @@ class CreditNotes(BaseSDK):
                 "API error occurred", http_res.status_code, http_res_text, http_res
             )
         if utils.match_response(http_res, "default", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UnexpectedErrorResponse)
+            return models.AccountingCreditNotesUpdateResponse(
+                unexpected_error_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.UnexpectedErrorResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
 
         content_type = http_res.headers.get("Content-Type")
         http_res_text = utils.stream_to_text(http_res)
@@ -1570,7 +1624,12 @@ class CreditNotes(BaseSDK):
 
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UpdateCreditNoteResponse)
+            return models.AccountingCreditNotesUpdateResponse(
+                update_credit_note_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.UpdateCreditNoteResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
         if utils.match_response(http_res, "400", "application/json"):
             data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
             raise models.BadRequestResponse(data=data)
@@ -1594,7 +1653,12 @@ class CreditNotes(BaseSDK):
                 "API error occurred", http_res.status_code, http_res_text, http_res
             )
         if utils.match_response(http_res, "default", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UnexpectedErrorResponse)
+            return models.AccountingCreditNotesUpdateResponse(
+                unexpected_error_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.UnexpectedErrorResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
 
         content_type = http_res.headers.get("Content-Type")
         http_res_text = await utils.stream_to_text_async(http_res)
@@ -1689,7 +1753,12 @@ class CreditNotes(BaseSDK):
 
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.DeleteCreditNoteResponse)
+            return models.AccountingCreditNotesDeleteResponse(
+                delete_credit_note_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.DeleteCreditNoteResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
         if utils.match_response(http_res, "400", "application/json"):
             data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
             raise models.BadRequestResponse(data=data)
@@ -1713,7 +1782,12 @@ class CreditNotes(BaseSDK):
                 "API error occurred", http_res.status_code, http_res_text, http_res
             )
         if utils.match_response(http_res, "default", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UnexpectedErrorResponse)
+            return models.AccountingCreditNotesDeleteResponse(
+                unexpected_error_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.UnexpectedErrorResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
 
         content_type = http_res.headers.get("Content-Type")
         http_res_text = utils.stream_to_text(http_res)
@@ -1808,7 +1882,12 @@ class CreditNotes(BaseSDK):
 
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.DeleteCreditNoteResponse)
+            return models.AccountingCreditNotesDeleteResponse(
+                delete_credit_note_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.DeleteCreditNoteResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
         if utils.match_response(http_res, "400", "application/json"):
             data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
             raise models.BadRequestResponse(data=data)
@@ -1832,7 +1911,12 @@ class CreditNotes(BaseSDK):
                 "API error occurred", http_res.status_code, http_res_text, http_res
             )
         if utils.match_response(http_res, "default", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UnexpectedErrorResponse)
+            return models.AccountingCreditNotesDeleteResponse(
+                unexpected_error_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.UnexpectedErrorResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
 
         content_type = http_res.headers.get("Content-Type")
         http_res_text = await utils.stream_to_text_async(http_res)

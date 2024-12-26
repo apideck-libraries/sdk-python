@@ -1,17 +1,10 @@
 # AccountingLocationsDeleteResponse
 
 
-## Supported Types
+## Fields
 
-### `models.DeleteAccountingLocationResponse`
-
-```python
-value: models.DeleteAccountingLocationResponse = /* values here */
-```
-
-### `models.UnexpectedErrorResponse`
-
-```python
-value: models.UnexpectedErrorResponse = /* values here */
-```
-
+| Field                                                                                              | Type                                                                                               | Required                                                                                           | Description                                                                                        |
+| -------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| `http_meta`                                                                                        | [models.HTTPMetadata](../models/httpmetadata.md)                                                   | :heavy_check_mark:                                                                                 | N/A                                                                                                |
+| `delete_accounting_location_response`                                                              | [Optional[models.DeleteAccountingLocationResponse]](../models/deleteaccountinglocationresponse.md) | :heavy_minus_sign:                                                                                 | Location deleted                                                                                   |
+| `unexpected_error_response`                                                                        | [Optional[models.UnexpectedErrorResponse]](../models/unexpectederrorresponse.md)                   | :heavy_minus_sign:                                                                                 | Unexpected error                                                                                   |

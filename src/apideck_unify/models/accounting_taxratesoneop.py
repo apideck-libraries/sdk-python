@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 from .gettaxrateresponse import GetTaxRateResponse, GetTaxRateResponseTypedDict
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -21,8 +22,8 @@ from apideck_unify.utils import (
 )
 import pydantic
 from pydantic import model_serializer
-from typing import Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class AccountingTaxRatesOneGlobalsTypedDict(TypedDict):
@@ -115,12 +116,19 @@ class AccountingTaxRatesOneRequest(BaseModel):
         return m
 
 
-AccountingTaxRatesOneResponseTypedDict = TypeAliasType(
-    "AccountingTaxRatesOneResponseTypedDict",
-    Union[GetTaxRateResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
+class AccountingTaxRatesOneResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    get_tax_rate_response: NotRequired[GetTaxRateResponseTypedDict]
+    r"""TaxRate"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-AccountingTaxRatesOneResponse = TypeAliasType(
-    "AccountingTaxRatesOneResponse", Union[GetTaxRateResponse, UnexpectedErrorResponse]
-)
+class AccountingTaxRatesOneResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    get_tax_rate_response: Optional[GetTaxRateResponse] = None
+    r"""TaxRate"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

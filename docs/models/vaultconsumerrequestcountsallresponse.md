@@ -1,17 +1,10 @@
 # VaultConsumerRequestCountsAllResponse
 
 
-## Supported Types
+## Fields
 
-### `models.ConsumerRequestCountsInDateRangeResponse`
-
-```python
-value: models.ConsumerRequestCountsInDateRangeResponse = /* values here */
-```
-
-### `models.UnexpectedErrorResponse`
-
-```python
-value: models.UnexpectedErrorResponse = /* values here */
-```
-
+| Field                                                                                                              | Type                                                                                                               | Required                                                                                                           | Description                                                                                                        |
+| ------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------ |
+| `http_meta`                                                                                                        | [models.HTTPMetadata](../models/httpmetadata.md)                                                                   | :heavy_check_mark:                                                                                                 | N/A                                                                                                                |
+| `consumer_request_counts_in_date_range_response`                                                                   | [Optional[models.ConsumerRequestCountsInDateRangeResponse]](../models/consumerrequestcountsindaterangeresponse.md) | :heavy_minus_sign:                                                                                                 | Consumers Request Counts within Date Range                                                                         |
+| `unexpected_error_response`                                                                                        | [Optional[models.UnexpectedErrorResponse]](../models/unexpectederrorresponse.md)                                   | :heavy_minus_sign:                                                                                                 | Unexpected error                                                                                                   |

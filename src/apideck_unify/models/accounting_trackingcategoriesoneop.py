@@ -5,6 +5,7 @@ from .gettrackingcategoryresponse import (
     GetTrackingCategoryResponse,
     GetTrackingCategoryResponseTypedDict,
 )
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -24,8 +25,8 @@ from apideck_unify.utils import (
 )
 import pydantic
 from pydantic import model_serializer
-from typing import Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class AccountingTrackingCategoriesOneGlobalsTypedDict(TypedDict):
@@ -118,13 +119,19 @@ class AccountingTrackingCategoriesOneRequest(BaseModel):
         return m
 
 
-AccountingTrackingCategoriesOneResponseTypedDict = TypeAliasType(
-    "AccountingTrackingCategoriesOneResponseTypedDict",
-    Union[GetTrackingCategoryResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
+class AccountingTrackingCategoriesOneResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    get_tracking_category_response: NotRequired[GetTrackingCategoryResponseTypedDict]
+    r"""Tracking category"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-AccountingTrackingCategoriesOneResponse = TypeAliasType(
-    "AccountingTrackingCategoriesOneResponse",
-    Union[GetTrackingCategoryResponse, UnexpectedErrorResponse],
-)
+class AccountingTrackingCategoriesOneResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    get_tracking_category_response: Optional[GetTrackingCategoryResponse] = None
+    r"""Tracking category"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

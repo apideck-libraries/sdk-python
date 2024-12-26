@@ -5,6 +5,7 @@ from .createjournalentryresponse import (
     CreateJournalEntryResponse,
     CreateJournalEntryResponseTypedDict,
 )
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .journalentry_input import JournalEntryInput, JournalEntryInputTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
@@ -18,8 +19,8 @@ from apideck_unify.utils import (
     RequestMetadata,
 )
 import pydantic
-from typing import Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class AccountingJournalEntriesAddGlobalsTypedDict(TypedDict):
@@ -73,13 +74,19 @@ class AccountingJournalEntriesAddRequest(BaseModel):
     r"""Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API."""
 
 
-AccountingJournalEntriesAddResponseTypedDict = TypeAliasType(
-    "AccountingJournalEntriesAddResponseTypedDict",
-    Union[CreateJournalEntryResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
+class AccountingJournalEntriesAddResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    create_journal_entry_response: NotRequired[CreateJournalEntryResponseTypedDict]
+    r"""JournalEntries"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-AccountingJournalEntriesAddResponse = TypeAliasType(
-    "AccountingJournalEntriesAddResponse",
-    Union[CreateJournalEntryResponse, UnexpectedErrorResponse],
-)
+class AccountingJournalEntriesAddResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    create_journal_entry_response: Optional[CreateJournalEntryResponse] = None
+    r"""JournalEntries"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

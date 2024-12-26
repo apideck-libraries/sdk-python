@@ -1,17 +1,10 @@
 # AccountingLedgerAccountsUpdateResponse
 
 
-## Supported Types
+## Fields
 
-### `models.UpdateLedgerAccountResponse`
-
-```python
-value: models.UpdateLedgerAccountResponse = /* values here */
-```
-
-### `models.UnexpectedErrorResponse`
-
-```python
-value: models.UnexpectedErrorResponse = /* values here */
-```
-
+| Field                                                                                    | Type                                                                                     | Required                                                                                 | Description                                                                              |
+| ---------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| `http_meta`                                                                              | [models.HTTPMetadata](../models/httpmetadata.md)                                         | :heavy_check_mark:                                                                       | N/A                                                                                      |
+| `update_ledger_account_response`                                                         | [Optional[models.UpdateLedgerAccountResponse]](../models/updateledgeraccountresponse.md) | :heavy_minus_sign:                                                                       | LedgerAccount updated                                                                    |
+| `unexpected_error_response`                                                              | [Optional[models.UnexpectedErrorResponse]](../models/unexpectederrorresponse.md)         | :heavy_minus_sign:                                                                       | Unexpected error                                                                         |

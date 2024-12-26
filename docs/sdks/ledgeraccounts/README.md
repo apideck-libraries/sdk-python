@@ -135,8 +135,10 @@ with Apideck(
         },
     ])
 
+    assert res.create_ledger_account_response is not None
+
     # Handle response
-    print(res)
+    print(res.create_ledger_account_response)
 
 ```
 
@@ -206,8 +208,10 @@ with Apideck(
 
     res = apideck.accounting.ledger_accounts.get(id="<id>", service_id="salesforce", fields="id,updated_at")
 
+    assert res.get_ledger_account_response is not None
+
     # Handle response
-    print(res)
+    print(res.get_ledger_account_response)
 
 ```
 
@@ -339,8 +343,10 @@ with Apideck(
         },
     ])
 
+    assert res.update_ledger_account_response is not None
+
     # Handle response
-    print(res)
+    print(res.update_ledger_account_response)
 
 ```
 
@@ -411,8 +417,10 @@ with Apideck(
 
     res = apideck.accounting.ledger_accounts.delete(id="<id>", service_id="salesforce")
 
+    assert res.delete_ledger_account_response is not None
+
     # Handle response
-    print(res)
+    print(res.delete_ledger_account_response)
 
 ```
 

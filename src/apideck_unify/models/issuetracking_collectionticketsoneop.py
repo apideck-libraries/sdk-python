@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 from .getticketresponse import GetTicketResponse, GetTicketResponseTypedDict
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -21,8 +22,8 @@ from apideck_unify.utils import (
 )
 import pydantic
 from pydantic import model_serializer
-from typing import Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class IssueTrackingCollectionTicketsOneGlobalsTypedDict(TypedDict):
@@ -122,13 +123,19 @@ class IssueTrackingCollectionTicketsOneRequest(BaseModel):
         return m
 
 
-IssueTrackingCollectionTicketsOneResponseTypedDict = TypeAliasType(
-    "IssueTrackingCollectionTicketsOneResponseTypedDict",
-    Union[GetTicketResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
+class IssueTrackingCollectionTicketsOneResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    get_ticket_response: NotRequired[GetTicketResponseTypedDict]
+    r"""Get a Ticket"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-IssueTrackingCollectionTicketsOneResponse = TypeAliasType(
-    "IssueTrackingCollectionTicketsOneResponse",
-    Union[GetTicketResponse, UnexpectedErrorResponse],
-)
+class IssueTrackingCollectionTicketsOneResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    get_ticket_response: Optional[GetTicketResponse] = None
+    r"""Get a Ticket"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

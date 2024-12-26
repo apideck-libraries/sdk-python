@@ -9,6 +9,7 @@ from .getaccountingdepartmentsresponse import (
     GetAccountingDepartmentsResponse,
     GetAccountingDepartmentsResponseTypedDict,
 )
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -23,8 +24,8 @@ from apideck_unify.types import (
 from apideck_unify.utils import FieldMetadata, HeaderMetadata, QueryParamMetadata
 import pydantic
 from pydantic import model_serializer
-from typing import Callable, Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Callable, Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class AccountingDepartmentsAllGlobalsTypedDict(TypedDict):
@@ -135,23 +136,25 @@ class AccountingDepartmentsAllRequest(BaseModel):
         return m
 
 
-AccountingDepartmentsAllResponseResultTypedDict = TypeAliasType(
-    "AccountingDepartmentsAllResponseResultTypedDict",
-    Union[UnexpectedErrorResponseTypedDict, GetAccountingDepartmentsResponseTypedDict],
-)
-
-
-AccountingDepartmentsAllResponseResult = TypeAliasType(
-    "AccountingDepartmentsAllResponseResult",
-    Union[UnexpectedErrorResponse, GetAccountingDepartmentsResponse],
-)
-
-
 class AccountingDepartmentsAllResponseTypedDict(TypedDict):
-    result: AccountingDepartmentsAllResponseResultTypedDict
+    http_meta: HTTPMetadataTypedDict
+    get_accounting_departments_response: NotRequired[
+        GetAccountingDepartmentsResponseTypedDict
+    ]
+    r"""Departments"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
 class AccountingDepartmentsAllResponse(BaseModel):
     next: Callable[[], Optional[AccountingDepartmentsAllResponse]]
 
-    result: AccountingDepartmentsAllResponseResult
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    get_accounting_departments_response: Optional[GetAccountingDepartmentsResponse] = (
+        None
+    )
+    r"""Departments"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

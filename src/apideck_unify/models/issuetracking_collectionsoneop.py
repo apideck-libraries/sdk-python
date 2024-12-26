@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 from .getcollectionresponse import GetCollectionResponse, GetCollectionResponseTypedDict
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -21,8 +22,8 @@ from apideck_unify.utils import (
 )
 import pydantic
 from pydantic import model_serializer
-from typing import Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class IssueTrackingCollectionsOneGlobalsTypedDict(TypedDict):
@@ -115,13 +116,19 @@ class IssueTrackingCollectionsOneRequest(BaseModel):
         return m
 
 
-IssueTrackingCollectionsOneResponseTypedDict = TypeAliasType(
-    "IssueTrackingCollectionsOneResponseTypedDict",
-    Union[GetCollectionResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
+class IssueTrackingCollectionsOneResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    get_collection_response: NotRequired[GetCollectionResponseTypedDict]
+    r"""Get a Collection"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-IssueTrackingCollectionsOneResponse = TypeAliasType(
-    "IssueTrackingCollectionsOneResponse",
-    Union[GetCollectionResponse, UnexpectedErrorResponse],
-)
+class IssueTrackingCollectionsOneResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    get_collection_response: Optional[GetCollectionResponse] = None
+    r"""Get a Collection"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

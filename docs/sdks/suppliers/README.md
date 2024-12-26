@@ -231,8 +231,10 @@ with Apideck(
         },
     ], subsidiary_id="12345")
 
+    assert res.create_supplier_response is not None
+
     # Handle response
-    print(res)
+    print(res.create_supplier_response)
 
 ```
 
@@ -303,8 +305,10 @@ with Apideck(
 
     res = apideck.accounting.suppliers.get(id="<id>", service_id="salesforce", fields="id,updated_at")
 
+    assert res.get_supplier_response is not None
+
     # Handle response
-    print(res)
+    print(res.get_supplier_response)
 
 ```
 
@@ -534,8 +538,10 @@ with Apideck(
         },
     ], subsidiary_id="12345")
 
+    assert res.update_supplier_response is not None
+
     # Handle response
-    print(res)
+    print(res.update_supplier_response)
 
 ```
 
@@ -607,8 +613,10 @@ with Apideck(
 
     res = apideck.accounting.suppliers.delete(id="<id>", service_id="salesforce")
 
+    assert res.delete_supplier_response is not None
+
     # Handle response
-    print(res)
+    print(res.delete_supplier_response)
 
 ```
 

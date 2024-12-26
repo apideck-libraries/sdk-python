@@ -5,6 +5,7 @@ from .getprofitandlossresponse import (
     GetProfitAndLossResponse,
     GetProfitAndLossResponseTypedDict,
 )
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .profitandlossfilter import ProfitAndLossFilter, ProfitAndLossFilterTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
@@ -20,8 +21,8 @@ from apideck_unify.types import (
 from apideck_unify.utils import FieldMetadata, HeaderMetadata, QueryParamMetadata
 import pydantic
 from pydantic import model_serializer
-from typing import Any, Dict, Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Any, Dict, Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class AccountingProfitAndLossOneGlobalsTypedDict(TypedDict):
@@ -124,13 +125,19 @@ class AccountingProfitAndLossOneRequest(BaseModel):
         return m
 
 
-AccountingProfitAndLossOneResponseTypedDict = TypeAliasType(
-    "AccountingProfitAndLossOneResponseTypedDict",
-    Union[GetProfitAndLossResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
+class AccountingProfitAndLossOneResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    get_profit_and_loss_response: NotRequired[GetProfitAndLossResponseTypedDict]
+    r"""Profit & Loss Report"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-AccountingProfitAndLossOneResponse = TypeAliasType(
-    "AccountingProfitAndLossOneResponse",
-    Union[GetProfitAndLossResponse, UnexpectedErrorResponse],
-)
+class AccountingProfitAndLossOneResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    get_profit_and_loss_response: Optional[GetProfitAndLossResponse] = None
+    r"""Profit & Loss Report"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

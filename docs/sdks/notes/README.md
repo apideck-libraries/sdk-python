@@ -105,8 +105,10 @@ with Apideck(
         },
     ])
 
+    assert res.create_note_response is not None
+
     # Handle response
-    print(res)
+    print(res.create_note_response)
 
 ```
 
@@ -160,8 +162,10 @@ with Apideck(
 
     res = apideck.crm.notes.get(id="<id>", service_id="salesforce", fields="id,updated_at")
 
+    assert res.get_note_response is not None
+
     # Handle response
-    print(res)
+    print(res.get_note_response)
 
 ```
 
@@ -272,8 +276,10 @@ with Apideck(
         },
     ])
 
+    assert res.update_note_response is not None
+
     # Handle response
-    print(res)
+    print(res.update_note_response)
 
 ```
 
@@ -328,8 +334,10 @@ with Apideck(
 
     res = apideck.crm.notes.delete(id="<id>", service_id="salesforce")
 
+    assert res.delete_note_response is not None
+
     # Handle response
-    print(res)
+    print(res.delete_note_response)
 
 ```
 

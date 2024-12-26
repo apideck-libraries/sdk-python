@@ -5,6 +5,7 @@ from .gethriscompaniesresponse import (
     GetHrisCompaniesResponse,
     GetHrisCompaniesResponseTypedDict,
 )
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -19,8 +20,8 @@ from apideck_unify.types import (
 from apideck_unify.utils import FieldMetadata, HeaderMetadata, QueryParamMetadata
 import pydantic
 from pydantic import model_serializer
-from typing import Any, Callable, Dict, Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Any, Callable, Dict, Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class HrisCompaniesAllGlobalsTypedDict(TypedDict):
@@ -137,23 +138,21 @@ class HrisCompaniesAllRequest(BaseModel):
         return m
 
 
-HrisCompaniesAllResponseResultTypedDict = TypeAliasType(
-    "HrisCompaniesAllResponseResultTypedDict",
-    Union[UnexpectedErrorResponseTypedDict, GetHrisCompaniesResponseTypedDict],
-)
-
-
-HrisCompaniesAllResponseResult = TypeAliasType(
-    "HrisCompaniesAllResponseResult",
-    Union[UnexpectedErrorResponse, GetHrisCompaniesResponse],
-)
-
-
 class HrisCompaniesAllResponseTypedDict(TypedDict):
-    result: HrisCompaniesAllResponseResultTypedDict
+    http_meta: HTTPMetadataTypedDict
+    get_hris_companies_response: NotRequired[GetHrisCompaniesResponseTypedDict]
+    r"""Companies"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
 class HrisCompaniesAllResponse(BaseModel):
     next: Callable[[], Optional[HrisCompaniesAllResponse]]
 
-    result: HrisCompaniesAllResponseResult
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    get_hris_companies_response: Optional[GetHrisCompaniesResponse] = None
+    r"""Companies"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

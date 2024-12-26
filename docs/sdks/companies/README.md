@@ -280,8 +280,10 @@ with Apideck(
         },
     ])
 
+    assert res.create_company_response is not None
+
     # Handle response
-    print(res)
+    print(res.create_company_response)
 
 ```
 
@@ -358,8 +360,10 @@ with Apideck(
 
     res = apideck.crm.companies.get(id="<id>", service_id="salesforce", fields="id,updated_at")
 
+    assert res.get_company_response is not None
+
     # Handle response
-    print(res)
+    print(res.get_company_response)
 
 ```
 
@@ -562,8 +566,10 @@ with Apideck(
         },
     ])
 
+    assert res.update_company_response is not None
+
     # Handle response
-    print(res)
+    print(res.update_company_response)
 
 ```
 
@@ -641,8 +647,10 @@ with Apideck(
 
     res = apideck.crm.companies.delete(id="<id>", service_id="salesforce")
 
+    assert res.delete_company_response is not None
+
     # Handle response
-    print(res)
+    print(res.delete_company_response)
 
 ```
 

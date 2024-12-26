@@ -316,8 +316,10 @@ with Apideck(
         },
     ])
 
+    assert res.create_invoice_response is not None
+
     # Handle response
-    print(res)
+    print(res.create_invoice_response)
 
 ```
 
@@ -401,8 +403,10 @@ with Apideck(
 
     res = apideck.accounting.invoices.get(id="<id>", service_id="salesforce", fields="id,updated_at")
 
+    assert res.get_invoice_response is not None
+
     # Handle response
-    print(res)
+    print(res.get_invoice_response)
 
 ```
 
@@ -669,8 +673,10 @@ with Apideck(
         },
     ])
 
+    assert res.update_invoice_response is not None
+
     # Handle response
-    print(res)
+    print(res.update_invoice_response)
 
 ```
 
@@ -755,8 +761,10 @@ with Apideck(
 
     res = apideck.accounting.invoices.delete(id="<id>", service_id="salesforce")
 
+    assert res.delete_invoice_response is not None
+
     # Handle response
-    print(res)
+    print(res.delete_invoice_response)
 
 ```
 

@@ -5,6 +5,7 @@ from .createsharedlinkresponse import (
     CreateSharedLinkResponse,
     CreateSharedLinkResponseTypedDict,
 )
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .sharedlink import SharedLinkInput, SharedLinkInputTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
@@ -18,8 +19,8 @@ from apideck_unify.utils import (
     RequestMetadata,
 )
 import pydantic
-from typing import Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class FileStorageSharedLinksAddGlobalsTypedDict(TypedDict):
@@ -73,13 +74,19 @@ class FileStorageSharedLinksAddRequest(BaseModel):
     r"""Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API."""
 
 
-FileStorageSharedLinksAddResponseTypedDict = TypeAliasType(
-    "FileStorageSharedLinksAddResponseTypedDict",
-    Union[CreateSharedLinkResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
+class FileStorageSharedLinksAddResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    create_shared_link_response: NotRequired[CreateSharedLinkResponseTypedDict]
+    r"""Shared Links"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-FileStorageSharedLinksAddResponse = TypeAliasType(
-    "FileStorageSharedLinksAddResponse",
-    Union[CreateSharedLinkResponse, UnexpectedErrorResponse],
-)
+class FileStorageSharedLinksAddResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    create_shared_link_response: Optional[CreateSharedLinkResponse] = None
+    r"""Shared Links"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 from .customer import CustomerInput, CustomerInputTypedDict
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -19,8 +20,8 @@ from apideck_unify.utils import (
     RequestMetadata,
 )
 import pydantic
-from typing import Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class AccountingCustomersUpdateGlobalsTypedDict(TypedDict):
@@ -81,13 +82,19 @@ class AccountingCustomersUpdateRequest(BaseModel):
     r"""Include raw response. Mostly used for debugging purposes"""
 
 
-AccountingCustomersUpdateResponseTypedDict = TypeAliasType(
-    "AccountingCustomersUpdateResponseTypedDict",
-    Union[UpdateCustomerResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
+class AccountingCustomersUpdateResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    update_customer_response: NotRequired[UpdateCustomerResponseTypedDict]
+    r"""Customers"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-AccountingCustomersUpdateResponse = TypeAliasType(
-    "AccountingCustomersUpdateResponse",
-    Union[UpdateCustomerResponse, UnexpectedErrorResponse],
-)
+class AccountingCustomersUpdateResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    update_customer_response: Optional[UpdateCustomerResponse] = None
+    r"""Customers"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

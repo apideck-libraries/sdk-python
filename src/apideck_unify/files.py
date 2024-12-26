@@ -143,7 +143,10 @@ class Files(BaseSDK):
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.FileStorageFilesAllResponse(
-                result=utils.unmarshal_json(http_res.text, models.GetFilesResponse),
+                get_files_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.GetFilesResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
             )
         if utils.match_response(http_res, "400", "application/json"):
@@ -170,9 +173,10 @@ class Files(BaseSDK):
             )
         if utils.match_response(http_res, "default", "application/json"):
             return models.FileStorageFilesAllResponse(
-                result=utils.unmarshal_json(
-                    http_res.text, models.UnexpectedErrorResponse
+                unexpected_error_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.UnexpectedErrorResponse]
                 ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
             )
 
@@ -307,7 +311,10 @@ class Files(BaseSDK):
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.FileStorageFilesAllResponse(
-                result=utils.unmarshal_json(http_res.text, models.GetFilesResponse),
+                get_files_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.GetFilesResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
             )
         if utils.match_response(http_res, "400", "application/json"):
@@ -334,9 +341,10 @@ class Files(BaseSDK):
             )
         if utils.match_response(http_res, "default", "application/json"):
             return models.FileStorageFilesAllResponse(
-                result=utils.unmarshal_json(
-                    http_res.text, models.UnexpectedErrorResponse
+                unexpected_error_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.UnexpectedErrorResponse]
                 ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
             )
 
@@ -462,7 +470,12 @@ class Files(BaseSDK):
 
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.GetFilesResponse)
+            return models.FileStorageFilesSearchResponse(
+                get_files_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.GetFilesResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
         if utils.match_response(http_res, "400", "application/json"):
             data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
             raise models.BadRequestResponse(data=data)
@@ -486,7 +499,12 @@ class Files(BaseSDK):
                 "API error occurred", http_res.status_code, http_res_text, http_res
             )
         if utils.match_response(http_res, "default", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UnexpectedErrorResponse)
+            return models.FileStorageFilesSearchResponse(
+                unexpected_error_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.UnexpectedErrorResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
 
         content_type = http_res.headers.get("Content-Type")
         http_res_text = utils.stream_to_text(http_res)
@@ -610,7 +628,12 @@ class Files(BaseSDK):
 
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.GetFilesResponse)
+            return models.FileStorageFilesSearchResponse(
+                get_files_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.GetFilesResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
         if utils.match_response(http_res, "400", "application/json"):
             data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
             raise models.BadRequestResponse(data=data)
@@ -634,7 +657,12 @@ class Files(BaseSDK):
                 "API error occurred", http_res.status_code, http_res_text, http_res
             )
         if utils.match_response(http_res, "default", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UnexpectedErrorResponse)
+            return models.FileStorageFilesSearchResponse(
+                unexpected_error_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.UnexpectedErrorResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
 
         content_type = http_res.headers.get("Content-Type")
         http_res_text = await utils.stream_to_text_async(http_res)
@@ -732,7 +760,12 @@ class Files(BaseSDK):
 
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.GetFileResponse)
+            return models.FileStorageFilesOneResponse(
+                get_file_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.GetFileResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
         if utils.match_response(http_res, "400", "application/json"):
             data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
             raise models.BadRequestResponse(data=data)
@@ -756,7 +789,12 @@ class Files(BaseSDK):
                 "API error occurred", http_res.status_code, http_res_text, http_res
             )
         if utils.match_response(http_res, "default", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UnexpectedErrorResponse)
+            return models.FileStorageFilesOneResponse(
+                unexpected_error_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.UnexpectedErrorResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
 
         content_type = http_res.headers.get("Content-Type")
         http_res_text = utils.stream_to_text(http_res)
@@ -854,7 +892,12 @@ class Files(BaseSDK):
 
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.GetFileResponse)
+            return models.FileStorageFilesOneResponse(
+                get_file_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.GetFileResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
         if utils.match_response(http_res, "400", "application/json"):
             data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
             raise models.BadRequestResponse(data=data)
@@ -878,7 +921,12 @@ class Files(BaseSDK):
                 "API error occurred", http_res.status_code, http_res_text, http_res
             )
         if utils.match_response(http_res, "default", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UnexpectedErrorResponse)
+            return models.FileStorageFilesOneResponse(
+                unexpected_error_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.UnexpectedErrorResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
 
         content_type = http_res.headers.get("Content-Type")
         http_res_text = await utils.stream_to_text_async(http_res)
@@ -998,7 +1046,12 @@ class Files(BaseSDK):
 
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UpdateFileResponse)
+            return models.FileStorageFilesUpdateResponse(
+                update_file_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.UpdateFileResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
         if utils.match_response(http_res, "400", "application/json"):
             data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
             raise models.BadRequestResponse(data=data)
@@ -1022,7 +1075,12 @@ class Files(BaseSDK):
                 "API error occurred", http_res.status_code, http_res_text, http_res
             )
         if utils.match_response(http_res, "default", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UnexpectedErrorResponse)
+            return models.FileStorageFilesUpdateResponse(
+                unexpected_error_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.UnexpectedErrorResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
 
         content_type = http_res.headers.get("Content-Type")
         http_res_text = utils.stream_to_text(http_res)
@@ -1142,7 +1200,12 @@ class Files(BaseSDK):
 
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UpdateFileResponse)
+            return models.FileStorageFilesUpdateResponse(
+                update_file_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.UpdateFileResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
         if utils.match_response(http_res, "400", "application/json"):
             data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
             raise models.BadRequestResponse(data=data)
@@ -1166,7 +1229,12 @@ class Files(BaseSDK):
                 "API error occurred", http_res.status_code, http_res_text, http_res
             )
         if utils.match_response(http_res, "default", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UnexpectedErrorResponse)
+            return models.FileStorageFilesUpdateResponse(
+                unexpected_error_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.UnexpectedErrorResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
 
         content_type = http_res.headers.get("Content-Type")
         http_res_text = await utils.stream_to_text_async(http_res)
@@ -1261,7 +1329,12 @@ class Files(BaseSDK):
 
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.DeleteFileResponse)
+            return models.FileStorageFilesDeleteResponse(
+                delete_file_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.DeleteFileResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
         if utils.match_response(http_res, "400", "application/json"):
             data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
             raise models.BadRequestResponse(data=data)
@@ -1285,7 +1358,12 @@ class Files(BaseSDK):
                 "API error occurred", http_res.status_code, http_res_text, http_res
             )
         if utils.match_response(http_res, "default", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UnexpectedErrorResponse)
+            return models.FileStorageFilesDeleteResponse(
+                unexpected_error_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.UnexpectedErrorResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
 
         content_type = http_res.headers.get("Content-Type")
         http_res_text = utils.stream_to_text(http_res)
@@ -1380,7 +1458,12 @@ class Files(BaseSDK):
 
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.DeleteFileResponse)
+            return models.FileStorageFilesDeleteResponse(
+                delete_file_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.DeleteFileResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
         if utils.match_response(http_res, "400", "application/json"):
             data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
             raise models.BadRequestResponse(data=data)
@@ -1404,7 +1487,12 @@ class Files(BaseSDK):
                 "API error occurred", http_res.status_code, http_res_text, http_res
             )
         if utils.match_response(http_res, "default", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UnexpectedErrorResponse)
+            return models.FileStorageFilesDeleteResponse(
+                unexpected_error_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.UnexpectedErrorResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
 
         content_type = http_res.headers.get("Content-Type")
         http_res_text = await utils.stream_to_text_async(http_res)
@@ -1504,7 +1592,10 @@ class Files(BaseSDK):
 
         data: Any = None
         if utils.match_response(http_res, "200", "*/*"):
-            return http_res
+            return models.FileStorageFilesDownloadResponse(
+                get_file_download_response=http_res,
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
         if utils.match_response(http_res, "400", "application/json"):
             http_res_text = utils.stream_to_text(http_res)
             data = utils.unmarshal_json(http_res_text, models.BadRequestResponseData)
@@ -1534,8 +1625,11 @@ class Files(BaseSDK):
             )
         if utils.match_response(http_res, "default", "application/json"):
             http_response_text = utils.stream_to_text(http_res)
-            return utils.unmarshal_json(
-                http_response_text, models.UnexpectedErrorResponse
+            return models.FileStorageFilesDownloadResponse(
+                unexpected_error_response=utils.unmarshal_json(
+                    http_response_text, Optional[models.UnexpectedErrorResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
             )
 
         content_type = http_res.headers.get("Content-Type")
@@ -1636,7 +1730,10 @@ class Files(BaseSDK):
 
         data: Any = None
         if utils.match_response(http_res, "200", "*/*"):
-            return http_res
+            return models.FileStorageFilesDownloadResponse(
+                get_file_download_response=http_res,
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
         if utils.match_response(http_res, "400", "application/json"):
             http_res_text = await utils.stream_to_text_async(http_res)
             data = utils.unmarshal_json(http_res_text, models.BadRequestResponseData)
@@ -1666,8 +1763,11 @@ class Files(BaseSDK):
             )
         if utils.match_response(http_res, "default", "application/json"):
             http_response_text = await utils.stream_to_text_async(http_res)
-            return utils.unmarshal_json(
-                http_response_text, models.UnexpectedErrorResponse
+            return models.FileStorageFilesDownloadResponse(
+                unexpected_error_response=utils.unmarshal_json(
+                    http_response_text, Optional[models.UnexpectedErrorResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
             )
 
         content_type = http_res.headers.get("Content-Type")
@@ -1771,7 +1871,10 @@ class Files(BaseSDK):
 
         data: Any = None
         if utils.match_response(http_res, "200", "*/*"):
-            return http_res
+            return models.FileStorageFilesExportResponse(
+                get_file_download_response=http_res,
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
         if utils.match_response(http_res, "400", "application/json"):
             http_res_text = utils.stream_to_text(http_res)
             data = utils.unmarshal_json(http_res_text, models.BadRequestResponseData)
@@ -1801,8 +1904,11 @@ class Files(BaseSDK):
             )
         if utils.match_response(http_res, "default", "application/json"):
             http_response_text = utils.stream_to_text(http_res)
-            return utils.unmarshal_json(
-                http_response_text, models.UnexpectedErrorResponse
+            return models.FileStorageFilesExportResponse(
+                unexpected_error_response=utils.unmarshal_json(
+                    http_response_text, Optional[models.UnexpectedErrorResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
             )
 
         content_type = http_res.headers.get("Content-Type")
@@ -1906,7 +2012,10 @@ class Files(BaseSDK):
 
         data: Any = None
         if utils.match_response(http_res, "200", "*/*"):
-            return http_res
+            return models.FileStorageFilesExportResponse(
+                get_file_download_response=http_res,
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
         if utils.match_response(http_res, "400", "application/json"):
             http_res_text = await utils.stream_to_text_async(http_res)
             data = utils.unmarshal_json(http_res_text, models.BadRequestResponseData)
@@ -1936,8 +2045,11 @@ class Files(BaseSDK):
             )
         if utils.match_response(http_res, "default", "application/json"):
             http_response_text = await utils.stream_to_text_async(http_res)
-            return utils.unmarshal_json(
-                http_response_text, models.UnexpectedErrorResponse
+            return models.FileStorageFilesExportResponse(
+                unexpected_error_response=utils.unmarshal_json(
+                    http_response_text, Optional[models.UnexpectedErrorResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
             )
 
         content_type = http_res.headers.get("Content-Type")

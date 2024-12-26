@@ -129,8 +129,10 @@ with Apideck(
         },
     ])
 
+    assert res.create_expense_response is not None
+
     # Handle response
-    print(res)
+    print(res.create_expense_response)
 
 ```
 
@@ -193,8 +195,10 @@ with Apideck(
 
     res = apideck.accounting.expenses.get(id="<id>", service_id="salesforce")
 
+    assert res.get_expense_response is not None
+
     # Handle response
-    print(res)
+    print(res.get_expense_response)
 
 ```
 
@@ -368,8 +372,10 @@ with Apideck(
         },
     ])
 
+    assert res.update_expense_response is not None
+
     # Handle response
-    print(res)
+    print(res.update_expense_response)
 
 ```
 
@@ -433,8 +439,10 @@ with Apideck(
 
     res = apideck.accounting.expenses.delete(id="<id>", service_id="salesforce")
 
+    assert res.delete_expense_response is not None
+
     # Handle response
-    print(res)
+    print(res.delete_expense_response)
 
 ```
 

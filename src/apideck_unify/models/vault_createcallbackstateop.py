@@ -6,6 +6,7 @@ from .createcallbackstateresponse import (
     CreateCallbackStateResponse,
     CreateCallbackStateResponseTypedDict,
 )
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -18,8 +19,8 @@ from apideck_unify.utils import (
     RequestMetadata,
 )
 import pydantic
-from typing import Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class VaultCreateCallbackStateGlobalsTypedDict(TypedDict):
@@ -72,13 +73,19 @@ class VaultCreateCallbackStateRequest(BaseModel):
     r"""Callback state data"""
 
 
-VaultCreateCallbackStateResponseTypedDict = TypeAliasType(
-    "VaultCreateCallbackStateResponseTypedDict",
-    Union[CreateCallbackStateResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
+class VaultCreateCallbackStateResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    create_callback_state_response: NotRequired[CreateCallbackStateResponseTypedDict]
+    r"""Callback state created"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-VaultCreateCallbackStateResponse = TypeAliasType(
-    "VaultCreateCallbackStateResponse",
-    Union[CreateCallbackStateResponse, UnexpectedErrorResponse],
-)
+class VaultCreateCallbackStateResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    create_callback_state_response: Optional[CreateCallbackStateResponse] = None
+    r"""Callback state created"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

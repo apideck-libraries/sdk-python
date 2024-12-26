@@ -132,9 +132,10 @@ class Attachments(BaseSDK):
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingAttachmentsAllResponse(
-                result=utils.unmarshal_json(
-                    http_res.text, models.GetAttachmentsResponse
+                get_attachments_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.GetAttachmentsResponse]
                 ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
             )
         if utils.match_response(http_res, "400", "application/json"):
@@ -161,9 +162,10 @@ class Attachments(BaseSDK):
             )
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingAttachmentsAllResponse(
-                result=utils.unmarshal_json(
-                    http_res.text, models.UnexpectedErrorResponse
+                unexpected_error_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.UnexpectedErrorResponse]
                 ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
             )
 
@@ -292,9 +294,10 @@ class Attachments(BaseSDK):
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingAttachmentsAllResponse(
-                result=utils.unmarshal_json(
-                    http_res.text, models.GetAttachmentsResponse
+                get_attachments_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.GetAttachmentsResponse]
                 ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
             )
         if utils.match_response(http_res, "400", "application/json"):
@@ -321,9 +324,10 @@ class Attachments(BaseSDK):
             )
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingAttachmentsAllResponse(
-                result=utils.unmarshal_json(
-                    http_res.text, models.UnexpectedErrorResponse
+                unexpected_error_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.UnexpectedErrorResponse]
                 ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
             )
 
@@ -429,7 +433,12 @@ class Attachments(BaseSDK):
 
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.GetAttachmentResponse)
+            return models.AccountingAttachmentsOneResponse(
+                get_attachment_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.GetAttachmentResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
         if utils.match_response(http_res, "400", "application/json"):
             data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
             raise models.BadRequestResponse(data=data)
@@ -453,7 +462,12 @@ class Attachments(BaseSDK):
                 "API error occurred", http_res.status_code, http_res_text, http_res
             )
         if utils.match_response(http_res, "default", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UnexpectedErrorResponse)
+            return models.AccountingAttachmentsOneResponse(
+                unexpected_error_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.UnexpectedErrorResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
 
         content_type = http_res.headers.get("Content-Type")
         http_res_text = utils.stream_to_text(http_res)
@@ -557,7 +571,12 @@ class Attachments(BaseSDK):
 
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.GetAttachmentResponse)
+            return models.AccountingAttachmentsOneResponse(
+                get_attachment_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.GetAttachmentResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
         if utils.match_response(http_res, "400", "application/json"):
             data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
             raise models.BadRequestResponse(data=data)
@@ -581,7 +600,12 @@ class Attachments(BaseSDK):
                 "API error occurred", http_res.status_code, http_res_text, http_res
             )
         if utils.match_response(http_res, "default", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UnexpectedErrorResponse)
+            return models.AccountingAttachmentsOneResponse(
+                unexpected_error_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.UnexpectedErrorResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
 
         content_type = http_res.headers.get("Content-Type")
         http_res_text = await utils.stream_to_text_async(http_res)
@@ -682,7 +706,12 @@ class Attachments(BaseSDK):
 
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.DeleteAttachmentResponse)
+            return models.AccountingAttachmentsDeleteResponse(
+                delete_attachment_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.DeleteAttachmentResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
         if utils.match_response(http_res, "400", "application/json"):
             data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
             raise models.BadRequestResponse(data=data)
@@ -706,7 +735,12 @@ class Attachments(BaseSDK):
                 "API error occurred", http_res.status_code, http_res_text, http_res
             )
         if utils.match_response(http_res, "default", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UnexpectedErrorResponse)
+            return models.AccountingAttachmentsDeleteResponse(
+                unexpected_error_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.UnexpectedErrorResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
 
         content_type = http_res.headers.get("Content-Type")
         http_res_text = utils.stream_to_text(http_res)
@@ -807,7 +841,12 @@ class Attachments(BaseSDK):
 
         data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.DeleteAttachmentResponse)
+            return models.AccountingAttachmentsDeleteResponse(
+                delete_attachment_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.DeleteAttachmentResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
         if utils.match_response(http_res, "400", "application/json"):
             data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
             raise models.BadRequestResponse(data=data)
@@ -831,7 +870,12 @@ class Attachments(BaseSDK):
                 "API error occurred", http_res.status_code, http_res_text, http_res
             )
         if utils.match_response(http_res, "default", "application/json"):
-            return utils.unmarshal_json(http_res.text, models.UnexpectedErrorResponse)
+            return models.AccountingAttachmentsDeleteResponse(
+                unexpected_error_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.UnexpectedErrorResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
 
         content_type = http_res.headers.get("Content-Type")
         http_res_text = await utils.stream_to_text_async(http_res)
@@ -937,7 +981,10 @@ class Attachments(BaseSDK):
 
         data: Any = None
         if utils.match_response(http_res, "200", "*/*"):
-            return http_res
+            return models.AccountingAttachmentsDownloadResponse(
+                get_attachment_download_response=http_res,
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
         if utils.match_response(http_res, "400", "application/json"):
             http_res_text = utils.stream_to_text(http_res)
             data = utils.unmarshal_json(http_res_text, models.BadRequestResponseData)
@@ -967,8 +1014,11 @@ class Attachments(BaseSDK):
             )
         if utils.match_response(http_res, "default", "application/json"):
             http_response_text = utils.stream_to_text(http_res)
-            return utils.unmarshal_json(
-                http_response_text, models.UnexpectedErrorResponse
+            return models.AccountingAttachmentsDownloadResponse(
+                unexpected_error_response=utils.unmarshal_json(
+                    http_response_text, Optional[models.UnexpectedErrorResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
             )
 
         content_type = http_res.headers.get("Content-Type")
@@ -1075,7 +1125,10 @@ class Attachments(BaseSDK):
 
         data: Any = None
         if utils.match_response(http_res, "200", "*/*"):
-            return http_res
+            return models.AccountingAttachmentsDownloadResponse(
+                get_attachment_download_response=http_res,
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
         if utils.match_response(http_res, "400", "application/json"):
             http_res_text = await utils.stream_to_text_async(http_res)
             data = utils.unmarshal_json(http_res_text, models.BadRequestResponseData)
@@ -1105,8 +1158,11 @@ class Attachments(BaseSDK):
             )
         if utils.match_response(http_res, "default", "application/json"):
             http_response_text = await utils.stream_to_text_async(http_res)
-            return utils.unmarshal_json(
-                http_response_text, models.UnexpectedErrorResponse
+            return models.AccountingAttachmentsDownloadResponse(
+                unexpected_error_response=utils.unmarshal_json(
+                    http_response_text, Optional[models.UnexpectedErrorResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
             )
 
         content_type = http_res.headers.get("Content-Type")

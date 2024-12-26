@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 from .deletewebhookresponse import DeleteWebhookResponse, DeleteWebhookResponseTypedDict
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -9,8 +10,8 @@ from .unexpectederrorresponse import (
 from apideck_unify.types import BaseModel
 from apideck_unify.utils import FieldMetadata, HeaderMetadata, PathParamMetadata
 import pydantic
-from typing import Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class WebhookWebhooksDeleteGlobalsTypedDict(TypedDict):
@@ -39,13 +40,19 @@ class WebhookWebhooksDeleteRequest(BaseModel):
     r"""JWT Webhook token that represents the unifiedApi and applicationId associated to the event source."""
 
 
-WebhookWebhooksDeleteResponseTypedDict = TypeAliasType(
-    "WebhookWebhooksDeleteResponseTypedDict",
-    Union[DeleteWebhookResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
+class WebhookWebhooksDeleteResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    delete_webhook_response: NotRequired[DeleteWebhookResponseTypedDict]
+    r"""Webhooks"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-WebhookWebhooksDeleteResponse = TypeAliasType(
-    "WebhookWebhooksDeleteResponse",
-    Union[DeleteWebhookResponse, UnexpectedErrorResponse],
-)
+class WebhookWebhooksDeleteResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    delete_webhook_response: Optional[DeleteWebhookResponse] = None
+    r"""Webhooks"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

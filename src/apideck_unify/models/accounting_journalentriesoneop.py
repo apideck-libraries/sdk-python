@@ -5,6 +5,7 @@ from .getjournalentryresponse import (
     GetJournalEntryResponse,
     GetJournalEntryResponseTypedDict,
 )
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -24,8 +25,8 @@ from apideck_unify.utils import (
 )
 import pydantic
 from pydantic import model_serializer
-from typing import Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class AccountingJournalEntriesOneGlobalsTypedDict(TypedDict):
@@ -118,13 +119,19 @@ class AccountingJournalEntriesOneRequest(BaseModel):
         return m
 
 
-AccountingJournalEntriesOneResponseTypedDict = TypeAliasType(
-    "AccountingJournalEntriesOneResponseTypedDict",
-    Union[GetJournalEntryResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
+class AccountingJournalEntriesOneResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    get_journal_entry_response: NotRequired[GetJournalEntryResponseTypedDict]
+    r"""JournalEntries"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-AccountingJournalEntriesOneResponse = TypeAliasType(
-    "AccountingJournalEntriesOneResponse",
-    Union[GetJournalEntryResponse, UnexpectedErrorResponse],
-)
+class AccountingJournalEntriesOneResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    get_journal_entry_response: Optional[GetJournalEntryResponse] = None
+    r"""JournalEntries"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

@@ -103,8 +103,10 @@ with Apideck(
         },
     ])
 
+    assert res.create_subsidiary_response is not None
+
     # Handle response
-    print(res)
+    print(res.create_subsidiary_response)
 
 ```
 
@@ -154,8 +156,10 @@ with Apideck(
 
     res = apideck.accounting.subsidiaries.get(id="<id>", service_id="salesforce", fields="id,updated_at")
 
+    assert res.get_subsidiary_response is not None
+
     # Handle response
-    print(res)
+    print(res.get_subsidiary_response)
 
 ```
 
@@ -267,8 +271,10 @@ with Apideck(
         },
     ])
 
+    assert res.update_subsidiary_response is not None
+
     # Handle response
-    print(res)
+    print(res.update_subsidiary_response)
 
 ```
 
@@ -319,8 +325,10 @@ with Apideck(
 
     res = apideck.accounting.subsidiaries.delete(id="<id>", service_id="salesforce")
 
+    assert res.delete_subsidiary_response is not None
+
     # Handle response
-    print(res)
+    print(res.delete_subsidiary_response)
 
 ```
 

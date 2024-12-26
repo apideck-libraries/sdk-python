@@ -118,8 +118,10 @@ with Apideck(
         },
     ])
 
+    assert res.create_pipeline_response is not None
+
     # Handle response
-    print(res)
+    print(res.create_pipeline_response)
 
 ```
 
@@ -173,8 +175,10 @@ with Apideck(
 
     res = apideck.crm.pipelines.get(id="<id>", service_id="salesforce", fields="id,updated_at")
 
+    assert res.get_pipeline_response is not None
+
     # Handle response
-    print(res)
+    print(res.get_pipeline_response)
 
 ```
 
@@ -284,8 +288,10 @@ with Apideck(
         },
     ])
 
+    assert res.update_pipeline_response is not None
+
     # Handle response
-    print(res)
+    print(res.update_pipeline_response)
 
 ```
 
@@ -340,8 +346,10 @@ with Apideck(
 
     res = apideck.crm.pipelines.delete(id="<id>", service_id="salesforce")
 
+    assert res.delete_pipeline_response is not None
+
     # Handle response
-    print(res)
+    print(res.delete_pipeline_response)
 
 ```
 

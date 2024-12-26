@@ -4,6 +4,7 @@ from __future__ import annotations
 from .contactsfilter import ContactsFilter, ContactsFilterTypedDict
 from .contactssort import ContactsSort, ContactsSortTypedDict
 from .getcontactsresponse import GetContactsResponse, GetContactsResponseTypedDict
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -18,8 +19,8 @@ from apideck_unify.types import (
 from apideck_unify.utils import FieldMetadata, HeaderMetadata, QueryParamMetadata
 import pydantic
 from pydantic import model_serializer
-from typing import Any, Callable, Dict, Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Any, Callable, Dict, Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class CrmContactsAllGlobalsTypedDict(TypedDict):
@@ -155,22 +156,21 @@ class CrmContactsAllRequest(BaseModel):
         return m
 
 
-CrmContactsAllResponseResultTypedDict = TypeAliasType(
-    "CrmContactsAllResponseResultTypedDict",
-    Union[UnexpectedErrorResponseTypedDict, GetContactsResponseTypedDict],
-)
-
-
-CrmContactsAllResponseResult = TypeAliasType(
-    "CrmContactsAllResponseResult", Union[UnexpectedErrorResponse, GetContactsResponse]
-)
-
-
 class CrmContactsAllResponseTypedDict(TypedDict):
-    result: CrmContactsAllResponseResultTypedDict
+    http_meta: HTTPMetadataTypedDict
+    get_contacts_response: NotRequired[GetContactsResponseTypedDict]
+    r"""Contacts"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
 class CrmContactsAllResponse(BaseModel):
     next: Callable[[], Optional[CrmContactsAllResponse]]
 
-    result: CrmContactsAllResponseResult
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    get_contacts_response: Optional[GetContactsResponse] = None
+    r"""Contacts"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

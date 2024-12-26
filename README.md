@@ -961,8 +961,10 @@ with Apideck(
         },
     ], server_url="https://upload.apideck.com")
 
+    assert res.create_upload_session_response is not None
+
     # Handle response
-    print(res)
+    print(res.create_upload_session_response)
 
 ```
 <!-- End Server Selection [server] -->

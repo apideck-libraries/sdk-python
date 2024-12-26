@@ -5,6 +5,7 @@ from .getcustommappingsresponse import (
     GetCustomMappingsResponse,
     GetCustomMappingsResponseTypedDict,
 )
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -12,8 +13,8 @@ from .unexpectederrorresponse import (
 from apideck_unify.types import BaseModel
 from apideck_unify.utils import FieldMetadata, HeaderMetadata, PathParamMetadata
 import pydantic
-from typing import Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class VaultCustomMappingsAllGlobalsTypedDict(TypedDict):
@@ -58,13 +59,19 @@ class VaultCustomMappingsAllRequest(BaseModel):
     r"""Service ID of the resource to return"""
 
 
-VaultCustomMappingsAllResponseTypedDict = TypeAliasType(
-    "VaultCustomMappingsAllResponseTypedDict",
-    Union[GetCustomMappingsResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
+class VaultCustomMappingsAllResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    get_custom_mappings_response: NotRequired[GetCustomMappingsResponseTypedDict]
+    r"""Custom mapping"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-VaultCustomMappingsAllResponse = TypeAliasType(
-    "VaultCustomMappingsAllResponse",
-    Union[GetCustomMappingsResponse, UnexpectedErrorResponse],
-)
+class VaultCustomMappingsAllResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    get_custom_mappings_response: Optional[GetCustomMappingsResponse] = None
+    r"""Custom mapping"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

@@ -85,8 +85,10 @@ with Apideck(
 
     res = apideck.issue_tracking.collections.get(collection_id="apideck-io", service_id="salesforce", fields="id,updated_at")
 
+    assert res.get_collection_response is not None
+
     # Handle response
-    print(res)
+    print(res.get_collection_response)
 
 ```
 

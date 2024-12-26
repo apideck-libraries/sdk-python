@@ -51,8 +51,10 @@ with Apideck(
         },
     ])
 
+    assert res.create_folder_response is not None
+
     # Handle response
-    print(res)
+    print(res.create_folder_response)
 
 ```
 
@@ -103,8 +105,10 @@ with Apideck(
 
     res = apideck.file_storage.folders.get(id="<id>", service_id="salesforce", fields="id,updated_at")
 
+    assert res.get_folder_response is not None
+
     # Handle response
-    print(res)
+    print(res.get_folder_response)
 
 ```
 
@@ -215,8 +219,10 @@ with Apideck(
         },
     ])
 
+    assert res.update_folder_response is not None
+
     # Handle response
-    print(res)
+    print(res.update_folder_response)
 
 ```
 
@@ -266,8 +272,10 @@ with Apideck(
 
     res = apideck.file_storage.folders.delete(id="<id>", service_id="salesforce")
 
+    assert res.delete_folder_response is not None
+
     # Handle response
-    print(res)
+    print(res.delete_folder_response)
 
 ```
 
@@ -377,8 +385,10 @@ with Apideck(
         },
     ])
 
+    assert res.update_folder_response is not None
+
     # Handle response
-    print(res)
+    print(res.update_folder_response)
 
 ```
 

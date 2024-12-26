@@ -33,8 +33,10 @@ with Apideck(
         "period_type": apideck_unify.PeriodType.MONTH,
     })
 
+    assert res.get_balance_sheet_response is not None
+
     # Handle response
-    print(res)
+    print(res.get_balance_sheet_response)
 
 ```
 

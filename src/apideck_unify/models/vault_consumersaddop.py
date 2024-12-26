@@ -5,6 +5,7 @@ from .createconsumerresponse import (
     CreateConsumerResponse,
     CreateConsumerResponseTypedDict,
 )
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -12,8 +13,8 @@ from .unexpectederrorresponse import (
 from apideck_unify.types import BaseModel
 from apideck_unify.utils import FieldMetadata, HeaderMetadata
 import pydantic
-from typing import Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class VaultConsumersAddGlobalsTypedDict(TypedDict):
@@ -30,12 +31,19 @@ class VaultConsumersAddGlobals(BaseModel):
     r"""The ID of your Unify application"""
 
 
-VaultConsumersAddResponseTypedDict = TypeAliasType(
-    "VaultConsumersAddResponseTypedDict",
-    Union[CreateConsumerResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
+class VaultConsumersAddResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    create_consumer_response: NotRequired[CreateConsumerResponseTypedDict]
+    r"""Consumer created"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-VaultConsumersAddResponse = TypeAliasType(
-    "VaultConsumersAddResponse", Union[CreateConsumerResponse, UnexpectedErrorResponse]
-)
+class VaultConsumersAddResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    create_consumer_response: Optional[CreateConsumerResponse] = None
+    r"""Consumer created"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

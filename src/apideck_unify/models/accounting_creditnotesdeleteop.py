@@ -5,6 +5,7 @@ from .deletecreditnoteresponse import (
     DeleteCreditNoteResponse,
     DeleteCreditNoteResponseTypedDict,
 )
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -17,8 +18,8 @@ from apideck_unify.utils import (
     QueryParamMetadata,
 )
 import pydantic
-from typing import Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class AccountingCreditNotesDeleteGlobalsTypedDict(TypedDict):
@@ -73,13 +74,19 @@ class AccountingCreditNotesDeleteRequest(BaseModel):
     r"""Include raw response. Mostly used for debugging purposes"""
 
 
-AccountingCreditNotesDeleteResponseTypedDict = TypeAliasType(
-    "AccountingCreditNotesDeleteResponseTypedDict",
-    Union[DeleteCreditNoteResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
+class AccountingCreditNotesDeleteResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    delete_credit_note_response: NotRequired[DeleteCreditNoteResponseTypedDict]
+    r"""Credit Note deleted"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-AccountingCreditNotesDeleteResponse = TypeAliasType(
-    "AccountingCreditNotesDeleteResponse",
-    Union[DeleteCreditNoteResponse, UnexpectedErrorResponse],
-)
+class AccountingCreditNotesDeleteResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    delete_credit_note_response: Optional[DeleteCreditNoteResponse] = None
+    r"""Credit Note deleted"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

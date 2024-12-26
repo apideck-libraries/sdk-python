@@ -26,8 +26,10 @@ with Apideck(
 
     res = apideck.vault.create_callback.state(service_id="pipedrive", unified_api="crm", redirect_uri="https://example.com/callback")
 
+    assert res.create_callback_state_response is not None
+
     # Handle response
-    print(res)
+    print(res.create_callback_state_response)
 
 ```
 

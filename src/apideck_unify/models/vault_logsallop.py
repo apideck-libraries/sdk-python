@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 from .getlogsresponse import GetLogsResponse, GetLogsResponseTypedDict
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .logsfilter import LogsFilter, LogsFilterTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
@@ -17,8 +18,8 @@ from apideck_unify.types import (
 from apideck_unify.utils import FieldMetadata, HeaderMetadata, QueryParamMetadata
 import pydantic
 from pydantic import model_serializer
-from typing import Callable, Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Callable, Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class VaultLogsAllGlobalsTypedDict(TypedDict):
@@ -104,22 +105,21 @@ class VaultLogsAllRequest(BaseModel):
         return m
 
 
-VaultLogsAllResponseResultTypedDict = TypeAliasType(
-    "VaultLogsAllResponseResultTypedDict",
-    Union[GetLogsResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
-
-
-VaultLogsAllResponseResult = TypeAliasType(
-    "VaultLogsAllResponseResult", Union[GetLogsResponse, UnexpectedErrorResponse]
-)
-
-
 class VaultLogsAllResponseTypedDict(TypedDict):
-    result: VaultLogsAllResponseResultTypedDict
+    http_meta: HTTPMetadataTypedDict
+    get_logs_response: NotRequired[GetLogsResponseTypedDict]
+    r"""Logs"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
 class VaultLogsAllResponse(BaseModel):
     next: Callable[[], Optional[VaultLogsAllResponse]]
 
-    result: VaultLogsAllResponseResult
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    get_logs_response: Optional[GetLogsResponse] = None
+    r"""Logs"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

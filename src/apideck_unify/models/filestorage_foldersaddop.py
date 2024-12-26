@@ -3,6 +3,7 @@
 from __future__ import annotations
 from .createfolderrequest import CreateFolderRequest, CreateFolderRequestTypedDict
 from .createfolderresponse import CreateFolderResponse, CreateFolderResponseTypedDict
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -22,8 +23,8 @@ from apideck_unify.utils import (
 )
 import pydantic
 from pydantic import model_serializer
-from typing import Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class FileStorageFoldersAddGlobalsTypedDict(TypedDict):
@@ -115,13 +116,19 @@ class FileStorageFoldersAddRequest(BaseModel):
         return m
 
 
-FileStorageFoldersAddResponseTypedDict = TypeAliasType(
-    "FileStorageFoldersAddResponseTypedDict",
-    Union[CreateFolderResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
+class FileStorageFoldersAddResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    create_folder_response: NotRequired[CreateFolderResponseTypedDict]
+    r"""Folders"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-FileStorageFoldersAddResponse = TypeAliasType(
-    "FileStorageFoldersAddResponse",
-    Union[CreateFolderResponse, UnexpectedErrorResponse],
-)
+class FileStorageFoldersAddResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    create_folder_response: Optional[CreateFolderResponse] = None
+    r"""Folders"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

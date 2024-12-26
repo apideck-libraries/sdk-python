@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 from .deleteuserresponse import DeleteUserResponse, DeleteUserResponseTypedDict
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -14,8 +15,8 @@ from apideck_unify.utils import (
     QueryParamMetadata,
 )
 import pydantic
-from typing import Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class CrmUsersDeleteGlobalsTypedDict(TypedDict):
@@ -70,12 +71,19 @@ class CrmUsersDeleteRequest(BaseModel):
     r"""Include raw response. Mostly used for debugging purposes"""
 
 
-CrmUsersDeleteResponseTypedDict = TypeAliasType(
-    "CrmUsersDeleteResponseTypedDict",
-    Union[DeleteUserResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
+class CrmUsersDeleteResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    delete_user_response: NotRequired[DeleteUserResponseTypedDict]
+    r"""User deleted"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-CrmUsersDeleteResponse = TypeAliasType(
-    "CrmUsersDeleteResponse", Union[DeleteUserResponse, UnexpectedErrorResponse]
-)
+class CrmUsersDeleteResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    delete_user_response: Optional[DeleteUserResponse] = None
+    r"""User deleted"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

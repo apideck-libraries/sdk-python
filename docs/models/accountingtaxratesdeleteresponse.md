@@ -1,17 +1,10 @@
 # AccountingTaxRatesDeleteResponse
 
 
-## Supported Types
+## Fields
 
-### `models.DeleteTaxRateResponse`
-
-```python
-value: models.DeleteTaxRateResponse = /* values here */
-```
-
-### `models.UnexpectedErrorResponse`
-
-```python
-value: models.UnexpectedErrorResponse = /* values here */
-```
-
+| Field                                                                            | Type                                                                             | Required                                                                         | Description                                                                      |
+| -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| `http_meta`                                                                      | [models.HTTPMetadata](../models/httpmetadata.md)                                 | :heavy_check_mark:                                                               | N/A                                                                              |
+| `delete_tax_rate_response`                                                       | [Optional[models.DeleteTaxRateResponse]](../models/deletetaxrateresponse.md)     | :heavy_minus_sign:                                                               | TaxRates deleted                                                                 |
+| `unexpected_error_response`                                                      | [Optional[models.UnexpectedErrorResponse]](../models/unexpectederrorresponse.md) | :heavy_minus_sign:                                                               | Unexpected error                                                                 |

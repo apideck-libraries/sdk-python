@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 from .getleadresponse import GetLeadResponse, GetLeadResponseTypedDict
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -21,8 +22,8 @@ from apideck_unify.utils import (
 )
 import pydantic
 from pydantic import model_serializer
-from typing import Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class CrmLeadsOneGlobalsTypedDict(TypedDict):
@@ -115,12 +116,19 @@ class CrmLeadsOneRequest(BaseModel):
         return m
 
 
-CrmLeadsOneResponseTypedDict = TypeAliasType(
-    "CrmLeadsOneResponseTypedDict",
-    Union[GetLeadResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
+class CrmLeadsOneResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    get_lead_response: NotRequired[GetLeadResponseTypedDict]
+    r"""Lead"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-CrmLeadsOneResponse = TypeAliasType(
-    "CrmLeadsOneResponse", Union[GetLeadResponse, UnexpectedErrorResponse]
-)
+class CrmLeadsOneResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    get_lead_response: Optional[GetLeadResponse] = None
+    r"""Lead"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

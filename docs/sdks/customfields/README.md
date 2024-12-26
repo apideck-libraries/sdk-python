@@ -26,8 +26,10 @@ with Apideck(
 
     res = apideck.vault.custom_fields.list(unified_api="crm", service_id="pipedrive", resource="leads", resource_id="1234")
 
+    assert res.get_custom_fields_response is not None
+
     # Handle response
-    print(res)
+    print(res.get_custom_fields_response)
 
 ```
 

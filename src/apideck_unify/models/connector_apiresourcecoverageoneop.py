@@ -5,6 +5,7 @@ from .getapiresourcecoverageresponse import (
     GetAPIResourceCoverageResponse,
     GetAPIResourceCoverageResponseTypedDict,
 )
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -12,8 +13,8 @@ from .unexpectederrorresponse import (
 from apideck_unify.types import BaseModel
 from apideck_unify.utils import FieldMetadata, HeaderMetadata, PathParamMetadata
 import pydantic
-from typing import Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class ConnectorAPIResourceCoverageOneGlobalsTypedDict(TypedDict):
@@ -49,13 +50,21 @@ class ConnectorAPIResourceCoverageOneRequest(BaseModel):
     r"""ID of the resource you are acting upon."""
 
 
-ConnectorAPIResourceCoverageOneResponseTypedDict = TypeAliasType(
-    "ConnectorAPIResourceCoverageOneResponseTypedDict",
-    Union[GetAPIResourceCoverageResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
+class ConnectorAPIResourceCoverageOneResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    get_api_resource_coverage_response: NotRequired[
+        GetAPIResourceCoverageResponseTypedDict
+    ]
+    r"""ApiResources"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-ConnectorAPIResourceCoverageOneResponse = TypeAliasType(
-    "ConnectorAPIResourceCoverageOneResponse",
-    Union[GetAPIResourceCoverageResponse, UnexpectedErrorResponse],
-)
+class ConnectorAPIResourceCoverageOneResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    get_api_resource_coverage_response: Optional[GetAPIResourceCoverageResponse] = None
+    r"""ApiResources"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 from .getsuppliersresponse import GetSuppliersResponse, GetSuppliersResponseTypedDict
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .suppliersfilter import SuppliersFilter, SuppliersFilterTypedDict
 from .supplierssort import SuppliersSort, SuppliersSortTypedDict
 from .unexpectederrorresponse import (
@@ -18,8 +19,8 @@ from apideck_unify.types import (
 from apideck_unify.utils import FieldMetadata, HeaderMetadata, QueryParamMetadata
 import pydantic
 from pydantic import model_serializer
-from typing import Any, Callable, Dict, Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Any, Callable, Dict, Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class AccountingSuppliersAllGlobalsTypedDict(TypedDict):
@@ -155,23 +156,21 @@ class AccountingSuppliersAllRequest(BaseModel):
         return m
 
 
-AccountingSuppliersAllResponseResultTypedDict = TypeAliasType(
-    "AccountingSuppliersAllResponseResultTypedDict",
-    Union[UnexpectedErrorResponseTypedDict, GetSuppliersResponseTypedDict],
-)
-
-
-AccountingSuppliersAllResponseResult = TypeAliasType(
-    "AccountingSuppliersAllResponseResult",
-    Union[UnexpectedErrorResponse, GetSuppliersResponse],
-)
-
-
 class AccountingSuppliersAllResponseTypedDict(TypedDict):
-    result: AccountingSuppliersAllResponseResultTypedDict
+    http_meta: HTTPMetadataTypedDict
+    get_suppliers_response: NotRequired[GetSuppliersResponseTypedDict]
+    r"""Suppliers"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
 class AccountingSuppliersAllResponse(BaseModel):
     next: Callable[[], Optional[AccountingSuppliersAllResponse]]
 
-    result: AccountingSuppliersAllResponseResult
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    get_suppliers_response: Optional[GetSuppliersResponse] = None
+    r"""Suppliers"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

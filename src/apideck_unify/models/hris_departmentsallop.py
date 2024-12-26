@@ -5,6 +5,7 @@ from .getdepartmentsresponse import (
     GetDepartmentsResponse,
     GetDepartmentsResponseTypedDict,
 )
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -19,8 +20,8 @@ from apideck_unify.types import (
 from apideck_unify.utils import FieldMetadata, HeaderMetadata, QueryParamMetadata
 import pydantic
 from pydantic import model_serializer
-from typing import Any, Callable, Dict, Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Any, Callable, Dict, Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class HrisDepartmentsAllGlobalsTypedDict(TypedDict):
@@ -137,23 +138,21 @@ class HrisDepartmentsAllRequest(BaseModel):
         return m
 
 
-HrisDepartmentsAllResponseResultTypedDict = TypeAliasType(
-    "HrisDepartmentsAllResponseResultTypedDict",
-    Union[UnexpectedErrorResponseTypedDict, GetDepartmentsResponseTypedDict],
-)
-
-
-HrisDepartmentsAllResponseResult = TypeAliasType(
-    "HrisDepartmentsAllResponseResult",
-    Union[UnexpectedErrorResponse, GetDepartmentsResponse],
-)
-
-
 class HrisDepartmentsAllResponseTypedDict(TypedDict):
-    result: HrisDepartmentsAllResponseResultTypedDict
+    http_meta: HTTPMetadataTypedDict
+    get_departments_response: NotRequired[GetDepartmentsResponseTypedDict]
+    r"""Departments"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
 class HrisDepartmentsAllResponse(BaseModel):
     next: Callable[[], Optional[HrisDepartmentsAllResponse]]
 
-    result: HrisDepartmentsAllResponseResult
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    get_departments_response: Optional[GetDepartmentsResponse] = None
+    r"""Departments"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

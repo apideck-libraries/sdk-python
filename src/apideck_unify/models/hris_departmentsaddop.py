@@ -6,6 +6,7 @@ from .createdepartmentresponse import (
     CreateDepartmentResponseTypedDict,
 )
 from .department_input import DepartmentInput, DepartmentInputTypedDict
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -18,8 +19,8 @@ from apideck_unify.utils import (
     RequestMetadata,
 )
 import pydantic
-from typing import Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class HrisDepartmentsAddGlobalsTypedDict(TypedDict):
@@ -73,13 +74,19 @@ class HrisDepartmentsAddRequest(BaseModel):
     r"""Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API."""
 
 
-HrisDepartmentsAddResponseTypedDict = TypeAliasType(
-    "HrisDepartmentsAddResponseTypedDict",
-    Union[CreateDepartmentResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
+class HrisDepartmentsAddResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    create_department_response: NotRequired[CreateDepartmentResponseTypedDict]
+    r"""Departments"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-HrisDepartmentsAddResponse = TypeAliasType(
-    "HrisDepartmentsAddResponse",
-    Union[CreateDepartmentResponse, UnexpectedErrorResponse],
-)
+class HrisDepartmentsAddResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    create_department_response: Optional[CreateDepartmentResponse] = None
+    r"""Departments"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

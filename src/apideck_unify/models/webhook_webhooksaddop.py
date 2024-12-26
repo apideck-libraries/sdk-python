@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 from .createwebhookresponse import CreateWebhookResponse, CreateWebhookResponseTypedDict
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -9,8 +10,8 @@ from .unexpectederrorresponse import (
 from apideck_unify.types import BaseModel
 from apideck_unify.utils import FieldMetadata, HeaderMetadata
 import pydantic
-from typing import Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class WebhookWebhooksAddGlobalsTypedDict(TypedDict):
@@ -27,12 +28,19 @@ class WebhookWebhooksAddGlobals(BaseModel):
     r"""The ID of your Unify application"""
 
 
-WebhookWebhooksAddResponseTypedDict = TypeAliasType(
-    "WebhookWebhooksAddResponseTypedDict",
-    Union[CreateWebhookResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
+class WebhookWebhooksAddResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    create_webhook_response: NotRequired[CreateWebhookResponseTypedDict]
+    r"""Webhooks"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-WebhookWebhooksAddResponse = TypeAliasType(
-    "WebhookWebhooksAddResponse", Union[CreateWebhookResponse, UnexpectedErrorResponse]
-)
+class WebhookWebhooksAddResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    create_webhook_response: Optional[CreateWebhookResponse] = None
+    r"""Webhooks"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""
