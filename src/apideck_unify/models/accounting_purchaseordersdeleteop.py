@@ -5,6 +5,7 @@ from .deletepurchaseorderresponse import (
     DeletePurchaseOrderResponse,
     DeletePurchaseOrderResponseTypedDict,
 )
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -17,8 +18,8 @@ from apideck_unify.utils import (
     QueryParamMetadata,
 )
 import pydantic
-from typing import Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class AccountingPurchaseOrdersDeleteGlobalsTypedDict(TypedDict):
@@ -73,13 +74,19 @@ class AccountingPurchaseOrdersDeleteRequest(BaseModel):
     r"""Include raw response. Mostly used for debugging purposes"""
 
 
-AccountingPurchaseOrdersDeleteResponseTypedDict = TypeAliasType(
-    "AccountingPurchaseOrdersDeleteResponseTypedDict",
-    Union[DeletePurchaseOrderResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
+class AccountingPurchaseOrdersDeleteResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    delete_purchase_order_response: NotRequired[DeletePurchaseOrderResponseTypedDict]
+    r"""PurchaseOrders"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-AccountingPurchaseOrdersDeleteResponse = TypeAliasType(
-    "AccountingPurchaseOrdersDeleteResponse",
-    Union[DeletePurchaseOrderResponse, UnexpectedErrorResponse],
-)
+class AccountingPurchaseOrdersDeleteResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    delete_purchase_order_response: Optional[DeletePurchaseOrderResponse] = None
+    r"""PurchaseOrders"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

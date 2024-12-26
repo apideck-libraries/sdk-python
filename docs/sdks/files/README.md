@@ -115,8 +115,10 @@ with Apideck(
         },
     ])
 
+    assert res.get_files_response is not None
+
     # Handle response
-    print(res)
+    print(res.get_files_response)
 
 ```
 
@@ -168,8 +170,10 @@ with Apideck(
 
     res = apideck.file_storage.files.get(id="<id>", service_id="salesforce", fields="id,updated_at")
 
+    assert res.get_file_response is not None
+
     # Handle response
-    print(res)
+    print(res.get_file_response)
 
 ```
 
@@ -280,8 +284,10 @@ with Apideck(
         },
     ])
 
+    assert res.update_file_response is not None
+
     # Handle response
-    print(res)
+    print(res.update_file_response)
 
 ```
 
@@ -331,8 +337,10 @@ with Apideck(
 
     res = apideck.file_storage.files.delete(id="<id>", service_id="salesforce")
 
+    assert res.delete_file_response is not None
+
     # Handle response
-    print(res)
+    print(res.delete_file_response)
 
 ```
 
@@ -378,8 +386,10 @@ with Apideck(
 
     res = apideck.file_storage.files.download(id="<id>", service_id="salesforce", fields="id,updated_at")
 
+    assert res.get_file_download_response is not None
+
     # Handle response
-    print(res)
+    print(res.get_file_download_response)
 
 ```
 
@@ -425,8 +435,10 @@ with Apideck(
 
     res = apideck.file_storage.files.export(id="<id>", file_format="pdf", service_id="salesforce", fields="id,updated_at")
 
+    assert res.get_file_download_response is not None
+
     # Handle response
-    print(res)
+    print(res.get_file_download_response)
 
 ```
 

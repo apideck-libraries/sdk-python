@@ -325,8 +325,10 @@ with Apideck(
         },
     ])
 
+    assert res.create_employee_response is not None
+
     # Handle response
-    print(res)
+    print(res.create_employee_response)
 
 ```
 
@@ -436,8 +438,10 @@ with Apideck(
         "search": "San Francisco",
     })
 
+    assert res.get_employee_response is not None
+
     # Handle response
-    print(res)
+    print(res.get_employee_response)
 
 ```
 
@@ -780,8 +784,10 @@ with Apideck(
         },
     ])
 
+    assert res.update_employee_response is not None
+
     # Handle response
-    print(res)
+    print(res.update_employee_response)
 
 ```
 
@@ -888,8 +894,10 @@ with Apideck(
 
     res = apideck.hris.employees.delete(id="<id>", service_id="salesforce")
 
+    assert res.delete_employee_response is not None
+
     # Handle response
-    print(res)
+    print(res.delete_employee_response)
 
 ```
 

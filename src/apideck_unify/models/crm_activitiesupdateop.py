@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 from .activity import ActivityInput, ActivityInputTypedDict
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -19,8 +20,8 @@ from apideck_unify.utils import (
     RequestMetadata,
 )
 import pydantic
-from typing import Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class CrmActivitiesUpdateGlobalsTypedDict(TypedDict):
@@ -81,13 +82,19 @@ class CrmActivitiesUpdateRequest(BaseModel):
     r"""Include raw response. Mostly used for debugging purposes"""
 
 
-CrmActivitiesUpdateResponseTypedDict = TypeAliasType(
-    "CrmActivitiesUpdateResponseTypedDict",
-    Union[UpdateActivityResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
+class CrmActivitiesUpdateResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    update_activity_response: NotRequired[UpdateActivityResponseTypedDict]
+    r"""Activity updated"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-CrmActivitiesUpdateResponse = TypeAliasType(
-    "CrmActivitiesUpdateResponse",
-    Union[UpdateActivityResponse, UnexpectedErrorResponse],
-)
+class CrmActivitiesUpdateResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    update_activity_response: Optional[UpdateActivityResponse] = None
+    r"""Activity updated"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

@@ -27,8 +27,10 @@ with Apideck(
 
     res = apideck.vault.connection_settings.list(unified_api="crm", service_id="pipedrive", resource="leads")
 
+    assert res.get_connection_response is not None
+
     # Handle response
-    print(res)
+    print(res.get_connection_response)
 
 ```
 
@@ -244,8 +246,10 @@ with Apideck(
         },
     ])
 
+    assert res.update_connection_response is not None
+
     # Handle response
-    print(res)
+    print(res.update_connection_response)
 
 ```
 

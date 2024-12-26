@@ -5,6 +5,7 @@ from .createpurchaseorderresponse import (
     CreatePurchaseOrderResponse,
     CreatePurchaseOrderResponseTypedDict,
 )
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .purchaseorder import PurchaseOrderInput, PurchaseOrderInputTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
@@ -18,8 +19,8 @@ from apideck_unify.utils import (
     RequestMetadata,
 )
 import pydantic
-from typing import Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class AccountingPurchaseOrdersAddGlobalsTypedDict(TypedDict):
@@ -73,13 +74,19 @@ class AccountingPurchaseOrdersAddRequest(BaseModel):
     r"""Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API."""
 
 
-AccountingPurchaseOrdersAddResponseTypedDict = TypeAliasType(
-    "AccountingPurchaseOrdersAddResponseTypedDict",
-    Union[CreatePurchaseOrderResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
+class AccountingPurchaseOrdersAddResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    create_purchase_order_response: NotRequired[CreatePurchaseOrderResponseTypedDict]
+    r"""PurchaseOrders"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-AccountingPurchaseOrdersAddResponse = TypeAliasType(
-    "AccountingPurchaseOrdersAddResponse",
-    Union[CreatePurchaseOrderResponse, UnexpectedErrorResponse],
-)
+class AccountingPurchaseOrdersAddResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    create_purchase_order_response: Optional[CreatePurchaseOrderResponse] = None
+    r"""PurchaseOrders"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

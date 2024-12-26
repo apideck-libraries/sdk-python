@@ -25,8 +25,10 @@ with Apideck(
 
     res = apideck.accounting.company_info.get(service_id="salesforce", fields="id,updated_at")
 
+    assert res.get_company_info_response is not None
+
     # Handle response
-    print(res)
+    print(res.get_company_info_response)
 
 ```
 

@@ -80,8 +80,10 @@ with Apideck(
 
     res = apideck.ecommerce.products.get(id="<id>", service_id="salesforce", fields="id,updated_at")
 
+    assert res.get_product_response is not None
+
     # Handle response
-    print(res)
+    print(res.get_product_response)
 
 ```
 

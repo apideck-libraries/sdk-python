@@ -34,8 +34,10 @@ with Apideck(
         "image": "https://www.spacex.com/static/images/share.jpg",
     })
 
+    assert res.create_consumer_response is not None
+
     # Handle response
-    print(res)
+    print(res.create_consumer_response)
 
 ```
 
@@ -130,8 +132,10 @@ with Apideck(
 
     res = apideck.vault.consumers.get(consumer_id="test_user_id")
 
+    assert res.get_consumer_response is not None
+
     # Handle response
-    print(res)
+    print(res.get_consumer_response)
 
 ```
 
@@ -180,8 +184,10 @@ with Apideck(
         "image": "https://www.spacex.com/static/images/share.jpg",
     })
 
+    assert res.update_consumer_response is not None
+
     # Handle response
-    print(res)
+    print(res.update_consumer_response)
 
 ```
 
@@ -226,8 +232,10 @@ with Apideck(
 
     res = apideck.vault.consumers.delete(consumer_id="test_user_id")
 
+    assert res.delete_consumer_response is not None
+
     # Handle response
-    print(res)
+    print(res.delete_consumer_response)
 
 ```
 

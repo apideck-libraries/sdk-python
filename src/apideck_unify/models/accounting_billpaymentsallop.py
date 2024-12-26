@@ -5,6 +5,7 @@ from .getbillpaymentsresponse import (
     GetBillPaymentsResponse,
     GetBillPaymentsResponseTypedDict,
 )
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .paymentsfilter import PaymentsFilter, PaymentsFilterTypedDict
 from .paymentssort import PaymentsSort, PaymentsSortTypedDict
 from .unexpectederrorresponse import (
@@ -21,8 +22,8 @@ from apideck_unify.types import (
 from apideck_unify.utils import FieldMetadata, HeaderMetadata, QueryParamMetadata
 import pydantic
 from pydantic import model_serializer
-from typing import Any, Callable, Dict, Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Any, Callable, Dict, Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class AccountingBillPaymentsAllGlobalsTypedDict(TypedDict):
@@ -158,23 +159,21 @@ class AccountingBillPaymentsAllRequest(BaseModel):
         return m
 
 
-AccountingBillPaymentsAllResponseResultTypedDict = TypeAliasType(
-    "AccountingBillPaymentsAllResponseResultTypedDict",
-    Union[UnexpectedErrorResponseTypedDict, GetBillPaymentsResponseTypedDict],
-)
-
-
-AccountingBillPaymentsAllResponseResult = TypeAliasType(
-    "AccountingBillPaymentsAllResponseResult",
-    Union[UnexpectedErrorResponse, GetBillPaymentsResponse],
-)
-
-
 class AccountingBillPaymentsAllResponseTypedDict(TypedDict):
-    result: AccountingBillPaymentsAllResponseResultTypedDict
+    http_meta: HTTPMetadataTypedDict
+    get_bill_payments_response: NotRequired[GetBillPaymentsResponseTypedDict]
+    r"""Bill Payments"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
 class AccountingBillPaymentsAllResponse(BaseModel):
     next: Callable[[], Optional[AccountingBillPaymentsAllResponse]]
 
-    result: AccountingBillPaymentsAllResponseResult
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    get_bill_payments_response: Optional[GetBillPaymentsResponse] = None
+    r"""Bill Payments"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

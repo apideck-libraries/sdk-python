@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 from .createmessageresponse import CreateMessageResponse, CreateMessageResponseTypedDict
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .message import MessageInput, MessageInputTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
@@ -15,8 +16,8 @@ from apideck_unify.utils import (
     RequestMetadata,
 )
 import pydantic
-from typing import Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class SmsMessagesAddGlobalsTypedDict(TypedDict):
@@ -70,12 +71,19 @@ class SmsMessagesAddRequest(BaseModel):
     r"""Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API."""
 
 
-SmsMessagesAddResponseTypedDict = TypeAliasType(
-    "SmsMessagesAddResponseTypedDict",
-    Union[CreateMessageResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
+class SmsMessagesAddResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    create_message_response: NotRequired[CreateMessageResponseTypedDict]
+    r"""Messages"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-SmsMessagesAddResponse = TypeAliasType(
-    "SmsMessagesAddResponse", Union[CreateMessageResponse, UnexpectedErrorResponse]
-)
+class SmsMessagesAddResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    create_message_response: Optional[CreateMessageResponse] = None
+    r"""Messages"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

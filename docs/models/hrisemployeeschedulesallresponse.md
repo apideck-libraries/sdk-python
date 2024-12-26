@@ -1,17 +1,10 @@
 # HrisEmployeeSchedulesAllResponse
 
 
-## Supported Types
+## Fields
 
-### `models.GetEmployeeSchedulesResponse`
-
-```python
-value: models.GetEmployeeSchedulesResponse = /* values here */
-```
-
-### `models.UnexpectedErrorResponse`
-
-```python
-value: models.UnexpectedErrorResponse = /* values here */
-```
-
+| Field                                                                                      | Type                                                                                       | Required                                                                                   | Description                                                                                |
+| ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------ |
+| `http_meta`                                                                                | [models.HTTPMetadata](../models/httpmetadata.md)                                           | :heavy_check_mark:                                                                         | N/A                                                                                        |
+| `get_employee_schedules_response`                                                          | [Optional[models.GetEmployeeSchedulesResponse]](../models/getemployeeschedulesresponse.md) | :heavy_minus_sign:                                                                         | EmployeeSchedules                                                                          |
+| `unexpected_error_response`                                                                | [Optional[models.UnexpectedErrorResponse]](../models/unexpectederrorresponse.md)           | :heavy_minus_sign:                                                                         | Unexpected error                                                                           |

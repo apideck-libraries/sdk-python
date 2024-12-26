@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 from .getpaymentresponse import GetPaymentResponse, GetPaymentResponseTypedDict
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -21,8 +22,8 @@ from apideck_unify.utils import (
 )
 import pydantic
 from pydantic import model_serializer
-from typing import Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class AccountingPaymentsOneGlobalsTypedDict(TypedDict):
@@ -115,12 +116,19 @@ class AccountingPaymentsOneRequest(BaseModel):
         return m
 
 
-AccountingPaymentsOneResponseTypedDict = TypeAliasType(
-    "AccountingPaymentsOneResponseTypedDict",
-    Union[GetPaymentResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
+class AccountingPaymentsOneResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    get_payment_response: NotRequired[GetPaymentResponseTypedDict]
+    r"""Payment"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-AccountingPaymentsOneResponse = TypeAliasType(
-    "AccountingPaymentsOneResponse", Union[GetPaymentResponse, UnexpectedErrorResponse]
-)
+class AccountingPaymentsOneResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    get_payment_response: Optional[GetPaymentResponse] = None
+    r"""Payment"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

@@ -121,8 +121,10 @@ with Apideck(
         },
     ])
 
+    assert res.create_ticket_response is not None
+
     # Handle response
-    print(res)
+    print(res.create_ticket_response)
 
 ```
 
@@ -178,8 +180,10 @@ with Apideck(
 
     res = apideck.issue_tracking.collection_tickets.get(ticket_id="<id>", collection_id="apideck-io", service_id="salesforce", fields="id,updated_at")
 
+    assert res.get_ticket_response is not None
+
     # Handle response
-    print(res)
+    print(res.get_ticket_response)
 
 ```
 
@@ -276,8 +280,10 @@ with Apideck(
         },
     ])
 
+    assert res.update_ticket_response is not None
+
     # Handle response
-    print(res)
+    print(res.update_ticket_response)
 
 ```
 
@@ -334,8 +340,10 @@ with Apideck(
 
     res = apideck.issue_tracking.collection_tickets.delete(ticket_id="<id>", collection_id="apideck-io", service_id="salesforce")
 
+    assert res.delete_ticket_response is not None
+
     # Handle response
-    print(res)
+    print(res.delete_ticket_response)
 
 ```
 

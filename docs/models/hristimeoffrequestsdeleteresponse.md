@@ -1,17 +1,10 @@
 # HrisTimeOffRequestsDeleteResponse
 
 
-## Supported Types
+## Fields
 
-### `models.DeleteTimeOffRequestResponse`
-
-```python
-value: models.DeleteTimeOffRequestResponse = /* values here */
-```
-
-### `models.UnexpectedErrorResponse`
-
-```python
-value: models.UnexpectedErrorResponse = /* values here */
-```
-
+| Field                                                                                      | Type                                                                                       | Required                                                                                   | Description                                                                                |
+| ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------ |
+| `http_meta`                                                                                | [models.HTTPMetadata](../models/httpmetadata.md)                                           | :heavy_check_mark:                                                                         | N/A                                                                                        |
+| `delete_time_off_request_response`                                                         | [Optional[models.DeleteTimeOffRequestResponse]](../models/deletetimeoffrequestresponse.md) | :heavy_minus_sign:                                                                         | TimeOffRequests                                                                            |
+| `unexpected_error_response`                                                                | [Optional[models.UnexpectedErrorResponse]](../models/unexpectederrorresponse.md)           | :heavy_minus_sign:                                                                         | Unexpected error                                                                           |

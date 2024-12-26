@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 from .createnoteresponse import CreateNoteResponse, CreateNoteResponseTypedDict
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .note_input import NoteInput, NoteInputTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
@@ -15,8 +16,8 @@ from apideck_unify.utils import (
     RequestMetadata,
 )
 import pydantic
-from typing import Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class CrmNotesAddGlobalsTypedDict(TypedDict):
@@ -69,12 +70,19 @@ class CrmNotesAddRequest(BaseModel):
     r"""Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API."""
 
 
-CrmNotesAddResponseTypedDict = TypeAliasType(
-    "CrmNotesAddResponseTypedDict",
-    Union[CreateNoteResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
+class CrmNotesAddResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    create_note_response: NotRequired[CreateNoteResponseTypedDict]
+    r"""Note created"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-CrmNotesAddResponse = TypeAliasType(
-    "CrmNotesAddResponse", Union[CreateNoteResponse, UnexpectedErrorResponse]
-)
+class CrmNotesAddResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    create_note_response: Optional[CreateNoteResponse] = None
+    r"""Note created"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

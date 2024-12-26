@@ -32,8 +32,10 @@ with Apideck(
         "search": "San Francisco",
     }, fields="id,updated_at")
 
+    assert res.get_aged_debtors_response is not None
+
     # Handle response
-    print(res)
+    print(res.get_aged_debtors_response)
 
 ```
 

@@ -5,6 +5,7 @@ from .deleteconsumerresponse import (
     DeleteConsumerResponse,
     DeleteConsumerResponseTypedDict,
 )
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -12,8 +13,8 @@ from .unexpectederrorresponse import (
 from apideck_unify.types import BaseModel
 from apideck_unify.utils import FieldMetadata, HeaderMetadata, PathParamMetadata
 import pydantic
-from typing import Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class VaultConsumersDeleteGlobalsTypedDict(TypedDict):
@@ -42,13 +43,19 @@ class VaultConsumersDeleteRequest(BaseModel):
     r"""ID of the consumer to return"""
 
 
-VaultConsumersDeleteResponseTypedDict = TypeAliasType(
-    "VaultConsumersDeleteResponseTypedDict",
-    Union[DeleteConsumerResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
+class VaultConsumersDeleteResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    delete_consumer_response: NotRequired[DeleteConsumerResponseTypedDict]
+    r"""Consumer deleted"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-VaultConsumersDeleteResponse = TypeAliasType(
-    "VaultConsumersDeleteResponse",
-    Union[DeleteConsumerResponse, UnexpectedErrorResponse],
-)
+class VaultConsumersDeleteResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    delete_consumer_response: Optional[DeleteConsumerResponse] = None
+    r"""Consumer deleted"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

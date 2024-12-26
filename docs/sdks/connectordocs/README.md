@@ -25,8 +25,10 @@ with Apideck(
 
     res = apideck.connector.connector_docs.get(id="<id>", doc_id="application_owner+oauth_credentials")
 
+    assert res.get_connector_doc_response is not None
+
     # Handle response
-    print(res)
+    print(res.get_connector_doc_response)
 
 ```
 

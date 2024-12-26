@@ -154,8 +154,10 @@ with Apideck(
         },
     ])
 
+    assert res.create_hris_company_response is not None
+
     # Handle response
-    print(res)
+    print(res.create_hris_company_response)
 
 ```
 
@@ -212,8 +214,10 @@ with Apideck(
 
     res = apideck.hris.companies.get(id="<id>", service_id="salesforce", fields="id,updated_at")
 
+    assert res.get_hris_company_response is not None
+
     # Handle response
-    print(res)
+    print(res.get_hris_company_response)
 
 ```
 
@@ -422,8 +426,10 @@ with Apideck(
         },
     ])
 
+    assert res.update_hris_company_response is not None
+
     # Handle response
-    print(res)
+    print(res.update_hris_company_response)
 
 ```
 
@@ -481,8 +487,10 @@ with Apideck(
 
     res = apideck.hris.companies.delete(id="<id>", service_id="salesforce")
 
+    assert res.delete_hris_company_response is not None
+
     # Handle response
-    print(res)
+    print(res.delete_hris_company_response)
 
 ```
 

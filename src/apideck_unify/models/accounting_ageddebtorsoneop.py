@@ -6,6 +6,7 @@ from .getageddebtorsresponse import (
     GetAgedDebtorsResponse,
     GetAgedDebtorsResponseTypedDict,
 )
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -20,8 +21,8 @@ from apideck_unify.types import (
 from apideck_unify.utils import FieldMetadata, HeaderMetadata, QueryParamMetadata
 import pydantic
 from pydantic import model_serializer
-from typing import Any, Dict, Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Any, Dict, Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class AccountingAgedDebtorsOneGlobalsTypedDict(TypedDict):
@@ -124,13 +125,19 @@ class AccountingAgedDebtorsOneRequest(BaseModel):
         return m
 
 
-AccountingAgedDebtorsOneResponseTypedDict = TypeAliasType(
-    "AccountingAgedDebtorsOneResponseTypedDict",
-    Union[GetAgedDebtorsResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
+class AccountingAgedDebtorsOneResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    get_aged_debtors_response: NotRequired[GetAgedDebtorsResponseTypedDict]
+    r"""Aged Debtors"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-AccountingAgedDebtorsOneResponse = TypeAliasType(
-    "AccountingAgedDebtorsOneResponse",
-    Union[GetAgedDebtorsResponse, UnexpectedErrorResponse],
-)
+class AccountingAgedDebtorsOneResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    get_aged_debtors_response: Optional[GetAgedDebtorsResponse] = None
+    r"""Aged Debtors"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

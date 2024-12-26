@@ -276,8 +276,10 @@ with Apideck(
         },
     ])
 
+    assert res.create_purchase_order_response is not None
+
     # Handle response
-    print(res)
+    print(res.create_purchase_order_response)
 
 ```
 
@@ -351,8 +353,10 @@ with Apideck(
 
     res = apideck.accounting.purchase_orders.get(id="<id>", service_id="salesforce")
 
+    assert res.get_purchase_order_response is not None
+
     # Handle response
-    print(res)
+    print(res.get_purchase_order_response)
 
 ```
 
@@ -694,8 +698,10 @@ with Apideck(
         },
     ])
 
+    assert res.update_purchase_order_response is not None
+
     # Handle response
-    print(res)
+    print(res.update_purchase_order_response)
 
 ```
 
@@ -770,8 +776,10 @@ with Apideck(
 
     res = apideck.accounting.purchase_orders.delete(id="<id>", service_id="salesforce")
 
+    assert res.delete_purchase_order_response is not None
+
     # Handle response
-    print(res)
+    print(res.delete_purchase_order_response)
 
 ```
 

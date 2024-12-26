@@ -112,8 +112,10 @@ with Apideck(
         },
     ])
 
+    assert res.create_comment_response is not None
+
     # Handle response
-    print(res)
+    print(res.create_comment_response)
 
 ```
 
@@ -280,8 +282,10 @@ with Apideck(
         },
     ])
 
+    assert res.update_comment_response is not None
+
     # Handle response
-    print(res)
+    print(res.update_comment_response)
 
 ```
 
@@ -331,8 +335,10 @@ with Apideck(
 
     res = apideck.issue_tracking.collection_ticket_comments.delete(id="<id>", collection_id="apideck-io", ticket_id="<id>", service_id="salesforce")
 
+    assert res.delete_comment_response is not None
+
     # Handle response
-    print(res)
+    print(res.delete_comment_response)
 
 ```
 

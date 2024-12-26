@@ -5,8 +5,8 @@ management:
   docVersion: 10.9.0
   speakeasyVersion: 1.460.2
   generationVersion: 2.484.0
-  releaseVersion: 0.2.1
-  configChecksum: 83fca60594a447eae7966b3a0c1e597d
+  releaseVersion: 0.2.2
+  configChecksum: fa15c2f319d4998f6704e28706d6a7ec
   repoURL: https://github.com/apideck-libraries/sdk-python.git
   installationURL: https://github.com/apideck-libraries/sdk-python.git
   published: true
@@ -62,7 +62,6 @@ generatedFiles:
   - docs/models/accountingattachmentsallglobals.md
   - docs/models/accountingattachmentsallrequest.md
   - docs/models/accountingattachmentsallresponse.md
-  - docs/models/accountingattachmentsallresponseresult.md
   - docs/models/accountingattachmentsdeleteglobals.md
   - docs/models/accountingattachmentsdeleterequest.md
   - docs/models/accountingattachmentsdeleteresponse.md
@@ -81,7 +80,6 @@ generatedFiles:
   - docs/models/accountingbillpaymentsallglobals.md
   - docs/models/accountingbillpaymentsallrequest.md
   - docs/models/accountingbillpaymentsallresponse.md
-  - docs/models/accountingbillpaymentsallresponseresult.md
   - docs/models/accountingbillpaymentsdeleteglobals.md
   - docs/models/accountingbillpaymentsdeleterequest.md
   - docs/models/accountingbillpaymentsdeleteresponse.md
@@ -97,7 +95,6 @@ generatedFiles:
   - docs/models/accountingbillsallglobals.md
   - docs/models/accountingbillsallrequest.md
   - docs/models/accountingbillsallresponse.md
-  - docs/models/accountingbillsallresponseresult.md
   - docs/models/accountingbillsdeleteglobals.md
   - docs/models/accountingbillsdeleterequest.md
   - docs/models/accountingbillsdeleteresponse.md
@@ -116,7 +113,6 @@ generatedFiles:
   - docs/models/accountingcreditnotesallglobals.md
   - docs/models/accountingcreditnotesallrequest.md
   - docs/models/accountingcreditnotesallresponse.md
-  - docs/models/accountingcreditnotesallresponseresult.md
   - docs/models/accountingcreditnotesdeleteglobals.md
   - docs/models/accountingcreditnotesdeleterequest.md
   - docs/models/accountingcreditnotesdeleteresponse.md
@@ -132,7 +128,6 @@ generatedFiles:
   - docs/models/accountingcustomersallglobals.md
   - docs/models/accountingcustomersallrequest.md
   - docs/models/accountingcustomersallresponse.md
-  - docs/models/accountingcustomersallresponseresult.md
   - docs/models/accountingcustomersdeleteglobals.md
   - docs/models/accountingcustomersdeleterequest.md
   - docs/models/accountingcustomersdeleteresponse.md
@@ -150,7 +145,6 @@ generatedFiles:
   - docs/models/accountingdepartmentsallglobals.md
   - docs/models/accountingdepartmentsallrequest.md
   - docs/models/accountingdepartmentsallresponse.md
-  - docs/models/accountingdepartmentsallresponseresult.md
   - docs/models/accountingdepartmentsdeleteglobals.md
   - docs/models/accountingdepartmentsdeleterequest.md
   - docs/models/accountingdepartmentsdeleteresponse.md
@@ -167,7 +161,6 @@ generatedFiles:
   - docs/models/accountingexpensesallglobals.md
   - docs/models/accountingexpensesallrequest.md
   - docs/models/accountingexpensesallresponse.md
-  - docs/models/accountingexpensesallresponseresult.md
   - docs/models/accountingexpensesdeleteglobals.md
   - docs/models/accountingexpensesdeleterequest.md
   - docs/models/accountingexpensesdeleteresponse.md
@@ -183,7 +176,6 @@ generatedFiles:
   - docs/models/accountinginvoiceitemsallglobals.md
   - docs/models/accountinginvoiceitemsallrequest.md
   - docs/models/accountinginvoiceitemsallresponse.md
-  - docs/models/accountinginvoiceitemsallresponseresult.md
   - docs/models/accountinginvoiceitemsdeleteglobals.md
   - docs/models/accountinginvoiceitemsdeleterequest.md
   - docs/models/accountinginvoiceitemsdeleteresponse.md
@@ -199,7 +191,6 @@ generatedFiles:
   - docs/models/accountinginvoicesallglobals.md
   - docs/models/accountinginvoicesallrequest.md
   - docs/models/accountinginvoicesallresponse.md
-  - docs/models/accountinginvoicesallresponseresult.md
   - docs/models/accountinginvoicesdeleteglobals.md
   - docs/models/accountinginvoicesdeleterequest.md
   - docs/models/accountinginvoicesdeleteresponse.md
@@ -215,7 +206,6 @@ generatedFiles:
   - docs/models/accountingjournalentriesallglobals.md
   - docs/models/accountingjournalentriesallrequest.md
   - docs/models/accountingjournalentriesallresponse.md
-  - docs/models/accountingjournalentriesallresponseresult.md
   - docs/models/accountingjournalentriesdeleteglobals.md
   - docs/models/accountingjournalentriesdeleterequest.md
   - docs/models/accountingjournalentriesdeleteresponse.md
@@ -231,7 +221,6 @@ generatedFiles:
   - docs/models/accountingledgeraccountsallglobals.md
   - docs/models/accountingledgeraccountsallrequest.md
   - docs/models/accountingledgeraccountsallresponse.md
-  - docs/models/accountingledgeraccountsallresponseresult.md
   - docs/models/accountingledgeraccountsdeleteglobals.md
   - docs/models/accountingledgeraccountsdeleterequest.md
   - docs/models/accountingledgeraccountsdeleteresponse.md
@@ -249,7 +238,6 @@ generatedFiles:
   - docs/models/accountinglocationsallglobals.md
   - docs/models/accountinglocationsallrequest.md
   - docs/models/accountinglocationsallresponse.md
-  - docs/models/accountinglocationsallresponseresult.md
   - docs/models/accountinglocationsdeleteglobals.md
   - docs/models/accountinglocationsdeleterequest.md
   - docs/models/accountinglocationsdeleteresponse.md
@@ -266,7 +254,6 @@ generatedFiles:
   - docs/models/accountingpaymentsallglobals.md
   - docs/models/accountingpaymentsallrequest.md
   - docs/models/accountingpaymentsallresponse.md
-  - docs/models/accountingpaymentsallresponseresult.md
   - docs/models/accountingpaymentsdeleteglobals.md
   - docs/models/accountingpaymentsdeleterequest.md
   - docs/models/accountingpaymentsdeleteresponse.md
@@ -285,7 +272,6 @@ generatedFiles:
   - docs/models/accountingpurchaseordersallglobals.md
   - docs/models/accountingpurchaseordersallrequest.md
   - docs/models/accountingpurchaseordersallresponse.md
-  - docs/models/accountingpurchaseordersallresponseresult.md
   - docs/models/accountingpurchaseordersdeleteglobals.md
   - docs/models/accountingpurchaseordersdeleterequest.md
   - docs/models/accountingpurchaseordersdeleteresponse.md
@@ -301,7 +287,6 @@ generatedFiles:
   - docs/models/accountingsubsidiariesallglobals.md
   - docs/models/accountingsubsidiariesallrequest.md
   - docs/models/accountingsubsidiariesallresponse.md
-  - docs/models/accountingsubsidiariesallresponseresult.md
   - docs/models/accountingsubsidiariesdeleteglobals.md
   - docs/models/accountingsubsidiariesdeleterequest.md
   - docs/models/accountingsubsidiariesdeleteresponse.md
@@ -317,7 +302,6 @@ generatedFiles:
   - docs/models/accountingsuppliersallglobals.md
   - docs/models/accountingsuppliersallrequest.md
   - docs/models/accountingsuppliersallresponse.md
-  - docs/models/accountingsuppliersallresponseresult.md
   - docs/models/accountingsuppliersdeleteglobals.md
   - docs/models/accountingsuppliersdeleterequest.md
   - docs/models/accountingsuppliersdeleteresponse.md
@@ -333,7 +317,6 @@ generatedFiles:
   - docs/models/accountingtaxratesallglobals.md
   - docs/models/accountingtaxratesallrequest.md
   - docs/models/accountingtaxratesallresponse.md
-  - docs/models/accountingtaxratesallresponseresult.md
   - docs/models/accountingtaxratesdeleteglobals.md
   - docs/models/accountingtaxratesdeleterequest.md
   - docs/models/accountingtaxratesdeleteresponse.md
@@ -349,7 +332,6 @@ generatedFiles:
   - docs/models/accountingtrackingcategoriesallglobals.md
   - docs/models/accountingtrackingcategoriesallrequest.md
   - docs/models/accountingtrackingcategoriesallresponse.md
-  - docs/models/accountingtrackingcategoriesallresponseresult.md
   - docs/models/accountingtrackingcategoriesdeleteglobals.md
   - docs/models/accountingtrackingcategoriesdeleterequest.md
   - docs/models/accountingtrackingcategoriesdeleteresponse.md
@@ -401,7 +383,6 @@ generatedFiles:
   - docs/models/atsapplicantsallglobals.md
   - docs/models/atsapplicantsallrequest.md
   - docs/models/atsapplicantsallresponse.md
-  - docs/models/atsapplicantsallresponseresult.md
   - docs/models/atsapplicantsdeleteglobals.md
   - docs/models/atsapplicantsdeleterequest.md
   - docs/models/atsapplicantsdeleteresponse.md
@@ -417,7 +398,6 @@ generatedFiles:
   - docs/models/atsapplicationsallglobals.md
   - docs/models/atsapplicationsallrequest.md
   - docs/models/atsapplicationsallresponse.md
-  - docs/models/atsapplicationsallresponseresult.md
   - docs/models/atsapplicationsdeleteglobals.md
   - docs/models/atsapplicationsdeleterequest.md
   - docs/models/atsapplicationsdeleteresponse.md
@@ -430,7 +410,6 @@ generatedFiles:
   - docs/models/atsjobsallglobals.md
   - docs/models/atsjobsallrequest.md
   - docs/models/atsjobsallresponse.md
-  - docs/models/atsjobsallresponseresult.md
   - docs/models/atsjobsoneglobals.md
   - docs/models/atsjobsonerequest.md
   - docs/models/atsjobsoneresponse.md
@@ -510,7 +489,6 @@ generatedFiles:
   - docs/models/connectorapisallglobals.md
   - docs/models/connectorapisallrequest.md
   - docs/models/connectorapisallresponse.md
-  - docs/models/connectorapisallresponseresult.md
   - docs/models/connectorapisoneglobals.md
   - docs/models/connectorapisonerequest.md
   - docs/models/connectorapisoneresponse.md
@@ -524,7 +502,6 @@ generatedFiles:
   - docs/models/connectorconnectorsallglobals.md
   - docs/models/connectorconnectorsallrequest.md
   - docs/models/connectorconnectorsallresponse.md
-  - docs/models/connectorconnectorsallresponseresult.md
   - docs/models/connectorconnectorsoneglobals.md
   - docs/models/connectorconnectorsonerequest.md
   - docs/models/connectorconnectorsoneresponse.md
@@ -616,7 +593,6 @@ generatedFiles:
   - docs/models/crmactivitiesallglobals.md
   - docs/models/crmactivitiesallrequest.md
   - docs/models/crmactivitiesallresponse.md
-  - docs/models/crmactivitiesallresponseresult.md
   - docs/models/crmactivitiesdeleteglobals.md
   - docs/models/crmactivitiesdeleterequest.md
   - docs/models/crmactivitiesdeleteresponse.md
@@ -632,7 +608,6 @@ generatedFiles:
   - docs/models/crmcompaniesallglobals.md
   - docs/models/crmcompaniesallrequest.md
   - docs/models/crmcompaniesallresponse.md
-  - docs/models/crmcompaniesallresponseresult.md
   - docs/models/crmcompaniesdeleteglobals.md
   - docs/models/crmcompaniesdeleterequest.md
   - docs/models/crmcompaniesdeleteresponse.md
@@ -648,7 +623,6 @@ generatedFiles:
   - docs/models/crmcontactsallglobals.md
   - docs/models/crmcontactsallrequest.md
   - docs/models/crmcontactsallresponse.md
-  - docs/models/crmcontactsallresponseresult.md
   - docs/models/crmcontactsdeleteglobals.md
   - docs/models/crmcontactsdeleterequest.md
   - docs/models/crmcontactsdeleteresponse.md
@@ -664,7 +638,6 @@ generatedFiles:
   - docs/models/crmleadsallglobals.md
   - docs/models/crmleadsallrequest.md
   - docs/models/crmleadsallresponse.md
-  - docs/models/crmleadsallresponseresult.md
   - docs/models/crmleadsdeleteglobals.md
   - docs/models/crmleadsdeleterequest.md
   - docs/models/crmleadsdeleteresponse.md
@@ -680,7 +653,6 @@ generatedFiles:
   - docs/models/crmnotesallglobals.md
   - docs/models/crmnotesallrequest.md
   - docs/models/crmnotesallresponse.md
-  - docs/models/crmnotesallresponseresult.md
   - docs/models/crmnotesdeleteglobals.md
   - docs/models/crmnotesdeleterequest.md
   - docs/models/crmnotesdeleteresponse.md
@@ -696,7 +668,6 @@ generatedFiles:
   - docs/models/crmopportunitiesallglobals.md
   - docs/models/crmopportunitiesallrequest.md
   - docs/models/crmopportunitiesallresponse.md
-  - docs/models/crmopportunitiesallresponseresult.md
   - docs/models/crmopportunitiesdeleteglobals.md
   - docs/models/crmopportunitiesdeleterequest.md
   - docs/models/crmopportunitiesdeleteresponse.md
@@ -712,7 +683,6 @@ generatedFiles:
   - docs/models/crmpipelinesallglobals.md
   - docs/models/crmpipelinesallrequest.md
   - docs/models/crmpipelinesallresponse.md
-  - docs/models/crmpipelinesallresponseresult.md
   - docs/models/crmpipelinesdeleteglobals.md
   - docs/models/crmpipelinesdeleterequest.md
   - docs/models/crmpipelinesdeleteresponse.md
@@ -728,7 +698,6 @@ generatedFiles:
   - docs/models/crmusersallglobals.md
   - docs/models/crmusersallrequest.md
   - docs/models/crmusersallresponse.md
-  - docs/models/crmusersallresponseresult.md
   - docs/models/crmusersdeleteglobals.md
   - docs/models/crmusersdeleterequest.md
   - docs/models/crmusersdeleteresponse.md
@@ -819,7 +788,6 @@ generatedFiles:
   - docs/models/ecommercecustomersallglobals.md
   - docs/models/ecommercecustomersallrequest.md
   - docs/models/ecommercecustomersallresponse.md
-  - docs/models/ecommercecustomersallresponseresult.md
   - docs/models/ecommercecustomersfilter.md
   - docs/models/ecommercecustomersoneglobals.md
   - docs/models/ecommercecustomersonerequest.md
@@ -832,7 +800,6 @@ generatedFiles:
   - docs/models/ecommerceordersallglobals.md
   - docs/models/ecommerceordersallrequest.md
   - docs/models/ecommerceordersallresponse.md
-  - docs/models/ecommerceordersallresponseresult.md
   - docs/models/ecommerceordersfilter.md
   - docs/models/ecommerceordersoneglobals.md
   - docs/models/ecommerceordersonerequest.md
@@ -845,7 +812,6 @@ generatedFiles:
   - docs/models/ecommerceproductsallglobals.md
   - docs/models/ecommerceproductsallrequest.md
   - docs/models/ecommerceproductsallresponse.md
-  - docs/models/ecommerceproductsallresponseresult.md
   - docs/models/ecommerceproductsoneglobals.md
   - docs/models/ecommerceproductsonerequest.md
   - docs/models/ecommerceproductsoneresponse.md
@@ -896,7 +862,6 @@ generatedFiles:
   - docs/models/filestoragedrivegroupsallglobals.md
   - docs/models/filestoragedrivegroupsallrequest.md
   - docs/models/filestoragedrivegroupsallresponse.md
-  - docs/models/filestoragedrivegroupsallresponseresult.md
   - docs/models/filestoragedrivegroupsdeleteglobals.md
   - docs/models/filestoragedrivegroupsdeleterequest.md
   - docs/models/filestoragedrivegroupsdeleteresponse.md
@@ -912,7 +877,6 @@ generatedFiles:
   - docs/models/filestoragedrivesallglobals.md
   - docs/models/filestoragedrivesallrequest.md
   - docs/models/filestoragedrivesallresponse.md
-  - docs/models/filestoragedrivesallresponseresult.md
   - docs/models/filestoragedrivesdeleteglobals.md
   - docs/models/filestoragedrivesdeleterequest.md
   - docs/models/filestoragedrivesdeleteresponse.md
@@ -925,7 +889,6 @@ generatedFiles:
   - docs/models/filestoragefilesallglobals.md
   - docs/models/filestoragefilesallrequest.md
   - docs/models/filestoragefilesallresponse.md
-  - docs/models/filestoragefilesallresponseresult.md
   - docs/models/filestoragefilesdeleteglobals.md
   - docs/models/filestoragefilesdeleterequest.md
   - docs/models/filestoragefilesdeleteresponse.md
@@ -965,7 +928,6 @@ generatedFiles:
   - docs/models/filestoragesharedlinksallglobals.md
   - docs/models/filestoragesharedlinksallrequest.md
   - docs/models/filestoragesharedlinksallresponse.md
-  - docs/models/filestoragesharedlinksallresponseresult.md
   - docs/models/filestoragesharedlinksdeleteglobals.md
   - docs/models/filestoragesharedlinksdeleterequest.md
   - docs/models/filestoragesharedlinksdeleteresponse.md
@@ -1128,7 +1090,6 @@ generatedFiles:
   - docs/models/hriscompaniesallglobals.md
   - docs/models/hriscompaniesallrequest.md
   - docs/models/hriscompaniesallresponse.md
-  - docs/models/hriscompaniesallresponseresult.md
   - docs/models/hriscompaniesdeleteglobals.md
   - docs/models/hriscompaniesdeleterequest.md
   - docs/models/hriscompaniesdeleteresponse.md
@@ -1147,7 +1108,6 @@ generatedFiles:
   - docs/models/hrisdepartmentsallglobals.md
   - docs/models/hrisdepartmentsallrequest.md
   - docs/models/hrisdepartmentsallresponse.md
-  - docs/models/hrisdepartmentsallresponseresult.md
   - docs/models/hrisdepartmentsdeleteglobals.md
   - docs/models/hrisdepartmentsdeleterequest.md
   - docs/models/hrisdepartmentsdeleteresponse.md
@@ -1169,7 +1129,6 @@ generatedFiles:
   - docs/models/hrisemployeesallglobals.md
   - docs/models/hrisemployeesallrequest.md
   - docs/models/hrisemployeesallresponse.md
-  - docs/models/hrisemployeesallresponseresult.md
   - docs/models/hrisemployeeschedulesallglobals.md
   - docs/models/hrisemployeeschedulesallrequest.md
   - docs/models/hrisemployeeschedulesallresponse.md
@@ -1194,7 +1153,6 @@ generatedFiles:
   - docs/models/hristimeoffrequestsallglobals.md
   - docs/models/hristimeoffrequestsallrequest.md
   - docs/models/hristimeoffrequestsallresponse.md
-  - docs/models/hristimeoffrequestsallresponseresult.md
   - docs/models/hristimeoffrequestsdeleteglobals.md
   - docs/models/hristimeoffrequestsdeleterequest.md
   - docs/models/hristimeoffrequestsdeleteresponse.md
@@ -1204,6 +1162,7 @@ generatedFiles:
   - docs/models/hristimeoffrequestsupdateglobals.md
   - docs/models/hristimeoffrequestsupdaterequest.md
   - docs/models/hristimeoffrequestsupdateresponse.md
+  - docs/models/httpmetadata.md
   - docs/models/images.md
   - docs/models/income.md
   - docs/models/integrationstate.md
@@ -1232,28 +1191,24 @@ generatedFiles:
   - docs/models/issuetrackingcollectionsallglobals.md
   - docs/models/issuetrackingcollectionsallrequest.md
   - docs/models/issuetrackingcollectionsallresponse.md
-  - docs/models/issuetrackingcollectionsallresponseresult.md
   - docs/models/issuetrackingcollectionsoneglobals.md
   - docs/models/issuetrackingcollectionsonerequest.md
   - docs/models/issuetrackingcollectionsoneresponse.md
   - docs/models/issuetrackingcollectiontagsallglobals.md
   - docs/models/issuetrackingcollectiontagsallrequest.md
   - docs/models/issuetrackingcollectiontagsallresponse.md
-  - docs/models/issuetrackingcollectiontagsallresponseresult.md
   - docs/models/issuetrackingcollectionticketcommentsaddglobals.md
   - docs/models/issuetrackingcollectionticketcommentsaddrequest.md
   - docs/models/issuetrackingcollectionticketcommentsaddresponse.md
   - docs/models/issuetrackingcollectionticketcommentsallglobals.md
   - docs/models/issuetrackingcollectionticketcommentsallrequest.md
   - docs/models/issuetrackingcollectionticketcommentsallresponse.md
-  - docs/models/issuetrackingcollectionticketcommentsallresponseresult.md
   - docs/models/issuetrackingcollectionticketcommentsdeleteglobals.md
   - docs/models/issuetrackingcollectionticketcommentsdeleterequest.md
   - docs/models/issuetrackingcollectionticketcommentsdeleteresponse.md
   - docs/models/issuetrackingcollectionticketcommentsoneglobals.md
   - docs/models/issuetrackingcollectionticketcommentsonerequest.md
   - docs/models/issuetrackingcollectionticketcommentsoneresponse.md
-  - docs/models/issuetrackingcollectionticketcommentsoneresponseresult.md
   - docs/models/issuetrackingcollectionticketcommentsupdateglobals.md
   - docs/models/issuetrackingcollectionticketcommentsupdaterequest.md
   - docs/models/issuetrackingcollectionticketcommentsupdateresponse.md
@@ -1263,7 +1218,6 @@ generatedFiles:
   - docs/models/issuetrackingcollectionticketsallglobals.md
   - docs/models/issuetrackingcollectionticketsallrequest.md
   - docs/models/issuetrackingcollectionticketsallresponse.md
-  - docs/models/issuetrackingcollectionticketsallresponseresult.md
   - docs/models/issuetrackingcollectionticketsdeleteglobals.md
   - docs/models/issuetrackingcollectionticketsdeleterequest.md
   - docs/models/issuetrackingcollectionticketsdeleteresponse.md
@@ -1276,7 +1230,6 @@ generatedFiles:
   - docs/models/issuetrackingcollectionusersallglobals.md
   - docs/models/issuetrackingcollectionusersallrequest.md
   - docs/models/issuetrackingcollectionusersallresponse.md
-  - docs/models/issuetrackingcollectionusersallresponseresult.md
   - docs/models/issuetrackingcollectionusersoneglobals.md
   - docs/models/issuetrackingcollectionusersonerequest.md
   - docs/models/issuetrackingcollectionusersoneresponse.md
@@ -1425,7 +1378,6 @@ generatedFiles:
   - docs/models/smsmessagesallglobals.md
   - docs/models/smsmessagesallrequest.md
   - docs/models/smsmessagesallresponse.md
-  - docs/models/smsmessagesallresponseresult.md
   - docs/models/smsmessagesdeleteglobals.md
   - docs/models/smsmessagesdeleterequest.md
   - docs/models/smsmessagesdeleteresponse.md
@@ -1557,6 +1509,7 @@ generatedFiles:
   - docs/models/vaultconnectionsallresponse.md
   - docs/models/vaultconnectionsdeleteglobals.md
   - docs/models/vaultconnectionsdeleterequest.md
+  - docs/models/vaultconnectionsdeleteresponse.md
   - docs/models/vaultconnectionsettingsallglobals.md
   - docs/models/vaultconnectionsettingsallrequest.md
   - docs/models/vaultconnectionsettingsallresponse.md
@@ -1584,7 +1537,6 @@ generatedFiles:
   - docs/models/vaultconsumersallglobals.md
   - docs/models/vaultconsumersallrequest.md
   - docs/models/vaultconsumersallresponse.md
-  - docs/models/vaultconsumersallresponseresult.md
   - docs/models/vaultconsumersdeleteglobals.md
   - docs/models/vaultconsumersdeleterequest.md
   - docs/models/vaultconsumersdeleteresponse.md
@@ -1606,7 +1558,6 @@ generatedFiles:
   - docs/models/vaultlogsallglobals.md
   - docs/models/vaultlogsallrequest.md
   - docs/models/vaultlogsallresponse.md
-  - docs/models/vaultlogsallresponseresult.md
   - docs/models/vaultsessionscreateglobals.md
   - docs/models/vaultsessionscreateresponse.md
   - docs/models/vaultvalidateconnectionstateglobals.md
@@ -1620,7 +1571,6 @@ generatedFiles:
   - docs/models/webhookeventlogsallglobals.md
   - docs/models/webhookeventlogsallrequest.md
   - docs/models/webhookeventlogsallresponse.md
-  - docs/models/webhookeventlogsallresponseresult.md
   - docs/models/webhookeventlogservice.md
   - docs/models/webhookeventlogsfilter.md
   - docs/models/webhookeventlogsfilterservice.md
@@ -1633,7 +1583,6 @@ generatedFiles:
   - docs/models/webhookwebhooksallglobals.md
   - docs/models/webhookwebhooksallrequest.md
   - docs/models/webhookwebhooksallresponse.md
-  - docs/models/webhookwebhooksallresponseresult.md
   - docs/models/webhookwebhooksdeleteglobals.md
   - docs/models/webhookwebhooksdeleterequest.md
   - docs/models/webhookwebhooksdeleteresponse.md
@@ -2369,6 +2318,7 @@ generatedFiles:
   - src/apideck_unify/models/hris_timeoffrequestsoneop.py
   - src/apideck_unify/models/hris_timeoffrequestsupdateop.py
   - src/apideck_unify/models/hriscompany.py
+  - src/apideck_unify/models/httpmetadata.py
   - src/apideck_unify/models/integrationstate.py
   - src/apideck_unify/models/internal/__init__.py
   - src/apideck_unify/models/internal/globals.py
@@ -8984,7 +8934,7 @@ examples:
         "422":
           application/json: {"status_code": 422, "error": "Unprocessable Entity", "type_name": "InvalidStateError", "message": "Invalid State", "detail": "Unprocessable request, please verify your request headers and body.", "ref": "https://developers.apideck.com/errors#invalidstateerror"}
         default:
-          application/json: {"status_code": 400, "error": "Bad Request", "type_name": "RequestHeadersValidationError", "message": "Invalid Params", "detail": {"missing": [{"x-apideck-consumer-id": "required"}]}, "ref": "https://developers.apideck.com/errors#unauthorizederror"}
+          application/json: {"status_code": 400, "error": "Bad Request", "type_name": "RequestHeadersValidationError", "message": "Invalid Params", "detail": "Missing Header: x-apideck-consumer-id", "ref": "https://developers.apideck.com/errors#unauthorizederror"}
   vault.createCallbackState:
     "":
       parameters:
@@ -9010,7 +8960,7 @@ examples:
         "422":
           application/json: {"status_code": 422, "error": "Unprocessable Entity", "type_name": "InvalidStateError", "message": "Invalid State", "detail": "Unprocessable request, please verify your request headers and body.", "ref": "https://developers.apideck.com/errors#invalidstateerror"}
         default:
-          application/json: {"status_code": 400, "error": "Bad Request", "type_name": "RequestHeadersValidationError", "message": "Invalid Params", "detail": {"missing": [{"x-apideck-consumer-id": "required"}]}, "ref": "https://developers.apideck.com/errors#unauthorizederror"}
+          application/json: {"status_code": 400, "error": "Bad Request", "type_name": "RequestHeadersValidationError", "message": "Invalid Params", "detail": "Missing Header: x-apideck-consumer-id", "ref": "https://developers.apideck.com/errors#unauthorizederror"}
   vault.connectionSettingsAll:
     "":
       parameters:

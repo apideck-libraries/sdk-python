@@ -31,8 +31,10 @@ with Apideck(
         "search": "San Francisco",
     }, fields="id,updated_at")
 
+    assert res.get_payrolls_response is not None
+
     # Handle response
-    print(res)
+    print(res.get_payrolls_response)
 
 ```
 
@@ -80,8 +82,10 @@ with Apideck(
 
     res = apideck.hris.payrolls.get(payroll_id="<id>", service_id="salesforce", fields="id,updated_at")
 
+    assert res.get_payroll_response is not None
+
     # Handle response
-    print(res)
+    print(res.get_payroll_response)
 
 ```
 

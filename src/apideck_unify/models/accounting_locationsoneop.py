@@ -5,6 +5,7 @@ from .getaccountinglocationresponse import (
     GetAccountingLocationResponse,
     GetAccountingLocationResponseTypedDict,
 )
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -24,8 +25,8 @@ from apideck_unify.utils import (
 )
 import pydantic
 from pydantic import model_serializer
-from typing import Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class AccountingLocationsOneGlobalsTypedDict(TypedDict):
@@ -118,13 +119,21 @@ class AccountingLocationsOneRequest(BaseModel):
         return m
 
 
-AccountingLocationsOneResponseTypedDict = TypeAliasType(
-    "AccountingLocationsOneResponseTypedDict",
-    Union[GetAccountingLocationResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
+class AccountingLocationsOneResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    get_accounting_location_response: NotRequired[
+        GetAccountingLocationResponseTypedDict
+    ]
+    r"""Location"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-AccountingLocationsOneResponse = TypeAliasType(
-    "AccountingLocationsOneResponse",
-    Union[GetAccountingLocationResponse, UnexpectedErrorResponse],
-)
+class AccountingLocationsOneResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    get_accounting_location_response: Optional[GetAccountingLocationResponse] = None
+    r"""Location"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

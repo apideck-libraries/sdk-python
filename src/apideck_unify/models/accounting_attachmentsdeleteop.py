@@ -6,6 +6,7 @@ from .deleteattachmentresponse import (
     DeleteAttachmentResponse,
     DeleteAttachmentResponseTypedDict,
 )
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -18,8 +19,8 @@ from apideck_unify.utils import (
     QueryParamMetadata,
 )
 import pydantic
-from typing import Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class AccountingAttachmentsDeleteGlobalsTypedDict(TypedDict):
@@ -89,13 +90,19 @@ class AccountingAttachmentsDeleteRequest(BaseModel):
     r"""Include raw response. Mostly used for debugging purposes"""
 
 
-AccountingAttachmentsDeleteResponseTypedDict = TypeAliasType(
-    "AccountingAttachmentsDeleteResponseTypedDict",
-    Union[DeleteAttachmentResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
+class AccountingAttachmentsDeleteResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    delete_attachment_response: NotRequired[DeleteAttachmentResponseTypedDict]
+    r"""Attachments"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-AccountingAttachmentsDeleteResponse = TypeAliasType(
-    "AccountingAttachmentsDeleteResponse",
-    Union[DeleteAttachmentResponse, UnexpectedErrorResponse],
-)
+class AccountingAttachmentsDeleteResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    delete_attachment_response: Optional[DeleteAttachmentResponse] = None
+    r"""Attachments"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

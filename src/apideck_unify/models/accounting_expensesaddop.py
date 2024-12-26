@@ -3,6 +3,7 @@
 from __future__ import annotations
 from .createexpenseresponse import CreateExpenseResponse, CreateExpenseResponseTypedDict
 from .expense import ExpenseInput, ExpenseInputTypedDict
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -15,8 +16,8 @@ from apideck_unify.utils import (
     RequestMetadata,
 )
 import pydantic
-from typing import Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class AccountingExpensesAddGlobalsTypedDict(TypedDict):
@@ -70,13 +71,19 @@ class AccountingExpensesAddRequest(BaseModel):
     r"""Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API."""
 
 
-AccountingExpensesAddResponseTypedDict = TypeAliasType(
-    "AccountingExpensesAddResponseTypedDict",
-    Union[CreateExpenseResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
+class AccountingExpensesAddResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    create_expense_response: NotRequired[CreateExpenseResponseTypedDict]
+    r"""Expenses"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-AccountingExpensesAddResponse = TypeAliasType(
-    "AccountingExpensesAddResponse",
-    Union[CreateExpenseResponse, UnexpectedErrorResponse],
-)
+class AccountingExpensesAddResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    create_expense_response: Optional[CreateExpenseResponse] = None
+    r"""Expenses"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

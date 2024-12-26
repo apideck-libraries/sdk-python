@@ -321,8 +321,10 @@ with Apideck(
         },
     ])
 
+    assert res.create_credit_note_response is not None
+
     # Handle response
-    print(res)
+    print(res.create_credit_note_response)
 
 ```
 
@@ -395,8 +397,10 @@ with Apideck(
 
     res = apideck.accounting.credit_notes.get(id="<id>", service_id="salesforce", fields="id,updated_at")
 
+    assert res.get_credit_note_response is not None
+
     # Handle response
-    print(res)
+    print(res.get_credit_note_response)
 
 ```
 
@@ -742,8 +746,10 @@ with Apideck(
         },
     ])
 
+    assert res.update_credit_note_response is not None
+
     # Handle response
-    print(res)
+    print(res.update_credit_note_response)
 
 ```
 
@@ -817,8 +823,10 @@ with Apideck(
 
     res = apideck.accounting.credit_notes.delete(id="<id>", service_id="salesforce")
 
+    assert res.delete_credit_note_response is not None
+
     # Handle response
-    print(res)
+    print(res.delete_credit_note_response)
 
 ```
 

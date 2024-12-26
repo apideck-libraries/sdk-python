@@ -5,6 +5,7 @@ from .deleteledgeraccountresponse import (
     DeleteLedgerAccountResponse,
     DeleteLedgerAccountResponseTypedDict,
 )
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -17,8 +18,8 @@ from apideck_unify.utils import (
     QueryParamMetadata,
 )
 import pydantic
-from typing import Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class AccountingLedgerAccountsDeleteGlobalsTypedDict(TypedDict):
@@ -73,13 +74,19 @@ class AccountingLedgerAccountsDeleteRequest(BaseModel):
     r"""Include raw response. Mostly used for debugging purposes"""
 
 
-AccountingLedgerAccountsDeleteResponseTypedDict = TypeAliasType(
-    "AccountingLedgerAccountsDeleteResponseTypedDict",
-    Union[DeleteLedgerAccountResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
+class AccountingLedgerAccountsDeleteResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    delete_ledger_account_response: NotRequired[DeleteLedgerAccountResponseTypedDict]
+    r"""LedgerAccount deleted"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-AccountingLedgerAccountsDeleteResponse = TypeAliasType(
-    "AccountingLedgerAccountsDeleteResponse",
-    Union[DeleteLedgerAccountResponse, UnexpectedErrorResponse],
-)
+class AccountingLedgerAccountsDeleteResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    delete_ledger_account_response: Optional[DeleteLedgerAccountResponse] = None
+    r"""LedgerAccount deleted"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

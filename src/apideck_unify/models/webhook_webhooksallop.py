@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 from .getwebhooksresponse import GetWebhooksResponse, GetWebhooksResponseTypedDict
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -16,8 +17,8 @@ from apideck_unify.types import (
 from apideck_unify.utils import FieldMetadata, HeaderMetadata, QueryParamMetadata
 import pydantic
 from pydantic import model_serializer
-from typing import Callable, Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Callable, Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class WebhookWebhooksAllGlobalsTypedDict(TypedDict):
@@ -85,23 +86,21 @@ class WebhookWebhooksAllRequest(BaseModel):
         return m
 
 
-WebhookWebhooksAllResponseResultTypedDict = TypeAliasType(
-    "WebhookWebhooksAllResponseResultTypedDict",
-    Union[GetWebhooksResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
-
-
-WebhookWebhooksAllResponseResult = TypeAliasType(
-    "WebhookWebhooksAllResponseResult",
-    Union[GetWebhooksResponse, UnexpectedErrorResponse],
-)
-
-
 class WebhookWebhooksAllResponseTypedDict(TypedDict):
-    result: WebhookWebhooksAllResponseResultTypedDict
+    http_meta: HTTPMetadataTypedDict
+    get_webhooks_response: NotRequired[GetWebhooksResponseTypedDict]
+    r"""Webhooks"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
 class WebhookWebhooksAllResponse(BaseModel):
     next: Callable[[], Optional[WebhookWebhooksAllResponse]]
 
-    result: WebhookWebhooksAllResponseResult
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    get_webhooks_response: Optional[GetWebhooksResponse] = None
+    r"""Webhooks"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

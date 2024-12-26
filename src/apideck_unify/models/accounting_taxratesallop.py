@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 from .gettaxratesresponse import GetTaxRatesResponse, GetTaxRatesResponseTypedDict
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .taxratesfilter import TaxRatesFilter, TaxRatesFilterTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
@@ -17,8 +18,8 @@ from apideck_unify.types import (
 from apideck_unify.utils import FieldMetadata, HeaderMetadata, QueryParamMetadata
 import pydantic
 from pydantic import model_serializer
-from typing import Any, Callable, Dict, Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Any, Callable, Dict, Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class AccountingTaxRatesAllGlobalsTypedDict(TypedDict):
@@ -145,23 +146,21 @@ class AccountingTaxRatesAllRequest(BaseModel):
         return m
 
 
-AccountingTaxRatesAllResponseResultTypedDict = TypeAliasType(
-    "AccountingTaxRatesAllResponseResultTypedDict",
-    Union[UnexpectedErrorResponseTypedDict, GetTaxRatesResponseTypedDict],
-)
-
-
-AccountingTaxRatesAllResponseResult = TypeAliasType(
-    "AccountingTaxRatesAllResponseResult",
-    Union[UnexpectedErrorResponse, GetTaxRatesResponse],
-)
-
-
 class AccountingTaxRatesAllResponseTypedDict(TypedDict):
-    result: AccountingTaxRatesAllResponseResultTypedDict
+    http_meta: HTTPMetadataTypedDict
+    get_tax_rates_response: NotRequired[GetTaxRatesResponseTypedDict]
+    r"""TaxRates"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
 class AccountingTaxRatesAllResponse(BaseModel):
     next: Callable[[], Optional[AccountingTaxRatesAllResponse]]
 
-    result: AccountingTaxRatesAllResponseResult
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    get_tax_rates_response: Optional[GetTaxRatesResponse] = None
+    r"""TaxRates"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

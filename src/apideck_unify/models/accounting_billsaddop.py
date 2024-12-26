@@ -3,6 +3,7 @@
 from __future__ import annotations
 from .bill import BillInput, BillInputTypedDict
 from .createbillresponse import CreateBillResponse, CreateBillResponseTypedDict
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -15,8 +16,8 @@ from apideck_unify.utils import (
     RequestMetadata,
 )
 import pydantic
-from typing import Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class AccountingBillsAddGlobalsTypedDict(TypedDict):
@@ -69,12 +70,19 @@ class AccountingBillsAddRequest(BaseModel):
     r"""Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API."""
 
 
-AccountingBillsAddResponseTypedDict = TypeAliasType(
-    "AccountingBillsAddResponseTypedDict",
-    Union[CreateBillResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
+class AccountingBillsAddResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    create_bill_response: NotRequired[CreateBillResponseTypedDict]
+    r"""Bill created"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-AccountingBillsAddResponse = TypeAliasType(
-    "AccountingBillsAddResponse", Union[CreateBillResponse, UnexpectedErrorResponse]
-)
+class AccountingBillsAddResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    create_bill_response: Optional[CreateBillResponse] = None
+    r"""Bill created"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

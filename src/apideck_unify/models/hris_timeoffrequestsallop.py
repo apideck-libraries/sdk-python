@@ -5,6 +5,7 @@ from .gettimeoffrequestsresponse import (
     GetTimeOffRequestsResponse,
     GetTimeOffRequestsResponseTypedDict,
 )
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .timeoffrequestsfilter import TimeOffRequestsFilter, TimeOffRequestsFilterTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
@@ -20,8 +21,8 @@ from apideck_unify.types import (
 from apideck_unify.utils import FieldMetadata, HeaderMetadata, QueryParamMetadata
 import pydantic
 from pydantic import model_serializer
-from typing import Any, Callable, Dict, Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Any, Callable, Dict, Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class HrisTimeOffRequestsAllGlobalsTypedDict(TypedDict):
@@ -148,23 +149,21 @@ class HrisTimeOffRequestsAllRequest(BaseModel):
         return m
 
 
-HrisTimeOffRequestsAllResponseResultTypedDict = TypeAliasType(
-    "HrisTimeOffRequestsAllResponseResultTypedDict",
-    Union[UnexpectedErrorResponseTypedDict, GetTimeOffRequestsResponseTypedDict],
-)
-
-
-HrisTimeOffRequestsAllResponseResult = TypeAliasType(
-    "HrisTimeOffRequestsAllResponseResult",
-    Union[UnexpectedErrorResponse, GetTimeOffRequestsResponse],
-)
-
-
 class HrisTimeOffRequestsAllResponseTypedDict(TypedDict):
-    result: HrisTimeOffRequestsAllResponseResultTypedDict
+    http_meta: HTTPMetadataTypedDict
+    get_time_off_requests_response: NotRequired[GetTimeOffRequestsResponseTypedDict]
+    r"""TimeOffRequests"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
 class HrisTimeOffRequestsAllResponse(BaseModel):
     next: Callable[[], Optional[HrisTimeOffRequestsAllResponse]]
 
-    result: HrisTimeOffRequestsAllResponseResult
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    get_time_off_requests_response: Optional[GetTimeOffRequestsResponse] = None
+    r"""TimeOffRequests"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

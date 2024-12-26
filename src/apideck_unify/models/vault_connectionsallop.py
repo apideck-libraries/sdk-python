@@ -5,6 +5,7 @@ from .getconnectionsresponse import (
     GetConnectionsResponse,
     GetConnectionsResponseTypedDict,
 )
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -12,8 +13,8 @@ from .unexpectederrorresponse import (
 from apideck_unify.types import BaseModel
 from apideck_unify.utils import FieldMetadata, HeaderMetadata, QueryParamMetadata
 import pydantic
-from typing import Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class VaultConnectionsAllGlobalsTypedDict(TypedDict):
@@ -60,13 +61,19 @@ class VaultConnectionsAllRequest(BaseModel):
     r"""Scopes results to connections that have been configured or not"""
 
 
-VaultConnectionsAllResponseTypedDict = TypeAliasType(
-    "VaultConnectionsAllResponseTypedDict",
-    Union[GetConnectionsResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
+class VaultConnectionsAllResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    get_connections_response: NotRequired[GetConnectionsResponseTypedDict]
+    r"""Connections"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-VaultConnectionsAllResponse = TypeAliasType(
-    "VaultConnectionsAllResponse",
-    Union[GetConnectionsResponse, UnexpectedErrorResponse],
-)
+class VaultConnectionsAllResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    get_connections_response: Optional[GetConnectionsResponse] = None
+    r"""Connections"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

@@ -81,8 +81,10 @@ with Apideck(
         apideck_unify.WebhookEventType.VAULT_CONNECTION_UPDATED,
     ], description="A description")
 
+    assert res.create_webhook_response is not None
+
     # Handle response
-    print(res)
+    print(res.create_webhook_response)
 
 ```
 
@@ -130,8 +132,10 @@ with Apideck(
 
     res = apideck.webhook.webhooks.get(id="<id>")
 
+    assert res.get_webhook_response is not None
+
     # Handle response
-    print(res)
+    print(res.get_webhook_response)
 
 ```
 
@@ -179,8 +183,10 @@ with Apideck(
         apideck_unify.WebhookEventType.VAULT_CONNECTION_UPDATED,
     ])
 
+    assert res.update_webhook_response is not None
+
     # Handle response
-    print(res)
+    print(res.update_webhook_response)
 
 ```
 
@@ -228,8 +234,10 @@ with Apideck(
 
     res = apideck.webhook.webhooks.delete(id="<id>")
 
+    assert res.delete_webhook_response is not None
+
     # Handle response
-    print(res)
+    print(res.delete_webhook_response)
 
 ```
 

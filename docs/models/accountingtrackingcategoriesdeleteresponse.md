@@ -1,17 +1,10 @@
 # AccountingTrackingCategoriesDeleteResponse
 
 
-## Supported Types
+## Fields
 
-### `models.DeleteTrackingCategoryResponse`
-
-```python
-value: models.DeleteTrackingCategoryResponse = /* values here */
-```
-
-### `models.UnexpectedErrorResponse`
-
-```python
-value: models.UnexpectedErrorResponse = /* values here */
-```
-
+| Field                                                                                          | Type                                                                                           | Required                                                                                       | Description                                                                                    |
+| ---------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| `http_meta`                                                                                    | [models.HTTPMetadata](../models/httpmetadata.md)                                               | :heavy_check_mark:                                                                             | N/A                                                                                            |
+| `delete_tracking_category_response`                                                            | [Optional[models.DeleteTrackingCategoryResponse]](../models/deletetrackingcategoryresponse.md) | :heavy_minus_sign:                                                                             | Tracking category deleted                                                                      |
+| `unexpected_error_response`                                                                    | [Optional[models.UnexpectedErrorResponse]](../models/unexpectederrorresponse.md)               | :heavy_minus_sign:                                                                             | Unexpected error                                                                               |

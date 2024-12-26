@@ -3,6 +3,7 @@
 from __future__ import annotations
 from .apisfilter import ApisFilter, ApisFilterTypedDict
 from .getapisresponse import GetApisResponse, GetApisResponseTypedDict
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -17,8 +18,8 @@ from apideck_unify.types import (
 from apideck_unify.utils import FieldMetadata, HeaderMetadata, QueryParamMetadata
 import pydantic
 from pydantic import model_serializer
-from typing import Callable, Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Callable, Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class ConnectorApisAllGlobalsTypedDict(TypedDict):
@@ -95,22 +96,21 @@ class ConnectorApisAllRequest(BaseModel):
         return m
 
 
-ConnectorApisAllResponseResultTypedDict = TypeAliasType(
-    "ConnectorApisAllResponseResultTypedDict",
-    Union[GetApisResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
-
-
-ConnectorApisAllResponseResult = TypeAliasType(
-    "ConnectorApisAllResponseResult", Union[GetApisResponse, UnexpectedErrorResponse]
-)
-
-
 class ConnectorApisAllResponseTypedDict(TypedDict):
-    result: ConnectorApisAllResponseResultTypedDict
+    http_meta: HTTPMetadataTypedDict
+    get_apis_response: NotRequired[GetApisResponseTypedDict]
+    r"""Apis"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
 class ConnectorApisAllResponse(BaseModel):
     next: Callable[[], Optional[ConnectorApisAllResponse]]
 
-    result: ConnectorApisAllResponseResult
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    get_apis_response: Optional[GetApisResponse] = None
+    r"""Apis"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

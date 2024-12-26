@@ -276,8 +276,10 @@ with Apideck(
         },
     ])
 
+    assert res.create_lead_response is not None
+
     # Handle response
-    print(res)
+    print(res.create_lead_response)
 
 ```
 
@@ -347,8 +349,10 @@ with Apideck(
 
     res = apideck.crm.leads.get(id="<id>", service_id="salesforce", fields="id,updated_at")
 
+    assert res.get_lead_response is not None
+
     # Handle response
-    print(res)
+    print(res.get_lead_response)
 
 ```
 
@@ -556,8 +560,10 @@ with Apideck(
         },
     ])
 
+    assert res.update_lead_response is not None
+
     # Handle response
-    print(res)
+    print(res.update_lead_response)
 
 ```
 
@@ -628,8 +634,10 @@ with Apideck(
 
     res = apideck.crm.leads.delete(id="<id>", service_id="salesforce")
 
+    assert res.delete_lead_response is not None
+
     # Handle response
-    print(res)
+    print(res.delete_lead_response)
 
 ```
 

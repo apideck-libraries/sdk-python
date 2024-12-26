@@ -1,17 +1,10 @@
 # VaultCreateCallbackStateResponse
 
 
-## Supported Types
+## Fields
 
-### `models.CreateCallbackStateResponse`
-
-```python
-value: models.CreateCallbackStateResponse = /* values here */
-```
-
-### `models.UnexpectedErrorResponse`
-
-```python
-value: models.UnexpectedErrorResponse = /* values here */
-```
-
+| Field                                                                                    | Type                                                                                     | Required                                                                                 | Description                                                                              |
+| ---------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| `http_meta`                                                                              | [models.HTTPMetadata](../models/httpmetadata.md)                                         | :heavy_check_mark:                                                                       | N/A                                                                                      |
+| `create_callback_state_response`                                                         | [Optional[models.CreateCallbackStateResponse]](../models/createcallbackstateresponse.md) | :heavy_minus_sign:                                                                       | Callback state created                                                                   |
+| `unexpected_error_response`                                                              | [Optional[models.UnexpectedErrorResponse]](../models/unexpectederrorresponse.md)         | :heavy_minus_sign:                                                                       | Unexpected error                                                                         |

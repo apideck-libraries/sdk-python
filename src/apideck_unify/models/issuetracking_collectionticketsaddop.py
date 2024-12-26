@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 from .createticketresponse import CreateTicketResponse, CreateTicketResponseTypedDict
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .ticket import TicketInput, TicketInputTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
@@ -16,8 +17,8 @@ from apideck_unify.utils import (
     RequestMetadata,
 )
 import pydantic
-from typing import Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class IssueTrackingCollectionTicketsAddGlobalsTypedDict(TypedDict):
@@ -78,13 +79,19 @@ class IssueTrackingCollectionTicketsAddRequest(BaseModel):
     r"""Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API."""
 
 
-IssueTrackingCollectionTicketsAddResponseTypedDict = TypeAliasType(
-    "IssueTrackingCollectionTicketsAddResponseTypedDict",
-    Union[CreateTicketResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
+class IssueTrackingCollectionTicketsAddResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    create_ticket_response: NotRequired[CreateTicketResponseTypedDict]
+    r"""Create a Ticket"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-IssueTrackingCollectionTicketsAddResponse = TypeAliasType(
-    "IssueTrackingCollectionTicketsAddResponse",
-    Union[CreateTicketResponse, UnexpectedErrorResponse],
-)
+class IssueTrackingCollectionTicketsAddResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    create_ticket_response: Optional[CreateTicketResponse] = None
+    r"""Create a Ticket"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

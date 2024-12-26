@@ -5,6 +5,7 @@ from .getsharedlinksresponse import (
     GetSharedLinksResponse,
     GetSharedLinksResponseTypedDict,
 )
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -19,8 +20,8 @@ from apideck_unify.types import (
 from apideck_unify.utils import FieldMetadata, HeaderMetadata, QueryParamMetadata
 import pydantic
 from pydantic import model_serializer
-from typing import Any, Callable, Dict, Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Any, Callable, Dict, Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class FileStorageSharedLinksAllGlobalsTypedDict(TypedDict):
@@ -137,23 +138,21 @@ class FileStorageSharedLinksAllRequest(BaseModel):
         return m
 
 
-FileStorageSharedLinksAllResponseResultTypedDict = TypeAliasType(
-    "FileStorageSharedLinksAllResponseResultTypedDict",
-    Union[UnexpectedErrorResponseTypedDict, GetSharedLinksResponseTypedDict],
-)
-
-
-FileStorageSharedLinksAllResponseResult = TypeAliasType(
-    "FileStorageSharedLinksAllResponseResult",
-    Union[UnexpectedErrorResponse, GetSharedLinksResponse],
-)
-
-
 class FileStorageSharedLinksAllResponseTypedDict(TypedDict):
-    result: FileStorageSharedLinksAllResponseResultTypedDict
+    http_meta: HTTPMetadataTypedDict
+    get_shared_links_response: NotRequired[GetSharedLinksResponseTypedDict]
+    r"""Shared Links"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
 class FileStorageSharedLinksAllResponse(BaseModel):
     next: Callable[[], Optional[FileStorageSharedLinksAllResponse]]
 
-    result: FileStorageSharedLinksAllResponseResult
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    get_shared_links_response: Optional[GetSharedLinksResponse] = None
+    r"""Shared Links"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

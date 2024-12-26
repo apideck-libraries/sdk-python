@@ -50,8 +50,10 @@ with Apideck(
         },
     ])
 
+    assert res.create_upload_session_response is not None
+
     # Handle response
-    print(res)
+    print(res.create_upload_session_response)
 
 ```
 
@@ -102,8 +104,10 @@ with Apideck(
 
     res = apideck.file_storage.upload_sessions.get(id="<id>", service_id="salesforce", fields="id,updated_at")
 
+    assert res.get_upload_session_response is not None
+
     # Handle response
-    print(res)
+    print(res.get_upload_session_response)
 
 ```
 
@@ -151,8 +155,10 @@ with Apideck(
 
     res = apideck.file_storage.upload_sessions.delete(id="<id>", service_id="salesforce")
 
+    assert res.delete_upload_session_response is not None
+
     # Handle response
-    print(res)
+    print(res.delete_upload_session_response)
 
 ```
 
@@ -198,8 +204,10 @@ with Apideck(
 
     res = apideck.file_storage.upload_sessions.finish(id="<id>", service_id="salesforce", digest="sha=fpRyg5eVQletdZqEKaFlqwBXJzM=")
 
+    assert res.get_file_response is not None
+
     # Handle response
-    print(res)
+    print(res.get_file_response)
 
 ```
 

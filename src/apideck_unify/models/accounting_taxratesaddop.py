@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 from .createtaxrateresponse import CreateTaxRateResponse, CreateTaxRateResponseTypedDict
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .taxrate import TaxRateInput, TaxRateInputTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
@@ -15,8 +16,8 @@ from apideck_unify.utils import (
     RequestMetadata,
 )
 import pydantic
-from typing import Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class AccountingTaxRatesAddGlobalsTypedDict(TypedDict):
@@ -70,13 +71,19 @@ class AccountingTaxRatesAddRequest(BaseModel):
     r"""Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API."""
 
 
-AccountingTaxRatesAddResponseTypedDict = TypeAliasType(
-    "AccountingTaxRatesAddResponseTypedDict",
-    Union[CreateTaxRateResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
+class AccountingTaxRatesAddResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    create_tax_rate_response: NotRequired[CreateTaxRateResponseTypedDict]
+    r"""TaxRate created"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-AccountingTaxRatesAddResponse = TypeAliasType(
-    "AccountingTaxRatesAddResponse",
-    Union[CreateTaxRateResponse, UnexpectedErrorResponse],
-)
+class AccountingTaxRatesAddResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    create_tax_rate_response: Optional[CreateTaxRateResponse] = None
+    r"""TaxRate created"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

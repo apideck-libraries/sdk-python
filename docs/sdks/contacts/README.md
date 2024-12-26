@@ -279,8 +279,10 @@ with Apideck(
         },
     ])
 
+    assert res.create_contact_response is not None
+
     # Handle response
-    print(res)
+    print(res.create_contact_response)
 
 ```
 
@@ -365,8 +367,10 @@ with Apideck(
         "owner_id": "12345",
     })
 
+    assert res.get_contact_response is not None
+
     # Handle response
-    print(res)
+    print(res.get_contact_response)
 
 ```
 
@@ -577,8 +581,10 @@ with Apideck(
         },
     ])
 
+    assert res.update_contact_response is not None
+
     # Handle response
-    print(res)
+    print(res.update_contact_response)
 
 ```
 
@@ -658,8 +664,10 @@ with Apideck(
 
     res = apideck.crm.contacts.delete(id="<id>", service_id="salesforce")
 
+    assert res.delete_contact_response is not None
+
     # Handle response
-    print(res)
+    print(res.delete_contact_response)
 
 ```
 

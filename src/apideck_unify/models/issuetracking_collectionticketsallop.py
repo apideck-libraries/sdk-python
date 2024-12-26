@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 from .getticketsresponse import GetTicketsResponse, GetTicketsResponseTypedDict
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .issuesfilter import IssuesFilter, IssuesFilterTypedDict
 from .ticketssort import TicketsSort, TicketsSortTypedDict
 from .unexpectederrorresponse import (
@@ -23,8 +24,8 @@ from apideck_unify.utils import (
 )
 import pydantic
 from pydantic import model_serializer
-from typing import Any, Callable, Dict, Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Any, Callable, Dict, Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class IssueTrackingCollectionTicketsAllGlobalsTypedDict(TypedDict):
@@ -167,23 +168,21 @@ class IssueTrackingCollectionTicketsAllRequest(BaseModel):
         return m
 
 
-IssueTrackingCollectionTicketsAllResponseResultTypedDict = TypeAliasType(
-    "IssueTrackingCollectionTicketsAllResponseResultTypedDict",
-    Union[UnexpectedErrorResponseTypedDict, GetTicketsResponseTypedDict],
-)
-
-
-IssueTrackingCollectionTicketsAllResponseResult = TypeAliasType(
-    "IssueTrackingCollectionTicketsAllResponseResult",
-    Union[UnexpectedErrorResponse, GetTicketsResponse],
-)
-
-
 class IssueTrackingCollectionTicketsAllResponseTypedDict(TypedDict):
-    result: IssueTrackingCollectionTicketsAllResponseResultTypedDict
+    http_meta: HTTPMetadataTypedDict
+    get_tickets_response: NotRequired[GetTicketsResponseTypedDict]
+    r"""List Tickets"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
 class IssueTrackingCollectionTicketsAllResponse(BaseModel):
     next: Callable[[], Optional[IssueTrackingCollectionTicketsAllResponse]]
 
-    result: IssueTrackingCollectionTicketsAllResponseResult
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    get_tickets_response: Optional[GetTicketsResponse] = None
+    r"""List Tickets"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

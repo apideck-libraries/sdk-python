@@ -5,6 +5,7 @@ from .getconnectorresourceresponse import (
     GetConnectorResourceResponse,
     GetConnectorResourceResponseTypedDict,
 )
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -18,8 +19,8 @@ from apideck_unify.utils import (
     QueryParamMetadata,
 )
 import pydantic
-from typing import Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class ConnectorConnectorResourcesOneGlobalsTypedDict(TypedDict):
@@ -63,13 +64,19 @@ class ConnectorConnectorResourcesOneRequest(BaseModel):
     r"""Specify unified API for the connector resource. This is useful when a resource appears in multiple APIs"""
 
 
-ConnectorConnectorResourcesOneResponseTypedDict = TypeAliasType(
-    "ConnectorConnectorResourcesOneResponseTypedDict",
-    Union[GetConnectorResourceResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
+class ConnectorConnectorResourcesOneResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    get_connector_resource_response: NotRequired[GetConnectorResourceResponseTypedDict]
+    r"""ConnectorResources"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-ConnectorConnectorResourcesOneResponse = TypeAliasType(
-    "ConnectorConnectorResourcesOneResponse",
-    Union[GetConnectorResourceResponse, UnexpectedErrorResponse],
-)
+class ConnectorConnectorResourcesOneResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    get_connector_resource_response: Optional[GetConnectorResourceResponse] = None
+    r"""ConnectorResources"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

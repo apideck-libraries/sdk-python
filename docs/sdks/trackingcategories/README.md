@@ -106,8 +106,10 @@ with Apideck(
         },
     ])
 
+    assert res.create_tracking_category_response is not None
+
     # Handle response
-    print(res)
+    print(res.create_tracking_category_response)
 
 ```
 
@@ -159,8 +161,10 @@ with Apideck(
 
     res = apideck.accounting.tracking_categories.get(id="<id>", service_id="salesforce", fields="id,updated_at")
 
+    assert res.get_tracking_category_response is not None
+
     # Handle response
-    print(res)
+    print(res.get_tracking_category_response)
 
 ```
 
@@ -272,8 +276,10 @@ with Apideck(
         },
     ])
 
+    assert res.update_tracking_category_response is not None
+
     # Handle response
-    print(res)
+    print(res.update_tracking_category_response)
 
 ```
 
@@ -326,8 +332,10 @@ with Apideck(
 
     res = apideck.accounting.tracking_categories.delete(id="<id>", service_id="salesforce")
 
+    assert res.delete_tracking_category_response is not None
+
     # Handle response
-    print(res)
+    print(res.delete_tracking_category_response)
 
 ```
 

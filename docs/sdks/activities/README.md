@@ -150,8 +150,10 @@ with Apideck(
         },
     ])
 
+    assert res.create_activity_response is not None
+
     # Handle response
-    print(res)
+    print(res.create_activity_response)
 
 ```
 
@@ -240,8 +242,10 @@ with Apideck(
 
     res = apideck.crm.activities.get(id="<id>", service_id="salesforce", fields="id,updated_at")
 
+    assert res.get_activity_response is not None
+
     # Handle response
-    print(res)
+    print(res.get_activity_response)
 
 ```
 
@@ -399,8 +403,10 @@ with Apideck(
         },
     ])
 
+    assert res.update_activity_response is not None
+
     # Handle response
-    print(res)
+    print(res.update_activity_response)
 
 ```
 
@@ -490,8 +496,10 @@ with Apideck(
 
     res = apideck.crm.activities.delete(id="<id>", service_id="salesforce")
 
+    assert res.delete_activity_response is not None
+
     # Handle response
-    print(res)
+    print(res.delete_activity_response)
 
 ```
 

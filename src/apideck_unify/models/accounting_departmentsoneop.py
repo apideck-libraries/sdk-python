@@ -5,6 +5,7 @@ from .getaccountingdepartmentresponse import (
     GetAccountingDepartmentResponse,
     GetAccountingDepartmentResponseTypedDict,
 )
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -24,8 +25,8 @@ from apideck_unify.utils import (
 )
 import pydantic
 from pydantic import model_serializer
-from typing import Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class AccountingDepartmentsOneGlobalsTypedDict(TypedDict):
@@ -118,13 +119,21 @@ class AccountingDepartmentsOneRequest(BaseModel):
         return m
 
 
-AccountingDepartmentsOneResponseTypedDict = TypeAliasType(
-    "AccountingDepartmentsOneResponseTypedDict",
-    Union[GetAccountingDepartmentResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
+class AccountingDepartmentsOneResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    get_accounting_department_response: NotRequired[
+        GetAccountingDepartmentResponseTypedDict
+    ]
+    r"""Location"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-AccountingDepartmentsOneResponse = TypeAliasType(
-    "AccountingDepartmentsOneResponse",
-    Union[GetAccountingDepartmentResponse, UnexpectedErrorResponse],
-)
+class AccountingDepartmentsOneResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    get_accounting_department_response: Optional[GetAccountingDepartmentResponse] = None
+    r"""Location"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

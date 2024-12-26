@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 from .department_input import DepartmentInput, DepartmentInputTypedDict
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -19,8 +20,8 @@ from apideck_unify.utils import (
     RequestMetadata,
 )
 import pydantic
-from typing import Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class HrisDepartmentsUpdateGlobalsTypedDict(TypedDict):
@@ -81,13 +82,19 @@ class HrisDepartmentsUpdateRequest(BaseModel):
     r"""Include raw response. Mostly used for debugging purposes"""
 
 
-HrisDepartmentsUpdateResponseTypedDict = TypeAliasType(
-    "HrisDepartmentsUpdateResponseTypedDict",
-    Union[UpdateDepartmentResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
+class HrisDepartmentsUpdateResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    update_department_response: NotRequired[UpdateDepartmentResponseTypedDict]
+    r"""Departments"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-HrisDepartmentsUpdateResponse = TypeAliasType(
-    "HrisDepartmentsUpdateResponse",
-    Union[UpdateDepartmentResponse, UnexpectedErrorResponse],
-)
+class HrisDepartmentsUpdateResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    update_department_response: Optional[UpdateDepartmentResponse] = None
+    r"""Departments"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

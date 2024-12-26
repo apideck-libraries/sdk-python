@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 from .getjobresponse import GetJobResponse, GetJobResponseTypedDict
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -21,8 +22,8 @@ from apideck_unify.utils import (
 )
 import pydantic
 from pydantic import model_serializer
-from typing import Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class AtsJobsOneGlobalsTypedDict(TypedDict):
@@ -115,12 +116,19 @@ class AtsJobsOneRequest(BaseModel):
         return m
 
 
-AtsJobsOneResponseTypedDict = TypeAliasType(
-    "AtsJobsOneResponseTypedDict",
-    Union[GetJobResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
+class AtsJobsOneResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    get_job_response: NotRequired[GetJobResponseTypedDict]
+    r"""Jobs"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-AtsJobsOneResponse = TypeAliasType(
-    "AtsJobsOneResponse", Union[GetJobResponse, UnexpectedErrorResponse]
-)
+class AtsJobsOneResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    get_job_response: Optional[GetJobResponse] = None
+    r"""Jobs"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

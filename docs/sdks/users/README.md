@@ -148,8 +148,10 @@ with Apideck(
         },
     ])
 
+    assert res.create_user_response is not None
+
     # Handle response
-    print(res)
+    print(res.create_user_response)
 
 ```
 
@@ -212,8 +214,10 @@ with Apideck(
 
     res = apideck.crm.users.get(id="<id>", service_id="salesforce", fields="id,updated_at")
 
+    assert res.get_user_response is not None
+
     # Handle response
-    print(res)
+    print(res.get_user_response)
 
 ```
 
@@ -427,8 +431,10 @@ with Apideck(
         },
     ])
 
+    assert res.update_user_response is not None
+
     # Handle response
-    print(res)
+    print(res.update_user_response)
 
 ```
 
@@ -492,8 +498,10 @@ with Apideck(
 
     res = apideck.crm.users.delete(id="<id>", service_id="salesforce")
 
+    assert res.delete_user_response is not None
+
     # Handle response
-    print(res)
+    print(res.delete_user_response)
 
 ```
 

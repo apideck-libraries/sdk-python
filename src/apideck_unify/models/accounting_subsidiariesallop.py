@@ -5,6 +5,7 @@ from .getsubsidiariesresponse import (
     GetSubsidiariesResponse,
     GetSubsidiariesResponseTypedDict,
 )
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -19,8 +20,8 @@ from apideck_unify.types import (
 from apideck_unify.utils import FieldMetadata, HeaderMetadata, QueryParamMetadata
 import pydantic
 from pydantic import model_serializer
-from typing import Callable, Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Callable, Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class AccountingSubsidiariesAllGlobalsTypedDict(TypedDict):
@@ -122,23 +123,21 @@ class AccountingSubsidiariesAllRequest(BaseModel):
         return m
 
 
-AccountingSubsidiariesAllResponseResultTypedDict = TypeAliasType(
-    "AccountingSubsidiariesAllResponseResultTypedDict",
-    Union[UnexpectedErrorResponseTypedDict, GetSubsidiariesResponseTypedDict],
-)
-
-
-AccountingSubsidiariesAllResponseResult = TypeAliasType(
-    "AccountingSubsidiariesAllResponseResult",
-    Union[UnexpectedErrorResponse, GetSubsidiariesResponse],
-)
-
-
 class AccountingSubsidiariesAllResponseTypedDict(TypedDict):
-    result: AccountingSubsidiariesAllResponseResultTypedDict
+    http_meta: HTTPMetadataTypedDict
+    get_subsidiaries_response: NotRequired[GetSubsidiariesResponseTypedDict]
+    r"""Subsidiaries"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
 class AccountingSubsidiariesAllResponse(BaseModel):
     next: Callable[[], Optional[AccountingSubsidiariesAllResponse]]
 
-    result: AccountingSubsidiariesAllResponseResult
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    get_subsidiaries_response: Optional[GetSubsidiariesResponse] = None
+    r"""Subsidiaries"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

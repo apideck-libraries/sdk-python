@@ -242,8 +242,10 @@ with Apideck(
         },
     ])
 
+    assert res.create_customer_response is not None
+
     # Handle response
-    print(res)
+    print(res.create_customer_response)
 
 ```
 
@@ -316,8 +318,10 @@ with Apideck(
 
     res = apideck.accounting.customers.get(id="<id>", service_id="salesforce", fields="id,updated_at")
 
+    assert res.get_customer_response is not None
+
     # Handle response
-    print(res)
+    print(res.get_customer_response)
 
 ```
 
@@ -559,8 +563,10 @@ with Apideck(
         },
     ])
 
+    assert res.update_customer_response is not None
+
     # Handle response
-    print(res)
+    print(res.update_customer_response)
 
 ```
 
@@ -634,8 +640,10 @@ with Apideck(
 
     res = apideck.accounting.customers.delete(id="<id>", service_id="salesforce")
 
+    assert res.delete_customer_response is not None
+
     # Handle response
-    print(res)
+    print(res.delete_customer_response)
 
 ```
 

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 from .getcommentresponse import GetCommentResponse, GetCommentResponseTypedDict
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -21,8 +22,8 @@ from apideck_unify.utils import (
 )
 import pydantic
 from pydantic import model_serializer
-from typing import Callable, Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Callable, Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class IssueTrackingCollectionTicketCommentsOneGlobalsTypedDict(TypedDict):
@@ -145,23 +146,21 @@ class IssueTrackingCollectionTicketCommentsOneRequest(BaseModel):
         return m
 
 
-IssueTrackingCollectionTicketCommentsOneResponseResultTypedDict = TypeAliasType(
-    "IssueTrackingCollectionTicketCommentsOneResponseResultTypedDict",
-    Union[GetCommentResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
-
-
-IssueTrackingCollectionTicketCommentsOneResponseResult = TypeAliasType(
-    "IssueTrackingCollectionTicketCommentsOneResponseResult",
-    Union[GetCommentResponse, UnexpectedErrorResponse],
-)
-
-
 class IssueTrackingCollectionTicketCommentsOneResponseTypedDict(TypedDict):
-    result: IssueTrackingCollectionTicketCommentsOneResponseResultTypedDict
+    http_meta: HTTPMetadataTypedDict
+    get_comment_response: NotRequired[GetCommentResponseTypedDict]
+    r"""Get a Comment"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
 class IssueTrackingCollectionTicketCommentsOneResponse(BaseModel):
     next: Callable[[], Optional[IssueTrackingCollectionTicketCommentsOneResponse]]
 
-    result: IssueTrackingCollectionTicketCommentsOneResponseResult
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    get_comment_response: Optional[GetCommentResponse] = None
+    r"""Get a Comment"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

@@ -26,8 +26,10 @@ with Apideck(
 
     res = apideck.connector.connector_resources.get(id="<id>", resource_id="<id>", unified_api=apideck_unify.UnifiedAPIID.CRM)
 
+    assert res.get_connector_resource_response is not None
+
     # Handle response
-    print(res)
+    print(res.get_connector_resource_response)
 
 ```
 

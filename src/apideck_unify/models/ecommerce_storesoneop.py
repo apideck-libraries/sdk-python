@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 from .getstoreresponse import GetStoreResponse, GetStoreResponseTypedDict
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -16,8 +17,8 @@ from apideck_unify.types import (
 from apideck_unify.utils import FieldMetadata, HeaderMetadata, QueryParamMetadata
 import pydantic
 from pydantic import model_serializer
-from typing import Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class EcommerceStoresOneGlobalsTypedDict(TypedDict):
@@ -103,12 +104,19 @@ class EcommerceStoresOneRequest(BaseModel):
         return m
 
 
-EcommerceStoresOneResponseTypedDict = TypeAliasType(
-    "EcommerceStoresOneResponseTypedDict",
-    Union[GetStoreResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
+class EcommerceStoresOneResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    get_store_response: NotRequired[GetStoreResponseTypedDict]
+    r"""Stores"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-EcommerceStoresOneResponse = TypeAliasType(
-    "EcommerceStoresOneResponse", Union[GetStoreResponse, UnexpectedErrorResponse]
-)
+class EcommerceStoresOneResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    get_store_response: Optional[GetStoreResponse] = None
+    r"""Stores"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

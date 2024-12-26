@@ -4,6 +4,7 @@ from __future__ import annotations
 from .filesfilter import FilesFilter, FilesFilterTypedDict
 from .filessort import FilesSort, FilesSortTypedDict
 from .getfilesresponse import GetFilesResponse, GetFilesResponseTypedDict
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -18,8 +19,8 @@ from apideck_unify.types import (
 from apideck_unify.utils import FieldMetadata, HeaderMetadata, QueryParamMetadata
 import pydantic
 from pydantic import model_serializer
-from typing import Any, Callable, Dict, Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Any, Callable, Dict, Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class FileStorageFilesAllGlobalsTypedDict(TypedDict):
@@ -155,23 +156,21 @@ class FileStorageFilesAllRequest(BaseModel):
         return m
 
 
-FileStorageFilesAllResponseResultTypedDict = TypeAliasType(
-    "FileStorageFilesAllResponseResultTypedDict",
-    Union[UnexpectedErrorResponseTypedDict, GetFilesResponseTypedDict],
-)
-
-
-FileStorageFilesAllResponseResult = TypeAliasType(
-    "FileStorageFilesAllResponseResult",
-    Union[UnexpectedErrorResponse, GetFilesResponse],
-)
-
-
 class FileStorageFilesAllResponseTypedDict(TypedDict):
-    result: FileStorageFilesAllResponseResultTypedDict
+    http_meta: HTTPMetadataTypedDict
+    get_files_response: NotRequired[GetFilesResponseTypedDict]
+    r"""Files"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
 class FileStorageFilesAllResponse(BaseModel):
     next: Callable[[], Optional[FileStorageFilesAllResponse]]
 
-    result: FileStorageFilesAllResponseResult
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    get_files_response: Optional[GetFilesResponse] = None
+    r"""Files"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

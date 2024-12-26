@@ -200,8 +200,10 @@ with Apideck(
         },
     ], accounting_period="01-24")
 
+    assert res.create_bill_response is not None
+
     # Handle response
-    print(res)
+    print(res.create_bill_response)
 
 ```
 
@@ -278,8 +280,10 @@ with Apideck(
 
     res = apideck.accounting.bills.get(id="<id>", service_id="salesforce", fields="id,updated_at")
 
+    assert res.get_bill_response is not None
+
     # Handle response
-    print(res)
+    print(res.get_bill_response)
 
 ```
 
@@ -536,8 +540,10 @@ with Apideck(
         },
     ], accounting_period="01-24")
 
+    assert res.update_bill_response is not None
+
     # Handle response
-    print(res)
+    print(res.update_bill_response)
 
 ```
 
@@ -615,8 +621,10 @@ with Apideck(
 
     res = apideck.accounting.bills.delete(id="<id>", service_id="salesforce")
 
+    assert res.delete_bill_response is not None
+
     # Handle response
-    print(res)
+    print(res.delete_bill_response)
 
 ```
 

@@ -3,6 +3,7 @@
 from __future__ import annotations
 from .commentssort import CommentsSort, CommentsSortTypedDict
 from .getcommentsresponse import GetCommentsResponse, GetCommentsResponseTypedDict
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -22,8 +23,8 @@ from apideck_unify.utils import (
 )
 import pydantic
 from pydantic import model_serializer
-from typing import Any, Callable, Dict, Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Any, Callable, Dict, Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class IssueTrackingCollectionTicketCommentsAllGlobalsTypedDict(TypedDict):
@@ -163,23 +164,21 @@ class IssueTrackingCollectionTicketCommentsAllRequest(BaseModel):
         return m
 
 
-IssueTrackingCollectionTicketCommentsAllResponseResultTypedDict = TypeAliasType(
-    "IssueTrackingCollectionTicketCommentsAllResponseResultTypedDict",
-    Union[UnexpectedErrorResponseTypedDict, GetCommentsResponseTypedDict],
-)
-
-
-IssueTrackingCollectionTicketCommentsAllResponseResult = TypeAliasType(
-    "IssueTrackingCollectionTicketCommentsAllResponseResult",
-    Union[UnexpectedErrorResponse, GetCommentsResponse],
-)
-
-
 class IssueTrackingCollectionTicketCommentsAllResponseTypedDict(TypedDict):
-    result: IssueTrackingCollectionTicketCommentsAllResponseResultTypedDict
+    http_meta: HTTPMetadataTypedDict
+    get_comments_response: NotRequired[GetCommentsResponseTypedDict]
+    r"""List Comments"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
 class IssueTrackingCollectionTicketCommentsAllResponse(BaseModel):
     next: Callable[[], Optional[IssueTrackingCollectionTicketCommentsAllResponse]]
 
-    result: IssueTrackingCollectionTicketCommentsAllResponseResult
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    get_comments_response: Optional[GetCommentsResponse] = None
+    r"""List Comments"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

@@ -118,8 +118,10 @@ with Apideck(
         },
     ])
 
+    assert res.create_opportunity_response is not None
+
     # Handle response
-    print(res)
+    print(res.create_opportunity_response)
 
 ```
 
@@ -193,8 +195,10 @@ with Apideck(
 
     res = apideck.crm.opportunities.get(id="<id>", service_id="salesforce", fields="id,updated_at")
 
+    assert res.get_opportunity_response is not None
+
     # Handle response
-    print(res)
+    print(res.get_opportunity_response)
 
 ```
 
@@ -294,8 +298,10 @@ with Apideck(
         },
     ])
 
+    assert res.update_opportunity_response is not None
+
     # Handle response
-    print(res)
+    print(res.update_opportunity_response)
 
 ```
 
@@ -370,8 +376,10 @@ with Apideck(
 
     res = apideck.crm.opportunities.delete(id="<id>", service_id="salesforce")
 
+    assert res.delete_opportunity_response is not None
+
     # Handle response
-    print(res)
+    print(res.delete_opportunity_response)
 
 ```
 

@@ -5,6 +5,7 @@ from .getpurchaseordersresponse import (
     GetPurchaseOrdersResponse,
     GetPurchaseOrdersResponseTypedDict,
 )
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .purchaseordersfilter import PurchaseOrdersFilter, PurchaseOrdersFilterTypedDict
 from .purchaseorderssort import PurchaseOrdersSort, PurchaseOrdersSortTypedDict
 from .unexpectederrorresponse import (
@@ -21,8 +22,8 @@ from apideck_unify.types import (
 from apideck_unify.utils import FieldMetadata, HeaderMetadata, QueryParamMetadata
 import pydantic
 from pydantic import model_serializer
-from typing import Any, Callable, Dict, Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Any, Callable, Dict, Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class AccountingPurchaseOrdersAllGlobalsTypedDict(TypedDict):
@@ -149,23 +150,21 @@ class AccountingPurchaseOrdersAllRequest(BaseModel):
         return m
 
 
-AccountingPurchaseOrdersAllResponseResultTypedDict = TypeAliasType(
-    "AccountingPurchaseOrdersAllResponseResultTypedDict",
-    Union[UnexpectedErrorResponseTypedDict, GetPurchaseOrdersResponseTypedDict],
-)
-
-
-AccountingPurchaseOrdersAllResponseResult = TypeAliasType(
-    "AccountingPurchaseOrdersAllResponseResult",
-    Union[UnexpectedErrorResponse, GetPurchaseOrdersResponse],
-)
-
-
 class AccountingPurchaseOrdersAllResponseTypedDict(TypedDict):
-    result: AccountingPurchaseOrdersAllResponseResultTypedDict
+    http_meta: HTTPMetadataTypedDict
+    get_purchase_orders_response: NotRequired[GetPurchaseOrdersResponseTypedDict]
+    r"""PurchaseOrders"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
 class AccountingPurchaseOrdersAllResponse(BaseModel):
     next: Callable[[], Optional[AccountingPurchaseOrdersAllResponse]]
 
-    result: AccountingPurchaseOrdersAllResponseResult
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    get_purchase_orders_response: Optional[GetPurchaseOrdersResponse] = None
+    r"""PurchaseOrders"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

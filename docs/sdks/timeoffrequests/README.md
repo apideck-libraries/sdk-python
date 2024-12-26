@@ -118,8 +118,10 @@ with Apideck(
         },
     ], policy_type="sick")
 
+    assert res.create_time_off_request_response is not None
+
     # Handle response
-    print(res)
+    print(res.create_time_off_request_response)
 
 ```
 
@@ -179,8 +181,10 @@ with Apideck(
 
     res = apideck.hris.time_off_requests.get(id="<id>", employee_id="<id>", service_id="salesforce", fields="id,updated_at")
 
+    assert res.get_time_off_request_response is not None
+
     # Handle response
-    print(res)
+    print(res.get_time_off_request_response)
 
 ```
 
@@ -296,8 +300,10 @@ with Apideck(
         },
     ], policy_type="sick")
 
+    assert res.update_time_off_request_response is not None
+
     # Handle response
-    print(res)
+    print(res.update_time_off_request_response)
 
 ```
 
@@ -359,8 +365,10 @@ with Apideck(
 
     res = apideck.hris.time_off_requests.delete(id="<id>", employee_id="<id>", service_id="salesforce")
 
+    assert res.delete_time_off_request_response is not None
+
     # Handle response
-    print(res)
+    print(res.delete_time_off_request_response)
 
 ```
 

@@ -105,8 +105,10 @@ with Apideck(
         },
     ])
 
+    assert res.create_department_response is not None
+
     # Handle response
-    print(res)
+    print(res.create_department_response)
 
 ```
 
@@ -155,8 +157,10 @@ with Apideck(
 
     res = apideck.hris.departments.get(id="<id>", service_id="salesforce", fields="id,updated_at")
 
+    assert res.get_department_response is not None
+
     # Handle response
-    print(res)
+    print(res.get_department_response)
 
 ```
 
@@ -267,8 +271,10 @@ with Apideck(
         },
     ])
 
+    assert res.update_department_response is not None
+
     # Handle response
-    print(res)
+    print(res.update_department_response)
 
 ```
 
@@ -318,8 +324,10 @@ with Apideck(
 
     res = apideck.hris.departments.delete(id="<id>", service_id="salesforce")
 
+    assert res.delete_department_response is not None
+
     # Handle response
-    print(res)
+    print(res.delete_department_response)
 
 ```
 

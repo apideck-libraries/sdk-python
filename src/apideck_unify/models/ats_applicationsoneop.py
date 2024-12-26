@@ -5,6 +5,7 @@ from .getapplicationresponse import (
     GetApplicationResponse,
     GetApplicationResponseTypedDict,
 )
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -17,8 +18,8 @@ from apideck_unify.utils import (
     QueryParamMetadata,
 )
 import pydantic
-from typing import Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class AtsApplicationsOneGlobalsTypedDict(TypedDict):
@@ -73,12 +74,19 @@ class AtsApplicationsOneRequest(BaseModel):
     r"""Include raw response. Mostly used for debugging purposes"""
 
 
-AtsApplicationsOneResponseTypedDict = TypeAliasType(
-    "AtsApplicationsOneResponseTypedDict",
-    Union[GetApplicationResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
+class AtsApplicationsOneResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    get_application_response: NotRequired[GetApplicationResponseTypedDict]
+    r"""Applications"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-AtsApplicationsOneResponse = TypeAliasType(
-    "AtsApplicationsOneResponse", Union[GetApplicationResponse, UnexpectedErrorResponse]
-)
+class AtsApplicationsOneResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    get_application_response: Optional[GetApplicationResponse] = None
+    r"""Applications"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

@@ -5,6 +5,7 @@ from .createopportunityresponse import (
     CreateOpportunityResponse,
     CreateOpportunityResponseTypedDict,
 )
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .opportunity_input import OpportunityInput, OpportunityInputTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
@@ -18,8 +19,8 @@ from apideck_unify.utils import (
     RequestMetadata,
 )
 import pydantic
-from typing import Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class CrmOpportunitiesAddGlobalsTypedDict(TypedDict):
@@ -73,13 +74,19 @@ class CrmOpportunitiesAddRequest(BaseModel):
     r"""Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API."""
 
 
-CrmOpportunitiesAddResponseTypedDict = TypeAliasType(
-    "CrmOpportunitiesAddResponseTypedDict",
-    Union[CreateOpportunityResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
+class CrmOpportunitiesAddResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    create_opportunity_response: NotRequired[CreateOpportunityResponseTypedDict]
+    r"""Opportunity created"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-CrmOpportunitiesAddResponse = TypeAliasType(
-    "CrmOpportunitiesAddResponse",
-    Union[CreateOpportunityResponse, UnexpectedErrorResponse],
-)
+class CrmOpportunitiesAddResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    create_opportunity_response: Optional[CreateOpportunityResponse] = None
+    r"""Opportunity created"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

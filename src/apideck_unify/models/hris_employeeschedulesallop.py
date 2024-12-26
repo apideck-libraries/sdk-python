@@ -5,6 +5,7 @@ from .getemployeeschedulesresponse import (
     GetEmployeeSchedulesResponse,
     GetEmployeeSchedulesResponseTypedDict,
 )
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -24,8 +25,8 @@ from apideck_unify.utils import (
 )
 import pydantic
 from pydantic import model_serializer
-from typing import Any, Dict, Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Any, Dict, Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class HrisEmployeeSchedulesAllGlobalsTypedDict(TypedDict):
@@ -126,13 +127,19 @@ class HrisEmployeeSchedulesAllRequest(BaseModel):
         return m
 
 
-HrisEmployeeSchedulesAllResponseTypedDict = TypeAliasType(
-    "HrisEmployeeSchedulesAllResponseTypedDict",
-    Union[GetEmployeeSchedulesResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
+class HrisEmployeeSchedulesAllResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    get_employee_schedules_response: NotRequired[GetEmployeeSchedulesResponseTypedDict]
+    r"""EmployeeSchedules"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-HrisEmployeeSchedulesAllResponse = TypeAliasType(
-    "HrisEmployeeSchedulesAllResponse",
-    Union[GetEmployeeSchedulesResponse, UnexpectedErrorResponse],
-)
+class HrisEmployeeSchedulesAllResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    get_employee_schedules_response: Optional[GetEmployeeSchedulesResponse] = None
+    r"""EmployeeSchedules"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

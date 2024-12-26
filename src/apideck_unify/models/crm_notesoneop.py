@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 from .getnoteresponse import GetNoteResponse, GetNoteResponseTypedDict
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -21,8 +22,8 @@ from apideck_unify.utils import (
 )
 import pydantic
 from pydantic import model_serializer
-from typing import Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class CrmNotesOneGlobalsTypedDict(TypedDict):
@@ -115,12 +116,19 @@ class CrmNotesOneRequest(BaseModel):
         return m
 
 
-CrmNotesOneResponseTypedDict = TypeAliasType(
-    "CrmNotesOneResponseTypedDict",
-    Union[GetNoteResponseTypedDict, UnexpectedErrorResponseTypedDict],
-)
+class CrmNotesOneResponseTypedDict(TypedDict):
+    http_meta: HTTPMetadataTypedDict
+    get_note_response: NotRequired[GetNoteResponseTypedDict]
+    r"""Note"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
-CrmNotesOneResponse = TypeAliasType(
-    "CrmNotesOneResponse", Union[GetNoteResponse, UnexpectedErrorResponse]
-)
+class CrmNotesOneResponse(BaseModel):
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    get_note_response: Optional[GetNoteResponse] = None
+    r"""Note"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""

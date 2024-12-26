@@ -33,8 +33,10 @@ with Apideck(
 
     res = apideck.vault.connections.list(api="crm", configured=True)
 
+    assert res.get_connections_response is not None
+
     # Handle response
-    print(res)
+    print(res.get_connections_response)
 
 ```
 
@@ -79,8 +81,10 @@ with Apideck(
 
     res = apideck.vault.connections.get(service_id="pipedrive", unified_api="crm")
 
+    assert res.get_connection_response is not None
+
     # Handle response
-    print(res)
+    print(res.get_connection_response)
 
 ```
 
@@ -295,8 +299,10 @@ with Apideck(
         },
     ])
 
+    assert res.update_connection_response is not None
+
     # Handle response
-    print(res)
+    print(res.update_connection_response)
 
 ```
 
@@ -363,7 +369,7 @@ with Apideck(
 
 ### Response
 
-**[models.UnexpectedErrorResponse](../../models/unexpectederrorresponse.md)**
+**[models.VaultConnectionsDeleteResponse](../../models/vaultconnectionsdeleteresponse.md)**
 
 ### Errors
 
@@ -404,8 +410,10 @@ with Apideck(
         "plan": "enterprise",
     })
 
+    assert res.create_connection_response is not None
+
     # Handle response
-    print(res)
+    print(res.create_connection_response)
 
 ```
 
@@ -459,8 +467,10 @@ with Apideck(
 
     res = apideck.vault.connections.token(service_id="pipedrive", unified_api="crm")
 
+    assert res.get_connection_response is not None
+
     # Handle response
-    print(res)
+    print(res.get_connection_response)
 
 ```
 

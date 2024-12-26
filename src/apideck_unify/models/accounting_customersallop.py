@@ -4,6 +4,7 @@ from __future__ import annotations
 from .customersfilter import CustomersFilter, CustomersFilterTypedDict
 from .customerssort import CustomersSort, CustomersSortTypedDict
 from .getcustomersresponse import GetCustomersResponse, GetCustomersResponseTypedDict
+from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -18,8 +19,8 @@ from apideck_unify.types import (
 from apideck_unify.utils import FieldMetadata, HeaderMetadata, QueryParamMetadata
 import pydantic
 from pydantic import model_serializer
-from typing import Any, Callable, Dict, Optional, Union
-from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+from typing import Any, Callable, Dict, Optional
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class AccountingCustomersAllGlobalsTypedDict(TypedDict):
@@ -155,23 +156,21 @@ class AccountingCustomersAllRequest(BaseModel):
         return m
 
 
-AccountingCustomersAllResponseResultTypedDict = TypeAliasType(
-    "AccountingCustomersAllResponseResultTypedDict",
-    Union[UnexpectedErrorResponseTypedDict, GetCustomersResponseTypedDict],
-)
-
-
-AccountingCustomersAllResponseResult = TypeAliasType(
-    "AccountingCustomersAllResponseResult",
-    Union[UnexpectedErrorResponse, GetCustomersResponse],
-)
-
-
 class AccountingCustomersAllResponseTypedDict(TypedDict):
-    result: AccountingCustomersAllResponseResultTypedDict
+    http_meta: HTTPMetadataTypedDict
+    get_customers_response: NotRequired[GetCustomersResponseTypedDict]
+    r"""Customers"""
+    unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
+    r"""Unexpected error"""
 
 
 class AccountingCustomersAllResponse(BaseModel):
     next: Callable[[], Optional[AccountingCustomersAllResponse]]
 
-    result: AccountingCustomersAllResponseResult
+    http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    get_customers_response: Optional[GetCustomersResponse] = None
+    r"""Customers"""
+
+    unexpected_error_response: Optional[UnexpectedErrorResponse] = None
+    r"""Unexpected error"""
