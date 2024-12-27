@@ -57,8 +57,10 @@ response = api_instance.contacts_all()
 print(response.data[0].id)
 
 # New SDK
+
+## Access data payload
 result = client.crm.contacts.list()
-print(result.data[0].id)
+print(result.get_contacts_response.data[0].id)
 
 # Access HTTP metadata
 print(result.http_meta.status_code)
