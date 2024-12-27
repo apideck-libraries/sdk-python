@@ -11,4 +11,4 @@ Type of the transaction.
 | `CREDIT_NOTE`  | credit_note    |
 | `BILL`         | bill           |
 | `PAYMENT`      | payment        |
-| `BILL_PAYMENT` | bill-payment   |
+| `BILL_PAYMENT` | bill_payment   |

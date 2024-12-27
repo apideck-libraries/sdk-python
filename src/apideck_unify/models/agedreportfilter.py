@@ -10,6 +10,8 @@ from typing_extensions import Annotated, NotRequired, TypedDict
 class AgedReportFilterTypedDict(TypedDict):
     customer_id: NotRequired[str]
     r"""Filter by customer id"""
+    supplier_id: NotRequired[str]
+    r"""Filter by supplier id"""
     report_as_of_date: NotRequired[str]
     r"""The cutoff date for considering transactions"""
     period_count: NotRequired[int]
@@ -21,6 +23,9 @@ class AgedReportFilterTypedDict(TypedDict):
 class AgedReportFilter(BaseModel):
     customer_id: Annotated[Optional[str], FieldMetadata(query=True)] = None
     r"""Filter by customer id"""
+
+    supplier_id: Annotated[Optional[str], FieldMetadata(query=True)] = None
+    r"""Filter by supplier id"""
 
     report_as_of_date: Annotated[Optional[str], FieldMetadata(query=True)] = None
     r"""The cutoff date for considering transactions"""

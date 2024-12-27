@@ -3,7 +3,7 @@
 import importlib.metadata
 
 __title__: str = "apideck-unify"
-__version__: str = "0.2.2"
+__version__: str = "0.2.3"
 
 try:
     if __package__ is not None:
