@@ -15,7 +15,7 @@ class TransactionType(str, Enum):
     CREDIT_NOTE = "credit_note"
     BILL = "bill"
     PAYMENT = "payment"
-    BILL_PAYMENT = "bill-payment"
+    BILL_PAYMENT = "bill_payment"
 
 
 class BalanceByTransactionTypedDict(TypedDict):
@@ -31,6 +31,8 @@ class BalanceByTransactionTypedDict(TypedDict):
     r"""Original amount of the transaction."""
     outstanding_balance: NotRequired[float]
     r"""Outstanding balance of the transaction."""
+    transaction_number: NotRequired[str]
+    r"""Transaction number of the transaction."""
 
 
 class BalanceByTransaction(BaseModel):
@@ -51,3 +53,6 @@ class BalanceByTransaction(BaseModel):
 
     outstanding_balance: Optional[float] = None
     r"""Outstanding balance of the transaction."""
+
+    transaction_number: Optional[str] = None
+    r"""Transaction number of the transaction."""

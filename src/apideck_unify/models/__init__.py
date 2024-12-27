@@ -3019,10 +3019,17 @@ from .opportunitiessort import (
 from .opportunity import Opportunity, OpportunityTypedDict
 from .opportunity_input import OpportunityInput, OpportunityInputTypedDict
 from .orderssort import OrdersSort, OrdersSortBy, OrdersSortTypedDict
-from .outstandingbalance import OutstandingBalance, OutstandingBalanceTypedDict
 from .outstandingbalancebycurrency import (
     OutstandingBalanceByCurrency,
     OutstandingBalanceByCurrencyTypedDict,
+)
+from .outstandingbalancebycustomer import (
+    OutstandingBalanceByCustomer,
+    OutstandingBalanceByCustomerTypedDict,
+)
+from .outstandingbalancebysupplier import (
+    OutstandingBalanceBySupplier,
+    OutstandingBalanceBySupplierTypedDict,
 )
 from .owner import Owner, OwnerTypedDict
 from .paginationcoverage import (
@@ -6055,10 +6062,12 @@ __all__ = [
     "OrdersSort",
     "OrdersSortBy",
     "OrdersSortTypedDict",
-    "OutstandingBalance",
     "OutstandingBalanceByCurrency",
     "OutstandingBalanceByCurrencyTypedDict",
-    "OutstandingBalanceTypedDict",
+    "OutstandingBalanceByCustomer",
+    "OutstandingBalanceByCustomerTypedDict",
+    "OutstandingBalanceBySupplier",
+    "OutstandingBalanceBySupplierTypedDict",
     "Owner",
     "OwnerTypedDict",
     "PaginationCoverage",

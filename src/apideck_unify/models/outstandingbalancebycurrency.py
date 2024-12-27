@@ -18,6 +18,8 @@ from typing_extensions import NotRequired, TypedDict
 class OutstandingBalanceByCurrencyTypedDict(TypedDict):
     currency: NotRequired[Nullable[Currency]]
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
+    total_amount: NotRequired[float]
+    r"""Total amount of the outstanding balance."""
     balances_by_period: NotRequired[List[BalanceByPeriodTypedDict]]
 
 
@@ -25,11 +27,14 @@ class OutstandingBalanceByCurrency(BaseModel):
     currency: OptionalNullable[Currency] = UNSET
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
 
+    total_amount: Optional[float] = None
+    r"""Total amount of the outstanding balance."""
+
     balances_by_period: Optional[List[BalanceByPeriod]] = None
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
-        optional_fields = ["currency", "balances_by_period"]
+        optional_fields = ["currency", "total_amount", "balances_by_period"]
         nullable_fields = ["currency"]
         null_default_fields = []
 

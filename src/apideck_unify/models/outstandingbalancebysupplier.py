@@ -10,22 +10,22 @@ from typing import List, Optional
 from typing_extensions import NotRequired, TypedDict
 
 
-class OutstandingBalanceTypedDict(TypedDict):
-    customer_id: NotRequired[str]
-    r"""Unique identifier for the customer or supplier."""
-    customer_name: NotRequired[str]
-    r"""Full name of the customer or supplier."""
+class OutstandingBalanceBySupplierTypedDict(TypedDict):
+    supplier_id: NotRequired[str]
+    r"""Unique identifier for the supplier."""
+    supplier_name: NotRequired[str]
+    r"""Full name of the supplier."""
     outstanding_balances_by_currency: NotRequired[
         List[OutstandingBalanceByCurrencyTypedDict]
     ]
 
 
-class OutstandingBalance(BaseModel):
-    customer_id: Optional[str] = None
-    r"""Unique identifier for the customer or supplier."""
+class OutstandingBalanceBySupplier(BaseModel):
+    supplier_id: Optional[str] = None
+    r"""Unique identifier for the supplier."""
 
-    customer_name: Optional[str] = None
-    r"""Full name of the customer or supplier."""
+    supplier_name: Optional[str] = None
+    r"""Full name of the supplier."""
 
     outstanding_balances_by_currency: Optional[List[OutstandingBalanceByCurrency]] = (
         None
