@@ -187,10 +187,6 @@ with Apideck(
 ### [accounting](docs/sdks/accounting/README.md)
 
 
-#### [accounting.aged_creditors](docs/sdks/agedcreditorssdk/README.md)
-
-* [get](docs/sdks/agedcreditorssdk/README.md#get) - Get Aged Creditors
-
 #### [accounting.aged_debtors](docs/sdks/ageddebtorssdk/README.md)
 
 * [get](docs/sdks/ageddebtorssdk/README.md#get) - Get Aged Debtors
@@ -458,10 +454,6 @@ with Apideck(
 #### [crm.pipelines](docs/sdks/pipelines/README.md)
 
 * [list](docs/sdks/pipelines/README.md#list) - List pipelines
-* [create](docs/sdks/pipelines/README.md#create) - Create pipeline
-* [get](docs/sdks/pipelines/README.md#get) - Get pipeline
-* [update](docs/sdks/pipelines/README.md#update) - Update pipeline
-* [delete](docs/sdks/pipelines/README.md#delete) - Delete pipeline
 
 #### [crm.users](docs/sdks/users/README.md)
 

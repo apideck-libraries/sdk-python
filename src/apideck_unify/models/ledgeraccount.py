@@ -3,6 +3,7 @@
 from __future__ import annotations
 from .bankaccount import BankAccount, BankAccountTypedDict
 from .currency import Currency
+from .customfield import CustomField, CustomFieldTypedDict
 from .custommappings import CustomMappings, CustomMappingsTypedDict
 from .linkedtaxrate import LinkedTaxRate, LinkedTaxRateTypedDict
 from .linkedtaxrate_input import LinkedTaxRateInput, LinkedTaxRateInputTypedDict
@@ -179,6 +180,7 @@ class LedgerAccountTypedDict(TypedDict):
     r"""The subsidiaries the account belongs to."""
     custom_mappings: NotRequired[Nullable[CustomMappingsTypedDict]]
     r"""When custom mappings are configured on the resource, the result is included here."""
+    custom_fields: NotRequired[List[CustomFieldTypedDict]]
     row_version: NotRequired[Nullable[str]]
     r"""A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object."""
     updated_by: NotRequired[Nullable[str]]
@@ -276,6 +278,8 @@ class LedgerAccount(BaseModel):
     custom_mappings: OptionalNullable[CustomMappings] = UNSET
     r"""When custom mappings are configured on the resource, the result is included here."""
 
+    custom_fields: Optional[List[CustomField]] = None
+
     row_version: OptionalNullable[str] = UNSET
     r"""A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object."""
 
@@ -324,6 +328,7 @@ class LedgerAccount(BaseModel):
             "last_reconciliation_date",
             "subsidiaries",
             "custom_mappings",
+            "custom_fields",
             "row_version",
             "updated_by",
             "created_by",
@@ -426,6 +431,7 @@ class LedgerAccountInputTypedDict(TypedDict):
     r"""Reconciliation Date means the last calendar day of each Reconciliation Period."""
     subsidiaries: NotRequired[List[LedgerAccountSubsidiariesTypedDict]]
     r"""The subsidiaries the account belongs to."""
+    custom_fields: NotRequired[List[CustomFieldTypedDict]]
     row_version: NotRequired[Nullable[str]]
     r"""A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object."""
     pass_through: NotRequired[List[PassThroughBodyTypedDict]]
@@ -503,6 +509,8 @@ class LedgerAccountInput(BaseModel):
     subsidiaries: Optional[List[LedgerAccountSubsidiaries]] = None
     r"""The subsidiaries the account belongs to."""
 
+    custom_fields: Optional[List[CustomField]] = None
+
     row_version: OptionalNullable[str] = UNSET
     r"""A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object."""
 
@@ -535,6 +543,7 @@ class LedgerAccountInput(BaseModel):
             "sub_account",
             "last_reconciliation_date",
             "subsidiaries",
+            "custom_fields",
             "row_version",
             "pass_through",
         ]
