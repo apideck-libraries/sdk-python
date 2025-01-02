@@ -2,7 +2,6 @@
 
 from .basesdk import BaseSDK
 from .sdkconfiguration import SDKConfiguration
-from apideck_unify.agedcreditors_sdk import AgedCreditorsSDK
 from apideck_unify.ageddebtors_sdk import AgedDebtorsSDK
 from apideck_unify.attachments import Attachments
 from apideck_unify.balancesheet_sdk import BalanceSheetSDK
@@ -49,7 +48,6 @@ class Accounting(BaseSDK):
     tracking_categories: TrackingCategories
     bill_payments: BillPayments
     expenses: Expenses
-    aged_creditors: AgedCreditorsSDK
     aged_debtors: AgedDebtorsSDK
 
     def __init__(self, sdk_config: SDKConfiguration) -> None:
@@ -79,5 +77,4 @@ class Accounting(BaseSDK):
         self.tracking_categories = TrackingCategories(self.sdk_configuration)
         self.bill_payments = BillPayments(self.sdk_configuration)
         self.expenses = Expenses(self.sdk_configuration)
-        self.aged_creditors = AgedCreditorsSDK(self.sdk_configuration)
         self.aged_debtors = AgedDebtorsSDK(self.sdk_configuration)

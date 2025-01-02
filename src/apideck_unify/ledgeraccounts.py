@@ -394,6 +394,9 @@ class LedgerAccounts(BaseSDK):
                 List[models.LedgerAccountSubsidiariesTypedDict],
             ]
         ] = None,
+        custom_fields: Optional[
+            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+        ] = None,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
@@ -432,6 +435,7 @@ class LedgerAccounts(BaseSDK):
         :param sub_account: Whether the account is a sub account or not.
         :param last_reconciliation_date: Reconciliation Date means the last calendar day of each Reconciliation Period.
         :param subsidiaries: The subsidiaries the account belongs to.
+        :param custom_fields:
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
@@ -481,6 +485,9 @@ class LedgerAccounts(BaseSDK):
                 last_reconciliation_date=last_reconciliation_date,
                 subsidiaries=utils.get_pydantic_model(
                     subsidiaries, Optional[List[models.LedgerAccountSubsidiaries]]
+                ),
+                custom_fields=utils.get_pydantic_model(
+                    custom_fields, Optional[List[models.CustomField]]
                 ),
                 row_version=row_version,
                 pass_through=utils.get_pydantic_model(
@@ -623,6 +630,9 @@ class LedgerAccounts(BaseSDK):
                 List[models.LedgerAccountSubsidiariesTypedDict],
             ]
         ] = None,
+        custom_fields: Optional[
+            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+        ] = None,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
@@ -661,6 +671,7 @@ class LedgerAccounts(BaseSDK):
         :param sub_account: Whether the account is a sub account or not.
         :param last_reconciliation_date: Reconciliation Date means the last calendar day of each Reconciliation Period.
         :param subsidiaries: The subsidiaries the account belongs to.
+        :param custom_fields:
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
@@ -710,6 +721,9 @@ class LedgerAccounts(BaseSDK):
                 last_reconciliation_date=last_reconciliation_date,
                 subsidiaries=utils.get_pydantic_model(
                     subsidiaries, Optional[List[models.LedgerAccountSubsidiaries]]
+                ),
+                custom_fields=utils.get_pydantic_model(
+                    custom_fields, Optional[List[models.CustomField]]
                 ),
                 row_version=row_version,
                 pass_through=utils.get_pydantic_model(
@@ -1117,6 +1131,9 @@ class LedgerAccounts(BaseSDK):
                 List[models.LedgerAccountSubsidiariesTypedDict],
             ]
         ] = None,
+        custom_fields: Optional[
+            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+        ] = None,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
@@ -1156,6 +1173,7 @@ class LedgerAccounts(BaseSDK):
         :param sub_account: Whether the account is a sub account or not.
         :param last_reconciliation_date: Reconciliation Date means the last calendar day of each Reconciliation Period.
         :param subsidiaries: The subsidiaries the account belongs to.
+        :param custom_fields:
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
@@ -1206,6 +1224,9 @@ class LedgerAccounts(BaseSDK):
                 last_reconciliation_date=last_reconciliation_date,
                 subsidiaries=utils.get_pydantic_model(
                     subsidiaries, Optional[List[models.LedgerAccountSubsidiaries]]
+                ),
+                custom_fields=utils.get_pydantic_model(
+                    custom_fields, Optional[List[models.CustomField]]
                 ),
                 row_version=row_version,
                 pass_through=utils.get_pydantic_model(
@@ -1349,6 +1370,9 @@ class LedgerAccounts(BaseSDK):
                 List[models.LedgerAccountSubsidiariesTypedDict],
             ]
         ] = None,
+        custom_fields: Optional[
+            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+        ] = None,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
@@ -1388,6 +1412,7 @@ class LedgerAccounts(BaseSDK):
         :param sub_account: Whether the account is a sub account or not.
         :param last_reconciliation_date: Reconciliation Date means the last calendar day of each Reconciliation Period.
         :param subsidiaries: The subsidiaries the account belongs to.
+        :param custom_fields:
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
@@ -1438,6 +1463,9 @@ class LedgerAccounts(BaseSDK):
                 last_reconciliation_date=last_reconciliation_date,
                 subsidiaries=utils.get_pydantic_model(
                     subsidiaries, Optional[List[models.LedgerAccountSubsidiaries]]
+                ),
+                custom_fields=utils.get_pydantic_model(
+                    custom_fields, Optional[List[models.CustomField]]
                 ),
                 row_version=row_version,
                 pass_through=utils.get_pydantic_model(
