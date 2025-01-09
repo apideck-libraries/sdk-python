@@ -1,12 +1,12 @@
 lockVersion: 2.0.0
 id: fca0ac3a-5f4e-452c-bbc7-2311afa8da40
 management:
-  docChecksum: 751539f3b8a24084318c7802fe497e71
+  docChecksum: ecf7354636f4f827d05e58359babc840
   docVersion: 10.9.0
-  speakeasyVersion: 1.460.3
-  generationVersion: 2.484.0
-  releaseVersion: 0.2.4
-  configChecksum: bdcd3827c3200357b0cecbb61a884e91
+  speakeasyVersion: 1.465.1
+  generationVersion: 2.488.4
+  releaseVersion: 0.2.5
+  configChecksum: 0b3e9446df0003772dfa12f5e0696179
   repoURL: https://github.com/apideck-libraries/sdk-python.git
   installationURL: https://github.com/apideck-libraries/sdk-python.git
   published: true
@@ -15,10 +15,10 @@ features:
     acceptHeaders: 3.0.0
     additionalDependencies: 1.0.0
     constsAndDefaults: 1.0.5
-    core: 5.7.4
+    core: 5.7.6
     deepObjectParams: 0.1.0
     defaultEnabledRetries: 0.2.0
-    deprecations: 3.0.0
+    deprecations: 3.0.2
     devContainers: 3.0.0
     downloadStreams: 1.0.1
     enumUnions: 0.1.0
