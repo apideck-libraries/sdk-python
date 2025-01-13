@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 from .currency import Currency
+from .customfield import CustomField, CustomFieldTypedDict
 from .custommappings import CustomMappings, CustomMappingsTypedDict
 from .journalentrylineitem import JournalEntryLineItem, JournalEntryLineItemTypedDict
 from .linkedtrackingcategory import (
@@ -63,6 +64,7 @@ class JournalEntryTypedDict(TypedDict):
     r"""The date and time when the object was created."""
     row_version: NotRequired[Nullable[str]]
     r"""A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object."""
+    custom_fields: NotRequired[List[CustomFieldTypedDict]]
     pass_through: NotRequired[List[PassThroughBodyTypedDict]]
     r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
 
@@ -128,6 +130,8 @@ class JournalEntry(BaseModel):
     row_version: OptionalNullable[str] = UNSET
     r"""A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object."""
 
+    custom_fields: Optional[List[CustomField]] = None
+
     pass_through: Optional[List[PassThroughBody]] = None
     r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
 
@@ -154,6 +158,7 @@ class JournalEntry(BaseModel):
             "updated_at",
             "created_at",
             "row_version",
+            "custom_fields",
             "pass_through",
         ]
         nullable_fields = [

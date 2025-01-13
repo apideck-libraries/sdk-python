@@ -1,12 +1,12 @@
 lockVersion: 2.0.0
 id: fca0ac3a-5f4e-452c-bbc7-2311afa8da40
 management:
-  docChecksum: 751539f3b8a24084318c7802fe497e71
-  docVersion: 10.9.0
-  speakeasyVersion: 1.460.3
-  generationVersion: 2.484.0
-  releaseVersion: 0.2.4
-  configChecksum: bdcd3827c3200357b0cecbb61a884e91
+  docChecksum: 4edecff9e6c4aad466910c1310d34b3a
+  docVersion: 10.9.1
+  speakeasyVersion: 1.468.2
+  generationVersion: 2.493.4
+  releaseVersion: 0.3.0
+  configChecksum: cd07ffed6429bd8ec7c928e576bd1a60
   repoURL: https://github.com/apideck-libraries/sdk-python.git
   installationURL: https://github.com/apideck-libraries/sdk-python.git
   published: true
@@ -15,10 +15,10 @@ features:
     acceptHeaders: 3.0.0
     additionalDependencies: 1.0.0
     constsAndDefaults: 1.0.5
-    core: 5.7.4
+    core: 5.10.1
     deepObjectParams: 0.1.0
     defaultEnabledRetries: 0.2.0
-    deprecations: 3.0.0
+    deprecations: 3.0.2
     devContainers: 3.0.0
     downloadStreams: 1.0.1
     enumUnions: 0.1.0
@@ -35,7 +35,7 @@ features:
     hiddenGlobals: 1.0.0
     inputOutputModels: 3.0.0
     methodArguments: 1.0.2
-    methodServerURLs: 3.1.0
+    methodServerURLs: 3.1.1
     nameOverrides: 3.0.1
     nullables: 1.0.0
     pagination: 3.0.2
@@ -51,7 +51,6 @@ generatedFiles:
   - .gitattributes
   - .python-version
   - .vscode/settings.json
-  - CONTRIBUTING.md
   - USAGE.md
   - docs/models/accountingageddebtorsoneglobals.md
   - docs/models/accountingageddebtorsonerequest.md
