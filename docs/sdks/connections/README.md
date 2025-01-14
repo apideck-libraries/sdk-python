@@ -203,16 +203,7 @@ with Apideck(
                 {
                     "id": "ProductInterest",
                     "options": [
-                        {
-                            "id": "1234",
-                            "label": "General Channel",
-                            "options": [
-                                {
-                                    "label": "General Channel",
-                                    "value": 12.5,
-                                },
-                            ],
-                        },
+
                     ],
                     "value": True,
                 },
@@ -228,10 +219,7 @@ with Apideck(
                             "id": "1234",
                             "label": "General Channel",
                             "options": [
-                                {
-                                    "label": "General Channel",
-                                    "value": 123,
-                                },
+
                             ],
                         },
                     ],
@@ -294,9 +282,7 @@ with Apideck(
             ],
         },
     ], custom_mappings=[
-        {
-            "value": "$.root.training.first_aid",
-        },
+
     ])
 
     assert res.update_connection_response is not None

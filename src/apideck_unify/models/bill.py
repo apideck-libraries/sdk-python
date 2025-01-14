@@ -67,9 +67,9 @@ class BillTypedDict(TypedDict):
     r"""Currency Exchange Rate at the time entity was recorded/generated."""
     tax_inclusive: NotRequired[Nullable[bool]]
     r"""Amounts are including tax"""
-    bill_date: NotRequired[date]
+    bill_date: NotRequired[Nullable[date]]
     r"""Date bill was issued - YYYY-MM-DD."""
-    due_date: NotRequired[date]
+    due_date: NotRequired[Nullable[date]]
     r"""The due date is the date on which a payment is scheduled to be received - YYYY-MM-DD."""
     paid_date: NotRequired[Nullable[date]]
     r"""The paid date is the date on which a payment was sent to the supplier - YYYY-MM-DD."""
@@ -153,10 +153,10 @@ class Bill(BaseModel):
     tax_inclusive: OptionalNullable[bool] = UNSET
     r"""Amounts are including tax"""
 
-    bill_date: Optional[date] = None
+    bill_date: OptionalNullable[date] = UNSET
     r"""Date bill was issued - YYYY-MM-DD."""
 
-    due_date: Optional[date] = None
+    due_date: OptionalNullable[date] = UNSET
     r"""The due date is the date on which a payment is scheduled to be received - YYYY-MM-DD."""
 
     paid_date: OptionalNullable[date] = UNSET
@@ -296,6 +296,8 @@ class Bill(BaseModel):
             "currency",
             "currency_rate",
             "tax_inclusive",
+            "bill_date",
+            "due_date",
             "paid_date",
             "po_number",
             "reference",
@@ -363,9 +365,9 @@ class BillInputTypedDict(TypedDict):
     r"""Currency Exchange Rate at the time entity was recorded/generated."""
     tax_inclusive: NotRequired[Nullable[bool]]
     r"""Amounts are including tax"""
-    bill_date: NotRequired[date]
+    bill_date: NotRequired[Nullable[date]]
     r"""Date bill was issued - YYYY-MM-DD."""
-    due_date: NotRequired[date]
+    due_date: NotRequired[Nullable[date]]
     r"""The due date is the date on which a payment is scheduled to be received - YYYY-MM-DD."""
     paid_date: NotRequired[Nullable[date]]
     r"""The paid date is the date on which a payment was sent to the supplier - YYYY-MM-DD."""
@@ -433,10 +435,10 @@ class BillInput(BaseModel):
     tax_inclusive: OptionalNullable[bool] = UNSET
     r"""Amounts are including tax"""
 
-    bill_date: Optional[date] = None
+    bill_date: OptionalNullable[date] = UNSET
     r"""Date bill was issued - YYYY-MM-DD."""
 
-    due_date: Optional[date] = None
+    due_date: OptionalNullable[date] = UNSET
     r"""The due date is the date on which a payment is scheduled to be received - YYYY-MM-DD."""
 
     paid_date: OptionalNullable[date] = UNSET
@@ -553,6 +555,8 @@ class BillInput(BaseModel):
             "currency",
             "currency_rate",
             "tax_inclusive",
+            "bill_date",
+            "due_date",
             "paid_date",
             "po_number",
             "reference",

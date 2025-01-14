@@ -144,20 +144,9 @@ with Apideck(
             "row_version": "1-12345",
         },
     ], social_links=[
-        {
-            "url": "https://www.twitter.com/apideck",
-            "id": "12345",
-            "type": "twitter",
-        },
+
     ], phone_numbers=[
-        {
-            "number": "111-111-1111",
-            "id": "12345",
-            "country_code": "1",
-            "area_code": "323",
-            "extension": "105",
-            "type": apideck_unify.PhoneNumberType.PRIMARY,
-        },
+
     ], emails=[
         {
             "email": "elon@musk.com",
@@ -551,19 +540,7 @@ with Apideck(
     ], tags=[
         "New",
     ], read_only=False, salutation="Mr", birthday=dateutil.parser.parse("2000-08-12").date(), pass_through=[
-        {
-            "service_id": "<id>",
-            "extend_paths": [
-                {
-                    "path": "$.nested.property",
-                    "value": {
-                        "TaxClassificationRef": {
-                            "value": "EUC-99990201-V1-00020000",
-                        },
-                    },
-                },
-            ],
-        },
+
     ])
 
     assert res.update_company_response is not None

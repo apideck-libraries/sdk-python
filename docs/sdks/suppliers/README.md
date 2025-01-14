@@ -147,25 +147,9 @@ with Apideck(
             "type": apideck_unify.EmailType.PRIMARY,
         },
     ], websites=[
-        {
-            "url": "http://example.com",
-            "id": "12345",
-            "type": apideck_unify.WebsiteType.PRIMARY,
-        },
+
     ], bank_accounts=[
-        {
-            "bank_name": "Monzo",
-            "account_number": "123465",
-            "account_name": "SPACEX LLC",
-            "account_type": apideck_unify.AccountType.CREDIT_CARD,
-            "iban": "CH2989144532982975332",
-            "bic": "AUDSCHGGXXX",
-            "routing_number": "012345678",
-            "bsb_number": "062-001",
-            "branch_identifier": "001",
-            "bank_code": "BNH",
-            "currency": apideck_unify.Currency.USD,
-        },
+
     ], notes="Some notes about this supplier", tax_rate={
         "id": "123456",
         "rate": 10,
@@ -213,27 +197,13 @@ with Apideck(
         {
             "service_id": "<id>",
             "extend_paths": [
-                {
-                    "path": "$.nested.property",
-                    "value": {
-                        "TaxClassificationRef": {
-                            "value": "EUC-99990201-V1-00020000",
-                        },
-                    },
-                },
+
             ],
         },
         {
             "service_id": "<id>",
             "extend_paths": [
-                {
-                    "path": "$.nested.property",
-                    "value": {
-                        "TaxClassificationRef": {
-                            "value": "EUC-99990201-V1-00020000",
-                        },
-                    },
-                },
+
             ],
         },
     ], subsidiary_id="12345")

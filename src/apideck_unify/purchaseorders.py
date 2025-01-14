@@ -389,7 +389,7 @@ class PurchaseOrders(BaseSDK):
             Union[models.BankAccount, models.BankAccountTypedDict]
         ] = None,
         accounting_by_row: OptionalNullable[bool] = UNSET,
-        due_date: Optional[date] = None,
+        due_date: OptionalNullable[date] = UNSET,
         payment_method: OptionalNullable[str] = UNSET,
         tax_code: OptionalNullable[str] = UNSET,
         channel: OptionalNullable[str] = UNSET,
@@ -645,7 +645,7 @@ class PurchaseOrders(BaseSDK):
             Union[models.BankAccount, models.BankAccountTypedDict]
         ] = None,
         accounting_by_row: OptionalNullable[bool] = UNSET,
-        due_date: Optional[date] = None,
+        due_date: OptionalNullable[date] = UNSET,
         payment_method: OptionalNullable[str] = UNSET,
         tax_code: OptionalNullable[str] = UNSET,
         channel: OptionalNullable[str] = UNSET,
@@ -1160,7 +1160,7 @@ class PurchaseOrders(BaseSDK):
             Union[models.BankAccount, models.BankAccountTypedDict]
         ] = None,
         accounting_by_row: OptionalNullable[bool] = UNSET,
-        due_date: Optional[date] = None,
+        due_date: OptionalNullable[date] = UNSET,
         payment_method: OptionalNullable[str] = UNSET,
         tax_code: OptionalNullable[str] = UNSET,
         channel: OptionalNullable[str] = UNSET,
@@ -1419,7 +1419,7 @@ class PurchaseOrders(BaseSDK):
             Union[models.BankAccount, models.BankAccountTypedDict]
         ] = None,
         accounting_by_row: OptionalNullable[bool] = UNSET,
-        due_date: Optional[date] = None,
+        due_date: OptionalNullable[date] = UNSET,
         payment_method: OptionalNullable[str] = UNSET,
         tax_code: OptionalNullable[str] = UNSET,
         channel: OptionalNullable[str] = UNSET,

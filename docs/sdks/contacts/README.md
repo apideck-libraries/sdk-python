@@ -160,20 +160,9 @@ with Apideck(
             "type": "twitter",
         },
     ], phone_numbers=[
-        {
-            "number": "111-111-1111",
-            "id": "12345",
-            "country_code": "1",
-            "area_code": "323",
-            "extension": "105",
-            "type": apideck_unify.PhoneNumberType.PRIMARY,
-        },
+
     ], emails=[
-        {
-            "email": "elon@musk.com",
-            "id": "123",
-            "type": apideck_unify.EmailType.PRIMARY,
-        },
+
     ], email_domain="gmail.com", custom_fields=[
         {
             "id": "2389328923893298",
@@ -569,14 +558,7 @@ with Apideck(
         {
             "service_id": "<id>",
             "extend_paths": [
-                {
-                    "path": "$.nested.property",
-                    "value": {
-                        "TaxClassificationRef": {
-                            "value": "EUC-99990201-V1-00020000",
-                        },
-                    },
-                },
+
             ],
         },
     ])
