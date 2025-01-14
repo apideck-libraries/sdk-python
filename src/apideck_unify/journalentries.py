@@ -384,6 +384,9 @@ class JournalEntries(BaseSDK):
         ] = UNSET,
         accounting_period: OptionalNullable[str] = UNSET,
         row_version: OptionalNullable[str] = UNSET,
+        custom_fields: Optional[
+            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+        ] = None,
         pass_through: Optional[
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
         ] = None,
@@ -412,6 +415,7 @@ class JournalEntries(BaseSDK):
         :param tracking_categories: A list of linked tracking categories.
         :param accounting_period: Accounting period
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
+        :param custom_fields:
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
@@ -449,6 +453,9 @@ class JournalEntries(BaseSDK):
                 ),
                 accounting_period=accounting_period,
                 row_version=row_version,
+                custom_fields=utils.get_pydantic_model(
+                    custom_fields, Optional[List[models.CustomField]]
+                ),
                 pass_through=utils.get_pydantic_model(
                     pass_through, Optional[List[models.PassThroughBody]]
                 ),
@@ -579,6 +586,9 @@ class JournalEntries(BaseSDK):
         ] = UNSET,
         accounting_period: OptionalNullable[str] = UNSET,
         row_version: OptionalNullable[str] = UNSET,
+        custom_fields: Optional[
+            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+        ] = None,
         pass_through: Optional[
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
         ] = None,
@@ -607,6 +617,7 @@ class JournalEntries(BaseSDK):
         :param tracking_categories: A list of linked tracking categories.
         :param accounting_period: Accounting period
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
+        :param custom_fields:
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
@@ -644,6 +655,9 @@ class JournalEntries(BaseSDK):
                 ),
                 accounting_period=accounting_period,
                 row_version=row_version,
+                custom_fields=utils.get_pydantic_model(
+                    custom_fields, Optional[List[models.CustomField]]
+                ),
                 pass_through=utils.get_pydantic_model(
                     pass_through, Optional[List[models.PassThroughBody]]
                 ),
@@ -1039,6 +1053,9 @@ class JournalEntries(BaseSDK):
         ] = UNSET,
         accounting_period: OptionalNullable[str] = UNSET,
         row_version: OptionalNullable[str] = UNSET,
+        custom_fields: Optional[
+            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+        ] = None,
         pass_through: Optional[
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
         ] = None,
@@ -1068,6 +1085,7 @@ class JournalEntries(BaseSDK):
         :param tracking_categories: A list of linked tracking categories.
         :param accounting_period: Accounting period
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
+        :param custom_fields:
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
@@ -1106,6 +1124,9 @@ class JournalEntries(BaseSDK):
                 ),
                 accounting_period=accounting_period,
                 row_version=row_version,
+                custom_fields=utils.get_pydantic_model(
+                    custom_fields, Optional[List[models.CustomField]]
+                ),
                 pass_through=utils.get_pydantic_model(
                     pass_through, Optional[List[models.PassThroughBody]]
                 ),
@@ -1237,6 +1258,9 @@ class JournalEntries(BaseSDK):
         ] = UNSET,
         accounting_period: OptionalNullable[str] = UNSET,
         row_version: OptionalNullable[str] = UNSET,
+        custom_fields: Optional[
+            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+        ] = None,
         pass_through: Optional[
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
         ] = None,
@@ -1266,6 +1290,7 @@ class JournalEntries(BaseSDK):
         :param tracking_categories: A list of linked tracking categories.
         :param accounting_period: Accounting period
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
+        :param custom_fields:
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
@@ -1304,6 +1329,9 @@ class JournalEntries(BaseSDK):
                 ),
                 accounting_period=accounting_period,
                 row_version=row_version,
+                custom_fields=utils.get_pydantic_model(
+                    custom_fields, Optional[List[models.CustomField]]
+                ),
                 pass_through=utils.get_pydantic_model(
                     pass_through, Optional[List[models.PassThroughBody]]
                 ),

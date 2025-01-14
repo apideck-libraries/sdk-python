@@ -87,7 +87,8 @@ class Apideck(BaseSDK):
 
         security: Any = None
         if callable(api_key):
-            security = lambda: models.Security(api_key=api_key())  # pylint: disable=unnecessary-lambda-assignment
+            # pylint: disable=unnecessary-lambda-assignment
+            security = lambda: models.Security(api_key=api_key())
         else:
             security = models.Security(api_key=api_key)
 
