@@ -141,12 +141,7 @@ with Apideck(
                 "code": "453",
             },
             "custom_fields": [
-                {
-                    "id": "2389328923893298",
-                    "name": "employee_level",
-                    "description": "Employee Level",
-                    "value": True,
-                },
+
             ],
             "row_version": "1-12345",
         },
@@ -176,10 +171,7 @@ with Apideck(
                 "rate": 10,
             },
             "tracking_categories": [
-                {
-                    "id": "123456",
-                    "name": "New York",
-                },
+
             ],
             "ledger_account": {
                 "id": "123456",
@@ -304,14 +296,7 @@ with Apideck(
         {
             "service_id": "<id>",
             "extend_paths": [
-                {
-                    "path": "$.nested.property",
-                    "value": {
-                        "TaxClassificationRef": {
-                            "value": "EUC-99990201-V1-00020000",
-                        },
-                    },
-                },
+
             ],
         },
     ])
@@ -649,28 +634,9 @@ with Apideck(
         "nominal_code": "N091",
         "code": "453",
     }, custom_fields=[
-        {
-            "id": "2389328923893298",
-            "name": "employee_level",
-            "description": "Employee Level",
-            "value": [
-                {},
-            ],
-        },
+
     ], row_version="1-12345", pass_through=[
-        {
-            "service_id": "<id>",
-            "extend_paths": [
-                {
-                    "path": "$.nested.property",
-                    "value": {
-                        "TaxClassificationRef": {
-                            "value": "EUC-99990201-V1-00020000",
-                        },
-                    },
-                },
-            ],
-        },
+
     ])
 
     assert res.update_invoice_response is not None

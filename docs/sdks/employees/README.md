@@ -234,18 +234,9 @@ with Apideck(
             "type": apideck_unify.PhoneNumberType.PRIMARY,
         },
     ], emails=[
-        {
-            "email": "elon@musk.com",
-            "id": "123",
-            "type": apideck_unify.EmailType.PRIMARY,
-        },
+
     ], custom_fields=[
-        {
-            "id": "2389328923893298",
-            "name": "employee_level",
-            "description": "Employee Level",
-            "value": True,
-        },
+
     ], social_links=[
         {
             "url": "https://www.twitter.com/apideck",
@@ -310,19 +301,7 @@ with Apideck(
     }, tags=[
         "New",
     ], row_version="1-12345", deleted=True, pass_through=[
-        {
-            "service_id": "<id>",
-            "extend_paths": [
-                {
-                    "path": "$.nested.property",
-                    "value": {
-                        "TaxClassificationRef": {
-                            "value": "EUC-99990201-V1-00020000",
-                        },
-                    },
-                },
-            ],
-        },
+
     ])
 
     assert res.create_employee_response is not None
@@ -772,14 +751,7 @@ with Apideck(
         {
             "service_id": "<id>",
             "extend_paths": [
-                {
-                    "path": "$.nested.property",
-                    "value": {
-                        "TaxClassificationRef": {
-                            "value": "EUC-99990201-V1-00020000",
-                        },
-                    },
-                },
+
             ],
         },
     ])

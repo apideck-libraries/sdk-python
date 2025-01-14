@@ -88,7 +88,7 @@ class PurchaseOrderTypedDict(TypedDict):
     bank_account: NotRequired[BankAccountTypedDict]
     accounting_by_row: NotRequired[Nullable[bool]]
     r"""Indicates if accounting by row is used (true) or not (false). Accounting by row means that a separate ledger transaction is created for each row."""
-    due_date: NotRequired[date]
+    due_date: NotRequired[Nullable[date]]
     r"""The due date is the date on which a payment is scheduled to be received - YYYY-MM-DD."""
     payment_method: NotRequired[Nullable[str]]
     r"""Payment method used for the transaction, such as cash, credit card, bank transfer, or check"""
@@ -181,7 +181,7 @@ class PurchaseOrder(BaseModel):
     accounting_by_row: OptionalNullable[bool] = UNSET
     r"""Indicates if accounting by row is used (true) or not (false). Accounting by row means that a separate ledger transaction is created for each row."""
 
-    due_date: Optional[date] = None
+    due_date: OptionalNullable[date] = UNSET
     r"""The due date is the date on which a payment is scheduled to be received - YYYY-MM-DD."""
 
     payment_method: OptionalNullable[str] = UNSET
@@ -280,6 +280,7 @@ class PurchaseOrder(BaseModel):
             "template_id",
             "discount_percentage",
             "accounting_by_row",
+            "due_date",
             "payment_method",
             "tax_code",
             "channel",
@@ -357,7 +358,7 @@ class PurchaseOrderInputTypedDict(TypedDict):
     bank_account: NotRequired[BankAccountTypedDict]
     accounting_by_row: NotRequired[Nullable[bool]]
     r"""Indicates if accounting by row is used (true) or not (false). Accounting by row means that a separate ledger transaction is created for each row."""
-    due_date: NotRequired[date]
+    due_date: NotRequired[Nullable[date]]
     r"""The due date is the date on which a payment is scheduled to be received - YYYY-MM-DD."""
     payment_method: NotRequired[Nullable[str]]
     r"""Payment method used for the transaction, such as cash, credit card, bank transfer, or check"""
@@ -434,7 +435,7 @@ class PurchaseOrderInput(BaseModel):
     accounting_by_row: OptionalNullable[bool] = UNSET
     r"""Indicates if accounting by row is used (true) or not (false). Accounting by row means that a separate ledger transaction is created for each row."""
 
-    due_date: Optional[date] = None
+    due_date: OptionalNullable[date] = UNSET
     r"""The due date is the date on which a payment is scheduled to be received - YYYY-MM-DD."""
 
     payment_method: OptionalNullable[str] = UNSET
@@ -510,6 +511,7 @@ class PurchaseOrderInput(BaseModel):
             "template_id",
             "discount_percentage",
             "accounting_by_row",
+            "due_date",
             "payment_method",
             "tax_code",
             "channel",

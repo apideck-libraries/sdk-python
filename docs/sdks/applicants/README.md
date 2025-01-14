@@ -106,14 +106,7 @@ with Apideck(
             "value": "Uses Salesforce and Marketo",
         },
     ], phone_numbers=[
-        {
-            "number": "111-111-1111",
-            "id": "12345",
-            "country_code": "1",
-            "area_code": "323",
-            "extension": "105",
-            "type": apideck_unify.PhoneNumberType.PRIMARY,
-        },
+
     ], addresses=[
         {
             "id": "123",
@@ -210,11 +203,7 @@ with Apideck(
             "type": apideck_unify.ApplicantType.PRIMARY,
         },
     ], social_links=[
-        {
-            "url": "https://www.twitter.com/apideck",
-            "id": "12345",
-            "type": "twitter",
-        },
+
     ], stage_id="12345", recruiter_id="12345", coordinator_id="12345", application_ids=[
         "a0d636c6-43b3-4bde-8c70-85b707d992f4",
         "a98lfd96-43b3-4bde-8c70-85b707d992e6",
@@ -229,19 +218,7 @@ with Apideck(
     ], confidential=False, anonymized=True, tags=[
         "New",
     ], archived=False, owner_id="54321", record_url="https://app.intercom.io/contacts/12345", deleted=True, pass_through=[
-        {
-            "service_id": "<id>",
-            "extend_paths": [
-                {
-                    "path": "$.nested.property",
-                    "value": {
-                        "TaxClassificationRef": {
-                            "value": "EUC-99990201-V1-00020000",
-                        },
-                    },
-                },
-            ],
-        },
+
     ])
 
     assert res.create_applicant_response is not None
@@ -490,11 +467,7 @@ with Apideck(
             "row_version": "1-12345",
         },
     ], websites=[
-        {
-            "url": "http://example.com",
-            "id": "12345",
-            "type": apideck_unify.ApplicantType.PRIMARY,
-        },
+
     ], social_links=[
         {
             "url": "https://www.twitter.com/apideck",

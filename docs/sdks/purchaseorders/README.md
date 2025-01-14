@@ -214,10 +214,7 @@ with Apideck(
         "bank_code": "BNH",
         "currency": apideck_unify.Currency.USD,
     }, accounting_by_row=False, due_date=dateutil.parser.parse("2020-10-30").date(), payment_method="cash", tax_code="1234", channel="email", memo="Thank you for the partnership and have a great day!", tracking_categories=[
-        {
-            "id": "123456",
-            "name": "New York",
-        },
+
     ], row_version="1-12345", pass_through=[
         {
             "service_id": "<id>",
@@ -251,27 +248,13 @@ with Apideck(
         {
             "service_id": "<id>",
             "extend_paths": [
-                {
-                    "path": "$.nested.property",
-                    "value": {
-                        "TaxClassificationRef": {
-                            "value": "EUC-99990201-V1-00020000",
-                        },
-                    },
-                },
+
             ],
         },
         {
             "service_id": "<id>",
             "extend_paths": [
-                {
-                    "path": "$.nested.property",
-                    "value": {
-                        "TaxClassificationRef": {
-                            "value": "EUC-99990201-V1-00020000",
-                        },
-                    },
-                },
+
             ],
         },
     ])
@@ -564,10 +547,7 @@ with Apideck(
                 "rate": 10,
             },
             "tracking_categories": [
-                {
-                    "id": "123456",
-                    "name": "New York",
-                },
+
             ],
             "ledger_account": {
                 "id": "123456",
@@ -575,14 +555,7 @@ with Apideck(
                 "code": "453",
             },
             "custom_fields": [
-                {
-                    "id": "2389328923893298",
-                    "name": "employee_level",
-                    "description": "Employee Level",
-                    "value": [
-                        {},
-                    ],
-                },
+
             ],
             "row_version": "1-12345",
         },

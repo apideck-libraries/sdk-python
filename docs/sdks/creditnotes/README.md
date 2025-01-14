@@ -152,11 +152,7 @@ with Apideck(
             "row_version": "1-12345",
         },
     ], allocations=[
-        {
-            "id": "123456",
-            "amount": 49.99,
-            "allocation_id": "123456",
-        },
+
     ], note="Some notes about this credit note", terms="Some terms about this credit note", billing_address={
         "id": "123",
         "type": apideck_unify.Type.PRIMARY,
@@ -588,10 +584,7 @@ with Apideck(
                 "rate": 10,
             },
             "tracking_categories": [
-                {
-                    "id": "123456",
-                    "name": "New York",
-                },
+
             ],
             "ledger_account": {
                 "id": "123456",
@@ -599,14 +592,7 @@ with Apideck(
                 "code": "453",
             },
             "custom_fields": [
-                {
-                    "id": "2389328923893298",
-                    "name": "employee_level",
-                    "description": "Employee Level",
-                    "value": [
-                        {},
-                    ],
-                },
+
             ],
             "row_version": "1-12345",
         },
@@ -734,14 +720,7 @@ with Apideck(
         {
             "service_id": "<id>",
             "extend_paths": [
-                {
-                    "path": "$.nested.property",
-                    "value": {
-                        "TaxClassificationRef": {
-                            "value": "EUC-99990201-V1-00020000",
-                        },
-                    },
-                },
+
             ],
         },
     ])
