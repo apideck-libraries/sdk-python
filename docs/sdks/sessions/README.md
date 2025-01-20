@@ -40,7 +40,15 @@ with Apideck(
             "unified_apis": [
                 apideck_unify.UnifiedAPIID.CRM,
             ],
-            "session_length": "30m",
+            "hide_resource_settings": False,
+            "sandbox_mode": False,
+            "isolation_mode": False,
+            "session_length": "1h",
+            "show_logs": True,
+            "show_suggestions": False,
+            "show_sidebar": True,
+            "auto_redirect": False,
+            "hide_guides": False,
         },
         "theme": {
             "favicon": "https://res.cloudinary.com/apideck/icons/intercom",

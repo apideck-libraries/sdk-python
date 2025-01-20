@@ -29,7 +29,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.accounting.ledger_accounts.list(service_id="salesforce", filter_={
+    res = apideck.accounting.ledger_accounts.list(raw=False, service_id="salesforce", limit=20, filter_={
         "updated_since": dateutil.parser.isoparse("2020-09-30T07:43:32.000Z"),
     }, sort={
         "by": apideck_unify.LedgerAccountsSortBy.UPDATED_AT,
@@ -92,7 +92,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.accounting.ledger_accounts.create(service_id="salesforce", display_id="1-12345", code="453", classification=apideck_unify.Classification.ASSET, type_=apideck_unify.LedgerAccountType.BANK, sub_type="CHECKING_ACCOUNT", name="Bank account", fully_qualified_name="Asset.Bank.Checking_Account", description="Main checking account", opening_balance=75000, current_balance=20000, currency=apideck_unify.Currency.USD, tax_type="NONE", tax_rate={
+    res = apideck.accounting.ledger_accounts.create(raw=False, service_id="salesforce", display_id="1-12345", code="453", classification=apideck_unify.Classification.ASSET, type_=apideck_unify.LedgerAccountType.BANK, sub_type="CHECKING_ACCOUNT", name="Bank account", fully_qualified_name="Asset.Bank.Checking_Account", description="Main checking account", opening_balance=75000, current_balance=20000, currency=apideck_unify.Currency.USD, tax_type="NONE", tax_rate={
         "id": "123456",
         "rate": 10,
     }, level=1, active=True, status=apideck_unify.AccountStatus.ACTIVE, header=True, bank_account={
@@ -116,20 +116,18 @@ with Apideck(
             "id": "2389328923893298",
             "name": "employee_level",
             "description": "Employee Level",
+            "value": {},
+        },
+        {
+            "id": "2389328923893298",
+            "name": "employee_level",
+            "description": "Employee Level",
             "value": True,
         },
     ], row_version="1-12345", pass_through=[
         {
             "service_id": "<id>",
             "extend_paths": [
-                {
-                    "path": "$.nested.property",
-                    "value": {
-                        "TaxClassificationRef": {
-                            "value": "EUC-99990201-V1-00020000",
-                        },
-                    },
-                },
                 {
                     "path": "$.nested.property",
                     "value": {
@@ -214,7 +212,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.accounting.ledger_accounts.get(id="<id>", service_id="salesforce", fields="id,updated_at")
+    res = apideck.accounting.ledger_accounts.get(id="<id>", service_id="salesforce", raw=False, fields="id,updated_at")
 
     assert res.get_ledger_account_response is not None
 
@@ -266,7 +264,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.accounting.ledger_accounts.update(id="<id>", service_id="salesforce", display_id="1-12345", code="453", classification=apideck_unify.Classification.ASSET, type_=apideck_unify.LedgerAccountType.BANK, sub_type="CHECKING_ACCOUNT", name="Bank account", fully_qualified_name="Asset.Bank.Checking_Account", description="Main checking account", opening_balance=75000, current_balance=20000, currency=apideck_unify.Currency.USD, tax_type="NONE", tax_rate={
+    res = apideck.accounting.ledger_accounts.update(id="<id>", service_id="salesforce", raw=False, display_id="1-12345", code="453", classification=apideck_unify.Classification.ASSET, type_=apideck_unify.LedgerAccountType.BANK, sub_type="CHECKING_ACCOUNT", name="Bank account", fully_qualified_name="Asset.Bank.Checking_Account", description="Main checking account", opening_balance=75000, current_balance=20000, currency=apideck_unify.Currency.USD, tax_type="NONE", tax_rate={
         "id": "123456",
         "rate": 10,
     }, level=1, active=True, status=apideck_unify.AccountStatus.ACTIVE, header=True, bank_account={
@@ -290,7 +288,20 @@ with Apideck(
             "id": "2389328923893298",
             "name": "employee_level",
             "description": "Employee Level",
+            "value": {},
+        },
+        {
+            "id": "2389328923893298",
+            "name": "employee_level",
+            "description": "Employee Level",
+            "value": True,
+        },
+        {
+            "id": "2389328923893298",
+            "name": "employee_level",
+            "description": "Employee Level",
             "value": [
+                {},
                 {},
             ],
         },
@@ -314,11 +325,6 @@ with Apideck(
                         },
                     },
                 },
-            ],
-        },
-        {
-            "service_id": "<id>",
-            "extend_paths": [
                 {
                     "path": "$.nested.property",
                     "value": {
@@ -332,22 +338,6 @@ with Apideck(
         {
             "service_id": "<id>",
             "extend_paths": [
-                {
-                    "path": "$.nested.property",
-                    "value": {
-                        "TaxClassificationRef": {
-                            "value": "EUC-99990201-V1-00020000",
-                        },
-                    },
-                },
-                {
-                    "path": "$.nested.property",
-                    "value": {
-                        "TaxClassificationRef": {
-                            "value": "EUC-99990201-V1-00020000",
-                        },
-                    },
-                },
                 {
                     "path": "$.nested.property",
                     "value": {
@@ -433,7 +423,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.accounting.ledger_accounts.delete(id="<id>", service_id="salesforce")
+    res = apideck.accounting.ledger_accounts.delete(id="<id>", service_id="salesforce", raw=False)
 
     assert res.delete_ledger_account_response is not None
 

@@ -28,7 +28,7 @@ with Apideck(
         "connector_id": "crm+salesforce",
         "status_code": 201,
         "exclude_unified_apis": "vault,proxy",
-    })
+    }, limit=20)
 
     while res is not None:
         # Handle items

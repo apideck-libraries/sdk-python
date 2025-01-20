@@ -29,7 +29,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.accounting.payments.list(service_id="salesforce", filter_={
+    res = apideck.accounting.payments.list(raw=False, service_id="salesforce", limit=20, filter_={
         "updated_since": dateutil.parser.isoparse("2020-09-30T07:43:32.000Z"),
     }, sort={
         "by": apideck_unify.PaymentsSortBy.UPDATED_AT,
@@ -92,7 +92,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.accounting.payments.create(total_amount=49.99, transaction_date=dateutil.parser.isoparse("2021-05-01T12:00:00.000Z"), service_id="salesforce", currency=apideck_unify.Currency.USD, currency_rate=0.69, reference="123456", payment_method="cash", payment_method_reference="123456", payment_method_id="12345", account={
+    res = apideck.accounting.payments.create(total_amount=49.99, transaction_date=dateutil.parser.isoparse("2021-05-01T12:00:00.000Z"), raw=False, service_id="salesforce", currency=apideck_unify.Currency.USD, currency_rate=0.69, reference="123456", payment_method="cash", payment_method_reference="123456", payment_method_id="12345", account={
         "id": "123456",
         "nominal_code": "N091",
         "code": "453",
@@ -101,6 +101,11 @@ with Apideck(
         "display_name": "Windsurf Shop",
         "email": "boring@boring.com",
     }, company_id="12345", reconciled=True, status=apideck_unify.PaymentStatus.AUTHORISED, type_=apideck_unify.PaymentType.ACCOUNTS_RECEIVABLE, allocations=[
+        {
+            "id": "123456",
+            "amount": 49.99,
+            "allocation_id": "123456",
+        },
         {
             "id": "123456",
             "amount": 49.99,
@@ -122,8 +127,68 @@ with Apideck(
             "description": "Employee Level",
             "value": "Uses Salesforce and Marketo",
         },
+        {
+            "id": "2389328923893298",
+            "name": "employee_level",
+            "description": "Employee Level",
+            "value": "Uses Salesforce and Marketo",
+        },
     ], row_version="1-12345", display_id="123456", pass_through=[
-
+        {
+            "service_id": "<id>",
+            "extend_paths": [
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
+            ],
+        },
+        {
+            "service_id": "<id>",
+            "extend_paths": [
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
+            ],
+        },
+        {
+            "service_id": "<id>",
+            "extend_paths": [
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
+            ],
+        },
     ])
 
     assert res.create_payment_response is not None
@@ -197,7 +262,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.accounting.payments.get(id="<id>", service_id="salesforce", fields="id,updated_at")
+    res = apideck.accounting.payments.get(id="<id>", service_id="salesforce", raw=False, fields="id,updated_at")
 
     assert res.get_payment_response is not None
 
@@ -249,7 +314,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.accounting.payments.update(id="<id>", total_amount=49.99, transaction_date=dateutil.parser.isoparse("2021-05-01T12:00:00.000Z"), service_id="salesforce", currency=apideck_unify.Currency.USD, currency_rate=0.69, reference="123456", payment_method="cash", payment_method_reference="123456", payment_method_id="12345", account={
+    res = apideck.accounting.payments.update(id="<id>", total_amount=49.99, transaction_date=dateutil.parser.isoparse("2021-05-01T12:00:00.000Z"), service_id="salesforce", raw=False, currency=apideck_unify.Currency.USD, currency_rate=0.69, reference="123456", payment_method="cash", payment_method_reference="123456", payment_method_id="12345", account={
         "id": "123456",
         "nominal_code": "N091",
         "code": "453",
@@ -287,6 +352,16 @@ with Apideck(
             "id": "2389328923893298",
             "name": "employee_level",
             "description": "Employee Level",
+            "value": [
+                {},
+                {},
+            ],
+        },
+        {
+            "id": "2389328923893298",
+            "name": "employee_level",
+            "description": "Employee Level",
+            "value": True,
         },
     ], row_version="1-12345", display_id="123456", pass_through=[
         {
@@ -300,6 +375,40 @@ with Apideck(
                         },
                     },
                 },
+            ],
+        },
+        {
+            "service_id": "<id>",
+            "extend_paths": [
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
+            ],
+        },
+        {
+            "service_id": "<id>",
+            "extend_paths": [
                 {
                     "path": "$.nested.property",
                     "value": {
@@ -392,7 +501,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.accounting.payments.delete(id="<id>", service_id="salesforce")
+    res = apideck.accounting.payments.delete(id="<id>", service_id="salesforce", raw=False)
 
     assert res.delete_payment_response is not None
 

@@ -28,7 +28,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.crm.leads.list(service_id="salesforce", filter_={
+    res = apideck.crm.leads.list(raw=False, service_id="salesforce", limit=20, filter_={
         "first_name": "Elon",
         "last_name": "Musk",
         "email": "elon@tesla.com",
@@ -93,7 +93,12 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.crm.leads.create(name="Elon Musk", company_name="Spacex", service_id="salesforce", owner_id="54321", owner_name="John Doe", company_id="2", lead_id="2", lead_source="Cold Call", first_name="Elon", last_name="Musk", description="A thinker", prefix="Sir", title="CEO", language="EN", status="New", monetary_amount=75000, currency=apideck_unify.Currency.USD, fax="+12129876543", websites=[
+    res = apideck.crm.leads.create(name="Elon Musk", company_name="Spacex", raw=False, service_id="salesforce", owner_id="54321", owner_name="John Doe", company_id="2", lead_id="2", lead_source="Cold Call", first_name="Elon", last_name="Musk", description="A thinker", prefix="Sir", title="CEO", language="EN", status="New", monetary_amount=75000, currency=apideck_unify.Currency.USD, fax="+12129876543", websites=[
+        {
+            "url": "http://example.com",
+            "id": "12345",
+            "type": apideck_unify.WebsiteType.PRIMARY,
+        },
         {
             "url": "http://example.com",
             "id": "12345",
@@ -158,10 +163,26 @@ with Apideck(
             "id": "12345",
             "type": "twitter",
         },
+        {
+            "url": "https://www.twitter.com/apideck",
+            "id": "12345",
+            "type": "twitter",
+        },
     ], phone_numbers=[
-
+        {
+            "number": "111-111-1111",
+            "id": "12345",
+            "country_code": "1",
+            "area_code": "323",
+            "extension": "105",
+            "type": apideck_unify.PhoneNumberType.PRIMARY,
+        },
     ], emails=[
-
+        {
+            "email": "elon@musk.com",
+            "id": "123",
+            "type": apideck_unify.EmailType.PRIMARY,
+        },
     ], custom_fields=[
         {
             "id": "2389328923893298",
@@ -336,7 +357,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.crm.leads.get(id="<id>", service_id="salesforce", fields="id,updated_at")
+    res = apideck.crm.leads.get(id="<id>", service_id="salesforce", raw=False, fields="id,updated_at")
 
     assert res.get_lead_response is not None
 
@@ -387,7 +408,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.crm.leads.update(id="<id>", name="Elon Musk", company_name="Spacex", service_id="salesforce", owner_id="54321", owner_name="John Doe", company_id="2", lead_id="2", lead_source="Cold Call", first_name="Elon", last_name="Musk", description="A thinker", prefix="Sir", title="CEO", language="EN", status="New", monetary_amount=75000, currency=apideck_unify.Currency.USD, fax="+12129876543", websites=[
+    res = apideck.crm.leads.update(id="<id>", name="Elon Musk", company_name="Spacex", service_id="salesforce", raw=False, owner_id="54321", owner_name="John Doe", company_id="2", lead_id="2", lead_source="Cold Call", first_name="Elon", last_name="Musk", description="A thinker", prefix="Sir", title="CEO", language="EN", status="New", monetary_amount=75000, currency=apideck_unify.Currency.USD, fax="+12129876543", websites=[
         {
             "url": "http://example.com",
             "id": "12345",
@@ -462,6 +483,11 @@ with Apideck(
             "id": "12345",
             "type": "twitter",
         },
+        {
+            "url": "https://www.twitter.com/apideck",
+            "id": "12345",
+            "type": "twitter",
+        },
     ], phone_numbers=[
         {
             "number": "111-111-1111",
@@ -505,6 +531,14 @@ with Apideck(
             "description": "Employee Level",
             "value": {},
         },
+        {
+            "id": "2389328923893298",
+            "name": "employee_level",
+            "description": "Employee Level",
+            "value": [
+                {},
+            ],
+        },
     ], tags=[
         "New",
     ], pass_through=[
@@ -519,25 +553,6 @@ with Apideck(
                         },
                     },
                 },
-            ],
-        },
-        {
-            "service_id": "<id>",
-            "extend_paths": [
-                {
-                    "path": "$.nested.property",
-                    "value": {
-                        "TaxClassificationRef": {
-                            "value": "EUC-99990201-V1-00020000",
-                        },
-                    },
-                },
-            ],
-        },
-        {
-            "service_id": "<id>",
-            "extend_paths": [
-
             ],
         },
     ])
@@ -614,7 +629,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.crm.leads.delete(id="<id>", service_id="salesforce")
+    res = apideck.crm.leads.delete(id="<id>", service_id="salesforce", raw=False)
 
     assert res.delete_lead_response is not None
 

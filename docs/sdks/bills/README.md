@@ -29,7 +29,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.accounting.bills.list(service_id="salesforce", filter_={
+    res = apideck.accounting.bills.list(raw=False, service_id="salesforce", limit=20, filter_={
         "updated_since": dateutil.parser.isoparse("2020-09-30T07:43:32.000Z"),
     }, sort={
         "by": apideck_unify.By.UPDATED_AT,
@@ -92,7 +92,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.accounting.bills.create(service_id="salesforce", bill_number="10001", supplier={
+    res = apideck.accounting.bills.create(raw=False, service_id="salesforce", bill_number="10001", supplier={
         "id": "12345",
         "display_name": "Windsurf Shop",
         "address": {
@@ -163,6 +163,47 @@ with Apideck(
             ],
             "row_version": "1-12345",
         },
+        {
+            "row_id": "12345",
+            "code": "120-C",
+            "line_number": 1,
+            "description": "Model Y is a fully electric, mid-size SUV, with seating for up to seven, dual motor AWD and unparalleled protection.",
+            "type": apideck_unify.BillLineItemType.EXPENSE_ACCOUNT,
+            "tax_amount": 27500,
+            "total_amount": 27500,
+            "quantity": 1,
+            "unit_price": 27500.5,
+            "unit_of_measure": "pc.",
+            "discount_percentage": 0.01,
+            "discount_amount": 19.99,
+            "location_id": "1234",
+            "department_id": "1234",
+            "item": {
+                "id": "12344",
+                "code": "120-C",
+                "name": "Model Y",
+            },
+            "tax_rate": {
+                "id": "123456",
+                "rate": 10,
+            },
+            "ledger_account": {
+                "id": "123456",
+                "nominal_code": "N091",
+                "code": "453",
+            },
+            "tracking_categories": [
+                {
+                    "id": "123456",
+                    "name": "New York",
+                },
+                {
+                    "id": "123456",
+                    "name": "New York",
+                },
+            ],
+            "row_version": "1-12345",
+        },
     ], terms="Net 30 days", balance=27500, deposit=0, sub_total=27500, total_tax=2500, total=27500, tax_code="1234", notes="Some notes about this bill.", status=apideck_unify.BillStatus.DRAFT, ledger_account={
         "id": "123456",
         "nominal_code": "N091",
@@ -189,10 +230,26 @@ with Apideck(
             "id": "2389328923893298",
             "name": "employee_level",
             "description": "Employee Level",
-            "value": True,
+            "value": [
+                "<value>",
+                "<value>",
+                "<value>",
+            ],
         },
     ], pass_through=[
-
+        {
+            "service_id": "<id>",
+            "extend_paths": [
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
+            ],
+        },
     ], accounting_period="01-24")
 
     assert res.create_bill_response is not None
@@ -274,7 +331,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.accounting.bills.get(id="<id>", service_id="salesforce", fields="id,updated_at")
+    res = apideck.accounting.bills.get(id="<id>", service_id="salesforce", raw=False, fields="id,updated_at")
 
     assert res.get_bill_response is not None
 
@@ -326,7 +383,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.accounting.bills.update(id="<id>", service_id="salesforce", bill_number="10001", supplier={
+    res = apideck.accounting.bills.update(id="<id>", service_id="salesforce", raw=False, bill_number="10001", supplier={
         "id": "12345",
         "display_name": "Windsurf Shop",
         "address": {
@@ -431,6 +488,10 @@ with Apideck(
                     "id": "123456",
                     "name": "New York",
                 },
+                {
+                    "id": "123456",
+                    "name": "New York",
+                },
             ],
             "row_version": "1-12345",
         },
@@ -509,6 +570,12 @@ with Apideck(
             "id": "2389328923893298",
             "name": "employee_level",
             "description": "Employee Level",
+            "value": {},
+        },
+        {
+            "id": "2389328923893298",
+            "name": "employee_level",
+            "description": "Employee Level",
             "value": [
                 {},
             ],
@@ -517,22 +584,6 @@ with Apideck(
         {
             "service_id": "<id>",
             "extend_paths": [
-                {
-                    "path": "$.nested.property",
-                    "value": {
-                        "TaxClassificationRef": {
-                            "value": "EUC-99990201-V1-00020000",
-                        },
-                    },
-                },
-                {
-                    "path": "$.nested.property",
-                    "value": {
-                        "TaxClassificationRef": {
-                            "value": "EUC-99990201-V1-00020000",
-                        },
-                    },
-                },
                 {
                     "path": "$.nested.property",
                     "value": {
@@ -625,7 +676,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.accounting.bills.delete(id="<id>", service_id="salesforce")
+    res = apideck.accounting.bills.delete(id="<id>", service_id="salesforce", raw=False)
 
     assert res.delete_bill_response is not None
 

@@ -27,7 +27,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.accounting.locations.list(service_id="salesforce", fields="id,updated_at", filter_={
+    res = apideck.accounting.locations.list(raw=False, service_id="salesforce", limit=20, fields="id,updated_at", filter_={
         "subsidiary": "1",
     })
 
@@ -82,7 +82,33 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.accounting.locations.create(service_id="salesforce", parent_id="12345", company_name="SpaceX", display_name="11 UT - South Jordan", status=apideck_unify.LocationStatus.ACTIVE, addresses=[
+    res = apideck.accounting.locations.create(raw=False, service_id="salesforce", parent_id="12345", company_name="SpaceX", display_name="11 UT - South Jordan", status=apideck_unify.LocationStatus.ACTIVE, addresses=[
+        {
+            "id": "123",
+            "type": apideck_unify.Type.PRIMARY,
+            "string": "25 Spring Street, Blackburn, VIC 3130",
+            "name": "HQ US",
+            "line1": "Main street",
+            "line2": "apt #",
+            "line3": "Suite #",
+            "line4": "delivery instructions",
+            "street_number": "25",
+            "city": "San Francisco",
+            "state": "CA",
+            "postal_code": "94104",
+            "country": "US",
+            "latitude": "40.759211",
+            "longitude": "-73.984638",
+            "county": "Santa Clara",
+            "contact_name": "Elon Musk",
+            "salutation": "Mr",
+            "phone_number": "111-111-1111",
+            "fax": "122-111-1111",
+            "email": "elon@musk.com",
+            "website": "https://elonmusk.com",
+            "notes": "Address notes or delivery instructions.",
+            "row_version": "1-12345",
+        },
         {
             "id": "123",
             "type": apideck_unify.Type.PRIMARY,
@@ -120,7 +146,27 @@ with Apideck(
         {
             "service_id": "<id>",
             "extend_paths": [
-
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
+            ],
+        },
+        {
+            "service_id": "<id>",
+            "extend_paths": [
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
             ],
         },
     ])
@@ -179,7 +225,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.accounting.locations.get(id="<id>", service_id="salesforce", fields="id,updated_at")
+    res = apideck.accounting.locations.get(id="<id>", service_id="salesforce", raw=False, fields="id,updated_at")
 
     assert res.get_accounting_location_response is not None
 
@@ -230,7 +276,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.accounting.locations.update(id="<id>", service_id="salesforce", parent_id="12345", company_name="SpaceX", display_name="11 UT - South Jordan", status=apideck_unify.LocationStatus.ACTIVE, addresses=[
+    res = apideck.accounting.locations.update(id="<id>", service_id="salesforce", raw=False, parent_id="12345", company_name="SpaceX", display_name="11 UT - South Jordan", status=apideck_unify.LocationStatus.ACTIVE, addresses=[
         {
             "id": "123",
             "type": apideck_unify.Type.PRIMARY,
@@ -328,6 +374,27 @@ with Apideck(
                         },
                     },
                 },
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
+            ],
+        },
+        {
+            "service_id": "<id>",
+            "extend_paths": [
                 {
                     "path": "$.nested.property",
                     "value": {
@@ -403,7 +470,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.accounting.locations.delete(id="<id>", service_id="salesforce")
+    res = apideck.accounting.locations.delete(id="<id>", service_id="salesforce", raw=False)
 
     assert res.delete_accounting_location_response is not None
 
