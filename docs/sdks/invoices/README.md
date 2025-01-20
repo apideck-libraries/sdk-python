@@ -29,7 +29,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.accounting.invoices.list(service_id="salesforce", filter_={
+    res = apideck.accounting.invoices.list(raw=False, service_id="salesforce", limit=20, filter_={
         "updated_since": dateutil.parser.isoparse("2020-09-30T07:43:32.000Z"),
         "created_since": dateutil.parser.isoparse("2020-09-30T07:43:32.000Z"),
         "number": "OIT00546",
@@ -94,11 +94,15 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.accounting.invoices.create(service_id="salesforce", type_=apideck_unify.InvoiceType.SERVICE, number="OIT00546", customer={
+    res = apideck.accounting.invoices.create(raw=False, service_id="salesforce", type_=apideck_unify.InvoiceType.SERVICE, number="OIT00546", customer={
         "id": "12345",
         "display_name": "Windsurf Shop",
         "email": "boring@boring.com",
     }, company_id="12345", invoice_date=dateutil.parser.parse("2020-09-30").date(), due_date=dateutil.parser.parse("2020-09-30").date(), terms="Net 30 days", po_number="90000117", reference="123456", status=apideck_unify.InvoiceStatus.DRAFT, invoice_sent=True, currency=apideck_unify.Currency.USD, currency_rate=0.69, tax_inclusive=True, sub_total=27500, total_tax=2500, tax_code="1234", discount_percentage=5.5, discount_amount=25, total=27500, balance=27500, deposit=0, customer_memo="Thank you for your business and have a great day!", tracking_categories=[
+        {
+            "id": "123456",
+            "name": "New York",
+        },
         {
             "id": "123456",
             "name": "New York",
@@ -134,6 +138,10 @@ with Apideck(
                     "id": "123456",
                     "name": "New York",
                 },
+                {
+                    "id": "123456",
+                    "name": "New York",
+                },
             ],
             "ledger_account": {
                 "id": "123456",
@@ -141,7 +149,12 @@ with Apideck(
                 "code": "453",
             },
             "custom_fields": [
-
+                {
+                    "id": "2389328923893298",
+                    "name": "employee_level",
+                    "description": "Employee Level",
+                    "value": "Uses Salesforce and Marketo",
+                },
             ],
             "row_version": "1-12345",
         },
@@ -171,7 +184,18 @@ with Apideck(
                 "rate": 10,
             },
             "tracking_categories": [
-
+                {
+                    "id": "123456",
+                    "name": "New York",
+                },
+                {
+                    "id": "123456",
+                    "name": "New York",
+                },
+                {
+                    "id": "123456",
+                    "name": "New York",
+                },
             ],
             "ledger_account": {
                 "id": "123456",
@@ -183,7 +207,7 @@ with Apideck(
                     "id": "2389328923893298",
                     "name": "employee_level",
                     "description": "Employee Level",
-                    "value": {},
+                    "value": "Uses Salesforce and Marketo",
                 },
                 {
                     "id": "2389328923893298",
@@ -296,7 +320,14 @@ with Apideck(
         {
             "service_id": "<id>",
             "extend_paths": [
-
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
             ],
         },
     ])
@@ -386,7 +417,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.accounting.invoices.get(id="<id>", service_id="salesforce", fields="id,updated_at")
+    res = apideck.accounting.invoices.get(id="<id>", service_id="salesforce", raw=False, fields="id,updated_at")
 
     assert res.get_invoice_response is not None
 
@@ -438,7 +469,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.accounting.invoices.update(id="<id>", service_id="salesforce", type_=apideck_unify.InvoiceType.SERVICE, number="OIT00546", customer={
+    res = apideck.accounting.invoices.update(id="<id>", service_id="salesforce", raw=False, type_=apideck_unify.InvoiceType.SERVICE, number="OIT00546", customer={
         "id": "12345",
         "display_name": "Windsurf Shop",
         "email": "boring@boring.com",
@@ -486,6 +517,10 @@ with Apideck(
                     "id": "123456",
                     "name": "New York",
                 },
+                {
+                    "id": "123456",
+                    "name": "New York",
+                },
             ],
             "ledger_account": {
                 "id": "123456",
@@ -497,6 +532,7 @@ with Apideck(
                     "id": "2389328923893298",
                     "name": "employee_level",
                     "description": "Employee Level",
+                    "value": {},
                 },
                 {
                     "id": "2389328923893298",
@@ -558,6 +594,12 @@ with Apideck(
                 "code": "453",
             },
             "custom_fields": [
+                {
+                    "id": "2389328923893298",
+                    "name": "employee_level",
+                    "description": "Employee Level",
+                    "value": 10,
+                },
                 {
                     "id": "2389328923893298",
                     "name": "employee_level",
@@ -634,9 +676,38 @@ with Apideck(
         "nominal_code": "N091",
         "code": "453",
     }, custom_fields=[
-
+        {
+            "id": "2389328923893298",
+            "name": "employee_level",
+            "description": "Employee Level",
+            "value": [
+                "<value>",
+                "<value>",
+                "<value>",
+            ],
+        },
     ], row_version="1-12345", pass_through=[
-
+        {
+            "service_id": "<id>",
+            "extend_paths": [
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
+            ],
+        },
     ])
 
     assert res.update_invoice_response is not None
@@ -725,7 +796,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.accounting.invoices.delete(id="<id>", service_id="salesforce")
+    res = apideck.accounting.invoices.delete(id="<id>", service_id="salesforce", raw=False)
 
     assert res.delete_invoice_response is not None
 

@@ -81,7 +81,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.vault.consumers.list()
+    res = apideck.vault.consumers.list(limit=20)
 
     while res is not None:
         # Handle items

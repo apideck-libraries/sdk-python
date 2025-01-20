@@ -28,7 +28,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.accounting.invoice_items.list(service_id="salesforce", filter_={
+    res = apideck.accounting.invoice_items.list(raw=False, service_id="salesforce", limit=20, filter_={
         "name": "Widgets Large",
         "type": apideck_unify.InvoiceItemType.SERVICE,
     }, pass_through={
@@ -88,7 +88,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.accounting.invoice_items.create(service_id="salesforce", name="Model Y", description="Model Y is a fully electric, mid-size SUV, with seating for up to seven, dual motor AWD and unparalleled protection.", code="120-C", sold=True, purchased=True, tracked=True, taxable=True, inventory_date=dateutil.parser.parse("2020-10-30").date(), type_=apideck_unify.InvoiceItemTypeType.INVENTORY, sales_details={
+    res = apideck.accounting.invoice_items.create(raw=False, service_id="salesforce", name="Model Y", description="Model Y is a fully electric, mid-size SUV, with seating for up to seven, dual motor AWD and unparalleled protection.", code="120-C", sold=True, purchased=True, tracked=True, taxable=True, inventory_date=dateutil.parser.parse("2020-10-30").date(), type_=apideck_unify.InvoiceItemTypeType.INVENTORY, sales_details={
         "unit_price": 27500.5,
         "unit_of_measure": "pc.",
         "tax_inclusive": True,
@@ -121,10 +121,22 @@ with Apideck(
             "id": "123456",
             "name": "New York",
         },
+        {
+            "id": "123456",
+            "name": "New York",
+        },
     ], active=True, row_version="1-12345", pass_through=[
         {
             "service_id": "<id>",
             "extend_paths": [
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
                 {
                     "path": "$.nested.property",
                     "value": {
@@ -138,7 +150,14 @@ with Apideck(
         {
             "service_id": "<id>",
             "extend_paths": [
-
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
             ],
         },
     ])
@@ -211,7 +230,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.accounting.invoice_items.get(id="<id>", service_id="salesforce", fields="id,updated_at", filter_={
+    res = apideck.accounting.invoice_items.get(id="<id>", service_id="salesforce", raw=False, fields="id,updated_at", filter_={
         "type": apideck_unify.InvoiceItemFilterInvoiceItemType.SERVICE,
     })
 
@@ -266,7 +285,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.accounting.invoice_items.update(id="<id>", service_id="salesforce", name="Model Y", description="Model Y is a fully electric, mid-size SUV, with seating for up to seven, dual motor AWD and unparalleled protection.", code="120-C", sold=True, purchased=True, tracked=True, taxable=True, inventory_date=dateutil.parser.parse("2020-10-30").date(), type_=apideck_unify.InvoiceItemTypeType.INVENTORY, sales_details={
+    res = apideck.accounting.invoice_items.update(id="<id>", service_id="salesforce", raw=False, name="Model Y", description="Model Y is a fully electric, mid-size SUV, with seating for up to seven, dual motor AWD and unparalleled protection.", code="120-C", sold=True, purchased=True, tracked=True, taxable=True, inventory_date=dateutil.parser.parse("2020-10-30").date(), type_=apideck_unify.InvoiceItemTypeType.INVENTORY, sales_details={
         "unit_price": 27500.5,
         "unit_of_measure": "pc.",
         "tax_inclusive": True,
@@ -311,6 +330,14 @@ with Apideck(
         {
             "service_id": "<id>",
             "extend_paths": [
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
                 {
                     "path": "$.nested.property",
                     "value": {
@@ -420,7 +447,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.accounting.invoice_items.delete(id="<id>", service_id="salesforce")
+    res = apideck.accounting.invoice_items.delete(id="<id>", service_id="salesforce", raw=False)
 
     assert res.delete_tax_rate_response is not None
 

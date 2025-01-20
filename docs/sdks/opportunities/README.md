@@ -28,7 +28,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.crm.opportunities.list(service_id="salesforce", filter_={
+    res = apideck.crm.opportunities.list(raw=False, service_id="salesforce", limit=20, filter_={
         "status": "Completed",
         "monetary_amount": 75000,
     }, sort={
@@ -92,7 +92,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.crm.opportunities.create(title="New Rocket", primary_contact_id="12345", service_id="salesforce", description="Opportunities are created for People and Companies that are interested in buying your products or services. Create Opportunities for People and Companies to move them through one of your Pipelines.", type_="Existing Customer - Upgrade", monetary_amount=75000, currency=apideck_unify.Currency.USD, win_probability=40, close_date=dateutil.parser.parse("2020-10-30").date(), loss_reason_id="12345", loss_reason="No budget", won_reason_id="12345", won_reason="Best pitch", pipeline_id="12345", pipeline_stage_id="12345", source_id="12345", lead_id="12345", lead_source="Website", contact_id="12345", contact_ids=[
+    res = apideck.crm.opportunities.create(title="New Rocket", primary_contact_id="12345", raw=False, service_id="salesforce", description="Opportunities are created for People and Companies that are interested in buying your products or services. Create Opportunities for People and Companies to move them through one of your Pipelines.", type_="Existing Customer - Upgrade", monetary_amount=75000, currency=apideck_unify.Currency.USD, win_probability=40, close_date=dateutil.parser.parse("2020-10-30").date(), loss_reason_id="12345", loss_reason="No budget", won_reason_id="12345", won_reason="Best pitch", pipeline_id="12345", pipeline_stage_id="12345", source_id="12345", lead_id="12345", lead_source="Website", contact_id="12345", contact_ids=[
         "12345",
     ], company_id="12345", company_name="Copper", owner_id="12345", priority="None", status="Open", status_id="12345", tags=[
         "New",
@@ -101,12 +101,26 @@ with Apideck(
             "id": "2389328923893298",
             "name": "employee_level",
             "description": "Employee Level",
+            "value": {},
+        },
+        {
+            "id": "2389328923893298",
+            "name": "employee_level",
+            "description": "Employee Level",
+            "value": True,
         },
     ], stage_last_changed_at=dateutil.parser.isoparse("2020-09-30T07:43:32.000Z"), pass_through=[
         {
             "service_id": "<id>",
             "extend_paths": [
-
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
             ],
         },
     ])
@@ -186,7 +200,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.crm.opportunities.get(id="<id>", service_id="salesforce", fields="id,updated_at")
+    res = apideck.crm.opportunities.get(id="<id>", service_id="salesforce", raw=False, fields="id,updated_at")
 
     assert res.get_opportunity_response is not None
 
@@ -238,7 +252,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.crm.opportunities.update(id="<id>", title="New Rocket", primary_contact_id="12345", service_id="salesforce", description="Opportunities are created for People and Companies that are interested in buying your products or services. Create Opportunities for People and Companies to move them through one of your Pipelines.", type_="Existing Customer - Upgrade", monetary_amount=75000, currency=apideck_unify.Currency.USD, win_probability=40, close_date=dateutil.parser.parse("2020-10-30").date(), loss_reason_id="12345", loss_reason="No budget", won_reason_id="12345", won_reason="Best pitch", pipeline_id="12345", pipeline_stage_id="12345", source_id="12345", lead_id="12345", lead_source="Website", contact_id="12345", contact_ids=[
+    res = apideck.crm.opportunities.update(id="<id>", title="New Rocket", primary_contact_id="12345", service_id="salesforce", raw=False, description="Opportunities are created for People and Companies that are interested in buying your products or services. Create Opportunities for People and Companies to move them through one of your Pipelines.", type_="Existing Customer - Upgrade", monetary_amount=75000, currency=apideck_unify.Currency.USD, win_probability=40, close_date=dateutil.parser.parse("2020-10-30").date(), loss_reason_id="12345", loss_reason="No budget", won_reason_id="12345", won_reason="Best pitch", pipeline_id="12345", pipeline_stage_id="12345", source_id="12345", lead_id="12345", lead_source="Website", contact_id="12345", contact_ids=[
         "12345",
     ], company_id="12345", company_name="Copper", owner_id="12345", priority="None", status="Open", status_id="12345", tags=[
         "New",
@@ -247,6 +261,7 @@ with Apideck(
             "id": "2389328923893298",
             "name": "employee_level",
             "description": "Employee Level",
+            "value": {},
         },
         {
             "id": "2389328923893298",
@@ -258,6 +273,10 @@ with Apideck(
             "id": "2389328923893298",
             "name": "employee_level",
             "description": "Employee Level",
+            "value": [
+                {},
+                {},
+            ],
         },
     ], stage_last_changed_at=dateutil.parser.isoparse("2020-09-30T07:43:32.000Z"), pass_through=[
         {
@@ -279,6 +298,19 @@ with Apideck(
                         },
                     },
                 },
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
+            ],
+        },
+        {
+            "service_id": "<id>",
+            "extend_paths": [
                 {
                     "path": "$.nested.property",
                     "value": {
@@ -367,7 +399,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.crm.opportunities.delete(id="<id>", service_id="salesforce")
+    res = apideck.crm.opportunities.delete(id="<id>", service_id="salesforce", raw=False)
 
     assert res.delete_opportunity_response is not None
 

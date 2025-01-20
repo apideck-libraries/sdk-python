@@ -27,7 +27,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.file_storage.drive_groups.list(service_id="salesforce", filter_={
+    res = apideck.file_storage.drive_groups.list(raw=False, service_id="salesforce", limit=20, filter_={
         "parent_group_id": "1234",
     }, pass_through={
         "search": "San Francisco",
@@ -84,7 +84,28 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.file_storage.drive_groups.create(name="accounting", service_id="salesforce", display_name="accounting", description="A description", pass_through=[
+    res = apideck.file_storage.drive_groups.create(name="accounting", raw=False, service_id="salesforce", display_name="accounting", description="A description", pass_through=[
+        {
+            "service_id": "<id>",
+            "extend_paths": [
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
+            ],
+        },
         {
             "service_id": "<id>",
             "extend_paths": [
@@ -158,7 +179,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.file_storage.drive_groups.get(id="<id>", service_id="salesforce", fields="id,updated_at")
+    res = apideck.file_storage.drive_groups.get(id="<id>", service_id="salesforce", raw=False, fields="id,updated_at")
 
     assert res.get_drive_group_response is not None
 
@@ -208,7 +229,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.file_storage.drive_groups.update(id="<id>", name="accounting", service_id="salesforce", display_name="accounting", description="A description", pass_through=[
+    res = apideck.file_storage.drive_groups.update(id="<id>", name="accounting", service_id="salesforce", raw=False, display_name="accounting", description="A description", pass_through=[
         {
             "service_id": "<id>",
             "extend_paths": [
@@ -233,6 +254,14 @@ with Apideck(
         {
             "service_id": "<id>",
             "extend_paths": [
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
                 {
                     "path": "$.nested.property",
                     "value": {
@@ -325,7 +354,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.file_storage.drive_groups.delete(id="<id>", service_id="salesforce")
+    res = apideck.file_storage.drive_groups.delete(id="<id>", service_id="salesforce", raw=False)
 
     assert res.delete_drive_group_response is not None
 

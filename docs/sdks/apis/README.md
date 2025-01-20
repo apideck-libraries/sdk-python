@@ -25,7 +25,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.connector.apis.list(filter_={
+    res = apideck.connector.apis.list(limit=20, filter_={
         "status": apideck_unify.APIStatus.BETA,
     })
 

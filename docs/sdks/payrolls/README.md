@@ -24,7 +24,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.hris.payrolls.list(service_id="salesforce", filter_={
+    res = apideck.hris.payrolls.list(raw=False, service_id="salesforce", filter_={
         "start_date": "2022-04-08",
         "end_date": "2022-04-21",
     }, pass_through={
@@ -80,7 +80,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.hris.payrolls.get(payroll_id="<id>", service_id="salesforce", fields="id,updated_at")
+    res = apideck.hris.payrolls.get(payroll_id="<id>", raw=False, service_id="salesforce", fields="id,updated_at")
 
     assert res.get_payroll_response is not None
 

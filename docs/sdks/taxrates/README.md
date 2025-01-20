@@ -28,7 +28,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.accounting.tax_rates.list(service_id="salesforce", filter_={
+    res = apideck.accounting.tax_rates.list(raw=False, service_id="salesforce", limit=20, filter_={
         "assets": True,
         "equity": True,
         "expenses": True,
@@ -90,7 +90,13 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.accounting.tax_rates.create(service_id="salesforce", id="1234", name="GST on Purchases", code="ABN", description="Reduced rate GST Purchases", effective_tax_rate=10, total_tax_rate=10, tax_payable_account_id="123456", tax_remitted_account_id="123456", components=[
+    res = apideck.accounting.tax_rates.create(raw=False, service_id="salesforce", id="1234", name="GST on Purchases", code="ABN", description="Reduced rate GST Purchases", effective_tax_rate=10, total_tax_rate=10, tax_payable_account_id="123456", tax_remitted_account_id="123456", components=[
+        {
+            "id": "10",
+            "name": "GST",
+            "rate": 10,
+            "compound": True,
+        },
         {
             "id": "10",
             "name": "GST",
@@ -109,12 +115,27 @@ with Apideck(
                         },
                     },
                 },
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
             ],
         },
         {
             "service_id": "<id>",
             "extend_paths": [
-
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
             ],
         },
     ], custom_fields=[
@@ -122,7 +143,11 @@ with Apideck(
             "id": "2389328923893298",
             "name": "employee_level",
             "description": "Employee Level",
-            "value": True,
+            "value": [
+                "<value>",
+                "<value>",
+                "<value>",
+            ],
         },
     ])
 
@@ -190,7 +215,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.accounting.tax_rates.get(id="<id>", service_id="salesforce", fields="id,updated_at")
+    res = apideck.accounting.tax_rates.get(id="<id>", service_id="salesforce", raw=False, fields="id,updated_at")
 
     assert res.get_tax_rate_response is not None
 
@@ -241,7 +266,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.accounting.tax_rates.update(id_param="<id>", service_id="salesforce", id="1234", name="GST on Purchases", code="ABN", description="Reduced rate GST Purchases", effective_tax_rate=10, total_tax_rate=10, tax_payable_account_id="123456", tax_remitted_account_id="123456", components=[
+    res = apideck.accounting.tax_rates.update(id_param="<value>", service_id="salesforce", raw=False, id="1234", name="GST on Purchases", code="ABN", description="Reduced rate GST Purchases", effective_tax_rate=10, total_tax_rate=10, tax_payable_account_id="123456", tax_remitted_account_id="123456", components=[
         {
             "id": "10",
             "name": "GST",
@@ -264,6 +289,14 @@ with Apideck(
         {
             "service_id": "<id>",
             "extend_paths": [
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
                 {
                     "path": "$.nested.property",
                     "value": {
@@ -308,9 +341,13 @@ with Apideck(
             "id": "2389328923893298",
             "name": "employee_level",
             "description": "Employee Level",
-            "value": [
-                {},
-            ],
+            "value": True,
+        },
+        {
+            "id": "2389328923893298",
+            "name": "employee_level",
+            "description": "Employee Level",
+            "value": {},
         },
     ])
 
@@ -378,7 +415,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.accounting.tax_rates.delete(id="<id>", service_id="salesforce")
+    res = apideck.accounting.tax_rates.delete(id="<id>", service_id="salesforce", raw=False)
 
     assert res.delete_tax_rate_response is not None
 
