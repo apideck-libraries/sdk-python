@@ -27,7 +27,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.sms.messages.list(service_id="salesforce", fields="id,updated_at")
+    res = apideck.sms.messages.list(raw=False, service_id="salesforce", limit=20, fields="id,updated_at")
 
     while res is not None:
         # Handle items
@@ -80,7 +80,28 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.sms.messages.create(from_="+15017122661", to="+15017122662", body="Hi! How are you doing?", service_id="salesforce", subject="Picture", type_=apideck_unify.MessageType.SMS, scheduled_at=dateutil.parser.isoparse("2020-09-30T07:43:32.000Z"), webhook_url="https://unify.apideck.com/webhook/webhooks/eyz329dkffdl4949/x/sms", reference="CUST001", messaging_service_id="123456", pass_through=[
+    res = apideck.sms.messages.create(from_="+15017122661", to="+15017122662", body="Hi! How are you doing?", raw=False, service_id="salesforce", subject="Picture", type_=apideck_unify.MessageType.SMS, scheduled_at=dateutil.parser.isoparse("2020-09-30T07:43:32.000Z"), webhook_url="https://unify.apideck.com/webhook/webhooks/eyz329dkffdl4949/x/sms", reference="CUST001", messaging_service_id="123456", pass_through=[
+        {
+            "service_id": "<id>",
+            "extend_paths": [
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
+            ],
+        },
         {
             "service_id": "<id>",
             "extend_paths": [
@@ -160,7 +181,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.sms.messages.get(id="<id>", service_id="salesforce", fields="id,updated_at")
+    res = apideck.sms.messages.get(id="<id>", service_id="salesforce", raw=False, fields="id,updated_at")
 
     assert res.get_message_response is not None
 
@@ -212,7 +233,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.sms.messages.update(id="<id>", from_="+15017122661", to="+15017122662", body="Hi! How are you doing?", service_id="salesforce", subject="Picture", type_=apideck_unify.MessageType.SMS, scheduled_at=dateutil.parser.isoparse("2020-09-30T07:43:32.000Z"), webhook_url="https://unify.apideck.com/webhook/webhooks/eyz329dkffdl4949/x/sms", reference="CUST001", messaging_service_id="123456", pass_through=[
+    res = apideck.sms.messages.update(id="<id>", from_="+15017122661", to="+15017122662", body="Hi! How are you doing?", service_id="salesforce", raw=False, subject="Picture", type_=apideck_unify.MessageType.SMS, scheduled_at=dateutil.parser.isoparse("2020-09-30T07:43:32.000Z"), webhook_url="https://unify.apideck.com/webhook/webhooks/eyz329dkffdl4949/x/sms", reference="CUST001", messaging_service_id="123456", pass_through=[
         {
             "service_id": "<id>",
             "extend_paths": [
@@ -237,6 +258,14 @@ with Apideck(
         {
             "service_id": "<id>",
             "extend_paths": [
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
                 {
                     "path": "$.nested.property",
                     "value": {
@@ -335,7 +364,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.sms.messages.delete(id="<id>", service_id="salesforce")
+    res = apideck.sms.messages.delete(id="<id>", service_id="salesforce", raw=False)
 
     assert res.delete_message_response is not None
 

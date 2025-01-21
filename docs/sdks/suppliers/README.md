@@ -29,7 +29,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.accounting.suppliers.list(service_id="salesforce", filter_={
+    res = apideck.accounting.suppliers.list(raw=False, service_id="salesforce", limit=20, filter_={
         "company_name": "SpaceX",
         "display_name": "Elon Musk",
         "first_name": "Elon",
@@ -96,7 +96,33 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.accounting.suppliers.create(service_id="salesforce", display_id="EMP00101", display_name="Windsurf Shop", company_name="SpaceX", company_id="12345", title="CEO", first_name="Elon", middle_name="D.", last_name="Musk", suffix="Jr.", individual=True, addresses=[
+    res = apideck.accounting.suppliers.create(raw=False, service_id="salesforce", display_id="EMP00101", display_name="Windsurf Shop", company_name="SpaceX", company_id="12345", title="CEO", first_name="Elon", middle_name="D.", last_name="Musk", suffix="Jr.", individual=True, addresses=[
+        {
+            "id": "123",
+            "type": apideck_unify.Type.PRIMARY,
+            "string": "25 Spring Street, Blackburn, VIC 3130",
+            "name": "HQ US",
+            "line1": "Main street",
+            "line2": "apt #",
+            "line3": "Suite #",
+            "line4": "delivery instructions",
+            "street_number": "25",
+            "city": "San Francisco",
+            "state": "CA",
+            "postal_code": "94104",
+            "country": "US",
+            "latitude": "40.759211",
+            "longitude": "-73.984638",
+            "county": "Santa Clara",
+            "contact_name": "Elon Musk",
+            "salutation": "Mr",
+            "phone_number": "111-111-1111",
+            "fax": "122-111-1111",
+            "email": "elon@musk.com",
+            "website": "https://elonmusk.com",
+            "notes": "Address notes or delivery instructions.",
+            "row_version": "1-12345",
+        },
         {
             "id": "123",
             "type": apideck_unify.Type.PRIMARY,
@@ -146,10 +172,31 @@ with Apideck(
             "id": "123",
             "type": apideck_unify.EmailType.PRIMARY,
         },
+        {
+            "email": "elon@musk.com",
+            "id": "123",
+            "type": apideck_unify.EmailType.PRIMARY,
+        },
     ], websites=[
-
+        {
+            "url": "http://example.com",
+            "id": "12345",
+            "type": apideck_unify.WebsiteType.PRIMARY,
+        },
     ], bank_accounts=[
-
+        {
+            "bank_name": "Monzo",
+            "account_number": "123465",
+            "account_name": "SPACEX LLC",
+            "account_type": apideck_unify.AccountType.CREDIT_CARD,
+            "iban": "CH2989144532982975332",
+            "bic": "AUDSCHGGXXX",
+            "routing_number": "012345678",
+            "bsb_number": "062-001",
+            "branch_identifier": "001",
+            "bank_code": "BNH",
+            "currency": apideck_unify.Currency.USD,
+        },
     ], notes="Some notes about this supplier", tax_rate={
         "id": "123456",
         "rate": 10,
@@ -162,7 +209,19 @@ with Apideck(
             "id": "2389328923893298",
             "name": "employee_level",
             "description": "Employee Level",
-            "value": True,
+            "value": {},
+        },
+        {
+            "id": "2389328923893298",
+            "name": "employee_level",
+            "description": "Employee Level",
+            "value": 10,
+        },
+        {
+            "id": "2389328923893298",
+            "name": "employee_level",
+            "description": "Employee Level",
+            "value": "Uses Salesforce and Marketo",
         },
     ], row_version="1-12345", pass_through=[
         {
@@ -197,13 +256,51 @@ with Apideck(
         {
             "service_id": "<id>",
             "extend_paths": [
-
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
             ],
         },
         {
             "service_id": "<id>",
             "extend_paths": [
-
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
             ],
         },
     ], subsidiary_id="12345")
@@ -281,7 +378,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.accounting.suppliers.get(id="<id>", service_id="salesforce", fields="id,updated_at")
+    res = apideck.accounting.suppliers.get(id="<id>", service_id="salesforce", raw=False, fields="id,updated_at")
 
     assert res.get_supplier_response is not None
 
@@ -332,7 +429,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.accounting.suppliers.update(id="<id>", service_id="salesforce", display_id="EMP00101", display_name="Windsurf Shop", company_name="SpaceX", company_id="12345", title="CEO", first_name="Elon", middle_name="D.", last_name="Musk", suffix="Jr.", individual=True, addresses=[
+    res = apideck.accounting.suppliers.update(id="<id>", service_id="salesforce", raw=False, display_id="EMP00101", display_name="Windsurf Shop", company_name="SpaceX", company_id="12345", title="CEO", first_name="Elon", middle_name="D.", last_name="Musk", suffix="Jr.", individual=True, addresses=[
         {
             "id": "123",
             "type": apideck_unify.Type.PRIMARY,
@@ -434,6 +531,11 @@ with Apideck(
             "id": "123",
             "type": apideck_unify.EmailType.PRIMARY,
         },
+        {
+            "email": "elon@musk.com",
+            "id": "123",
+            "type": apideck_unify.EmailType.PRIMARY,
+        },
     ], websites=[
         {
             "url": "http://example.com",
@@ -489,6 +591,12 @@ with Apideck(
             "id": "2389328923893298",
             "name": "employee_level",
             "description": "Employee Level",
+            "value": {},
+        },
+        {
+            "id": "2389328923893298",
+            "name": "employee_level",
+            "description": "Employee Level",
             "value": [
                 {},
             ],
@@ -497,22 +605,6 @@ with Apideck(
         {
             "service_id": "<id>",
             "extend_paths": [
-                {
-                    "path": "$.nested.property",
-                    "value": {
-                        "TaxClassificationRef": {
-                            "value": "EUC-99990201-V1-00020000",
-                        },
-                    },
-                },
-                {
-                    "path": "$.nested.property",
-                    "value": {
-                        "TaxClassificationRef": {
-                            "value": "EUC-99990201-V1-00020000",
-                        },
-                    },
-                },
                 {
                     "path": "$.nested.property",
                     "value": {
@@ -599,7 +691,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.accounting.suppliers.delete(id="<id>", service_id="salesforce")
+    res = apideck.accounting.suppliers.delete(id="<id>", service_id="salesforce", raw=False)
 
     assert res.delete_supplier_response is not None
 

@@ -29,9 +29,9 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.accounting.purchase_orders.list(service_id="salesforce", pass_through={
+    res = apideck.accounting.purchase_orders.list(raw=False, service_id="salesforce", pass_through={
         "search": "San Francisco",
-    }, filter_={
+    }, limit=20, filter_={
         "updated_since": dateutil.parser.isoparse("2020-09-30T07:43:32.000Z"),
         "supplier_id": "1234",
     }, sort={
@@ -92,7 +92,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.accounting.purchase_orders.create(service_id="salesforce", po_number="90000117", reference="123456", supplier={
+    res = apideck.accounting.purchase_orders.create(raw=False, service_id="salesforce", po_number="90000117", reference="123456", supplier={
         "id": "12345",
         "display_name": "Windsurf Shop",
         "address": {
@@ -169,6 +169,78 @@ with Apideck(
                     "description": "Employee Level",
                     "value": "Uses Salesforce and Marketo",
                 },
+                {
+                    "id": "2389328923893298",
+                    "name": "employee_level",
+                    "description": "Employee Level",
+                    "value": "Uses Salesforce and Marketo",
+                },
+            ],
+            "row_version": "1-12345",
+        },
+        {
+            "id": "12345",
+            "row_id": "12345",
+            "code": "120-C",
+            "line_number": 1,
+            "description": "Model Y is a fully electric, mid-size SUV, with seating for up to seven, dual motor AWD and unparalleled protection.",
+            "type": apideck_unify.InvoiceLineItemType.SALES_ITEM,
+            "tax_amount": 27500,
+            "total_amount": 27500,
+            "quantity": 1,
+            "unit_price": 27500.5,
+            "unit_of_measure": "pc.",
+            "discount_percentage": 0.01,
+            "discount_amount": 19.99,
+            "location_id": "1234",
+            "department_id": "1234",
+            "item": {
+                "id": "12344",
+                "code": "120-C",
+                "name": "Model Y",
+            },
+            "tax_rate": {
+                "id": "123456",
+                "rate": 10,
+            },
+            "tracking_categories": [
+                {
+                    "id": "123456",
+                    "name": "New York",
+                },
+                {
+                    "id": "123456",
+                    "name": "New York",
+                },
+                {
+                    "id": "123456",
+                    "name": "New York",
+                },
+            ],
+            "ledger_account": {
+                "id": "123456",
+                "nominal_code": "N091",
+                "code": "453",
+            },
+            "custom_fields": [
+                {
+                    "id": "2389328923893298",
+                    "name": "employee_level",
+                    "description": "Employee Level",
+                    "value": "Uses Salesforce and Marketo",
+                },
+                {
+                    "id": "2389328923893298",
+                    "name": "employee_level",
+                    "description": "Employee Level",
+                    "value": 10,
+                },
+                {
+                    "id": "2389328923893298",
+                    "name": "employee_level",
+                    "description": "Employee Level",
+                    "value": "Uses Salesforce and Marketo",
+                },
             ],
             "row_version": "1-12345",
         },
@@ -214,7 +286,18 @@ with Apideck(
         "bank_code": "BNH",
         "currency": apideck_unify.Currency.USD,
     }, accounting_by_row=False, due_date=dateutil.parser.parse("2020-10-30").date(), payment_method="cash", tax_code="1234", channel="email", memo="Thank you for the partnership and have a great day!", tracking_categories=[
-
+        {
+            "id": "123456",
+            "name": "New York",
+        },
+        {
+            "id": "123456",
+            "name": "New York",
+        },
+        {
+            "id": "123456",
+            "name": "New York",
+        },
     ], row_version="1-12345", pass_through=[
         {
             "service_id": "<id>",
@@ -235,6 +318,27 @@ with Apideck(
                         },
                     },
                 },
+            ],
+        },
+        {
+            "service_id": "<id>",
+            "extend_paths": [
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
                 {
                     "path": "$.nested.property",
                     "value": {
@@ -248,13 +352,30 @@ with Apideck(
         {
             "service_id": "<id>",
             "extend_paths": [
-
-            ],
-        },
-        {
-            "service_id": "<id>",
-            "extend_paths": [
-
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
             ],
         },
     ])
@@ -334,7 +455,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.accounting.purchase_orders.get(id="<id>", service_id="salesforce")
+    res = apideck.accounting.purchase_orders.get(id="<id>", service_id="salesforce", raw=False)
 
     assert res.get_purchase_order_response is not None
 
@@ -385,7 +506,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.accounting.purchase_orders.update(id="<id>", service_id="salesforce", po_number="90000117", reference="123456", supplier={
+    res = apideck.accounting.purchase_orders.update(id="<id>", service_id="salesforce", raw=False, po_number="90000117", reference="123456", supplier={
         "id": "12345",
         "display_name": "Windsurf Shop",
         "address": {
@@ -460,6 +581,72 @@ with Apideck(
                     "id": "2389328923893298",
                     "name": "employee_level",
                     "description": "Employee Level",
+                    "value": [
+                        {},
+                        {},
+                    ],
+                },
+                {
+                    "id": "2389328923893298",
+                    "name": "employee_level",
+                    "description": "Employee Level",
+                    "value": True,
+                },
+            ],
+            "row_version": "1-12345",
+        },
+        {
+            "id": "12345",
+            "row_id": "12345",
+            "code": "120-C",
+            "line_number": 1,
+            "description": "Model Y is a fully electric, mid-size SUV, with seating for up to seven, dual motor AWD and unparalleled protection.",
+            "type": apideck_unify.InvoiceLineItemType.SALES_ITEM,
+            "tax_amount": 27500,
+            "total_amount": 27500,
+            "quantity": 1,
+            "unit_price": 27500.5,
+            "unit_of_measure": "pc.",
+            "discount_percentage": 0.01,
+            "discount_amount": 19.99,
+            "location_id": "1234",
+            "department_id": "1234",
+            "item": {
+                "id": "12344",
+                "code": "120-C",
+                "name": "Model Y",
+            },
+            "tax_rate": {
+                "id": "123456",
+                "rate": 10,
+            },
+            "tracking_categories": [
+                {
+                    "id": "123456",
+                    "name": "New York",
+                },
+                {
+                    "id": "123456",
+                    "name": "New York",
+                },
+                {
+                    "id": "123456",
+                    "name": "New York",
+                },
+            ],
+            "ledger_account": {
+                "id": "123456",
+                "nominal_code": "N091",
+                "code": "453",
+            },
+            "custom_fields": [
+                {
+                    "id": "2389328923893298",
+                    "name": "employee_level",
+                    "description": "Employee Level",
+                    "value": [
+                        {},
+                    ],
                 },
             ],
             "row_version": "1-12345",
@@ -507,55 +694,6 @@ with Apideck(
                     "description": "Employee Level",
                     "value": "Uses Salesforce and Marketo",
                 },
-                {
-                    "id": "2389328923893298",
-                    "name": "employee_level",
-                    "description": "Employee Level",
-                },
-                {
-                    "id": "2389328923893298",
-                    "name": "employee_level",
-                    "description": "Employee Level",
-                    "value": 10,
-                },
-            ],
-            "row_version": "1-12345",
-        },
-        {
-            "id": "12345",
-            "row_id": "12345",
-            "code": "120-C",
-            "line_number": 1,
-            "description": "Model Y is a fully electric, mid-size SUV, with seating for up to seven, dual motor AWD and unparalleled protection.",
-            "type": apideck_unify.InvoiceLineItemType.SALES_ITEM,
-            "tax_amount": 27500,
-            "total_amount": 27500,
-            "quantity": 1,
-            "unit_price": 27500.5,
-            "unit_of_measure": "pc.",
-            "discount_percentage": 0.01,
-            "discount_amount": 19.99,
-            "location_id": "1234",
-            "department_id": "1234",
-            "item": {
-                "id": "12344",
-                "code": "120-C",
-                "name": "Model Y",
-            },
-            "tax_rate": {
-                "id": "123456",
-                "rate": 10,
-            },
-            "tracking_categories": [
-
-            ],
-            "ledger_account": {
-                "id": "123456",
-                "nominal_code": "N091",
-                "code": "453",
-            },
-            "custom_fields": [
-
             ],
             "row_version": "1-12345",
         },
@@ -630,6 +768,14 @@ with Apideck(
         {
             "service_id": "<id>",
             "extend_paths": [
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
                 {
                     "path": "$.nested.property",
                     "value": {
@@ -747,7 +893,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.accounting.purchase_orders.delete(id="<id>", service_id="salesforce")
+    res = apideck.accounting.purchase_orders.delete(id="<id>", service_id="salesforce", raw=False)
 
     assert res.delete_purchase_order_response is not None
 

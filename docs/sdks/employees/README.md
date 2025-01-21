@@ -28,7 +28,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.hris.employees.list(service_id="salesforce", filter_={
+    res = apideck.hris.employees.list(raw=False, service_id="salesforce", limit=20, filter_={
         "company_id": "1234",
         "email": "elon@tesla.com",
         "first_name": "Elon",
@@ -99,7 +99,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.hris.employees.create(service_id="salesforce", id="12345", first_name="Elon", last_name="Musk", middle_name="D.", display_name="Technoking", preferred_name="Elon Musk", initials="EM", salutation="Mr", title="CEO", marital_status="married", partner={
+    res = apideck.hris.employees.create(raw=False, service_id="salesforce", id="12345", first_name="Elon", last_name="Musk", middle_name="D.", display_name="Technoking", preferred_name="Elon Musk", initials="EM", salutation="Mr", title="CEO", marital_status="married", partner={
         "first_name": "Elon",
         "last_name": "Musk",
         "middle_name": "D.",
@@ -125,6 +125,45 @@ with Apideck(
     ], nationalities=[
         "US",
     ], photo_url="https://unavatar.io/elon-musk", timezone="Europe/London", source="lever", source_id="12345", record_url="https://app.intercom.io/contacts/12345", jobs=[
+        {
+            "title": "CEO",
+            "role": "Sales",
+            "start_date": dateutil.parser.parse("2020-08-12").date(),
+            "end_date": dateutil.parser.parse("2020-08-12").date(),
+            "compensation_rate": 72000,
+            "currency": apideck_unify.Currency.USD,
+            "payment_unit": apideck_unify.PaymentUnit.YEAR,
+            "hired_at": dateutil.parser.parse("2020-08-12").date(),
+            "is_primary": True,
+            "is_manager": True,
+            "status": apideck_unify.EmployeeJobStatus.ACTIVE,
+            "location": {
+                "id": "123",
+                "type": apideck_unify.Type.PRIMARY,
+                "string": "25 Spring Street, Blackburn, VIC 3130",
+                "name": "HQ US",
+                "line1": "Main street",
+                "line2": "apt #",
+                "line3": "Suite #",
+                "line4": "delivery instructions",
+                "street_number": "25",
+                "city": "San Francisco",
+                "state": "CA",
+                "postal_code": "94104",
+                "country": "US",
+                "latitude": "40.759211",
+                "longitude": "-73.984638",
+                "county": "Santa Clara",
+                "contact_name": "Elon Musk",
+                "salutation": "Mr",
+                "phone_number": "111-111-1111",
+                "fax": "122-111-1111",
+                "email": "elon@musk.com",
+                "website": "https://elonmusk.com",
+                "notes": "Address notes or delivery instructions.",
+                "row_version": "1-12345",
+            },
+        },
         {
             "title": "CEO",
             "role": "Sales",
@@ -233,53 +272,38 @@ with Apideck(
             "extension": "105",
             "type": apideck_unify.PhoneNumberType.PRIMARY,
         },
+        {
+            "number": "111-111-1111",
+            "id": "12345",
+            "country_code": "1",
+            "area_code": "323",
+            "extension": "105",
+            "type": apideck_unify.PhoneNumberType.PRIMARY,
+        },
     ], emails=[
-
+        {
+            "email": "elon@musk.com",
+            "id": "123",
+            "type": apideck_unify.EmailType.PRIMARY,
+        },
     ], custom_fields=[
-
+        {
+            "id": "2389328923893298",
+            "name": "employee_level",
+            "description": "Employee Level",
+            "value": [
+                "<value>",
+                "<value>",
+                "<value>",
+            ],
+        },
     ], social_links=[
         {
             "url": "https://www.twitter.com/apideck",
             "id": "12345",
             "type": "twitter",
         },
-        {
-            "url": "https://www.twitter.com/apideck",
-            "id": "12345",
-            "type": "twitter",
-        },
-        {
-            "url": "https://www.twitter.com/apideck",
-            "id": "12345",
-            "type": "twitter",
-        },
     ], bank_accounts=[
-        {
-            "bank_name": "Monzo",
-            "account_number": "123465",
-            "account_name": "SPACEX LLC",
-            "account_type": apideck_unify.AccountType.CREDIT_CARD,
-            "iban": "CH2989144532982975332",
-            "bic": "AUDSCHGGXXX",
-            "routing_number": "012345678",
-            "bsb_number": "062-001",
-            "branch_identifier": "001",
-            "bank_code": "BNH",
-            "currency": apideck_unify.Currency.USD,
-        },
-        {
-            "bank_name": "Monzo",
-            "account_number": "123465",
-            "account_name": "SPACEX LLC",
-            "account_type": apideck_unify.AccountType.CREDIT_CARD,
-            "iban": "CH2989144532982975332",
-            "bic": "AUDSCHGGXXX",
-            "routing_number": "012345678",
-            "bsb_number": "062-001",
-            "branch_identifier": "001",
-            "bank_code": "BNH",
-            "currency": apideck_unify.Currency.USD,
-        },
         {
             "bank_name": "Monzo",
             "account_number": "123465",
@@ -301,7 +325,35 @@ with Apideck(
     }, tags=[
         "New",
     ], row_version="1-12345", deleted=True, pass_through=[
-
+        {
+            "service_id": "<id>",
+            "extend_paths": [
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
+            ],
+        },
     ])
 
     assert res.create_employee_response is not None
@@ -411,7 +463,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.hris.employees.get(id="<id>", service_id="salesforce", fields="id,updated_at", filter_={
+    res = apideck.hris.employees.get(id="<id>", service_id="salesforce", raw=False, fields="id,updated_at", filter_={
         "company_id": "1234",
     }, pass_through={
         "search": "San Francisco",
@@ -469,7 +521,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.hris.employees.update(id_param="<id>", service_id="salesforce", id="12345", first_name="Elon", last_name="Musk", middle_name="D.", display_name="Technoking", preferred_name="Elon Musk", initials="EM", salutation="Mr", title="CEO", marital_status="married", partner={
+    res = apideck.hris.employees.update(id_param="<value>", service_id="salesforce", raw=False, id="12345", first_name="Elon", last_name="Musk", middle_name="D.", display_name="Technoking", preferred_name="Elon Musk", initials="EM", salutation="Mr", title="CEO", marital_status="married", partner={
         "first_name": "Elon",
         "last_name": "Musk",
         "middle_name": "D.",
@@ -681,6 +733,14 @@ with Apideck(
             "extension": "105",
             "type": apideck_unify.PhoneNumberType.PRIMARY,
         },
+        {
+            "number": "111-111-1111",
+            "id": "12345",
+            "country_code": "1",
+            "area_code": "323",
+            "extension": "105",
+            "type": apideck_unify.PhoneNumberType.PRIMARY,
+        },
     ], emails=[
         {
             "email": "elon@musk.com",
@@ -740,6 +800,19 @@ with Apideck(
             "bank_code": "BNH",
             "currency": apideck_unify.Currency.USD,
         },
+        {
+            "bank_name": "Monzo",
+            "account_number": "123465",
+            "account_name": "SPACEX LLC",
+            "account_type": apideck_unify.AccountType.CREDIT_CARD,
+            "iban": "CH2989144532982975332",
+            "bic": "AUDSCHGGXXX",
+            "routing_number": "012345678",
+            "bsb_number": "062-001",
+            "branch_identifier": "001",
+            "bank_code": "BNH",
+            "currency": apideck_unify.Currency.USD,
+        },
     ], tax_code="1111", tax_id="234-32-0000", dietary_preference="Veggie", food_allergies=[
         "No allergies",
     ], probation_period={
@@ -751,7 +824,14 @@ with Apideck(
         {
             "service_id": "<id>",
             "extend_paths": [
-
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
             ],
         },
     ])
@@ -864,7 +944,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.hris.employees.delete(id="<id>", service_id="salesforce")
+    res = apideck.hris.employees.delete(id="<id>", service_id="salesforce", raw=False)
 
     assert res.delete_employee_response is not None
 

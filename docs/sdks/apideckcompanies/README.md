@@ -27,7 +27,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.hris.companies.list(service_id="salesforce", pass_through={
+    res = apideck.hris.companies.list(raw=False, service_id="salesforce", limit=20, pass_through={
         "search": "San Francisco",
     }, fields="id,updated_at")
 
@@ -82,7 +82,33 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.hris.companies.create(legal_name="SpaceX", service_id="salesforce", display_name="SpaceX", subdomain="company", status=apideck_unify.HrisCompanyStatus.ACTIVE, company_number="123456-AB", currency=apideck_unify.Currency.USD, addresses=[
+    res = apideck.hris.companies.create(legal_name="SpaceX", raw=False, service_id="salesforce", display_name="SpaceX", subdomain="company", status=apideck_unify.HrisCompanyStatus.ACTIVE, company_number="123456-AB", currency=apideck_unify.Currency.USD, addresses=[
+        {
+            "id": "123",
+            "type": apideck_unify.Type.PRIMARY,
+            "string": "25 Spring Street, Blackburn, VIC 3130",
+            "name": "HQ US",
+            "line1": "Main street",
+            "line2": "apt #",
+            "line3": "Suite #",
+            "line4": "delivery instructions",
+            "street_number": "25",
+            "city": "San Francisco",
+            "state": "CA",
+            "postal_code": "94104",
+            "country": "US",
+            "latitude": "40.759211",
+            "longitude": "-73.984638",
+            "county": "Santa Clara",
+            "contact_name": "Elon Musk",
+            "salutation": "Mr",
+            "phone_number": "111-111-1111",
+            "fax": "122-111-1111",
+            "email": "elon@musk.com",
+            "website": "https://elonmusk.com",
+            "notes": "Address notes or delivery instructions.",
+            "row_version": "1-12345",
+        },
         {
             "id": "123",
             "type": apideck_unify.Type.PRIMARY,
@@ -132,10 +158,47 @@ with Apideck(
             "id": "123",
             "type": apideck_unify.EmailType.PRIMARY,
         },
+        {
+            "email": "elon@musk.com",
+            "id": "123",
+            "type": apideck_unify.EmailType.PRIMARY,
+        },
     ], websites=[
-
+        {
+            "url": "http://example.com",
+            "id": "12345",
+            "type": apideck_unify.WebsiteType.PRIMARY,
+        },
     ], debtor_id="12345", pass_through=[
-
+        {
+            "service_id": "<id>",
+            "extend_paths": [
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
+            ],
+        },
     ])
 
     assert res.create_hris_company_response is not None
@@ -196,7 +259,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.hris.companies.get(id="<id>", service_id="salesforce", fields="id,updated_at")
+    res = apideck.hris.companies.get(id="<id>", service_id="salesforce", raw=False, fields="id,updated_at")
 
     assert res.get_hris_company_response is not None
 
@@ -247,7 +310,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.hris.companies.update(id="<id>", legal_name="SpaceX", service_id="salesforce", display_name="SpaceX", subdomain="company", status=apideck_unify.HrisCompanyStatus.ACTIVE, company_number="123456-AB", currency=apideck_unify.Currency.USD, addresses=[
+    res = apideck.hris.companies.update(id="<id>", legal_name="SpaceX", service_id="salesforce", raw=False, display_name="SpaceX", subdomain="company", status=apideck_unify.HrisCompanyStatus.ACTIVE, company_number="123456-AB", currency=apideck_unify.Currency.USD, addresses=[
         {
             "id": "123",
             "type": apideck_unify.Type.PRIMARY,
@@ -349,6 +412,11 @@ with Apideck(
             "id": "123",
             "type": apideck_unify.EmailType.PRIMARY,
         },
+        {
+            "email": "elon@musk.com",
+            "id": "123",
+            "type": apideck_unify.EmailType.PRIMARY,
+        },
     ], websites=[
         {
             "url": "http://example.com",
@@ -369,6 +437,14 @@ with Apideck(
         {
             "service_id": "<id>",
             "extend_paths": [
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
                 {
                     "path": "$.nested.property",
                     "value": {
@@ -469,7 +545,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.hris.companies.delete(id="<id>", service_id="salesforce")
+    res = apideck.hris.companies.delete(id="<id>", service_id="salesforce", raw=False)
 
     assert res.delete_hris_company_response is not None
 

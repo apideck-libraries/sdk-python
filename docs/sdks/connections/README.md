@@ -160,6 +160,116 @@ with Apideck(
                                 },
                             ],
                         },
+                        {
+                            "label": "General Channel",
+                            "value": [
+                                "team",
+                                "general",
+                            ],
+                        },
+                    ],
+                    "value": 10.5,
+                },
+                {
+                    "id": "ProductInterest",
+                    "options": [
+                        {
+                            "label": "General Channel",
+                            "value": "general",
+                        },
+                    ],
+                    "value": True,
+                },
+            ],
+        },
+        {
+            "resource": "leads",
+            "defaults": [
+                {
+                    "id": "ProductInterest",
+                    "options": [
+                        {
+                            "label": "General Channel",
+                            "value": True,
+                        },
+                    ],
+                    "value": True,
+                },
+                {
+                    "id": "ProductInterest",
+                    "options": [
+                        {
+                            "label": "General Channel",
+                            "value": True,
+                        },
+                        {
+                            "id": "1234",
+                            "label": "General Channel",
+                            "options": [
+                                {
+                                    "label": "General Channel",
+                                    "value": 12.5,
+                                },
+                                {
+                                    "label": "General Channel",
+                                    "value": "general",
+                                },
+                            ],
+                        },
+                    ],
+                    "value": 10,
+                },
+                {
+                    "id": "ProductInterest",
+                    "options": [
+                        {
+                            "id": "1234",
+                            "label": "General Channel",
+                            "options": [
+                                {
+                                    "label": "General Channel",
+                                    "value": [
+                                        "team",
+                                        "general",
+                                    ],
+                                },
+                                {
+                                    "label": "General Channel",
+                                    "value": True,
+                                },
+                                {
+                                    "label": "General Channel",
+                                    "value": 12.5,
+                                },
+                            ],
+                        },
+                        {
+                            "label": "General Channel",
+                            "value": 12.5,
+                        },
+                    ],
+                    "value": 10.5,
+                },
+            ],
+        },
+        {
+            "resource": "leads",
+            "defaults": [
+                {
+                    "id": "ProductInterest",
+                    "options": [
+                        {
+                            "label": "General Channel",
+                            "value": "general",
+                        },
+                        {
+                            "label": "General Channel",
+                            "value": True,
+                        },
+                        {
+                            "label": "General Channel",
+                            "value": True,
+                        },
                     ],
                     "value": "GC5000 series",
                 },
@@ -168,121 +278,21 @@ with Apideck(
                     "options": [
                         {
                             "label": "General Channel",
-                            "value": 123,
-                        },
-                        {
-                            "label": "General Channel",
-                            "value": "general",
-                        },
-                        {
-                            "id": "1234",
-                            "label": "General Channel",
-                            "options": [
-                                {
-                                    "label": "General Channel",
-                                    "value": 123,
-                                },
-                                {
-                                    "label": "General Channel",
-                                    "value": 12.5,
-                                },
-                                {
-                                    "label": "General Channel",
-                                    "value": True,
-                                },
-                            ],
-                        },
-                    ],
-                    "value": True,
-                },
-            ],
-        },
-        {
-            "resource": "leads",
-            "defaults": [
-                {
-                    "id": "ProductInterest",
-                    "options": [
-
-                    ],
-                    "value": True,
-                },
-            ],
-        },
-        {
-            "resource": "leads",
-            "defaults": [
-                {
-                    "id": "ProductInterest",
-                    "options": [
-                        {
-                            "id": "1234",
-                            "label": "General Channel",
-                            "options": [
-
-                            ],
-                        },
-                    ],
-                    "value": 10,
-                },
-                {
-                    "id": "ProductInterest",
-                    "options": [
-                        {
-                            "id": "1234",
-                            "label": "General Channel",
-                            "options": [
-                                {
-                                    "label": "General Channel",
-                                    "value": [
-                                        "team",
-                                        "general",
-                                    ],
-                                },
-                                {
-                                    "label": "General Channel",
-                                    "value": True,
-                                },
-                                {
-                                    "label": "General Channel",
-                                    "value": 12.5,
-                                },
-                            ],
-                        },
-                    ],
-                    "value": 10,
-                },
-                {
-                    "id": "ProductInterest",
-                    "options": [
-                        {
-                            "id": "1234",
-                            "label": "General Channel",
-                            "options": [
-                                {
-                                    "label": "General Channel",
-                                    "value": [
-                                        "team",
-                                        "general",
-                                    ],
-                                },
-                                {
-                                    "label": "General Channel",
-                                    "value": "general",
-                                },
-                            ],
+                            "value": True,
                         },
                         {
                             "label": "General Channel",
                             "value": 123,
                         },
                     ],
-                    "value": True,
+                    "value": 10.5,
                 },
             ],
         },
     ], custom_mappings=[
-
+        {
+            "value": "$.root.training.first_aid",
+        },
     ])
 
     assert res.update_connection_response is not None

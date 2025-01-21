@@ -23,7 +23,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.ecommerce.stores.get(service_id="salesforce", fields="id,updated_at")
+    res = apideck.ecommerce.stores.get(service_id="salesforce", raw=False, fields="id,updated_at")
 
     assert res.get_store_response is not None
 

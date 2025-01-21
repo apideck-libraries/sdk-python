@@ -27,7 +27,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.accounting.departments.list(service_id="salesforce", fields="id,updated_at", filter_={
+    res = apideck.accounting.departments.list(raw=False, service_id="salesforce", limit=20, fields="id,updated_at", filter_={
         "subsidiary": "1",
     })
 
@@ -82,7 +82,10 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.accounting.departments.create(service_id="salesforce", parent_id="12345", name="Sales", status=apideck_unify.DepartmentStatus.ACTIVE, subsidiaries=[
+    res = apideck.accounting.departments.create(raw=False, service_id="salesforce", parent_id="12345", name="Sales", status=apideck_unify.DepartmentStatus.ACTIVE, subsidiaries=[
+        {
+            "name": "SpaceX",
+        },
         {
             "name": "SpaceX",
         },
@@ -98,12 +101,27 @@ with Apideck(
                         },
                     },
                 },
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
             ],
         },
         {
             "service_id": "<id>",
             "extend_paths": [
-
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
             ],
         },
     ])
@@ -160,7 +178,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.accounting.departments.get(id="<id>", service_id="salesforce", fields="id,updated_at")
+    res = apideck.accounting.departments.get(id="<id>", service_id="salesforce", raw=False, fields="id,updated_at")
 
     assert res.get_accounting_department_response is not None
 
@@ -211,7 +229,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.accounting.departments.update(id="<id>", service_id="salesforce", parent_id="12345", name="Sales", status=apideck_unify.DepartmentStatus.ACTIVE, subsidiaries=[
+    res = apideck.accounting.departments.update(id="<id>", service_id="salesforce", raw=False, parent_id="12345", name="Sales", status=apideck_unify.DepartmentStatus.ACTIVE, subsidiaries=[
         {
             "name": "SpaceX",
         },
@@ -225,6 +243,14 @@ with Apideck(
         {
             "service_id": "<id>",
             "extend_paths": [
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
                 {
                     "path": "$.nested.property",
                     "value": {
@@ -319,7 +345,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.accounting.departments.delete(id="<id>", service_id="salesforce")
+    res = apideck.accounting.departments.delete(id="<id>", service_id="salesforce", raw=False)
 
     assert res.delete_accounting_department_response is not None
 
