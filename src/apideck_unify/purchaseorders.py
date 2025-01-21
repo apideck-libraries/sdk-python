@@ -15,6 +15,8 @@ class PurchaseOrders(BaseSDK):
         self,
         *,
         raw: Optional[bool] = False,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         cursor: OptionalNullable[str] = UNSET,
         pass_through: Optional[Dict[str, Any]] = None,
@@ -35,6 +37,8 @@ class PurchaseOrders(BaseSDK):
         List Purchase Orders
 
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
         :param pass_through: Optional unmapped key/values that will be passed through to downstream as query parameters. Ie: ?pass_through[search]=leads becomes ?search=leads
@@ -56,6 +60,8 @@ class PurchaseOrders(BaseSDK):
 
         request = models.AccountingPurchaseOrdersAllRequest(
             raw=raw,
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             cursor=cursor,
             pass_through=pass_through,
@@ -121,6 +127,8 @@ class PurchaseOrders(BaseSDK):
 
             return self.list(
                 raw=raw,
+                consumer_id=consumer_id,
+                app_id=app_id,
                 service_id=service_id,
                 cursor=next_cursor,
                 pass_through=pass_through,
@@ -188,6 +196,8 @@ class PurchaseOrders(BaseSDK):
         self,
         *,
         raw: Optional[bool] = False,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         cursor: OptionalNullable[str] = UNSET,
         pass_through: Optional[Dict[str, Any]] = None,
@@ -208,6 +218,8 @@ class PurchaseOrders(BaseSDK):
         List Purchase Orders
 
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
         :param pass_through: Optional unmapped key/values that will be passed through to downstream as query parameters. Ie: ?pass_through[search]=leads becomes ?search=leads
@@ -229,6 +241,8 @@ class PurchaseOrders(BaseSDK):
 
         request = models.AccountingPurchaseOrdersAllRequest(
             raw=raw,
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             cursor=cursor,
             pass_through=pass_through,
@@ -294,6 +308,8 @@ class PurchaseOrders(BaseSDK):
 
             return self.list(
                 raw=raw,
+                consumer_id=consumer_id,
+                app_id=app_id,
                 service_id=service_id,
                 cursor=next_cursor,
                 pass_through=pass_through,
@@ -361,6 +377,8 @@ class PurchaseOrders(BaseSDK):
         self,
         *,
         raw: Optional[bool] = False,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         po_number: OptionalNullable[str] = UNSET,
         reference: OptionalNullable[str] = UNSET,
@@ -424,6 +442,8 @@ class PurchaseOrders(BaseSDK):
         Create Purchase Order
 
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param po_number: A PO Number uniquely identifies a purchase order and is generally defined by the buyer.
         :param reference: Optional purchase order reference.
@@ -469,6 +489,8 @@ class PurchaseOrders(BaseSDK):
 
         request = models.AccountingPurchaseOrdersAddRequest(
             raw=raw,
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             purchase_order=models.PurchaseOrderInput(
                 po_number=po_number,
@@ -622,6 +644,8 @@ class PurchaseOrders(BaseSDK):
         self,
         *,
         raw: Optional[bool] = False,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         po_number: OptionalNullable[str] = UNSET,
         reference: OptionalNullable[str] = UNSET,
@@ -685,6 +709,8 @@ class PurchaseOrders(BaseSDK):
         Create Purchase Order
 
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param po_number: A PO Number uniquely identifies a purchase order and is generally defined by the buyer.
         :param reference: Optional purchase order reference.
@@ -730,6 +756,8 @@ class PurchaseOrders(BaseSDK):
 
         request = models.AccountingPurchaseOrdersAddRequest(
             raw=raw,
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             purchase_order=models.PurchaseOrderInput(
                 po_number=po_number,
@@ -883,6 +911,8 @@ class PurchaseOrders(BaseSDK):
         self,
         *,
         id: str,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
@@ -895,6 +925,8 @@ class PurchaseOrders(BaseSDK):
         Get Purchase Order
 
         :param id: ID of the record you are acting upon.
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param retries: Override the default retry configuration for this method
@@ -912,6 +944,8 @@ class PurchaseOrders(BaseSDK):
 
         request = models.AccountingPurchaseOrdersOneRequest(
             id=id,
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             raw=raw,
         )
@@ -1017,6 +1051,8 @@ class PurchaseOrders(BaseSDK):
         self,
         *,
         id: str,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
@@ -1029,6 +1065,8 @@ class PurchaseOrders(BaseSDK):
         Get Purchase Order
 
         :param id: ID of the record you are acting upon.
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param retries: Override the default retry configuration for this method
@@ -1046,6 +1084,8 @@ class PurchaseOrders(BaseSDK):
 
         request = models.AccountingPurchaseOrdersOneRequest(
             id=id,
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             raw=raw,
         )
@@ -1151,6 +1191,8 @@ class PurchaseOrders(BaseSDK):
         self,
         *,
         id: str,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
         po_number: OptionalNullable[str] = UNSET,
@@ -1215,6 +1257,8 @@ class PurchaseOrders(BaseSDK):
         Update Purchase Order
 
         :param id: ID of the record you are acting upon.
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param po_number: A PO Number uniquely identifies a purchase order and is generally defined by the buyer.
@@ -1261,6 +1305,8 @@ class PurchaseOrders(BaseSDK):
 
         request = models.AccountingPurchaseOrdersUpdateRequest(
             id=id,
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             raw=raw,
             purchase_order=models.PurchaseOrderInput(
@@ -1415,6 +1461,8 @@ class PurchaseOrders(BaseSDK):
         self,
         *,
         id: str,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
         po_number: OptionalNullable[str] = UNSET,
@@ -1479,6 +1527,8 @@ class PurchaseOrders(BaseSDK):
         Update Purchase Order
 
         :param id: ID of the record you are acting upon.
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param po_number: A PO Number uniquely identifies a purchase order and is generally defined by the buyer.
@@ -1525,6 +1575,8 @@ class PurchaseOrders(BaseSDK):
 
         request = models.AccountingPurchaseOrdersUpdateRequest(
             id=id,
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             raw=raw,
             purchase_order=models.PurchaseOrderInput(
@@ -1679,6 +1731,8 @@ class PurchaseOrders(BaseSDK):
         self,
         *,
         id: str,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
@@ -1691,6 +1745,8 @@ class PurchaseOrders(BaseSDK):
         Delete Purchase Order
 
         :param id: ID of the record you are acting upon.
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param retries: Override the default retry configuration for this method
@@ -1708,6 +1764,8 @@ class PurchaseOrders(BaseSDK):
 
         request = models.AccountingPurchaseOrdersDeleteRequest(
             id=id,
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             raw=raw,
         )
@@ -1813,6 +1871,8 @@ class PurchaseOrders(BaseSDK):
         self,
         *,
         id: str,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
@@ -1825,6 +1885,8 @@ class PurchaseOrders(BaseSDK):
         Delete Purchase Order
 
         :param id: ID of the record you are acting upon.
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param retries: Override the default retry configuration for this method
@@ -1842,6 +1904,8 @@ class PurchaseOrders(BaseSDK):
 
         request = models.AccountingPurchaseOrdersDeleteRequest(
             id=id,
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             raw=raw,
         )

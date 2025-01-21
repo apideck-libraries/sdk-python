@@ -15,6 +15,8 @@ class Bills(BaseSDK):
         self,
         *,
         raw: Optional[bool] = False,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         cursor: OptionalNullable[str] = UNSET,
         limit: Optional[int] = 20,
@@ -34,6 +36,8 @@ class Bills(BaseSDK):
         List Bills
 
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
         :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
@@ -56,6 +60,8 @@ class Bills(BaseSDK):
 
         request = models.AccountingBillsAllRequest(
             raw=raw,
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             cursor=cursor,
             limit=limit,
@@ -120,6 +126,8 @@ class Bills(BaseSDK):
 
             return self.list(
                 raw=raw,
+                consumer_id=consumer_id,
+                app_id=app_id,
                 service_id=service_id,
                 cursor=next_cursor,
                 limit=limit,
@@ -188,6 +196,8 @@ class Bills(BaseSDK):
         self,
         *,
         raw: Optional[bool] = False,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         cursor: OptionalNullable[str] = UNSET,
         limit: Optional[int] = 20,
@@ -207,6 +217,8 @@ class Bills(BaseSDK):
         List Bills
 
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
         :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
@@ -229,6 +241,8 @@ class Bills(BaseSDK):
 
         request = models.AccountingBillsAllRequest(
             raw=raw,
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             cursor=cursor,
             limit=limit,
@@ -293,6 +307,8 @@ class Bills(BaseSDK):
 
             return self.list(
                 raw=raw,
+                consumer_id=consumer_id,
+                app_id=app_id,
                 service_id=service_id,
                 cursor=next_cursor,
                 limit=limit,
@@ -361,6 +377,8 @@ class Bills(BaseSDK):
         self,
         *,
         raw: Optional[bool] = False,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         bill_number: OptionalNullable[str] = UNSET,
         supplier: OptionalNullable[
@@ -427,6 +445,8 @@ class Bills(BaseSDK):
         Create Bill
 
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param bill_number: Reference to supplier bill number
         :param supplier: The supplier this entity is linked to.
@@ -476,6 +496,8 @@ class Bills(BaseSDK):
 
         request = models.AccountingBillsAddRequest(
             raw=raw,
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             bill=models.BillInput(
                 bill_number=bill_number,
@@ -633,6 +655,8 @@ class Bills(BaseSDK):
         self,
         *,
         raw: Optional[bool] = False,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         bill_number: OptionalNullable[str] = UNSET,
         supplier: OptionalNullable[
@@ -699,6 +723,8 @@ class Bills(BaseSDK):
         Create Bill
 
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param bill_number: Reference to supplier bill number
         :param supplier: The supplier this entity is linked to.
@@ -748,6 +774,8 @@ class Bills(BaseSDK):
 
         request = models.AccountingBillsAddRequest(
             raw=raw,
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             bill=models.BillInput(
                 bill_number=bill_number,
@@ -905,6 +933,8 @@ class Bills(BaseSDK):
         self,
         *,
         id: str,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
         fields: OptionalNullable[str] = UNSET,
@@ -918,6 +948,8 @@ class Bills(BaseSDK):
         Get Bill
 
         :param id: ID of the record you are acting upon.
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param fields: The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded.
@@ -936,6 +968,8 @@ class Bills(BaseSDK):
 
         request = models.AccountingBillsOneRequest(
             id=id,
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             raw=raw,
             fields=fields,
@@ -1042,6 +1076,8 @@ class Bills(BaseSDK):
         self,
         *,
         id: str,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
         fields: OptionalNullable[str] = UNSET,
@@ -1055,6 +1091,8 @@ class Bills(BaseSDK):
         Get Bill
 
         :param id: ID of the record you are acting upon.
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param fields: The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded.
@@ -1073,6 +1111,8 @@ class Bills(BaseSDK):
 
         request = models.AccountingBillsOneRequest(
             id=id,
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             raw=raw,
             fields=fields,
@@ -1179,6 +1219,8 @@ class Bills(BaseSDK):
         self,
         *,
         id: str,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
         bill_number: OptionalNullable[str] = UNSET,
@@ -1246,6 +1288,8 @@ class Bills(BaseSDK):
         Update Bill
 
         :param id: ID of the record you are acting upon.
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param bill_number: Reference to supplier bill number
@@ -1296,6 +1340,8 @@ class Bills(BaseSDK):
 
         request = models.AccountingBillsUpdateRequest(
             id=id,
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             raw=raw,
             bill=models.BillInput(
@@ -1454,6 +1500,8 @@ class Bills(BaseSDK):
         self,
         *,
         id: str,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
         bill_number: OptionalNullable[str] = UNSET,
@@ -1521,6 +1569,8 @@ class Bills(BaseSDK):
         Update Bill
 
         :param id: ID of the record you are acting upon.
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param bill_number: Reference to supplier bill number
@@ -1571,6 +1621,8 @@ class Bills(BaseSDK):
 
         request = models.AccountingBillsUpdateRequest(
             id=id,
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             raw=raw,
             bill=models.BillInput(
@@ -1729,6 +1781,8 @@ class Bills(BaseSDK):
         self,
         *,
         id: str,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
@@ -1741,6 +1795,8 @@ class Bills(BaseSDK):
         Delete Bill
 
         :param id: ID of the record you are acting upon.
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param retries: Override the default retry configuration for this method
@@ -1758,6 +1814,8 @@ class Bills(BaseSDK):
 
         request = models.AccountingBillsDeleteRequest(
             id=id,
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             raw=raw,
         )
@@ -1863,6 +1921,8 @@ class Bills(BaseSDK):
         self,
         *,
         id: str,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
@@ -1875,6 +1935,8 @@ class Bills(BaseSDK):
         Delete Bill
 
         :param id: ID of the record you are acting upon.
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param retries: Override the default retry configuration for this method
@@ -1892,6 +1954,8 @@ class Bills(BaseSDK):
 
         request = models.AccountingBillsDeleteRequest(
             id=id,
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             raw=raw,
         )

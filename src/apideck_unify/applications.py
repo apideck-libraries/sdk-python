@@ -14,6 +14,8 @@ class Applications(BaseSDK):
         self,
         *,
         raw: Optional[bool] = False,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         cursor: OptionalNullable[str] = UNSET,
         pass_through: Optional[Dict[str, Any]] = None,
@@ -28,6 +30,8 @@ class Applications(BaseSDK):
         List Applications
 
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
         :param pass_through: Optional unmapped key/values that will be passed through to downstream as query parameters. Ie: ?pass_through[search]=leads becomes ?search=leads
@@ -47,6 +51,8 @@ class Applications(BaseSDK):
 
         request = models.AtsApplicationsAllRequest(
             raw=raw,
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             cursor=cursor,
             pass_through=pass_through,
@@ -108,6 +114,8 @@ class Applications(BaseSDK):
 
             return self.list(
                 raw=raw,
+                consumer_id=consumer_id,
+                app_id=app_id,
                 service_id=service_id,
                 cursor=next_cursor,
                 pass_through=pass_through,
@@ -173,6 +181,8 @@ class Applications(BaseSDK):
         self,
         *,
         raw: Optional[bool] = False,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         cursor: OptionalNullable[str] = UNSET,
         pass_through: Optional[Dict[str, Any]] = None,
@@ -187,6 +197,8 @@ class Applications(BaseSDK):
         List Applications
 
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
         :param pass_through: Optional unmapped key/values that will be passed through to downstream as query parameters. Ie: ?pass_through[search]=leads becomes ?search=leads
@@ -206,6 +218,8 @@ class Applications(BaseSDK):
 
         request = models.AtsApplicationsAllRequest(
             raw=raw,
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             cursor=cursor,
             pass_through=pass_through,
@@ -267,6 +281,8 @@ class Applications(BaseSDK):
 
             return self.list(
                 raw=raw,
+                consumer_id=consumer_id,
+                app_id=app_id,
                 service_id=service_id,
                 cursor=next_cursor,
                 pass_through=pass_through,
@@ -334,6 +350,8 @@ class Applications(BaseSDK):
         applicant_id: Nullable[str],
         job_id: Nullable[str],
         raw: Optional[bool] = False,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         status: OptionalNullable[models.ApplicationStatus] = UNSET,
         stage: Optional[Union[models.Stage, models.StageTypedDict]] = None,
@@ -352,6 +370,8 @@ class Applications(BaseSDK):
         :param applicant_id:
         :param job_id:
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param status:
         :param stage:
@@ -371,6 +391,8 @@ class Applications(BaseSDK):
 
         request = models.AtsApplicationsAddRequest(
             raw=raw,
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             application=models.ApplicationInput(
                 applicant_id=applicant_id,
@@ -489,6 +511,8 @@ class Applications(BaseSDK):
         applicant_id: Nullable[str],
         job_id: Nullable[str],
         raw: Optional[bool] = False,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         status: OptionalNullable[models.ApplicationStatus] = UNSET,
         stage: Optional[Union[models.Stage, models.StageTypedDict]] = None,
@@ -507,6 +531,8 @@ class Applications(BaseSDK):
         :param applicant_id:
         :param job_id:
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param status:
         :param stage:
@@ -526,6 +552,8 @@ class Applications(BaseSDK):
 
         request = models.AtsApplicationsAddRequest(
             raw=raw,
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             application=models.ApplicationInput(
                 applicant_id=applicant_id,
@@ -642,6 +670,8 @@ class Applications(BaseSDK):
         self,
         *,
         id: str,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
@@ -654,6 +684,8 @@ class Applications(BaseSDK):
         Get Application
 
         :param id: ID of the record you are acting upon.
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param retries: Override the default retry configuration for this method
@@ -671,6 +703,8 @@ class Applications(BaseSDK):
 
         request = models.AtsApplicationsOneRequest(
             id=id,
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             raw=raw,
         )
@@ -776,6 +810,8 @@ class Applications(BaseSDK):
         self,
         *,
         id: str,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
@@ -788,6 +824,8 @@ class Applications(BaseSDK):
         Get Application
 
         :param id: ID of the record you are acting upon.
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param retries: Override the default retry configuration for this method
@@ -805,6 +843,8 @@ class Applications(BaseSDK):
 
         request = models.AtsApplicationsOneRequest(
             id=id,
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             raw=raw,
         )
@@ -912,6 +952,8 @@ class Applications(BaseSDK):
         id: str,
         applicant_id: Nullable[str],
         job_id: Nullable[str],
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
         status: OptionalNullable[models.ApplicationStatus] = UNSET,
@@ -931,6 +973,8 @@ class Applications(BaseSDK):
         :param id: ID of the record you are acting upon.
         :param applicant_id:
         :param job_id:
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param status:
@@ -951,6 +995,8 @@ class Applications(BaseSDK):
 
         request = models.AtsApplicationsUpdateRequest(
             id=id,
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             raw=raw,
             application=models.ApplicationInput(
@@ -1070,6 +1116,8 @@ class Applications(BaseSDK):
         id: str,
         applicant_id: Nullable[str],
         job_id: Nullable[str],
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
         status: OptionalNullable[models.ApplicationStatus] = UNSET,
@@ -1089,6 +1137,8 @@ class Applications(BaseSDK):
         :param id: ID of the record you are acting upon.
         :param applicant_id:
         :param job_id:
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param status:
@@ -1109,6 +1159,8 @@ class Applications(BaseSDK):
 
         request = models.AtsApplicationsUpdateRequest(
             id=id,
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             raw=raw,
             application=models.ApplicationInput(
@@ -1226,6 +1278,8 @@ class Applications(BaseSDK):
         self,
         *,
         id: str,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
@@ -1238,6 +1292,8 @@ class Applications(BaseSDK):
         Delete Application
 
         :param id: ID of the record you are acting upon.
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param retries: Override the default retry configuration for this method
@@ -1255,6 +1311,8 @@ class Applications(BaseSDK):
 
         request = models.AtsApplicationsDeleteRequest(
             id=id,
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             raw=raw,
         )
@@ -1360,6 +1418,8 @@ class Applications(BaseSDK):
         self,
         *,
         id: str,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
@@ -1372,6 +1432,8 @@ class Applications(BaseSDK):
         Delete Application
 
         :param id: ID of the record you are acting upon.
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param retries: Override the default retry configuration for this method
@@ -1389,6 +1451,8 @@ class Applications(BaseSDK):
 
         request = models.AtsApplicationsDeleteRequest(
             id=id,
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             raw=raw,
         )

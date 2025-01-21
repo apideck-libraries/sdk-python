@@ -14,6 +14,8 @@ class Suppliers(BaseSDK):
         self,
         *,
         raw: Optional[bool] = False,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         cursor: OptionalNullable[str] = UNSET,
         limit: Optional[int] = 20,
@@ -35,6 +37,8 @@ class Suppliers(BaseSDK):
         List Suppliers
 
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
         :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
@@ -57,6 +61,8 @@ class Suppliers(BaseSDK):
 
         request = models.AccountingSuppliersAllRequest(
             raw=raw,
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             cursor=cursor,
             limit=limit,
@@ -121,6 +127,8 @@ class Suppliers(BaseSDK):
 
             return self.list(
                 raw=raw,
+                consumer_id=consumer_id,
+                app_id=app_id,
                 service_id=service_id,
                 cursor=next_cursor,
                 limit=limit,
@@ -189,6 +197,8 @@ class Suppliers(BaseSDK):
         self,
         *,
         raw: Optional[bool] = False,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         cursor: OptionalNullable[str] = UNSET,
         limit: Optional[int] = 20,
@@ -210,6 +220,8 @@ class Suppliers(BaseSDK):
         List Suppliers
 
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
         :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
@@ -232,6 +244,8 @@ class Suppliers(BaseSDK):
 
         request = models.AccountingSuppliersAllRequest(
             raw=raw,
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             cursor=cursor,
             limit=limit,
@@ -296,6 +310,8 @@ class Suppliers(BaseSDK):
 
             return self.list(
                 raw=raw,
+                consumer_id=consumer_id,
+                app_id=app_id,
                 service_id=service_id,
                 cursor=next_cursor,
                 limit=limit,
@@ -364,6 +380,8 @@ class Suppliers(BaseSDK):
         self,
         *,
         raw: Optional[bool] = False,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         display_id: OptionalNullable[str] = UNSET,
         display_name: OptionalNullable[str] = UNSET,
@@ -421,6 +439,8 @@ class Suppliers(BaseSDK):
         Create Supplier
 
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param display_id: Display ID
         :param display_name: Display name
@@ -464,6 +484,8 @@ class Suppliers(BaseSDK):
 
         request = models.AccountingSuppliersAddRequest(
             raw=raw,
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             supplier=models.SupplierInput(
                 display_id=display_id,
@@ -616,6 +638,8 @@ class Suppliers(BaseSDK):
         self,
         *,
         raw: Optional[bool] = False,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         display_id: OptionalNullable[str] = UNSET,
         display_name: OptionalNullable[str] = UNSET,
@@ -673,6 +697,8 @@ class Suppliers(BaseSDK):
         Create Supplier
 
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param display_id: Display ID
         :param display_name: Display name
@@ -716,6 +742,8 @@ class Suppliers(BaseSDK):
 
         request = models.AccountingSuppliersAddRequest(
             raw=raw,
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             supplier=models.SupplierInput(
                 display_id=display_id,
@@ -868,6 +896,8 @@ class Suppliers(BaseSDK):
         self,
         *,
         id: str,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
         fields: OptionalNullable[str] = UNSET,
@@ -881,6 +911,8 @@ class Suppliers(BaseSDK):
         Get Supplier
 
         :param id: ID of the record you are acting upon.
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param fields: The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded.
@@ -899,6 +931,8 @@ class Suppliers(BaseSDK):
 
         request = models.AccountingSuppliersOneRequest(
             id=id,
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             raw=raw,
             fields=fields,
@@ -1005,6 +1039,8 @@ class Suppliers(BaseSDK):
         self,
         *,
         id: str,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
         fields: OptionalNullable[str] = UNSET,
@@ -1018,6 +1054,8 @@ class Suppliers(BaseSDK):
         Get Supplier
 
         :param id: ID of the record you are acting upon.
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param fields: The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded.
@@ -1036,6 +1074,8 @@ class Suppliers(BaseSDK):
 
         request = models.AccountingSuppliersOneRequest(
             id=id,
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             raw=raw,
             fields=fields,
@@ -1142,6 +1182,8 @@ class Suppliers(BaseSDK):
         self,
         *,
         id: str,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
         display_id: OptionalNullable[str] = UNSET,
@@ -1200,6 +1242,8 @@ class Suppliers(BaseSDK):
         Update Supplier
 
         :param id: ID of the record you are acting upon.
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param display_id: Display ID
@@ -1244,6 +1288,8 @@ class Suppliers(BaseSDK):
 
         request = models.AccountingSuppliersUpdateRequest(
             id=id,
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             raw=raw,
             supplier=models.SupplierInput(
@@ -1397,6 +1443,8 @@ class Suppliers(BaseSDK):
         self,
         *,
         id: str,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
         display_id: OptionalNullable[str] = UNSET,
@@ -1455,6 +1503,8 @@ class Suppliers(BaseSDK):
         Update Supplier
 
         :param id: ID of the record you are acting upon.
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param display_id: Display ID
@@ -1499,6 +1549,8 @@ class Suppliers(BaseSDK):
 
         request = models.AccountingSuppliersUpdateRequest(
             id=id,
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             raw=raw,
             supplier=models.SupplierInput(
@@ -1652,6 +1704,8 @@ class Suppliers(BaseSDK):
         self,
         *,
         id: str,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
@@ -1664,6 +1718,8 @@ class Suppliers(BaseSDK):
         Delete Supplier
 
         :param id: ID of the record you are acting upon.
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param retries: Override the default retry configuration for this method
@@ -1681,6 +1737,8 @@ class Suppliers(BaseSDK):
 
         request = models.AccountingSuppliersDeleteRequest(
             id=id,
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             raw=raw,
         )
@@ -1786,6 +1844,8 @@ class Suppliers(BaseSDK):
         self,
         *,
         id: str,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
@@ -1798,6 +1858,8 @@ class Suppliers(BaseSDK):
         Delete Supplier
 
         :param id: ID of the record you are acting upon.
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param retries: Override the default retry configuration for this method
@@ -1815,6 +1877,8 @@ class Suppliers(BaseSDK):
 
         request = models.AccountingSuppliersDeleteRequest(
             id=id,
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             raw=raw,
         )

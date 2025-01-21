@@ -14,6 +14,8 @@ class CustomMappingsSDK(BaseSDK):
         *,
         unified_api: str,
         service_id: str,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -25,6 +27,8 @@ class CustomMappingsSDK(BaseSDK):
 
         :param unified_api: Unified API
         :param service_id: Service ID of the resource to return
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -39,6 +43,8 @@ class CustomMappingsSDK(BaseSDK):
             base_url = server_url
 
         request = models.VaultCustomMappingsAllRequest(
+            consumer_id=consumer_id,
+            app_id=app_id,
             unified_api=unified_api,
             service_id=service_id,
         )
@@ -145,6 +151,8 @@ class CustomMappingsSDK(BaseSDK):
         *,
         unified_api: str,
         service_id: str,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -156,6 +164,8 @@ class CustomMappingsSDK(BaseSDK):
 
         :param unified_api: Unified API
         :param service_id: Service ID of the resource to return
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -170,6 +180,8 @@ class CustomMappingsSDK(BaseSDK):
             base_url = server_url
 
         request = models.VaultCustomMappingsAllRequest(
+            consumer_id=consumer_id,
+            app_id=app_id,
             unified_api=unified_api,
             service_id=service_id,
         )

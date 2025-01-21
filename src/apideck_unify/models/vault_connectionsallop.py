@@ -41,6 +41,10 @@ class VaultConnectionsAllGlobals(BaseModel):
 
 
 class VaultConnectionsAllRequestTypedDict(TypedDict):
+    consumer_id: NotRequired[str]
+    r"""ID of the consumer which you want to get or push data from"""
+    app_id: NotRequired[str]
+    r"""The ID of your Unify application"""
     api: NotRequired[str]
     r"""Scope results to Unified API"""
     configured: NotRequired[bool]
@@ -48,6 +52,20 @@ class VaultConnectionsAllRequestTypedDict(TypedDict):
 
 
 class VaultConnectionsAllRequest(BaseModel):
+    consumer_id: Annotated[
+        Optional[str],
+        pydantic.Field(alias="x-apideck-consumer-id"),
+        FieldMetadata(header=HeaderMetadata(style="simple", explode=False)),
+    ] = None
+    r"""ID of the consumer which you want to get or push data from"""
+
+    app_id: Annotated[
+        Optional[str],
+        pydantic.Field(alias="x-apideck-app-id"),
+        FieldMetadata(header=HeaderMetadata(style="simple", explode=False)),
+    ] = None
+    r"""The ID of your Unify application"""
+
     api: Annotated[
         Optional[str],
         FieldMetadata(query=QueryParamMetadata(style="form", explode=True)),

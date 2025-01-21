@@ -3416,6 +3416,8 @@ from .vault_consumerrequestcountsallop import (
 from .vault_consumersaddop import (
     VaultConsumersAddGlobals,
     VaultConsumersAddGlobalsTypedDict,
+    VaultConsumersAddRequest,
+    VaultConsumersAddRequestTypedDict,
     VaultConsumersAddResponse,
     VaultConsumersAddResponseTypedDict,
 )
@@ -3486,6 +3488,8 @@ from .vault_logsallop import (
 from .vault_sessionscreateop import (
     VaultSessionsCreateGlobals,
     VaultSessionsCreateGlobalsTypedDict,
+    VaultSessionsCreateRequest,
+    VaultSessionsCreateRequestTypedDict,
     VaultSessionsCreateResponse,
     VaultSessionsCreateResponseTypedDict,
 )
@@ -3511,6 +3515,8 @@ from .webhook_eventlogsallop import (
 from .webhook_webhooksaddop import (
     WebhookWebhooksAddGlobals,
     WebhookWebhooksAddGlobalsTypedDict,
+    WebhookWebhooksAddRequest,
+    WebhookWebhooksAddRequestTypedDict,
     WebhookWebhooksAddResponse,
     WebhookWebhooksAddResponseTypedDict,
 )
@@ -6364,6 +6370,8 @@ __all__ = [
     "VaultConsumerRequestCountsAllResponseTypedDict",
     "VaultConsumersAddGlobals",
     "VaultConsumersAddGlobalsTypedDict",
+    "VaultConsumersAddRequest",
+    "VaultConsumersAddRequestTypedDict",
     "VaultConsumersAddResponse",
     "VaultConsumersAddResponseTypedDict",
     "VaultConsumersAllGlobals",
@@ -6416,6 +6424,8 @@ __all__ = [
     "VaultLogsAllResponseTypedDict",
     "VaultSessionsCreateGlobals",
     "VaultSessionsCreateGlobalsTypedDict",
+    "VaultSessionsCreateRequest",
+    "VaultSessionsCreateRequestTypedDict",
     "VaultSessionsCreateResponse",
     "VaultSessionsCreateResponseTypedDict",
     "VaultValidateConnectionStateGlobals",
@@ -6454,6 +6464,8 @@ __all__ = [
     "WebhookTypedDict",
     "WebhookWebhooksAddGlobals",
     "WebhookWebhooksAddGlobalsTypedDict",
+    "WebhookWebhooksAddRequest",
+    "WebhookWebhooksAddRequestTypedDict",
     "WebhookWebhooksAddResponse",
     "WebhookWebhooksAddResponseTypedDict",
     "WebhookWebhooksAllGlobals",

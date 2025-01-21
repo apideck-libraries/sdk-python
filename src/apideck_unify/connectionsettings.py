@@ -15,6 +15,8 @@ class ConnectionSettings(BaseSDK):
         unified_api: str,
         service_id: str,
         resource: str,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -28,6 +30,8 @@ class ConnectionSettings(BaseSDK):
         :param unified_api: Unified API
         :param service_id: Service ID of the resource to return
         :param resource: Name of the resource (plural)
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -42,6 +46,8 @@ class ConnectionSettings(BaseSDK):
             base_url = server_url
 
         request = models.VaultConnectionSettingsAllRequest(
+            consumer_id=consumer_id,
+            app_id=app_id,
             unified_api=unified_api,
             service_id=service_id,
             resource=resource,
@@ -150,6 +156,8 @@ class ConnectionSettings(BaseSDK):
         unified_api: str,
         service_id: str,
         resource: str,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -163,6 +171,8 @@ class ConnectionSettings(BaseSDK):
         :param unified_api: Unified API
         :param service_id: Service ID of the resource to return
         :param resource: Name of the resource (plural)
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -177,6 +187,8 @@ class ConnectionSettings(BaseSDK):
             base_url = server_url
 
         request = models.VaultConnectionSettingsAllRequest(
+            consumer_id=consumer_id,
+            app_id=app_id,
             unified_api=unified_api,
             service_id=service_id,
             resource=resource,
@@ -285,6 +297,8 @@ class ConnectionSettings(BaseSDK):
         service_id: str,
         unified_api: str,
         resource: str,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         enabled: Optional[bool] = None,
         settings: OptionalNullable[Dict[str, Any]] = UNSET,
         metadata: OptionalNullable[Dict[str, Any]] = UNSET,
@@ -312,6 +326,8 @@ class ConnectionSettings(BaseSDK):
         :param service_id: Service ID of the resource to return
         :param unified_api: Unified API
         :param resource: Name of the resource (plural)
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param enabled: Whether the connection is enabled or not. You can enable or disable a connection using the Update Connection API.
         :param settings: Connection settings. Values will persist to `form_fields` with corresponding id
         :param metadata: Attach your own consumer specific metadata
@@ -331,6 +347,8 @@ class ConnectionSettings(BaseSDK):
             base_url = server_url
 
         request = models.VaultConnectionSettingsUpdateRequest(
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             unified_api=unified_api,
             resource=resource,
@@ -453,6 +471,8 @@ class ConnectionSettings(BaseSDK):
         service_id: str,
         unified_api: str,
         resource: str,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         enabled: Optional[bool] = None,
         settings: OptionalNullable[Dict[str, Any]] = UNSET,
         metadata: OptionalNullable[Dict[str, Any]] = UNSET,
@@ -480,6 +500,8 @@ class ConnectionSettings(BaseSDK):
         :param service_id: Service ID of the resource to return
         :param unified_api: Unified API
         :param resource: Name of the resource (plural)
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param enabled: Whether the connection is enabled or not. You can enable or disable a connection using the Update Connection API.
         :param settings: Connection settings. Values will persist to `form_fields` with corresponding id
         :param metadata: Attach your own consumer specific metadata
@@ -499,6 +521,8 @@ class ConnectionSettings(BaseSDK):
             base_url = server_url
 
         request = models.VaultConnectionSettingsUpdateRequest(
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             unified_api=unified_api,
             resource=resource,

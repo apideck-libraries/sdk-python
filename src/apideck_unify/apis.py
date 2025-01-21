@@ -13,6 +13,7 @@ class Apis(BaseSDK):
     def list(
         self,
         *,
+        app_id: Optional[str] = None,
         cursor: OptionalNullable[str] = UNSET,
         limit: Optional[int] = 20,
         filter_: Optional[Union[models.ApisFilter, models.ApisFilterTypedDict]] = None,
@@ -25,6 +26,7 @@ class Apis(BaseSDK):
 
         List APIs
 
+        :param app_id: The ID of your Unify application
         :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
         :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
         :param filter_: Apply filters
@@ -42,6 +44,7 @@ class Apis(BaseSDK):
             base_url = server_url
 
         request = models.ConnectorApisAllRequest(
+            app_id=app_id,
             cursor=cursor,
             limit=limit,
             filter_=utils.get_pydantic_model(filter_, Optional[models.ApisFilter]),
@@ -100,6 +103,7 @@ class Apis(BaseSDK):
             next_cursor = next_cursor[0]
 
             return self.list(
+                app_id=app_id,
                 cursor=next_cursor,
                 limit=limit,
                 filter_=filter_,
@@ -157,6 +161,7 @@ class Apis(BaseSDK):
     async def list_async(
         self,
         *,
+        app_id: Optional[str] = None,
         cursor: OptionalNullable[str] = UNSET,
         limit: Optional[int] = 20,
         filter_: Optional[Union[models.ApisFilter, models.ApisFilterTypedDict]] = None,
@@ -169,6 +174,7 @@ class Apis(BaseSDK):
 
         List APIs
 
+        :param app_id: The ID of your Unify application
         :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
         :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
         :param filter_: Apply filters
@@ -186,6 +192,7 @@ class Apis(BaseSDK):
             base_url = server_url
 
         request = models.ConnectorApisAllRequest(
+            app_id=app_id,
             cursor=cursor,
             limit=limit,
             filter_=utils.get_pydantic_model(filter_, Optional[models.ApisFilter]),
@@ -244,6 +251,7 @@ class Apis(BaseSDK):
             next_cursor = next_cursor[0]
 
             return self.list(
+                app_id=app_id,
                 cursor=next_cursor,
                 limit=limit,
                 filter_=filter_,
@@ -302,6 +310,7 @@ class Apis(BaseSDK):
         self,
         *,
         id: str,
+        app_id: Optional[str] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -312,6 +321,7 @@ class Apis(BaseSDK):
         Get API
 
         :param id: ID of the record you are acting upon.
+        :param app_id: The ID of your Unify application
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -326,6 +336,7 @@ class Apis(BaseSDK):
             base_url = server_url
 
         request = models.ConnectorApisOneRequest(
+            app_id=app_id,
             id=id,
         )
 
@@ -423,6 +434,7 @@ class Apis(BaseSDK):
         self,
         *,
         id: str,
+        app_id: Optional[str] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -433,6 +445,7 @@ class Apis(BaseSDK):
         Get API
 
         :param id: ID of the record you are acting upon.
+        :param app_id: The ID of your Unify application
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -447,6 +460,7 @@ class Apis(BaseSDK):
             base_url = server_url
 
         request = models.ConnectorApisOneRequest(
+            app_id=app_id,
             id=id,
         )
 

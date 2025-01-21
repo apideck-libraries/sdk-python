@@ -31,6 +31,8 @@ class WebhookWebhooksOneGlobals(BaseModel):
 class WebhookWebhooksOneRequestTypedDict(TypedDict):
     id: str
     r"""JWT Webhook token that represents the unifiedApi and applicationId associated to the event source."""
+    app_id: NotRequired[str]
+    r"""The ID of your Unify application"""
 
 
 class WebhookWebhooksOneRequest(BaseModel):
@@ -38,6 +40,13 @@ class WebhookWebhooksOneRequest(BaseModel):
         str, FieldMetadata(path=PathParamMetadata(style="simple", explode=False))
     ]
     r"""JWT Webhook token that represents the unifiedApi and applicationId associated to the event source."""
+
+    app_id: Annotated[
+        Optional[str],
+        pydantic.Field(alias="x-apideck-app-id"),
+        FieldMetadata(header=HeaderMetadata(style="simple", explode=False)),
+    ] = None
+    r"""The ID of your Unify application"""
 
 
 class WebhookWebhooksOneResponseTypedDict(TypedDict):

@@ -46,6 +46,10 @@ class VaultLogsAllGlobals(BaseModel):
 
 
 class VaultLogsAllRequestTypedDict(TypedDict):
+    app_id: NotRequired[str]
+    r"""The ID of your Unify application"""
+    consumer_id: NotRequired[str]
+    r"""ID of the consumer which you want to get or push data from"""
     filter_: NotRequired[LogsFilterTypedDict]
     r"""Filter results"""
     cursor: NotRequired[Nullable[str]]
@@ -55,6 +59,20 @@ class VaultLogsAllRequestTypedDict(TypedDict):
 
 
 class VaultLogsAllRequest(BaseModel):
+    app_id: Annotated[
+        Optional[str],
+        pydantic.Field(alias="x-apideck-app-id"),
+        FieldMetadata(header=HeaderMetadata(style="simple", explode=False)),
+    ] = None
+    r"""The ID of your Unify application"""
+
+    consumer_id: Annotated[
+        Optional[str],
+        pydantic.Field(alias="x-apideck-consumer-id"),
+        FieldMetadata(header=HeaderMetadata(style="simple", explode=False)),
+    ] = None
+    r"""ID of the consumer which you want to get or push data from"""
+
     filter_: Annotated[
         Optional[LogsFilter],
         pydantic.Field(alias="filter"),
@@ -76,7 +94,7 @@ class VaultLogsAllRequest(BaseModel):
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
-        optional_fields = ["filter", "cursor", "limit"]
+        optional_fields = ["appId", "consumerId", "filter", "cursor", "limit"]
         nullable_fields = ["cursor"]
         null_default_fields = []
 

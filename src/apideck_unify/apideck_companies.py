@@ -14,6 +14,8 @@ class ApideckCompanies(BaseSDK):
         self,
         *,
         raw: Optional[bool] = False,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         cursor: OptionalNullable[str] = UNSET,
         limit: Optional[int] = 20,
@@ -29,6 +31,8 @@ class ApideckCompanies(BaseSDK):
         List Companies
 
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
         :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
@@ -49,6 +53,8 @@ class ApideckCompanies(BaseSDK):
 
         request = models.HrisCompaniesAllRequest(
             raw=raw,
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             cursor=cursor,
             limit=limit,
@@ -111,6 +117,8 @@ class ApideckCompanies(BaseSDK):
 
             return self.list(
                 raw=raw,
+                consumer_id=consumer_id,
+                app_id=app_id,
                 service_id=service_id,
                 cursor=next_cursor,
                 limit=limit,
@@ -177,6 +185,8 @@ class ApideckCompanies(BaseSDK):
         self,
         *,
         raw: Optional[bool] = False,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         cursor: OptionalNullable[str] = UNSET,
         limit: Optional[int] = 20,
@@ -192,6 +202,8 @@ class ApideckCompanies(BaseSDK):
         List Companies
 
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
         :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
@@ -212,6 +224,8 @@ class ApideckCompanies(BaseSDK):
 
         request = models.HrisCompaniesAllRequest(
             raw=raw,
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             cursor=cursor,
             limit=limit,
@@ -274,6 +288,8 @@ class ApideckCompanies(BaseSDK):
 
             return self.list(
                 raw=raw,
+                consumer_id=consumer_id,
+                app_id=app_id,
                 service_id=service_id,
                 cursor=next_cursor,
                 limit=limit,
@@ -341,6 +357,8 @@ class ApideckCompanies(BaseSDK):
         *,
         legal_name: Nullable[str],
         raw: Optional[bool] = False,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         display_name: OptionalNullable[str] = UNSET,
         subdomain: OptionalNullable[str] = UNSET,
@@ -372,6 +390,8 @@ class ApideckCompanies(BaseSDK):
 
         :param legal_name:
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param display_name:
         :param subdomain:
@@ -399,6 +419,8 @@ class ApideckCompanies(BaseSDK):
 
         request = models.HrisCompaniesAddRequest(
             raw=raw,
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             hris_company=models.HrisCompanyInput(
                 legal_name=legal_name,
@@ -529,6 +551,8 @@ class ApideckCompanies(BaseSDK):
         *,
         legal_name: Nullable[str],
         raw: Optional[bool] = False,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         display_name: OptionalNullable[str] = UNSET,
         subdomain: OptionalNullable[str] = UNSET,
@@ -560,6 +584,8 @@ class ApideckCompanies(BaseSDK):
 
         :param legal_name:
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param display_name:
         :param subdomain:
@@ -587,6 +613,8 @@ class ApideckCompanies(BaseSDK):
 
         request = models.HrisCompaniesAddRequest(
             raw=raw,
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             hris_company=models.HrisCompanyInput(
                 legal_name=legal_name,
@@ -716,6 +744,8 @@ class ApideckCompanies(BaseSDK):
         self,
         *,
         id: str,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
         fields: OptionalNullable[str] = UNSET,
@@ -729,6 +759,8 @@ class ApideckCompanies(BaseSDK):
         Get Company
 
         :param id: ID of the record you are acting upon.
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param fields: The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded.
@@ -747,6 +779,8 @@ class ApideckCompanies(BaseSDK):
 
         request = models.HrisCompaniesOneRequest(
             id=id,
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             raw=raw,
             fields=fields,
@@ -853,6 +887,8 @@ class ApideckCompanies(BaseSDK):
         self,
         *,
         id: str,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
         fields: OptionalNullable[str] = UNSET,
@@ -866,6 +902,8 @@ class ApideckCompanies(BaseSDK):
         Get Company
 
         :param id: ID of the record you are acting upon.
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param fields: The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded.
@@ -884,6 +922,8 @@ class ApideckCompanies(BaseSDK):
 
         request = models.HrisCompaniesOneRequest(
             id=id,
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             raw=raw,
             fields=fields,
@@ -991,6 +1031,8 @@ class ApideckCompanies(BaseSDK):
         *,
         id: str,
         legal_name: Nullable[str],
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
         display_name: OptionalNullable[str] = UNSET,
@@ -1023,6 +1065,8 @@ class ApideckCompanies(BaseSDK):
 
         :param id: ID of the record you are acting upon.
         :param legal_name:
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param display_name:
@@ -1051,6 +1095,8 @@ class ApideckCompanies(BaseSDK):
 
         request = models.HrisCompaniesUpdateRequest(
             id=id,
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             raw=raw,
             hris_company=models.HrisCompanyInput(
@@ -1182,6 +1228,8 @@ class ApideckCompanies(BaseSDK):
         *,
         id: str,
         legal_name: Nullable[str],
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
         display_name: OptionalNullable[str] = UNSET,
@@ -1214,6 +1262,8 @@ class ApideckCompanies(BaseSDK):
 
         :param id: ID of the record you are acting upon.
         :param legal_name:
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param display_name:
@@ -1242,6 +1292,8 @@ class ApideckCompanies(BaseSDK):
 
         request = models.HrisCompaniesUpdateRequest(
             id=id,
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             raw=raw,
             hris_company=models.HrisCompanyInput(
@@ -1372,6 +1424,8 @@ class ApideckCompanies(BaseSDK):
         self,
         *,
         id: str,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
@@ -1384,6 +1438,8 @@ class ApideckCompanies(BaseSDK):
         Delete Company
 
         :param id: ID of the record you are acting upon.
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param retries: Override the default retry configuration for this method
@@ -1401,6 +1457,8 @@ class ApideckCompanies(BaseSDK):
 
         request = models.HrisCompaniesDeleteRequest(
             id=id,
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             raw=raw,
         )
@@ -1506,6 +1564,8 @@ class ApideckCompanies(BaseSDK):
         self,
         *,
         id: str,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
@@ -1518,6 +1578,8 @@ class ApideckCompanies(BaseSDK):
         Delete Company
 
         :param id: ID of the record you are acting upon.
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param retries: Override the default retry configuration for this method
@@ -1535,6 +1597,8 @@ class ApideckCompanies(BaseSDK):
 
         request = models.HrisCompaniesDeleteRequest(
             id=id,
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             raw=raw,
         )

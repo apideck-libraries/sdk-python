@@ -14,6 +14,8 @@ class CreateCallback(BaseSDK):
         *,
         service_id: str,
         unified_api: str,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         redirect_uri: Optional[str] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -27,6 +29,8 @@ class CreateCallback(BaseSDK):
 
         :param service_id: Service ID of the resource to return
         :param unified_api: Unified API
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param redirect_uri: The redirect URI to be used after the connection is created.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
@@ -42,6 +46,8 @@ class CreateCallback(BaseSDK):
             base_url = server_url
 
         request = models.VaultCreateCallbackStateRequest(
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             unified_api=unified_api,
             create_callback_state=models.CreateCallbackState(
@@ -158,6 +164,8 @@ class CreateCallback(BaseSDK):
         *,
         service_id: str,
         unified_api: str,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         redirect_uri: Optional[str] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -171,6 +179,8 @@ class CreateCallback(BaseSDK):
 
         :param service_id: Service ID of the resource to return
         :param unified_api: Unified API
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param redirect_uri: The redirect URI to be used after the connection is created.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
@@ -186,6 +196,8 @@ class CreateCallback(BaseSDK):
             base_url = server_url
 
         request = models.VaultCreateCallbackStateRequest(
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             unified_api=unified_api,
             create_callback_state=models.CreateCallbackState(

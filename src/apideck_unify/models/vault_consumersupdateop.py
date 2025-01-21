@@ -41,6 +41,8 @@ class VaultConsumersUpdateRequestTypedDict(TypedDict):
     consumer_id: str
     r"""ID of the consumer to return"""
     update_consumer_request: UpdateConsumerRequestTypedDict
+    app_id: NotRequired[str]
+    r"""The ID of your Unify application"""
 
 
 class VaultConsumersUpdateRequest(BaseModel):
@@ -53,6 +55,13 @@ class VaultConsumersUpdateRequest(BaseModel):
         UpdateConsumerRequest,
         FieldMetadata(request=RequestMetadata(media_type="application/json")),
     ]
+
+    app_id: Annotated[
+        Optional[str],
+        pydantic.Field(alias="x-apideck-app-id"),
+        FieldMetadata(header=HeaderMetadata(style="simple", explode=False)),
+    ] = None
+    r"""The ID of your Unify application"""
 
 
 class VaultConsumersUpdateResponseTypedDict(TypedDict):

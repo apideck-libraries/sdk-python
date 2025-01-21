@@ -52,6 +52,10 @@ class VaultCustomFieldsAllRequestTypedDict(TypedDict):
     r"""Service ID of the resource to return"""
     resource: str
     r"""Name of the resource (plural)"""
+    consumer_id: NotRequired[str]
+    r"""ID of the consumer which you want to get or push data from"""
+    app_id: NotRequired[str]
+    r"""The ID of your Unify application"""
     resource_id: NotRequired[str]
     r"""This is the id of the resource you want to fetch when listing custom fields. For example, if you want to fetch custom fields for a specific contact, you would use the contact id."""
 
@@ -71,6 +75,20 @@ class VaultCustomFieldsAllRequest(BaseModel):
         str, FieldMetadata(path=PathParamMetadata(style="simple", explode=False))
     ]
     r"""Name of the resource (plural)"""
+
+    consumer_id: Annotated[
+        Optional[str],
+        pydantic.Field(alias="x-apideck-consumer-id"),
+        FieldMetadata(header=HeaderMetadata(style="simple", explode=False)),
+    ] = None
+    r"""ID of the consumer which you want to get or push data from"""
+
+    app_id: Annotated[
+        Optional[str],
+        pydantic.Field(alias="x-apideck-app-id"),
+        FieldMetadata(header=HeaderMetadata(style="simple", explode=False)),
+    ] = None
+    r"""The ID of your Unify application"""
 
     resource_id: Annotated[
         Optional[str],

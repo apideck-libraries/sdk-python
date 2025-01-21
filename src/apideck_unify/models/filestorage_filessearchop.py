@@ -53,6 +53,10 @@ class FileStorageFilesSearchGlobals(BaseModel):
 
 class FileStorageFilesSearchRequestTypedDict(TypedDict):
     files_search: FilesSearchTypedDict
+    consumer_id: NotRequired[str]
+    r"""ID of the consumer which you want to get or push data from"""
+    app_id: NotRequired[str]
+    r"""The ID of your Unify application"""
     service_id: NotRequired[str]
     r"""Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API."""
     pass_through_param: NotRequired[Dict[str, Any]]
@@ -72,6 +76,20 @@ class FileStorageFilesSearchRequest(BaseModel):
         FilesSearch,
         FieldMetadata(request=RequestMetadata(media_type="application/json")),
     ]
+
+    consumer_id: Annotated[
+        Optional[str],
+        pydantic.Field(alias="x-apideck-consumer-id"),
+        FieldMetadata(header=HeaderMetadata(style="simple", explode=False)),
+    ] = None
+    r"""ID of the consumer which you want to get or push data from"""
+
+    app_id: Annotated[
+        Optional[str],
+        pydantic.Field(alias="x-apideck-app-id"),
+        FieldMetadata(header=HeaderMetadata(style="simple", explode=False)),
+    ] = None
+    r"""The ID of your Unify application"""
 
     service_id: Annotated[
         Optional[str],
@@ -115,6 +133,8 @@ class FileStorageFilesSearchRequest(BaseModel):
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
         optional_fields = [
+            "consumerId",
+            "appId",
             "serviceId",
             "pass_through_param",
             "fields",

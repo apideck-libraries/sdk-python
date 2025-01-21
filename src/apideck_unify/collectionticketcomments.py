@@ -16,6 +16,8 @@ class CollectionTicketComments(BaseSDK):
         collection_id: str,
         ticket_id: str,
         raw: Optional[bool] = False,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         cursor: OptionalNullable[str] = UNSET,
         limit: Optional[int] = 20,
@@ -34,6 +36,8 @@ class CollectionTicketComments(BaseSDK):
         :param collection_id: The collection ID
         :param ticket_id: ID of the ticket you are acting upon.
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
         :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
@@ -55,6 +59,8 @@ class CollectionTicketComments(BaseSDK):
 
         request = models.IssueTrackingCollectionTicketCommentsAllRequest(
             raw=raw,
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             cursor=cursor,
             limit=limit,
@@ -124,6 +130,8 @@ class CollectionTicketComments(BaseSDK):
                 collection_id=collection_id,
                 ticket_id=ticket_id,
                 raw=raw,
+                consumer_id=consumer_id,
+                app_id=app_id,
                 service_id=service_id,
                 cursor=next_cursor,
                 limit=limit,
@@ -193,6 +201,8 @@ class CollectionTicketComments(BaseSDK):
         collection_id: str,
         ticket_id: str,
         raw: Optional[bool] = False,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         cursor: OptionalNullable[str] = UNSET,
         limit: Optional[int] = 20,
@@ -211,6 +221,8 @@ class CollectionTicketComments(BaseSDK):
         :param collection_id: The collection ID
         :param ticket_id: ID of the ticket you are acting upon.
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
         :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
@@ -232,6 +244,8 @@ class CollectionTicketComments(BaseSDK):
 
         request = models.IssueTrackingCollectionTicketCommentsAllRequest(
             raw=raw,
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             cursor=cursor,
             limit=limit,
@@ -301,6 +315,8 @@ class CollectionTicketComments(BaseSDK):
                 collection_id=collection_id,
                 ticket_id=ticket_id,
                 raw=raw,
+                consumer_id=consumer_id,
+                app_id=app_id,
                 service_id=service_id,
                 cursor=next_cursor,
                 limit=limit,
@@ -370,6 +386,8 @@ class CollectionTicketComments(BaseSDK):
         collection_id: str,
         ticket_id: str,
         raw: Optional[bool] = False,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         body: OptionalNullable[str] = UNSET,
         pass_through: Optional[
@@ -387,6 +405,8 @@ class CollectionTicketComments(BaseSDK):
         :param collection_id: The collection ID
         :param ticket_id: ID of the ticket you are acting upon.
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param body: Body of the comment
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
@@ -405,6 +425,8 @@ class CollectionTicketComments(BaseSDK):
 
         request = models.IssueTrackingCollectionTicketCommentsAddRequest(
             raw=raw,
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             collection_id=collection_id,
             ticket_id=ticket_id,
@@ -526,6 +548,8 @@ class CollectionTicketComments(BaseSDK):
         collection_id: str,
         ticket_id: str,
         raw: Optional[bool] = False,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         body: OptionalNullable[str] = UNSET,
         pass_through: Optional[
@@ -543,6 +567,8 @@ class CollectionTicketComments(BaseSDK):
         :param collection_id: The collection ID
         :param ticket_id: ID of the ticket you are acting upon.
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param body: Body of the comment
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
@@ -561,6 +587,8 @@ class CollectionTicketComments(BaseSDK):
 
         request = models.IssueTrackingCollectionTicketCommentsAddRequest(
             raw=raw,
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             collection_id=collection_id,
             ticket_id=ticket_id,
@@ -683,6 +711,8 @@ class CollectionTicketComments(BaseSDK):
         collection_id: str,
         ticket_id: str,
         raw: Optional[bool] = False,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         cursor: OptionalNullable[str] = UNSET,
         limit: Optional[int] = 20,
@@ -700,6 +730,8 @@ class CollectionTicketComments(BaseSDK):
         :param collection_id: The collection ID
         :param ticket_id: ID of the ticket you are acting upon.
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
         :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
@@ -720,6 +752,8 @@ class CollectionTicketComments(BaseSDK):
         request = models.IssueTrackingCollectionTicketCommentsOneRequest(
             id=id,
             raw=raw,
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             cursor=cursor,
             limit=limit,
@@ -788,6 +822,8 @@ class CollectionTicketComments(BaseSDK):
                 collection_id=collection_id,
                 ticket_id=ticket_id,
                 raw=raw,
+                consumer_id=consumer_id,
+                app_id=app_id,
                 service_id=service_id,
                 cursor=next_cursor,
                 limit=limit,
@@ -856,6 +892,8 @@ class CollectionTicketComments(BaseSDK):
         collection_id: str,
         ticket_id: str,
         raw: Optional[bool] = False,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         cursor: OptionalNullable[str] = UNSET,
         limit: Optional[int] = 20,
@@ -873,6 +911,8 @@ class CollectionTicketComments(BaseSDK):
         :param collection_id: The collection ID
         :param ticket_id: ID of the ticket you are acting upon.
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
         :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
@@ -893,6 +933,8 @@ class CollectionTicketComments(BaseSDK):
         request = models.IssueTrackingCollectionTicketCommentsOneRequest(
             id=id,
             raw=raw,
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             cursor=cursor,
             limit=limit,
@@ -961,6 +1003,8 @@ class CollectionTicketComments(BaseSDK):
                 collection_id=collection_id,
                 ticket_id=ticket_id,
                 raw=raw,
+                consumer_id=consumer_id,
+                app_id=app_id,
                 service_id=service_id,
                 cursor=next_cursor,
                 limit=limit,
@@ -1028,6 +1072,8 @@ class CollectionTicketComments(BaseSDK):
         id: str,
         collection_id: str,
         ticket_id: str,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
         body: OptionalNullable[str] = UNSET,
@@ -1046,6 +1092,8 @@ class CollectionTicketComments(BaseSDK):
         :param id: ID of the record you are acting upon.
         :param collection_id: The collection ID
         :param ticket_id: ID of the ticket you are acting upon.
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param body: Body of the comment
@@ -1065,6 +1113,8 @@ class CollectionTicketComments(BaseSDK):
 
         request = models.IssueTrackingCollectionTicketCommentsUpdateRequest(
             id=id,
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             raw=raw,
             collection_id=collection_id,
@@ -1187,6 +1237,8 @@ class CollectionTicketComments(BaseSDK):
         id: str,
         collection_id: str,
         ticket_id: str,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
         body: OptionalNullable[str] = UNSET,
@@ -1205,6 +1257,8 @@ class CollectionTicketComments(BaseSDK):
         :param id: ID of the record you are acting upon.
         :param collection_id: The collection ID
         :param ticket_id: ID of the ticket you are acting upon.
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param body: Body of the comment
@@ -1224,6 +1278,8 @@ class CollectionTicketComments(BaseSDK):
 
         request = models.IssueTrackingCollectionTicketCommentsUpdateRequest(
             id=id,
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             raw=raw,
             collection_id=collection_id,
@@ -1346,6 +1402,8 @@ class CollectionTicketComments(BaseSDK):
         id: str,
         collection_id: str,
         ticket_id: str,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
@@ -1360,6 +1418,8 @@ class CollectionTicketComments(BaseSDK):
         :param id: ID of the record you are acting upon.
         :param collection_id: The collection ID
         :param ticket_id: ID of the ticket you are acting upon.
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param retries: Override the default retry configuration for this method
@@ -1377,6 +1437,8 @@ class CollectionTicketComments(BaseSDK):
 
         request = models.IssueTrackingCollectionTicketCommentsDeleteRequest(
             id=id,
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             raw=raw,
             collection_id=collection_id,
@@ -1486,6 +1548,8 @@ class CollectionTicketComments(BaseSDK):
         id: str,
         collection_id: str,
         ticket_id: str,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
@@ -1500,6 +1564,8 @@ class CollectionTicketComments(BaseSDK):
         :param id: ID of the record you are acting upon.
         :param collection_id: The collection ID
         :param ticket_id: ID of the ticket you are acting upon.
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param retries: Override the default retry configuration for this method
@@ -1517,6 +1583,8 @@ class CollectionTicketComments(BaseSDK):
 
         request = models.IssueTrackingCollectionTicketCommentsDeleteRequest(
             id=id,
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             raw=raw,
             collection_id=collection_id,

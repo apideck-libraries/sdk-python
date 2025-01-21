@@ -31,6 +31,8 @@ class VaultConsumersOneGlobals(BaseModel):
 class VaultConsumersOneRequestTypedDict(TypedDict):
     consumer_id: str
     r"""ID of the consumer to return"""
+    app_id: NotRequired[str]
+    r"""The ID of your Unify application"""
 
 
 class VaultConsumersOneRequest(BaseModel):
@@ -38,6 +40,13 @@ class VaultConsumersOneRequest(BaseModel):
         str, FieldMetadata(path=PathParamMetadata(style="simple", explode=False))
     ]
     r"""ID of the consumer to return"""
+
+    app_id: Annotated[
+        Optional[str],
+        pydantic.Field(alias="x-apideck-app-id"),
+        FieldMetadata(header=HeaderMetadata(style="simple", explode=False)),
+    ] = None
+    r"""The ID of your Unify application"""
 
 
 class VaultConsumersOneResponseTypedDict(TypedDict):

@@ -43,6 +43,8 @@ class VaultConsumerRequestCountsAllRequestTypedDict(TypedDict):
     r"""Scopes results to requests that happened after datetime"""
     end_datetime: str
     r"""Scopes results to requests that happened before datetime"""
+    app_id: NotRequired[str]
+    r"""The ID of your Unify application"""
 
 
 class VaultConsumerRequestCountsAllRequest(BaseModel):
@@ -60,6 +62,13 @@ class VaultConsumerRequestCountsAllRequest(BaseModel):
         str, FieldMetadata(query=QueryParamMetadata(style="form", explode=True))
     ]
     r"""Scopes results to requests that happened before datetime"""
+
+    app_id: Annotated[
+        Optional[str],
+        pydantic.Field(alias="x-apideck-app-id"),
+        FieldMetadata(header=HeaderMetadata(style="simple", explode=False)),
+    ] = None
+    r"""The ID of your Unify application"""
 
 
 class VaultConsumerRequestCountsAllResponseTypedDict(TypedDict):
