@@ -52,6 +52,10 @@ class FileStorageFilesDownloadGlobals(BaseModel):
 class FileStorageFilesDownloadRequestTypedDict(TypedDict):
     id: str
     r"""ID of the record you are acting upon."""
+    consumer_id: NotRequired[str]
+    r"""ID of the consumer which you want to get or push data from"""
+    app_id: NotRequired[str]
+    r"""The ID of your Unify application"""
     service_id: NotRequired[str]
     r"""Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API."""
     fields: NotRequired[Nullable[str]]
@@ -63,6 +67,20 @@ class FileStorageFilesDownloadRequest(BaseModel):
         str, FieldMetadata(path=PathParamMetadata(style="simple", explode=False))
     ]
     r"""ID of the record you are acting upon."""
+
+    consumer_id: Annotated[
+        Optional[str],
+        pydantic.Field(alias="x-apideck-consumer-id"),
+        FieldMetadata(header=HeaderMetadata(style="simple", explode=False)),
+    ] = None
+    r"""ID of the consumer which you want to get or push data from"""
+
+    app_id: Annotated[
+        Optional[str],
+        pydantic.Field(alias="x-apideck-app-id"),
+        FieldMetadata(header=HeaderMetadata(style="simple", explode=False)),
+    ] = None
+    r"""The ID of your Unify application"""
 
     service_id: Annotated[
         Optional[str],
@@ -79,7 +97,7 @@ class FileStorageFilesDownloadRequest(BaseModel):
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
-        optional_fields = ["serviceId", "fields"]
+        optional_fields = ["consumerId", "appId", "serviceId", "fields"]
         nullable_fields = ["fields"]
         null_default_fields = []
 

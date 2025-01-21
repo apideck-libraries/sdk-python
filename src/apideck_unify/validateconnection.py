@@ -14,6 +14,8 @@ class ValidateConnection(BaseSDK):
         *,
         service_id: str,
         unified_api: str,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         request_body: Optional[
             Union[
                 models.VaultValidateConnectionStateRequestBody,
@@ -37,6 +39,8 @@ class ValidateConnection(BaseSDK):
 
         :param service_id: Service ID of the resource to return
         :param unified_api: Unified API
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param request_body:
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
@@ -52,6 +56,8 @@ class ValidateConnection(BaseSDK):
             base_url = server_url
 
         request = models.VaultValidateConnectionStateRequest(
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             unified_api=unified_api,
             request_body=utils.get_pydantic_model(
@@ -168,6 +174,8 @@ class ValidateConnection(BaseSDK):
         *,
         service_id: str,
         unified_api: str,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         request_body: Optional[
             Union[
                 models.VaultValidateConnectionStateRequestBody,
@@ -191,6 +199,8 @@ class ValidateConnection(BaseSDK):
 
         :param service_id: Service ID of the resource to return
         :param unified_api: Unified API
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param request_body:
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
@@ -206,6 +216,8 @@ class ValidateConnection(BaseSDK):
             base_url = server_url
 
         request = models.VaultValidateConnectionStateRequest(
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             unified_api=unified_api,
             request_body=utils.get_pydantic_model(

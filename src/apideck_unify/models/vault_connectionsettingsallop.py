@@ -44,6 +44,10 @@ class VaultConnectionSettingsAllRequestTypedDict(TypedDict):
     r"""Service ID of the resource to return"""
     resource: str
     r"""Name of the resource (plural)"""
+    consumer_id: NotRequired[str]
+    r"""ID of the consumer which you want to get or push data from"""
+    app_id: NotRequired[str]
+    r"""The ID of your Unify application"""
 
 
 class VaultConnectionSettingsAllRequest(BaseModel):
@@ -61,6 +65,20 @@ class VaultConnectionSettingsAllRequest(BaseModel):
         str, FieldMetadata(path=PathParamMetadata(style="simple", explode=False))
     ]
     r"""Name of the resource (plural)"""
+
+    consumer_id: Annotated[
+        Optional[str],
+        pydantic.Field(alias="x-apideck-consumer-id"),
+        FieldMetadata(header=HeaderMetadata(style="simple", explode=False)),
+    ] = None
+    r"""ID of the consumer which you want to get or push data from"""
+
+    app_id: Annotated[
+        Optional[str],
+        pydantic.Field(alias="x-apideck-app-id"),
+        FieldMetadata(header=HeaderMetadata(style="simple", explode=False)),
+    ] = None
+    r"""The ID of your Unify application"""
 
 
 class VaultConnectionSettingsAllResponseTypedDict(TypedDict):

@@ -16,6 +16,8 @@ class UploadSessions(BaseSDK):
         parent_folder_id: str,
         size: Nullable[int],
         raw: Optional[bool] = False,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         drive_id: Optional[str] = None,
         pass_through: Optional[
@@ -34,6 +36,8 @@ class UploadSessions(BaseSDK):
         :param parent_folder_id: The parent folder to create the new file within. This can be an ID or a path depending on the downstream folder. Please see the connector section below to see downstream specific gotchas.
         :param size: The size of the file in bytes
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param drive_id: ID of the drive to upload to.
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
@@ -54,6 +58,8 @@ class UploadSessions(BaseSDK):
 
         request = models.FileStorageUploadSessionsAddRequest(
             raw=raw,
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             create_upload_session_request=models.CreateUploadSessionRequest(
                 name=name,
@@ -177,6 +183,8 @@ class UploadSessions(BaseSDK):
         parent_folder_id: str,
         size: Nullable[int],
         raw: Optional[bool] = False,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         drive_id: Optional[str] = None,
         pass_through: Optional[
@@ -195,6 +203,8 @@ class UploadSessions(BaseSDK):
         :param parent_folder_id: The parent folder to create the new file within. This can be an ID or a path depending on the downstream folder. Please see the connector section below to see downstream specific gotchas.
         :param size: The size of the file in bytes
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param drive_id: ID of the drive to upload to.
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
@@ -215,6 +225,8 @@ class UploadSessions(BaseSDK):
 
         request = models.FileStorageUploadSessionsAddRequest(
             raw=raw,
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             create_upload_session_request=models.CreateUploadSessionRequest(
                 name=name,
@@ -335,6 +347,8 @@ class UploadSessions(BaseSDK):
         self,
         *,
         id: str,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
         fields: OptionalNullable[str] = UNSET,
@@ -348,6 +362,8 @@ class UploadSessions(BaseSDK):
         Get Upload Session. Use the `part_size` to split your file into parts. Upload the parts to the [Upload part of File](#operation/uploadSessionsUpload) endpoint. Note that the base URL is upload.apideck.com instead of unify.apideck.com. For more information on uploads, refer to the [file upload guide](/guides/file-upload).
 
         :param id: ID of the record you are acting upon.
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param fields: The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded.
@@ -368,6 +384,8 @@ class UploadSessions(BaseSDK):
 
         request = models.FileStorageUploadSessionsOneRequest(
             id=id,
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             raw=raw,
             fields=fields,
@@ -474,6 +492,8 @@ class UploadSessions(BaseSDK):
         self,
         *,
         id: str,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
         fields: OptionalNullable[str] = UNSET,
@@ -487,6 +507,8 @@ class UploadSessions(BaseSDK):
         Get Upload Session. Use the `part_size` to split your file into parts. Upload the parts to the [Upload part of File](#operation/uploadSessionsUpload) endpoint. Note that the base URL is upload.apideck.com instead of unify.apideck.com. For more information on uploads, refer to the [file upload guide](/guides/file-upload).
 
         :param id: ID of the record you are acting upon.
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param fields: The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded.
@@ -507,6 +529,8 @@ class UploadSessions(BaseSDK):
 
         request = models.FileStorageUploadSessionsOneRequest(
             id=id,
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             raw=raw,
             fields=fields,
@@ -613,6 +637,8 @@ class UploadSessions(BaseSDK):
         self,
         *,
         id: str,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
@@ -625,6 +651,8 @@ class UploadSessions(BaseSDK):
         Abort Upload Session. Note that the base URL is upload.apideck.com instead of unify.apideck.com. For more information on uploads, refer to the [file upload guide](/guides/file-upload).
 
         :param id: ID of the record you are acting upon.
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param retries: Override the default retry configuration for this method
@@ -642,6 +670,8 @@ class UploadSessions(BaseSDK):
 
         request = models.FileStorageUploadSessionsDeleteRequest(
             id=id,
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             raw=raw,
         )
@@ -747,6 +777,8 @@ class UploadSessions(BaseSDK):
         self,
         *,
         id: str,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
@@ -759,6 +791,8 @@ class UploadSessions(BaseSDK):
         Abort Upload Session. Note that the base URL is upload.apideck.com instead of unify.apideck.com. For more information on uploads, refer to the [file upload guide](/guides/file-upload).
 
         :param id: ID of the record you are acting upon.
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param retries: Override the default retry configuration for this method
@@ -776,6 +810,8 @@ class UploadSessions(BaseSDK):
 
         request = models.FileStorageUploadSessionsDeleteRequest(
             id=id,
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             raw=raw,
         )
@@ -882,6 +918,8 @@ class UploadSessions(BaseSDK):
         *,
         id: str,
         raw: Optional[bool] = False,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         digest: Optional[str] = None,
         request_body: Optional[
@@ -901,6 +939,8 @@ class UploadSessions(BaseSDK):
 
         :param id: ID of the record you are acting upon.
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param digest: The RFC3230 message digest of the uploaded part. Only required for the Box connector. More information on the Box API docs [here](https://developer.box.com/reference/put-files-upload-sessions-id/#param-digest)
         :param request_body:
@@ -922,6 +962,8 @@ class UploadSessions(BaseSDK):
         request = models.FileStorageUploadSessionsFinishRequest(
             id=id,
             raw=raw,
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             digest=digest,
             request_body=utils.get_pydantic_model(
@@ -1039,6 +1081,8 @@ class UploadSessions(BaseSDK):
         *,
         id: str,
         raw: Optional[bool] = False,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         digest: Optional[str] = None,
         request_body: Optional[
@@ -1058,6 +1102,8 @@ class UploadSessions(BaseSDK):
 
         :param id: ID of the record you are acting upon.
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param digest: The RFC3230 message digest of the uploaded part. Only required for the Box connector. More information on the Box API docs [here](https://developer.box.com/reference/put-files-upload-sessions-id/#param-digest)
         :param request_body:
@@ -1079,6 +1125,8 @@ class UploadSessions(BaseSDK):
         request = models.FileStorageUploadSessionsFinishRequest(
             id=id,
             raw=raw,
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             digest=digest,
             request_body=utils.get_pydantic_model(

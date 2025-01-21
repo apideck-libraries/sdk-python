@@ -13,6 +13,8 @@ class Logs(BaseSDK):
     def list(
         self,
         *,
+        app_id: Optional[str] = None,
+        consumer_id: Optional[str] = None,
         filter_: Optional[Union[models.LogsFilter, models.LogsFilterTypedDict]] = None,
         cursor: OptionalNullable[str] = UNSET,
         limit: Optional[int] = 20,
@@ -26,6 +28,8 @@ class Logs(BaseSDK):
         This endpoint includes all consumer request logs.
 
 
+        :param app_id: The ID of your Unify application
+        :param consumer_id: ID of the consumer which you want to get or push data from
         :param filter_: Filter results
         :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
         :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
@@ -43,6 +47,8 @@ class Logs(BaseSDK):
             base_url = server_url
 
         request = models.VaultLogsAllRequest(
+            app_id=app_id,
+            consumer_id=consumer_id,
             filter_=utils.get_pydantic_model(filter_, Optional[models.LogsFilter]),
             cursor=cursor,
             limit=limit,
@@ -102,6 +108,8 @@ class Logs(BaseSDK):
             next_cursor = next_cursor[0]
 
             return self.list(
+                app_id=app_id,
+                consumer_id=consumer_id,
                 filter_=filter_,
                 cursor=next_cursor,
                 limit=limit,
@@ -165,6 +173,8 @@ class Logs(BaseSDK):
     async def list_async(
         self,
         *,
+        app_id: Optional[str] = None,
+        consumer_id: Optional[str] = None,
         filter_: Optional[Union[models.LogsFilter, models.LogsFilterTypedDict]] = None,
         cursor: OptionalNullable[str] = UNSET,
         limit: Optional[int] = 20,
@@ -178,6 +188,8 @@ class Logs(BaseSDK):
         This endpoint includes all consumer request logs.
 
 
+        :param app_id: The ID of your Unify application
+        :param consumer_id: ID of the consumer which you want to get or push data from
         :param filter_: Filter results
         :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
         :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
@@ -195,6 +207,8 @@ class Logs(BaseSDK):
             base_url = server_url
 
         request = models.VaultLogsAllRequest(
+            app_id=app_id,
+            consumer_id=consumer_id,
             filter_=utils.get_pydantic_model(filter_, Optional[models.LogsFilter]),
             cursor=cursor,
             limit=limit,
@@ -254,6 +268,8 @@ class Logs(BaseSDK):
             next_cursor = next_cursor[0]
 
             return self.list(
+                app_id=app_id,
+                consumer_id=consumer_id,
                 filter_=filter_,
                 cursor=next_cursor,
                 limit=limit,

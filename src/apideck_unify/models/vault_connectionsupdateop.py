@@ -53,6 +53,10 @@ class VaultConnectionsUpdateRequestTypedDict(TypedDict):
     r"""Unified API"""
     connection: ConnectionInputTypedDict
     r"""Fields that need to be updated on the resource"""
+    consumer_id: NotRequired[str]
+    r"""ID of the consumer which you want to get or push data from"""
+    app_id: NotRequired[str]
+    r"""The ID of your Unify application"""
 
 
 class VaultConnectionsUpdateRequest(BaseModel):
@@ -71,6 +75,20 @@ class VaultConnectionsUpdateRequest(BaseModel):
         FieldMetadata(request=RequestMetadata(media_type="application/json")),
     ]
     r"""Fields that need to be updated on the resource"""
+
+    consumer_id: Annotated[
+        Optional[str],
+        pydantic.Field(alias="x-apideck-consumer-id"),
+        FieldMetadata(header=HeaderMetadata(style="simple", explode=False)),
+    ] = None
+    r"""ID of the consumer which you want to get or push data from"""
+
+    app_id: Annotated[
+        Optional[str],
+        pydantic.Field(alias="x-apideck-app-id"),
+        FieldMetadata(header=HeaderMetadata(style="simple", explode=False)),
+    ] = None
+    r"""The ID of your Unify application"""
 
 
 class VaultConnectionsUpdateResponseTypedDict(TypedDict):

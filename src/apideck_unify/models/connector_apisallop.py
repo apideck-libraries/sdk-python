@@ -37,6 +37,8 @@ class ConnectorApisAllGlobals(BaseModel):
 
 
 class ConnectorApisAllRequestTypedDict(TypedDict):
+    app_id: NotRequired[str]
+    r"""The ID of your Unify application"""
     cursor: NotRequired[Nullable[str]]
     r"""Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response."""
     limit: NotRequired[int]
@@ -46,6 +48,13 @@ class ConnectorApisAllRequestTypedDict(TypedDict):
 
 
 class ConnectorApisAllRequest(BaseModel):
+    app_id: Annotated[
+        Optional[str],
+        pydantic.Field(alias="x-apideck-app-id"),
+        FieldMetadata(header=HeaderMetadata(style="simple", explode=False)),
+    ] = None
+    r"""The ID of your Unify application"""
+
     cursor: Annotated[
         OptionalNullable[str],
         FieldMetadata(query=QueryParamMetadata(style="form", explode=True)),
@@ -67,7 +76,7 @@ class ConnectorApisAllRequest(BaseModel):
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
-        optional_fields = ["cursor", "limit", "filter"]
+        optional_fields = ["appId", "cursor", "limit", "filter"]
         nullable_fields = ["cursor"]
         null_default_fields = []
 

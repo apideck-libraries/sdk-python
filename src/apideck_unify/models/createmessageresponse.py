@@ -20,6 +20,7 @@ class CreateMessageResponseTypedDict(TypedDict):
     operation: str
     r"""Operation performed"""
     data: UnifiedIDTypedDict
+    r"""A object containing a unique identifier for the resource that was created, updated, or deleted."""
 
 
 class CreateMessageResponse(BaseModel):
@@ -41,3 +42,4 @@ class CreateMessageResponse(BaseModel):
     r"""Operation performed"""
 
     data: UnifiedID
+    r"""A object containing a unique identifier for the resource that was created, updated, or deleted."""

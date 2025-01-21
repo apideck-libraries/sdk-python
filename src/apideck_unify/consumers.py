@@ -14,6 +14,7 @@ class Consumers(BaseSDK):
         self,
         *,
         consumer_id: str,
+        app_id: Optional[str] = None,
         metadata: Optional[
             Union[models.ConsumerMetadata, models.ConsumerMetadataTypedDict]
         ] = None,
@@ -27,6 +28,7 @@ class Consumers(BaseSDK):
         Create a consumer
 
         :param consumer_id: Unique consumer identifier. You can freely choose a consumer ID yourself. Most of the time, this is an ID of your internal data model that represents a user or account in your system (for example account:12345). If the consumer doesn't exist yet, Vault will upsert a consumer based on your ID.
+        :param app_id: The ID of your Unify application
         :param metadata: The metadata of the consumer. This is used to display the consumer in the sidebar. This is optional, but recommended.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
@@ -41,10 +43,13 @@ class Consumers(BaseSDK):
         if server_url is not None:
             base_url = server_url
 
-        request = models.ConsumerInput(
-            consumer_id=consumer_id,
-            metadata=utils.get_pydantic_model(
-                metadata, Optional[models.ConsumerMetadata]
+        request = models.VaultConsumersAddRequest(
+            app_id=app_id,
+            consumer=models.ConsumerInput(
+                consumer_id=consumer_id,
+                metadata=utils.get_pydantic_model(
+                    metadata, Optional[models.ConsumerMetadata]
+                ),
             ),
         )
 
@@ -65,7 +70,7 @@ class Consumers(BaseSDK):
             ),
             security=self.sdk_configuration.security,
             get_serialized_body=lambda: utils.serialize_request_body(
-                request, False, False, "json", models.ConsumerInput
+                request.consumer, False, False, "json", models.ConsumerInput
             ),
             timeout_ms=timeout_ms,
         )
@@ -151,6 +156,7 @@ class Consumers(BaseSDK):
         self,
         *,
         consumer_id: str,
+        app_id: Optional[str] = None,
         metadata: Optional[
             Union[models.ConsumerMetadata, models.ConsumerMetadataTypedDict]
         ] = None,
@@ -164,6 +170,7 @@ class Consumers(BaseSDK):
         Create a consumer
 
         :param consumer_id: Unique consumer identifier. You can freely choose a consumer ID yourself. Most of the time, this is an ID of your internal data model that represents a user or account in your system (for example account:12345). If the consumer doesn't exist yet, Vault will upsert a consumer based on your ID.
+        :param app_id: The ID of your Unify application
         :param metadata: The metadata of the consumer. This is used to display the consumer in the sidebar. This is optional, but recommended.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
@@ -178,10 +185,13 @@ class Consumers(BaseSDK):
         if server_url is not None:
             base_url = server_url
 
-        request = models.ConsumerInput(
-            consumer_id=consumer_id,
-            metadata=utils.get_pydantic_model(
-                metadata, Optional[models.ConsumerMetadata]
+        request = models.VaultConsumersAddRequest(
+            app_id=app_id,
+            consumer=models.ConsumerInput(
+                consumer_id=consumer_id,
+                metadata=utils.get_pydantic_model(
+                    metadata, Optional[models.ConsumerMetadata]
+                ),
             ),
         )
 
@@ -202,7 +212,7 @@ class Consumers(BaseSDK):
             ),
             security=self.sdk_configuration.security,
             get_serialized_body=lambda: utils.serialize_request_body(
-                request, False, False, "json", models.ConsumerInput
+                request.consumer, False, False, "json", models.ConsumerInput
             ),
             timeout_ms=timeout_ms,
         )
@@ -287,6 +297,7 @@ class Consumers(BaseSDK):
     def list(
         self,
         *,
+        app_id: Optional[str] = None,
         cursor: OptionalNullable[str] = UNSET,
         limit: Optional[int] = 20,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
@@ -299,6 +310,7 @@ class Consumers(BaseSDK):
         This endpoint includes all application consumers, along with an aggregated count of requests made.
 
 
+        :param app_id: The ID of your Unify application
         :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
         :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
         :param retries: Override the default retry configuration for this method
@@ -315,6 +327,7 @@ class Consumers(BaseSDK):
             base_url = server_url
 
         request = models.VaultConsumersAllRequest(
+            app_id=app_id,
             cursor=cursor,
             limit=limit,
         )
@@ -372,6 +385,7 @@ class Consumers(BaseSDK):
             next_cursor = next_cursor[0]
 
             return self.list(
+                app_id=app_id,
                 cursor=next_cursor,
                 limit=limit,
                 retries=retries,
@@ -434,6 +448,7 @@ class Consumers(BaseSDK):
     async def list_async(
         self,
         *,
+        app_id: Optional[str] = None,
         cursor: OptionalNullable[str] = UNSET,
         limit: Optional[int] = 20,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
@@ -446,6 +461,7 @@ class Consumers(BaseSDK):
         This endpoint includes all application consumers, along with an aggregated count of requests made.
 
 
+        :param app_id: The ID of your Unify application
         :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
         :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
         :param retries: Override the default retry configuration for this method
@@ -462,6 +478,7 @@ class Consumers(BaseSDK):
             base_url = server_url
 
         request = models.VaultConsumersAllRequest(
+            app_id=app_id,
             cursor=cursor,
             limit=limit,
         )
@@ -519,6 +536,7 @@ class Consumers(BaseSDK):
             next_cursor = next_cursor[0]
 
             return self.list(
+                app_id=app_id,
                 cursor=next_cursor,
                 limit=limit,
                 retries=retries,
@@ -582,6 +600,7 @@ class Consumers(BaseSDK):
         self,
         *,
         consumer_id: str,
+        app_id: Optional[str] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -593,6 +612,7 @@ class Consumers(BaseSDK):
 
 
         :param consumer_id: ID of the consumer to return
+        :param app_id: The ID of your Unify application
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -607,6 +627,7 @@ class Consumers(BaseSDK):
             base_url = server_url
 
         request = models.VaultConsumersOneRequest(
+            app_id=app_id,
             consumer_id=consumer_id,
         )
 
@@ -710,6 +731,7 @@ class Consumers(BaseSDK):
         self,
         *,
         consumer_id: str,
+        app_id: Optional[str] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -721,6 +743,7 @@ class Consumers(BaseSDK):
 
 
         :param consumer_id: ID of the consumer to return
+        :param app_id: The ID of your Unify application
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -735,6 +758,7 @@ class Consumers(BaseSDK):
             base_url = server_url
 
         request = models.VaultConsumersOneRequest(
+            app_id=app_id,
             consumer_id=consumer_id,
         )
 
@@ -838,6 +862,7 @@ class Consumers(BaseSDK):
         self,
         *,
         consumer_id: str,
+        app_id: Optional[str] = None,
         metadata: Optional[
             Union[models.ConsumerMetadata, models.ConsumerMetadataTypedDict]
         ] = None,
@@ -851,6 +876,7 @@ class Consumers(BaseSDK):
         Update consumer metadata such as name and email.
 
         :param consumer_id: ID of the consumer to return
+        :param app_id: The ID of your Unify application
         :param metadata: The metadata of the consumer. This is used to display the consumer in the sidebar. This is optional, but recommended.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
@@ -866,6 +892,7 @@ class Consumers(BaseSDK):
             base_url = server_url
 
         request = models.VaultConsumersUpdateRequest(
+            app_id=app_id,
             consumer_id=consumer_id,
             update_consumer_request=models.UpdateConsumerRequest(
                 metadata=utils.get_pydantic_model(
@@ -981,6 +1008,7 @@ class Consumers(BaseSDK):
         self,
         *,
         consumer_id: str,
+        app_id: Optional[str] = None,
         metadata: Optional[
             Union[models.ConsumerMetadata, models.ConsumerMetadataTypedDict]
         ] = None,
@@ -994,6 +1022,7 @@ class Consumers(BaseSDK):
         Update consumer metadata such as name and email.
 
         :param consumer_id: ID of the consumer to return
+        :param app_id: The ID of your Unify application
         :param metadata: The metadata of the consumer. This is used to display the consumer in the sidebar. This is optional, but recommended.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
@@ -1009,6 +1038,7 @@ class Consumers(BaseSDK):
             base_url = server_url
 
         request = models.VaultConsumersUpdateRequest(
+            app_id=app_id,
             consumer_id=consumer_id,
             update_consumer_request=models.UpdateConsumerRequest(
                 metadata=utils.get_pydantic_model(
@@ -1124,6 +1154,7 @@ class Consumers(BaseSDK):
         self,
         *,
         consumer_id: str,
+        app_id: Optional[str] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -1134,6 +1165,7 @@ class Consumers(BaseSDK):
         Delete consumer and all their connections, including credentials.
 
         :param consumer_id: ID of the consumer to return
+        :param app_id: The ID of your Unify application
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -1148,6 +1180,7 @@ class Consumers(BaseSDK):
             base_url = server_url
 
         request = models.VaultConsumersDeleteRequest(
+            app_id=app_id,
             consumer_id=consumer_id,
         )
 
@@ -1251,6 +1284,7 @@ class Consumers(BaseSDK):
         self,
         *,
         consumer_id: str,
+        app_id: Optional[str] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -1261,6 +1295,7 @@ class Consumers(BaseSDK):
         Delete consumer and all their connections, including credentials.
 
         :param consumer_id: ID of the consumer to return
+        :param app_id: The ID of your Unify application
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -1275,6 +1310,7 @@ class Consumers(BaseSDK):
             base_url = server_url
 
         request = models.VaultConsumersDeleteRequest(
+            app_id=app_id,
             consumer_id=consumer_id,
         )
 

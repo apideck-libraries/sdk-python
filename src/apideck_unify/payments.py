@@ -15,6 +15,8 @@ class Payments(BaseSDK):
         self,
         *,
         raw: Optional[bool] = False,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         cursor: OptionalNullable[str] = UNSET,
         limit: Optional[int] = 20,
@@ -34,6 +36,8 @@ class Payments(BaseSDK):
         List Payments
 
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
         :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
@@ -56,6 +60,8 @@ class Payments(BaseSDK):
 
         request = models.AccountingPaymentsAllRequest(
             raw=raw,
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             cursor=cursor,
             limit=limit,
@@ -120,6 +126,8 @@ class Payments(BaseSDK):
 
             return self.list(
                 raw=raw,
+                consumer_id=consumer_id,
+                app_id=app_id,
                 service_id=service_id,
                 cursor=next_cursor,
                 limit=limit,
@@ -188,6 +196,8 @@ class Payments(BaseSDK):
         self,
         *,
         raw: Optional[bool] = False,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         cursor: OptionalNullable[str] = UNSET,
         limit: Optional[int] = 20,
@@ -207,6 +217,8 @@ class Payments(BaseSDK):
         List Payments
 
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
         :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
@@ -229,6 +241,8 @@ class Payments(BaseSDK):
 
         request = models.AccountingPaymentsAllRequest(
             raw=raw,
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             cursor=cursor,
             limit=limit,
@@ -293,6 +307,8 @@ class Payments(BaseSDK):
 
             return self.list(
                 raw=raw,
+                consumer_id=consumer_id,
+                app_id=app_id,
                 service_id=service_id,
                 cursor=next_cursor,
                 limit=limit,
@@ -363,6 +379,8 @@ class Payments(BaseSDK):
         total_amount: Nullable[float],
         transaction_date: Nullable[datetime],
         raw: Optional[bool] = False,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         currency: OptionalNullable[models.Currency] = UNSET,
         currency_rate: OptionalNullable[float] = UNSET,
@@ -422,6 +440,8 @@ class Payments(BaseSDK):
         :param total_amount: The total amount of the transaction
         :param transaction_date: The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
         :param currency_rate: Currency Exchange Rate at the time entity was recorded/generated.
@@ -461,6 +481,8 @@ class Payments(BaseSDK):
 
         request = models.AccountingPaymentsAddRequest(
             raw=raw,
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             payment=models.PaymentInput(
                 currency=currency,
@@ -612,6 +634,8 @@ class Payments(BaseSDK):
         total_amount: Nullable[float],
         transaction_date: Nullable[datetime],
         raw: Optional[bool] = False,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         currency: OptionalNullable[models.Currency] = UNSET,
         currency_rate: OptionalNullable[float] = UNSET,
@@ -671,6 +695,8 @@ class Payments(BaseSDK):
         :param total_amount: The total amount of the transaction
         :param transaction_date: The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
         :param currency_rate: Currency Exchange Rate at the time entity was recorded/generated.
@@ -710,6 +736,8 @@ class Payments(BaseSDK):
 
         request = models.AccountingPaymentsAddRequest(
             raw=raw,
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             payment=models.PaymentInput(
                 currency=currency,
@@ -859,6 +887,8 @@ class Payments(BaseSDK):
         self,
         *,
         id: str,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
         fields: OptionalNullable[str] = UNSET,
@@ -872,6 +902,8 @@ class Payments(BaseSDK):
         Get Payment
 
         :param id: ID of the record you are acting upon.
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param fields: The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded.
@@ -890,6 +922,8 @@ class Payments(BaseSDK):
 
         request = models.AccountingPaymentsOneRequest(
             id=id,
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             raw=raw,
             fields=fields,
@@ -996,6 +1030,8 @@ class Payments(BaseSDK):
         self,
         *,
         id: str,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
         fields: OptionalNullable[str] = UNSET,
@@ -1009,6 +1045,8 @@ class Payments(BaseSDK):
         Get Payment
 
         :param id: ID of the record you are acting upon.
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param fields: The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded.
@@ -1027,6 +1065,8 @@ class Payments(BaseSDK):
 
         request = models.AccountingPaymentsOneRequest(
             id=id,
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             raw=raw,
             fields=fields,
@@ -1135,6 +1175,8 @@ class Payments(BaseSDK):
         id: str,
         total_amount: Nullable[float],
         transaction_date: Nullable[datetime],
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
         currency: OptionalNullable[models.Currency] = UNSET,
@@ -1195,6 +1237,8 @@ class Payments(BaseSDK):
         :param id: ID of the record you are acting upon.
         :param total_amount: The total amount of the transaction
         :param transaction_date: The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
@@ -1235,6 +1279,8 @@ class Payments(BaseSDK):
 
         request = models.AccountingPaymentsUpdateRequest(
             id=id,
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             raw=raw,
             payment=models.PaymentInput(
@@ -1387,6 +1433,8 @@ class Payments(BaseSDK):
         id: str,
         total_amount: Nullable[float],
         transaction_date: Nullable[datetime],
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
         currency: OptionalNullable[models.Currency] = UNSET,
@@ -1447,6 +1495,8 @@ class Payments(BaseSDK):
         :param id: ID of the record you are acting upon.
         :param total_amount: The total amount of the transaction
         :param transaction_date: The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
@@ -1487,6 +1537,8 @@ class Payments(BaseSDK):
 
         request = models.AccountingPaymentsUpdateRequest(
             id=id,
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             raw=raw,
             payment=models.PaymentInput(
@@ -1637,6 +1689,8 @@ class Payments(BaseSDK):
         self,
         *,
         id: str,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
@@ -1649,6 +1703,8 @@ class Payments(BaseSDK):
         Delete Payment
 
         :param id: ID of the record you are acting upon.
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param retries: Override the default retry configuration for this method
@@ -1666,6 +1722,8 @@ class Payments(BaseSDK):
 
         request = models.AccountingPaymentsDeleteRequest(
             id=id,
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             raw=raw,
         )
@@ -1771,6 +1829,8 @@ class Payments(BaseSDK):
         self,
         *,
         id: str,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
@@ -1783,6 +1843,8 @@ class Payments(BaseSDK):
         Delete Payment
 
         :param id: ID of the record you are acting upon.
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param retries: Override the default retry configuration for this method
@@ -1800,6 +1862,8 @@ class Payments(BaseSDK):
 
         request = models.AccountingPaymentsDeleteRequest(
             id=id,
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             raw=raw,
         )

@@ -15,6 +15,7 @@ class ConsumerRequestCounts(BaseSDK):
         consumer_id: str,
         start_datetime: str,
         end_datetime: str,
+        app_id: Optional[str] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -28,6 +29,7 @@ class ConsumerRequestCounts(BaseSDK):
         :param consumer_id: ID of the consumer to return
         :param start_datetime: Scopes results to requests that happened after datetime
         :param end_datetime: Scopes results to requests that happened before datetime
+        :param app_id: The ID of your Unify application
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -42,6 +44,7 @@ class ConsumerRequestCounts(BaseSDK):
             base_url = server_url
 
         request = models.VaultConsumerRequestCountsAllRequest(
+            app_id=app_id,
             consumer_id=consumer_id,
             start_datetime=start_datetime,
             end_datetime=end_datetime,
@@ -150,6 +153,7 @@ class ConsumerRequestCounts(BaseSDK):
         consumer_id: str,
         start_datetime: str,
         end_datetime: str,
+        app_id: Optional[str] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -163,6 +167,7 @@ class ConsumerRequestCounts(BaseSDK):
         :param consumer_id: ID of the consumer to return
         :param start_datetime: Scopes results to requests that happened after datetime
         :param end_datetime: Scopes results to requests that happened before datetime
+        :param app_id: The ID of your Unify application
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -177,6 +182,7 @@ class ConsumerRequestCounts(BaseSDK):
             base_url = server_url
 
         request = models.VaultConsumerRequestCountsAllRequest(
+            app_id=app_id,
             consumer_id=consumer_id,
             start_datetime=start_datetime,
             end_datetime=end_datetime,

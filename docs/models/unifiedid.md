@@ -1,5 +1,7 @@
 # UnifiedID
 
+A object containing a unique identifier for the resource that was created, updated, or deleted.
+
 
 ## Fields
 

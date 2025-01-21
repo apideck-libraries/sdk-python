@@ -42,6 +42,8 @@ class ConnectorConnectorResourcesOneRequestTypedDict(TypedDict):
     r"""ID of the record you are acting upon."""
     resource_id: str
     r"""ID of the resource you are acting upon."""
+    app_id: NotRequired[str]
+    r"""The ID of your Unify application"""
     unified_api: NotRequired[UnifiedAPIID]
     r"""Specify unified API for the connector resource. This is useful when a resource appears in multiple APIs"""
 
@@ -56,6 +58,13 @@ class ConnectorConnectorResourcesOneRequest(BaseModel):
         str, FieldMetadata(path=PathParamMetadata(style="simple", explode=False))
     ]
     r"""ID of the resource you are acting upon."""
+
+    app_id: Annotated[
+        Optional[str],
+        pydantic.Field(alias="x-apideck-app-id"),
+        FieldMetadata(header=HeaderMetadata(style="simple", explode=False)),
+    ] = None
+    r"""The ID of your Unify application"""
 
     unified_api: Annotated[
         Optional[UnifiedAPIID],

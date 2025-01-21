@@ -34,6 +34,8 @@ class VaultConsumersDeleteGlobals(BaseModel):
 class VaultConsumersDeleteRequestTypedDict(TypedDict):
     consumer_id: str
     r"""ID of the consumer to return"""
+    app_id: NotRequired[str]
+    r"""The ID of your Unify application"""
 
 
 class VaultConsumersDeleteRequest(BaseModel):
@@ -41,6 +43,13 @@ class VaultConsumersDeleteRequest(BaseModel):
         str, FieldMetadata(path=PathParamMetadata(style="simple", explode=False))
     ]
     r"""ID of the consumer to return"""
+
+    app_id: Annotated[
+        Optional[str],
+        pydantic.Field(alias="x-apideck-app-id"),
+        FieldMetadata(header=HeaderMetadata(style="simple", explode=False)),
+    ] = None
+    r"""The ID of your Unify application"""
 
 
 class VaultConsumersDeleteResponseTypedDict(TypedDict):

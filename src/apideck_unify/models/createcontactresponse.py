@@ -20,6 +20,7 @@ class CreateContactResponseTypedDict(TypedDict):
     operation: str
     r"""Operation performed"""
     data: UnifiedIDTypedDict
+    r"""A object containing a unique identifier for the resource that was created, updated, or deleted."""
 
 
 class CreateContactResponse(BaseModel):
@@ -41,3 +42,4 @@ class CreateContactResponse(BaseModel):
     r"""Operation performed"""
 
     data: UnifiedID
+    r"""A object containing a unique identifier for the resource that was created, updated, or deleted."""
