@@ -13,6 +13,7 @@ class Connectors(BaseSDK):
     def list(
         self,
         *,
+        app_id: Optional[str] = None,
         cursor: OptionalNullable[str] = UNSET,
         limit: Optional[int] = 20,
         filter_: Optional[
@@ -27,6 +28,7 @@ class Connectors(BaseSDK):
 
         List Connectors
 
+        :param app_id: The ID of your Unify application
         :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
         :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
         :param filter_: Apply filters
@@ -44,6 +46,7 @@ class Connectors(BaseSDK):
             base_url = server_url
 
         request = models.ConnectorConnectorsAllRequest(
+            app_id=app_id,
             cursor=cursor,
             limit=limit,
             filter_=utils.get_pydantic_model(
@@ -104,6 +107,7 @@ class Connectors(BaseSDK):
             next_cursor = next_cursor[0]
 
             return self.list(
+                app_id=app_id,
                 cursor=next_cursor,
                 limit=limit,
                 filter_=filter_,
@@ -161,6 +165,7 @@ class Connectors(BaseSDK):
     async def list_async(
         self,
         *,
+        app_id: Optional[str] = None,
         cursor: OptionalNullable[str] = UNSET,
         limit: Optional[int] = 20,
         filter_: Optional[
@@ -175,6 +180,7 @@ class Connectors(BaseSDK):
 
         List Connectors
 
+        :param app_id: The ID of your Unify application
         :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
         :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
         :param filter_: Apply filters
@@ -192,6 +198,7 @@ class Connectors(BaseSDK):
             base_url = server_url
 
         request = models.ConnectorConnectorsAllRequest(
+            app_id=app_id,
             cursor=cursor,
             limit=limit,
             filter_=utils.get_pydantic_model(
@@ -252,6 +259,7 @@ class Connectors(BaseSDK):
             next_cursor = next_cursor[0]
 
             return self.list(
+                app_id=app_id,
                 cursor=next_cursor,
                 limit=limit,
                 filter_=filter_,
@@ -310,6 +318,7 @@ class Connectors(BaseSDK):
         self,
         *,
         id: str,
+        app_id: Optional[str] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -320,6 +329,7 @@ class Connectors(BaseSDK):
         Get Connector
 
         :param id: ID of the record you are acting upon.
+        :param app_id: The ID of your Unify application
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -334,6 +344,7 @@ class Connectors(BaseSDK):
             base_url = server_url
 
         request = models.ConnectorConnectorsOneRequest(
+            app_id=app_id,
             id=id,
         )
 
@@ -431,6 +442,7 @@ class Connectors(BaseSDK):
         self,
         *,
         id: str,
+        app_id: Optional[str] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -441,6 +453,7 @@ class Connectors(BaseSDK):
         Get Connector
 
         :param id: ID of the record you are acting upon.
+        :param app_id: The ID of your Unify application
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -455,6 +468,7 @@ class Connectors(BaseSDK):
             base_url = server_url
 
         request = models.ConnectorConnectorsOneRequest(
+            app_id=app_id,
             id=id,
         )
 

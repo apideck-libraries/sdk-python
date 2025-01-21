@@ -20,6 +20,7 @@ class UpdateDriveGroupResponseTypedDict(TypedDict):
     operation: str
     r"""Operation performed"""
     data: UnifiedIDTypedDict
+    r"""A object containing a unique identifier for the resource that was created, updated, or deleted."""
 
 
 class UpdateDriveGroupResponse(BaseModel):
@@ -41,3 +42,4 @@ class UpdateDriveGroupResponse(BaseModel):
     r"""Operation performed"""
 
     data: UnifiedID
+    r"""A object containing a unique identifier for the resource that was created, updated, or deleted."""

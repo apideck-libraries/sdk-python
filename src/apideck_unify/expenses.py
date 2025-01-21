@@ -15,6 +15,8 @@ class Expenses(BaseSDK):
         self,
         *,
         raw: Optional[bool] = False,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         cursor: OptionalNullable[str] = UNSET,
         limit: Optional[int] = 20,
@@ -28,6 +30,8 @@ class Expenses(BaseSDK):
         List Expenses
 
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
         :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
@@ -46,6 +50,8 @@ class Expenses(BaseSDK):
 
         request = models.AccountingExpensesAllRequest(
             raw=raw,
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             cursor=cursor,
             limit=limit,
@@ -106,6 +112,8 @@ class Expenses(BaseSDK):
 
             return self.list(
                 raw=raw,
+                consumer_id=consumer_id,
+                app_id=app_id,
                 service_id=service_id,
                 cursor=next_cursor,
                 limit=limit,
@@ -170,6 +178,8 @@ class Expenses(BaseSDK):
         self,
         *,
         raw: Optional[bool] = False,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         cursor: OptionalNullable[str] = UNSET,
         limit: Optional[int] = 20,
@@ -183,6 +193,8 @@ class Expenses(BaseSDK):
         List Expenses
 
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
         :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
@@ -201,6 +213,8 @@ class Expenses(BaseSDK):
 
         request = models.AccountingExpensesAllRequest(
             raw=raw,
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             cursor=cursor,
             limit=limit,
@@ -261,6 +275,8 @@ class Expenses(BaseSDK):
 
             return self.list(
                 raw=raw,
+                consumer_id=consumer_id,
+                app_id=app_id,
                 service_id=service_id,
                 cursor=next_cursor,
                 limit=limit,
@@ -331,6 +347,8 @@ class Expenses(BaseSDK):
             List[models.ExpenseLineItemInputTypedDict],
         ],
         raw: Optional[bool] = False,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         number: OptionalNullable[str] = UNSET,
         customer_id: Optional[str] = None,
@@ -366,6 +384,8 @@ class Expenses(BaseSDK):
         :param account_id: The unique identifier for the ledger account that this expense should be credited to.
         :param line_items: Expense line items linked to this expense.
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param number: Number.
         :param customer_id: The ID of the customer this entity is linked to. Used for expenses that should be marked as billable to customers.
@@ -397,6 +417,8 @@ class Expenses(BaseSDK):
 
         request = models.AccountingExpensesAddRequest(
             raw=raw,
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             expense=models.ExpenseInput(
                 number=number,
@@ -538,6 +560,8 @@ class Expenses(BaseSDK):
             List[models.ExpenseLineItemInputTypedDict],
         ],
         raw: Optional[bool] = False,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         number: OptionalNullable[str] = UNSET,
         customer_id: Optional[str] = None,
@@ -573,6 +597,8 @@ class Expenses(BaseSDK):
         :param account_id: The unique identifier for the ledger account that this expense should be credited to.
         :param line_items: Expense line items linked to this expense.
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param number: Number.
         :param customer_id: The ID of the customer this entity is linked to. Used for expenses that should be marked as billable to customers.
@@ -604,6 +630,8 @@ class Expenses(BaseSDK):
 
         request = models.AccountingExpensesAddRequest(
             raw=raw,
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             expense=models.ExpenseInput(
                 number=number,
@@ -739,6 +767,8 @@ class Expenses(BaseSDK):
         self,
         *,
         id: str,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
@@ -751,6 +781,8 @@ class Expenses(BaseSDK):
         Get Expense
 
         :param id: ID of the record you are acting upon.
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param retries: Override the default retry configuration for this method
@@ -768,6 +800,8 @@ class Expenses(BaseSDK):
 
         request = models.AccountingExpensesOneRequest(
             id=id,
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             raw=raw,
         )
@@ -873,6 +907,8 @@ class Expenses(BaseSDK):
         self,
         *,
         id: str,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
@@ -885,6 +921,8 @@ class Expenses(BaseSDK):
         Get Expense
 
         :param id: ID of the record you are acting upon.
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param retries: Override the default retry configuration for this method
@@ -902,6 +940,8 @@ class Expenses(BaseSDK):
 
         request = models.AccountingExpensesOneRequest(
             id=id,
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             raw=raw,
         )
@@ -1013,6 +1053,8 @@ class Expenses(BaseSDK):
             List[models.ExpenseLineItemInput],
             List[models.ExpenseLineItemInputTypedDict],
         ],
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
         number: OptionalNullable[str] = UNSET,
@@ -1049,6 +1091,8 @@ class Expenses(BaseSDK):
         :param transaction_date: The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD
         :param account_id: The unique identifier for the ledger account that this expense should be credited to.
         :param line_items: Expense line items linked to this expense.
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param number: Number.
@@ -1081,6 +1125,8 @@ class Expenses(BaseSDK):
 
         request = models.AccountingExpensesUpdateRequest(
             id=id,
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             raw=raw,
             expense=models.ExpenseInput(
@@ -1223,6 +1269,8 @@ class Expenses(BaseSDK):
             List[models.ExpenseLineItemInput],
             List[models.ExpenseLineItemInputTypedDict],
         ],
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
         number: OptionalNullable[str] = UNSET,
@@ -1259,6 +1307,8 @@ class Expenses(BaseSDK):
         :param transaction_date: The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD
         :param account_id: The unique identifier for the ledger account that this expense should be credited to.
         :param line_items: Expense line items linked to this expense.
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param number: Number.
@@ -1291,6 +1341,8 @@ class Expenses(BaseSDK):
 
         request = models.AccountingExpensesUpdateRequest(
             id=id,
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             raw=raw,
             expense=models.ExpenseInput(
@@ -1427,6 +1479,8 @@ class Expenses(BaseSDK):
         self,
         *,
         id: str,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
@@ -1439,6 +1493,8 @@ class Expenses(BaseSDK):
         Delete Expense
 
         :param id: ID of the record you are acting upon.
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param retries: Override the default retry configuration for this method
@@ -1456,6 +1512,8 @@ class Expenses(BaseSDK):
 
         request = models.AccountingExpensesDeleteRequest(
             id=id,
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             raw=raw,
         )
@@ -1561,6 +1619,8 @@ class Expenses(BaseSDK):
         self,
         *,
         id: str,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
@@ -1573,6 +1633,8 @@ class Expenses(BaseSDK):
         Delete Expense
 
         :param id: ID of the record you are acting upon.
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param retries: Override the default retry configuration for this method
@@ -1590,6 +1652,8 @@ class Expenses(BaseSDK):
 
         request = models.AccountingExpensesDeleteRequest(
             id=id,
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             raw=raw,
         )

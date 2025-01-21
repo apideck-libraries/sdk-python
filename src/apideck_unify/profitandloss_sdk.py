@@ -13,6 +13,8 @@ class ProfitAndLossSDK(BaseSDK):
         self,
         *,
         raw: Optional[bool] = False,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         filter_: Optional[
             Union[models.ProfitAndLossFilter, models.ProfitAndLossFilterTypedDict]
@@ -29,6 +31,8 @@ class ProfitAndLossSDK(BaseSDK):
         Get Profit and Loss
 
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param filter_: Apply filters
         :param pass_through: Optional unmapped key/values that will be passed through to downstream as query parameters. Ie: ?pass_through[search]=leads becomes ?search=leads
@@ -48,6 +52,8 @@ class ProfitAndLossSDK(BaseSDK):
 
         request = models.AccountingProfitAndLossOneRequest(
             raw=raw,
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             filter_=utils.get_pydantic_model(
                 filter_, Optional[models.ProfitAndLossFilter]
@@ -157,6 +163,8 @@ class ProfitAndLossSDK(BaseSDK):
         self,
         *,
         raw: Optional[bool] = False,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         filter_: Optional[
             Union[models.ProfitAndLossFilter, models.ProfitAndLossFilterTypedDict]
@@ -173,6 +181,8 @@ class ProfitAndLossSDK(BaseSDK):
         Get Profit and Loss
 
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param filter_: Apply filters
         :param pass_through: Optional unmapped key/values that will be passed through to downstream as query parameters. Ie: ?pass_through[search]=leads becomes ?search=leads
@@ -192,6 +202,8 @@ class ProfitAndLossSDK(BaseSDK):
 
         request = models.AccountingProfitAndLossOneRequest(
             raw=raw,
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             filter_=utils.get_pydantic_model(
                 filter_, Optional[models.ProfitAndLossFilter]

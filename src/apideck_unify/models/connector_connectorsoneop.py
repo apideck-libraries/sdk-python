@@ -31,6 +31,8 @@ class ConnectorConnectorsOneGlobals(BaseModel):
 class ConnectorConnectorsOneRequestTypedDict(TypedDict):
     id: str
     r"""ID of the record you are acting upon."""
+    app_id: NotRequired[str]
+    r"""The ID of your Unify application"""
 
 
 class ConnectorConnectorsOneRequest(BaseModel):
@@ -38,6 +40,13 @@ class ConnectorConnectorsOneRequest(BaseModel):
         str, FieldMetadata(path=PathParamMetadata(style="simple", explode=False))
     ]
     r"""ID of the record you are acting upon."""
+
+    app_id: Annotated[
+        Optional[str],
+        pydantic.Field(alias="x-apideck-app-id"),
+        FieldMetadata(header=HeaderMetadata(style="simple", explode=False)),
+    ] = None
+    r"""The ID of your Unify application"""
 
 
 class ConnectorConnectorsOneResponseTypedDict(TypedDict):

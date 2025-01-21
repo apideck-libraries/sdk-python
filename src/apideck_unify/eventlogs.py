@@ -13,6 +13,7 @@ class EventLogs(BaseSDK):
     def list(
         self,
         *,
+        app_id: Optional[str] = None,
         cursor: OptionalNullable[str] = UNSET,
         limit: Optional[int] = 20,
         filter_: Optional[
@@ -27,6 +28,7 @@ class EventLogs(BaseSDK):
 
         List event logs
 
+        :param app_id: The ID of your Unify application
         :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
         :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
         :param filter_: Filter results
@@ -44,6 +46,7 @@ class EventLogs(BaseSDK):
             base_url = server_url
 
         request = models.WebhookEventLogsAllRequest(
+            app_id=app_id,
             cursor=cursor,
             limit=limit,
             filter_=utils.get_pydantic_model(
@@ -104,6 +107,7 @@ class EventLogs(BaseSDK):
             next_cursor = next_cursor[0]
 
             return self.list(
+                app_id=app_id,
                 cursor=next_cursor,
                 limit=limit,
                 filter_=filter_,
@@ -167,6 +171,7 @@ class EventLogs(BaseSDK):
     async def list_async(
         self,
         *,
+        app_id: Optional[str] = None,
         cursor: OptionalNullable[str] = UNSET,
         limit: Optional[int] = 20,
         filter_: Optional[
@@ -181,6 +186,7 @@ class EventLogs(BaseSDK):
 
         List event logs
 
+        :param app_id: The ID of your Unify application
         :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
         :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
         :param filter_: Filter results
@@ -198,6 +204,7 @@ class EventLogs(BaseSDK):
             base_url = server_url
 
         request = models.WebhookEventLogsAllRequest(
+            app_id=app_id,
             cursor=cursor,
             limit=limit,
             filter_=utils.get_pydantic_model(
@@ -258,6 +265,7 @@ class EventLogs(BaseSDK):
             next_cursor = next_cursor[0]
 
             return self.list(
+                app_id=app_id,
                 cursor=next_cursor,
                 limit=limit,
                 filter_=filter_,

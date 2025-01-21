@@ -14,6 +14,8 @@ class SharedLinks(BaseSDK):
         self,
         *,
         raw: Optional[bool] = False,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         cursor: OptionalNullable[str] = UNSET,
         limit: Optional[int] = 20,
@@ -29,6 +31,8 @@ class SharedLinks(BaseSDK):
         List SharedLinks
 
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
         :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
@@ -49,6 +53,8 @@ class SharedLinks(BaseSDK):
 
         request = models.FileStorageSharedLinksAllRequest(
             raw=raw,
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             cursor=cursor,
             limit=limit,
@@ -111,6 +117,8 @@ class SharedLinks(BaseSDK):
 
             return self.list(
                 raw=raw,
+                consumer_id=consumer_id,
+                app_id=app_id,
                 service_id=service_id,
                 cursor=next_cursor,
                 limit=limit,
@@ -177,6 +185,8 @@ class SharedLinks(BaseSDK):
         self,
         *,
         raw: Optional[bool] = False,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         cursor: OptionalNullable[str] = UNSET,
         limit: Optional[int] = 20,
@@ -192,6 +202,8 @@ class SharedLinks(BaseSDK):
         List SharedLinks
 
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
         :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
@@ -212,6 +224,8 @@ class SharedLinks(BaseSDK):
 
         request = models.FileStorageSharedLinksAllRequest(
             raw=raw,
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             cursor=cursor,
             limit=limit,
@@ -274,6 +288,8 @@ class SharedLinks(BaseSDK):
 
             return self.list(
                 raw=raw,
+                consumer_id=consumer_id,
+                app_id=app_id,
                 service_id=service_id,
                 cursor=next_cursor,
                 limit=limit,
@@ -341,6 +357,8 @@ class SharedLinks(BaseSDK):
         *,
         target_id: Nullable[str],
         raw: Optional[bool] = False,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         download_url: OptionalNullable[str] = UNSET,
         scope: OptionalNullable[models.Scope] = UNSET,
@@ -359,6 +377,8 @@ class SharedLinks(BaseSDK):
 
         :param target_id: The ID of the file or folder to link.
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param download_url: The URL that can be used to download the file.
         :param scope: The scope of the shared link.
@@ -379,6 +399,8 @@ class SharedLinks(BaseSDK):
 
         request = models.FileStorageSharedLinksAddRequest(
             raw=raw,
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             shared_link=models.SharedLinkInput(
                 download_url=download_url,
@@ -496,6 +518,8 @@ class SharedLinks(BaseSDK):
         *,
         target_id: Nullable[str],
         raw: Optional[bool] = False,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         download_url: OptionalNullable[str] = UNSET,
         scope: OptionalNullable[models.Scope] = UNSET,
@@ -514,6 +538,8 @@ class SharedLinks(BaseSDK):
 
         :param target_id: The ID of the file or folder to link.
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param download_url: The URL that can be used to download the file.
         :param scope: The scope of the shared link.
@@ -534,6 +560,8 @@ class SharedLinks(BaseSDK):
 
         request = models.FileStorageSharedLinksAddRequest(
             raw=raw,
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             shared_link=models.SharedLinkInput(
                 download_url=download_url,
@@ -650,6 +678,8 @@ class SharedLinks(BaseSDK):
         self,
         *,
         id: str,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
         fields: OptionalNullable[str] = UNSET,
@@ -663,6 +693,8 @@ class SharedLinks(BaseSDK):
         Get Shared Link
 
         :param id: ID of the record you are acting upon.
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param fields: The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded.
@@ -681,6 +713,8 @@ class SharedLinks(BaseSDK):
 
         request = models.FileStorageSharedLinksOneRequest(
             id=id,
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             raw=raw,
             fields=fields,
@@ -787,6 +821,8 @@ class SharedLinks(BaseSDK):
         self,
         *,
         id: str,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
         fields: OptionalNullable[str] = UNSET,
@@ -800,6 +836,8 @@ class SharedLinks(BaseSDK):
         Get Shared Link
 
         :param id: ID of the record you are acting upon.
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param fields: The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded.
@@ -818,6 +856,8 @@ class SharedLinks(BaseSDK):
 
         request = models.FileStorageSharedLinksOneRequest(
             id=id,
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             raw=raw,
             fields=fields,
@@ -925,6 +965,8 @@ class SharedLinks(BaseSDK):
         *,
         id: str,
         target_id: Nullable[str],
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
         download_url: OptionalNullable[str] = UNSET,
@@ -944,6 +986,8 @@ class SharedLinks(BaseSDK):
 
         :param id: ID of the record you are acting upon.
         :param target_id: The ID of the file or folder to link.
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param download_url: The URL that can be used to download the file.
@@ -965,6 +1009,8 @@ class SharedLinks(BaseSDK):
 
         request = models.FileStorageSharedLinksUpdateRequest(
             id=id,
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             raw=raw,
             shared_link=models.SharedLinkInput(
@@ -1083,6 +1129,8 @@ class SharedLinks(BaseSDK):
         *,
         id: str,
         target_id: Nullable[str],
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
         download_url: OptionalNullable[str] = UNSET,
@@ -1102,6 +1150,8 @@ class SharedLinks(BaseSDK):
 
         :param id: ID of the record you are acting upon.
         :param target_id: The ID of the file or folder to link.
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param download_url: The URL that can be used to download the file.
@@ -1123,6 +1173,8 @@ class SharedLinks(BaseSDK):
 
         request = models.FileStorageSharedLinksUpdateRequest(
             id=id,
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             raw=raw,
             shared_link=models.SharedLinkInput(
@@ -1240,6 +1292,8 @@ class SharedLinks(BaseSDK):
         self,
         *,
         id: str,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
@@ -1252,6 +1306,8 @@ class SharedLinks(BaseSDK):
         Delete Shared Link
 
         :param id: ID of the record you are acting upon.
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param retries: Override the default retry configuration for this method
@@ -1269,6 +1325,8 @@ class SharedLinks(BaseSDK):
 
         request = models.FileStorageSharedLinksDeleteRequest(
             id=id,
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             raw=raw,
         )
@@ -1374,6 +1432,8 @@ class SharedLinks(BaseSDK):
         self,
         *,
         id: str,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
@@ -1386,6 +1446,8 @@ class SharedLinks(BaseSDK):
         Delete Shared Link
 
         :param id: ID of the record you are acting upon.
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param retries: Override the default retry configuration for this method
@@ -1403,6 +1465,8 @@ class SharedLinks(BaseSDK):
 
         request = models.FileStorageSharedLinksDeleteRequest(
             id=id,
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             raw=raw,
         )

@@ -23,7 +23,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.connector.connector_docs.get(id="<id>", doc_id="application_owner+oauth_credentials")
+    res = apideck.connector.connector_docs.get(id="<id>", doc_id="application_owner+oauth_credentials", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX")
 
     assert res.get_connector_doc_response is not None
 
@@ -38,6 +38,7 @@ with Apideck(
 | ------------------------------------------------------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------------- |
 | `id`                                                                | *str*                                                               | :heavy_check_mark:                                                  | ID of the record you are acting upon.                               |                                                                     |
 | `doc_id`                                                            | *str*                                                               | :heavy_check_mark:                                                  | ID of the Doc                                                       | application_owner+oauth_credentials                                 |
+| `app_id`                                                            | *Optional[str]*                                                     | :heavy_minus_sign:                                                  | The ID of your Unify application                                    | dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX                             |
 | `retries`                                                           | [Optional[utils.RetryConfig]](../../models/utils/retryconfig.md)    | :heavy_minus_sign:                                                  | Configuration to override the default retry behavior of the client. |                                                                     |
 
 ### Response

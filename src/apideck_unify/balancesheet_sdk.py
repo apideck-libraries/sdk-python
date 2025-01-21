@@ -12,6 +12,8 @@ class BalanceSheetSDK(BaseSDK):
     def get(
         self,
         *,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         pass_through: Optional[Dict[str, Any]] = None,
         filter_: Optional[
@@ -27,6 +29,8 @@ class BalanceSheetSDK(BaseSDK):
 
         Get BalanceSheet
 
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param pass_through: Optional unmapped key/values that will be passed through to downstream as query parameters. Ie: ?pass_through[search]=leads becomes ?search=leads
         :param filter_: Apply filters
@@ -45,6 +49,8 @@ class BalanceSheetSDK(BaseSDK):
             base_url = server_url
 
         request = models.AccountingBalanceSheetOneRequest(
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             pass_through=pass_through,
             filter_=utils.get_pydantic_model(
@@ -153,6 +159,8 @@ class BalanceSheetSDK(BaseSDK):
     async def get_async(
         self,
         *,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         pass_through: Optional[Dict[str, Any]] = None,
         filter_: Optional[
@@ -168,6 +176,8 @@ class BalanceSheetSDK(BaseSDK):
 
         Get BalanceSheet
 
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param pass_through: Optional unmapped key/values that will be passed through to downstream as query parameters. Ie: ?pass_through[search]=leads becomes ?search=leads
         :param filter_: Apply filters
@@ -186,6 +196,8 @@ class BalanceSheetSDK(BaseSDK):
             base_url = server_url
 
         request = models.AccountingBalanceSheetOneRequest(
+            consumer_id=consumer_id,
+            app_id=app_id,
             service_id=service_id,
             pass_through=pass_through,
             filter_=utils.get_pydantic_model(

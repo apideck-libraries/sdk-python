@@ -14,6 +14,7 @@ class ConnectorResources(BaseSDK):
         *,
         id: str,
         resource_id: str,
+        app_id: Optional[str] = None,
         unified_api: Optional[models.UnifiedAPIID] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -26,6 +27,7 @@ class ConnectorResources(BaseSDK):
 
         :param id: ID of the record you are acting upon.
         :param resource_id: ID of the resource you are acting upon.
+        :param app_id: The ID of your Unify application
         :param unified_api: Specify unified API for the connector resource. This is useful when a resource appears in multiple APIs
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
@@ -41,6 +43,7 @@ class ConnectorResources(BaseSDK):
             base_url = server_url
 
         request = models.ConnectorConnectorResourcesOneRequest(
+            app_id=app_id,
             id=id,
             resource_id=resource_id,
             unified_api=unified_api,
@@ -141,6 +144,7 @@ class ConnectorResources(BaseSDK):
         *,
         id: str,
         resource_id: str,
+        app_id: Optional[str] = None,
         unified_api: Optional[models.UnifiedAPIID] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -153,6 +157,7 @@ class ConnectorResources(BaseSDK):
 
         :param id: ID of the record you are acting upon.
         :param resource_id: ID of the resource you are acting upon.
+        :param app_id: The ID of your Unify application
         :param unified_api: Specify unified API for the connector resource. This is useful when a resource appears in multiple APIs
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
@@ -168,6 +173,7 @@ class ConnectorResources(BaseSDK):
             base_url = server_url
 
         request = models.ConnectorConnectorResourcesOneRequest(
+            app_id=app_id,
             id=id,
             resource_id=resource_id,
             unified_api=unified_api,

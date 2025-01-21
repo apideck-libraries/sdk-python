@@ -15,6 +15,8 @@ class ConnectionCustomMappings(BaseSDK):
         unified_api: str,
         service_id: str,
         resource: str,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         resource_id: Optional[str] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -28,6 +30,8 @@ class ConnectionCustomMappings(BaseSDK):
         :param unified_api: Unified API
         :param service_id: Service ID of the resource to return
         :param resource: Name of the resource (plural)
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param resource_id: This is the id of the resource you want to fetch when listing custom fields. For example, if you want to fetch custom fields for a specific contact, you would use the contact id.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
@@ -43,6 +47,8 @@ class ConnectionCustomMappings(BaseSDK):
             base_url = server_url
 
         request = models.VaultConnectionCustomMappingsAllRequest(
+            consumer_id=consumer_id,
+            app_id=app_id,
             unified_api=unified_api,
             service_id=service_id,
             resource=resource,
@@ -152,6 +158,8 @@ class ConnectionCustomMappings(BaseSDK):
         unified_api: str,
         service_id: str,
         resource: str,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
         resource_id: Optional[str] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -165,6 +173,8 @@ class ConnectionCustomMappings(BaseSDK):
         :param unified_api: Unified API
         :param service_id: Service ID of the resource to return
         :param resource: Name of the resource (plural)
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
         :param resource_id: This is the id of the resource you want to fetch when listing custom fields. For example, if you want to fetch custom fields for a specific contact, you would use the contact id.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
@@ -180,6 +190,8 @@ class ConnectionCustomMappings(BaseSDK):
             base_url = server_url
 
         request = models.VaultConnectionCustomMappingsAllRequest(
+            consumer_id=consumer_id,
+            app_id=app_id,
             unified_api=unified_api,
             service_id=service_id,
             resource=resource,

@@ -13,6 +13,7 @@ class Webhooks(BaseSDK):
     def list(
         self,
         *,
+        app_id: Optional[str] = None,
         cursor: OptionalNullable[str] = UNSET,
         limit: Optional[int] = 20,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
@@ -24,6 +25,7 @@ class Webhooks(BaseSDK):
 
         List all webhook subscriptions
 
+        :param app_id: The ID of your Unify application
         :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
         :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
         :param retries: Override the default retry configuration for this method
@@ -40,6 +42,7 @@ class Webhooks(BaseSDK):
             base_url = server_url
 
         request = models.WebhookWebhooksAllRequest(
+            app_id=app_id,
             cursor=cursor,
             limit=limit,
         )
@@ -97,6 +100,7 @@ class Webhooks(BaseSDK):
             next_cursor = next_cursor[0]
 
             return self.list(
+                app_id=app_id,
                 cursor=next_cursor,
                 limit=limit,
                 retries=retries,
@@ -159,6 +163,7 @@ class Webhooks(BaseSDK):
     async def list_async(
         self,
         *,
+        app_id: Optional[str] = None,
         cursor: OptionalNullable[str] = UNSET,
         limit: Optional[int] = 20,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
@@ -170,6 +175,7 @@ class Webhooks(BaseSDK):
 
         List all webhook subscriptions
 
+        :param app_id: The ID of your Unify application
         :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
         :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
         :param retries: Override the default retry configuration for this method
@@ -186,6 +192,7 @@ class Webhooks(BaseSDK):
             base_url = server_url
 
         request = models.WebhookWebhooksAllRequest(
+            app_id=app_id,
             cursor=cursor,
             limit=limit,
         )
@@ -243,6 +250,7 @@ class Webhooks(BaseSDK):
             next_cursor = next_cursor[0]
 
             return self.list(
+                app_id=app_id,
                 cursor=next_cursor,
                 limit=limit,
                 retries=retries,
@@ -309,6 +317,7 @@ class Webhooks(BaseSDK):
         status: models.Status,
         delivery_url: str,
         events: List[models.WebhookEventType],
+        app_id: Optional[str] = None,
         description: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -323,6 +332,7 @@ class Webhooks(BaseSDK):
         :param status: The status of the webhook.
         :param delivery_url: The delivery url of the webhook endpoint.
         :param events: The list of subscribed events for this webhook. [`*`] indicates that all events are enabled.
+        :param app_id: The ID of your Unify application
         :param description: A description of the object.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
@@ -337,12 +347,15 @@ class Webhooks(BaseSDK):
         if server_url is not None:
             base_url = server_url
 
-        request = models.CreateWebhookRequest(
-            description=description,
-            unified_api=unified_api,
-            status=status,
-            delivery_url=delivery_url,
-            events=events,
+        request = models.WebhookWebhooksAddRequest(
+            app_id=app_id,
+            create_webhook_request=models.CreateWebhookRequest(
+                description=description,
+                unified_api=unified_api,
+                status=status,
+                delivery_url=delivery_url,
+                events=events,
+            ),
         )
 
         req = self._build_request(
@@ -362,7 +375,11 @@ class Webhooks(BaseSDK):
             ),
             security=self.sdk_configuration.security,
             get_serialized_body=lambda: utils.serialize_request_body(
-                request, False, False, "json", models.CreateWebhookRequest
+                request.create_webhook_request,
+                False,
+                False,
+                "json",
+                models.CreateWebhookRequest,
             ),
             timeout_ms=timeout_ms,
         )
@@ -451,6 +468,7 @@ class Webhooks(BaseSDK):
         status: models.Status,
         delivery_url: str,
         events: List[models.WebhookEventType],
+        app_id: Optional[str] = None,
         description: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -465,6 +483,7 @@ class Webhooks(BaseSDK):
         :param status: The status of the webhook.
         :param delivery_url: The delivery url of the webhook endpoint.
         :param events: The list of subscribed events for this webhook. [`*`] indicates that all events are enabled.
+        :param app_id: The ID of your Unify application
         :param description: A description of the object.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
@@ -479,12 +498,15 @@ class Webhooks(BaseSDK):
         if server_url is not None:
             base_url = server_url
 
-        request = models.CreateWebhookRequest(
-            description=description,
-            unified_api=unified_api,
-            status=status,
-            delivery_url=delivery_url,
-            events=events,
+        request = models.WebhookWebhooksAddRequest(
+            app_id=app_id,
+            create_webhook_request=models.CreateWebhookRequest(
+                description=description,
+                unified_api=unified_api,
+                status=status,
+                delivery_url=delivery_url,
+                events=events,
+            ),
         )
 
         req = self._build_request_async(
@@ -504,7 +526,11 @@ class Webhooks(BaseSDK):
             ),
             security=self.sdk_configuration.security,
             get_serialized_body=lambda: utils.serialize_request_body(
-                request, False, False, "json", models.CreateWebhookRequest
+                request.create_webhook_request,
+                False,
+                False,
+                "json",
+                models.CreateWebhookRequest,
             ),
             timeout_ms=timeout_ms,
         )
@@ -590,6 +616,7 @@ class Webhooks(BaseSDK):
         self,
         *,
         id: str,
+        app_id: Optional[str] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -600,6 +627,7 @@ class Webhooks(BaseSDK):
         Get the webhook subscription details
 
         :param id: JWT Webhook token that represents the unifiedApi and applicationId associated to the event source.
+        :param app_id: The ID of your Unify application
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -615,6 +643,7 @@ class Webhooks(BaseSDK):
 
         request = models.WebhookWebhooksOneRequest(
             id=id,
+            app_id=app_id,
         )
 
         req = self._build_request(
@@ -717,6 +746,7 @@ class Webhooks(BaseSDK):
         self,
         *,
         id: str,
+        app_id: Optional[str] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -727,6 +757,7 @@ class Webhooks(BaseSDK):
         Get the webhook subscription details
 
         :param id: JWT Webhook token that represents the unifiedApi and applicationId associated to the event source.
+        :param app_id: The ID of your Unify application
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -742,6 +773,7 @@ class Webhooks(BaseSDK):
 
         request = models.WebhookWebhooksOneRequest(
             id=id,
+            app_id=app_id,
         )
 
         req = self._build_request_async(
@@ -844,6 +876,7 @@ class Webhooks(BaseSDK):
         self,
         *,
         id: str,
+        app_id: Optional[str] = None,
         description: OptionalNullable[str] = UNSET,
         status: Optional[models.Status] = None,
         delivery_url: Optional[str] = None,
@@ -858,6 +891,7 @@ class Webhooks(BaseSDK):
         Update a webhook subscription
 
         :param id: JWT Webhook token that represents the unifiedApi and applicationId associated to the event source.
+        :param app_id: The ID of your Unify application
         :param description: A description of the object.
         :param status: The status of the webhook.
         :param delivery_url: The delivery url of the webhook endpoint.
@@ -877,6 +911,7 @@ class Webhooks(BaseSDK):
 
         request = models.WebhookWebhooksUpdateRequest(
             id=id,
+            app_id=app_id,
             update_webhook_request=models.UpdateWebhookRequest(
                 description=description,
                 status=status,
@@ -992,6 +1027,7 @@ class Webhooks(BaseSDK):
         self,
         *,
         id: str,
+        app_id: Optional[str] = None,
         description: OptionalNullable[str] = UNSET,
         status: Optional[models.Status] = None,
         delivery_url: Optional[str] = None,
@@ -1006,6 +1042,7 @@ class Webhooks(BaseSDK):
         Update a webhook subscription
 
         :param id: JWT Webhook token that represents the unifiedApi and applicationId associated to the event source.
+        :param app_id: The ID of your Unify application
         :param description: A description of the object.
         :param status: The status of the webhook.
         :param delivery_url: The delivery url of the webhook endpoint.
@@ -1025,6 +1062,7 @@ class Webhooks(BaseSDK):
 
         request = models.WebhookWebhooksUpdateRequest(
             id=id,
+            app_id=app_id,
             update_webhook_request=models.UpdateWebhookRequest(
                 description=description,
                 status=status,
@@ -1140,6 +1178,7 @@ class Webhooks(BaseSDK):
         self,
         *,
         id: str,
+        app_id: Optional[str] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -1150,6 +1189,7 @@ class Webhooks(BaseSDK):
         Delete a webhook subscription
 
         :param id: JWT Webhook token that represents the unifiedApi and applicationId associated to the event source.
+        :param app_id: The ID of your Unify application
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -1165,6 +1205,7 @@ class Webhooks(BaseSDK):
 
         request = models.WebhookWebhooksDeleteRequest(
             id=id,
+            app_id=app_id,
         )
 
         req = self._build_request(
@@ -1267,6 +1308,7 @@ class Webhooks(BaseSDK):
         self,
         *,
         id: str,
+        app_id: Optional[str] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -1277,6 +1319,7 @@ class Webhooks(BaseSDK):
         Delete a webhook subscription
 
         :param id: JWT Webhook token that represents the unifiedApi and applicationId associated to the event source.
+        :param app_id: The ID of your Unify application
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -1292,6 +1335,7 @@ class Webhooks(BaseSDK):
 
         request = models.WebhookWebhooksDeleteRequest(
             id=id,
+            app_id=app_id,
         )
 
         req = self._build_request_async(

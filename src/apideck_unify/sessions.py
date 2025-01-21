@@ -3,16 +3,18 @@
 from .basesdk import BaseSDK
 from apideck_unify import models, utils
 from apideck_unify._hooks import HookContext
-from apideck_unify.types import BaseModel, OptionalNullable, UNSET
+from apideck_unify.types import OptionalNullable, UNSET
 from apideck_unify.utils import get_security_from_env
-from typing import Any, Mapping, Optional, Union, cast
+from typing import Any, Mapping, Optional, Union
 
 
 class Sessions(BaseSDK):
     def create(
         self,
         *,
-        request: Optional[Union[models.Session, models.SessionTypedDict]] = None,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
+        session: Optional[Union[models.Session, models.SessionTypedDict]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -26,7 +28,9 @@ class Sessions(BaseSDK):
         Note: This is a short lived token that will expire after 1 hour (TTL: 3600).
 
 
-        :param request: The request object to send.
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
+        :param session: Additional redirect uri and/or consumer metadata
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -40,9 +44,11 @@ class Sessions(BaseSDK):
         if server_url is not None:
             base_url = server_url
 
-        if not isinstance(request, BaseModel):
-            request = utils.unmarshal(request, Optional[models.Session])
-        request = cast(Optional[models.Session], request)
+        request = models.VaultSessionsCreateRequest(
+            consumer_id=consumer_id,
+            app_id=app_id,
+            session=utils.get_pydantic_model(session, Optional[models.Session]),
+        )
 
         req = self._build_request(
             method="POST",
@@ -62,7 +68,7 @@ class Sessions(BaseSDK):
             ),
             security=self.sdk_configuration.security,
             get_serialized_body=lambda: utils.serialize_request_body(
-                request, False, True, "json", Optional[models.Session]
+                request.session, False, True, "json", Optional[models.Session]
             ),
             timeout_ms=timeout_ms,
         )
@@ -147,7 +153,9 @@ class Sessions(BaseSDK):
     async def create_async(
         self,
         *,
-        request: Optional[Union[models.Session, models.SessionTypedDict]] = None,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
+        session: Optional[Union[models.Session, models.SessionTypedDict]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -161,7 +169,9 @@ class Sessions(BaseSDK):
         Note: This is a short lived token that will expire after 1 hour (TTL: 3600).
 
 
-        :param request: The request object to send.
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
+        :param session: Additional redirect uri and/or consumer metadata
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -175,9 +185,11 @@ class Sessions(BaseSDK):
         if server_url is not None:
             base_url = server_url
 
-        if not isinstance(request, BaseModel):
-            request = utils.unmarshal(request, Optional[models.Session])
-        request = cast(Optional[models.Session], request)
+        request = models.VaultSessionsCreateRequest(
+            consumer_id=consumer_id,
+            app_id=app_id,
+            session=utils.get_pydantic_model(session, Optional[models.Session]),
+        )
 
         req = self._build_request_async(
             method="POST",
@@ -197,7 +209,7 @@ class Sessions(BaseSDK):
             ),
             security=self.sdk_configuration.security,
             get_serialized_body=lambda: utils.serialize_request_body(
-                request, False, True, "json", Optional[models.Session]
+                request.session, False, True, "json", Optional[models.Session]
             ),
             timeout_ms=timeout_ms,
         )

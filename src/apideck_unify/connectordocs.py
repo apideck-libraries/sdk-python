@@ -20,6 +20,7 @@ class ConnectorDocs(BaseSDK):
         *,
         id: str,
         doc_id: str,
+        app_id: Optional[str] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -32,6 +33,7 @@ class ConnectorDocs(BaseSDK):
 
         :param id: ID of the record you are acting upon.
         :param doc_id: ID of the Doc
+        :param app_id: The ID of your Unify application
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -47,6 +49,7 @@ class ConnectorDocs(BaseSDK):
             base_url = server_url
 
         request = models.ConnectorConnectorDocsOneRequest(
+            app_id=app_id,
             id=id,
             doc_id=doc_id,
         )
@@ -146,6 +149,7 @@ class ConnectorDocs(BaseSDK):
         *,
         id: str,
         doc_id: str,
+        app_id: Optional[str] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -158,6 +162,7 @@ class ConnectorDocs(BaseSDK):
 
         :param id: ID of the record you are acting upon.
         :param doc_id: ID of the Doc
+        :param app_id: The ID of your Unify application
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -173,6 +178,7 @@ class ConnectorDocs(BaseSDK):
             base_url = server_url
 
         request = models.ConnectorConnectorDocsOneRequest(
+            app_id=app_id,
             id=id,
             doc_id=doc_id,
         )
