@@ -25,7 +25,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.issue_tracking.collections.list(service_id="salesforce", sort={
+    res = apideck.issue_tracking.collections.list(raw=False, service_id="salesforce", limit=20, sort={
         "by": apideck_unify.CollectionsSortBy.NAME,
         "direction": apideck_unify.SortDirection.DESC,
     }, pass_through={
@@ -83,7 +83,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.issue_tracking.collections.get(collection_id="apideck-io", service_id="salesforce", fields="id,updated_at")
+    res = apideck.issue_tracking.collections.get(collection_id="apideck-io", service_id="salesforce", raw=False, fields="id,updated_at")
 
     assert res.get_collection_response is not None
 

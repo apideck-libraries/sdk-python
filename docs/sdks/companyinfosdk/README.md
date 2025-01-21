@@ -23,7 +23,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.accounting.company_info.get(service_id="salesforce", fields="id,updated_at")
+    res = apideck.accounting.company_info.get(raw=False, service_id="salesforce", fields="id,updated_at")
 
     assert res.get_company_info_response is not None
 

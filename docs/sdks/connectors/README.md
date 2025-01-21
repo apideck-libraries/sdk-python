@@ -25,7 +25,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.connector.connectors.list(filter_={
+    res = apideck.connector.connectors.list(limit=20, filter_={
         "unified_api": apideck_unify.UnifiedAPIID.FILE_STORAGE,
     })
 

@@ -31,7 +31,7 @@ with Apideck(
         "end_date": "2021-12-31",
         "period_count": 3,
         "period_type": apideck_unify.PeriodType.MONTH,
-    })
+    }, raw=False)
 
     assert res.get_balance_sheet_response is not None
 

@@ -29,7 +29,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.accounting.journal_entries.list(service_id="salesforce", filter_={
+    res = apideck.accounting.journal_entries.list(raw=False, service_id="salesforce", limit=20, filter_={
         "updated_since": dateutil.parser.isoparse("2020-09-30T07:43:32.000Z"),
     }, sort={
         "by": apideck_unify.JournalEntriesSortBy.UPDATED_AT,
@@ -92,7 +92,69 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.accounting.journal_entries.create(service_id="salesforce", title="Purchase Invoice-Inventory (USD): 2019/02/01 Batch Summary Entry", currency_rate=0.69, currency=apideck_unify.Currency.USD, company_id="12345", line_items=[
+    res = apideck.accounting.journal_entries.create(raw=False, service_id="salesforce", title="Purchase Invoice-Inventory (USD): 2019/02/01 Batch Summary Entry", currency_rate=0.69, currency=apideck_unify.Currency.USD, company_id="12345", line_items=[
+        {
+            "type": apideck_unify.JournalEntryLineItemType.DEBIT,
+            "ledger_account": {
+                "id": "123456",
+                "nominal_code": "N091",
+                "code": "453",
+            },
+            "description": "Model Y is a fully electric, mid-size SUV, with seating for up to seven, dual motor AWD and unparalleled protection.",
+            "tax_amount": 27500,
+            "sub_total": 27500,
+            "total_amount": 27500,
+            "tax_rate": {
+                "id": "123456",
+                "rate": 10,
+            },
+            "tracking_categories": [
+                {
+                    "id": "123456",
+                    "name": "New York",
+                },
+                {
+                    "id": "123456",
+                    "name": "New York",
+                },
+            ],
+            "customer": {
+                "id": "12345",
+                "display_name": "Windsurf Shop",
+                "email": "boring@boring.com",
+            },
+            "supplier": {
+                "id": "12345",
+                "display_name": "Windsurf Shop",
+                "address": {
+                    "id": "123",
+                    "type": apideck_unify.Type.PRIMARY,
+                    "string": "25 Spring Street, Blackburn, VIC 3130",
+                    "name": "HQ US",
+                    "line1": "Main street",
+                    "line2": "apt #",
+                    "line3": "Suite #",
+                    "line4": "delivery instructions",
+                    "street_number": "25",
+                    "city": "San Francisco",
+                    "state": "CA",
+                    "postal_code": "94104",
+                    "country": "US",
+                    "latitude": "40.759211",
+                    "longitude": "-73.984638",
+                    "county": "Santa Clara",
+                    "contact_name": "Elon Musk",
+                    "salutation": "Mr",
+                    "phone_number": "111-111-1111",
+                    "fax": "122-111-1111",
+                    "email": "elon@musk.com",
+                    "website": "https://elonmusk.com",
+                    "notes": "Address notes or delivery instructions.",
+                    "row_version": "1-12345",
+                },
+            },
+            "line_number": 1,
+        },
         {
             "type": apideck_unify.JournalEntryLineItemType.DEBIT,
             "ledger_account": {
@@ -165,10 +227,26 @@ with Apideck(
             "id": "2389328923893298",
             "name": "employee_level",
             "description": "Employee Level",
-            "value": True,
+            "value": [
+                "<value>",
+                "<value>",
+                "<value>",
+            ],
         },
     ], pass_through=[
-
+        {
+            "service_id": "<id>",
+            "extend_paths": [
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
+            ],
+        },
     ])
 
     assert res.create_journal_entry_response is not None
@@ -233,7 +311,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.accounting.journal_entries.get(id="<id>", service_id="salesforce", fields="id,updated_at")
+    res = apideck.accounting.journal_entries.get(id="<id>", service_id="salesforce", raw=False, fields="id,updated_at")
 
     assert res.get_journal_entry_response is not None
 
@@ -285,7 +363,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.accounting.journal_entries.update(id="<id>", service_id="salesforce", title="Purchase Invoice-Inventory (USD): 2019/02/01 Batch Summary Entry", currency_rate=0.69, currency=apideck_unify.Currency.USD, company_id="12345", line_items=[
+    res = apideck.accounting.journal_entries.update(id="<id>", service_id="salesforce", raw=False, title="Purchase Invoice-Inventory (USD): 2019/02/01 Batch Summary Entry", currency_rate=0.69, currency=apideck_unify.Currency.USD, company_id="12345", line_items=[
         {
             "type": apideck_unify.JournalEntryLineItemType.DEBIT,
             "ledger_account": {
@@ -364,6 +442,10 @@ with Apideck(
                 "rate": 10,
             },
             "tracking_categories": [
+                {
+                    "id": "123456",
+                    "name": "New York",
+                },
                 {
                     "id": "123456",
                     "name": "New York",
@@ -486,6 +568,12 @@ with Apideck(
             "id": "2389328923893298",
             "name": "employee_level",
             "description": "Employee Level",
+            "value": {},
+        },
+        {
+            "id": "2389328923893298",
+            "name": "employee_level",
+            "description": "Employee Level",
             "value": [
                 {},
             ],
@@ -494,22 +582,6 @@ with Apideck(
         {
             "service_id": "<id>",
             "extend_paths": [
-                {
-                    "path": "$.nested.property",
-                    "value": {
-                        "TaxClassificationRef": {
-                            "value": "EUC-99990201-V1-00020000",
-                        },
-                    },
-                },
-                {
-                    "path": "$.nested.property",
-                    "value": {
-                        "TaxClassificationRef": {
-                            "value": "EUC-99990201-V1-00020000",
-                        },
-                    },
-                },
                 {
                     "path": "$.nested.property",
                     "value": {
@@ -585,7 +657,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.accounting.journal_entries.delete(id="<id>", service_id="salesforce")
+    res = apideck.accounting.journal_entries.delete(id="<id>", service_id="salesforce", raw=False)
 
     assert res.delete_journal_entry_response is not None
 

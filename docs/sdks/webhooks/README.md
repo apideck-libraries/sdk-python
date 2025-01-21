@@ -27,7 +27,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.webhook.webhooks.list()
+    res = apideck.webhook.webhooks.list(limit=20)
 
     while res is not None:
         # Handle items

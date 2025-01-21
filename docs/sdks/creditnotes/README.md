@@ -29,7 +29,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.accounting.credit_notes.list(service_id="salesforce", filter_={
+    res = apideck.accounting.credit_notes.list(raw=False, service_id="salesforce", limit=20, filter_={
         "updated_since": dateutil.parser.isoparse("2020-09-30T07:43:32.000Z"),
     }, sort={
         "by": apideck_unify.CreditNotesSortBy.UPDATED_AT,
@@ -92,7 +92,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.accounting.credit_notes.create(total_amount=49.99, service_id="salesforce", number="OIT00546", customer={
+    res = apideck.accounting.credit_notes.create(total_amount=49.99, raw=False, service_id="salesforce", number="OIT00546", customer={
         "id": "12345",
         "display_name": "Windsurf Shop",
         "email": "boring@boring.com",
@@ -148,11 +148,97 @@ with Apideck(
                     "description": "Employee Level",
                     "value": "Uses Salesforce and Marketo",
                 },
+                {
+                    "id": "2389328923893298",
+                    "name": "employee_level",
+                    "description": "Employee Level",
+                    "value": "Uses Salesforce and Marketo",
+                },
+            ],
+            "row_version": "1-12345",
+        },
+        {
+            "id": "12345",
+            "row_id": "12345",
+            "code": "120-C",
+            "line_number": 1,
+            "description": "Model Y is a fully electric, mid-size SUV, with seating for up to seven, dual motor AWD and unparalleled protection.",
+            "type": apideck_unify.InvoiceLineItemType.SALES_ITEM,
+            "tax_amount": 27500,
+            "total_amount": 27500,
+            "quantity": 1,
+            "unit_price": 27500.5,
+            "unit_of_measure": "pc.",
+            "discount_percentage": 0.01,
+            "discount_amount": 19.99,
+            "location_id": "1234",
+            "department_id": "1234",
+            "item": {
+                "id": "12344",
+                "code": "120-C",
+                "name": "Model Y",
+            },
+            "tax_rate": {
+                "id": "123456",
+                "rate": 10,
+            },
+            "tracking_categories": [
+                {
+                    "id": "123456",
+                    "name": "New York",
+                },
+                {
+                    "id": "123456",
+                    "name": "New York",
+                },
+                {
+                    "id": "123456",
+                    "name": "New York",
+                },
+            ],
+            "ledger_account": {
+                "id": "123456",
+                "nominal_code": "N091",
+                "code": "453",
+            },
+            "custom_fields": [
+                {
+                    "id": "2389328923893298",
+                    "name": "employee_level",
+                    "description": "Employee Level",
+                    "value": "Uses Salesforce and Marketo",
+                },
+                {
+                    "id": "2389328923893298",
+                    "name": "employee_level",
+                    "description": "Employee Level",
+                    "value": 10,
+                },
+                {
+                    "id": "2389328923893298",
+                    "name": "employee_level",
+                    "description": "Employee Level",
+                    "value": "Uses Salesforce and Marketo",
+                },
             ],
             "row_version": "1-12345",
         },
     ], allocations=[
-
+        {
+            "id": "123456",
+            "amount": 49.99,
+            "allocation_id": "123456",
+        },
+        {
+            "id": "123456",
+            "amount": 49.99,
+            "allocation_id": "123456",
+        },
+        {
+            "id": "123456",
+            "amount": 49.99,
+            "allocation_id": "123456",
+        },
     ], note="Some notes about this credit note", terms="Some terms about this credit note", billing_address={
         "id": "123",
         "type": apideck_unify.Type.PRIMARY,
@@ -221,90 +307,22 @@ with Apideck(
             "id": "2389328923893298",
             "name": "employee_level",
             "description": "Employee Level",
-            "value": "Uses Salesforce and Marketo",
+            "value": [
+                "<value>",
+                "<value>",
+                "<value>",
+            ],
         },
         {
             "id": "2389328923893298",
             "name": "employee_level",
             "description": "Employee Level",
-            "value": 10,
-        },
-        {
-            "id": "2389328923893298",
-            "name": "employee_level",
-            "description": "Employee Level",
-            "value": "Uses Salesforce and Marketo",
+            "value": True,
         },
     ], row_version="1-12345", pass_through=[
         {
             "service_id": "<id>",
             "extend_paths": [
-                {
-                    "path": "$.nested.property",
-                    "value": {
-                        "TaxClassificationRef": {
-                            "value": "EUC-99990201-V1-00020000",
-                        },
-                    },
-                },
-                {
-                    "path": "$.nested.property",
-                    "value": {
-                        "TaxClassificationRef": {
-                            "value": "EUC-99990201-V1-00020000",
-                        },
-                    },
-                },
-                {
-                    "path": "$.nested.property",
-                    "value": {
-                        "TaxClassificationRef": {
-                            "value": "EUC-99990201-V1-00020000",
-                        },
-                    },
-                },
-            ],
-        },
-        {
-            "service_id": "<id>",
-            "extend_paths": [
-                {
-                    "path": "$.nested.property",
-                    "value": {
-                        "TaxClassificationRef": {
-                            "value": "EUC-99990201-V1-00020000",
-                        },
-                    },
-                },
-                {
-                    "path": "$.nested.property",
-                    "value": {
-                        "TaxClassificationRef": {
-                            "value": "EUC-99990201-V1-00020000",
-                        },
-                    },
-                },
-            ],
-        },
-        {
-            "service_id": "<id>",
-            "extend_paths": [
-                {
-                    "path": "$.nested.property",
-                    "value": {
-                        "TaxClassificationRef": {
-                            "value": "EUC-99990201-V1-00020000",
-                        },
-                    },
-                },
-                {
-                    "path": "$.nested.property",
-                    "value": {
-                        "TaxClassificationRef": {
-                            "value": "EUC-99990201-V1-00020000",
-                        },
-                    },
-                },
                 {
                     "path": "$.nested.property",
                     "value": {
@@ -391,7 +409,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.accounting.credit_notes.get(id="<id>", service_id="salesforce", fields="id,updated_at")
+    res = apideck.accounting.credit_notes.get(id="<id>", service_id="salesforce", raw=False, fields="id,updated_at")
 
     assert res.get_credit_note_response is not None
 
@@ -443,7 +461,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.accounting.credit_notes.update(id="<id>", total_amount=49.99, service_id="salesforce", number="OIT00546", customer={
+    res = apideck.accounting.credit_notes.update(id="<id>", total_amount=49.99, service_id="salesforce", raw=False, number="OIT00546", customer={
         "id": "12345",
         "display_name": "Windsurf Shop",
         "email": "boring@boring.com",
@@ -497,6 +515,72 @@ with Apideck(
                     "id": "2389328923893298",
                     "name": "employee_level",
                     "description": "Employee Level",
+                    "value": [
+                        {},
+                        {},
+                    ],
+                },
+                {
+                    "id": "2389328923893298",
+                    "name": "employee_level",
+                    "description": "Employee Level",
+                    "value": True,
+                },
+            ],
+            "row_version": "1-12345",
+        },
+        {
+            "id": "12345",
+            "row_id": "12345",
+            "code": "120-C",
+            "line_number": 1,
+            "description": "Model Y is a fully electric, mid-size SUV, with seating for up to seven, dual motor AWD and unparalleled protection.",
+            "type": apideck_unify.InvoiceLineItemType.SALES_ITEM,
+            "tax_amount": 27500,
+            "total_amount": 27500,
+            "quantity": 1,
+            "unit_price": 27500.5,
+            "unit_of_measure": "pc.",
+            "discount_percentage": 0.01,
+            "discount_amount": 19.99,
+            "location_id": "1234",
+            "department_id": "1234",
+            "item": {
+                "id": "12344",
+                "code": "120-C",
+                "name": "Model Y",
+            },
+            "tax_rate": {
+                "id": "123456",
+                "rate": 10,
+            },
+            "tracking_categories": [
+                {
+                    "id": "123456",
+                    "name": "New York",
+                },
+                {
+                    "id": "123456",
+                    "name": "New York",
+                },
+                {
+                    "id": "123456",
+                    "name": "New York",
+                },
+            ],
+            "ledger_account": {
+                "id": "123456",
+                "nominal_code": "N091",
+                "code": "453",
+            },
+            "custom_fields": [
+                {
+                    "id": "2389328923893298",
+                    "name": "employee_level",
+                    "description": "Employee Level",
+                    "value": [
+                        {},
+                    ],
                 },
             ],
             "row_version": "1-12345",
@@ -544,55 +628,6 @@ with Apideck(
                     "description": "Employee Level",
                     "value": "Uses Salesforce and Marketo",
                 },
-                {
-                    "id": "2389328923893298",
-                    "name": "employee_level",
-                    "description": "Employee Level",
-                },
-                {
-                    "id": "2389328923893298",
-                    "name": "employee_level",
-                    "description": "Employee Level",
-                    "value": 10,
-                },
-            ],
-            "row_version": "1-12345",
-        },
-        {
-            "id": "12345",
-            "row_id": "12345",
-            "code": "120-C",
-            "line_number": 1,
-            "description": "Model Y is a fully electric, mid-size SUV, with seating for up to seven, dual motor AWD and unparalleled protection.",
-            "type": apideck_unify.InvoiceLineItemType.SALES_ITEM,
-            "tax_amount": 27500,
-            "total_amount": 27500,
-            "quantity": 1,
-            "unit_price": 27500.5,
-            "unit_of_measure": "pc.",
-            "discount_percentage": 0.01,
-            "discount_amount": 19.99,
-            "location_id": "1234",
-            "department_id": "1234",
-            "item": {
-                "id": "12344",
-                "code": "120-C",
-                "name": "Model Y",
-            },
-            "tax_rate": {
-                "id": "123456",
-                "rate": 10,
-            },
-            "tracking_categories": [
-
-            ],
-            "ledger_account": {
-                "id": "123456",
-                "nominal_code": "N091",
-                "code": "453",
-            },
-            "custom_fields": [
-
             ],
             "row_version": "1-12345",
         },
@@ -702,11 +737,6 @@ with Apideck(
                         },
                     },
                 },
-            ],
-        },
-        {
-            "service_id": "<id>",
-            "extend_paths": [
                 {
                     "path": "$.nested.property",
                     "value": {
@@ -720,7 +750,35 @@ with Apideck(
         {
             "service_id": "<id>",
             "extend_paths": [
-
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
+            ],
+        },
+        {
+            "service_id": "<id>",
+            "extend_paths": [
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
             ],
         },
     ])
@@ -800,7 +858,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.accounting.credit_notes.delete(id="<id>", service_id="salesforce")
+    res = apideck.accounting.credit_notes.delete(id="<id>", service_id="salesforce", raw=False)
 
     assert res.delete_credit_note_response is not None
 

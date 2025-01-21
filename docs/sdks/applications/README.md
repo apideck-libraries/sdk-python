@@ -27,9 +27,9 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.ats.applications.list(service_id="salesforce", pass_through={
+    res = apideck.ats.applications.list(raw=False, service_id="salesforce", pass_through={
         "search": "San Francisco",
-    })
+    }, limit=20)
 
     while res is not None:
         # Handle items
@@ -81,10 +81,31 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.ats.applications.create(applicant_id="12345", job_id="12345", service_id="salesforce", status=apideck_unify.ApplicationStatus.OPEN, stage={
+    res = apideck.ats.applications.create(applicant_id="12345", job_id="12345", raw=False, service_id="salesforce", status=apideck_unify.ApplicationStatus.OPEN, stage={
         "id": "12345",
         "name": "12345",
     }, pass_through=[
+        {
+            "service_id": "<id>",
+            "extend_paths": [
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
+            ],
+        },
         {
             "service_id": "<id>",
             "extend_paths": [
@@ -159,7 +180,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.ats.applications.get(id="<id>", service_id="salesforce")
+    res = apideck.ats.applications.get(id="<id>", service_id="salesforce", raw=False)
 
     assert res.get_application_response is not None
 
@@ -209,7 +230,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.ats.applications.update(id="<id>", applicant_id="12345", job_id="12345", service_id="salesforce", status=apideck_unify.ApplicationStatus.OPEN, stage={
+    res = apideck.ats.applications.update(id="<id>", applicant_id="12345", job_id="12345", service_id="salesforce", raw=False, status=apideck_unify.ApplicationStatus.OPEN, stage={
         "id": "12345",
         "name": "12345",
     }, pass_through=[
@@ -237,6 +258,14 @@ with Apideck(
         {
             "service_id": "<id>",
             "extend_paths": [
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
                 {
                     "path": "$.nested.property",
                     "value": {
@@ -330,7 +359,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.ats.applications.delete(id="<id>", service_id="salesforce")
+    res = apideck.ats.applications.delete(id="<id>", service_id="salesforce", raw=False)
 
     assert res.delete_application_response is not None
 
