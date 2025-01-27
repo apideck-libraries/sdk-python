@@ -7,6 +7,7 @@ from .getinvoiceitemsresponse import (
 )
 from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .invoiceitemsfilter import InvoiceItemsFilter, InvoiceItemsFilterTypedDict
+from .invoiceitemssort import InvoiceItemsSort, InvoiceItemsSortTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -63,6 +64,8 @@ class AccountingInvoiceItemsAllRequestTypedDict(TypedDict):
     r"""Number of results to return. Minimum 1, Maximum 200, Default 20"""
     filter_: NotRequired[InvoiceItemsFilterTypedDict]
     r"""Apply filters"""
+    sort: NotRequired[InvoiceItemsSortTypedDict]
+    r"""Apply sorting"""
     pass_through: NotRequired[Dict[str, Any]]
     r"""Optional unmapped key/values that will be passed through to downstream as query parameters. Ie: ?pass_through[search]=leads becomes ?search=leads"""
     fields: NotRequired[Nullable[str]]
@@ -116,6 +119,12 @@ class AccountingInvoiceItemsAllRequest(BaseModel):
     ] = None
     r"""Apply filters"""
 
+    sort: Annotated[
+        Optional[InvoiceItemsSort],
+        FieldMetadata(query=QueryParamMetadata(style="deepObject", explode=True)),
+    ] = None
+    r"""Apply sorting"""
+
     pass_through: Annotated[
         Optional[Dict[str, Any]],
         FieldMetadata(query=QueryParamMetadata(style="deepObject", explode=True)),
@@ -138,6 +147,7 @@ class AccountingInvoiceItemsAllRequest(BaseModel):
             "cursor",
             "limit",
             "filter",
+            "sort",
             "pass_through",
             "fields",
         ]

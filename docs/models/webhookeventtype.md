@@ -110,3 +110,12 @@
 | `ACCOUNTING_EXPENSE_CREATED`            | accounting.expense.created              |
 | `ACCOUNTING_EXPENSE_UPDATED`            | accounting.expense.updated              |
 | `ACCOUNTING_EXPENSE_DELETED`            | accounting.expense.deleted              |
+| `ECOMMERCE_ORDER_CREATED`               | ecommerce.order.created                 |
+| `ECOMMERCE_ORDER_UPDATED`               | ecommerce.order.updated                 |
+| `ECOMMERCE_ORDER_DELETED`               | ecommerce.order.deleted                 |
+| `ECOMMERCE_PRODUCT_CREATED`             | ecommerce.product.created               |
+| `ECOMMERCE_PRODUCT_UPDATED`             | ecommerce.product.updated               |
+| `ECOMMERCE_PRODUCT_DELETED`             | ecommerce.product.deleted               |
+| `ECOMMERCE_CUSTOMER_CREATED`            | ecommerce.customer.created              |
+| `ECOMMERCE_CUSTOMER_UPDATED`            | ecommerce.customer.updated              |
+| `ECOMMERCE_CUSTOMER_DELETED`            | ecommerce.customer.deleted              |

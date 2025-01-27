@@ -2707,6 +2707,11 @@ from .invoiceitemsfilter import (
     InvoiceItemsFilter,
     InvoiceItemsFilterTypedDict,
 )
+from .invoiceitemssort import (
+    InvoiceItemsSort,
+    InvoiceItemsSortBy,
+    InvoiceItemsSortTypedDict,
+)
 from .invoicelineitem import (
     InvoiceLineItem,
     InvoiceLineItemInput,
@@ -5726,6 +5731,9 @@ __all__ = [
     "InvoiceItemTypedDict",
     "InvoiceItemsFilter",
     "InvoiceItemsFilterTypedDict",
+    "InvoiceItemsSort",
+    "InvoiceItemsSortBy",
+    "InvoiceItemsSortTypedDict",
     "InvoiceLineItem",
     "InvoiceLineItemInput",
     "InvoiceLineItemInputTypedDict",

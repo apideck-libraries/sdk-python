@@ -21,10 +21,10 @@ from typing_extensions import NotRequired, TypedDict
 class OpportunityTypedDict(TypedDict):
     title: str
     r"""The title or name of the opportunity."""
-    primary_contact_id: Nullable[str]
-    r"""The unique identifier of the primary contact associated with the opportunity."""
     id: NotRequired[str]
     r"""A unique identifier for the opportunity."""
+    primary_contact_id: NotRequired[Nullable[str]]
+    r"""The unique identifier of the primary contact associated with the opportunity."""
     description: NotRequired[Nullable[str]]
     r"""A description of the opportunity."""
     type: NotRequired[Nullable[str]]
@@ -107,11 +107,11 @@ class Opportunity(BaseModel):
     title: str
     r"""The title or name of the opportunity."""
 
-    primary_contact_id: Nullable[str]
-    r"""The unique identifier of the primary contact associated with the opportunity."""
-
     id: Optional[str] = None
     r"""A unique identifier for the opportunity."""
+
+    primary_contact_id: OptionalNullable[str] = UNSET
+    r"""The unique identifier of the primary contact associated with the opportunity."""
 
     description: OptionalNullable[str] = UNSET
     r"""A description of the opportunity."""
@@ -232,6 +232,7 @@ class Opportunity(BaseModel):
     def serialize_model(self, handler):
         optional_fields = [
             "id",
+            "primary_contact_id",
             "description",
             "type",
             "monetary_amount",
