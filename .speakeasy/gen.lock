@@ -1,12 +1,12 @@
 lockVersion: 2.0.0
 id: fca0ac3a-5f4e-452c-bbc7-2311afa8da40
 management:
-  docChecksum: e48a35a03464d13fe7097cbee9013a9a
-  docVersion: 10.10.0
-  speakeasyVersion: 1.469.12
-  generationVersion: 2.493.34
-  releaseVersion: 0.5.0
-  configChecksum: 69751c5b1bce0ec648491e77fadaafbd
+  docChecksum: 6a0f18f0de50b45403acc2fd81738096
+  docVersion: 10.11.0
+  speakeasyVersion: 1.476.2
+  generationVersion: 2.495.1
+  releaseVersion: 0.6.0
+  configChecksum: 41d97ecd7457dca88d0bedbbecb9f002
   repoURL: https://github.com/apideck-libraries/sdk-python.git
   installationURL: https://github.com/apideck-libraries/sdk-python.git
   published: true
@@ -15,7 +15,7 @@ features:
     acceptHeaders: 3.0.0
     additionalDependencies: 1.0.0
     constsAndDefaults: 1.0.5
-    core: 5.10.4
+    core: 5.10.5
     deepObjectParams: 0.1.0
     defaultEnabledRetries: 0.2.0
     deprecations: 3.0.2
@@ -1154,6 +1154,8 @@ generatedFiles:
   - docs/models/invoiceitempurchasedetails.md
   - docs/models/invoiceitemsalesdetails.md
   - docs/models/invoiceitemsfilter.md
+  - docs/models/invoiceitemssort.md
+  - docs/models/invoiceitemssortby.md
   - docs/models/invoiceitemtype.md
   - docs/models/invoiceitemtypetype.md
   - docs/models/invoicelineitem.md
@@ -2292,6 +2294,7 @@ generatedFiles:
   - src/apideck_unify/models/invoiceitem.py
   - src/apideck_unify/models/invoiceitemfilter.py
   - src/apideck_unify/models/invoiceitemsfilter.py
+  - src/apideck_unify/models/invoiceitemssort.py
   - src/apideck_unify/models/invoicelineitem.py
   - src/apideck_unify/models/invoiceresponse.py
   - src/apideck_unify/models/invoicesfilter.py
@@ -3101,6 +3104,7 @@ examples:
           filter: {"name": "Widgets Large", "type": "service"}
           pass_through: {"search": "San Francisco"}
           fields: "id,updated_at"
+          sort: {"by": "updated_at", "direction": "desc"}
         header:
           x-apideck-consumer-id: "test-consumer"
           x-apideck-app-id: "dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX"

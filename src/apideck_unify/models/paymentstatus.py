@@ -7,7 +7,9 @@ from enum import Enum
 class PaymentStatus(str, Enum):
     r"""Status of payment"""
 
+    DRAFT = "draft"
     AUTHORISED = "authorised"
+    REJECTED = "rejected"
     PAID = "paid"
     VOIDED = "voided"
     DELETED = "deleted"

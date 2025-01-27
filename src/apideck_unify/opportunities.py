@@ -3,7 +3,7 @@
 from .basesdk import BaseSDK
 from apideck_unify import models, utils
 from apideck_unify._hooks import HookContext
-from apideck_unify.types import Nullable, OptionalNullable, UNSET
+from apideck_unify.types import OptionalNullable, UNSET
 from apideck_unify.utils import get_security_from_env
 from datetime import date, datetime
 from jsonpath import JSONPath
@@ -385,11 +385,11 @@ class Opportunities(BaseSDK):
         self,
         *,
         title: str,
-        primary_contact_id: Nullable[str],
         raw: Optional[bool] = False,
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
+        primary_contact_id: OptionalNullable[str] = UNSET,
         description: OptionalNullable[str] = UNSET,
         type_: OptionalNullable[str] = UNSET,
         monetary_amount: OptionalNullable[float] = UNSET,
@@ -431,11 +431,11 @@ class Opportunities(BaseSDK):
         Create opportunity
 
         :param title: The title or name of the opportunity.
-        :param primary_contact_id: The unique identifier of the primary contact associated with the opportunity.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param primary_contact_id: The unique identifier of the primary contact associated with the opportunity.
         :param description: A description of the opportunity.
         :param type: The type of the opportunity
         :param monetary_amount: The monetary value associated with the opportunity
@@ -622,11 +622,11 @@ class Opportunities(BaseSDK):
         self,
         *,
         title: str,
-        primary_contact_id: Nullable[str],
         raw: Optional[bool] = False,
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
+        primary_contact_id: OptionalNullable[str] = UNSET,
         description: OptionalNullable[str] = UNSET,
         type_: OptionalNullable[str] = UNSET,
         monetary_amount: OptionalNullable[float] = UNSET,
@@ -668,11 +668,11 @@ class Opportunities(BaseSDK):
         Create opportunity
 
         :param title: The title or name of the opportunity.
-        :param primary_contact_id: The unique identifier of the primary contact associated with the opportunity.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param primary_contact_id: The unique identifier of the primary contact associated with the opportunity.
         :param description: A description of the opportunity.
         :param type: The type of the opportunity
         :param monetary_amount: The monetary value associated with the opportunity
@@ -1146,11 +1146,11 @@ class Opportunities(BaseSDK):
         *,
         id: str,
         title: str,
-        primary_contact_id: Nullable[str],
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
+        primary_contact_id: OptionalNullable[str] = UNSET,
         description: OptionalNullable[str] = UNSET,
         type_: OptionalNullable[str] = UNSET,
         monetary_amount: OptionalNullable[float] = UNSET,
@@ -1193,11 +1193,11 @@ class Opportunities(BaseSDK):
 
         :param id: ID of the record you are acting upon.
         :param title: The title or name of the opportunity.
-        :param primary_contact_id: The unique identifier of the primary contact associated with the opportunity.
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param primary_contact_id: The unique identifier of the primary contact associated with the opportunity.
         :param description: A description of the opportunity.
         :param type: The type of the opportunity
         :param monetary_amount: The monetary value associated with the opportunity
@@ -1386,11 +1386,11 @@ class Opportunities(BaseSDK):
         *,
         id: str,
         title: str,
-        primary_contact_id: Nullable[str],
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
+        primary_contact_id: OptionalNullable[str] = UNSET,
         description: OptionalNullable[str] = UNSET,
         type_: OptionalNullable[str] = UNSET,
         monetary_amount: OptionalNullable[float] = UNSET,
@@ -1433,11 +1433,11 @@ class Opportunities(BaseSDK):
 
         :param id: ID of the record you are acting upon.
         :param title: The title or name of the opportunity.
-        :param primary_contact_id: The unique identifier of the primary contact associated with the opportunity.
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param primary_contact_id: The unique identifier of the primary contact associated with the opportunity.
         :param description: A description of the opportunity.
         :param type: The type of the opportunity
         :param monetary_amount: The monetary value associated with the opportunity
