@@ -30,13 +30,12 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.file_storage.files.list(raw=False, consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", limit=20, filter_={
+    res = apideck.file_storage.files.list(consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", filter_={
         "drive_id": "1234",
         "folder_id": "root",
         "shared": True,
     }, sort={
         "by": apideck_unify.FilesSortBy.UPDATED_AT,
-        "direction": apideck_unify.SortDirection.DESC,
     }, pass_through={
         "search": "San Francisco",
     }, fields="id,updated_at")
@@ -97,7 +96,7 @@ with Apideck(
 
     res = apideck.file_storage.files.search(query="logo jpg", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", pass_through_param={
         "search": "San Francisco",
-    }, fields="id,updated_at", limit=20, filter_={
+    }, fields="id,updated_at", filter_={
         "drive_id": "1234",
         "folder_id": "root",
         "shared": True,
@@ -172,7 +171,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.file_storage.files.get(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", raw=False, fields="id,updated_at")
+    res = apideck.file_storage.files.get(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", fields="id,updated_at")
 
     assert res.get_file_response is not None
 
@@ -224,7 +223,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.file_storage.files.update(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", raw=False, name="New Name.pdf", description="Renamed PDF Document", parent_folder_id="1234", pass_through=[
+    res = apideck.file_storage.files.update(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", name="New Name.pdf", description="Renamed PDF Document", parent_folder_id="1234", pass_through=[
         {
             "service_id": "<id>",
             "extend_paths": [
@@ -351,7 +350,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.file_storage.files.delete(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", raw=False)
+    res = apideck.file_storage.files.delete(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce")
 
     assert res.delete_file_response is not None
 

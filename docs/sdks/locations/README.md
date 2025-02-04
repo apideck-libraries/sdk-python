@@ -27,7 +27,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.accounting.locations.list(raw=False, consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", limit=20, fields="id,updated_at", filter_={
+    res = apideck.accounting.locations.list(consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", fields="id,updated_at", filter_={
         "subsidiary": "1",
     })
 
@@ -84,7 +84,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.accounting.locations.create(raw=False, consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", parent_id="12345", company_name="SpaceX", display_name="11 UT - South Jordan", status=apideck_unify.LocationStatus.ACTIVE, addresses=[
+    res = apideck.accounting.locations.create(consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", parent_id="12345", company_name="SpaceX", display_name="11 UT - South Jordan", status=apideck_unify.LocationStatus.ACTIVE, addresses=[
         {
             "id": "123",
             "type": apideck_unify.Type.PRIMARY,
@@ -229,7 +229,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.accounting.locations.get(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", raw=False, fields="id,updated_at")
+    res = apideck.accounting.locations.get(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", fields="id,updated_at")
 
     assert res.get_accounting_location_response is not None
 
@@ -282,7 +282,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.accounting.locations.update(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", raw=False, parent_id="12345", company_name="SpaceX", display_name="11 UT - South Jordan", status=apideck_unify.LocationStatus.ACTIVE, addresses=[
+    res = apideck.accounting.locations.update(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", parent_id="12345", company_name="SpaceX", display_name="11 UT - South Jordan", status=apideck_unify.LocationStatus.ACTIVE, addresses=[
         {
             "id": "123",
             "type": apideck_unify.Type.PRIMARY,
@@ -478,7 +478,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.accounting.locations.delete(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", raw=False)
+    res = apideck.accounting.locations.delete(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce")
 
     assert res.delete_accounting_location_response is not None
 

@@ -29,11 +29,10 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.crm.activities.list(raw=False, consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", limit=20, filter_={
+    res = apideck.crm.activities.list(consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", filter_={
         "updated_since": dateutil.parser.isoparse("2020-09-30T07:43:32.000Z"),
     }, sort={
         "by": apideck_unify.ActivitiesSortBy.CREATED_AT,
-        "direction": apideck_unify.SortDirection.DESC,
     }, pass_through={
         "search": "San Francisco",
     }, fields="id,updated_at")
@@ -93,7 +92,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.crm.activities.create(type_=apideck_unify.ActivityType.MEETING, raw=False, consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", activity_datetime="2021-05-01T12:00:00.000Z", duration_seconds=1800, user_id="12345", account_id="12345", contact_id="12345", company_id="12345", opportunity_id="12345", lead_id="12345", owner_id="12345", campaign_id="12345", case_id="12345", asset_id="12345", contract_id="12345", product_id="12345", solution_id="12345", custom_object_id="12345", title="Meeting", description="More info about the meeting", note="An internal note about the meeting", location="Space", location_address={
+    res = apideck.crm.activities.create(type_=apideck_unify.ActivityType.MEETING, consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", activity_datetime="2021-05-01T12:00:00.000Z", duration_seconds=1800, user_id="12345", account_id="12345", contact_id="12345", company_id="12345", opportunity_id="12345", lead_id="12345", owner_id="12345", campaign_id="12345", case_id="12345", asset_id="12345", contract_id="12345", product_id="12345", solution_id="12345", custom_object_id="12345", title="Meeting", description="More info about the meeting", note="An internal note about the meeting", location="Space", location_address={
         "id": "123",
         "type": apideck_unify.Type.PRIMARY,
         "string": "25 Spring Street, Blackburn, VIC 3130",
@@ -267,7 +266,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.crm.activities.get(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", raw=False, fields="id,updated_at")
+    res = apideck.crm.activities.get(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", fields="id,updated_at")
 
     assert res.get_activity_response is not None
 
@@ -320,7 +319,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.crm.activities.update(id="<id>", type_=apideck_unify.ActivityType.MEETING, consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", raw=False, activity_datetime="2021-05-01T12:00:00.000Z", duration_seconds=1800, user_id="12345", account_id="12345", contact_id="12345", company_id="12345", opportunity_id="12345", lead_id="12345", owner_id="12345", campaign_id="12345", case_id="12345", asset_id="12345", contract_id="12345", product_id="12345", solution_id="12345", custom_object_id="12345", title="Meeting", description="More info about the meeting", note="An internal note about the meeting", location="Space", location_address={
+    res = apideck.crm.activities.update(id="<id>", type_=apideck_unify.ActivityType.MEETING, consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", activity_datetime="2021-05-01T12:00:00.000Z", duration_seconds=1800, user_id="12345", account_id="12345", contact_id="12345", company_id="12345", opportunity_id="12345", lead_id="12345", owner_id="12345", campaign_id="12345", case_id="12345", asset_id="12345", contract_id="12345", product_id="12345", solution_id="12345", custom_object_id="12345", title="Meeting", description="More info about the meeting", note="An internal note about the meeting", location="Space", location_address={
         "id": "123",
         "type": apideck_unify.Type.PRIMARY,
         "string": "25 Spring Street, Blackburn, VIC 3130",
@@ -549,7 +548,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.crm.activities.delete(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", raw=False)
+    res = apideck.crm.activities.delete(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce")
 
     assert res.delete_activity_response is not None
 

@@ -138,7 +138,7 @@ class PurchaseOrders(BaseSDK):
                 retries=retries,
             )
 
-        data: Any = None
+        response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingPurchaseOrdersAllResponse(
                 get_purchase_orders_response=utils.unmarshal_json(
@@ -148,22 +148,30 @@ class PurchaseOrders(BaseSDK):
                 next=next_func,
             )
         if utils.match_response(http_res, "400", "application/json"):
-            data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
-            raise models.BadRequestResponse(data=data)
+            response_data = utils.unmarshal_json(
+                http_res.text, models.BadRequestResponseData
+            )
+            raise models.BadRequestResponse(data=response_data)
         if utils.match_response(http_res, "401", "application/json"):
-            data = utils.unmarshal_json(http_res.text, models.UnauthorizedResponseData)
-            raise models.UnauthorizedResponse(data=data)
+            response_data = utils.unmarshal_json(
+                http_res.text, models.UnauthorizedResponseData
+            )
+            raise models.UnauthorizedResponse(data=response_data)
         if utils.match_response(http_res, "402", "application/json"):
-            data = utils.unmarshal_json(
+            response_data = utils.unmarshal_json(
                 http_res.text, models.PaymentRequiredResponseData
             )
-            raise models.PaymentRequiredResponse(data=data)
+            raise models.PaymentRequiredResponse(data=response_data)
         if utils.match_response(http_res, "404", "application/json"):
-            data = utils.unmarshal_json(http_res.text, models.NotFoundResponseData)
-            raise models.NotFoundResponse(data=data)
+            response_data = utils.unmarshal_json(
+                http_res.text, models.NotFoundResponseData
+            )
+            raise models.NotFoundResponse(data=response_data)
         if utils.match_response(http_res, "422", "application/json"):
-            data = utils.unmarshal_json(http_res.text, models.UnprocessableResponseData)
-            raise models.UnprocessableResponse(data=data)
+            response_data = utils.unmarshal_json(
+                http_res.text, models.UnprocessableResponseData
+            )
+            raise models.UnprocessableResponse(data=response_data)
         if utils.match_response(http_res, "4XX", "*"):
             http_res_text = utils.stream_to_text(http_res)
             raise models.APIError(
@@ -319,7 +327,7 @@ class PurchaseOrders(BaseSDK):
                 retries=retries,
             )
 
-        data: Any = None
+        response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingPurchaseOrdersAllResponse(
                 get_purchase_orders_response=utils.unmarshal_json(
@@ -329,22 +337,30 @@ class PurchaseOrders(BaseSDK):
                 next=next_func,
             )
         if utils.match_response(http_res, "400", "application/json"):
-            data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
-            raise models.BadRequestResponse(data=data)
+            response_data = utils.unmarshal_json(
+                http_res.text, models.BadRequestResponseData
+            )
+            raise models.BadRequestResponse(data=response_data)
         if utils.match_response(http_res, "401", "application/json"):
-            data = utils.unmarshal_json(http_res.text, models.UnauthorizedResponseData)
-            raise models.UnauthorizedResponse(data=data)
+            response_data = utils.unmarshal_json(
+                http_res.text, models.UnauthorizedResponseData
+            )
+            raise models.UnauthorizedResponse(data=response_data)
         if utils.match_response(http_res, "402", "application/json"):
-            data = utils.unmarshal_json(
+            response_data = utils.unmarshal_json(
                 http_res.text, models.PaymentRequiredResponseData
             )
-            raise models.PaymentRequiredResponse(data=data)
+            raise models.PaymentRequiredResponse(data=response_data)
         if utils.match_response(http_res, "404", "application/json"):
-            data = utils.unmarshal_json(http_res.text, models.NotFoundResponseData)
-            raise models.NotFoundResponse(data=data)
+            response_data = utils.unmarshal_json(
+                http_res.text, models.NotFoundResponseData
+            )
+            raise models.NotFoundResponse(data=response_data)
         if utils.match_response(http_res, "422", "application/json"):
-            data = utils.unmarshal_json(http_res.text, models.UnprocessableResponseData)
-            raise models.UnprocessableResponse(data=data)
+            response_data = utils.unmarshal_json(
+                http_res.text, models.UnprocessableResponseData
+            )
+            raise models.UnprocessableResponse(data=response_data)
         if utils.match_response(http_res, "4XX", "*"):
             http_res_text = await utils.stream_to_text_async(http_res)
             raise models.APIError(
@@ -588,7 +604,7 @@ class PurchaseOrders(BaseSDK):
             retry_config=retry_config,
         )
 
-        data: Any = None
+        response_data: Any = None
         if utils.match_response(http_res, "201", "application/json"):
             return models.AccountingPurchaseOrdersAddResponse(
                 create_purchase_order_response=utils.unmarshal_json(
@@ -597,22 +613,30 @@ class PurchaseOrders(BaseSDK):
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
             )
         if utils.match_response(http_res, "400", "application/json"):
-            data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
-            raise models.BadRequestResponse(data=data)
+            response_data = utils.unmarshal_json(
+                http_res.text, models.BadRequestResponseData
+            )
+            raise models.BadRequestResponse(data=response_data)
         if utils.match_response(http_res, "401", "application/json"):
-            data = utils.unmarshal_json(http_res.text, models.UnauthorizedResponseData)
-            raise models.UnauthorizedResponse(data=data)
+            response_data = utils.unmarshal_json(
+                http_res.text, models.UnauthorizedResponseData
+            )
+            raise models.UnauthorizedResponse(data=response_data)
         if utils.match_response(http_res, "402", "application/json"):
-            data = utils.unmarshal_json(
+            response_data = utils.unmarshal_json(
                 http_res.text, models.PaymentRequiredResponseData
             )
-            raise models.PaymentRequiredResponse(data=data)
+            raise models.PaymentRequiredResponse(data=response_data)
         if utils.match_response(http_res, "404", "application/json"):
-            data = utils.unmarshal_json(http_res.text, models.NotFoundResponseData)
-            raise models.NotFoundResponse(data=data)
+            response_data = utils.unmarshal_json(
+                http_res.text, models.NotFoundResponseData
+            )
+            raise models.NotFoundResponse(data=response_data)
         if utils.match_response(http_res, "422", "application/json"):
-            data = utils.unmarshal_json(http_res.text, models.UnprocessableResponseData)
-            raise models.UnprocessableResponse(data=data)
+            response_data = utils.unmarshal_json(
+                http_res.text, models.UnprocessableResponseData
+            )
+            raise models.UnprocessableResponse(data=response_data)
         if utils.match_response(http_res, "4XX", "*"):
             http_res_text = utils.stream_to_text(http_res)
             raise models.APIError(
@@ -855,7 +879,7 @@ class PurchaseOrders(BaseSDK):
             retry_config=retry_config,
         )
 
-        data: Any = None
+        response_data: Any = None
         if utils.match_response(http_res, "201", "application/json"):
             return models.AccountingPurchaseOrdersAddResponse(
                 create_purchase_order_response=utils.unmarshal_json(
@@ -864,22 +888,30 @@ class PurchaseOrders(BaseSDK):
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
             )
         if utils.match_response(http_res, "400", "application/json"):
-            data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
-            raise models.BadRequestResponse(data=data)
+            response_data = utils.unmarshal_json(
+                http_res.text, models.BadRequestResponseData
+            )
+            raise models.BadRequestResponse(data=response_data)
         if utils.match_response(http_res, "401", "application/json"):
-            data = utils.unmarshal_json(http_res.text, models.UnauthorizedResponseData)
-            raise models.UnauthorizedResponse(data=data)
+            response_data = utils.unmarshal_json(
+                http_res.text, models.UnauthorizedResponseData
+            )
+            raise models.UnauthorizedResponse(data=response_data)
         if utils.match_response(http_res, "402", "application/json"):
-            data = utils.unmarshal_json(
+            response_data = utils.unmarshal_json(
                 http_res.text, models.PaymentRequiredResponseData
             )
-            raise models.PaymentRequiredResponse(data=data)
+            raise models.PaymentRequiredResponse(data=response_data)
         if utils.match_response(http_res, "404", "application/json"):
-            data = utils.unmarshal_json(http_res.text, models.NotFoundResponseData)
-            raise models.NotFoundResponse(data=data)
+            response_data = utils.unmarshal_json(
+                http_res.text, models.NotFoundResponseData
+            )
+            raise models.NotFoundResponse(data=response_data)
         if utils.match_response(http_res, "422", "application/json"):
-            data = utils.unmarshal_json(http_res.text, models.UnprocessableResponseData)
-            raise models.UnprocessableResponse(data=data)
+            response_data = utils.unmarshal_json(
+                http_res.text, models.UnprocessableResponseData
+            )
+            raise models.UnprocessableResponse(data=response_data)
         if utils.match_response(http_res, "4XX", "*"):
             http_res_text = await utils.stream_to_text_async(http_res)
             raise models.APIError(
@@ -995,7 +1027,7 @@ class PurchaseOrders(BaseSDK):
             retry_config=retry_config,
         )
 
-        data: Any = None
+        response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingPurchaseOrdersOneResponse(
                 get_purchase_order_response=utils.unmarshal_json(
@@ -1004,22 +1036,30 @@ class PurchaseOrders(BaseSDK):
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
             )
         if utils.match_response(http_res, "400", "application/json"):
-            data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
-            raise models.BadRequestResponse(data=data)
+            response_data = utils.unmarshal_json(
+                http_res.text, models.BadRequestResponseData
+            )
+            raise models.BadRequestResponse(data=response_data)
         if utils.match_response(http_res, "401", "application/json"):
-            data = utils.unmarshal_json(http_res.text, models.UnauthorizedResponseData)
-            raise models.UnauthorizedResponse(data=data)
+            response_data = utils.unmarshal_json(
+                http_res.text, models.UnauthorizedResponseData
+            )
+            raise models.UnauthorizedResponse(data=response_data)
         if utils.match_response(http_res, "402", "application/json"):
-            data = utils.unmarshal_json(
+            response_data = utils.unmarshal_json(
                 http_res.text, models.PaymentRequiredResponseData
             )
-            raise models.PaymentRequiredResponse(data=data)
+            raise models.PaymentRequiredResponse(data=response_data)
         if utils.match_response(http_res, "404", "application/json"):
-            data = utils.unmarshal_json(http_res.text, models.NotFoundResponseData)
-            raise models.NotFoundResponse(data=data)
+            response_data = utils.unmarshal_json(
+                http_res.text, models.NotFoundResponseData
+            )
+            raise models.NotFoundResponse(data=response_data)
         if utils.match_response(http_res, "422", "application/json"):
-            data = utils.unmarshal_json(http_res.text, models.UnprocessableResponseData)
-            raise models.UnprocessableResponse(data=data)
+            response_data = utils.unmarshal_json(
+                http_res.text, models.UnprocessableResponseData
+            )
+            raise models.UnprocessableResponse(data=response_data)
         if utils.match_response(http_res, "4XX", "*"):
             http_res_text = utils.stream_to_text(http_res)
             raise models.APIError(
@@ -1135,7 +1175,7 @@ class PurchaseOrders(BaseSDK):
             retry_config=retry_config,
         )
 
-        data: Any = None
+        response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingPurchaseOrdersOneResponse(
                 get_purchase_order_response=utils.unmarshal_json(
@@ -1144,22 +1184,30 @@ class PurchaseOrders(BaseSDK):
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
             )
         if utils.match_response(http_res, "400", "application/json"):
-            data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
-            raise models.BadRequestResponse(data=data)
+            response_data = utils.unmarshal_json(
+                http_res.text, models.BadRequestResponseData
+            )
+            raise models.BadRequestResponse(data=response_data)
         if utils.match_response(http_res, "401", "application/json"):
-            data = utils.unmarshal_json(http_res.text, models.UnauthorizedResponseData)
-            raise models.UnauthorizedResponse(data=data)
+            response_data = utils.unmarshal_json(
+                http_res.text, models.UnauthorizedResponseData
+            )
+            raise models.UnauthorizedResponse(data=response_data)
         if utils.match_response(http_res, "402", "application/json"):
-            data = utils.unmarshal_json(
+            response_data = utils.unmarshal_json(
                 http_res.text, models.PaymentRequiredResponseData
             )
-            raise models.PaymentRequiredResponse(data=data)
+            raise models.PaymentRequiredResponse(data=response_data)
         if utils.match_response(http_res, "404", "application/json"):
-            data = utils.unmarshal_json(http_res.text, models.NotFoundResponseData)
-            raise models.NotFoundResponse(data=data)
+            response_data = utils.unmarshal_json(
+                http_res.text, models.NotFoundResponseData
+            )
+            raise models.NotFoundResponse(data=response_data)
         if utils.match_response(http_res, "422", "application/json"):
-            data = utils.unmarshal_json(http_res.text, models.UnprocessableResponseData)
-            raise models.UnprocessableResponse(data=data)
+            response_data = utils.unmarshal_json(
+                http_res.text, models.UnprocessableResponseData
+            )
+            raise models.UnprocessableResponse(data=response_data)
         if utils.match_response(http_res, "4XX", "*"):
             http_res_text = await utils.stream_to_text_async(http_res)
             raise models.APIError(
@@ -1405,7 +1453,7 @@ class PurchaseOrders(BaseSDK):
             retry_config=retry_config,
         )
 
-        data: Any = None
+        response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingPurchaseOrdersUpdateResponse(
                 update_purchase_order_response=utils.unmarshal_json(
@@ -1414,22 +1462,30 @@ class PurchaseOrders(BaseSDK):
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
             )
         if utils.match_response(http_res, "400", "application/json"):
-            data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
-            raise models.BadRequestResponse(data=data)
+            response_data = utils.unmarshal_json(
+                http_res.text, models.BadRequestResponseData
+            )
+            raise models.BadRequestResponse(data=response_data)
         if utils.match_response(http_res, "401", "application/json"):
-            data = utils.unmarshal_json(http_res.text, models.UnauthorizedResponseData)
-            raise models.UnauthorizedResponse(data=data)
+            response_data = utils.unmarshal_json(
+                http_res.text, models.UnauthorizedResponseData
+            )
+            raise models.UnauthorizedResponse(data=response_data)
         if utils.match_response(http_res, "402", "application/json"):
-            data = utils.unmarshal_json(
+            response_data = utils.unmarshal_json(
                 http_res.text, models.PaymentRequiredResponseData
             )
-            raise models.PaymentRequiredResponse(data=data)
+            raise models.PaymentRequiredResponse(data=response_data)
         if utils.match_response(http_res, "404", "application/json"):
-            data = utils.unmarshal_json(http_res.text, models.NotFoundResponseData)
-            raise models.NotFoundResponse(data=data)
+            response_data = utils.unmarshal_json(
+                http_res.text, models.NotFoundResponseData
+            )
+            raise models.NotFoundResponse(data=response_data)
         if utils.match_response(http_res, "422", "application/json"):
-            data = utils.unmarshal_json(http_res.text, models.UnprocessableResponseData)
-            raise models.UnprocessableResponse(data=data)
+            response_data = utils.unmarshal_json(
+                http_res.text, models.UnprocessableResponseData
+            )
+            raise models.UnprocessableResponse(data=response_data)
         if utils.match_response(http_res, "4XX", "*"):
             http_res_text = utils.stream_to_text(http_res)
             raise models.APIError(
@@ -1675,7 +1731,7 @@ class PurchaseOrders(BaseSDK):
             retry_config=retry_config,
         )
 
-        data: Any = None
+        response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingPurchaseOrdersUpdateResponse(
                 update_purchase_order_response=utils.unmarshal_json(
@@ -1684,22 +1740,30 @@ class PurchaseOrders(BaseSDK):
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
             )
         if utils.match_response(http_res, "400", "application/json"):
-            data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
-            raise models.BadRequestResponse(data=data)
+            response_data = utils.unmarshal_json(
+                http_res.text, models.BadRequestResponseData
+            )
+            raise models.BadRequestResponse(data=response_data)
         if utils.match_response(http_res, "401", "application/json"):
-            data = utils.unmarshal_json(http_res.text, models.UnauthorizedResponseData)
-            raise models.UnauthorizedResponse(data=data)
+            response_data = utils.unmarshal_json(
+                http_res.text, models.UnauthorizedResponseData
+            )
+            raise models.UnauthorizedResponse(data=response_data)
         if utils.match_response(http_res, "402", "application/json"):
-            data = utils.unmarshal_json(
+            response_data = utils.unmarshal_json(
                 http_res.text, models.PaymentRequiredResponseData
             )
-            raise models.PaymentRequiredResponse(data=data)
+            raise models.PaymentRequiredResponse(data=response_data)
         if utils.match_response(http_res, "404", "application/json"):
-            data = utils.unmarshal_json(http_res.text, models.NotFoundResponseData)
-            raise models.NotFoundResponse(data=data)
+            response_data = utils.unmarshal_json(
+                http_res.text, models.NotFoundResponseData
+            )
+            raise models.NotFoundResponse(data=response_data)
         if utils.match_response(http_res, "422", "application/json"):
-            data = utils.unmarshal_json(http_res.text, models.UnprocessableResponseData)
-            raise models.UnprocessableResponse(data=data)
+            response_data = utils.unmarshal_json(
+                http_res.text, models.UnprocessableResponseData
+            )
+            raise models.UnprocessableResponse(data=response_data)
         if utils.match_response(http_res, "4XX", "*"):
             http_res_text = await utils.stream_to_text_async(http_res)
             raise models.APIError(
@@ -1815,7 +1879,7 @@ class PurchaseOrders(BaseSDK):
             retry_config=retry_config,
         )
 
-        data: Any = None
+        response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingPurchaseOrdersDeleteResponse(
                 delete_purchase_order_response=utils.unmarshal_json(
@@ -1824,22 +1888,30 @@ class PurchaseOrders(BaseSDK):
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
             )
         if utils.match_response(http_res, "400", "application/json"):
-            data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
-            raise models.BadRequestResponse(data=data)
+            response_data = utils.unmarshal_json(
+                http_res.text, models.BadRequestResponseData
+            )
+            raise models.BadRequestResponse(data=response_data)
         if utils.match_response(http_res, "401", "application/json"):
-            data = utils.unmarshal_json(http_res.text, models.UnauthorizedResponseData)
-            raise models.UnauthorizedResponse(data=data)
+            response_data = utils.unmarshal_json(
+                http_res.text, models.UnauthorizedResponseData
+            )
+            raise models.UnauthorizedResponse(data=response_data)
         if utils.match_response(http_res, "402", "application/json"):
-            data = utils.unmarshal_json(
+            response_data = utils.unmarshal_json(
                 http_res.text, models.PaymentRequiredResponseData
             )
-            raise models.PaymentRequiredResponse(data=data)
+            raise models.PaymentRequiredResponse(data=response_data)
         if utils.match_response(http_res, "404", "application/json"):
-            data = utils.unmarshal_json(http_res.text, models.NotFoundResponseData)
-            raise models.NotFoundResponse(data=data)
+            response_data = utils.unmarshal_json(
+                http_res.text, models.NotFoundResponseData
+            )
+            raise models.NotFoundResponse(data=response_data)
         if utils.match_response(http_res, "422", "application/json"):
-            data = utils.unmarshal_json(http_res.text, models.UnprocessableResponseData)
-            raise models.UnprocessableResponse(data=data)
+            response_data = utils.unmarshal_json(
+                http_res.text, models.UnprocessableResponseData
+            )
+            raise models.UnprocessableResponse(data=response_data)
         if utils.match_response(http_res, "4XX", "*"):
             http_res_text = utils.stream_to_text(http_res)
             raise models.APIError(
@@ -1955,7 +2027,7 @@ class PurchaseOrders(BaseSDK):
             retry_config=retry_config,
         )
 
-        data: Any = None
+        response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingPurchaseOrdersDeleteResponse(
                 delete_purchase_order_response=utils.unmarshal_json(
@@ -1964,22 +2036,30 @@ class PurchaseOrders(BaseSDK):
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
             )
         if utils.match_response(http_res, "400", "application/json"):
-            data = utils.unmarshal_json(http_res.text, models.BadRequestResponseData)
-            raise models.BadRequestResponse(data=data)
+            response_data = utils.unmarshal_json(
+                http_res.text, models.BadRequestResponseData
+            )
+            raise models.BadRequestResponse(data=response_data)
         if utils.match_response(http_res, "401", "application/json"):
-            data = utils.unmarshal_json(http_res.text, models.UnauthorizedResponseData)
-            raise models.UnauthorizedResponse(data=data)
+            response_data = utils.unmarshal_json(
+                http_res.text, models.UnauthorizedResponseData
+            )
+            raise models.UnauthorizedResponse(data=response_data)
         if utils.match_response(http_res, "402", "application/json"):
-            data = utils.unmarshal_json(
+            response_data = utils.unmarshal_json(
                 http_res.text, models.PaymentRequiredResponseData
             )
-            raise models.PaymentRequiredResponse(data=data)
+            raise models.PaymentRequiredResponse(data=response_data)
         if utils.match_response(http_res, "404", "application/json"):
-            data = utils.unmarshal_json(http_res.text, models.NotFoundResponseData)
-            raise models.NotFoundResponse(data=data)
+            response_data = utils.unmarshal_json(
+                http_res.text, models.NotFoundResponseData
+            )
+            raise models.NotFoundResponse(data=response_data)
         if utils.match_response(http_res, "422", "application/json"):
-            data = utils.unmarshal_json(http_res.text, models.UnprocessableResponseData)
-            raise models.UnprocessableResponse(data=data)
+            response_data = utils.unmarshal_json(
+                http_res.text, models.UnprocessableResponseData
+            )
+            raise models.UnprocessableResponse(data=response_data)
         if utils.match_response(http_res, "4XX", "*"):
             http_res_text = await utils.stream_to_text_async(http_res)
             raise models.APIError(

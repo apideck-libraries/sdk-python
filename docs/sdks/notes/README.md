@@ -27,7 +27,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.crm.notes.list(raw=False, consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", limit=20, pass_through={
+    res = apideck.crm.notes.list(consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", pass_through={
         "search": "San Francisco",
     }, fields="id,updated_at")
 
@@ -83,7 +83,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.crm.notes.create(raw=False, consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", title="Meeting Notes", content="Office hours are 9AM-6PM", owner_id="12345", contact_id="12345", company_id="12345", opportunity_id="12345", lead_id="12345", active=True, pass_through=[
+    res = apideck.crm.notes.create(consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", title="Meeting Notes", content="Office hours are 9AM-6PM", owner_id="12345", contact_id="12345", company_id="12345", opportunity_id="12345", lead_id="12345", active=True, pass_through=[
         {
             "service_id": "<id>",
             "extend_paths": [
@@ -185,7 +185,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.crm.notes.get(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", raw=False, fields="id,updated_at")
+    res = apideck.crm.notes.get(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", fields="id,updated_at")
 
     assert res.get_note_response is not None
 
@@ -237,7 +237,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.crm.notes.update(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", raw=False, title="Meeting Notes", content="Office hours are 9AM-6PM", owner_id="12345", contact_id="12345", company_id="12345", opportunity_id="12345", lead_id="12345", active=True, pass_through=[
+    res = apideck.crm.notes.update(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", title="Meeting Notes", content="Office hours are 9AM-6PM", owner_id="12345", contact_id="12345", company_id="12345", opportunity_id="12345", lead_id="12345", active=True, pass_through=[
         {
             "service_id": "<id>",
             "extend_paths": [
@@ -369,7 +369,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.crm.notes.delete(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", raw=False)
+    res = apideck.crm.notes.delete(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce")
 
     assert res.delete_note_response is not None
 

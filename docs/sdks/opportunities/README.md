@@ -28,12 +28,11 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.crm.opportunities.list(raw=False, consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", limit=20, filter_={
+    res = apideck.crm.opportunities.list(consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", filter_={
         "status": "Completed",
         "monetary_amount": 75000,
     }, sort={
         "by": apideck_unify.OpportunitiesSortBy.CREATED_AT,
-        "direction": apideck_unify.SortDirection.DESC,
     }, pass_through={
         "search": "San Francisco",
     }, fields="id,updated_at")
@@ -94,7 +93,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.crm.opportunities.create(title="New Rocket", raw=False, consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", primary_contact_id="12345", description="Opportunities are created for People and Companies that are interested in buying your products or services. Create Opportunities for People and Companies to move them through one of your Pipelines.", type_="Existing Customer - Upgrade", monetary_amount=75000, currency=apideck_unify.Currency.USD, win_probability=40, close_date=dateutil.parser.parse("2020-10-30").date(), loss_reason_id="12345", loss_reason="No budget", won_reason_id="12345", won_reason="Best pitch", pipeline_id="12345", pipeline_stage_id="12345", source_id="12345", lead_id="12345", lead_source="Website", contact_id="12345", contact_ids=[
+    res = apideck.crm.opportunities.create(title="New Rocket", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", primary_contact_id="12345", description="Opportunities are created for People and Companies that are interested in buying your products or services. Create Opportunities for People and Companies to move them through one of your Pipelines.", type_="Existing Customer - Upgrade", monetary_amount=75000, currency=apideck_unify.Currency.USD, win_probability=40, close_date=dateutil.parser.parse("2020-10-30").date(), loss_reason_id="12345", loss_reason="No budget", won_reason_id="12345", won_reason="Best pitch", pipeline_id="12345", pipeline_stage_id="12345", source_id="12345", lead_id="12345", lead_source="Website", contact_id="12345", contact_ids=[
         "12345",
     ], company_id="12345", company_name="Copper", owner_id="12345", priority="None", status="Open", status_id="12345", tags=[
         "New",
@@ -204,7 +203,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.crm.opportunities.get(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", raw=False, fields="id,updated_at")
+    res = apideck.crm.opportunities.get(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", fields="id,updated_at")
 
     assert res.get_opportunity_response is not None
 
@@ -258,7 +257,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.crm.opportunities.update(id="<id>", title="New Rocket", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", raw=False, primary_contact_id="12345", description="Opportunities are created for People and Companies that are interested in buying your products or services. Create Opportunities for People and Companies to move them through one of your Pipelines.", type_="Existing Customer - Upgrade", monetary_amount=75000, currency=apideck_unify.Currency.USD, win_probability=40, close_date=dateutil.parser.parse("2020-10-30").date(), loss_reason_id="12345", loss_reason="No budget", won_reason_id="12345", won_reason="Best pitch", pipeline_id="12345", pipeline_stage_id="12345", source_id="12345", lead_id="12345", lead_source="Website", contact_id="12345", contact_ids=[
+    res = apideck.crm.opportunities.update(id="<id>", title="New Rocket", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", primary_contact_id="12345", description="Opportunities are created for People and Companies that are interested in buying your products or services. Create Opportunities for People and Companies to move them through one of your Pipelines.", type_="Existing Customer - Upgrade", monetary_amount=75000, currency=apideck_unify.Currency.USD, win_probability=40, close_date=dateutil.parser.parse("2020-10-30").date(), loss_reason_id="12345", loss_reason="No budget", won_reason_id="12345", won_reason="Best pitch", pipeline_id="12345", pipeline_stage_id="12345", source_id="12345", lead_id="12345", lead_source="Website", contact_id="12345", contact_ids=[
         "12345",
     ], company_id="12345", company_name="Copper", owner_id="12345", priority="None", status="Open", status_id="12345", tags=[
         "New",
@@ -407,7 +406,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.crm.opportunities.delete(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", raw=False)
+    res = apideck.crm.opportunities.delete(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce")
 
     assert res.delete_opportunity_response is not None
 

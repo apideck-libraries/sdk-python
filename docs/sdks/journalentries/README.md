@@ -29,11 +29,10 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.accounting.journal_entries.list(raw=False, consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", limit=20, filter_={
+    res = apideck.accounting.journal_entries.list(consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", filter_={
         "updated_since": dateutil.parser.isoparse("2020-09-30T07:43:32.000Z"),
     }, sort={
         "by": apideck_unify.JournalEntriesSortBy.UPDATED_AT,
-        "direction": apideck_unify.SortDirection.DESC,
     }, pass_through={
         "search": "San Francisco",
     }, fields="id,updated_at")
@@ -94,7 +93,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.accounting.journal_entries.create(raw=False, consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", title="Purchase Invoice-Inventory (USD): 2019/02/01 Batch Summary Entry", currency_rate=0.69, currency=apideck_unify.Currency.USD, company_id="12345", line_items=[
+    res = apideck.accounting.journal_entries.create(consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", title="Purchase Invoice-Inventory (USD): 2019/02/01 Batch Summary Entry", currency_rate=0.69, currency=apideck_unify.Currency.USD, company_id="12345", line_items=[
         {
             "type": apideck_unify.JournalEntryLineItemType.DEBIT,
             "ledger_account": {
@@ -315,7 +314,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.accounting.journal_entries.get(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", raw=False, fields="id,updated_at")
+    res = apideck.accounting.journal_entries.get(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", fields="id,updated_at")
 
     assert res.get_journal_entry_response is not None
 
@@ -369,7 +368,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.accounting.journal_entries.update(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", raw=False, title="Purchase Invoice-Inventory (USD): 2019/02/01 Batch Summary Entry", currency_rate=0.69, currency=apideck_unify.Currency.USD, company_id="12345", line_items=[
+    res = apideck.accounting.journal_entries.update(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", title="Purchase Invoice-Inventory (USD): 2019/02/01 Batch Summary Entry", currency_rate=0.69, currency=apideck_unify.Currency.USD, company_id="12345", line_items=[
         {
             "type": apideck_unify.JournalEntryLineItemType.DEBIT,
             "ledger_account": {
@@ -665,7 +664,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.accounting.journal_entries.delete(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", raw=False)
+    res = apideck.accounting.journal_entries.delete(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce")
 
     assert res.delete_journal_entry_response is not None
 

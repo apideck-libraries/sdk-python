@@ -10,7 +10,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.accounting.tax_rates.list(raw=False, consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", limit=20, filter_={
+    res = apideck.accounting.tax_rates.list(consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", filter_={
         "assets": True,
         "equity": True,
         "expenses": True,
@@ -42,7 +42,7 @@ async def main():
         app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
     ) as apideck:
 
-        res = await apideck.accounting.tax_rates.list_async(raw=False, consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", limit=20, filter_={
+        res = await apideck.accounting.tax_rates.list_async(consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", filter_={
             "assets": True,
             "equity": True,
             "expenses": True,
