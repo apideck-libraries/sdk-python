@@ -28,11 +28,10 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.crm.companies.list(raw=False, consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", limit=20, filter_={
+    res = apideck.crm.companies.list(consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", filter_={
         "name": "SpaceX",
     }, sort={
         "by": apideck_unify.CompaniesSortBy.CREATED_AT,
-        "direction": apideck_unify.SortDirection.DESC,
     }, pass_through={
         "search": "San Francisco",
     }, fields="id,updated_at")
@@ -93,7 +92,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.crm.companies.create(name="SpaceX", raw=False, consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", owner_id="12345", image="https://www.spacex.com/static/images/share.jpg", description="Space Exploration Technologies Corp. is an American aerospace manufacturer, space transportation services and communications company headquartered in Hawthorne, California.", vat_number="BE0689615164", currency=apideck_unify.Currency.USD, status="Open", fax="+12129876543", annual_revenue="+$35m", number_of_employees="500-1000", industry="Apparel", ownership="Public", sales_tax_number="12456EN", payee_number="78932EN", abn_or_tfn="46 115 614 695", abn_branch="123", acn="XXX XXX XXX", first_name="Elon", last_name="Musk", bank_accounts=[
+    res = apideck.crm.companies.create(name="SpaceX", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", owner_id="12345", image="https://www.spacex.com/static/images/share.jpg", description="Space Exploration Technologies Corp. is an American aerospace manufacturer, space transportation services and communications company headquartered in Hawthorne, California.", vat_number="BE0689615164", currency=apideck_unify.Currency.USD, status="Open", fax="+12129876543", annual_revenue="+$35m", number_of_employees="500-1000", industry="Apparel", ownership="Public", sales_tax_number="12456EN", payee_number="78932EN", abn_or_tfn="46 115 614 695", abn_branch="123", acn="XXX XXX XXX", first_name="Elon", last_name="Musk", bank_accounts=[
         {
             "bank_name": "Monzo",
             "account_number": "123465",
@@ -401,7 +400,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.crm.companies.get(id="<id>", raw=False, consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", fields="id,updated_at")
+    res = apideck.crm.companies.get(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", fields="id,updated_at")
 
     assert res.get_company_response is not None
 
@@ -455,7 +454,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.crm.companies.update(id="<id>", name="SpaceX", raw=False, consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", owner_id="12345", image="https://www.spacex.com/static/images/share.jpg", description="Space Exploration Technologies Corp. is an American aerospace manufacturer, space transportation services and communications company headquartered in Hawthorne, California.", vat_number="BE0689615164", currency=apideck_unify.Currency.USD, status="Open", fax="+12129876543", annual_revenue="+$35m", number_of_employees="500-1000", industry="Apparel", ownership="Public", sales_tax_number="12456EN", payee_number="78932EN", abn_or_tfn="46 115 614 695", abn_branch="123", acn="XXX XXX XXX", first_name="Elon", last_name="Musk", bank_accounts=[
+    res = apideck.crm.companies.update(id="<id>", name="SpaceX", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", owner_id="12345", image="https://www.spacex.com/static/images/share.jpg", description="Space Exploration Technologies Corp. is an American aerospace manufacturer, space transportation services and communications company headquartered in Hawthorne, California.", vat_number="BE0689615164", currency=apideck_unify.Currency.USD, status="Open", fax="+12129876543", annual_revenue="+$35m", number_of_employees="500-1000", industry="Apparel", ownership="Public", sales_tax_number="12456EN", payee_number="78932EN", abn_or_tfn="46 115 614 695", abn_branch="123", acn="XXX XXX XXX", first_name="Elon", last_name="Musk", bank_accounts=[
         {
             "bank_name": "Monzo",
             "account_number": "123465",
@@ -726,7 +725,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.crm.companies.delete(id="<id>", raw=False, consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce")
+    res = apideck.crm.companies.delete(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce")
 
     assert res.delete_company_response is not None
 

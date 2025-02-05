@@ -28,7 +28,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.crm.contacts.list(raw=False, consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", limit=20, filter_={
+    res = apideck.crm.contacts.list(consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", filter_={
         "first_name": "Elon",
         "last_name": "Musk",
         "email": "elon@tesla.com",
@@ -36,7 +36,6 @@ with Apideck(
         "owner_id": "12345",
     }, sort={
         "by": apideck_unify.ContactsSortBy.CREATED_AT,
-        "direction": apideck_unify.SortDirection.DESC,
     }, pass_through={
         "search": "San Francisco",
     }, fields="id,updated_at")
@@ -96,7 +95,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.crm.contacts.create(name="Elon Musk", raw=False, consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", owner_id="54321", type_=apideck_unify.ContactType.PERSONAL, company_id="23456", company_name="23456", lead_id="34567", first_name="Elon", middle_name="D.", last_name="Musk", prefix="Mr.", suffix="PhD", title="CEO", department="Engineering", language="EN", gender=apideck_unify.ContactGender.FEMALE, birthday="2000-08-12", photo_url="https://unavatar.io/elon-musk", lead_source="Cold Call", fax="+12129876543", description="Internal champion", current_balance=10.5, status="open", active=True, websites=[
+    res = apideck.crm.contacts.create(name="Elon Musk", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", owner_id="54321", type_=apideck_unify.ContactType.PERSONAL, company_id="23456", company_name="23456", lead_id="34567", first_name="Elon", middle_name="D.", last_name="Musk", prefix="Mr.", suffix="PhD", title="CEO", department="Engineering", language="EN", gender=apideck_unify.ContactGender.FEMALE, birthday="2000-08-12", photo_url="https://unavatar.io/elon-musk", lead_source="Cold Call", fax="+12129876543", description="Internal champion", current_balance=10.5, status="open", active=True, websites=[
         {
             "url": "http://example.com",
             "id": "12345",
@@ -373,7 +372,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.crm.contacts.get(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", raw=False, fields="id,updated_at", filter_={
+    res = apideck.crm.contacts.get(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", fields="id,updated_at", filter_={
         "first_name": "Elon",
         "last_name": "Musk",
         "email": "elon@tesla.com",
@@ -433,7 +432,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.crm.contacts.update(id="<id>", name="Elon Musk", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", raw=False, owner_id="54321", type_=apideck_unify.ContactType.PERSONAL, company_id="23456", company_name="23456", lead_id="34567", first_name="Elon", middle_name="D.", last_name="Musk", prefix="Mr.", suffix="PhD", title="CEO", department="Engineering", language="EN", gender=apideck_unify.ContactGender.FEMALE, birthday="2000-08-12", photo_url="https://unavatar.io/elon-musk", lead_source="Cold Call", fax="+12129876543", description="Internal champion", current_balance=10.5, status="open", active=True, websites=[
+    res = apideck.crm.contacts.update(id="<id>", name="Elon Musk", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", owner_id="54321", type_=apideck_unify.ContactType.PERSONAL, company_id="23456", company_name="23456", lead_id="34567", first_name="Elon", middle_name="D.", last_name="Musk", prefix="Mr.", suffix="PhD", title="CEO", department="Engineering", language="EN", gender=apideck_unify.ContactGender.FEMALE, birthday="2000-08-12", photo_url="https://unavatar.io/elon-musk", lead_source="Cold Call", fax="+12129876543", description="Internal champion", current_balance=10.5, status="open", active=True, websites=[
         {
             "url": "http://example.com",
             "id": "12345",
@@ -667,7 +666,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.crm.contacts.delete(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", raw=False)
+    res = apideck.crm.contacts.delete(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce")
 
     assert res.delete_contact_response is not None
 
