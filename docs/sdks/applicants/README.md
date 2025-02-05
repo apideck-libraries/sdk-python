@@ -27,7 +27,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.ats.applicants.list(raw=False, consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", limit=20, filter_={
+    res = apideck.ats.applicants.list(consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", filter_={
         "job_id": "1234",
     }, pass_through={
         "search": "San Francisco",
@@ -88,7 +88,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.ats.applicants.create(raw=False, consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", name="Elon Musk", first_name="Elon", last_name="Musk", middle_name="D.", initials="EM", birthday=dateutil.parser.parse("2000-08-12").date(), cover_letter="I submit this application to express my sincere interest in the API developer position. In the previous role, I was responsible for leadership and ...", photo_url="https://unavatar.io/elon-musk", headline="PepsiCo, Inc, Central Perk", title="CEO", emails=[
+    res = apideck.ats.applicants.create(consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", name="Elon Musk", first_name="Elon", last_name="Musk", middle_name="D.", initials="EM", birthday=dateutil.parser.parse("2000-08-12").date(), cover_letter="I submit this application to express my sincere interest in the API developer position. In the previous role, I was responsible for leadership and ...", photo_url="https://unavatar.io/elon-musk", headline="PepsiCo, Inc, Central Perk", title="CEO", emails=[
         {
             "email": "elon@musk.com",
             "id": "123",
@@ -330,7 +330,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.ats.applicants.get(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", raw=False, fields="id,updated_at")
+    res = apideck.ats.applicants.get(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", fields="id,updated_at")
 
     assert res.get_applicant_response is not None
 
@@ -384,7 +384,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.ats.applicants.update(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", raw=False, name="Elon Musk", first_name="Elon", last_name="Musk", middle_name="D.", initials="EM", birthday=dateutil.parser.parse("2000-08-12").date(), cover_letter="I submit this application to express my sincere interest in the API developer position. In the previous role, I was responsible for leadership and ...", photo_url="https://unavatar.io/elon-musk", headline="PepsiCo, Inc, Central Perk", title="CEO", emails=[
+    res = apideck.ats.applicants.update(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", name="Elon Musk", first_name="Elon", last_name="Musk", middle_name="D.", initials="EM", birthday=dateutil.parser.parse("2000-08-12").date(), cover_letter="I submit this application to express my sincere interest in the API developer position. In the previous role, I was responsible for leadership and ...", photo_url="https://unavatar.io/elon-musk", headline="PepsiCo, Inc, Central Perk", title="CEO", emails=[
         {
             "email": "elon@musk.com",
             "id": "123",
@@ -656,7 +656,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.ats.applicants.delete(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", raw=False)
+    res = apideck.ats.applicants.delete(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce")
 
     assert res.delete_applicant_response is not None
 

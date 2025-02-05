@@ -23,7 +23,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.webhook.event_logs.list(app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", limit=20, filter_={
+    res = apideck.webhook.event_logs.list(app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", filter_={
         "exclude_apis": "vault,proxy",
         "consumer_id": "test_user_id",
         "entity_type": "Connection",

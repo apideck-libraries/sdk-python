@@ -27,7 +27,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.accounting.attachments.list(reference_type=apideck_unify.AttachmentReferenceType.INVOICE, reference_id="123456", raw=False, consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", limit=20, fields="id,updated_at")
+    res = apideck.accounting.attachments.list(reference_type=apideck_unify.AttachmentReferenceType.INVOICE, reference_id="123456", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", fields="id,updated_at")
 
     while res is not None:
         # Handle items
@@ -83,7 +83,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.accounting.attachments.get(reference_type=apideck_unify.AttachmentReferenceType.INVOICE, reference_id="123456", id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", raw=False, fields="id,updated_at")
+    res = apideck.accounting.attachments.get(reference_type=apideck_unify.AttachmentReferenceType.INVOICE, reference_id="123456", id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", fields="id,updated_at")
 
     assert res.get_attachment_response is not None
 
@@ -138,7 +138,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.accounting.attachments.delete(reference_type=apideck_unify.AttachmentReferenceType.INVOICE, reference_id="123456", id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", raw=False)
+    res = apideck.accounting.attachments.delete(reference_type=apideck_unify.AttachmentReferenceType.INVOICE, reference_id="123456", id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce")
 
     assert res.delete_attachment_response is not None
 

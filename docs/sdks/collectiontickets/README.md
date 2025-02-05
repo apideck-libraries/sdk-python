@@ -28,9 +28,8 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.issue_tracking.collection_tickets.list(collection_id="apideck-io", raw=False, consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", limit=20, sort={
+    res = apideck.issue_tracking.collection_tickets.list(collection_id="apideck-io", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", sort={
         "by": apideck_unify.TicketsSortBy.CREATED_AT,
-        "direction": apideck_unify.SortDirection.DESC,
     }, filter_={
         "status": [
             "open",
@@ -96,7 +95,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.issue_tracking.collection_tickets.create(collection_id="apideck-io", raw=False, consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", parent_id="12345", type_="Technical", subject="Technical Support Request", description="I am facing issues with my internet connection", status="open", priority=apideck_unify.Priority.HIGH, assignees=[
+    res = apideck.issue_tracking.collection_tickets.create(collection_id="apideck-io", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", parent_id="12345", type_="Technical", subject="Technical Support Request", description="I am facing issues with my internet connection", status="open", priority=apideck_unify.Priority.HIGH, assignees=[
         {
             "id": "12345",
         },
@@ -198,7 +197,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.issue_tracking.collection_tickets.get(ticket_id="<id>", collection_id="apideck-io", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", raw=False, fields="id,updated_at")
+    res = apideck.issue_tracking.collection_tickets.get(ticket_id="<id>", collection_id="apideck-io", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", fields="id,updated_at")
 
     assert res.get_ticket_response is not None
 
@@ -253,7 +252,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.issue_tracking.collection_tickets.update(ticket_id="<id>", collection_id="apideck-io", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", raw=False, parent_id="12345", type_="Technical", subject="Technical Support Request", description="I am facing issues with my internet connection", status="open", priority=apideck_unify.Priority.HIGH, assignees=[
+    res = apideck.issue_tracking.collection_tickets.update(ticket_id="<id>", collection_id="apideck-io", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", parent_id="12345", type_="Technical", subject="Technical Support Request", description="I am facing issues with my internet connection", status="open", priority=apideck_unify.Priority.HIGH, assignees=[
         {
             "id": "12345",
         },
@@ -383,7 +382,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.issue_tracking.collection_tickets.delete(ticket_id="<id>", collection_id="apideck-io", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", raw=False)
+    res = apideck.issue_tracking.collection_tickets.delete(ticket_id="<id>", collection_id="apideck-io", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce")
 
     assert res.delete_ticket_response is not None
 

@@ -27,7 +27,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.file_storage.shared_links.list(raw=False, consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", limit=20, pass_through={
+    res = apideck.file_storage.shared_links.list(consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", pass_through={
         "search": "San Francisco",
     }, fields="id,updated_at")
 
@@ -84,7 +84,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.file_storage.shared_links.create(target_id="<id>", raw=False, consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", download_url="https://www.box.com/shared/static/rh935iit6ewrmw0unyul.jpeg", scope=apideck_unify.Scope.COMPANY, pass_through=[
+    res = apideck.file_storage.shared_links.create(target_id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", download_url="https://www.box.com/shared/static/rh935iit6ewrmw0unyul.jpeg", scope=apideck_unify.Scope.COMPANY, pass_through=[
         {
             "service_id": "<id>",
             "extend_paths": [
@@ -182,7 +182,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.file_storage.shared_links.get(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", raw=False, fields="id,updated_at")
+    res = apideck.file_storage.shared_links.get(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", fields="id,updated_at")
 
     assert res.get_shared_link_response is not None
 
@@ -235,7 +235,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.file_storage.shared_links.update(id="<id>", target_id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", raw=False, download_url="https://www.box.com/shared/static/rh935iit6ewrmw0unyul.jpeg", scope=apideck_unify.Scope.COMPANY, pass_through=[
+    res = apideck.file_storage.shared_links.update(id="<id>", target_id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", download_url="https://www.box.com/shared/static/rh935iit6ewrmw0unyul.jpeg", scope=apideck_unify.Scope.COMPANY, pass_through=[
         {
             "service_id": "<id>",
             "extend_paths": [
@@ -363,7 +363,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.file_storage.shared_links.delete(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", raw=False)
+    res = apideck.file_storage.shared_links.delete(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce")
 
     assert res.delete_shared_link_response is not None
 
