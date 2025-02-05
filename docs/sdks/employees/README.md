@@ -28,7 +28,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.hris.employees.list(raw=False, consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", limit=20, filter_={
+    res = apideck.hris.employees.list(consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", filter_={
         "company_id": "1234",
         "email": "elon@tesla.com",
         "first_name": "Elon",
@@ -40,7 +40,6 @@ with Apideck(
         "department_id": "1234",
     }, sort={
         "by": apideck_unify.EmployeesSortBy.CREATED_AT,
-        "direction": apideck_unify.SortDirection.DESC,
     }, pass_through={
         "search": "San Francisco",
     }, fields="id,updated_at")
@@ -101,7 +100,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.hris.employees.create(raw=False, consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", id="12345", first_name="Elon", last_name="Musk", middle_name="D.", display_name="Technoking", preferred_name="Elon Musk", initials="EM", salutation="Mr", title="CEO", marital_status="married", partner={
+    res = apideck.hris.employees.create(consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", id="12345", first_name="Elon", last_name="Musk", middle_name="D.", display_name="Technoking", preferred_name="Elon Musk", initials="EM", salutation="Mr", title="CEO", marital_status="married", partner={
         "first_name": "Elon",
         "last_name": "Musk",
         "middle_name": "D.",
@@ -467,7 +466,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.hris.employees.get(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", raw=False, fields="id,updated_at", filter_={
+    res = apideck.hris.employees.get(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", fields="id,updated_at", filter_={
         "company_id": "1234",
     }, pass_through={
         "search": "San Francisco",
@@ -527,7 +526,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.hris.employees.update(id_param="<value>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", raw=False, id="12345", first_name="Elon", last_name="Musk", middle_name="D.", display_name="Technoking", preferred_name="Elon Musk", initials="EM", salutation="Mr", title="CEO", marital_status="married", partner={
+    res = apideck.hris.employees.update(id_param="<value>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", id="12345", first_name="Elon", last_name="Musk", middle_name="D.", display_name="Technoking", preferred_name="Elon Musk", initials="EM", salutation="Mr", title="CEO", marital_status="married", partner={
         "first_name": "Elon",
         "last_name": "Musk",
         "middle_name": "D.",
@@ -952,7 +951,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.hris.employees.delete(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", raw=False)
+    res = apideck.hris.employees.delete(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce")
 
     assert res.delete_employee_response is not None
 

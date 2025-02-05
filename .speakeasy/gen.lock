@@ -1,12 +1,12 @@
 lockVersion: 2.0.0
 id: fca0ac3a-5f4e-452c-bbc7-2311afa8da40
 management:
-  docChecksum: 6a0f18f0de50b45403acc2fd81738096
-  docVersion: 10.11.0
-  speakeasyVersion: 1.476.2
-  generationVersion: 2.495.1
-  releaseVersion: 0.6.0
-  configChecksum: 41d97ecd7457dca88d0bedbbecb9f002
+  docChecksum: ce365646919aaa86160f5dff0718034b
+  docVersion: 10.11.2
+  speakeasyVersion: 1.484.1
+  generationVersion: 2.503.2
+  releaseVersion: 0.6.1
+  configChecksum: b923b27662b76baca7aa82c9785d5781
   repoURL: https://github.com/apideck-libraries/sdk-python.git
   installationURL: https://github.com/apideck-libraries/sdk-python.git
   published: true
@@ -15,7 +15,7 @@ features:
     acceptHeaders: 3.0.0
     additionalDependencies: 1.0.0
     constsAndDefaults: 1.0.5
-    core: 5.10.5
+    core: 5.10.9
     deepObjectParams: 0.1.0
     defaultEnabledRetries: 0.2.0
     deprecations: 3.0.2
@@ -25,7 +25,7 @@ features:
     envVarSecurityUsage: 0.3.2
     errors: 3.2.0
     flatRequests: 1.0.1
-    flattening: 3.1.0
+    flattening: 3.1.1
     globalSecurity: 3.0.2
     globalSecurityCallbacks: 1.0.0
     globalSecurityFlattening: 1.0.0
@@ -37,7 +37,7 @@ features:
     methodServerURLs: 3.1.1
     nameOverrides: 3.0.1
     nullables: 1.0.0
-    pagination: 3.0.2
+    pagination: 3.0.3
     responseFormat: 1.0.1
     retries: 3.0.2
     sdkHooks: 1.0.0

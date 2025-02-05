@@ -29,11 +29,10 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.accounting.payments.list(raw=False, consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", limit=20, filter_={
+    res = apideck.accounting.payments.list(consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", filter_={
         "updated_since": dateutil.parser.isoparse("2020-09-30T07:43:32.000Z"),
     }, sort={
         "by": apideck_unify.PaymentsSortBy.UPDATED_AT,
-        "direction": apideck_unify.SortDirection.DESC,
     }, pass_through={
         "search": "San Francisco",
     }, fields="id,updated_at")
@@ -94,7 +93,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.accounting.payments.create(total_amount=49.99, transaction_date=dateutil.parser.isoparse("2021-05-01T12:00:00.000Z"), raw=False, consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", currency=apideck_unify.Currency.USD, currency_rate=0.69, reference="123456", payment_method="cash", payment_method_reference="123456", payment_method_id="12345", account={
+    res = apideck.accounting.payments.create(total_amount=49.99, transaction_date=dateutil.parser.isoparse("2021-05-01T12:00:00.000Z"), consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", currency=apideck_unify.Currency.USD, currency_rate=0.69, reference="123456", payment_method="cash", payment_method_reference="123456", payment_method_id="12345", account={
         "id": "123456",
         "nominal_code": "N091",
         "code": "453",
@@ -266,7 +265,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.accounting.payments.get(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", raw=False, fields="id,updated_at")
+    res = apideck.accounting.payments.get(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", fields="id,updated_at")
 
     assert res.get_payment_response is not None
 
@@ -320,7 +319,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.accounting.payments.update(id="<id>", total_amount=49.99, transaction_date=dateutil.parser.isoparse("2021-05-01T12:00:00.000Z"), consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", raw=False, currency=apideck_unify.Currency.USD, currency_rate=0.69, reference="123456", payment_method="cash", payment_method_reference="123456", payment_method_id="12345", account={
+    res = apideck.accounting.payments.update(id="<id>", total_amount=49.99, transaction_date=dateutil.parser.isoparse("2021-05-01T12:00:00.000Z"), consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", currency=apideck_unify.Currency.USD, currency_rate=0.69, reference="123456", payment_method="cash", payment_method_reference="123456", payment_method_id="12345", account={
         "id": "123456",
         "nominal_code": "N091",
         "code": "453",
@@ -509,7 +508,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.accounting.payments.delete(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", raw=False)
+    res = apideck.accounting.payments.delete(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce")
 
     assert res.delete_payment_response is not None
 

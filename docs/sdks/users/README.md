@@ -27,7 +27,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.crm.users.list(raw=False, consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", limit=20, pass_through={
+    res = apideck.crm.users.list(consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", pass_through={
         "search": "San Francisco",
     }, fields="id,updated_at")
 
@@ -90,7 +90,7 @@ with Apideck(
             "id": "123",
             "type": apideck_unify.EmailType.PRIMARY,
         },
-    ], raw=False, consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", parent_id="54321", username="masterofcoin", first_name="Elon", last_name="Musk", title="CEO", division="Europe", company_name="SpaceX", employee_number="123456-AB", description="A description", image="https://logo.clearbit.com/spacex.com?s=128", language="EN", status="active", password="supersecretpassword", addresses=[
+    ], consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", parent_id="54321", username="masterofcoin", first_name="Elon", last_name="Musk", title="CEO", division="Europe", company_name="SpaceX", employee_number="123456-AB", description="A description", image="https://logo.clearbit.com/spacex.com?s=128", language="EN", status="active", password="supersecretpassword", addresses=[
         {
             "id": "123",
             "type": apideck_unify.Type.PRIMARY,
@@ -242,7 +242,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.crm.users.get(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", raw=False, fields="id,updated_at")
+    res = apideck.crm.users.get(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", fields="id,updated_at")
 
     assert res.get_user_response is not None
 
@@ -301,7 +301,7 @@ with Apideck(
             "id": "123",
             "type": apideck_unify.EmailType.PRIMARY,
         },
-    ], consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", raw=False, parent_id="54321", username="masterofcoin", first_name="Elon", last_name="Musk", title="CEO", division="Europe", company_name="SpaceX", employee_number="123456-AB", description="A description", image="https://logo.clearbit.com/spacex.com?s=128", language="EN", status="active", password="supersecretpassword", addresses=[
+    ], consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", parent_id="54321", username="masterofcoin", first_name="Elon", last_name="Musk", title="CEO", division="Europe", company_name="SpaceX", employee_number="123456-AB", description="A description", image="https://logo.clearbit.com/spacex.com?s=128", language="EN", status="active", password="supersecretpassword", addresses=[
         {
             "id": "123",
             "type": apideck_unify.Type.PRIMARY,
@@ -538,7 +538,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.crm.users.delete(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", raw=False)
+    res = apideck.crm.users.delete(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce")
 
     assert res.delete_user_response is not None
 
