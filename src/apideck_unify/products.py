@@ -96,6 +96,7 @@ class Products(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="ecommerce.productsAll",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -113,7 +114,10 @@ class Products(BaseSDK):
 
             if len(next_cursor) == 0:
                 return None
+
             next_cursor = next_cursor[0]
+            if next_cursor is None:
+                return None
 
             return self.list(
                 raw=raw,
@@ -275,6 +279,7 @@ class Products(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="ecommerce.productsAll",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -292,7 +297,10 @@ class Products(BaseSDK):
 
             if len(next_cursor) == 0:
                 return None
+
             next_cursor = next_cursor[0]
+            if next_cursor is None:
+                return None
 
             return self.list(
                 raw=raw,
@@ -448,6 +456,7 @@ class Products(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="ecommerce.productsOne",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -599,6 +608,7 @@ class Products(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="ecommerce.productsOne",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(

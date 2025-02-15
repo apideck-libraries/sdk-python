@@ -106,6 +106,7 @@ class Suppliers(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="accounting.suppliersAll",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -123,7 +124,10 @@ class Suppliers(BaseSDK):
 
             if len(next_cursor) == 0:
                 return None
+
             next_cursor = next_cursor[0]
+            if next_cursor is None:
+                return None
 
             return self.list(
                 raw=raw,
@@ -297,6 +301,7 @@ class Suppliers(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="accounting.suppliersAll",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -314,7 +319,10 @@ class Suppliers(BaseSDK):
 
             if len(next_cursor) == 0:
                 return None
+
             next_cursor = next_cursor[0]
+            if next_cursor is None:
+                return None
 
             return self.list(
                 raw=raw,
@@ -587,6 +595,7 @@ class Suppliers(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="accounting.suppliersAdd",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -853,6 +862,7 @@ class Suppliers(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="accounting.suppliersAdd",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -1004,6 +1014,7 @@ class Suppliers(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="accounting.suppliersOne",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -1155,6 +1166,7 @@ class Suppliers(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="accounting.suppliersOne",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -1424,6 +1436,7 @@ class Suppliers(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="accounting.suppliersUpdate",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -1693,6 +1706,7 @@ class Suppliers(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="accounting.suppliersUpdate",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -1841,6 +1855,7 @@ class Suppliers(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="accounting.suppliersDelete",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -1989,6 +2004,7 @@ class Suppliers(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="accounting.suppliersDelete",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(

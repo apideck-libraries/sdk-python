@@ -103,6 +103,7 @@ class TimeOffRequests(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="hris.timeOffRequestsAll",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -120,7 +121,10 @@ class TimeOffRequests(BaseSDK):
 
             if len(next_cursor) == 0:
                 return None
+
             next_cursor = next_cursor[0]
+            if next_cursor is None:
+                return None
 
             return self.list(
                 raw=raw,
@@ -290,6 +294,7 @@ class TimeOffRequests(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="hris.timeOffRequestsAll",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -307,7 +312,10 @@ class TimeOffRequests(BaseSDK):
 
             if len(next_cursor) == 0:
                 return None
+
             next_cursor = next_cursor[0]
+            if next_cursor is None:
+                return None
 
             return self.list(
                 raw=raw,
@@ -516,6 +524,7 @@ class TimeOffRequests(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="hris.timeOffRequestsAdd",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -719,6 +728,7 @@ class TimeOffRequests(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="hris.timeOffRequestsAdd",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -873,6 +883,7 @@ class TimeOffRequests(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="hris.timeOffRequestsOne",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -1027,6 +1038,7 @@ class TimeOffRequests(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="hris.timeOffRequestsOne",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -1236,6 +1248,7 @@ class TimeOffRequests(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="hris.timeOffRequestsUpdate",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -1445,6 +1458,7 @@ class TimeOffRequests(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="hris.timeOffRequestsUpdate",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -1596,6 +1610,7 @@ class TimeOffRequests(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="hris.timeOffRequestsDelete",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -1747,6 +1762,7 @@ class TimeOffRequests(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="hris.timeOffRequestsDelete",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(

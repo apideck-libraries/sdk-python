@@ -109,6 +109,7 @@ class Opportunities(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="crm.opportunitiesAll",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -126,7 +127,10 @@ class Opportunities(BaseSDK):
 
             if len(next_cursor) == 0:
                 return None
+
             next_cursor = next_cursor[0]
+            if next_cursor is None:
+                return None
 
             return self.list(
                 raw=raw,
@@ -302,6 +306,7 @@ class Opportunities(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="crm.opportunitiesAll",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -319,7 +324,10 @@ class Opportunities(BaseSDK):
 
             if len(next_cursor) == 0:
                 return None
+
             next_cursor = next_cursor[0]
+            if next_cursor is None:
+                return None
 
             return self.list(
                 raw=raw,
@@ -571,6 +579,7 @@ class Opportunities(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="crm.opportunitiesAdd",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -816,6 +825,7 @@ class Opportunities(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="crm.opportunitiesAdd",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -967,6 +977,7 @@ class Opportunities(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="crm.opportunitiesOne",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -1118,6 +1129,7 @@ class Opportunities(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="crm.opportunitiesOne",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -1366,6 +1378,7 @@ class Opportunities(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="crm.opportunitiesUpdate",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -1614,6 +1627,7 @@ class Opportunities(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="crm.opportunitiesUpdate",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -1762,6 +1776,7 @@ class Opportunities(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="crm.opportunitiesDelete",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -1910,6 +1925,7 @@ class Opportunities(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="crm.opportunitiesDelete",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(

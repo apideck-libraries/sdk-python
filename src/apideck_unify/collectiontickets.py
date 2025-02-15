@@ -108,6 +108,7 @@ class CollectionTickets(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="issueTracking.collectionTicketsAll",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -125,7 +126,10 @@ class CollectionTickets(BaseSDK):
 
             if len(next_cursor) == 0:
                 return None
+
             next_cursor = next_cursor[0]
+            if next_cursor is None:
+                return None
 
             return self.list(
                 collection_id=collection_id,
@@ -301,6 +305,7 @@ class CollectionTickets(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="issueTracking.collectionTicketsAll",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -318,7 +323,10 @@ class CollectionTickets(BaseSDK):
 
             if len(next_cursor) == 0:
                 return None
+
             next_cursor = next_cursor[0]
+            if next_cursor is None:
+                return None
 
             return self.list(
                 collection_id=collection_id,
@@ -524,6 +532,7 @@ class CollectionTickets(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="issueTracking.collectionTicketsAdd",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -722,6 +731,7 @@ class CollectionTickets(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="issueTracking.collectionTicketsAdd",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -876,6 +886,7 @@ class CollectionTickets(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="issueTracking.collectionTicketsOne",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -1030,6 +1041,7 @@ class CollectionTickets(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="issueTracking.collectionTicketsOne",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -1231,6 +1243,7 @@ class CollectionTickets(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="issueTracking.collectionTicketsUpdate",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -1432,6 +1445,7 @@ class CollectionTickets(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="issueTracking.collectionTicketsUpdate",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -1583,6 +1597,7 @@ class CollectionTickets(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="issueTracking.collectionTicketsDelete",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -1734,6 +1749,7 @@ class CollectionTickets(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="issueTracking.collectionTicketsDelete",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(

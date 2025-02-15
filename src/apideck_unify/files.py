@@ -115,6 +115,7 @@ class Files(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="fileStorage.filesAll",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -132,7 +133,10 @@ class Files(BaseSDK):
 
             if len(next_cursor) == 0:
                 return None
+
             next_cursor = next_cursor[0]
+            if next_cursor is None:
+                return None
 
             return self.list(
                 raw=raw,
@@ -304,6 +308,7 @@ class Files(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="fileStorage.filesAll",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -321,7 +326,10 @@ class Files(BaseSDK):
 
             if len(next_cursor) == 0:
                 return None
+
             next_cursor = next_cursor[0]
+            if next_cursor is None:
+                return None
 
             return self.list(
                 raw=raw,
@@ -505,6 +513,7 @@ class Files(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="fileStorage.filesSearch",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -682,6 +691,7 @@ class Files(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="fileStorage.filesSearch",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -833,6 +843,7 @@ class Files(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="fileStorage.filesOne",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -984,6 +995,7 @@ class Files(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="fileStorage.filesOne",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -1157,6 +1169,7 @@ class Files(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="fileStorage.filesUpdate",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -1330,6 +1343,7 @@ class Files(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="fileStorage.filesUpdate",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -1478,6 +1492,7 @@ class Files(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="fileStorage.filesDelete",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -1626,6 +1641,7 @@ class Files(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="fileStorage.filesDelete",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -1778,6 +1794,7 @@ class Files(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="fileStorage.filesDownload",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -1935,6 +1952,7 @@ class Files(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="fileStorage.filesDownload",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -2095,6 +2113,7 @@ class Files(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="fileStorage.filesExport",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -2255,6 +2274,7 @@ class Files(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="fileStorage.filesExport",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(

@@ -12,11 +12,12 @@ generation:
     nameResolutionDec2023: true
     parameterOrderingFeb2024: true
     requestResponseComponentNamesFeb2024: true
+    securityFeb2025: false
   auth:
     oAuth2ClientCredentialsEnabled: true
     oAuth2PasswordEnabled: true
 python:
-  version: 0.6.1
+  version: 0.7.0
   additionalDependencies:
     dev: {}
     main: {}
@@ -46,5 +47,6 @@ python:
   methodArguments: infer-optional-args
   outputModelSuffix: output
   packageName: apideck-unify
+  pytestTimeout: 0
   responseFormat: envelope-http
   templateVersion: v2
