@@ -47,6 +47,8 @@ class Expenses(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.AccountingExpensesAllRequest(
             raw=raw,
@@ -91,6 +93,7 @@ class Expenses(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="accounting.expensesAll",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -108,7 +111,10 @@ class Expenses(BaseSDK):
 
             if len(next_cursor) == 0:
                 return None
+
             next_cursor = next_cursor[0]
+            if next_cursor is None:
+                return None
 
             return self.list(
                 raw=raw,
@@ -218,6 +224,8 @@ class Expenses(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.AccountingExpensesAllRequest(
             raw=raw,
@@ -262,6 +270,7 @@ class Expenses(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="accounting.expensesAll",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -279,7 +288,10 @@ class Expenses(BaseSDK):
 
             if len(next_cursor) == 0:
                 return None
+
             next_cursor = next_cursor[0]
+            if next_cursor is None:
+                return None
 
             return self.list(
                 raw=raw,
@@ -430,6 +442,8 @@ class Expenses(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.AccountingExpensesAddRequest(
             raw=raw,
@@ -503,6 +517,7 @@ class Expenses(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="accounting.expensesAdd",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -651,6 +666,8 @@ class Expenses(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.AccountingExpensesAddRequest(
             raw=raw,
@@ -724,6 +741,7 @@ class Expenses(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="accounting.expensesAdd",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -829,6 +847,8 @@ class Expenses(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.AccountingExpensesOneRequest(
             id=id,
@@ -872,6 +892,7 @@ class Expenses(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="accounting.expensesOne",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -977,6 +998,8 @@ class Expenses(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.AccountingExpensesOneRequest(
             id=id,
@@ -1020,6 +1043,7 @@ class Expenses(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="accounting.expensesOne",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -1170,6 +1194,8 @@ class Expenses(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.AccountingExpensesUpdateRequest(
             id=id,
@@ -1244,6 +1270,7 @@ class Expenses(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="accounting.expensesUpdate",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -1394,6 +1421,8 @@ class Expenses(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.AccountingExpensesUpdateRequest(
             id=id,
@@ -1468,6 +1497,7 @@ class Expenses(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="accounting.expensesUpdate",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -1573,6 +1603,8 @@ class Expenses(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.AccountingExpensesDeleteRequest(
             id=id,
@@ -1616,6 +1648,7 @@ class Expenses(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="accounting.expensesDelete",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -1721,6 +1754,8 @@ class Expenses(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.AccountingExpensesDeleteRequest(
             id=id,
@@ -1764,6 +1799,7 @@ class Expenses(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="accounting.expensesDelete",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(

@@ -107,7 +107,9 @@ class BillTypedDict(TypedDict):
     bank_account: NotRequired[BankAccountTypedDict]
     discount_percentage: NotRequired[Nullable[float]]
     r"""Discount percentage applied to this transaction."""
-    tracking_categories: NotRequired[Nullable[List[LinkedTrackingCategoryTypedDict]]]
+    tracking_categories: NotRequired[
+        Nullable[List[Nullable[LinkedTrackingCategoryTypedDict]]]
+    ]
     r"""A list of linked tracking categories."""
     updated_by: NotRequired[Nullable[str]]
     r"""The user who last updated the object."""
@@ -215,7 +217,9 @@ class Bill(BaseModel):
     discount_percentage: OptionalNullable[float] = UNSET
     r"""Discount percentage applied to this transaction."""
 
-    tracking_categories: OptionalNullable[List[LinkedTrackingCategory]] = UNSET
+    tracking_categories: OptionalNullable[List[Nullable[LinkedTrackingCategory]]] = (
+        UNSET
+    )
     r"""A list of linked tracking categories."""
 
     updated_by: OptionalNullable[str] = UNSET
@@ -405,7 +409,9 @@ class BillInputTypedDict(TypedDict):
     bank_account: NotRequired[BankAccountTypedDict]
     discount_percentage: NotRequired[Nullable[float]]
     r"""Discount percentage applied to this transaction."""
-    tracking_categories: NotRequired[Nullable[List[LinkedTrackingCategoryTypedDict]]]
+    tracking_categories: NotRequired[
+        Nullable[List[Nullable[LinkedTrackingCategoryTypedDict]]]
+    ]
     r"""A list of linked tracking categories."""
     row_version: NotRequired[Nullable[str]]
     r"""A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object."""
@@ -497,7 +503,9 @@ class BillInput(BaseModel):
     discount_percentage: OptionalNullable[float] = UNSET
     r"""Discount percentage applied to this transaction."""
 
-    tracking_categories: OptionalNullable[List[LinkedTrackingCategory]] = UNSET
+    tracking_categories: OptionalNullable[List[Nullable[LinkedTrackingCategory]]] = (
+        UNSET
+    )
     r"""A list of linked tracking categories."""
 
     row_version: OptionalNullable[str] = UNSET

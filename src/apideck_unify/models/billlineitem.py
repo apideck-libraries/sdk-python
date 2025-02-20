@@ -67,7 +67,9 @@ class BillLineItemTypedDict(TypedDict):
     item: NotRequired[LinkedInvoiceItemTypedDict]
     tax_rate: NotRequired[LinkedTaxRateTypedDict]
     ledger_account: NotRequired[Nullable[LinkedLedgerAccountTypedDict]]
-    tracking_categories: NotRequired[Nullable[List[LinkedTrackingCategoryTypedDict]]]
+    tracking_categories: NotRequired[
+        Nullable[List[Nullable[LinkedTrackingCategoryTypedDict]]]
+    ]
     r"""A list of linked tracking categories."""
     row_version: NotRequired[Nullable[str]]
     r"""A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object."""
@@ -131,7 +133,9 @@ class BillLineItem(BaseModel):
 
     ledger_account: OptionalNullable[LinkedLedgerAccount] = UNSET
 
-    tracking_categories: OptionalNullable[List[LinkedTrackingCategory]] = UNSET
+    tracking_categories: OptionalNullable[List[Nullable[LinkedTrackingCategory]]] = (
+        UNSET
+    )
     r"""A list of linked tracking categories."""
 
     row_version: OptionalNullable[str] = UNSET
@@ -256,7 +260,9 @@ class BillLineItemInputTypedDict(TypedDict):
     item: NotRequired[LinkedInvoiceItemTypedDict]
     tax_rate: NotRequired[LinkedTaxRateInputTypedDict]
     ledger_account: NotRequired[Nullable[LinkedLedgerAccountInputTypedDict]]
-    tracking_categories: NotRequired[Nullable[List[LinkedTrackingCategoryTypedDict]]]
+    tracking_categories: NotRequired[
+        Nullable[List[Nullable[LinkedTrackingCategoryTypedDict]]]
+    ]
     r"""A list of linked tracking categories."""
     row_version: NotRequired[Nullable[str]]
     r"""A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object."""
@@ -309,7 +315,9 @@ class BillLineItemInput(BaseModel):
 
     ledger_account: OptionalNullable[LinkedLedgerAccountInput] = UNSET
 
-    tracking_categories: OptionalNullable[List[LinkedTrackingCategory]] = UNSET
+    tracking_categories: OptionalNullable[List[Nullable[LinkedTrackingCategory]]] = (
+        UNSET
+    )
     r"""A list of linked tracking categories."""
 
     row_version: OptionalNullable[str] = UNSET

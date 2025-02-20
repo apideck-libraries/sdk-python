@@ -73,7 +73,7 @@ class EcommerceProductOptionsTypedDict(TypedDict):
     r"""A unique identifier for the option of the product."""
     name: NotRequired[Nullable[str]]
     r"""The name of the option for the product."""
-    values: NotRequired[List[str]]
+    values: NotRequired[List[Nullable[str]]]
 
 
 class EcommerceProductOptions(BaseModel):
@@ -83,7 +83,7 @@ class EcommerceProductOptions(BaseModel):
     name: OptionalNullable[str] = UNSET
     r"""The name of the option for the product."""
 
-    values: Optional[List[str]] = None
+    values: Optional[List[Nullable[str]]] = None
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
@@ -374,7 +374,7 @@ class EcommerceProductTypedDict(TypedDict):
     options: NotRequired[List[EcommerceProductOptionsTypedDict]]
     r"""An array of options for the product."""
     variants: NotRequired[List[VariantsTypedDict]]
-    tags: NotRequired[List[str]]
+    tags: NotRequired[List[Nullable[str]]]
     r"""An array of tags for the product, used for organization and searching."""
     categories: NotRequired[List[EcommerceProductCategoriesTypedDict]]
     r"""An array of categories for the product, used for organization and searching."""
@@ -422,7 +422,7 @@ class EcommerceProduct(BaseModel):
 
     variants: Optional[List[Variants]] = None
 
-    tags: Optional[List[str]] = None
+    tags: Optional[List[Nullable[str]]] = None
     r"""An array of tags for the product, used for organization and searching."""
 
     categories: Optional[List[EcommerceProductCategories]] = None

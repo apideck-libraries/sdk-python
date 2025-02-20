@@ -21,7 +21,9 @@ from typing_extensions import NotRequired, TypedDict
 class ExpenseLineItemInputTypedDict(TypedDict):
     total_amount: Nullable[float]
     r"""The total amount of the expense line item."""
-    tracking_categories: NotRequired[Nullable[List[LinkedTrackingCategoryTypedDict]]]
+    tracking_categories: NotRequired[
+        Nullable[List[Nullable[LinkedTrackingCategoryTypedDict]]]
+    ]
     r"""A list of linked tracking categories."""
     account_id: NotRequired[str]
     r"""The unique identifier for the ledger account."""
@@ -42,7 +44,9 @@ class ExpenseLineItemInput(BaseModel):
     total_amount: Nullable[float]
     r"""The total amount of the expense line item."""
 
-    tracking_categories: OptionalNullable[List[LinkedTrackingCategory]] = UNSET
+    tracking_categories: OptionalNullable[List[Nullable[LinkedTrackingCategory]]] = (
+        UNSET
+    )
     r"""A list of linked tracking categories."""
 
     account_id: Optional[str] = None

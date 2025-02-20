@@ -3,7 +3,7 @@
 from .basesdk import BaseSDK
 from apideck_unify import models, utils
 from apideck_unify._hooks import HookContext
-from apideck_unify.types import OptionalNullable, UNSET
+from apideck_unify.types import Nullable, OptionalNullable, UNSET
 from apideck_unify.utils import get_security_from_env
 from datetime import date
 from jsonpath import JSONPath
@@ -59,6 +59,8 @@ class InvoiceItems(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.AccountingInvoiceItemsAllRequest(
             raw=raw,
@@ -109,6 +111,7 @@ class InvoiceItems(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="accounting.invoiceItemsAll",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -126,7 +129,10 @@ class InvoiceItems(BaseSDK):
 
             if len(next_cursor) == 0:
                 return None
+
             next_cursor = next_cursor[0]
+            if next_cursor is None:
+                return None
 
             return self.list(
                 raw=raw,
@@ -252,6 +258,8 @@ class InvoiceItems(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.AccountingInvoiceItemsAllRequest(
             raw=raw,
@@ -302,6 +310,7 @@ class InvoiceItems(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="accounting.invoiceItemsAll",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -319,7 +328,10 @@ class InvoiceItems(BaseSDK):
 
             if len(next_cursor) == 0:
                 return None
+
             next_cursor = next_cursor[0]
+            if next_cursor is None:
+                return None
 
             return self.list(
                 raw=raw,
@@ -452,8 +464,8 @@ class InvoiceItems(BaseSDK):
         ] = UNSET,
         tracking_categories: OptionalNullable[
             Union[
-                List[models.LinkedTrackingCategory],
-                List[models.LinkedTrackingCategoryTypedDict],
+                List[Nullable[models.LinkedTrackingCategory]],
+                List[Nullable[models.LinkedTrackingCategoryTypedDict]],
             ]
         ] = UNSET,
         active: OptionalNullable[bool] = UNSET,
@@ -507,6 +519,8 @@ class InvoiceItems(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.AccountingInvoiceItemsAddRequest(
             raw=raw,
@@ -546,7 +560,7 @@ class InvoiceItems(BaseSDK):
                 ),
                 tracking_categories=utils.get_pydantic_model(
                     tracking_categories,
-                    OptionalNullable[List[models.LinkedTrackingCategory]],
+                    OptionalNullable[List[Nullable[models.LinkedTrackingCategory]]],
                 ),
                 active=active,
                 row_version=row_version,
@@ -593,6 +607,7 @@ class InvoiceItems(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="accounting.invoiceItemsAdd",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -719,8 +734,8 @@ class InvoiceItems(BaseSDK):
         ] = UNSET,
         tracking_categories: OptionalNullable[
             Union[
-                List[models.LinkedTrackingCategory],
-                List[models.LinkedTrackingCategoryTypedDict],
+                List[Nullable[models.LinkedTrackingCategory]],
+                List[Nullable[models.LinkedTrackingCategoryTypedDict]],
             ]
         ] = UNSET,
         active: OptionalNullable[bool] = UNSET,
@@ -774,6 +789,8 @@ class InvoiceItems(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.AccountingInvoiceItemsAddRequest(
             raw=raw,
@@ -813,7 +830,7 @@ class InvoiceItems(BaseSDK):
                 ),
                 tracking_categories=utils.get_pydantic_model(
                     tracking_categories,
-                    OptionalNullable[List[models.LinkedTrackingCategory]],
+                    OptionalNullable[List[Nullable[models.LinkedTrackingCategory]]],
                 ),
                 active=active,
                 row_version=row_version,
@@ -860,6 +877,7 @@ class InvoiceItems(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="accounting.invoiceItemsAdd",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -971,6 +989,8 @@ class InvoiceItems(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.AccountingInvoiceItemsOneRequest(
             id=id,
@@ -1018,6 +1038,7 @@ class InvoiceItems(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="accounting.invoiceItemsOne",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -1129,6 +1150,8 @@ class InvoiceItems(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.AccountingInvoiceItemsOneRequest(
             id=id,
@@ -1176,6 +1199,7 @@ class InvoiceItems(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="accounting.invoiceItemsOne",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -1303,8 +1327,8 @@ class InvoiceItems(BaseSDK):
         ] = UNSET,
         tracking_categories: OptionalNullable[
             Union[
-                List[models.LinkedTrackingCategory],
-                List[models.LinkedTrackingCategoryTypedDict],
+                List[Nullable[models.LinkedTrackingCategory]],
+                List[Nullable[models.LinkedTrackingCategoryTypedDict]],
             ]
         ] = UNSET,
         active: OptionalNullable[bool] = UNSET,
@@ -1359,6 +1383,8 @@ class InvoiceItems(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.AccountingInvoiceItemsUpdateRequest(
             id=id,
@@ -1399,7 +1425,7 @@ class InvoiceItems(BaseSDK):
                 ),
                 tracking_categories=utils.get_pydantic_model(
                     tracking_categories,
-                    OptionalNullable[List[models.LinkedTrackingCategory]],
+                    OptionalNullable[List[Nullable[models.LinkedTrackingCategory]]],
                 ),
                 active=active,
                 row_version=row_version,
@@ -1446,6 +1472,7 @@ class InvoiceItems(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="accounting.invoiceItemsUpdate",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -1573,8 +1600,8 @@ class InvoiceItems(BaseSDK):
         ] = UNSET,
         tracking_categories: OptionalNullable[
             Union[
-                List[models.LinkedTrackingCategory],
-                List[models.LinkedTrackingCategoryTypedDict],
+                List[Nullable[models.LinkedTrackingCategory]],
+                List[Nullable[models.LinkedTrackingCategoryTypedDict]],
             ]
         ] = UNSET,
         active: OptionalNullable[bool] = UNSET,
@@ -1629,6 +1656,8 @@ class InvoiceItems(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.AccountingInvoiceItemsUpdateRequest(
             id=id,
@@ -1669,7 +1698,7 @@ class InvoiceItems(BaseSDK):
                 ),
                 tracking_categories=utils.get_pydantic_model(
                     tracking_categories,
-                    OptionalNullable[List[models.LinkedTrackingCategory]],
+                    OptionalNullable[List[Nullable[models.LinkedTrackingCategory]]],
                 ),
                 active=active,
                 row_version=row_version,
@@ -1716,6 +1745,7 @@ class InvoiceItems(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="accounting.invoiceItemsUpdate",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -1821,6 +1851,8 @@ class InvoiceItems(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.AccountingInvoiceItemsDeleteRequest(
             id=id,
@@ -1864,6 +1896,7 @@ class InvoiceItems(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="accounting.invoiceItemsDelete",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -1969,6 +2002,8 @@ class InvoiceItems(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.AccountingInvoiceItemsDeleteRequest(
             id=id,
@@ -2012,6 +2047,7 @@ class InvoiceItems(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="accounting.invoiceItemsDelete",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(

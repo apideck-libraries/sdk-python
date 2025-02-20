@@ -54,6 +54,8 @@ class DriveGroups(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.FileStorageDriveGroupsAllRequest(
             raw=raw,
@@ -103,6 +105,7 @@ class DriveGroups(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="fileStorage.driveGroupsAll",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -120,7 +123,10 @@ class DriveGroups(BaseSDK):
 
             if len(next_cursor) == 0:
                 return None
+
             next_cursor = next_cursor[0]
+            if next_cursor is None:
+                return None
 
             return self.list(
                 raw=raw,
@@ -241,6 +247,8 @@ class DriveGroups(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.FileStorageDriveGroupsAllRequest(
             raw=raw,
@@ -290,6 +298,7 @@ class DriveGroups(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="fileStorage.driveGroupsAll",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -307,7 +316,10 @@ class DriveGroups(BaseSDK):
 
             if len(next_cursor) == 0:
                 return None
+
             next_cursor = next_cursor[0]
+            if next_cursor is None:
+                return None
 
             return self.list(
                 raw=raw,
@@ -426,6 +438,8 @@ class DriveGroups(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.FileStorageDriveGroupsAddRequest(
             raw=raw,
@@ -479,6 +493,7 @@ class DriveGroups(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="fileStorage.driveGroupsAdd",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -592,6 +607,8 @@ class DriveGroups(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.FileStorageDriveGroupsAddRequest(
             raw=raw,
@@ -645,6 +662,7 @@ class DriveGroups(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="fileStorage.driveGroupsAdd",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -752,6 +770,8 @@ class DriveGroups(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.FileStorageDriveGroupsOneRequest(
             id=id,
@@ -796,6 +816,7 @@ class DriveGroups(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="fileStorage.driveGroupsOne",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -903,6 +924,8 @@ class DriveGroups(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.FileStorageDriveGroupsOneRequest(
             id=id,
@@ -947,6 +970,7 @@ class DriveGroups(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="fileStorage.driveGroupsOne",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -1062,6 +1086,8 @@ class DriveGroups(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.FileStorageDriveGroupsUpdateRequest(
             id=id,
@@ -1116,6 +1142,7 @@ class DriveGroups(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="fileStorage.driveGroupsUpdate",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -1231,6 +1258,8 @@ class DriveGroups(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.FileStorageDriveGroupsUpdateRequest(
             id=id,
@@ -1285,6 +1314,7 @@ class DriveGroups(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="fileStorage.driveGroupsUpdate",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -1390,6 +1420,8 @@ class DriveGroups(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.FileStorageDriveGroupsDeleteRequest(
             id=id,
@@ -1433,6 +1465,7 @@ class DriveGroups(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="fileStorage.driveGroupsDelete",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -1538,6 +1571,8 @@ class DriveGroups(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.FileStorageDriveGroupsDeleteRequest(
             id=id,
@@ -1581,6 +1616,7 @@ class DriveGroups(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="fileStorage.driveGroupsDelete",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(

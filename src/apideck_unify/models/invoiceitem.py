@@ -172,7 +172,9 @@ class InvoiceItemTypedDict(TypedDict):
     income_account: NotRequired[Nullable[LinkedLedgerAccountTypedDict]]
     expense_account: NotRequired[Nullable[LinkedLedgerAccountTypedDict]]
     tracking_category: NotRequired[Nullable[DeprecatedLinkedTrackingCategoryTypedDict]]
-    tracking_categories: NotRequired[Nullable[List[LinkedTrackingCategoryTypedDict]]]
+    tracking_categories: NotRequired[
+        Nullable[List[Nullable[LinkedTrackingCategoryTypedDict]]]
+    ]
     r"""A list of linked tracking categories."""
     active: NotRequired[Nullable[bool]]
     custom_mappings: NotRequired[Nullable[CustomMappingsTypedDict]]
@@ -243,7 +245,9 @@ class InvoiceItem(BaseModel):
         ),
     ] = UNSET
 
-    tracking_categories: OptionalNullable[List[LinkedTrackingCategory]] = UNSET
+    tracking_categories: OptionalNullable[List[Nullable[LinkedTrackingCategory]]] = (
+        UNSET
+    )
     r"""A list of linked tracking categories."""
 
     active: OptionalNullable[bool] = UNSET
@@ -481,7 +485,9 @@ class InvoiceItemInputTypedDict(TypedDict):
     income_account: NotRequired[Nullable[LinkedLedgerAccountInputTypedDict]]
     expense_account: NotRequired[Nullable[LinkedLedgerAccountInputTypedDict]]
     tracking_category: NotRequired[Nullable[DeprecatedLinkedTrackingCategoryTypedDict]]
-    tracking_categories: NotRequired[Nullable[List[LinkedTrackingCategoryTypedDict]]]
+    tracking_categories: NotRequired[
+        Nullable[List[Nullable[LinkedTrackingCategoryTypedDict]]]
+    ]
     r"""A list of linked tracking categories."""
     active: NotRequired[Nullable[bool]]
     row_version: NotRequired[Nullable[str]]
@@ -539,7 +545,9 @@ class InvoiceItemInput(BaseModel):
         ),
     ] = UNSET
 
-    tracking_categories: OptionalNullable[List[LinkedTrackingCategory]] = UNSET
+    tracking_categories: OptionalNullable[List[Nullable[LinkedTrackingCategory]]] = (
+        UNSET
+    )
     r"""A list of linked tracking categories."""
 
     active: OptionalNullable[bool] = UNSET

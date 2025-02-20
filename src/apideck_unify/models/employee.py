@@ -310,8 +310,8 @@ class EmployeeTypedDict(TypedDict):
     r"""The preferred pronouns of the person."""
     preferred_language: NotRequired[Nullable[str]]
     r"""language code according to ISO 639-1. For the United States - EN"""
-    languages: NotRequired[List[str]]
-    nationalities: NotRequired[List[str]]
+    languages: NotRequired[List[Nullable[str]]]
+    nationalities: NotRequired[List[Nullable[str]]]
     photo_url: NotRequired[Nullable[str]]
     r"""The URL of the photo of a person."""
     timezone: NotRequired[Nullable[str]]
@@ -468,9 +468,9 @@ class Employee(BaseModel):
     preferred_language: OptionalNullable[str] = UNSET
     r"""language code according to ISO 639-1. For the United States - EN"""
 
-    languages: Optional[List[str]] = None
+    languages: Optional[List[Nullable[str]]] = None
 
-    nationalities: Optional[List[str]] = None
+    nationalities: Optional[List[Nullable[str]]] = None
 
     photo_url: OptionalNullable[str] = UNSET
     r"""The URL of the photo of a person."""
@@ -765,8 +765,8 @@ class EmployeeInputTypedDict(TypedDict):
     r"""The preferred pronouns of the person."""
     preferred_language: NotRequired[Nullable[str]]
     r"""language code according to ISO 639-1. For the United States - EN"""
-    languages: NotRequired[List[str]]
-    nationalities: NotRequired[List[str]]
+    languages: NotRequired[List[Nullable[str]]]
+    nationalities: NotRequired[List[Nullable[str]]]
     photo_url: NotRequired[Nullable[str]]
     r"""The URL of the photo of a person."""
     timezone: NotRequired[Nullable[str]]
@@ -913,9 +913,9 @@ class EmployeeInput(BaseModel):
     preferred_language: OptionalNullable[str] = UNSET
     r"""language code according to ISO 639-1. For the United States - EN"""
 
-    languages: Optional[List[str]] = None
+    languages: Optional[List[Nullable[str]]] = None
 
-    nationalities: Optional[List[str]] = None
+    nationalities: Optional[List[Nullable[str]]] = None
 
     photo_url: OptionalNullable[str] = UNSET
     r"""The URL of the photo of a person."""

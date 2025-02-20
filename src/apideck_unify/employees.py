@@ -3,7 +3,7 @@
 from .basesdk import BaseSDK
 from apideck_unify import models, utils
 from apideck_unify._hooks import HookContext
-from apideck_unify.types import OptionalNullable, UNSET
+from apideck_unify.types import Nullable, OptionalNullable, UNSET
 from apideck_unify.utils import get_security_from_env
 from datetime import date
 from jsonpath import JSONPath
@@ -59,6 +59,8 @@ class Employees(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.HrisEmployeesAllRequest(
             raw=raw,
@@ -107,6 +109,7 @@ class Employees(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="hris.employeesAll",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -124,7 +127,10 @@ class Employees(BaseSDK):
 
             if len(next_cursor) == 0:
                 return None
+
             next_cursor = next_cursor[0]
+            if next_cursor is None:
+                return None
 
             return self.list(
                 raw=raw,
@@ -250,6 +256,8 @@ class Employees(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.HrisEmployeesAllRequest(
             raw=raw,
@@ -298,6 +306,7 @@ class Employees(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="hris.employeesAll",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -315,7 +324,10 @@ class Employees(BaseSDK):
 
             if len(next_cursor) == 0:
                 return None
+
             next_cursor = next_cursor[0]
+            if next_cursor is None:
+                return None
 
             return self.list(
                 raw=raw,
@@ -440,8 +452,8 @@ class Employees(BaseSDK):
         gender: OptionalNullable[models.Gender] = UNSET,
         pronouns: OptionalNullable[str] = UNSET,
         preferred_language: OptionalNullable[str] = UNSET,
-        languages: Optional[List[str]] = None,
-        nationalities: Optional[List[str]] = None,
+        languages: Optional[List[Nullable[str]]] = None,
+        nationalities: Optional[List[Nullable[str]]] = None,
         photo_url: OptionalNullable[str] = UNSET,
         timezone: OptionalNullable[str] = UNSET,
         source: OptionalNullable[str] = UNSET,
@@ -572,6 +584,8 @@ class Employees(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.HrisEmployeesAddRequest(
             raw=raw,
@@ -701,6 +715,7 @@ class Employees(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="hris.employeesAdd",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -819,8 +834,8 @@ class Employees(BaseSDK):
         gender: OptionalNullable[models.Gender] = UNSET,
         pronouns: OptionalNullable[str] = UNSET,
         preferred_language: OptionalNullable[str] = UNSET,
-        languages: Optional[List[str]] = None,
-        nationalities: Optional[List[str]] = None,
+        languages: Optional[List[Nullable[str]]] = None,
+        nationalities: Optional[List[Nullable[str]]] = None,
         photo_url: OptionalNullable[str] = UNSET,
         timezone: OptionalNullable[str] = UNSET,
         source: OptionalNullable[str] = UNSET,
@@ -951,6 +966,8 @@ class Employees(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.HrisEmployeesAddRequest(
             raw=raw,
@@ -1080,6 +1097,7 @@ class Employees(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="hris.employeesAdd",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -1193,6 +1211,8 @@ class Employees(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.HrisEmployeesOneRequest(
             id=id,
@@ -1241,6 +1261,7 @@ class Employees(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="hris.employeesOne",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -1354,6 +1375,8 @@ class Employees(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.HrisEmployeesOneRequest(
             id=id,
@@ -1402,6 +1425,7 @@ class Employees(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="hris.employeesOne",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -1521,8 +1545,8 @@ class Employees(BaseSDK):
         gender: OptionalNullable[models.Gender] = UNSET,
         pronouns: OptionalNullable[str] = UNSET,
         preferred_language: OptionalNullable[str] = UNSET,
-        languages: Optional[List[str]] = None,
-        nationalities: Optional[List[str]] = None,
+        languages: Optional[List[Nullable[str]]] = None,
+        nationalities: Optional[List[Nullable[str]]] = None,
         photo_url: OptionalNullable[str] = UNSET,
         timezone: OptionalNullable[str] = UNSET,
         source: OptionalNullable[str] = UNSET,
@@ -1654,6 +1678,8 @@ class Employees(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.HrisEmployeesUpdateRequest(
             id_param=id_param,
@@ -1784,6 +1810,7 @@ class Employees(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="hris.employeesUpdate",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -1903,8 +1930,8 @@ class Employees(BaseSDK):
         gender: OptionalNullable[models.Gender] = UNSET,
         pronouns: OptionalNullable[str] = UNSET,
         preferred_language: OptionalNullable[str] = UNSET,
-        languages: Optional[List[str]] = None,
-        nationalities: Optional[List[str]] = None,
+        languages: Optional[List[Nullable[str]]] = None,
+        nationalities: Optional[List[Nullable[str]]] = None,
         photo_url: OptionalNullable[str] = UNSET,
         timezone: OptionalNullable[str] = UNSET,
         source: OptionalNullable[str] = UNSET,
@@ -2036,6 +2063,8 @@ class Employees(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.HrisEmployeesUpdateRequest(
             id_param=id_param,
@@ -2166,6 +2195,7 @@ class Employees(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="hris.employeesUpdate",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -2271,6 +2301,8 @@ class Employees(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.HrisEmployeesDeleteRequest(
             id=id,
@@ -2314,6 +2346,7 @@ class Employees(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="hris.employeesDelete",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -2419,6 +2452,8 @@ class Employees(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.HrisEmployeesDeleteRequest(
             id=id,
@@ -2462,6 +2497,7 @@ class Employees(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="hris.employeesDelete",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(

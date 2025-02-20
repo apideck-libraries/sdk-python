@@ -57,7 +57,9 @@ class JournalEntryLineItemTypedDict(TypedDict):
     r"""Debit entries are considered positive, and credit entries are considered negative."""
     tax_rate: NotRequired[LinkedTaxRateTypedDict]
     tracking_category: NotRequired[Nullable[DeprecatedLinkedTrackingCategoryTypedDict]]
-    tracking_categories: NotRequired[Nullable[List[LinkedTrackingCategoryTypedDict]]]
+    tracking_categories: NotRequired[
+        Nullable[List[Nullable[LinkedTrackingCategoryTypedDict]]]
+    ]
     r"""A list of linked tracking categories."""
     customer: NotRequired[Nullable[LinkedCustomerTypedDict]]
     r"""The customer this entity is linked to."""
@@ -101,7 +103,9 @@ class JournalEntryLineItem(BaseModel):
         ),
     ] = UNSET
 
-    tracking_categories: OptionalNullable[List[LinkedTrackingCategory]] = UNSET
+    tracking_categories: OptionalNullable[List[Nullable[LinkedTrackingCategory]]] = (
+        UNSET
+    )
     r"""A list of linked tracking categories."""
 
     customer: OptionalNullable[LinkedCustomer] = UNSET
@@ -189,7 +193,9 @@ class JournalEntryLineItemInputTypedDict(TypedDict):
     r"""Debit entries are considered positive, and credit entries are considered negative."""
     tax_rate: NotRequired[LinkedTaxRateInputTypedDict]
     tracking_category: NotRequired[Nullable[DeprecatedLinkedTrackingCategoryTypedDict]]
-    tracking_categories: NotRequired[Nullable[List[LinkedTrackingCategoryTypedDict]]]
+    tracking_categories: NotRequired[
+        Nullable[List[Nullable[LinkedTrackingCategoryTypedDict]]]
+    ]
     r"""A list of linked tracking categories."""
     customer: NotRequired[Nullable[LinkedCustomerInputTypedDict]]
     r"""The customer this entity is linked to."""
@@ -226,7 +232,9 @@ class JournalEntryLineItemInput(BaseModel):
         ),
     ] = UNSET
 
-    tracking_categories: OptionalNullable[List[LinkedTrackingCategory]] = UNSET
+    tracking_categories: OptionalNullable[List[Nullable[LinkedTrackingCategory]]] = (
+        UNSET
+    )
     r"""A list of linked tracking categories."""
 
     customer: OptionalNullable[LinkedCustomerInput] = UNSET
