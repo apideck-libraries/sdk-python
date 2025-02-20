@@ -41,6 +41,8 @@ class ConnectorResources(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.ConnectorConnectorResourcesOneRequest(
             app_id=app_id,
@@ -82,6 +84,7 @@ class ConnectorResources(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="connector.connectorResourcesOne",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -175,6 +178,8 @@ class ConnectorResources(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.ConnectorConnectorResourcesOneRequest(
             app_id=app_id,
@@ -216,6 +221,7 @@ class ConnectorResources(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="connector.connectorResourcesOne",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(

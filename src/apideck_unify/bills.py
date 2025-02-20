@@ -3,7 +3,7 @@
 from .basesdk import BaseSDK
 from apideck_unify import models, utils
 from apideck_unify._hooks import HookContext
-from apideck_unify.types import OptionalNullable, UNSET
+from apideck_unify.types import Nullable, OptionalNullable, UNSET
 from apideck_unify.utils import get_security_from_env
 from datetime import date
 from jsonpath import JSONPath
@@ -57,6 +57,8 @@ class Bills(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.AccountingBillsAllRequest(
             raw=raw,
@@ -105,6 +107,7 @@ class Bills(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="accounting.billsAll",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -122,7 +125,10 @@ class Bills(BaseSDK):
 
             if len(next_cursor) == 0:
                 return None
+
             next_cursor = next_cursor[0]
+            if next_cursor is None:
+                return None
 
             return self.list(
                 raw=raw,
@@ -246,6 +252,8 @@ class Bills(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.AccountingBillsAllRequest(
             raw=raw,
@@ -294,6 +302,7 @@ class Bills(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="accounting.billsAll",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -311,7 +320,10 @@ class Bills(BaseSDK):
 
             if len(next_cursor) == 0:
                 return None
+
             next_cursor = next_cursor[0]
+            if next_cursor is None:
+                return None
 
             return self.list(
                 raw=raw,
@@ -439,8 +451,8 @@ class Bills(BaseSDK):
         discount_percentage: OptionalNullable[float] = UNSET,
         tracking_categories: OptionalNullable[
             Union[
-                List[models.LinkedTrackingCategory],
-                List[models.LinkedTrackingCategoryTypedDict],
+                List[Nullable[models.LinkedTrackingCategory]],
+                List[Nullable[models.LinkedTrackingCategoryTypedDict]],
             ]
         ] = UNSET,
         row_version: OptionalNullable[str] = UNSET,
@@ -509,6 +521,8 @@ class Bills(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.AccountingBillsAddRequest(
             raw=raw,
@@ -554,7 +568,7 @@ class Bills(BaseSDK):
                 discount_percentage=discount_percentage,
                 tracking_categories=utils.get_pydantic_model(
                     tracking_categories,
-                    OptionalNullable[List[models.LinkedTrackingCategory]],
+                    OptionalNullable[List[Nullable[models.LinkedTrackingCategory]]],
                 ),
                 row_version=row_version,
                 custom_fields=utils.get_pydantic_model(
@@ -604,6 +618,7 @@ class Bills(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="accounting.billsAdd",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -725,8 +740,8 @@ class Bills(BaseSDK):
         discount_percentage: OptionalNullable[float] = UNSET,
         tracking_categories: OptionalNullable[
             Union[
-                List[models.LinkedTrackingCategory],
-                List[models.LinkedTrackingCategoryTypedDict],
+                List[Nullable[models.LinkedTrackingCategory]],
+                List[Nullable[models.LinkedTrackingCategoryTypedDict]],
             ]
         ] = UNSET,
         row_version: OptionalNullable[str] = UNSET,
@@ -795,6 +810,8 @@ class Bills(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.AccountingBillsAddRequest(
             raw=raw,
@@ -840,7 +857,7 @@ class Bills(BaseSDK):
                 discount_percentage=discount_percentage,
                 tracking_categories=utils.get_pydantic_model(
                     tracking_categories,
-                    OptionalNullable[List[models.LinkedTrackingCategory]],
+                    OptionalNullable[List[Nullable[models.LinkedTrackingCategory]]],
                 ),
                 row_version=row_version,
                 custom_fields=utils.get_pydantic_model(
@@ -890,6 +907,7 @@ class Bills(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="accounting.billsAdd",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -997,6 +1015,8 @@ class Bills(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.AccountingBillsOneRequest(
             id=id,
@@ -1041,6 +1061,7 @@ class Bills(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="accounting.billsOne",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -1148,6 +1169,8 @@ class Bills(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.AccountingBillsOneRequest(
             id=id,
@@ -1192,6 +1215,7 @@ class Bills(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="accounting.billsOne",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -1314,8 +1338,8 @@ class Bills(BaseSDK):
         discount_percentage: OptionalNullable[float] = UNSET,
         tracking_categories: OptionalNullable[
             Union[
-                List[models.LinkedTrackingCategory],
-                List[models.LinkedTrackingCategoryTypedDict],
+                List[Nullable[models.LinkedTrackingCategory]],
+                List[Nullable[models.LinkedTrackingCategoryTypedDict]],
             ]
         ] = UNSET,
         row_version: OptionalNullable[str] = UNSET,
@@ -1385,6 +1409,8 @@ class Bills(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.AccountingBillsUpdateRequest(
             id=id,
@@ -1431,7 +1457,7 @@ class Bills(BaseSDK):
                 discount_percentage=discount_percentage,
                 tracking_categories=utils.get_pydantic_model(
                     tracking_categories,
-                    OptionalNullable[List[models.LinkedTrackingCategory]],
+                    OptionalNullable[List[Nullable[models.LinkedTrackingCategory]]],
                 ),
                 row_version=row_version,
                 custom_fields=utils.get_pydantic_model(
@@ -1481,6 +1507,7 @@ class Bills(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="accounting.billsUpdate",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -1603,8 +1630,8 @@ class Bills(BaseSDK):
         discount_percentage: OptionalNullable[float] = UNSET,
         tracking_categories: OptionalNullable[
             Union[
-                List[models.LinkedTrackingCategory],
-                List[models.LinkedTrackingCategoryTypedDict],
+                List[Nullable[models.LinkedTrackingCategory]],
+                List[Nullable[models.LinkedTrackingCategoryTypedDict]],
             ]
         ] = UNSET,
         row_version: OptionalNullable[str] = UNSET,
@@ -1674,6 +1701,8 @@ class Bills(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.AccountingBillsUpdateRequest(
             id=id,
@@ -1720,7 +1749,7 @@ class Bills(BaseSDK):
                 discount_percentage=discount_percentage,
                 tracking_categories=utils.get_pydantic_model(
                     tracking_categories,
-                    OptionalNullable[List[models.LinkedTrackingCategory]],
+                    OptionalNullable[List[Nullable[models.LinkedTrackingCategory]]],
                 ),
                 row_version=row_version,
                 custom_fields=utils.get_pydantic_model(
@@ -1770,6 +1799,7 @@ class Bills(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="accounting.billsUpdate",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -1875,6 +1905,8 @@ class Bills(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.AccountingBillsDeleteRequest(
             id=id,
@@ -1918,6 +1950,7 @@ class Bills(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="accounting.billsDelete",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -2023,6 +2056,8 @@ class Bills(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.AccountingBillsDeleteRequest(
             id=id,
@@ -2066,6 +2101,7 @@ class Bills(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="accounting.billsDelete",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(

@@ -57,6 +57,8 @@ class Payments(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.AccountingPaymentsAllRequest(
             raw=raw,
@@ -105,6 +107,7 @@ class Payments(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="accounting.paymentsAll",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -122,7 +125,10 @@ class Payments(BaseSDK):
 
             if len(next_cursor) == 0:
                 return None
+
             next_cursor = next_cursor[0]
+            if next_cursor is None:
+                return None
 
             return self.list(
                 raw=raw,
@@ -246,6 +252,8 @@ class Payments(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.AccountingPaymentsAllRequest(
             raw=raw,
@@ -294,6 +302,7 @@ class Payments(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="accounting.paymentsAll",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -311,7 +320,10 @@ class Payments(BaseSDK):
 
             if len(next_cursor) == 0:
                 return None
+
             next_cursor = next_cursor[0]
+            if next_cursor is None:
+                return None
 
             return self.list(
                 raw=raw,
@@ -432,8 +444,8 @@ class Payments(BaseSDK):
         number: OptionalNullable[str] = UNSET,
         tracking_categories: OptionalNullable[
             Union[
-                List[models.LinkedTrackingCategory],
-                List[models.LinkedTrackingCategoryTypedDict],
+                List[Nullable[models.LinkedTrackingCategory]],
+                List[Nullable[models.LinkedTrackingCategoryTypedDict]],
             ]
         ] = UNSET,
         custom_fields: Optional[
@@ -494,6 +506,8 @@ class Payments(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.AccountingPaymentsAddRequest(
             raw=raw,
@@ -531,7 +545,7 @@ class Payments(BaseSDK):
                 number=number,
                 tracking_categories=utils.get_pydantic_model(
                     tracking_categories,
-                    OptionalNullable[List[models.LinkedTrackingCategory]],
+                    OptionalNullable[List[Nullable[models.LinkedTrackingCategory]]],
                 ),
                 custom_fields=utils.get_pydantic_model(
                     custom_fields, Optional[List[models.CustomField]]
@@ -581,6 +595,7 @@ class Payments(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="accounting.paymentsAdd",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -695,8 +710,8 @@ class Payments(BaseSDK):
         number: OptionalNullable[str] = UNSET,
         tracking_categories: OptionalNullable[
             Union[
-                List[models.LinkedTrackingCategory],
-                List[models.LinkedTrackingCategoryTypedDict],
+                List[Nullable[models.LinkedTrackingCategory]],
+                List[Nullable[models.LinkedTrackingCategoryTypedDict]],
             ]
         ] = UNSET,
         custom_fields: Optional[
@@ -757,6 +772,8 @@ class Payments(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.AccountingPaymentsAddRequest(
             raw=raw,
@@ -794,7 +811,7 @@ class Payments(BaseSDK):
                 number=number,
                 tracking_categories=utils.get_pydantic_model(
                     tracking_categories,
-                    OptionalNullable[List[models.LinkedTrackingCategory]],
+                    OptionalNullable[List[Nullable[models.LinkedTrackingCategory]]],
                 ),
                 custom_fields=utils.get_pydantic_model(
                     custom_fields, Optional[List[models.CustomField]]
@@ -844,6 +861,7 @@ class Payments(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="accounting.paymentsAdd",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -951,6 +969,8 @@ class Payments(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.AccountingPaymentsOneRequest(
             id=id,
@@ -995,6 +1015,7 @@ class Payments(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="accounting.paymentsOne",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -1102,6 +1123,8 @@ class Payments(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.AccountingPaymentsOneRequest(
             id=id,
@@ -1146,6 +1169,7 @@ class Payments(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="accounting.paymentsOne",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -1261,8 +1285,8 @@ class Payments(BaseSDK):
         number: OptionalNullable[str] = UNSET,
         tracking_categories: OptionalNullable[
             Union[
-                List[models.LinkedTrackingCategory],
-                List[models.LinkedTrackingCategoryTypedDict],
+                List[Nullable[models.LinkedTrackingCategory]],
+                List[Nullable[models.LinkedTrackingCategoryTypedDict]],
             ]
         ] = UNSET,
         custom_fields: Optional[
@@ -1324,6 +1348,8 @@ class Payments(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.AccountingPaymentsUpdateRequest(
             id=id,
@@ -1362,7 +1388,7 @@ class Payments(BaseSDK):
                 number=number,
                 tracking_categories=utils.get_pydantic_model(
                     tracking_categories,
-                    OptionalNullable[List[models.LinkedTrackingCategory]],
+                    OptionalNullable[List[Nullable[models.LinkedTrackingCategory]]],
                 ),
                 custom_fields=utils.get_pydantic_model(
                     custom_fields, Optional[List[models.CustomField]]
@@ -1412,6 +1438,7 @@ class Payments(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="accounting.paymentsUpdate",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -1527,8 +1554,8 @@ class Payments(BaseSDK):
         number: OptionalNullable[str] = UNSET,
         tracking_categories: OptionalNullable[
             Union[
-                List[models.LinkedTrackingCategory],
-                List[models.LinkedTrackingCategoryTypedDict],
+                List[Nullable[models.LinkedTrackingCategory]],
+                List[Nullable[models.LinkedTrackingCategoryTypedDict]],
             ]
         ] = UNSET,
         custom_fields: Optional[
@@ -1590,6 +1617,8 @@ class Payments(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.AccountingPaymentsUpdateRequest(
             id=id,
@@ -1628,7 +1657,7 @@ class Payments(BaseSDK):
                 number=number,
                 tracking_categories=utils.get_pydantic_model(
                     tracking_categories,
-                    OptionalNullable[List[models.LinkedTrackingCategory]],
+                    OptionalNullable[List[Nullable[models.LinkedTrackingCategory]]],
                 ),
                 custom_fields=utils.get_pydantic_model(
                     custom_fields, Optional[List[models.CustomField]]
@@ -1678,6 +1707,7 @@ class Payments(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="accounting.paymentsUpdate",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -1783,6 +1813,8 @@ class Payments(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.AccountingPaymentsDeleteRequest(
             id=id,
@@ -1826,6 +1858,7 @@ class Payments(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="accounting.paymentsDelete",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -1931,6 +1964,8 @@ class Payments(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.AccountingPaymentsDeleteRequest(
             id=id,
@@ -1974,6 +2009,7 @@ class Payments(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="accounting.paymentsDelete",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(

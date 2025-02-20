@@ -69,7 +69,9 @@ class InvoiceLineItemTypedDict(TypedDict):
     r"""Department id"""
     item: NotRequired[LinkedInvoiceItemTypedDict]
     tax_rate: NotRequired[LinkedTaxRateTypedDict]
-    tracking_categories: NotRequired[Nullable[List[LinkedTrackingCategoryTypedDict]]]
+    tracking_categories: NotRequired[
+        Nullable[List[Nullable[LinkedTrackingCategoryTypedDict]]]
+    ]
     r"""A list of linked tracking categories."""
     ledger_account: NotRequired[Nullable[LinkedLedgerAccountTypedDict]]
     custom_fields: NotRequired[List[CustomFieldTypedDict]]
@@ -133,7 +135,9 @@ class InvoiceLineItem(BaseModel):
 
     tax_rate: Optional[LinkedTaxRate] = None
 
-    tracking_categories: OptionalNullable[List[LinkedTrackingCategory]] = UNSET
+    tracking_categories: OptionalNullable[List[Nullable[LinkedTrackingCategory]]] = (
+        UNSET
+    )
     r"""A list of linked tracking categories."""
 
     ledger_account: OptionalNullable[LinkedLedgerAccount] = UNSET
@@ -265,7 +269,9 @@ class InvoiceLineItemInputTypedDict(TypedDict):
     r"""Department id"""
     item: NotRequired[LinkedInvoiceItemTypedDict]
     tax_rate: NotRequired[LinkedTaxRateInputTypedDict]
-    tracking_categories: NotRequired[Nullable[List[LinkedTrackingCategoryTypedDict]]]
+    tracking_categories: NotRequired[
+        Nullable[List[Nullable[LinkedTrackingCategoryTypedDict]]]
+    ]
     r"""A list of linked tracking categories."""
     ledger_account: NotRequired[Nullable[LinkedLedgerAccountInputTypedDict]]
     custom_fields: NotRequired[List[CustomFieldTypedDict]]
@@ -321,7 +327,9 @@ class InvoiceLineItemInput(BaseModel):
 
     tax_rate: Optional[LinkedTaxRateInput] = None
 
-    tracking_categories: OptionalNullable[List[LinkedTrackingCategory]] = UNSET
+    tracking_categories: OptionalNullable[List[Nullable[LinkedTrackingCategory]]] = (
+        UNSET
+    )
     r"""A list of linked tracking categories."""
 
     ledger_account: OptionalNullable[LinkedLedgerAccountInput] = UNSET

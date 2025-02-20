@@ -56,6 +56,8 @@ class Contacts(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.CrmContactsAllRequest(
             raw=raw,
@@ -104,6 +106,7 @@ class Contacts(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="crm.contactsAll",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -121,7 +124,10 @@ class Contacts(BaseSDK):
 
             if len(next_cursor) == 0:
                 return None
+
             next_cursor = next_cursor[0]
+            if next_cursor is None:
+                return None
 
             return self.list(
                 raw=raw,
@@ -245,6 +251,8 @@ class Contacts(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.CrmContactsAllRequest(
             raw=raw,
@@ -293,6 +301,7 @@ class Contacts(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="crm.contactsAll",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -310,7 +319,10 @@ class Contacts(BaseSDK):
 
             if len(next_cursor) == 0:
                 return None
+
             next_cursor = next_cursor[0]
+            if next_cursor is None:
+                return None
 
             return self.list(
                 raw=raw,
@@ -500,6 +512,8 @@ class Contacts(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.CrmContactsAddRequest(
             raw=raw,
@@ -593,6 +607,7 @@ class Contacts(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="crm.contactsAdd",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -776,6 +791,8 @@ class Contacts(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.CrmContactsAddRequest(
             raw=raw,
@@ -869,6 +886,7 @@ class Contacts(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="crm.contactsAdd",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -980,6 +998,8 @@ class Contacts(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.CrmContactsOneRequest(
             id=id,
@@ -1025,6 +1045,7 @@ class Contacts(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="crm.contactsOne",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -1136,6 +1157,8 @@ class Contacts(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.CrmContactsOneRequest(
             id=id,
@@ -1181,6 +1204,7 @@ class Contacts(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="crm.contactsOne",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -1366,6 +1390,8 @@ class Contacts(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.CrmContactsUpdateRequest(
             id=id,
@@ -1460,6 +1486,7 @@ class Contacts(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="crm.contactsUpdate",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -1645,6 +1672,8 @@ class Contacts(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.CrmContactsUpdateRequest(
             id=id,
@@ -1739,6 +1768,7 @@ class Contacts(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="crm.contactsUpdate",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -1844,6 +1874,8 @@ class Contacts(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.CrmContactsDeleteRequest(
             id=id,
@@ -1887,6 +1919,7 @@ class Contacts(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="crm.contactsDelete",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -1992,6 +2025,8 @@ class Contacts(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.CrmContactsDeleteRequest(
             id=id,
@@ -2035,6 +2070,7 @@ class Contacts(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="crm.contactsDelete",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(

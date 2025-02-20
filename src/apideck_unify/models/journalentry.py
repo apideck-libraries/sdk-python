@@ -48,7 +48,9 @@ class JournalEntryTypedDict(TypedDict):
     r"""Applicable tax id/code override if tax is not supplied on a line item basis."""
     number: NotRequired[Nullable[str]]
     r"""Journal entry number."""
-    tracking_categories: NotRequired[Nullable[List[LinkedTrackingCategoryTypedDict]]]
+    tracking_categories: NotRequired[
+        Nullable[List[Nullable[LinkedTrackingCategoryTypedDict]]]
+    ]
     r"""A list of linked tracking categories."""
     accounting_period: NotRequired[Nullable[str]]
     r"""Accounting period"""
@@ -106,7 +108,9 @@ class JournalEntry(BaseModel):
     number: OptionalNullable[str] = UNSET
     r"""Journal entry number."""
 
-    tracking_categories: OptionalNullable[List[LinkedTrackingCategory]] = UNSET
+    tracking_categories: OptionalNullable[List[Nullable[LinkedTrackingCategory]]] = (
+        UNSET
+    )
     r"""A list of linked tracking categories."""
 
     accounting_period: OptionalNullable[str] = UNSET

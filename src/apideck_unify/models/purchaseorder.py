@@ -98,7 +98,9 @@ class PurchaseOrderTypedDict(TypedDict):
     r"""The channel through which the transaction is processed."""
     memo: NotRequired[Nullable[str]]
     r"""Message for the supplier. This text appears on the Purchase Order."""
-    tracking_categories: NotRequired[Nullable[List[LinkedTrackingCategoryTypedDict]]]
+    tracking_categories: NotRequired[
+        Nullable[List[Nullable[LinkedTrackingCategoryTypedDict]]]
+    ]
     r"""A list of linked tracking categories."""
     custom_mappings: NotRequired[Nullable[CustomMappingsTypedDict]]
     r"""When custom mappings are configured on the resource, the result is included here."""
@@ -196,7 +198,9 @@ class PurchaseOrder(BaseModel):
     memo: OptionalNullable[str] = UNSET
     r"""Message for the supplier. This text appears on the Purchase Order."""
 
-    tracking_categories: OptionalNullable[List[LinkedTrackingCategory]] = UNSET
+    tracking_categories: OptionalNullable[List[Nullable[LinkedTrackingCategory]]] = (
+        UNSET
+    )
     r"""A list of linked tracking categories."""
 
     custom_mappings: OptionalNullable[CustomMappings] = UNSET
@@ -368,7 +372,9 @@ class PurchaseOrderInputTypedDict(TypedDict):
     r"""The channel through which the transaction is processed."""
     memo: NotRequired[Nullable[str]]
     r"""Message for the supplier. This text appears on the Purchase Order."""
-    tracking_categories: NotRequired[Nullable[List[LinkedTrackingCategoryTypedDict]]]
+    tracking_categories: NotRequired[
+        Nullable[List[Nullable[LinkedTrackingCategoryTypedDict]]]
+    ]
     r"""A list of linked tracking categories."""
     row_version: NotRequired[Nullable[str]]
     r"""A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object."""
@@ -450,7 +456,9 @@ class PurchaseOrderInput(BaseModel):
     memo: OptionalNullable[str] = UNSET
     r"""Message for the supplier. This text appears on the Purchase Order."""
 
-    tracking_categories: OptionalNullable[List[LinkedTrackingCategory]] = UNSET
+    tracking_categories: OptionalNullable[List[Nullable[LinkedTrackingCategory]]] = (
+        UNSET
+    )
     r"""A list of linked tracking categories."""
 
     row_version: OptionalNullable[str] = UNSET

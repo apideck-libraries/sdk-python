@@ -67,6 +67,8 @@ class Files(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.FileStorageFilesAllRequest(
             raw=raw,
@@ -115,6 +117,7 @@ class Files(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="fileStorage.filesAll",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -132,7 +135,10 @@ class Files(BaseSDK):
 
             if len(next_cursor) == 0:
                 return None
+
             next_cursor = next_cursor[0]
+            if next_cursor is None:
+                return None
 
             return self.list(
                 raw=raw,
@@ -256,6 +262,8 @@ class Files(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.FileStorageFilesAllRequest(
             raw=raw,
@@ -304,6 +312,7 @@ class Files(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="fileStorage.filesAll",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -321,7 +330,10 @@ class Files(BaseSDK):
 
             if len(next_cursor) == 0:
                 return None
+
             next_cursor = next_cursor[0]
+            if next_cursor is None:
+                return None
 
             return self.list(
                 raw=raw,
@@ -410,6 +422,7 @@ class Files(BaseSDK):
         fields: OptionalNullable[str] = UNSET,
         cursor: OptionalNullable[str] = UNSET,
         limit: Optional[int] = 20,
+        raw: Optional[bool] = False,
         filter_: Optional[
             Union[models.FilesFilter, models.FilesFilterTypedDict]
         ] = None,
@@ -434,6 +447,7 @@ class Files(BaseSDK):
         :param fields: The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded.
         :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
         :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
+        :param raw: Include raw response. Mostly used for debugging purposes
         :param filter_: Apply filters
         :param drive_id: ID of the drive to filter on
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
@@ -449,6 +463,8 @@ class Files(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.FileStorageFilesSearchRequest(
             consumer_id=consumer_id,
@@ -458,6 +474,7 @@ class Files(BaseSDK):
             fields=fields,
             cursor=cursor,
             limit=limit,
+            raw=raw,
             filter_=utils.get_pydantic_model(filter_, Optional[models.FilesFilter]),
             files_search=models.FilesSearch(
                 query=query,
@@ -505,6 +522,7 @@ class Files(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="fileStorage.filesSearch",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -587,6 +605,7 @@ class Files(BaseSDK):
         fields: OptionalNullable[str] = UNSET,
         cursor: OptionalNullable[str] = UNSET,
         limit: Optional[int] = 20,
+        raw: Optional[bool] = False,
         filter_: Optional[
             Union[models.FilesFilter, models.FilesFilterTypedDict]
         ] = None,
@@ -611,6 +630,7 @@ class Files(BaseSDK):
         :param fields: The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded.
         :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
         :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
+        :param raw: Include raw response. Mostly used for debugging purposes
         :param filter_: Apply filters
         :param drive_id: ID of the drive to filter on
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
@@ -626,6 +646,8 @@ class Files(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.FileStorageFilesSearchRequest(
             consumer_id=consumer_id,
@@ -635,6 +657,7 @@ class Files(BaseSDK):
             fields=fields,
             cursor=cursor,
             limit=limit,
+            raw=raw,
             filter_=utils.get_pydantic_model(filter_, Optional[models.FilesFilter]),
             files_search=models.FilesSearch(
                 query=query,
@@ -682,6 +705,7 @@ class Files(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="fileStorage.filesSearch",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -789,6 +813,8 @@ class Files(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.FileStorageFilesOneRequest(
             id=id,
@@ -833,6 +859,7 @@ class Files(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="fileStorage.filesOne",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -940,6 +967,8 @@ class Files(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.FileStorageFilesOneRequest(
             id=id,
@@ -984,6 +1013,7 @@ class Files(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="fileStorage.filesOne",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -1099,6 +1129,8 @@ class Files(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.FileStorageFilesUpdateRequest(
             id=id,
@@ -1157,6 +1189,7 @@ class Files(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="fileStorage.filesUpdate",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -1272,6 +1305,8 @@ class Files(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.FileStorageFilesUpdateRequest(
             id=id,
@@ -1330,6 +1365,7 @@ class Files(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="fileStorage.filesUpdate",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -1435,6 +1471,8 @@ class Files(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.FileStorageFilesDeleteRequest(
             id=id,
@@ -1478,6 +1516,7 @@ class Files(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="fileStorage.filesDelete",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -1583,6 +1622,8 @@ class Files(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.FileStorageFilesDeleteRequest(
             id=id,
@@ -1626,6 +1667,7 @@ class Files(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="fileStorage.filesDelete",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -1733,6 +1775,8 @@ class Files(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.FileStorageFilesDownloadRequest(
             id=id,
@@ -1778,6 +1822,7 @@ class Files(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="fileStorage.filesDownload",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -1890,6 +1935,8 @@ class Files(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.FileStorageFilesDownloadRequest(
             id=id,
@@ -1935,6 +1982,7 @@ class Files(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="fileStorage.filesDownload",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -2049,6 +2097,8 @@ class Files(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.FileStorageFilesExportRequest(
             id=id,
@@ -2095,6 +2145,7 @@ class Files(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="fileStorage.filesExport",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -2209,6 +2260,8 @@ class Files(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.FileStorageFilesExportRequest(
             id=id,
@@ -2255,6 +2308,7 @@ class Files(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="fileStorage.filesExport",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(

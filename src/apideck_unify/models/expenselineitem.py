@@ -23,7 +23,9 @@ class ExpenseLineItemTypedDict(TypedDict):
     r"""The total amount of the expense line item."""
     id: NotRequired[str]
     r"""A unique identifier for an object."""
-    tracking_categories: NotRequired[Nullable[List[LinkedTrackingCategoryTypedDict]]]
+    tracking_categories: NotRequired[
+        Nullable[List[Nullable[LinkedTrackingCategoryTypedDict]]]
+    ]
     r"""A list of linked tracking categories."""
     account_id: NotRequired[str]
     r"""The unique identifier for the ledger account."""
@@ -47,7 +49,9 @@ class ExpenseLineItem(BaseModel):
     id: Optional[str] = None
     r"""A unique identifier for an object."""
 
-    tracking_categories: OptionalNullable[List[LinkedTrackingCategory]] = UNSET
+    tracking_categories: OptionalNullable[List[Nullable[LinkedTrackingCategory]]] = (
+        UNSET
+    )
     r"""A list of linked tracking categories."""
 
     account_id: Optional[str] = None

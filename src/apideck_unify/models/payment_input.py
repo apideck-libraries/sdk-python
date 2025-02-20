@@ -73,7 +73,9 @@ class PaymentInputTypedDict(TypedDict):
     r"""Note associated with the transaction"""
     number: NotRequired[Nullable[str]]
     r"""Number associated with the transaction"""
-    tracking_categories: NotRequired[Nullable[List[LinkedTrackingCategoryTypedDict]]]
+    tracking_categories: NotRequired[
+        Nullable[List[Nullable[LinkedTrackingCategoryTypedDict]]]
+    ]
     r"""A list of linked tracking categories."""
     custom_fields: NotRequired[List[CustomFieldTypedDict]]
     row_version: NotRequired[Nullable[str]]
@@ -158,7 +160,9 @@ class PaymentInput(BaseModel):
     number: OptionalNullable[str] = UNSET
     r"""Number associated with the transaction"""
 
-    tracking_categories: OptionalNullable[List[LinkedTrackingCategory]] = UNSET
+    tracking_categories: OptionalNullable[List[Nullable[LinkedTrackingCategory]]] = (
+        UNSET
+    )
     r"""A list of linked tracking categories."""
 
     custom_fields: Optional[List[CustomField]] = None

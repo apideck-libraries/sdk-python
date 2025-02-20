@@ -106,7 +106,9 @@ class CreditNoteTypedDict(TypedDict):
     r"""Optional terms to be associated with the credit note."""
     billing_address: NotRequired[AddressTypedDict]
     shipping_address: NotRequired[AddressTypedDict]
-    tracking_categories: NotRequired[Nullable[List[LinkedTrackingCategoryTypedDict]]]
+    tracking_categories: NotRequired[
+        Nullable[List[Nullable[LinkedTrackingCategoryTypedDict]]]
+    ]
     r"""A list of linked tracking categories."""
     custom_mappings: NotRequired[Nullable[CustomMappingsTypedDict]]
     r"""When custom mappings are configured on the resource, the result is included here."""
@@ -196,7 +198,9 @@ class CreditNote(BaseModel):
 
     shipping_address: Optional[Address] = None
 
-    tracking_categories: OptionalNullable[List[LinkedTrackingCategory]] = UNSET
+    tracking_categories: OptionalNullable[List[Nullable[LinkedTrackingCategory]]] = (
+        UNSET
+    )
     r"""A list of linked tracking categories."""
 
     custom_mappings: OptionalNullable[CustomMappings] = UNSET
@@ -354,7 +358,9 @@ class CreditNoteInputTypedDict(TypedDict):
     r"""Optional terms to be associated with the credit note."""
     billing_address: NotRequired[AddressTypedDict]
     shipping_address: NotRequired[AddressTypedDict]
-    tracking_categories: NotRequired[Nullable[List[LinkedTrackingCategoryTypedDict]]]
+    tracking_categories: NotRequired[
+        Nullable[List[Nullable[LinkedTrackingCategoryTypedDict]]]
+    ]
     r"""A list of linked tracking categories."""
     custom_fields: NotRequired[List[CustomFieldTypedDict]]
     row_version: NotRequired[Nullable[str]]
@@ -431,7 +437,9 @@ class CreditNoteInput(BaseModel):
 
     shipping_address: Optional[Address] = None
 
-    tracking_categories: OptionalNullable[List[LinkedTrackingCategory]] = UNSET
+    tracking_categories: OptionalNullable[List[Nullable[LinkedTrackingCategory]]] = (
+        UNSET
+    )
     r"""A list of linked tracking categories."""
 
     custom_fields: Optional[List[CustomField]] = None

@@ -119,7 +119,9 @@ class InvoiceTypedDict(TypedDict):
     customer_memo: NotRequired[Nullable[str]]
     r"""Customer memo"""
     tracking_category: NotRequired[Nullable[DeprecatedLinkedTrackingCategoryTypedDict]]
-    tracking_categories: NotRequired[Nullable[List[LinkedTrackingCategoryTypedDict]]]
+    tracking_categories: NotRequired[
+        Nullable[List[Nullable[LinkedTrackingCategoryTypedDict]]]
+    ]
     r"""A list of linked tracking categories."""
     line_items: NotRequired[List[InvoiceLineItemTypedDict]]
     billing_address: NotRequired[AddressTypedDict]
@@ -238,7 +240,9 @@ class Invoice(BaseModel):
         ),
     ] = UNSET
 
-    tracking_categories: OptionalNullable[List[LinkedTrackingCategory]] = UNSET
+    tracking_categories: OptionalNullable[List[Nullable[LinkedTrackingCategory]]] = (
+        UNSET
+    )
     r"""A list of linked tracking categories."""
 
     line_items: Optional[List[InvoiceLineItem]] = None
@@ -457,7 +461,9 @@ class InvoiceInputTypedDict(TypedDict):
     customer_memo: NotRequired[Nullable[str]]
     r"""Customer memo"""
     tracking_category: NotRequired[Nullable[DeprecatedLinkedTrackingCategoryTypedDict]]
-    tracking_categories: NotRequired[Nullable[List[LinkedTrackingCategoryTypedDict]]]
+    tracking_categories: NotRequired[
+        Nullable[List[Nullable[LinkedTrackingCategoryTypedDict]]]
+    ]
     r"""A list of linked tracking categories."""
     line_items: NotRequired[List[InvoiceLineItemInputTypedDict]]
     billing_address: NotRequired[AddressTypedDict]
@@ -560,7 +566,9 @@ class InvoiceInput(BaseModel):
         ),
     ] = UNSET
 
-    tracking_categories: OptionalNullable[List[LinkedTrackingCategory]] = UNSET
+    tracking_categories: OptionalNullable[List[Nullable[LinkedTrackingCategory]]] = (
+        UNSET
+    )
     r"""A list of linked tracking categories."""
 
     line_items: Optional[List[InvoiceLineItemInput]] = None

@@ -67,6 +67,8 @@ class FileStorageFilesSearchRequestTypedDict(TypedDict):
     r"""Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response."""
     limit: NotRequired[int]
     r"""Number of results to return. Minimum 1, Maximum 200, Default 20"""
+    raw: NotRequired[bool]
+    r"""Include raw response. Mostly used for debugging purposes"""
     filter_: NotRequired[FilesFilterTypedDict]
     r"""Apply filters"""
 
@@ -123,6 +125,12 @@ class FileStorageFilesSearchRequest(BaseModel):
     ] = 20
     r"""Number of results to return. Minimum 1, Maximum 200, Default 20"""
 
+    raw: Annotated[
+        Optional[bool],
+        FieldMetadata(query=QueryParamMetadata(style="form", explode=True)),
+    ] = False
+    r"""Include raw response. Mostly used for debugging purposes"""
+
     filter_: Annotated[
         Optional[FilesFilter],
         pydantic.Field(alias="filter"),
@@ -140,6 +148,7 @@ class FileStorageFilesSearchRequest(BaseModel):
             "fields",
             "cursor",
             "limit",
+            "raw",
             "filter",
         ]
         nullable_fields = ["fields", "cursor"]

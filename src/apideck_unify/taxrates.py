@@ -55,6 +55,8 @@ class TaxRates(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.AccountingTaxRatesAllRequest(
             raw=raw,
@@ -102,6 +104,7 @@ class TaxRates(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="accounting.taxRatesAll",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -119,7 +122,10 @@ class TaxRates(BaseSDK):
 
             if len(next_cursor) == 0:
                 return None
+
             next_cursor = next_cursor[0]
+            if next_cursor is None:
+                return None
 
             return self.list(
                 raw=raw,
@@ -241,6 +247,8 @@ class TaxRates(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.AccountingTaxRatesAllRequest(
             raw=raw,
@@ -288,6 +296,7 @@ class TaxRates(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="accounting.taxRatesAll",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -305,7 +314,10 @@ class TaxRates(BaseSDK):
 
             if len(next_cursor) == 0:
                 return None
+
             next_cursor = next_cursor[0]
+            if next_cursor is None:
+                return None
 
             return self.list(
                 raw=raw,
@@ -458,6 +470,8 @@ class TaxRates(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.AccountingTaxRatesAddRequest(
             raw=raw,
@@ -530,6 +544,7 @@ class TaxRates(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="accounting.taxRatesAdd",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -677,6 +692,8 @@ class TaxRates(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.AccountingTaxRatesAddRequest(
             raw=raw,
@@ -749,6 +766,7 @@ class TaxRates(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="accounting.taxRatesAdd",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -857,6 +875,8 @@ class TaxRates(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.AccountingTaxRatesOneRequest(
             id=id,
@@ -901,6 +921,7 @@ class TaxRates(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="accounting.taxRatesOne",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -1009,6 +1030,8 @@ class TaxRates(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.AccountingTaxRatesOneRequest(
             id=id,
@@ -1053,6 +1076,7 @@ class TaxRates(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="accounting.taxRatesOne",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -1202,6 +1226,8 @@ class TaxRates(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.AccountingTaxRatesUpdateRequest(
             id_param=id_param,
@@ -1275,6 +1301,7 @@ class TaxRates(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="accounting.taxRatesUpdate",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -1424,6 +1451,8 @@ class TaxRates(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.AccountingTaxRatesUpdateRequest(
             id_param=id_param,
@@ -1497,6 +1526,7 @@ class TaxRates(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="accounting.taxRatesUpdate",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -1602,6 +1632,8 @@ class TaxRates(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.AccountingTaxRatesDeleteRequest(
             id=id,
@@ -1645,6 +1677,7 @@ class TaxRates(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="accounting.taxRatesDelete",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -1750,6 +1783,8 @@ class TaxRates(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.AccountingTaxRatesDeleteRequest(
             id=id,
@@ -1793,6 +1828,7 @@ class TaxRates(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="accounting.taxRatesDelete",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(

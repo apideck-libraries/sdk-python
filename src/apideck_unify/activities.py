@@ -58,6 +58,8 @@ class Activities(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.CrmActivitiesAllRequest(
             raw=raw,
@@ -108,6 +110,7 @@ class Activities(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="crm.activitiesAll",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -125,7 +128,10 @@ class Activities(BaseSDK):
 
             if len(next_cursor) == 0:
                 return None
+
             next_cursor = next_cursor[0]
+            if next_cursor is None:
+                return None
 
             return self.list(
                 raw=raw,
@@ -251,6 +257,8 @@ class Activities(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.CrmActivitiesAllRequest(
             raw=raw,
@@ -301,6 +309,7 @@ class Activities(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="crm.activitiesAll",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -318,7 +327,10 @@ class Activities(BaseSDK):
 
             if len(next_cursor) == 0:
                 return None
+
             next_cursor = next_cursor[0]
+            if next_cursor is None:
+                return None
 
             return self.list(
                 raw=raw,
@@ -527,6 +539,8 @@ class Activities(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.CrmActivitiesAddRequest(
             raw=raw,
@@ -626,6 +640,7 @@ class Activities(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="crm.activitiesAdd",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -828,6 +843,8 @@ class Activities(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.CrmActivitiesAddRequest(
             raw=raw,
@@ -927,6 +944,7 @@ class Activities(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="crm.activitiesAdd",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -1034,6 +1052,8 @@ class Activities(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.CrmActivitiesOneRequest(
             id=id,
@@ -1078,6 +1098,7 @@ class Activities(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="crm.activitiesOne",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -1185,6 +1206,8 @@ class Activities(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.CrmActivitiesOneRequest(
             id=id,
@@ -1229,6 +1252,7 @@ class Activities(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="crm.activitiesOne",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -1433,6 +1457,8 @@ class Activities(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.CrmActivitiesUpdateRequest(
             id=id,
@@ -1533,6 +1559,7 @@ class Activities(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="crm.activitiesUpdate",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -1737,6 +1764,8 @@ class Activities(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.CrmActivitiesUpdateRequest(
             id=id,
@@ -1837,6 +1866,7 @@ class Activities(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="crm.activitiesUpdate",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -1942,6 +1972,8 @@ class Activities(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.CrmActivitiesDeleteRequest(
             id=id,
@@ -1985,6 +2017,7 @@ class Activities(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="crm.activitiesDelete",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -2090,6 +2123,8 @@ class Activities(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.CrmActivitiesDeleteRequest(
             id=id,
@@ -2133,6 +2168,7 @@ class Activities(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="crm.activitiesDelete",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(

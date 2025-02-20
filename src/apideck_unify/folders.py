@@ -55,6 +55,8 @@ class Folders(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.FileStorageFoldersAddRequest(
             raw=raw,
@@ -114,6 +116,7 @@ class Folders(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="fileStorage.foldersAdd",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -231,6 +234,8 @@ class Folders(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.FileStorageFoldersAddRequest(
             raw=raw,
@@ -290,6 +295,7 @@ class Folders(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="fileStorage.foldersAdd",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -397,6 +403,8 @@ class Folders(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.FileStorageFoldersOneRequest(
             id=id,
@@ -441,6 +449,7 @@ class Folders(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="fileStorage.foldersOne",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -548,6 +557,8 @@ class Folders(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.FileStorageFoldersOneRequest(
             id=id,
@@ -592,6 +603,7 @@ class Folders(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="fileStorage.foldersOne",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -707,6 +719,8 @@ class Folders(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.FileStorageFoldersUpdateRequest(
             id=id,
@@ -765,6 +779,7 @@ class Folders(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="fileStorage.foldersUpdate",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -880,6 +895,8 @@ class Folders(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.FileStorageFoldersUpdateRequest(
             id=id,
@@ -938,6 +955,7 @@ class Folders(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="fileStorage.foldersUpdate",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -1043,6 +1061,8 @@ class Folders(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.FileStorageFoldersDeleteRequest(
             id=id,
@@ -1086,6 +1106,7 @@ class Folders(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="fileStorage.foldersDelete",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -1191,6 +1212,8 @@ class Folders(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.FileStorageFoldersDeleteRequest(
             id=id,
@@ -1234,6 +1257,7 @@ class Folders(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="fileStorage.foldersDelete",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -1349,6 +1373,8 @@ class Folders(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.FileStorageFoldersCopyRequest(
             id=id,
@@ -1407,6 +1433,7 @@ class Folders(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="fileStorage.foldersCopy",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -1522,6 +1549,8 @@ class Folders(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.FileStorageFoldersCopyRequest(
             id=id,
@@ -1580,6 +1609,7 @@ class Folders(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="fileStorage.foldersCopy",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(

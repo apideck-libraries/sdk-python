@@ -3,7 +3,7 @@
 from .basesdk import BaseSDK
 from apideck_unify import models, utils
 from apideck_unify._hooks import HookContext
-from apideck_unify.types import OptionalNullable, UNSET
+from apideck_unify.types import Nullable, OptionalNullable, UNSET
 from apideck_unify.utils import get_security_from_env
 from datetime import date
 from jsonpath import JSONPath
@@ -57,6 +57,8 @@ class PurchaseOrders(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.AccountingPurchaseOrdersAllRequest(
             raw=raw,
@@ -106,6 +108,7 @@ class PurchaseOrders(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="accounting.purchaseOrdersAll",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -123,7 +126,10 @@ class PurchaseOrders(BaseSDK):
 
             if len(next_cursor) == 0:
                 return None
+
             next_cursor = next_cursor[0]
+            if next_cursor is None:
+                return None
 
             return self.list(
                 raw=raw,
@@ -246,6 +252,8 @@ class PurchaseOrders(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.AccountingPurchaseOrdersAllRequest(
             raw=raw,
@@ -295,6 +303,7 @@ class PurchaseOrders(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="accounting.purchaseOrdersAll",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -312,7 +321,10 @@ class PurchaseOrders(BaseSDK):
 
             if len(next_cursor) == 0:
                 return None
+
             next_cursor = next_cursor[0]
+            if next_cursor is None:
+                return None
 
             return self.list(
                 raw=raw,
@@ -440,8 +452,8 @@ class PurchaseOrders(BaseSDK):
         memo: OptionalNullable[str] = UNSET,
         tracking_categories: OptionalNullable[
             Union[
-                List[models.LinkedTrackingCategory],
-                List[models.LinkedTrackingCategoryTypedDict],
+                List[Nullable[models.LinkedTrackingCategory]],
+                List[Nullable[models.LinkedTrackingCategoryTypedDict]],
             ]
         ] = UNSET,
         row_version: OptionalNullable[str] = UNSET,
@@ -502,6 +514,8 @@ class PurchaseOrders(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.AccountingPurchaseOrdersAddRequest(
             raw=raw,
@@ -547,7 +561,7 @@ class PurchaseOrders(BaseSDK):
                 memo=memo,
                 tracking_categories=utils.get_pydantic_model(
                     tracking_categories,
-                    OptionalNullable[List[models.LinkedTrackingCategory]],
+                    OptionalNullable[List[Nullable[models.LinkedTrackingCategory]]],
                 ),
                 row_version=row_version,
                 pass_through=utils.get_pydantic_model(
@@ -593,6 +607,7 @@ class PurchaseOrders(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="accounting.purchaseOrdersAdd",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -715,8 +730,8 @@ class PurchaseOrders(BaseSDK):
         memo: OptionalNullable[str] = UNSET,
         tracking_categories: OptionalNullable[
             Union[
-                List[models.LinkedTrackingCategory],
-                List[models.LinkedTrackingCategoryTypedDict],
+                List[Nullable[models.LinkedTrackingCategory]],
+                List[Nullable[models.LinkedTrackingCategoryTypedDict]],
             ]
         ] = UNSET,
         row_version: OptionalNullable[str] = UNSET,
@@ -777,6 +792,8 @@ class PurchaseOrders(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.AccountingPurchaseOrdersAddRequest(
             raw=raw,
@@ -822,7 +839,7 @@ class PurchaseOrders(BaseSDK):
                 memo=memo,
                 tracking_categories=utils.get_pydantic_model(
                     tracking_categories,
-                    OptionalNullable[List[models.LinkedTrackingCategory]],
+                    OptionalNullable[List[Nullable[models.LinkedTrackingCategory]]],
                 ),
                 row_version=row_version,
                 pass_through=utils.get_pydantic_model(
@@ -868,6 +885,7 @@ class PurchaseOrders(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="accounting.purchaseOrdersAdd",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -973,6 +991,8 @@ class PurchaseOrders(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.AccountingPurchaseOrdersOneRequest(
             id=id,
@@ -1016,6 +1036,7 @@ class PurchaseOrders(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="accounting.purchaseOrdersOne",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -1121,6 +1142,8 @@ class PurchaseOrders(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.AccountingPurchaseOrdersOneRequest(
             id=id,
@@ -1164,6 +1187,7 @@ class PurchaseOrders(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="accounting.purchaseOrdersOne",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -1287,8 +1311,8 @@ class PurchaseOrders(BaseSDK):
         memo: OptionalNullable[str] = UNSET,
         tracking_categories: OptionalNullable[
             Union[
-                List[models.LinkedTrackingCategory],
-                List[models.LinkedTrackingCategoryTypedDict],
+                List[Nullable[models.LinkedTrackingCategory]],
+                List[Nullable[models.LinkedTrackingCategoryTypedDict]],
             ]
         ] = UNSET,
         row_version: OptionalNullable[str] = UNSET,
@@ -1350,6 +1374,8 @@ class PurchaseOrders(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.AccountingPurchaseOrdersUpdateRequest(
             id=id,
@@ -1396,7 +1422,7 @@ class PurchaseOrders(BaseSDK):
                 memo=memo,
                 tracking_categories=utils.get_pydantic_model(
                     tracking_categories,
-                    OptionalNullable[List[models.LinkedTrackingCategory]],
+                    OptionalNullable[List[Nullable[models.LinkedTrackingCategory]]],
                 ),
                 row_version=row_version,
                 pass_through=utils.get_pydantic_model(
@@ -1442,6 +1468,7 @@ class PurchaseOrders(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="accounting.purchaseOrdersUpdate",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -1565,8 +1592,8 @@ class PurchaseOrders(BaseSDK):
         memo: OptionalNullable[str] = UNSET,
         tracking_categories: OptionalNullable[
             Union[
-                List[models.LinkedTrackingCategory],
-                List[models.LinkedTrackingCategoryTypedDict],
+                List[Nullable[models.LinkedTrackingCategory]],
+                List[Nullable[models.LinkedTrackingCategoryTypedDict]],
             ]
         ] = UNSET,
         row_version: OptionalNullable[str] = UNSET,
@@ -1628,6 +1655,8 @@ class PurchaseOrders(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.AccountingPurchaseOrdersUpdateRequest(
             id=id,
@@ -1674,7 +1703,7 @@ class PurchaseOrders(BaseSDK):
                 memo=memo,
                 tracking_categories=utils.get_pydantic_model(
                     tracking_categories,
-                    OptionalNullable[List[models.LinkedTrackingCategory]],
+                    OptionalNullable[List[Nullable[models.LinkedTrackingCategory]]],
                 ),
                 row_version=row_version,
                 pass_through=utils.get_pydantic_model(
@@ -1720,6 +1749,7 @@ class PurchaseOrders(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="accounting.purchaseOrdersUpdate",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -1825,6 +1855,8 @@ class PurchaseOrders(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.AccountingPurchaseOrdersDeleteRequest(
             id=id,
@@ -1868,6 +1900,7 @@ class PurchaseOrders(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="accounting.purchaseOrdersDelete",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
@@ -1973,6 +2006,8 @@ class PurchaseOrders(BaseSDK):
 
         if server_url is not None:
             base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
 
         request = models.AccountingPurchaseOrdersDeleteRequest(
             id=id,
@@ -2016,6 +2051,7 @@ class PurchaseOrders(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                base_url=base_url or "",
                 operation_id="accounting.purchaseOrdersDelete",
                 oauth2_scopes=[],
                 security_source=get_security_from_env(
