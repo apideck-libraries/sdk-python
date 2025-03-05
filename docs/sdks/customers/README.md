@@ -23,6 +23,7 @@ from apideck_unify import Apideck
 import dateutil.parser
 import os
 
+
 with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
@@ -92,6 +93,7 @@ import apideck_unify
 from apideck_unify import Apideck
 import os
 
+
 with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
@@ -101,7 +103,7 @@ with Apideck(
     res = apideck.accounting.customers.create(consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", display_id="EMP00101", display_name="Windsurf Shop", company_name="SpaceX", company_id="12345", title="CEO", first_name="Elon", middle_name="D.", last_name="Musk", suffix="Jr.", individual=True, project=False, addresses=[
         {
             "id": "123",
-            "type": apideck_unify.Type.PRIMARY,
+            "type": apideck_unify.AddressType.PRIMARY,
             "string": "25 Spring Street, Blackburn, VIC 3130",
             "name": "HQ US",
             "line1": "Main street",
@@ -127,7 +129,7 @@ with Apideck(
         },
         {
             "id": "123",
-            "type": apideck_unify.Type.PRIMARY,
+            "type": apideck_unify.AddressType.PRIMARY,
             "string": "25 Spring Street, Blackburn, VIC 3130",
             "name": "HQ US",
             "line1": "Main street",
@@ -380,6 +382,7 @@ Get Customer
 from apideck_unify import Apideck
 import os
 
+
 with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
@@ -433,6 +436,7 @@ import apideck_unify
 from apideck_unify import Apideck
 import os
 
+
 with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
@@ -442,7 +446,7 @@ with Apideck(
     res = apideck.accounting.customers.update(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", display_id="EMP00101", display_name="Windsurf Shop", company_name="SpaceX", company_id="12345", title="CEO", first_name="Elon", middle_name="D.", last_name="Musk", suffix="Jr.", individual=True, project=False, addresses=[
         {
             "id": "123",
-            "type": apideck_unify.Type.PRIMARY,
+            "type": apideck_unify.AddressType.PRIMARY,
             "string": "25 Spring Street, Blackburn, VIC 3130",
             "name": "HQ US",
             "line1": "Main street",
@@ -468,7 +472,7 @@ with Apideck(
         },
         {
             "id": "123",
-            "type": apideck_unify.Type.PRIMARY,
+            "type": apideck_unify.AddressType.PRIMARY,
             "string": "25 Spring Street, Blackburn, VIC 3130",
             "name": "HQ US",
             "line1": "Main street",
@@ -494,7 +498,7 @@ with Apideck(
         },
         {
             "id": "123",
-            "type": apideck_unify.Type.PRIMARY,
+            "type": apideck_unify.AddressType.PRIMARY,
             "string": "25 Spring Street, Blackburn, VIC 3130",
             "name": "HQ US",
             "line1": "Main street",
@@ -700,6 +704,7 @@ Delete Customer
 ```python
 from apideck_unify import Apideck
 import os
+
 
 with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),

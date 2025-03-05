@@ -22,6 +22,7 @@ import apideck_unify
 from apideck_unify import Apideck
 import os
 
+
 with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
@@ -89,13 +90,14 @@ import apideck_unify
 from apideck_unify import Apideck
 import os
 
+
 with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.crm.contacts.create(name="Elon Musk", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", owner_id="54321", type_=apideck_unify.ContactType.PERSONAL, company_id="23456", company_name="23456", lead_id="34567", first_name="Elon", middle_name="D.", last_name="Musk", prefix="Mr.", suffix="PhD", title="CEO", department="Engineering", language="EN", gender=apideck_unify.ContactGender.FEMALE, birthday="2000-08-12", photo_url="https://unavatar.io/elon-musk", lead_source="Cold Call", fax="+12129876543", description="Internal champion", current_balance=10.5, status="open", active=True, websites=[
+    res = apideck.crm.contacts.create(name="Elon Musk", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", owner_id="54321", type_=apideck_unify.Type.PERSONAL, company_id="23456", company_name="23456", lead_id="34567", first_name="Elon", middle_name="D.", last_name="Musk", prefix="Mr.", suffix="PhD", title="CEO", department="Engineering", language="EN", gender=apideck_unify.ContactGender.FEMALE, birthday="2000-08-12", photo_url="https://unavatar.io/elon-musk", lead_source="Cold Call", fax="+12129876543", description="Internal champion", current_balance=10.5, status="open", active=True, websites=[
         {
             "url": "http://example.com",
             "id": "12345",
@@ -109,7 +111,7 @@ with Apideck(
     ], addresses=[
         {
             "id": "123",
-            "type": apideck_unify.Type.PRIMARY,
+            "type": apideck_unify.AddressType.PRIMARY,
             "string": "25 Spring Street, Blackburn, VIC 3130",
             "name": "HQ US",
             "line1": "Main street",
@@ -135,7 +137,7 @@ with Apideck(
         },
         {
             "id": "123",
-            "type": apideck_unify.Type.PRIMARY,
+            "type": apideck_unify.AddressType.PRIMARY,
             "string": "25 Spring Street, Blackburn, VIC 3130",
             "name": "HQ US",
             "line1": "Main street",
@@ -307,7 +309,7 @@ with Apideck(
 | `app_id`                                                                                                                                                | *Optional[str]*                                                                                                                                         | :heavy_minus_sign:                                                                                                                                      | The ID of your Unify application                                                                                                                        | dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX                                                                                                                 |
 | `service_id`                                                                                                                                            | *Optional[str]*                                                                                                                                         | :heavy_minus_sign:                                                                                                                                      | Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.           | salesforce                                                                                                                                              |
 | `owner_id`                                                                                                                                              | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | The owner of the contact.                                                                                                                               | 54321                                                                                                                                                   |
-| `type`                                                                                                                                                  | [OptionalNullable[models.ContactType]](../../models/contacttype.md)                                                                                     | :heavy_minus_sign:                                                                                                                                      | The type of the contact.                                                                                                                                | personal                                                                                                                                                |
+| `type`                                                                                                                                                  | [OptionalNullable[models.Type]](../../models/type.md)                                                                                                   | :heavy_minus_sign:                                                                                                                                      | The type of the contact.                                                                                                                                | personal                                                                                                                                                |
 | `company_id`                                                                                                                                            | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | The company the contact is associated with.                                                                                                             | 23456                                                                                                                                                   |
 | `company_name`                                                                                                                                          | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | The name of the company the contact is associated with.                                                                                                 | 23456                                                                                                                                                   |
 | `lead_id`                                                                                                                                               | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | The lead the contact is associated with.                                                                                                                | 34567                                                                                                                                                   |
@@ -365,6 +367,7 @@ Get contact
 ```python
 from apideck_unify import Apideck
 import os
+
 
 with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
@@ -426,13 +429,14 @@ import apideck_unify
 from apideck_unify import Apideck
 import os
 
+
 with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.crm.contacts.update(id="<id>", name="Elon Musk", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", owner_id="54321", type_=apideck_unify.ContactType.PERSONAL, company_id="23456", company_name="23456", lead_id="34567", first_name="Elon", middle_name="D.", last_name="Musk", prefix="Mr.", suffix="PhD", title="CEO", department="Engineering", language="EN", gender=apideck_unify.ContactGender.FEMALE, birthday="2000-08-12", photo_url="https://unavatar.io/elon-musk", lead_source="Cold Call", fax="+12129876543", description="Internal champion", current_balance=10.5, status="open", active=True, websites=[
+    res = apideck.crm.contacts.update(id="<id>", name="Elon Musk", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", owner_id="54321", type_=apideck_unify.Type.PERSONAL, company_id="23456", company_name="23456", lead_id="34567", first_name="Elon", middle_name="D.", last_name="Musk", prefix="Mr.", suffix="PhD", title="CEO", department="Engineering", language="EN", gender=apideck_unify.ContactGender.FEMALE, birthday="2000-08-12", photo_url="https://unavatar.io/elon-musk", lead_source="Cold Call", fax="+12129876543", description="Internal champion", current_balance=10.5, status="open", active=True, websites=[
         {
             "url": "http://example.com",
             "id": "12345",
@@ -451,7 +455,7 @@ with Apideck(
     ], addresses=[
         {
             "id": "123",
-            "type": apideck_unify.Type.PRIMARY,
+            "type": apideck_unify.AddressType.PRIMARY,
             "string": "25 Spring Street, Blackburn, VIC 3130",
             "name": "HQ US",
             "line1": "Main street",
@@ -477,7 +481,7 @@ with Apideck(
         },
         {
             "id": "123",
-            "type": apideck_unify.Type.PRIMARY,
+            "type": apideck_unify.AddressType.PRIMARY,
             "string": "25 Spring Street, Blackburn, VIC 3130",
             "name": "HQ US",
             "line1": "Main street",
@@ -601,7 +605,7 @@ with Apideck(
 | `service_id`                                                                                                                                            | *Optional[str]*                                                                                                                                         | :heavy_minus_sign:                                                                                                                                      | Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.           | salesforce                                                                                                                                              |
 | `raw`                                                                                                                                                   | *Optional[bool]*                                                                                                                                        | :heavy_minus_sign:                                                                                                                                      | Include raw response. Mostly used for debugging purposes                                                                                                |                                                                                                                                                         |
 | `owner_id`                                                                                                                                              | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | The owner of the contact.                                                                                                                               | 54321                                                                                                                                                   |
-| `type`                                                                                                                                                  | [OptionalNullable[models.ContactType]](../../models/contacttype.md)                                                                                     | :heavy_minus_sign:                                                                                                                                      | The type of the contact.                                                                                                                                | personal                                                                                                                                                |
+| `type`                                                                                                                                                  | [OptionalNullable[models.Type]](../../models/type.md)                                                                                                   | :heavy_minus_sign:                                                                                                                                      | The type of the contact.                                                                                                                                | personal                                                                                                                                                |
 | `company_id`                                                                                                                                            | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | The company the contact is associated with.                                                                                                             | 23456                                                                                                                                                   |
 | `company_name`                                                                                                                                          | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | The name of the company the contact is associated with.                                                                                                 | 23456                                                                                                                                                   |
 | `lead_id`                                                                                                                                               | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | The lead the contact is associated with.                                                                                                                | 34567                                                                                                                                                   |
@@ -659,6 +663,7 @@ Delete contact
 ```python
 from apideck_unify import Apideck
 import os
+
 
 with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),

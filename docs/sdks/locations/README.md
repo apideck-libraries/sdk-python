@@ -21,6 +21,7 @@ List Locations
 from apideck_unify import Apideck
 import os
 
+
 with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
@@ -78,6 +79,7 @@ import apideck_unify
 from apideck_unify import Apideck
 import os
 
+
 with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
@@ -87,7 +89,7 @@ with Apideck(
     res = apideck.accounting.locations.create(consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", parent_id="12345", company_name="SpaceX", display_name="11 UT - South Jordan", status=apideck_unify.LocationStatus.ACTIVE, addresses=[
         {
             "id": "123",
-            "type": apideck_unify.Type.PRIMARY,
+            "type": apideck_unify.AddressType.PRIMARY,
             "string": "25 Spring Street, Blackburn, VIC 3130",
             "name": "HQ US",
             "line1": "Main street",
@@ -113,7 +115,7 @@ with Apideck(
         },
         {
             "id": "123",
-            "type": apideck_unify.Type.PRIMARY,
+            "type": apideck_unify.AddressType.PRIMARY,
             "string": "25 Spring Street, Blackburn, VIC 3130",
             "name": "HQ US",
             "line1": "Main street",
@@ -223,6 +225,7 @@ Get Location
 from apideck_unify import Apideck
 import os
 
+
 with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
@@ -276,6 +279,7 @@ import apideck_unify
 from apideck_unify import Apideck
 import os
 
+
 with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
@@ -285,7 +289,7 @@ with Apideck(
     res = apideck.accounting.locations.update(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", parent_id="12345", company_name="SpaceX", display_name="11 UT - South Jordan", status=apideck_unify.LocationStatus.ACTIVE, addresses=[
         {
             "id": "123",
-            "type": apideck_unify.Type.PRIMARY,
+            "type": apideck_unify.AddressType.PRIMARY,
             "string": "25 Spring Street, Blackburn, VIC 3130",
             "name": "HQ US",
             "line1": "Main street",
@@ -311,7 +315,7 @@ with Apideck(
         },
         {
             "id": "123",
-            "type": apideck_unify.Type.PRIMARY,
+            "type": apideck_unify.AddressType.PRIMARY,
             "string": "25 Spring Street, Blackburn, VIC 3130",
             "name": "HQ US",
             "line1": "Main street",
@@ -337,7 +341,7 @@ with Apideck(
         },
         {
             "id": "123",
-            "type": apideck_unify.Type.PRIMARY,
+            "type": apideck_unify.AddressType.PRIMARY,
             "string": "25 Spring Street, Blackburn, VIC 3130",
             "name": "HQ US",
             "line1": "Main street",
@@ -471,6 +475,7 @@ Delete Location
 ```python
 from apideck_unify import Apideck
 import os
+
 
 with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),

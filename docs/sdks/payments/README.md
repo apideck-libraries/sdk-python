@@ -23,6 +23,7 @@ from apideck_unify import Apideck
 import dateutil.parser
 import os
 
+
 with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
@@ -86,6 +87,7 @@ import apideck_unify
 from apideck_unify import Apideck
 import dateutil.parser
 import os
+
 
 with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
@@ -259,6 +261,7 @@ Get Payment
 from apideck_unify import Apideck
 import os
 
+
 with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
@@ -312,6 +315,7 @@ import apideck_unify
 from apideck_unify import Apideck
 import dateutil.parser
 import os
+
 
 with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
@@ -501,6 +505,7 @@ Delete Payment
 ```python
 from apideck_unify import Apideck
 import os
+
 
 with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),

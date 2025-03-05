@@ -17,6 +17,7 @@ List schedules for employee, a schedule is a work pattern, not the actual worked
 from apideck_unify import Apideck
 import os
 
+
 with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",

@@ -13,7 +13,7 @@ from pydantic import model_serializer
 from typing_extensions import NotRequired, TypedDict
 
 
-class Type(str, Enum):
+class AddressType(str, Enum):
     r"""The type of address."""
 
     PRIMARY = "primary"
@@ -28,7 +28,7 @@ class Type(str, Enum):
 class AddressTypedDict(TypedDict):
     id: NotRequired[Nullable[str]]
     r"""Unique identifier for the address."""
-    type: NotRequired[Nullable[Type]]
+    type: NotRequired[Nullable[AddressType]]
     r"""The type of address."""
     string: NotRequired[Nullable[str]]
     r"""The address string. Some APIs don't provide structured address data."""
@@ -80,7 +80,7 @@ class Address(BaseModel):
     id: OptionalNullable[str] = UNSET
     r"""Unique identifier for the address."""
 
-    type: OptionalNullable[Type] = UNSET
+    type: OptionalNullable[AddressType] = UNSET
     r"""The type of address."""
 
     string: OptionalNullable[str] = UNSET

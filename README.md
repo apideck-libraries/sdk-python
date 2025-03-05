@@ -118,6 +118,7 @@ Generally, the SDK will work well with most IDEs out of the box. However, when u
 from apideck_unify import Apideck
 import os
 
+
 with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
@@ -150,6 +151,7 @@ import asyncio
 import os
 
 async def main():
+
     async with Apideck(
         api_key=os.getenv("APIDECK_API_KEY", ""),
         consumer_id="test-consumer",
@@ -190,6 +192,7 @@ To authenticate with the API the `api_key` parameter must be set when initializi
 ```python
 from apideck_unify import Apideck
 import os
+
 
 with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
@@ -754,6 +757,7 @@ Here's an example of one such pagination call:
 from apideck_unify import Apideck
 import os
 
+
 with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
@@ -789,6 +793,7 @@ from apideck_unify import Apideck
 from apideck_unify.utils import BackoffStrategy, RetryConfig
 import os
 
+
 with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
@@ -818,6 +823,7 @@ If you'd like to override the default retry strategy for all operations that sup
 from apideck_unify import Apideck
 from apideck_unify.utils import BackoffStrategy, RetryConfig
 import os
+
 
 with Apideck(
     retry_config=RetryConfig("backoff", BackoffStrategy(1, 50, 1.1, 100), False),
@@ -875,6 +881,7 @@ When custom error responses are specified for an operation, the SDK may also rai
 from apideck_unify import Apideck, models
 import os
 
+
 with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
@@ -929,6 +936,7 @@ The default server can be overridden globally by passing a URL to the `server_ur
 from apideck_unify import Apideck
 import os
 
+
 with Apideck(
     server_url="https://unify.apideck.com",
     api_key=os.getenv("APIDECK_API_KEY", ""),
@@ -959,6 +967,7 @@ The server URL can also be overridden on a per-operation basis, provided a serve
 ```python
 from apideck_unify import Apideck
 import os
+
 
 with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
@@ -1111,6 +1120,7 @@ The `Apideck` class implements the context manager protocol and registers a fina
 from apideck_unify import Apideck
 import os
 def main():
+
     with Apideck(
         api_key=os.getenv("APIDECK_API_KEY", ""),
         consumer_id="test-consumer",
@@ -1121,6 +1131,7 @@ def main():
 
 # Or when using async:
 async def amain():
+
     async with Apideck(
         api_key=os.getenv("APIDECK_API_KEY", ""),
         consumer_id="test-consumer",

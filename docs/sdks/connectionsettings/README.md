@@ -19,6 +19,7 @@ This endpoint returns custom settings and their defaults required by connection 
 from apideck_unify import Apideck
 import os
 
+
 with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
@@ -69,6 +70,7 @@ Update default values for a connection's resource settings
 ```python
 from apideck_unify import Apideck
 import os
+
 
 with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),

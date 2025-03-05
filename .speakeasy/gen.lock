@@ -1,12 +1,12 @@
 lockVersion: 2.0.0
 id: fca0ac3a-5f4e-452c-bbc7-2311afa8da40
 management:
-  docChecksum: 7c6ef2ed512e323eb81fb00225e7e166
+  docChecksum: 30b8f4819c98857dd9903d879b3ebca9
   docVersion: 10.11.5
-  speakeasyVersion: 1.501.1
-  generationVersion: 2.522.5
-  releaseVersion: 0.8.0
-  configChecksum: 5cc9cdf7161979901cc0e0ee06065fd3
+  speakeasyVersion: 1.509.1
+  generationVersion: 2.539.1
+  releaseVersion: 0.8.1
+  configChecksum: be7fc460b53aee18f5c05b65996bf729
   repoURL: https://github.com/apideck-libraries/sdk-python.git
   installationURL: https://github.com/apideck-libraries/sdk-python.git
   published: true
@@ -15,7 +15,7 @@ features:
     acceptHeaders: 3.0.0
     additionalDependencies: 1.0.0
     constsAndDefaults: 1.0.5
-    core: 5.12.1
+    core: 5.12.2
     deepObjectParams: 0.1.0
     defaultEnabledRetries: 0.2.0
     deprecations: 3.0.2
@@ -349,6 +349,7 @@ generatedFiles:
   - docs/models/activitytype.md
   - docs/models/address.md
   - docs/models/addresses.md
+  - docs/models/addresstype.md
   - docs/models/ageddebtors.md
   - docs/models/agedreportfilter.md
   - docs/models/allocation.md
@@ -520,7 +521,6 @@ generatedFiles:
   - docs/models/contactsfilter.md
   - docs/models/contactssort.md
   - docs/models/contactssortby.md
-  - docs/models/contacttype.md
   - docs/models/copyfolderrequest.md
   - docs/models/coverage.md
   - docs/models/createaccountingdepartmentresponse.md
