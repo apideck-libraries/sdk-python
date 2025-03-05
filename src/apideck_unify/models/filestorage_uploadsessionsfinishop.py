@@ -19,6 +19,7 @@ import pydantic
 from typing import Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
+
 FILE_STORAGE_UPLOAD_SESSIONS_FINISH_OP_SERVERS = [
     "https://upload.apideck.com",
 ]

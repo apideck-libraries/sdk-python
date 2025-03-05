@@ -18,6 +18,7 @@ Get consumer request counts within a given datetime range.
 from apideck_unify import Apideck
 import os
 
+
 with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",

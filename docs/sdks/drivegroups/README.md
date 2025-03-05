@@ -21,6 +21,7 @@ List DriveGroups
 from apideck_unify import Apideck
 import os
 
+
 with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
@@ -79,6 +80,7 @@ Create DriveGroup
 ```python
 from apideck_unify import Apideck
 import os
+
 
 with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
@@ -177,6 +179,7 @@ Get DriveGroup
 from apideck_unify import Apideck
 import os
 
+
 with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
@@ -228,6 +231,7 @@ Update DriveGroup
 ```python
 from apideck_unify import Apideck
 import os
+
 
 with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
@@ -355,6 +359,7 @@ Delete DriveGroup
 ```python
 from apideck_unify import Apideck
 import os
+
 
 with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),

@@ -22,6 +22,7 @@ List Tax Rates. Note: Not all connectors return the actual rate/percentage value
 from apideck_unify import Apideck
 import os
 
+
 with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
@@ -85,6 +86,7 @@ Create Tax Rate
 import apideck_unify
 from apideck_unify import Apideck
 import os
+
 
 with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
@@ -213,6 +215,7 @@ Get Tax Rate. Note: Not all connectors return the actual rate/percentage value. 
 from apideck_unify import Apideck
 import os
 
+
 with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
@@ -265,6 +268,7 @@ Update Tax Rate
 import apideck_unify
 from apideck_unify import Apideck
 import os
+
 
 with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
@@ -416,6 +420,7 @@ Delete Tax Rate
 ```python
 from apideck_unify import Apideck
 import os
+
 
 with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),

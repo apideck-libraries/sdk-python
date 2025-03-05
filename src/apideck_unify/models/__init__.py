@@ -783,7 +783,7 @@ from .activityattendee import (
     ActivityAttendeeStatus,
     ActivityAttendeeTypedDict,
 )
-from .address import Address, AddressTypedDict, Type
+from .address import Address, AddressType, AddressTypedDict
 from .ageddebtors import AgedDebtors, AgedDebtorsTypedDict
 from .agedreportfilter import AgedReportFilter, AgedReportFilterTypedDict
 from .allocation import (
@@ -1161,8 +1161,8 @@ from .contact import (
     ContactGender,
     ContactInput,
     ContactInputTypedDict,
-    ContactType,
     ContactTypedDict,
+    Type,
 )
 from .contactsfilter import ContactsFilter, ContactsFilterTypedDict
 from .contactssort import ContactsSort, ContactsSortBy, ContactsSortTypedDict
@@ -4188,6 +4188,7 @@ __all__ = [
     "ActivityType",
     "ActivityTypedDict",
     "Address",
+    "AddressType",
     "AddressTypedDict",
     "Addresses",
     "AddressesTypedDict",
@@ -4491,7 +4492,6 @@ __all__ = [
     "ContactGender",
     "ContactInput",
     "ContactInputTypedDict",
-    "ContactType",
     "ContactTypedDict",
     "ContactsFilter",
     "ContactsFilterTypedDict",

@@ -21,6 +21,7 @@ Create a consumer
 from apideck_unify import Apideck
 import os
 
+
 with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
@@ -76,6 +77,7 @@ This endpoint includes all application consumers, along with an aggregated count
 from apideck_unify import Apideck
 import os
 
+
 with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
@@ -126,6 +128,7 @@ Consumer detail including their aggregated counts with the connections they have
 from apideck_unify import Apideck
 import os
 
+
 with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
@@ -173,6 +176,7 @@ Update consumer metadata such as name and email.
 ```python
 from apideck_unify import Apideck
 import os
+
 
 with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
@@ -227,6 +231,7 @@ Delete consumer and all their connections, including credentials.
 ```python
 from apideck_unify import Apideck
 import os
+
 
 with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),

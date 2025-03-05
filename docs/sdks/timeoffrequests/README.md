@@ -22,6 +22,7 @@ import apideck_unify
 from apideck_unify import Apideck
 import os
 
+
 with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
@@ -86,6 +87,7 @@ Create Time Off Request
 import apideck_unify
 from apideck_unify import Apideck
 import os
+
 
 with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
@@ -198,6 +200,7 @@ Get Time Off Request
 from apideck_unify import Apideck
 import os
 
+
 with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
@@ -251,6 +254,7 @@ Update Time Off Request
 import apideck_unify
 from apideck_unify import Apideck
 import os
+
 
 with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
@@ -393,6 +397,7 @@ Delete Time Off Request
 ```python
 from apideck_unify import Apideck
 import os
+
 
 with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),

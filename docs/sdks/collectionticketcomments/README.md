@@ -22,6 +22,7 @@ import apideck_unify
 from apideck_unify import Apideck
 import os
 
+
 with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
@@ -82,6 +83,7 @@ Create Comment
 ```python
 from apideck_unify import Apideck
 import os
+
 
 with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
@@ -180,6 +182,7 @@ Get Comment
 from apideck_unify import Apideck
 import os
 
+
 with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
@@ -235,6 +238,7 @@ Update Comment
 ```python
 from apideck_unify import Apideck
 import os
+
 
 with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
@@ -362,6 +366,7 @@ Delete Comment
 ```python
 from apideck_unify import Apideck
 import os
+
 
 with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),

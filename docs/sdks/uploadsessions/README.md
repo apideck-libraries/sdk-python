@@ -20,6 +20,7 @@ Start an Upload Session. Upload sessions are used to upload large files, use the
 from apideck_unify import Apideck
 import os
 
+
 with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
@@ -119,6 +120,7 @@ Get Upload Session. Use the `part_size` to split your file into parts. Upload th
 from apideck_unify import Apideck
 import os
 
+
 with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
@@ -172,6 +174,7 @@ Abort Upload Session. Note that the base URL is upload.apideck.com instead of un
 from apideck_unify import Apideck
 import os
 
+
 with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
@@ -222,6 +225,7 @@ Finish Upload Session. Only call this endpoint after all File parts have been up
 ```python
 from apideck_unify import Apideck
 import os
+
 
 with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),

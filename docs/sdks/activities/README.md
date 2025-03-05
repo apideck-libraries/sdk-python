@@ -23,6 +23,7 @@ from apideck_unify import Apideck
 import dateutil.parser
 import os
 
+
 with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
@@ -86,6 +87,7 @@ import apideck_unify
 from apideck_unify import Apideck
 import os
 
+
 with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
@@ -94,7 +96,7 @@ with Apideck(
 
     res = apideck.crm.activities.create(type_=apideck_unify.ActivityType.MEETING, consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", activity_datetime="2021-05-01T12:00:00.000Z", duration_seconds=1800, user_id="12345", account_id="12345", contact_id="12345", company_id="12345", opportunity_id="12345", lead_id="12345", owner_id="12345", campaign_id="12345", case_id="12345", asset_id="12345", contract_id="12345", product_id="12345", solution_id="12345", custom_object_id="12345", title="Meeting", description="More info about the meeting", note="An internal note about the meeting", location="Space", location_address={
         "id": "123",
-        "type": apideck_unify.Type.PRIMARY,
+        "type": apideck_unify.AddressType.PRIMARY,
         "string": "25 Spring Street, Blackburn, VIC 3130",
         "name": "HQ US",
         "line1": "Main street",
@@ -260,6 +262,7 @@ Get activity
 from apideck_unify import Apideck
 import os
 
+
 with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
@@ -313,6 +316,7 @@ import apideck_unify
 from apideck_unify import Apideck
 import os
 
+
 with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
@@ -321,7 +325,7 @@ with Apideck(
 
     res = apideck.crm.activities.update(id="<id>", type_=apideck_unify.ActivityType.MEETING, consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", activity_datetime="2021-05-01T12:00:00.000Z", duration_seconds=1800, user_id="12345", account_id="12345", contact_id="12345", company_id="12345", opportunity_id="12345", lead_id="12345", owner_id="12345", campaign_id="12345", case_id="12345", asset_id="12345", contract_id="12345", product_id="12345", solution_id="12345", custom_object_id="12345", title="Meeting", description="More info about the meeting", note="An internal note about the meeting", location="Space", location_address={
         "id": "123",
-        "type": apideck_unify.Type.PRIMARY,
+        "type": apideck_unify.AddressType.PRIMARY,
         "string": "25 Spring Street, Blackburn, VIC 3130",
         "name": "HQ US",
         "line1": "Main street",
@@ -541,6 +545,7 @@ Delete activity
 ```python
 from apideck_unify import Apideck
 import os
+
 
 with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),

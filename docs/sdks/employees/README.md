@@ -22,6 +22,7 @@ import apideck_unify
 from apideck_unify import Apideck
 import os
 
+
 with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
@@ -94,6 +95,7 @@ from apideck_unify import Apideck
 import dateutil.parser
 import os
 
+
 with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
@@ -140,7 +142,7 @@ with Apideck(
             "status": apideck_unify.EmployeeJobStatus.ACTIVE,
             "location": {
                 "id": "123",
-                "type": apideck_unify.Type.PRIMARY,
+                "type": apideck_unify.AddressType.PRIMARY,
                 "string": "25 Spring Street, Blackburn, VIC 3130",
                 "name": "HQ US",
                 "line1": "Main street",
@@ -179,7 +181,7 @@ with Apideck(
             "status": apideck_unify.EmployeeJobStatus.ACTIVE,
             "location": {
                 "id": "123",
-                "type": apideck_unify.Type.PRIMARY,
+                "type": apideck_unify.AddressType.PRIMARY,
                 "string": "25 Spring Street, Blackburn, VIC 3130",
                 "name": "HQ US",
                 "line1": "Main street",
@@ -214,7 +216,7 @@ with Apideck(
     ], works_remote=True, addresses=[
         {
             "id": "123",
-            "type": apideck_unify.Type.PRIMARY,
+            "type": apideck_unify.AddressType.PRIMARY,
             "string": "25 Spring Street, Blackburn, VIC 3130",
             "name": "HQ US",
             "line1": "Main street",
@@ -240,7 +242,7 @@ with Apideck(
         },
         {
             "id": "123",
-            "type": apideck_unify.Type.PRIMARY,
+            "type": apideck_unify.AddressType.PRIMARY,
             "string": "25 Spring Street, Blackburn, VIC 3130",
             "name": "HQ US",
             "line1": "Main street",
@@ -460,6 +462,7 @@ Get Employee
 from apideck_unify import Apideck
 import os
 
+
 with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
@@ -520,6 +523,7 @@ from apideck_unify import Apideck
 import dateutil.parser
 import os
 
+
 with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
@@ -566,7 +570,7 @@ with Apideck(
             "status": apideck_unify.EmployeeJobStatus.ACTIVE,
             "location": {
                 "id": "123",
-                "type": apideck_unify.Type.PRIMARY,
+                "type": apideck_unify.AddressType.PRIMARY,
                 "string": "25 Spring Street, Blackburn, VIC 3130",
                 "name": "HQ US",
                 "line1": "Main street",
@@ -605,7 +609,7 @@ with Apideck(
             "status": apideck_unify.EmployeeJobStatus.ACTIVE,
             "location": {
                 "id": "123",
-                "type": apideck_unify.Type.PRIMARY,
+                "type": apideck_unify.AddressType.PRIMARY,
                 "string": "25 Spring Street, Blackburn, VIC 3130",
                 "name": "HQ US",
                 "line1": "Main street",
@@ -644,7 +648,7 @@ with Apideck(
             "status": apideck_unify.EmployeeJobStatus.ACTIVE,
             "location": {
                 "id": "123",
-                "type": apideck_unify.Type.PRIMARY,
+                "type": apideck_unify.AddressType.PRIMARY,
                 "string": "25 Spring Street, Blackburn, VIC 3130",
                 "name": "HQ US",
                 "line1": "Main street",
@@ -679,7 +683,7 @@ with Apideck(
     ], works_remote=True, addresses=[
         {
             "id": "123",
-            "type": apideck_unify.Type.PRIMARY,
+            "type": apideck_unify.AddressType.PRIMARY,
             "string": "25 Spring Street, Blackburn, VIC 3130",
             "name": "HQ US",
             "line1": "Main street",
@@ -705,7 +709,7 @@ with Apideck(
         },
         {
             "id": "123",
-            "type": apideck_unify.Type.PRIMARY,
+            "type": apideck_unify.AddressType.PRIMARY,
             "string": "25 Spring Street, Blackburn, VIC 3130",
             "name": "HQ US",
             "line1": "Main street",
@@ -944,6 +948,7 @@ Delete Employee
 ```python
 from apideck_unify import Apideck
 import os
+
 
 with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
