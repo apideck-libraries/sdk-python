@@ -1,6 +1,6 @@
-# Income
+# CostOfGoodsSold
 
-The operating income accounts
+The cost of goods sold accounts
 
 
 ## Fields
