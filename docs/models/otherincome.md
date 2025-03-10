@@ -1,6 +1,6 @@
-# Income
+# OtherIncome
 
-The operating income accounts
+The other income accounts
 
 
 ## Fields
