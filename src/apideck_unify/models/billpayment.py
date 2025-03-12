@@ -114,7 +114,7 @@ class BillPaymentTypedDict(TypedDict):
     id: str
     r"""A unique identifier for an object."""
     total_amount: Nullable[float]
-    r"""The total amount of the transaction"""
+    r"""The total amount of the transaction or record"""
     transaction_date: Nullable[datetime]
     r"""The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD"""
     downstream_id: NotRequired[Nullable[str]]
@@ -175,7 +175,7 @@ class BillPayment(BaseModel):
     r"""A unique identifier for an object."""
 
     total_amount: Nullable[float]
-    r"""The total amount of the transaction"""
+    r"""The total amount of the transaction or record"""
 
     transaction_date: Nullable[datetime]
     r"""The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD"""
@@ -396,7 +396,7 @@ class BillPaymentAllocations(BaseModel):
 
 class BillPaymentInputTypedDict(TypedDict):
     total_amount: Nullable[float]
-    r"""The total amount of the transaction"""
+    r"""The total amount of the transaction or record"""
     transaction_date: Nullable[datetime]
     r"""The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD"""
     currency: NotRequired[Nullable[Currency]]
@@ -442,7 +442,7 @@ class BillPaymentInputTypedDict(TypedDict):
 
 class BillPaymentInput(BaseModel):
     total_amount: Nullable[float]
-    r"""The total amount of the transaction"""
+    r"""The total amount of the transaction or record"""
 
     transaction_date: Nullable[datetime]
     r"""The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD"""

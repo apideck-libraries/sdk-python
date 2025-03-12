@@ -36,7 +36,7 @@ class PaymentTypedDict(TypedDict):
     id: str
     r"""A unique identifier for an object."""
     total_amount: Nullable[float]
-    r"""The total amount of the transaction"""
+    r"""The total amount of the transaction or record"""
     transaction_date: Nullable[datetime]
     r"""The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD"""
     downstream_id: NotRequired[Nullable[str]]
@@ -103,7 +103,7 @@ class Payment(BaseModel):
     r"""A unique identifier for an object."""
 
     total_amount: Nullable[float]
-    r"""The total amount of the transaction"""
+    r"""The total amount of the transaction or record"""
 
     transaction_date: Nullable[datetime]
     r"""The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD"""

@@ -1,6 +1,6 @@
-# Income
+# UncategorizedAccounts
 
-The operating income accounts
+The accounts not categorized in the other sections
 
 
 ## Fields

@@ -39,6 +39,8 @@ class CustomersFilterTypedDict(TypedDict):
     status: NotRequired[Nullable[CustomersFilterStatus]]
     r"""Status of customer to filter on"""
     updated_since: NotRequired[datetime]
+    supplier_id: NotRequired[str]
+    r"""Supplier ID of customer to search for"""
 
 
 class CustomersFilter(BaseModel):
@@ -64,6 +66,9 @@ class CustomersFilter(BaseModel):
 
     updated_since: Annotated[Optional[datetime], FieldMetadata(query=True)] = None
 
+    supplier_id: Annotated[Optional[str], FieldMetadata(query=True)] = None
+    r"""Supplier ID of customer to search for"""
+
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
         optional_fields = [
@@ -74,6 +79,7 @@ class CustomersFilter(BaseModel):
             "email",
             "status",
             "updated_since",
+            "supplier_id",
         ]
         nullable_fields = ["status"]
         null_default_fields = []

@@ -4,6 +4,7 @@ from __future__ import annotations
 from apideck_unify.types import BaseModel
 from apideck_unify.utils import FieldMetadata
 from enum import Enum
+import pydantic
 from typing import Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
@@ -28,7 +29,13 @@ class BalanceSheetFilterTypedDict(TypedDict):
 
 
 class BalanceSheetFilter(BaseModel):
-    start_date: Annotated[Optional[str], FieldMetadata(query=True)] = None
+    start_date: Annotated[
+        Optional[str],
+        pydantic.Field(
+            deprecated="warning: ** DEPRECATED ** - This will be removed in a future release, please migrate away from it as soon as possible."
+        ),
+        FieldMetadata(query=True),
+    ] = None
     r"""The start date of the period to include in the resource."""
 
     end_date: Annotated[Optional[str], FieldMetadata(query=True)] = None
