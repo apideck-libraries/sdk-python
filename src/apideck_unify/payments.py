@@ -465,7 +465,7 @@ class Payments(BaseSDK):
 
         Create Payment
 
-        :param total_amount: The total amount of the transaction
+        :param total_amount: The total amount of the transaction or record
         :param transaction_date: The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD
         :param raw: Include raw response. Mostly used for debugging purposes
         :param consumer_id: ID of the consumer which you want to get or push data from
@@ -731,7 +731,7 @@ class Payments(BaseSDK):
 
         Create Payment
 
-        :param total_amount: The total amount of the transaction
+        :param total_amount: The total amount of the transaction or record
         :param transaction_date: The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD
         :param raw: Include raw response. Mostly used for debugging purposes
         :param consumer_id: ID of the consumer which you want to get or push data from
@@ -1307,7 +1307,7 @@ class Payments(BaseSDK):
         Update Payment
 
         :param id: ID of the record you are acting upon.
-        :param total_amount: The total amount of the transaction
+        :param total_amount: The total amount of the transaction or record
         :param transaction_date: The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
@@ -1576,7 +1576,7 @@ class Payments(BaseSDK):
         Update Payment
 
         :param id: ID of the record you are acting upon.
-        :param total_amount: The total amount of the transaction
+        :param total_amount: The total amount of the transaction or record
         :param transaction_date: The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application

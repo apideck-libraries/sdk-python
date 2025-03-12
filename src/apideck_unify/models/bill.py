@@ -107,6 +107,8 @@ class BillTypedDict(TypedDict):
     bank_account: NotRequired[BankAccountTypedDict]
     discount_percentage: NotRequired[Nullable[float]]
     r"""Discount percentage applied to this transaction."""
+    source_document_url: NotRequired[Nullable[str]]
+    r"""URL link to a source document - shown as 'Go to [appName]' in the downstream app. Currently only supported for Xero."""
     tracking_categories: NotRequired[
         Nullable[List[Nullable[LinkedTrackingCategoryTypedDict]]]
     ]
@@ -217,6 +219,9 @@ class Bill(BaseModel):
     discount_percentage: OptionalNullable[float] = UNSET
     r"""Discount percentage applied to this transaction."""
 
+    source_document_url: OptionalNullable[str] = UNSET
+    r"""URL link to a source document - shown as 'Go to [appName]' in the downstream app. Currently only supported for Xero."""
+
     tracking_categories: OptionalNullable[List[Nullable[LinkedTrackingCategory]]] = (
         UNSET
     )
@@ -281,6 +286,7 @@ class Bill(BaseModel):
             "accounting_by_row",
             "bank_account",
             "discount_percentage",
+            "source_document_url",
             "tracking_categories",
             "updated_by",
             "created_by",
@@ -320,6 +326,7 @@ class Bill(BaseModel):
             "language",
             "accounting_by_row",
             "discount_percentage",
+            "source_document_url",
             "tracking_categories",
             "updated_by",
             "created_by",
@@ -409,6 +416,8 @@ class BillInputTypedDict(TypedDict):
     bank_account: NotRequired[BankAccountTypedDict]
     discount_percentage: NotRequired[Nullable[float]]
     r"""Discount percentage applied to this transaction."""
+    source_document_url: NotRequired[Nullable[str]]
+    r"""URL link to a source document - shown as 'Go to [appName]' in the downstream app. Currently only supported for Xero."""
     tracking_categories: NotRequired[
         Nullable[List[Nullable[LinkedTrackingCategoryTypedDict]]]
     ]
@@ -503,6 +512,9 @@ class BillInput(BaseModel):
     discount_percentage: OptionalNullable[float] = UNSET
     r"""Discount percentage applied to this transaction."""
 
+    source_document_url: OptionalNullable[str] = UNSET
+    r"""URL link to a source document - shown as 'Go to [appName]' in the downstream app. Currently only supported for Xero."""
+
     tracking_categories: OptionalNullable[List[Nullable[LinkedTrackingCategory]]] = (
         UNSET
     )
@@ -550,6 +562,7 @@ class BillInput(BaseModel):
             "accounting_by_row",
             "bank_account",
             "discount_percentage",
+            "source_document_url",
             "tracking_categories",
             "row_version",
             "custom_fields",
@@ -583,6 +596,7 @@ class BillInput(BaseModel):
             "language",
             "accounting_by_row",
             "discount_percentage",
+            "source_document_url",
             "tracking_categories",
             "row_version",
             "accounting_period",

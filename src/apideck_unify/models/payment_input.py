@@ -36,7 +36,7 @@ from typing_extensions import Annotated, NotRequired, TypedDict
 
 class PaymentInputTypedDict(TypedDict):
     total_amount: Nullable[float]
-    r"""The total amount of the transaction"""
+    r"""The total amount of the transaction or record"""
     transaction_date: Nullable[datetime]
     r"""The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD"""
     currency: NotRequired[Nullable[Currency]]
@@ -88,7 +88,7 @@ class PaymentInputTypedDict(TypedDict):
 
 class PaymentInput(BaseModel):
     total_amount: Nullable[float]
-    r"""The total amount of the transaction"""
+    r"""The total amount of the transaction or record"""
 
     transaction_date: Nullable[datetime]
     r"""The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD"""

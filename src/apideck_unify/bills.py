@@ -449,6 +449,7 @@ class Bills(BaseSDK):
             Union[models.BankAccount, models.BankAccountTypedDict]
         ] = None,
         discount_percentage: OptionalNullable[float] = UNSET,
+        source_document_url: OptionalNullable[str] = UNSET,
         tracking_categories: OptionalNullable[
             Union[
                 List[Nullable[models.LinkedTrackingCategory]],
@@ -504,6 +505,7 @@ class Bills(BaseSDK):
         :param accounting_by_row: Indicates if accounting by row is used (true) or not (false). Accounting by row means that a separate ledger transaction is created for each row.
         :param bank_account:
         :param discount_percentage: Discount percentage applied to this transaction.
+        :param source_document_url: URL link to a source document - shown as 'Go to [appName]' in the downstream app. Currently only supported for Xero.
         :param tracking_categories: A list of linked tracking categories.
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
         :param custom_fields:
@@ -566,6 +568,7 @@ class Bills(BaseSDK):
                     bank_account, Optional[models.BankAccount]
                 ),
                 discount_percentage=discount_percentage,
+                source_document_url=source_document_url,
                 tracking_categories=utils.get_pydantic_model(
                     tracking_categories,
                     OptionalNullable[List[Nullable[models.LinkedTrackingCategory]]],
@@ -738,6 +741,7 @@ class Bills(BaseSDK):
             Union[models.BankAccount, models.BankAccountTypedDict]
         ] = None,
         discount_percentage: OptionalNullable[float] = UNSET,
+        source_document_url: OptionalNullable[str] = UNSET,
         tracking_categories: OptionalNullable[
             Union[
                 List[Nullable[models.LinkedTrackingCategory]],
@@ -793,6 +797,7 @@ class Bills(BaseSDK):
         :param accounting_by_row: Indicates if accounting by row is used (true) or not (false). Accounting by row means that a separate ledger transaction is created for each row.
         :param bank_account:
         :param discount_percentage: Discount percentage applied to this transaction.
+        :param source_document_url: URL link to a source document - shown as 'Go to [appName]' in the downstream app. Currently only supported for Xero.
         :param tracking_categories: A list of linked tracking categories.
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
         :param custom_fields:
@@ -855,6 +860,7 @@ class Bills(BaseSDK):
                     bank_account, Optional[models.BankAccount]
                 ),
                 discount_percentage=discount_percentage,
+                source_document_url=source_document_url,
                 tracking_categories=utils.get_pydantic_model(
                     tracking_categories,
                     OptionalNullable[List[Nullable[models.LinkedTrackingCategory]]],
@@ -1336,6 +1342,7 @@ class Bills(BaseSDK):
             Union[models.BankAccount, models.BankAccountTypedDict]
         ] = None,
         discount_percentage: OptionalNullable[float] = UNSET,
+        source_document_url: OptionalNullable[str] = UNSET,
         tracking_categories: OptionalNullable[
             Union[
                 List[Nullable[models.LinkedTrackingCategory]],
@@ -1392,6 +1399,7 @@ class Bills(BaseSDK):
         :param accounting_by_row: Indicates if accounting by row is used (true) or not (false). Accounting by row means that a separate ledger transaction is created for each row.
         :param bank_account:
         :param discount_percentage: Discount percentage applied to this transaction.
+        :param source_document_url: URL link to a source document - shown as 'Go to [appName]' in the downstream app. Currently only supported for Xero.
         :param tracking_categories: A list of linked tracking categories.
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
         :param custom_fields:
@@ -1455,6 +1463,7 @@ class Bills(BaseSDK):
                     bank_account, Optional[models.BankAccount]
                 ),
                 discount_percentage=discount_percentage,
+                source_document_url=source_document_url,
                 tracking_categories=utils.get_pydantic_model(
                     tracking_categories,
                     OptionalNullable[List[Nullable[models.LinkedTrackingCategory]]],
@@ -1628,6 +1637,7 @@ class Bills(BaseSDK):
             Union[models.BankAccount, models.BankAccountTypedDict]
         ] = None,
         discount_percentage: OptionalNullable[float] = UNSET,
+        source_document_url: OptionalNullable[str] = UNSET,
         tracking_categories: OptionalNullable[
             Union[
                 List[Nullable[models.LinkedTrackingCategory]],
@@ -1684,6 +1694,7 @@ class Bills(BaseSDK):
         :param accounting_by_row: Indicates if accounting by row is used (true) or not (false). Accounting by row means that a separate ledger transaction is created for each row.
         :param bank_account:
         :param discount_percentage: Discount percentage applied to this transaction.
+        :param source_document_url: URL link to a source document - shown as 'Go to [appName]' in the downstream app. Currently only supported for Xero.
         :param tracking_categories: A list of linked tracking categories.
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
         :param custom_fields:
@@ -1747,6 +1758,7 @@ class Bills(BaseSDK):
                     bank_account, Optional[models.BankAccount]
                 ),
                 discount_percentage=discount_percentage,
+                source_document_url=source_document_url,
                 tracking_categories=utils.get_pydantic_model(
                     tracking_categories,
                     OptionalNullable[List[Nullable[models.LinkedTrackingCategory]]],
