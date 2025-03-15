@@ -95,7 +95,7 @@ with Apideck(
     ], consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", parent_id="54321", username="masterofcoin", first_name="Elon", last_name="Musk", title="CEO", division="Europe", company_name="SpaceX", employee_number="123456-AB", description="A description", image="https://logo.clearbit.com/spacex.com?s=128", language="EN", status="active", password="supersecretpassword", addresses=[
         {
             "id": "123",
-            "type": apideck_unify.AddressType.PRIMARY,
+            "type": apideck_unify.Type.PRIMARY,
             "string": "25 Spring Street, Blackburn, VIC 3130",
             "name": "HQ US",
             "line1": "Main street",
@@ -121,7 +121,7 @@ with Apideck(
         },
         {
             "id": "123",
-            "type": apideck_unify.AddressType.PRIMARY,
+            "type": apideck_unify.Type.PRIMARY,
             "string": "25 Spring Street, Blackburn, VIC 3130",
             "name": "HQ US",
             "line1": "Main street",
@@ -308,7 +308,7 @@ with Apideck(
     ], consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", parent_id="54321", username="masterofcoin", first_name="Elon", last_name="Musk", title="CEO", division="Europe", company_name="SpaceX", employee_number="123456-AB", description="A description", image="https://logo.clearbit.com/spacex.com?s=128", language="EN", status="active", password="supersecretpassword", addresses=[
         {
             "id": "123",
-            "type": apideck_unify.AddressType.PRIMARY,
+            "type": apideck_unify.Type.PRIMARY,
             "string": "25 Spring Street, Blackburn, VIC 3130",
             "name": "HQ US",
             "line1": "Main street",
@@ -334,7 +334,7 @@ with Apideck(
         },
         {
             "id": "123",
-            "type": apideck_unify.AddressType.PRIMARY,
+            "type": apideck_unify.Type.PRIMARY,
             "string": "25 Spring Street, Blackburn, VIC 3130",
             "name": "HQ US",
             "line1": "Main street",
@@ -360,7 +360,7 @@ with Apideck(
         },
         {
             "id": "123",
-            "type": apideck_unify.AddressType.PRIMARY,
+            "type": apideck_unify.Type.PRIMARY,
             "string": "25 Spring Street, Blackburn, VIC 3130",
             "name": "HQ US",
             "line1": "Main street",

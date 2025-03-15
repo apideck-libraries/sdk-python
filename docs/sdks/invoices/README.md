@@ -229,7 +229,7 @@ with Apideck(
         },
     ], billing_address={
         "id": "123",
-        "type": apideck_unify.AddressType.PRIMARY,
+        "type": apideck_unify.Type.PRIMARY,
         "string": "25 Spring Street, Blackburn, VIC 3130",
         "name": "HQ US",
         "line1": "Main street",
@@ -254,7 +254,7 @@ with Apideck(
         "row_version": "1-12345",
     }, shipping_address={
         "id": "123",
-        "type": apideck_unify.AddressType.PRIMARY,
+        "type": apideck_unify.Type.PRIMARY,
         "string": "25 Spring Street, Blackburn, VIC 3130",
         "name": "HQ US",
         "line1": "Main street",
@@ -620,7 +620,7 @@ with Apideck(
         },
     ], billing_address={
         "id": "123",
-        "type": apideck_unify.AddressType.PRIMARY,
+        "type": apideck_unify.Type.PRIMARY,
         "string": "25 Spring Street, Blackburn, VIC 3130",
         "name": "HQ US",
         "line1": "Main street",
@@ -645,7 +645,7 @@ with Apideck(
         "row_version": "1-12345",
     }, shipping_address={
         "id": "123",
-        "type": apideck_unify.AddressType.PRIMARY,
+        "type": apideck_unify.Type.PRIMARY,
         "string": "25 Spring Street, Blackburn, VIC 3130",
         "name": "HQ US",
         "line1": "Main street",
