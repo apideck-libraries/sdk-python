@@ -1,12 +1,12 @@
 lockVersion: 2.0.0
 id: fca0ac3a-5f4e-452c-bbc7-2311afa8da40
 management:
-  docChecksum: 50a61e9cfff156b49464cb8c6443a41f
+  docChecksum: 3b1c13212460fc354a5e34450e98e822
   docVersion: 10.12.3
-  speakeasyVersion: 1.517.0
-  generationVersion: 2.548.1
-  releaseVersion: 0.9.0
-  configChecksum: 2f03f8087c1eaa5e1575e29be2d3dcbf
+  speakeasyVersion: 1.517.3
+  generationVersion: 2.548.6
+  releaseVersion: 0.9.1
+  configChecksum: f0e25b1baa73a2e1c67b99d54e63f8b2
   repoURL: https://github.com/apideck-libraries/sdk-python.git
   installationURL: https://github.com/apideck-libraries/sdk-python.git
   published: true
@@ -349,7 +349,6 @@ generatedFiles:
   - docs/models/activitytype.md
   - docs/models/address.md
   - docs/models/addresses.md
-  - docs/models/addresstype.md
   - docs/models/ageddebtors.md
   - docs/models/agedreportfilter.md
   - docs/models/allocation.md
@@ -521,6 +520,7 @@ generatedFiles:
   - docs/models/contactsfilter.md
   - docs/models/contactssort.md
   - docs/models/contactssortby.md
+  - docs/models/contacttype.md
   - docs/models/copyfolderrequest.md
   - docs/models/costofgoodssold.md
   - docs/models/coverage.md

@@ -24,7 +24,7 @@ from typing import List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
-class Type(str, Enum):
+class ContactType(str, Enum):
     r"""The type of the contact."""
 
     CUSTOMER = "customer"
@@ -48,7 +48,7 @@ class ContactTypedDict(TypedDict):
     r"""Unique identifier for the contact."""
     owner_id: NotRequired[Nullable[str]]
     r"""The owner of the contact."""
-    type: NotRequired[Nullable[Type]]
+    type: NotRequired[Nullable[ContactType]]
     r"""The type of the contact."""
     company_id: NotRequired[Nullable[str]]
     r"""The company the contact is associated with."""
@@ -127,7 +127,7 @@ class Contact(BaseModel):
     owner_id: OptionalNullable[str] = UNSET
     r"""The owner of the contact."""
 
-    type: OptionalNullable[Type] = UNSET
+    type: OptionalNullable[ContactType] = UNSET
     r"""The type of the contact."""
 
     company_id: OptionalNullable[str] = UNSET
@@ -347,7 +347,7 @@ class ContactInputTypedDict(TypedDict):
     r"""Full name of the contact."""
     owner_id: NotRequired[Nullable[str]]
     r"""The owner of the contact."""
-    type: NotRequired[Nullable[Type]]
+    type: NotRequired[Nullable[ContactType]]
     r"""The type of the contact."""
     company_id: NotRequired[Nullable[str]]
     r"""The company the contact is associated with."""
@@ -411,7 +411,7 @@ class ContactInput(BaseModel):
     owner_id: OptionalNullable[str] = UNSET
     r"""The owner of the contact."""
 
-    type: OptionalNullable[Type] = UNSET
+    type: OptionalNullable[ContactType] = UNSET
     r"""The type of the contact."""
 
     company_id: OptionalNullable[str] = UNSET
