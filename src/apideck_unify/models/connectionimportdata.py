@@ -69,17 +69,17 @@ class Credentials(BaseModel):
         return m
 
 
-class ConnectionImportDataSettingsTypedDict(TypedDict):
+class SettingsTypedDict(TypedDict):
     r"""Connection settings. Values will persist to `form_fields` with corresponding id"""
 
 
-class ConnectionImportDataSettings(BaseModel):
+class Settings(BaseModel):
     r"""Connection settings. Values will persist to `form_fields` with corresponding id"""
 
 
 class ConnectionImportDataTypedDict(TypedDict):
     credentials: NotRequired[CredentialsTypedDict]
-    settings: NotRequired[Nullable[ConnectionImportDataSettingsTypedDict]]
+    settings: NotRequired[Nullable[SettingsTypedDict]]
     r"""Connection settings. Values will persist to `form_fields` with corresponding id"""
     metadata: NotRequired[Nullable[Dict[str, Any]]]
     r"""Attach your own consumer specific metadata"""
@@ -88,7 +88,7 @@ class ConnectionImportDataTypedDict(TypedDict):
 class ConnectionImportData(BaseModel):
     credentials: Optional[Credentials] = None
 
-    settings: OptionalNullable[ConnectionImportDataSettings] = UNSET
+    settings: OptionalNullable[Settings] = UNSET
     r"""Connection settings. Values will persist to `form_fields` with corresponding id"""
 
     metadata: OptionalNullable[Dict[str, Any]] = UNSET

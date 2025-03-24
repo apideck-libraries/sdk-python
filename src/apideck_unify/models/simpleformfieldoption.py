@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 from apideck_unify.types import BaseModel
+from enum import Enum
 from typing import List, Optional, Union
 from typing_extensions import NotRequired, TypeAliasType, TypedDict
 
@@ -23,12 +24,19 @@ SimpleFormFieldOptionValue = TypeAliasType(
 )
 
 
+class OptionType(str, Enum):
+    SIMPLE = "simple"
+
+
 class SimpleFormFieldOptionTypedDict(TypedDict):
-    label: NotRequired[str]
+    label: str
+    option_type: OptionType
     value: NotRequired[SimpleFormFieldOptionValueTypedDict]
 
 
 class SimpleFormFieldOption(BaseModel):
-    label: Optional[str] = None
+    label: str
+
+    option_type: OptionType
 
     value: Optional[SimpleFormFieldOptionValue] = None

@@ -89,7 +89,7 @@ with Apideck(
     res = apideck.hris.companies.create(legal_name="SpaceX", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", display_name="SpaceX", subdomain="company", status=apideck_unify.HrisCompanyStatus.ACTIVE, company_number="123456-AB", currency=apideck_unify.Currency.USD, addresses=[
         {
             "id": "123",
-            "type": apideck_unify.AddressType.PRIMARY,
+            "type": apideck_unify.Type.PRIMARY,
             "string": "25 Spring Street, Blackburn, VIC 3130",
             "name": "HQ US",
             "line1": "Main street",
@@ -115,7 +115,7 @@ with Apideck(
         },
         {
             "id": "123",
-            "type": apideck_unify.AddressType.PRIMARY,
+            "type": apideck_unify.Type.PRIMARY,
             "string": "25 Spring Street, Blackburn, VIC 3130",
             "name": "HQ US",
             "line1": "Main street",
@@ -323,7 +323,7 @@ with Apideck(
     res = apideck.hris.companies.update(id="<id>", legal_name="SpaceX", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", display_name="SpaceX", subdomain="company", status=apideck_unify.HrisCompanyStatus.ACTIVE, company_number="123456-AB", currency=apideck_unify.Currency.USD, addresses=[
         {
             "id": "123",
-            "type": apideck_unify.AddressType.PRIMARY,
+            "type": apideck_unify.Type.PRIMARY,
             "string": "25 Spring Street, Blackburn, VIC 3130",
             "name": "HQ US",
             "line1": "Main street",
@@ -349,7 +349,7 @@ with Apideck(
         },
         {
             "id": "123",
-            "type": apideck_unify.AddressType.PRIMARY,
+            "type": apideck_unify.Type.PRIMARY,
             "string": "25 Spring Street, Blackburn, VIC 3130",
             "name": "HQ US",
             "line1": "Main street",
@@ -375,7 +375,7 @@ with Apideck(
         },
         {
             "id": "123",
-            "type": apideck_unify.AddressType.PRIMARY,
+            "type": apideck_unify.Type.PRIMARY,
             "string": "25 Spring Street, Blackburn, VIC 3130",
             "name": "HQ US",
             "line1": "Main street",

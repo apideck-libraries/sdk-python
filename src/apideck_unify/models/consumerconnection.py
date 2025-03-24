@@ -15,14 +15,6 @@ from typing import Any, Dict, Optional
 from typing_extensions import NotRequired, TypedDict
 
 
-class SettingsTypedDict(TypedDict):
-    r"""Connection settings. Values will persist to `form_fields` with corresponding id"""
-
-
-class Settings(BaseModel):
-    r"""Connection settings. Values will persist to `form_fields` with corresponding id"""
-
-
 class ConsumerConnectionTypedDict(TypedDict):
     id: NotRequired[str]
     name: NotRequired[str]
@@ -36,7 +28,7 @@ class ConsumerConnectionTypedDict(TypedDict):
     auth_type: NotRequired[AuthType]
     r"""Type of authorization used by the connector"""
     enabled: NotRequired[bool]
-    settings: NotRequired[Nullable[SettingsTypedDict]]
+    settings: NotRequired[Nullable[Dict[str, Any]]]
     r"""Connection settings. Values will persist to `form_fields` with corresponding id"""
     metadata: NotRequired[Nullable[Dict[str, Any]]]
     r"""Attach your own consumer specific metadata"""
@@ -70,7 +62,7 @@ class ConsumerConnection(BaseModel):
 
     enabled: Optional[bool] = None
 
-    settings: OptionalNullable[Settings] = UNSET
+    settings: OptionalNullable[Dict[str, Any]] = UNSET
     r"""Connection settings. Values will persist to `form_fields` with corresponding id"""
 
     metadata: OptionalNullable[Dict[str, Any]] = UNSET

@@ -135,7 +135,7 @@ with Apideck(
     ], addresses=[
         {
             "id": "123",
-            "type": apideck_unify.AddressType.PRIMARY,
+            "type": apideck_unify.Type.PRIMARY,
             "string": "25 Spring Street, Blackburn, VIC 3130",
             "name": "HQ US",
             "line1": "Main street",
@@ -161,7 +161,7 @@ with Apideck(
         },
         {
             "id": "123",
-            "type": apideck_unify.AddressType.PRIMARY,
+            "type": apideck_unify.Type.PRIMARY,
             "string": "25 Spring Street, Blackburn, VIC 3130",
             "name": "HQ US",
             "line1": "Main street",
@@ -512,7 +512,7 @@ with Apideck(
     ], addresses=[
         {
             "id": "123",
-            "type": apideck_unify.AddressType.PRIMARY,
+            "type": apideck_unify.Type.PRIMARY,
             "string": "25 Spring Street, Blackburn, VIC 3130",
             "name": "HQ US",
             "line1": "Main street",
@@ -538,7 +538,7 @@ with Apideck(
         },
         {
             "id": "123",
-            "type": apideck_unify.AddressType.PRIMARY,
+            "type": apideck_unify.Type.PRIMARY,
             "string": "25 Spring Street, Blackburn, VIC 3130",
             "name": "HQ US",
             "line1": "Main street",

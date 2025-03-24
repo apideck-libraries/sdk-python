@@ -3,19 +3,27 @@
 from __future__ import annotations
 from .simpleformfieldoption import SimpleFormFieldOption, SimpleFormFieldOptionTypedDict
 from apideck_unify.types import BaseModel
+from enum import Enum
 from typing import List, Optional
 from typing_extensions import NotRequired, TypedDict
 
 
+class FormFieldOptionGroupOptionType(str, Enum):
+    GROUP = "group"
+
+
 class FormFieldOptionGroupTypedDict(TypedDict):
+    label: str
+    options: List[SimpleFormFieldOptionTypedDict]
+    option_type: FormFieldOptionGroupOptionType
     id: NotRequired[str]
-    label: NotRequired[str]
-    options: NotRequired[List[SimpleFormFieldOptionTypedDict]]
 
 
 class FormFieldOptionGroup(BaseModel):
+    label: str
+
+    options: List[SimpleFormFieldOption]
+
+    option_type: FormFieldOptionGroupOptionType
+
     id: Optional[str] = None
-
-    label: Optional[str] = None
-
-    options: Optional[List[SimpleFormFieldOption]] = None
