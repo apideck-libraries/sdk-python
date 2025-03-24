@@ -3,8 +3,10 @@
 from __future__ import annotations
 from .formfieldoptiongroup import FormFieldOptionGroup, FormFieldOptionGroupTypedDict
 from .simpleformfieldoption import SimpleFormFieldOption, SimpleFormFieldOptionTypedDict
+from apideck_unify.utils import get_discriminator
+from pydantic import Discriminator, Tag
 from typing import Union
-from typing_extensions import TypeAliasType
+from typing_extensions import Annotated, TypeAliasType
 
 
 FormFieldOptionTypedDict = TypeAliasType(
@@ -13,6 +15,10 @@ FormFieldOptionTypedDict = TypeAliasType(
 )
 
 
-FormFieldOption = TypeAliasType(
-    "FormFieldOption", Union[SimpleFormFieldOption, FormFieldOptionGroup]
-)
+FormFieldOption = Annotated[
+    Union[
+        Annotated[SimpleFormFieldOption, Tag("simple")],
+        Annotated[FormFieldOptionGroup, Tag("group")],
+    ],
+    Discriminator(lambda m: get_discriminator(m, "option_type", "option_type")),
+]

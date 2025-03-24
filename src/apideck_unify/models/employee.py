@@ -243,6 +243,8 @@ class ProbationPeriod(BaseModel):
 class EmployeeTypedDict(TypedDict):
     id: NotRequired[Nullable[str]]
     r"""A unique identifier for an object."""
+    downstream_id: NotRequired[Nullable[str]]
+    r"""The third-party API ID of original entity"""
     first_name: NotRequired[Nullable[str]]
     r"""The first name of the person."""
     last_name: NotRequired[Nullable[str]]
@@ -360,6 +362,9 @@ class EmployeeTypedDict(TypedDict):
 class Employee(BaseModel):
     id: OptionalNullable[str] = UNSET
     r"""A unique identifier for an object."""
+
+    downstream_id: OptionalNullable[str] = UNSET
+    r"""The third-party API ID of original entity"""
 
     first_name: OptionalNullable[str] = UNSET
     r"""The first name of the person."""
@@ -547,6 +552,7 @@ class Employee(BaseModel):
     def serialize_model(self, handler):
         optional_fields = [
             "id",
+            "downstream_id",
             "first_name",
             "last_name",
             "middle_name",
@@ -615,6 +621,7 @@ class Employee(BaseModel):
         ]
         nullable_fields = [
             "id",
+            "downstream_id",
             "first_name",
             "last_name",
             "middle_name",

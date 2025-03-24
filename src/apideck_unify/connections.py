@@ -1272,10 +1272,7 @@ class Connections(BaseSDK):
             Union[models.Credentials, models.CredentialsTypedDict]
         ] = None,
         settings: OptionalNullable[
-            Union[
-                models.ConnectionImportDataSettings,
-                models.ConnectionImportDataSettingsTypedDict,
-            ]
+            Union[models.Settings, models.SettingsTypedDict]
         ] = UNSET,
         metadata: OptionalNullable[Dict[str, Any]] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
@@ -1320,7 +1317,7 @@ class Connections(BaseSDK):
                     credentials, Optional[models.Credentials]
                 ),
                 settings=utils.get_pydantic_model(
-                    settings, OptionalNullable[models.ConnectionImportDataSettings]
+                    settings, OptionalNullable[models.Settings]
                 ),
                 metadata=metadata,
             ),
@@ -1450,10 +1447,7 @@ class Connections(BaseSDK):
             Union[models.Credentials, models.CredentialsTypedDict]
         ] = None,
         settings: OptionalNullable[
-            Union[
-                models.ConnectionImportDataSettings,
-                models.ConnectionImportDataSettingsTypedDict,
-            ]
+            Union[models.Settings, models.SettingsTypedDict]
         ] = UNSET,
         metadata: OptionalNullable[Dict[str, Any]] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
@@ -1498,7 +1492,7 @@ class Connections(BaseSDK):
                     credentials, Optional[models.Credentials]
                 ),
                 settings=utils.get_pydantic_model(
-                    settings, OptionalNullable[models.ConnectionImportDataSettings]
+                    settings, OptionalNullable[models.Settings]
                 ),
                 metadata=metadata,
             ),

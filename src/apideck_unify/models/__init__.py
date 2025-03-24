@@ -783,7 +783,7 @@ from .activityattendee import (
     ActivityAttendeeStatus,
     ActivityAttendeeTypedDict,
 )
-from .address import Address, AddressType, AddressTypedDict
+from .address import Address, AddressTypedDict, Type
 from .ageddebtors import AgedDebtors, AgedDebtorsTypedDict
 from .agedreportfilter import AgedReportFilter, AgedReportFilterTypedDict
 from .allocation import (
@@ -1045,11 +1045,11 @@ from .connection import (
 )
 from .connectionimportdata import (
     ConnectionImportData,
-    ConnectionImportDataSettings,
-    ConnectionImportDataSettingsTypedDict,
     ConnectionImportDataTypedDict,
     Credentials,
     CredentialsTypedDict,
+    Settings,
+    SettingsTypedDict,
 )
 from .connectionstate import ConnectionState
 from .connector import (
@@ -1143,12 +1143,7 @@ from .connectorsfilter import ConnectorsFilter, ConnectorsFilterTypedDict
 from .connectorstatus import ConnectorStatus
 from .consumer import Consumer, ConsumerTypedDict
 from .consumer_input import ConsumerInput, ConsumerInputTypedDict
-from .consumerconnection import (
-    ConsumerConnection,
-    ConsumerConnectionTypedDict,
-    Settings,
-    SettingsTypedDict,
-)
+from .consumerconnection import ConsumerConnection, ConsumerConnectionTypedDict
 from .consumermetadata import ConsumerMetadata, ConsumerMetadataTypedDict
 from .consumerrequestcountsindaterangeresponse import (
     ConsumerRequestCountsInDateRangeResponse,
@@ -1161,8 +1156,8 @@ from .contact import (
     ContactGender,
     ContactInput,
     ContactInputTypedDict,
+    ContactType,
     ContactTypedDict,
-    Type,
 )
 from .contactsfilter import ContactsFilter, ContactsFilterTypedDict
 from .contactssort import ContactsSort, ContactsSortBy, ContactsSortTypedDict
@@ -2180,7 +2175,11 @@ from .filetype import FileType
 from .folder import Folder, FolderTypedDict
 from .formfield import FormField, FormFieldType, FormFieldTypedDict
 from .formfieldoption import FormFieldOption, FormFieldOptionTypedDict
-from .formfieldoptiongroup import FormFieldOptionGroup, FormFieldOptionGroupTypedDict
+from .formfieldoptiongroup import (
+    FormFieldOptionGroup,
+    FormFieldOptionGroupOptionType,
+    FormFieldOptionGroupTypedDict,
+)
 from .gender import Gender
 from .getaccountingdepartmentresponse import (
     GetAccountingDepartmentResponse,
@@ -3081,6 +3080,7 @@ from .sharedlinktarget import SharedLinkTarget, SharedLinkTargetTypedDict
 from .simpleformfieldoption import (
     Five,
     FiveTypedDict,
+    OptionType,
     SimpleFormFieldOption,
     SimpleFormFieldOptionTypedDict,
     SimpleFormFieldOptionValue,
@@ -4195,7 +4195,6 @@ __all__ = [
     "ActivityType",
     "ActivityTypedDict",
     "Address",
-    "AddressType",
     "AddressTypedDict",
     "Addresses",
     "AddressesTypedDict",
@@ -4407,8 +4406,6 @@ __all__ = [
     "ConnectionDefaults",
     "ConnectionDefaultsTypedDict",
     "ConnectionImportData",
-    "ConnectionImportDataSettings",
-    "ConnectionImportDataSettingsTypedDict",
     "ConnectionImportDataTypedDict",
     "ConnectionInput",
     "ConnectionInputTypedDict",
@@ -4499,6 +4496,7 @@ __all__ = [
     "ContactGender",
     "ContactInput",
     "ContactInputTypedDict",
+    "ContactType",
     "ContactTypedDict",
     "ContactsFilter",
     "ContactsFilterTypedDict",
@@ -5311,6 +5309,7 @@ __all__ = [
     "FormField",
     "FormFieldOption",
     "FormFieldOptionGroup",
+    "FormFieldOptionGroupOptionType",
     "FormFieldOptionGroupTypedDict",
     "FormFieldOptionTypedDict",
     "FormFieldType",
@@ -5967,6 +5966,7 @@ __all__ = [
     "OpportunityInput",
     "OpportunityInputTypedDict",
     "OpportunityTypedDict",
+    "OptionType",
     "Options",
     "OptionsTypedDict",
     "OrdersSort",
