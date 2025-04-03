@@ -469,6 +469,10 @@ class InvoiceItems(BaseSDK):
             ]
         ] = UNSET,
         active: OptionalNullable[bool] = UNSET,
+        department_id: OptionalNullable[str] = UNSET,
+        location_id: OptionalNullable[str] = UNSET,
+        subsidiary_id: OptionalNullable[str] = UNSET,
+        tax_schedule_id: OptionalNullable[str] = UNSET,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
@@ -505,6 +509,10 @@ class InvoiceItems(BaseSDK):
         :param tracking_category:
         :param tracking_categories: A list of linked tracking categories.
         :param active:
+        :param department_id: The ID of the department
+        :param location_id: The ID of the location
+        :param subsidiary_id: The ID of the subsidiary
+        :param tax_schedule_id: The ID of the tax schedule
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
@@ -563,6 +571,10 @@ class InvoiceItems(BaseSDK):
                     OptionalNullable[List[Nullable[models.LinkedTrackingCategory]]],
                 ),
                 active=active,
+                department_id=department_id,
+                location_id=location_id,
+                subsidiary_id=subsidiary_id,
+                tax_schedule_id=tax_schedule_id,
                 row_version=row_version,
                 pass_through=utils.get_pydantic_model(
                     pass_through, Optional[List[models.PassThroughBody]]
@@ -739,6 +751,10 @@ class InvoiceItems(BaseSDK):
             ]
         ] = UNSET,
         active: OptionalNullable[bool] = UNSET,
+        department_id: OptionalNullable[str] = UNSET,
+        location_id: OptionalNullable[str] = UNSET,
+        subsidiary_id: OptionalNullable[str] = UNSET,
+        tax_schedule_id: OptionalNullable[str] = UNSET,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
@@ -775,6 +791,10 @@ class InvoiceItems(BaseSDK):
         :param tracking_category:
         :param tracking_categories: A list of linked tracking categories.
         :param active:
+        :param department_id: The ID of the department
+        :param location_id: The ID of the location
+        :param subsidiary_id: The ID of the subsidiary
+        :param tax_schedule_id: The ID of the tax schedule
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
@@ -833,6 +853,10 @@ class InvoiceItems(BaseSDK):
                     OptionalNullable[List[Nullable[models.LinkedTrackingCategory]]],
                 ),
                 active=active,
+                department_id=department_id,
+                location_id=location_id,
+                subsidiary_id=subsidiary_id,
+                tax_schedule_id=tax_schedule_id,
                 row_version=row_version,
                 pass_through=utils.get_pydantic_model(
                     pass_through, Optional[List[models.PassThroughBody]]
@@ -1332,6 +1356,10 @@ class InvoiceItems(BaseSDK):
             ]
         ] = UNSET,
         active: OptionalNullable[bool] = UNSET,
+        department_id: OptionalNullable[str] = UNSET,
+        location_id: OptionalNullable[str] = UNSET,
+        subsidiary_id: OptionalNullable[str] = UNSET,
+        tax_schedule_id: OptionalNullable[str] = UNSET,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
@@ -1369,6 +1397,10 @@ class InvoiceItems(BaseSDK):
         :param tracking_category:
         :param tracking_categories: A list of linked tracking categories.
         :param active:
+        :param department_id: The ID of the department
+        :param location_id: The ID of the location
+        :param subsidiary_id: The ID of the subsidiary
+        :param tax_schedule_id: The ID of the tax schedule
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
@@ -1428,6 +1460,10 @@ class InvoiceItems(BaseSDK):
                     OptionalNullable[List[Nullable[models.LinkedTrackingCategory]]],
                 ),
                 active=active,
+                department_id=department_id,
+                location_id=location_id,
+                subsidiary_id=subsidiary_id,
+                tax_schedule_id=tax_schedule_id,
                 row_version=row_version,
                 pass_through=utils.get_pydantic_model(
                     pass_through, Optional[List[models.PassThroughBody]]
@@ -1605,6 +1641,10 @@ class InvoiceItems(BaseSDK):
             ]
         ] = UNSET,
         active: OptionalNullable[bool] = UNSET,
+        department_id: OptionalNullable[str] = UNSET,
+        location_id: OptionalNullable[str] = UNSET,
+        subsidiary_id: OptionalNullable[str] = UNSET,
+        tax_schedule_id: OptionalNullable[str] = UNSET,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
@@ -1642,6 +1682,10 @@ class InvoiceItems(BaseSDK):
         :param tracking_category:
         :param tracking_categories: A list of linked tracking categories.
         :param active:
+        :param department_id: The ID of the department
+        :param location_id: The ID of the location
+        :param subsidiary_id: The ID of the subsidiary
+        :param tax_schedule_id: The ID of the tax schedule
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
@@ -1701,6 +1745,10 @@ class InvoiceItems(BaseSDK):
                     OptionalNullable[List[Nullable[models.LinkedTrackingCategory]]],
                 ),
                 active=active,
+                department_id=department_id,
+                location_id=location_id,
+                subsidiary_id=subsidiary_id,
+                tax_schedule_id=tax_schedule_id,
                 row_version=row_version,
                 pass_through=utils.get_pydantic_model(
                     pass_through, Optional[List[models.PassThroughBody]]

@@ -11,14 +11,14 @@ from apideck_unify.types import (
     UNSET_SENTINEL,
 )
 from pydantic import model_serializer
-from typing import List, Optional
+from typing import List
 from typing_extensions import NotRequired, TypedDict
 
 
 class LinkedEcommerceCustomerTypedDict(TypedDict):
     r"""The customer this entity is linked to."""
 
-    id: Nullable[str]
+    id: NotRequired[Nullable[str]]
     r"""The ID of the customer this entity is linked to."""
     name: NotRequired[Nullable[str]]
     r"""Full name of the customer"""
@@ -28,14 +28,14 @@ class LinkedEcommerceCustomerTypedDict(TypedDict):
     r"""Last name of the customer"""
     company_name: NotRequired[Nullable[str]]
     r"""Company name of the customer"""
-    phone_numbers: NotRequired[List[PhoneNumberTypedDict]]
-    emails: NotRequired[List[EmailTypedDict]]
+    phone_numbers: NotRequired[Nullable[List[PhoneNumberTypedDict]]]
+    emails: NotRequired[Nullable[List[EmailTypedDict]]]
 
 
 class LinkedEcommerceCustomer(BaseModel):
     r"""The customer this entity is linked to."""
 
-    id: Nullable[str]
+    id: OptionalNullable[str] = UNSET
     r"""The ID of the customer this entity is linked to."""
 
     name: OptionalNullable[str] = UNSET
@@ -50,13 +50,14 @@ class LinkedEcommerceCustomer(BaseModel):
     company_name: OptionalNullable[str] = UNSET
     r"""Company name of the customer"""
 
-    phone_numbers: Optional[List[PhoneNumber]] = None
+    phone_numbers: OptionalNullable[List[PhoneNumber]] = UNSET
 
-    emails: Optional[List[Email]] = None
+    emails: OptionalNullable[List[Email]] = UNSET
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
         optional_fields = [
+            "id",
             "name",
             "first_name",
             "last_name",
@@ -64,14 +65,22 @@ class LinkedEcommerceCustomer(BaseModel):
             "phone_numbers",
             "emails",
         ]
-        nullable_fields = ["id", "name", "first_name", "last_name", "company_name"]
+        nullable_fields = [
+            "id",
+            "name",
+            "first_name",
+            "last_name",
+            "company_name",
+            "phone_numbers",
+            "emails",
+        ]
         null_default_fields = []
 
         serialized = handler(self)
 
         m = {}
 
-        for n, f in self.model_fields.items():
+        for n, f in type(self).model_fields.items():
             k = f.alias or n
             val = serialized.get(k)
             serialized.pop(k, None)

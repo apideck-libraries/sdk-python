@@ -6,6 +6,7 @@
 ### Available Operations
 
 * [list](#list) - List Attachments
+* [upload](#upload) - Upload attachment
 * [get](#get) - Get Attachment
 * [delete](#delete) - Delete Attachment
 * [download](#download) - Download Attachment
@@ -55,6 +56,63 @@ with Apideck(
 ### Response
 
 **[models.AccountingAttachmentsAllResponse](../../models/accountingattachmentsallresponse.md)**
+
+### Errors
+
+| Error Type                     | Status Code                    | Content Type                   |
+| ------------------------------ | ------------------------------ | ------------------------------ |
+| models.BadRequestResponse      | 400                            | application/json               |
+| models.UnauthorizedResponse    | 401                            | application/json               |
+| models.PaymentRequiredResponse | 402                            | application/json               |
+| models.NotFoundResponse        | 404                            | application/json               |
+| models.UnprocessableResponse   | 422                            | application/json               |
+| models.APIError                | 4XX, 5XX                       | \*/\*                          |
+
+## upload
+
+Upload attachment
+
+### Example Usage
+
+```python
+import apideck_unify
+from apideck_unify import Apideck
+import os
+
+
+with Apideck(
+    api_key=os.getenv("APIDECK_API_KEY", ""),
+    consumer_id="test-consumer",
+    app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+) as apideck:
+
+    res = apideck.accounting.attachments.upload(reference_type=apideck_unify.AttachmentReferenceType.INVOICE, reference_id="123456", request_body=open("example.file", "rb"), x_apideck_metadata="{\"name\":\"document.pdf\",\"description\":\"Invoice attachment\"}", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce")
+
+    assert res.create_attachment_response is not None
+
+    # Handle response
+    print(res.create_attachment_response)
+
+```
+
+### Parameters
+
+| Parameter                                                                                                                                     | Type                                                                                                                                          | Required                                                                                                                                      | Description                                                                                                                                   | Example                                                                                                                                       |
+| --------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| `reference_type`                                                                                                                              | [models.AttachmentReferenceType](../../models/attachmentreferencetype.md)                                                                     | :heavy_check_mark:                                                                                                                            | The reference type of the document.                                                                                                           | invoice                                                                                                                                       |
+| `reference_id`                                                                                                                                | *str*                                                                                                                                         | :heavy_check_mark:                                                                                                                            | The reference id of the object to retrieve.                                                                                                   | 12345                                                                                                                                         |
+| `request_body`                                                                                                                                | *Union[bytes, IO[bytes], io.BufferedReader]*                                                                                                  | :heavy_check_mark:                                                                                                                            | N/A                                                                                                                                           |                                                                                                                                               |
+| `raw`                                                                                                                                         | *Optional[bool]*                                                                                                                              | :heavy_minus_sign:                                                                                                                            | Include raw response. Mostly used for debugging purposes                                                                                      |                                                                                                                                               |
+| `x_apideck_metadata`                                                                                                                          | *Optional[str]*                                                                                                                               | :heavy_minus_sign:                                                                                                                            | Metadata to attach to the attachment file (JSON string)                                                                                       |                                                                                                                                               |
+| `consumer_id`                                                                                                                                 | *Optional[str]*                                                                                                                               | :heavy_minus_sign:                                                                                                                            | ID of the consumer which you want to get or push data from                                                                                    | test-consumer                                                                                                                                 |
+| `app_id`                                                                                                                                      | *Optional[str]*                                                                                                                               | :heavy_minus_sign:                                                                                                                            | The ID of your Unify application                                                                                                              | dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX                                                                                                       |
+| `service_id`                                                                                                                                  | *Optional[str]*                                                                                                                               | :heavy_minus_sign:                                                                                                                            | Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API. | salesforce                                                                                                                                    |
+| `retries`                                                                                                                                     | [Optional[utils.RetryConfig]](../../models/utils/retryconfig.md)                                                                              | :heavy_minus_sign:                                                                                                                            | Configuration to override the default retry behavior of the client.                                                                           |                                                                                                                                               |
+| `server_url`                                                                                                                                  | *Optional[str]*                                                                                                                               | :heavy_minus_sign:                                                                                                                            | An optional server URL to use.                                                                                                                | http://localhost:8080                                                                                                                         |
+
+### Response
+
+**[models.AccountingAttachmentsUploadResponse](../../models/accountingattachmentsuploadresponse.md)**
 
 ### Errors
 

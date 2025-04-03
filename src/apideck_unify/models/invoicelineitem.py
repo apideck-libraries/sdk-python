@@ -64,9 +64,9 @@ class InvoiceLineItemTypedDict(TypedDict):
     discount_amount: NotRequired[Nullable[float]]
     r"""Discount amount applied to the line item when supported downstream."""
     location_id: NotRequired[Nullable[str]]
-    r"""Location id"""
+    r"""The ID of the location"""
     department_id: NotRequired[Nullable[str]]
-    r"""Department id"""
+    r"""The ID of the department"""
     item: NotRequired[LinkedInvoiceItemTypedDict]
     tax_rate: NotRequired[LinkedTaxRateTypedDict]
     tracking_categories: NotRequired[
@@ -126,10 +126,10 @@ class InvoiceLineItem(BaseModel):
     r"""Discount amount applied to the line item when supported downstream."""
 
     location_id: OptionalNullable[str] = UNSET
-    r"""Location id"""
+    r"""The ID of the location"""
 
     department_id: OptionalNullable[str] = UNSET
-    r"""Department id"""
+    r"""The ID of the department"""
 
     item: Optional[LinkedInvoiceItem] = None
 
@@ -217,7 +217,7 @@ class InvoiceLineItem(BaseModel):
 
         m = {}
 
-        for n, f in self.model_fields.items():
+        for n, f in type(self).model_fields.items():
             k = f.alias or n
             val = serialized.get(k)
             serialized.pop(k, None)
@@ -264,9 +264,9 @@ class InvoiceLineItemInputTypedDict(TypedDict):
     discount_amount: NotRequired[Nullable[float]]
     r"""Discount amount applied to the line item when supported downstream."""
     location_id: NotRequired[Nullable[str]]
-    r"""Location id"""
+    r"""The ID of the location"""
     department_id: NotRequired[Nullable[str]]
-    r"""Department id"""
+    r"""The ID of the department"""
     item: NotRequired[LinkedInvoiceItemTypedDict]
     tax_rate: NotRequired[LinkedTaxRateInputTypedDict]
     tracking_categories: NotRequired[
@@ -318,10 +318,10 @@ class InvoiceLineItemInput(BaseModel):
     r"""Discount amount applied to the line item when supported downstream."""
 
     location_id: OptionalNullable[str] = UNSET
-    r"""Location id"""
+    r"""The ID of the location"""
 
     department_id: OptionalNullable[str] = UNSET
-    r"""Department id"""
+    r"""The ID of the department"""
 
     item: Optional[LinkedInvoiceItem] = None
 
@@ -389,7 +389,7 @@ class InvoiceLineItemInput(BaseModel):
 
         m = {}
 
-        for n, f in self.model_fields.items():
+        for n, f in type(self).model_fields.items():
             k = f.alias or n
             val = serialized.get(k)
             serialized.pop(k, None)

@@ -5,7 +5,8 @@ from apideck_unify import models, utils
 from apideck_unify._hooks import HookContext
 from apideck_unify.types import Nullable, OptionalNullable, UNSET
 from apideck_unify.utils import get_security_from_env
-from typing import Any, List, Mapping, Optional, Union
+import io
+from typing import Any, IO, List, Mapping, Optional, Union
 
 
 class UploadSessions(BaseSDK):
@@ -654,6 +655,340 @@ class UploadSessions(BaseSDK):
             )
         if utils.match_response(http_res, "default", "application/json"):
             return models.FileStorageUploadSessionsOneResponse(
+                unexpected_error_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.UnexpectedErrorResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
+
+        content_type = http_res.headers.get("Content-Type")
+        http_res_text = await utils.stream_to_text_async(http_res)
+        raise models.APIError(
+            f"Unexpected response received (code: {http_res.status_code}, type: {content_type})",
+            http_res.status_code,
+            http_res_text,
+            http_res,
+        )
+
+    def upload(
+        self,
+        *,
+        id: str,
+        part_number: float,
+        request_body: Union[bytes, IO[bytes], io.BufferedReader],
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
+        service_id: Optional[str] = None,
+        digest: Optional[str] = None,
+        raw: Optional[bool] = False,
+        retries: OptionalNullable[utils.RetryConfig] = UNSET,
+        server_url: Optional[str] = None,
+        timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
+    ) -> models.FileStorageUploadSessionsUploadResponse:
+        r"""Upload part of File to Upload Session
+
+        Upload part of File to Upload Session (max 100MB). Get `part_size` from [Get Upload Session](#operation/uploadSessionsOne) first. Every File part (except the last one) uploaded to this endpoint should have Content-Length equal to `part_size`. Note that the base URL is upload.apideck.com instead of unify.apideck.com. For more information on uploads, refer to the [file upload guide](/guides/file-upload).
+
+        :param id: ID of the record you are acting upon.
+        :param part_number: Part number of the file part being uploaded.
+        :param request_body:
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
+        :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param digest: The RFC3230 message digest of the uploaded part. Only required for the Box connector. More information on the Box API docs [here](https://developer.box.com/reference/put-files-upload-sessions-id/#param-digest)
+        :param raw: Include raw response. Mostly used for debugging purposes
+        :param retries: Override the default retry configuration for this method
+        :param server_url: Override the default server URL for this method
+        :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
+        """
+        base_url = None
+        url_variables = None
+        if timeout_ms is None:
+            timeout_ms = self.sdk_configuration.timeout_ms
+
+        if server_url is not None:
+            base_url = server_url
+        else:
+            base_url = models.FILE_STORAGE_UPLOAD_SESSIONS_UPLOAD_OP_SERVERS[0]
+
+        request = models.FileStorageUploadSessionsUploadRequest(
+            id=id,
+            consumer_id=consumer_id,
+            app_id=app_id,
+            service_id=service_id,
+            part_number=part_number,
+            digest=digest,
+            raw=raw,
+            request_body=request_body,
+        )
+
+        req = self._build_request(
+            method="PUT",
+            path="/file-storage/upload-sessions/{id}",
+            base_url=base_url,
+            url_variables=url_variables,
+            request=request,
+            request_body_required=True,
+            request_has_path_params=True,
+            request_has_query_params=True,
+            user_agent_header="user-agent",
+            accept_header_value="application/json",
+            http_headers=http_headers,
+            _globals=models.FileStorageUploadSessionsUploadGlobals(
+                consumer_id=self.sdk_configuration.globals.consumer_id,
+                app_id=self.sdk_configuration.globals.app_id,
+            ),
+            security=self.sdk_configuration.security,
+            get_serialized_body=lambda: utils.serialize_request_body(
+                request.request_body,
+                False,
+                False,
+                "raw",
+                Union[bytes, IO[bytes], io.BufferedReader],
+            ),
+            timeout_ms=timeout_ms,
+        )
+
+        if retries == UNSET:
+            if self.sdk_configuration.retry_config is not UNSET:
+                retries = self.sdk_configuration.retry_config
+            else:
+                retries = utils.RetryConfig(
+                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 3600000), True
+                )
+
+        retry_config = None
+        if isinstance(retries, utils.RetryConfig):
+            retry_config = (retries, ["5XX"])
+
+        http_res = self.do_request(
+            hook_ctx=HookContext(
+                base_url=base_url or "",
+                operation_id="fileStorage.uploadSessionsUpload",
+                oauth2_scopes=[],
+                security_source=get_security_from_env(
+                    self.sdk_configuration.security, models.Security
+                ),
+            ),
+            request=req,
+            error_status_codes=["400", "401", "402", "404", "422", "4XX", "5XX"],
+            retry_config=retry_config,
+        )
+
+        response_data: Any = None
+        if utils.match_response(http_res, "200", "application/json"):
+            return models.FileStorageUploadSessionsUploadResponse(
+                update_upload_session_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.UpdateUploadSessionResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
+        if utils.match_response(http_res, "400", "application/json"):
+            response_data = utils.unmarshal_json(
+                http_res.text, models.BadRequestResponseData
+            )
+            raise models.BadRequestResponse(data=response_data)
+        if utils.match_response(http_res, "401", "application/json"):
+            response_data = utils.unmarshal_json(
+                http_res.text, models.UnauthorizedResponseData
+            )
+            raise models.UnauthorizedResponse(data=response_data)
+        if utils.match_response(http_res, "402", "application/json"):
+            response_data = utils.unmarshal_json(
+                http_res.text, models.PaymentRequiredResponseData
+            )
+            raise models.PaymentRequiredResponse(data=response_data)
+        if utils.match_response(http_res, "404", "application/json"):
+            response_data = utils.unmarshal_json(
+                http_res.text, models.NotFoundResponseData
+            )
+            raise models.NotFoundResponse(data=response_data)
+        if utils.match_response(http_res, "422", "application/json"):
+            response_data = utils.unmarshal_json(
+                http_res.text, models.UnprocessableResponseData
+            )
+            raise models.UnprocessableResponse(data=response_data)
+        if utils.match_response(http_res, "4XX", "*"):
+            http_res_text = utils.stream_to_text(http_res)
+            raise models.APIError(
+                "API error occurred", http_res.status_code, http_res_text, http_res
+            )
+        if utils.match_response(http_res, "5XX", "*"):
+            http_res_text = utils.stream_to_text(http_res)
+            raise models.APIError(
+                "API error occurred", http_res.status_code, http_res_text, http_res
+            )
+        if utils.match_response(http_res, "default", "application/json"):
+            return models.FileStorageUploadSessionsUploadResponse(
+                unexpected_error_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.UnexpectedErrorResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
+
+        content_type = http_res.headers.get("Content-Type")
+        http_res_text = utils.stream_to_text(http_res)
+        raise models.APIError(
+            f"Unexpected response received (code: {http_res.status_code}, type: {content_type})",
+            http_res.status_code,
+            http_res_text,
+            http_res,
+        )
+
+    async def upload_async(
+        self,
+        *,
+        id: str,
+        part_number: float,
+        request_body: Union[bytes, IO[bytes], io.BufferedReader],
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
+        service_id: Optional[str] = None,
+        digest: Optional[str] = None,
+        raw: Optional[bool] = False,
+        retries: OptionalNullable[utils.RetryConfig] = UNSET,
+        server_url: Optional[str] = None,
+        timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
+    ) -> models.FileStorageUploadSessionsUploadResponse:
+        r"""Upload part of File to Upload Session
+
+        Upload part of File to Upload Session (max 100MB). Get `part_size` from [Get Upload Session](#operation/uploadSessionsOne) first. Every File part (except the last one) uploaded to this endpoint should have Content-Length equal to `part_size`. Note that the base URL is upload.apideck.com instead of unify.apideck.com. For more information on uploads, refer to the [file upload guide](/guides/file-upload).
+
+        :param id: ID of the record you are acting upon.
+        :param part_number: Part number of the file part being uploaded.
+        :param request_body:
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
+        :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param digest: The RFC3230 message digest of the uploaded part. Only required for the Box connector. More information on the Box API docs [here](https://developer.box.com/reference/put-files-upload-sessions-id/#param-digest)
+        :param raw: Include raw response. Mostly used for debugging purposes
+        :param retries: Override the default retry configuration for this method
+        :param server_url: Override the default server URL for this method
+        :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
+        """
+        base_url = None
+        url_variables = None
+        if timeout_ms is None:
+            timeout_ms = self.sdk_configuration.timeout_ms
+
+        if server_url is not None:
+            base_url = server_url
+        else:
+            base_url = models.FILE_STORAGE_UPLOAD_SESSIONS_UPLOAD_OP_SERVERS[0]
+
+        request = models.FileStorageUploadSessionsUploadRequest(
+            id=id,
+            consumer_id=consumer_id,
+            app_id=app_id,
+            service_id=service_id,
+            part_number=part_number,
+            digest=digest,
+            raw=raw,
+            request_body=request_body,
+        )
+
+        req = self._build_request_async(
+            method="PUT",
+            path="/file-storage/upload-sessions/{id}",
+            base_url=base_url,
+            url_variables=url_variables,
+            request=request,
+            request_body_required=True,
+            request_has_path_params=True,
+            request_has_query_params=True,
+            user_agent_header="user-agent",
+            accept_header_value="application/json",
+            http_headers=http_headers,
+            _globals=models.FileStorageUploadSessionsUploadGlobals(
+                consumer_id=self.sdk_configuration.globals.consumer_id,
+                app_id=self.sdk_configuration.globals.app_id,
+            ),
+            security=self.sdk_configuration.security,
+            get_serialized_body=lambda: utils.serialize_request_body(
+                request.request_body,
+                False,
+                False,
+                "raw",
+                Union[bytes, IO[bytes], io.BufferedReader],
+            ),
+            timeout_ms=timeout_ms,
+        )
+
+        if retries == UNSET:
+            if self.sdk_configuration.retry_config is not UNSET:
+                retries = self.sdk_configuration.retry_config
+            else:
+                retries = utils.RetryConfig(
+                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 3600000), True
+                )
+
+        retry_config = None
+        if isinstance(retries, utils.RetryConfig):
+            retry_config = (retries, ["5XX"])
+
+        http_res = await self.do_request_async(
+            hook_ctx=HookContext(
+                base_url=base_url or "",
+                operation_id="fileStorage.uploadSessionsUpload",
+                oauth2_scopes=[],
+                security_source=get_security_from_env(
+                    self.sdk_configuration.security, models.Security
+                ),
+            ),
+            request=req,
+            error_status_codes=["400", "401", "402", "404", "422", "4XX", "5XX"],
+            retry_config=retry_config,
+        )
+
+        response_data: Any = None
+        if utils.match_response(http_res, "200", "application/json"):
+            return models.FileStorageUploadSessionsUploadResponse(
+                update_upload_session_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.UpdateUploadSessionResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
+        if utils.match_response(http_res, "400", "application/json"):
+            response_data = utils.unmarshal_json(
+                http_res.text, models.BadRequestResponseData
+            )
+            raise models.BadRequestResponse(data=response_data)
+        if utils.match_response(http_res, "401", "application/json"):
+            response_data = utils.unmarshal_json(
+                http_res.text, models.UnauthorizedResponseData
+            )
+            raise models.UnauthorizedResponse(data=response_data)
+        if utils.match_response(http_res, "402", "application/json"):
+            response_data = utils.unmarshal_json(
+                http_res.text, models.PaymentRequiredResponseData
+            )
+            raise models.PaymentRequiredResponse(data=response_data)
+        if utils.match_response(http_res, "404", "application/json"):
+            response_data = utils.unmarshal_json(
+                http_res.text, models.NotFoundResponseData
+            )
+            raise models.NotFoundResponse(data=response_data)
+        if utils.match_response(http_res, "422", "application/json"):
+            response_data = utils.unmarshal_json(
+                http_res.text, models.UnprocessableResponseData
+            )
+            raise models.UnprocessableResponse(data=response_data)
+        if utils.match_response(http_res, "4XX", "*"):
+            http_res_text = await utils.stream_to_text_async(http_res)
+            raise models.APIError(
+                "API error occurred", http_res.status_code, http_res_text, http_res
+            )
+        if utils.match_response(http_res, "5XX", "*"):
+            http_res_text = await utils.stream_to_text_async(http_res)
+            raise models.APIError(
+                "API error occurred", http_res.status_code, http_res_text, http_res
+            )
+        if utils.match_response(http_res, "default", "application/json"):
+            return models.FileStorageUploadSessionsUploadResponse(
                 unexpected_error_response=utils.unmarshal_json(
                     http_res.text, Optional[models.UnexpectedErrorResponse]
                 ),

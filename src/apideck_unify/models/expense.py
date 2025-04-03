@@ -55,8 +55,8 @@ class ExpenseTypedDict(TypedDict):
     r"""The ID of the supplier this entity is linked to."""
     company_id: NotRequired[Nullable[str]]
     r"""The company or subsidiary id the transaction belongs to"""
-    department_id: NotRequired[str]
-    r"""The ID of the department this expense is linked to."""
+    department_id: NotRequired[Nullable[str]]
+    r"""The ID of the department"""
     payment_type: NotRequired[Nullable[ExpensePaymentType]]
     r"""The type of payment for the expense."""
     currency: NotRequired[Nullable[Currency]]
@@ -108,8 +108,8 @@ class Expense(BaseModel):
     company_id: OptionalNullable[str] = UNSET
     r"""The company or subsidiary id the transaction belongs to"""
 
-    department_id: Optional[str] = None
-    r"""The ID of the department this expense is linked to."""
+    department_id: OptionalNullable[str] = UNSET
+    r"""The ID of the department"""
 
     payment_type: OptionalNullable[ExpensePaymentType] = UNSET
     r"""The type of payment for the expense."""
@@ -175,6 +175,7 @@ class Expense(BaseModel):
             "transaction_date",
             "number",
             "company_id",
+            "department_id",
             "payment_type",
             "currency",
             "currency_rate",
@@ -192,7 +193,7 @@ class Expense(BaseModel):
 
         m = {}
 
-        for n, f in self.model_fields.items():
+        for n, f in type(self).model_fields.items():
             k = f.alias or n
             val = serialized.get(k)
             serialized.pop(k, None)
@@ -228,8 +229,8 @@ class ExpenseInputTypedDict(TypedDict):
     r"""The ID of the supplier this entity is linked to."""
     company_id: NotRequired[Nullable[str]]
     r"""The company or subsidiary id the transaction belongs to"""
-    department_id: NotRequired[str]
-    r"""The ID of the department this expense is linked to."""
+    department_id: NotRequired[Nullable[str]]
+    r"""The ID of the department"""
     payment_type: NotRequired[Nullable[ExpensePaymentType]]
     r"""The type of payment for the expense."""
     currency: NotRequired[Nullable[Currency]]
@@ -272,8 +273,8 @@ class ExpenseInput(BaseModel):
     company_id: OptionalNullable[str] = UNSET
     r"""The company or subsidiary id the transaction belongs to"""
 
-    department_id: Optional[str] = None
-    r"""The ID of the department this expense is linked to."""
+    department_id: OptionalNullable[str] = UNSET
+    r"""The ID of the department"""
 
     payment_type: OptionalNullable[ExpensePaymentType] = UNSET
     r"""The type of payment for the expense."""
@@ -326,6 +327,7 @@ class ExpenseInput(BaseModel):
             "transaction_date",
             "number",
             "company_id",
+            "department_id",
             "payment_type",
             "currency",
             "currency_rate",
@@ -340,7 +342,7 @@ class ExpenseInput(BaseModel):
 
         m = {}
 
-        for n, f in self.model_fields.items():
+        for n, f in type(self).model_fields.items():
             k = f.alias or n
             val = serialized.get(k)
             serialized.pop(k, None)

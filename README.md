@@ -28,6 +28,7 @@ For more information about the API: [Apideck Developer Docs](https://developers.
   * [Authentication](#authentication)
   * [Available Resources and Operations](#available-resources-and-operations)
   * [Pagination](#pagination)
+  * [File uploads](#file-uploads)
   * [Retries](#retries)
   * [Error Handling](#error-handling)
   * [Server Selection](#server-selection)
@@ -227,6 +228,10 @@ with Apideck(
 ### [accounting](docs/sdks/accounting/README.md)
 
 
+#### [accounting.aged_creditors](docs/sdks/agedcreditorssdk/README.md)
+
+* [get](docs/sdks/agedcreditorssdk/README.md#get) - Get Aged Creditors
+
 #### [accounting.aged_debtors](docs/sdks/ageddebtorssdk/README.md)
 
 * [get](docs/sdks/ageddebtorssdk/README.md#get) - Get Aged Debtors
@@ -234,6 +239,7 @@ with Apideck(
 #### [accounting.attachments](docs/sdks/attachments/README.md)
 
 * [list](docs/sdks/attachments/README.md#list) - List Attachments
+* [upload](docs/sdks/attachments/README.md#upload) - Upload attachment
 * [get](docs/sdks/attachments/README.md#get) - Get Attachment
 * [delete](docs/sdks/attachments/README.md#delete) - Delete Attachment
 * [download](docs/sdks/attachments/README.md#download) - Download Attachment
@@ -494,6 +500,10 @@ with Apideck(
 #### [crm.pipelines](docs/sdks/pipelines/README.md)
 
 * [list](docs/sdks/pipelines/README.md#list) - List pipelines
+* [create](docs/sdks/pipelines/README.md#create) - Create pipeline
+* [get](docs/sdks/pipelines/README.md#get) - Get pipeline
+* [update](docs/sdks/pipelines/README.md#update) - Update pipeline
+* [delete](docs/sdks/pipelines/README.md#delete) - Delete pipeline
 
 #### [crm.users](docs/sdks/users/README.md)
 
@@ -574,6 +584,7 @@ with Apideck(
 
 * [create](docs/sdks/uploadsessions/README.md#create) - Start Upload Session
 * [get](docs/sdks/uploadsessions/README.md#get) - Get Upload Session
+* [upload](docs/sdks/uploadsessions/README.md#upload) - Upload part of File to Upload Session
 * [delete](docs/sdks/uploadsessions/README.md#delete) - Abort Upload Session
 * [finish](docs/sdks/uploadsessions/README.md#finish) - Finish Upload Session
 
@@ -782,6 +793,38 @@ with Apideck(
 ```
 <!-- End Pagination [pagination] -->
 
+<!-- Start File uploads [file-upload] -->
+## File uploads
+
+Certain SDK methods accept file objects as part of a request body or multi-part request. It is possible and typically recommended to upload files as a stream rather than reading the entire contents into memory. This avoids excessive memory consumption and potentially crashing with out-of-memory errors when working with very large files. The following example demonstrates how to attach a file stream to a request.
+
+> [!TIP]
+>
+> For endpoints that handle file uploads bytes arrays can also be used. However, using streams is recommended for large files.
+>
+
+```python
+import apideck_unify
+from apideck_unify import Apideck
+import os
+
+
+with Apideck(
+    api_key=os.getenv("APIDECK_API_KEY", ""),
+    consumer_id="test-consumer",
+    app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+) as apideck:
+
+    res = apideck.accounting.attachments.upload(reference_type=apideck_unify.AttachmentReferenceType.INVOICE, reference_id="123456", request_body=open("example.file", "rb"), x_apideck_metadata="{\"name\":\"document.pdf\",\"description\":\"Invoice attachment\"}", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce")
+
+    assert res.create_attachment_response is not None
+
+    # Handle response
+    print(res.create_attachment_response)
+
+```
+<!-- End File uploads [file-upload] -->
+
 <!-- Start Retries [retries] -->
 ## Retries
 
@@ -965,6 +1008,7 @@ with Apideck(
 
 The server URL can also be overridden on a per-operation basis, provided a server list was specified for the operation. For example:
 ```python
+import apideck_unify
 from apideck_unify import Apideck
 import os
 
@@ -975,55 +1019,12 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.file_storage.upload_sessions.create(name="Documents", parent_folder_id="1234", size=1810673, consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", drive_id="1234", pass_through=[
-        {
-            "service_id": "<id>",
-            "extend_paths": [
-                {
-                    "path": "$.nested.property",
-                    "value": {
-                        "TaxClassificationRef": {
-                            "value": "EUC-99990201-V1-00020000",
-                        },
-                    },
-                },
-                {
-                    "path": "$.nested.property",
-                    "value": {
-                        "TaxClassificationRef": {
-                            "value": "EUC-99990201-V1-00020000",
-                        },
-                    },
-                },
-            ],
-        },
-        {
-            "service_id": "<id>",
-            "extend_paths": [
-                {
-                    "path": "$.nested.property",
-                    "value": {
-                        "TaxClassificationRef": {
-                            "value": "EUC-99990201-V1-00020000",
-                        },
-                    },
-                },
-                {
-                    "path": "$.nested.property",
-                    "value": {
-                        "TaxClassificationRef": {
-                            "value": "EUC-99990201-V1-00020000",
-                        },
-                    },
-                },
-            ],
-        },
-    ], server_url="https://upload.apideck.com")
+    res = apideck.accounting.attachments.upload(reference_type=apideck_unify.AttachmentReferenceType.INVOICE, reference_id="123456", request_body=open("example.file", "rb"), x_apideck_metadata="{\"name\":\"document.pdf\",\"description\":\"Invoice attachment\"}", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", server_url="https://upload.apideck.com")
 
-    assert res.create_upload_session_response is not None
+    assert res.create_attachment_response is not None
 
     # Handle response
-    print(res.create_upload_session_response)
+    print(res.create_attachment_response)
 
 ```
 <!-- End Server Selection [server] -->

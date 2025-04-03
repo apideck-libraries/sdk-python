@@ -4,6 +4,7 @@ from __future__ import annotations
 from .address import Address, AddressTypedDict
 from .bankaccount import BankAccount, BankAccountTypedDict
 from .currency import Currency
+from .customfield import CustomField, CustomFieldTypedDict
 from .custommappings import CustomMappings, CustomMappingsTypedDict
 from .invoicelineitem import (
     InvoiceLineItem,
@@ -104,6 +105,7 @@ class PurchaseOrderTypedDict(TypedDict):
     r"""A list of linked tracking categories."""
     custom_mappings: NotRequired[Nullable[CustomMappingsTypedDict]]
     r"""When custom mappings are configured on the resource, the result is included here."""
+    custom_fields: NotRequired[List[CustomFieldTypedDict]]
     row_version: NotRequired[Nullable[str]]
     r"""A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object."""
     updated_by: NotRequired[Nullable[str]]
@@ -206,6 +208,8 @@ class PurchaseOrder(BaseModel):
     custom_mappings: OptionalNullable[CustomMappings] = UNSET
     r"""When custom mappings are configured on the resource, the result is included here."""
 
+    custom_fields: Optional[List[CustomField]] = None
+
     row_version: OptionalNullable[str] = UNSET
     r"""A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object."""
 
@@ -257,6 +261,7 @@ class PurchaseOrder(BaseModel):
             "memo",
             "tracking_categories",
             "custom_mappings",
+            "custom_fields",
             "row_version",
             "updated_by",
             "created_by",
@@ -303,7 +308,7 @@ class PurchaseOrder(BaseModel):
 
         m = {}
 
-        for n, f in self.model_fields.items():
+        for n, f in type(self).model_fields.items():
             k = f.alias or n
             val = serialized.get(k)
             serialized.pop(k, None)
@@ -376,6 +381,7 @@ class PurchaseOrderInputTypedDict(TypedDict):
         Nullable[List[Nullable[LinkedTrackingCategoryTypedDict]]]
     ]
     r"""A list of linked tracking categories."""
+    custom_fields: NotRequired[List[CustomFieldTypedDict]]
     row_version: NotRequired[Nullable[str]]
     r"""A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object."""
     pass_through: NotRequired[List[PassThroughBodyTypedDict]]
@@ -461,6 +467,8 @@ class PurchaseOrderInput(BaseModel):
     )
     r"""A list of linked tracking categories."""
 
+    custom_fields: Optional[List[CustomField]] = None
+
     row_version: OptionalNullable[str] = UNSET
     r"""A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object."""
 
@@ -497,6 +505,7 @@ class PurchaseOrderInput(BaseModel):
             "channel",
             "memo",
             "tracking_categories",
+            "custom_fields",
             "row_version",
             "pass_through",
         ]
@@ -533,7 +542,7 @@ class PurchaseOrderInput(BaseModel):
 
         m = {}
 
-        for n, f in self.model_fields.items():
+        for n, f in type(self).model_fields.items():
             k = f.alias or n
             val = serialized.get(k)
             serialized.pop(k, None)
