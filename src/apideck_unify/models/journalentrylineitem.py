@@ -65,10 +65,10 @@ class JournalEntryLineItemTypedDict(TypedDict):
     r"""The customer this entity is linked to."""
     supplier: NotRequired[Nullable[LinkedSupplierTypedDict]]
     r"""The supplier this entity is linked to."""
-    department_id: NotRequired[str]
-    r"""A unique identifier for an object."""
-    location_id: NotRequired[str]
-    r"""A unique identifier for an object."""
+    department_id: NotRequired[Nullable[str]]
+    r"""The ID of the department"""
+    location_id: NotRequired[Nullable[str]]
+    r"""The ID of the location"""
     line_number: NotRequired[Nullable[int]]
     r"""Line number of the resource"""
 
@@ -114,11 +114,11 @@ class JournalEntryLineItem(BaseModel):
     supplier: OptionalNullable[LinkedSupplier] = UNSET
     r"""The supplier this entity is linked to."""
 
-    department_id: Optional[str] = None
-    r"""A unique identifier for an object."""
+    department_id: OptionalNullable[str] = UNSET
+    r"""The ID of the department"""
 
-    location_id: Optional[str] = None
-    r"""A unique identifier for an object."""
+    location_id: OptionalNullable[str] = UNSET
+    r"""The ID of the location"""
 
     line_number: OptionalNullable[int] = UNSET
     r"""Line number of the resource"""
@@ -150,6 +150,8 @@ class JournalEntryLineItem(BaseModel):
             "tracking_categories",
             "customer",
             "supplier",
+            "department_id",
+            "location_id",
             "line_number",
         ]
         null_default_fields = []
@@ -158,7 +160,7 @@ class JournalEntryLineItem(BaseModel):
 
         m = {}
 
-        for n, f in self.model_fields.items():
+        for n, f in type(self).model_fields.items():
             k = f.alias or n
             val = serialized.get(k)
             serialized.pop(k, None)
@@ -201,6 +203,10 @@ class JournalEntryLineItemInputTypedDict(TypedDict):
     r"""The customer this entity is linked to."""
     supplier: NotRequired[Nullable[LinkedSupplierInputTypedDict]]
     r"""The supplier this entity is linked to."""
+    department_id: NotRequired[Nullable[str]]
+    r"""The ID of the department"""
+    location_id: NotRequired[Nullable[str]]
+    r"""The ID of the location"""
     line_number: NotRequired[Nullable[int]]
     r"""Line number of the resource"""
 
@@ -243,6 +249,12 @@ class JournalEntryLineItemInput(BaseModel):
     supplier: OptionalNullable[LinkedSupplierInput] = UNSET
     r"""The supplier this entity is linked to."""
 
+    department_id: OptionalNullable[str] = UNSET
+    r"""The ID of the department"""
+
+    location_id: OptionalNullable[str] = UNSET
+    r"""The ID of the location"""
+
     line_number: OptionalNullable[int] = UNSET
     r"""Line number of the resource"""
 
@@ -258,6 +270,8 @@ class JournalEntryLineItemInput(BaseModel):
             "tracking_categories",
             "customer",
             "supplier",
+            "department_id",
+            "location_id",
             "line_number",
         ]
         nullable_fields = [
@@ -270,6 +284,8 @@ class JournalEntryLineItemInput(BaseModel):
             "tracking_categories",
             "customer",
             "supplier",
+            "department_id",
+            "location_id",
             "line_number",
         ]
         null_default_fields = []
@@ -278,7 +294,7 @@ class JournalEntryLineItemInput(BaseModel):
 
         m = {}
 
-        for n, f in self.model_fields.items():
+        for n, f in type(self).model_fields.items():
             k = f.alias or n
             val = serialized.get(k)
             serialized.pop(k, None)

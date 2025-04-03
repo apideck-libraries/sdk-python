@@ -37,7 +37,9 @@ class InvoiceItemTypeType(str, Enum):
     r"""Item type"""
 
     INVENTORY = "inventory"
+    NON_INVENTORY = "non_inventory"
     SERVICE = "service"
+    DESCRIPTION = "description"
     OTHER = "other"
 
 
@@ -71,7 +73,7 @@ class SalesDetails(BaseModel):
 
         m = {}
 
-        for n, f in self.model_fields.items():
+        for n, f in type(self).model_fields.items():
             k = f.alias or n
             val = serialized.get(k)
             serialized.pop(k, None)
@@ -122,7 +124,7 @@ class PurchaseDetails(BaseModel):
 
         m = {}
 
-        for n, f in self.model_fields.items():
+        for n, f in type(self).model_fields.items():
             k = f.alias or n
             val = serialized.get(k)
             serialized.pop(k, None)
@@ -177,6 +179,14 @@ class InvoiceItemTypedDict(TypedDict):
     ]
     r"""A list of linked tracking categories."""
     active: NotRequired[Nullable[bool]]
+    department_id: NotRequired[Nullable[str]]
+    r"""The ID of the department"""
+    location_id: NotRequired[Nullable[str]]
+    r"""The ID of the location"""
+    subsidiary_id: NotRequired[Nullable[str]]
+    r"""The ID of the subsidiary"""
+    tax_schedule_id: NotRequired[Nullable[str]]
+    r"""The ID of the tax schedule"""
     custom_mappings: NotRequired[Nullable[CustomMappingsTypedDict]]
     r"""When custom mappings are configured on the resource, the result is included here."""
     row_version: NotRequired[Nullable[str]]
@@ -252,6 +262,18 @@ class InvoiceItem(BaseModel):
 
     active: OptionalNullable[bool] = UNSET
 
+    department_id: OptionalNullable[str] = UNSET
+    r"""The ID of the department"""
+
+    location_id: OptionalNullable[str] = UNSET
+    r"""The ID of the location"""
+
+    subsidiary_id: OptionalNullable[str] = UNSET
+    r"""The ID of the subsidiary"""
+
+    tax_schedule_id: OptionalNullable[str] = UNSET
+    r"""The ID of the tax schedule"""
+
     custom_mappings: OptionalNullable[CustomMappings] = UNSET
     r"""When custom mappings are configured on the resource, the result is included here."""
 
@@ -296,6 +318,10 @@ class InvoiceItem(BaseModel):
             "tracking_category",
             "tracking_categories",
             "active",
+            "department_id",
+            "location_id",
+            "subsidiary_id",
+            "tax_schedule_id",
             "custom_mappings",
             "row_version",
             "updated_by",
@@ -322,6 +348,10 @@ class InvoiceItem(BaseModel):
             "tracking_category",
             "tracking_categories",
             "active",
+            "department_id",
+            "location_id",
+            "subsidiary_id",
+            "tax_schedule_id",
             "custom_mappings",
             "row_version",
             "updated_by",
@@ -335,7 +365,7 @@ class InvoiceItem(BaseModel):
 
         m = {}
 
-        for n, f in self.model_fields.items():
+        for n, f in type(self).model_fields.items():
             k = f.alias or n
             val = serialized.get(k)
             serialized.pop(k, None)
@@ -386,7 +416,7 @@ class InvoiceItemSalesDetails(BaseModel):
 
         m = {}
 
-        for n, f in self.model_fields.items():
+        for n, f in type(self).model_fields.items():
             k = f.alias or n
             val = serialized.get(k)
             serialized.pop(k, None)
@@ -437,7 +467,7 @@ class InvoiceItemPurchaseDetails(BaseModel):
 
         m = {}
 
-        for n, f in self.model_fields.items():
+        for n, f in type(self).model_fields.items():
             k = f.alias or n
             val = serialized.get(k)
             serialized.pop(k, None)
@@ -490,6 +520,14 @@ class InvoiceItemInputTypedDict(TypedDict):
     ]
     r"""A list of linked tracking categories."""
     active: NotRequired[Nullable[bool]]
+    department_id: NotRequired[Nullable[str]]
+    r"""The ID of the department"""
+    location_id: NotRequired[Nullable[str]]
+    r"""The ID of the location"""
+    subsidiary_id: NotRequired[Nullable[str]]
+    r"""The ID of the subsidiary"""
+    tax_schedule_id: NotRequired[Nullable[str]]
+    r"""The ID of the tax schedule"""
     row_version: NotRequired[Nullable[str]]
     r"""A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object."""
     pass_through: NotRequired[List[PassThroughBodyTypedDict]]
@@ -552,6 +590,18 @@ class InvoiceItemInput(BaseModel):
 
     active: OptionalNullable[bool] = UNSET
 
+    department_id: OptionalNullable[str] = UNSET
+    r"""The ID of the department"""
+
+    location_id: OptionalNullable[str] = UNSET
+    r"""The ID of the location"""
+
+    subsidiary_id: OptionalNullable[str] = UNSET
+    r"""The ID of the subsidiary"""
+
+    tax_schedule_id: OptionalNullable[str] = UNSET
+    r"""The ID of the tax schedule"""
+
     row_version: OptionalNullable[str] = UNSET
     r"""A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object."""
 
@@ -580,6 +630,10 @@ class InvoiceItemInput(BaseModel):
             "tracking_category",
             "tracking_categories",
             "active",
+            "department_id",
+            "location_id",
+            "subsidiary_id",
+            "tax_schedule_id",
             "row_version",
             "pass_through",
         ]
@@ -601,6 +655,10 @@ class InvoiceItemInput(BaseModel):
             "tracking_category",
             "tracking_categories",
             "active",
+            "department_id",
+            "location_id",
+            "subsidiary_id",
+            "tax_schedule_id",
             "row_version",
         ]
         null_default_fields = []
@@ -609,7 +667,7 @@ class InvoiceItemInput(BaseModel):
 
         m = {}
 
-        for n, f in self.model_fields.items():
+        for n, f in type(self).model_fields.items():
             k = f.alias or n
             val = serialized.get(k)
             serialized.pop(k, None)

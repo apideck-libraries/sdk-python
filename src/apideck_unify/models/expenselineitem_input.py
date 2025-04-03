@@ -29,10 +29,12 @@ class ExpenseLineItemInputTypedDict(TypedDict):
     r"""The unique identifier for the ledger account."""
     customer_id: NotRequired[str]
     r"""The ID of the customer this expense item is linked to."""
-    department_id: NotRequired[str]
-    r"""The ID of the department this expense item is linked to."""
-    location_id: NotRequired[str]
-    r"""The ID of the location this expense item is linked to."""
+    department_id: NotRequired[Nullable[str]]
+    r"""The ID of the department"""
+    location_id: NotRequired[Nullable[str]]
+    r"""The ID of the location"""
+    subsidiary_id: NotRequired[Nullable[str]]
+    r"""The ID of the subsidiary"""
     tax_rate: NotRequired[LinkedTaxRateInputTypedDict]
     description: NotRequired[Nullable[str]]
     r"""The expense line item description"""
@@ -55,11 +57,14 @@ class ExpenseLineItemInput(BaseModel):
     customer_id: Optional[str] = None
     r"""The ID of the customer this expense item is linked to."""
 
-    department_id: Optional[str] = None
-    r"""The ID of the department this expense item is linked to."""
+    department_id: OptionalNullable[str] = UNSET
+    r"""The ID of the department"""
 
-    location_id: Optional[str] = None
-    r"""The ID of the location this expense item is linked to."""
+    location_id: OptionalNullable[str] = UNSET
+    r"""The ID of the location"""
+
+    subsidiary_id: OptionalNullable[str] = UNSET
+    r"""The ID of the subsidiary"""
 
     tax_rate: Optional[LinkedTaxRateInput] = None
 
@@ -77,18 +82,26 @@ class ExpenseLineItemInput(BaseModel):
             "customer_id",
             "department_id",
             "location_id",
+            "subsidiary_id",
             "tax_rate",
             "description",
             "billable",
         ]
-        nullable_fields = ["total_amount", "tracking_categories", "description"]
+        nullable_fields = [
+            "total_amount",
+            "tracking_categories",
+            "department_id",
+            "location_id",
+            "subsidiary_id",
+            "description",
+        ]
         null_default_fields = []
 
         serialized = handler(self)
 
         m = {}
 
-        for n, f in self.model_fields.items():
+        for n, f in type(self).model_fields.items():
             k = f.alias or n
             val = serialized.get(k)
             serialized.pop(k, None)

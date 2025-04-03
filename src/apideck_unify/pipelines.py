@@ -6,7 +6,7 @@ from apideck_unify._hooks import HookContext
 from apideck_unify.types import OptionalNullable, UNSET
 from apideck_unify.utils import get_security_from_env
 from jsonpath import JSONPath
-from typing import Any, Dict, Mapping, Optional
+from typing import Any, Dict, List, Mapping, Optional, Union
 
 
 class Pipelines(BaseSDK):
@@ -369,6 +369,1374 @@ class Pipelines(BaseSDK):
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
+            )
+
+        content_type = http_res.headers.get("Content-Type")
+        http_res_text = await utils.stream_to_text_async(http_res)
+        raise models.APIError(
+            f"Unexpected response received (code: {http_res.status_code}, type: {content_type})",
+            http_res.status_code,
+            http_res_text,
+            http_res,
+        )
+
+    def create(
+        self,
+        *,
+        name: str,
+        raw: Optional[bool] = False,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
+        service_id: Optional[str] = None,
+        id: Optional[str] = None,
+        currency: OptionalNullable[models.Currency] = UNSET,
+        archived: Optional[bool] = None,
+        active: Optional[bool] = None,
+        display_order: OptionalNullable[int] = UNSET,
+        win_probability_enabled: Optional[bool] = None,
+        stages: Optional[
+            Union[List[models.PipelineStages], List[models.PipelineStagesTypedDict]]
+        ] = None,
+        pass_through: Optional[
+            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+        ] = None,
+        retries: OptionalNullable[utils.RetryConfig] = UNSET,
+        server_url: Optional[str] = None,
+        timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
+    ) -> models.CrmPipelinesAddResponse:
+        r"""Create pipeline
+
+        Create pipeline
+
+        :param name: The name of the Pipeline.
+        :param raw: Include raw response. Mostly used for debugging purposes
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
+        :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param id: The unique identifier of the Pipeline.
+        :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
+        :param archived: Whether the Pipeline is archived or not.
+        :param active: Whether the Pipeline is active or not.
+        :param display_order: The order in which the Pipeline is displayed in the UI.
+        :param win_probability_enabled: Whether the Pipeline has win probability enabled or not.
+        :param stages: The Pipeline Stages.
+        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
+        :param retries: Override the default retry configuration for this method
+        :param server_url: Override the default server URL for this method
+        :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
+        """
+        base_url = None
+        url_variables = None
+        if timeout_ms is None:
+            timeout_ms = self.sdk_configuration.timeout_ms
+
+        if server_url is not None:
+            base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
+
+        request = models.CrmPipelinesAddRequest(
+            raw=raw,
+            consumer_id=consumer_id,
+            app_id=app_id,
+            service_id=service_id,
+            pipeline=models.PipelineInput(
+                id=id,
+                name=name,
+                currency=currency,
+                archived=archived,
+                active=active,
+                display_order=display_order,
+                win_probability_enabled=win_probability_enabled,
+                stages=utils.get_pydantic_model(
+                    stages, Optional[List[models.PipelineStages]]
+                ),
+                pass_through=utils.get_pydantic_model(
+                    pass_through, Optional[List[models.PassThroughBody]]
+                ),
+            ),
+        )
+
+        req = self._build_request(
+            method="POST",
+            path="/crm/pipelines",
+            base_url=base_url,
+            url_variables=url_variables,
+            request=request,
+            request_body_required=True,
+            request_has_path_params=False,
+            request_has_query_params=True,
+            user_agent_header="user-agent",
+            accept_header_value="application/json",
+            http_headers=http_headers,
+            _globals=models.CrmPipelinesAddGlobals(
+                consumer_id=self.sdk_configuration.globals.consumer_id,
+                app_id=self.sdk_configuration.globals.app_id,
+            ),
+            security=self.sdk_configuration.security,
+            get_serialized_body=lambda: utils.serialize_request_body(
+                request.pipeline, False, False, "json", models.PipelineInput
+            ),
+            timeout_ms=timeout_ms,
+        )
+
+        if retries == UNSET:
+            if self.sdk_configuration.retry_config is not UNSET:
+                retries = self.sdk_configuration.retry_config
+            else:
+                retries = utils.RetryConfig(
+                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 3600000), True
+                )
+
+        retry_config = None
+        if isinstance(retries, utils.RetryConfig):
+            retry_config = (retries, ["5XX"])
+
+        http_res = self.do_request(
+            hook_ctx=HookContext(
+                base_url=base_url or "",
+                operation_id="crm.pipelinesAdd",
+                oauth2_scopes=[],
+                security_source=get_security_from_env(
+                    self.sdk_configuration.security, models.Security
+                ),
+            ),
+            request=req,
+            error_status_codes=["400", "401", "402", "404", "422", "4XX", "5XX"],
+            retry_config=retry_config,
+        )
+
+        response_data: Any = None
+        if utils.match_response(http_res, "201", "application/json"):
+            return models.CrmPipelinesAddResponse(
+                create_pipeline_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.CreatePipelineResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
+        if utils.match_response(http_res, "400", "application/json"):
+            response_data = utils.unmarshal_json(
+                http_res.text, models.BadRequestResponseData
+            )
+            raise models.BadRequestResponse(data=response_data)
+        if utils.match_response(http_res, "401", "application/json"):
+            response_data = utils.unmarshal_json(
+                http_res.text, models.UnauthorizedResponseData
+            )
+            raise models.UnauthorizedResponse(data=response_data)
+        if utils.match_response(http_res, "402", "application/json"):
+            response_data = utils.unmarshal_json(
+                http_res.text, models.PaymentRequiredResponseData
+            )
+            raise models.PaymentRequiredResponse(data=response_data)
+        if utils.match_response(http_res, "404", "application/json"):
+            response_data = utils.unmarshal_json(
+                http_res.text, models.NotFoundResponseData
+            )
+            raise models.NotFoundResponse(data=response_data)
+        if utils.match_response(http_res, "422", "application/json"):
+            response_data = utils.unmarshal_json(
+                http_res.text, models.UnprocessableResponseData
+            )
+            raise models.UnprocessableResponse(data=response_data)
+        if utils.match_response(http_res, "4XX", "*"):
+            http_res_text = utils.stream_to_text(http_res)
+            raise models.APIError(
+                "API error occurred", http_res.status_code, http_res_text, http_res
+            )
+        if utils.match_response(http_res, "5XX", "*"):
+            http_res_text = utils.stream_to_text(http_res)
+            raise models.APIError(
+                "API error occurred", http_res.status_code, http_res_text, http_res
+            )
+        if utils.match_response(http_res, "default", "application/json"):
+            return models.CrmPipelinesAddResponse(
+                unexpected_error_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.UnexpectedErrorResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
+
+        content_type = http_res.headers.get("Content-Type")
+        http_res_text = utils.stream_to_text(http_res)
+        raise models.APIError(
+            f"Unexpected response received (code: {http_res.status_code}, type: {content_type})",
+            http_res.status_code,
+            http_res_text,
+            http_res,
+        )
+
+    async def create_async(
+        self,
+        *,
+        name: str,
+        raw: Optional[bool] = False,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
+        service_id: Optional[str] = None,
+        id: Optional[str] = None,
+        currency: OptionalNullable[models.Currency] = UNSET,
+        archived: Optional[bool] = None,
+        active: Optional[bool] = None,
+        display_order: OptionalNullable[int] = UNSET,
+        win_probability_enabled: Optional[bool] = None,
+        stages: Optional[
+            Union[List[models.PipelineStages], List[models.PipelineStagesTypedDict]]
+        ] = None,
+        pass_through: Optional[
+            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+        ] = None,
+        retries: OptionalNullable[utils.RetryConfig] = UNSET,
+        server_url: Optional[str] = None,
+        timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
+    ) -> models.CrmPipelinesAddResponse:
+        r"""Create pipeline
+
+        Create pipeline
+
+        :param name: The name of the Pipeline.
+        :param raw: Include raw response. Mostly used for debugging purposes
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
+        :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param id: The unique identifier of the Pipeline.
+        :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
+        :param archived: Whether the Pipeline is archived or not.
+        :param active: Whether the Pipeline is active or not.
+        :param display_order: The order in which the Pipeline is displayed in the UI.
+        :param win_probability_enabled: Whether the Pipeline has win probability enabled or not.
+        :param stages: The Pipeline Stages.
+        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
+        :param retries: Override the default retry configuration for this method
+        :param server_url: Override the default server URL for this method
+        :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
+        """
+        base_url = None
+        url_variables = None
+        if timeout_ms is None:
+            timeout_ms = self.sdk_configuration.timeout_ms
+
+        if server_url is not None:
+            base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
+
+        request = models.CrmPipelinesAddRequest(
+            raw=raw,
+            consumer_id=consumer_id,
+            app_id=app_id,
+            service_id=service_id,
+            pipeline=models.PipelineInput(
+                id=id,
+                name=name,
+                currency=currency,
+                archived=archived,
+                active=active,
+                display_order=display_order,
+                win_probability_enabled=win_probability_enabled,
+                stages=utils.get_pydantic_model(
+                    stages, Optional[List[models.PipelineStages]]
+                ),
+                pass_through=utils.get_pydantic_model(
+                    pass_through, Optional[List[models.PassThroughBody]]
+                ),
+            ),
+        )
+
+        req = self._build_request_async(
+            method="POST",
+            path="/crm/pipelines",
+            base_url=base_url,
+            url_variables=url_variables,
+            request=request,
+            request_body_required=True,
+            request_has_path_params=False,
+            request_has_query_params=True,
+            user_agent_header="user-agent",
+            accept_header_value="application/json",
+            http_headers=http_headers,
+            _globals=models.CrmPipelinesAddGlobals(
+                consumer_id=self.sdk_configuration.globals.consumer_id,
+                app_id=self.sdk_configuration.globals.app_id,
+            ),
+            security=self.sdk_configuration.security,
+            get_serialized_body=lambda: utils.serialize_request_body(
+                request.pipeline, False, False, "json", models.PipelineInput
+            ),
+            timeout_ms=timeout_ms,
+        )
+
+        if retries == UNSET:
+            if self.sdk_configuration.retry_config is not UNSET:
+                retries = self.sdk_configuration.retry_config
+            else:
+                retries = utils.RetryConfig(
+                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 3600000), True
+                )
+
+        retry_config = None
+        if isinstance(retries, utils.RetryConfig):
+            retry_config = (retries, ["5XX"])
+
+        http_res = await self.do_request_async(
+            hook_ctx=HookContext(
+                base_url=base_url or "",
+                operation_id="crm.pipelinesAdd",
+                oauth2_scopes=[],
+                security_source=get_security_from_env(
+                    self.sdk_configuration.security, models.Security
+                ),
+            ),
+            request=req,
+            error_status_codes=["400", "401", "402", "404", "422", "4XX", "5XX"],
+            retry_config=retry_config,
+        )
+
+        response_data: Any = None
+        if utils.match_response(http_res, "201", "application/json"):
+            return models.CrmPipelinesAddResponse(
+                create_pipeline_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.CreatePipelineResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
+        if utils.match_response(http_res, "400", "application/json"):
+            response_data = utils.unmarshal_json(
+                http_res.text, models.BadRequestResponseData
+            )
+            raise models.BadRequestResponse(data=response_data)
+        if utils.match_response(http_res, "401", "application/json"):
+            response_data = utils.unmarshal_json(
+                http_res.text, models.UnauthorizedResponseData
+            )
+            raise models.UnauthorizedResponse(data=response_data)
+        if utils.match_response(http_res, "402", "application/json"):
+            response_data = utils.unmarshal_json(
+                http_res.text, models.PaymentRequiredResponseData
+            )
+            raise models.PaymentRequiredResponse(data=response_data)
+        if utils.match_response(http_res, "404", "application/json"):
+            response_data = utils.unmarshal_json(
+                http_res.text, models.NotFoundResponseData
+            )
+            raise models.NotFoundResponse(data=response_data)
+        if utils.match_response(http_res, "422", "application/json"):
+            response_data = utils.unmarshal_json(
+                http_res.text, models.UnprocessableResponseData
+            )
+            raise models.UnprocessableResponse(data=response_data)
+        if utils.match_response(http_res, "4XX", "*"):
+            http_res_text = await utils.stream_to_text_async(http_res)
+            raise models.APIError(
+                "API error occurred", http_res.status_code, http_res_text, http_res
+            )
+        if utils.match_response(http_res, "5XX", "*"):
+            http_res_text = await utils.stream_to_text_async(http_res)
+            raise models.APIError(
+                "API error occurred", http_res.status_code, http_res_text, http_res
+            )
+        if utils.match_response(http_res, "default", "application/json"):
+            return models.CrmPipelinesAddResponse(
+                unexpected_error_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.UnexpectedErrorResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
+
+        content_type = http_res.headers.get("Content-Type")
+        http_res_text = await utils.stream_to_text_async(http_res)
+        raise models.APIError(
+            f"Unexpected response received (code: {http_res.status_code}, type: {content_type})",
+            http_res.status_code,
+            http_res_text,
+            http_res,
+        )
+
+    def get(
+        self,
+        *,
+        id: str,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
+        service_id: Optional[str] = None,
+        raw: Optional[bool] = False,
+        fields: OptionalNullable[str] = UNSET,
+        retries: OptionalNullable[utils.RetryConfig] = UNSET,
+        server_url: Optional[str] = None,
+        timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
+    ) -> models.CrmPipelinesOneResponse:
+        r"""Get pipeline
+
+        Get pipeline
+
+        :param id: ID of the record you are acting upon.
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
+        :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param raw: Include raw response. Mostly used for debugging purposes
+        :param fields: The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded.
+        :param retries: Override the default retry configuration for this method
+        :param server_url: Override the default server URL for this method
+        :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
+        """
+        base_url = None
+        url_variables = None
+        if timeout_ms is None:
+            timeout_ms = self.sdk_configuration.timeout_ms
+
+        if server_url is not None:
+            base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
+
+        request = models.CrmPipelinesOneRequest(
+            id=id,
+            consumer_id=consumer_id,
+            app_id=app_id,
+            service_id=service_id,
+            raw=raw,
+            fields=fields,
+        )
+
+        req = self._build_request(
+            method="GET",
+            path="/crm/pipelines/{id}",
+            base_url=base_url,
+            url_variables=url_variables,
+            request=request,
+            request_body_required=False,
+            request_has_path_params=True,
+            request_has_query_params=True,
+            user_agent_header="user-agent",
+            accept_header_value="application/json",
+            http_headers=http_headers,
+            _globals=models.CrmPipelinesOneGlobals(
+                consumer_id=self.sdk_configuration.globals.consumer_id,
+                app_id=self.sdk_configuration.globals.app_id,
+            ),
+            security=self.sdk_configuration.security,
+            timeout_ms=timeout_ms,
+        )
+
+        if retries == UNSET:
+            if self.sdk_configuration.retry_config is not UNSET:
+                retries = self.sdk_configuration.retry_config
+            else:
+                retries = utils.RetryConfig(
+                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 3600000), True
+                )
+
+        retry_config = None
+        if isinstance(retries, utils.RetryConfig):
+            retry_config = (retries, ["5XX"])
+
+        http_res = self.do_request(
+            hook_ctx=HookContext(
+                base_url=base_url or "",
+                operation_id="crm.pipelinesOne",
+                oauth2_scopes=[],
+                security_source=get_security_from_env(
+                    self.sdk_configuration.security, models.Security
+                ),
+            ),
+            request=req,
+            error_status_codes=["400", "401", "402", "404", "422", "4XX", "5XX"],
+            retry_config=retry_config,
+        )
+
+        response_data: Any = None
+        if utils.match_response(http_res, "200", "application/json"):
+            return models.CrmPipelinesOneResponse(
+                get_pipeline_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.GetPipelineResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
+        if utils.match_response(http_res, "400", "application/json"):
+            response_data = utils.unmarshal_json(
+                http_res.text, models.BadRequestResponseData
+            )
+            raise models.BadRequestResponse(data=response_data)
+        if utils.match_response(http_res, "401", "application/json"):
+            response_data = utils.unmarshal_json(
+                http_res.text, models.UnauthorizedResponseData
+            )
+            raise models.UnauthorizedResponse(data=response_data)
+        if utils.match_response(http_res, "402", "application/json"):
+            response_data = utils.unmarshal_json(
+                http_res.text, models.PaymentRequiredResponseData
+            )
+            raise models.PaymentRequiredResponse(data=response_data)
+        if utils.match_response(http_res, "404", "application/json"):
+            response_data = utils.unmarshal_json(
+                http_res.text, models.NotFoundResponseData
+            )
+            raise models.NotFoundResponse(data=response_data)
+        if utils.match_response(http_res, "422", "application/json"):
+            response_data = utils.unmarshal_json(
+                http_res.text, models.UnprocessableResponseData
+            )
+            raise models.UnprocessableResponse(data=response_data)
+        if utils.match_response(http_res, "4XX", "*"):
+            http_res_text = utils.stream_to_text(http_res)
+            raise models.APIError(
+                "API error occurred", http_res.status_code, http_res_text, http_res
+            )
+        if utils.match_response(http_res, "5XX", "*"):
+            http_res_text = utils.stream_to_text(http_res)
+            raise models.APIError(
+                "API error occurred", http_res.status_code, http_res_text, http_res
+            )
+        if utils.match_response(http_res, "default", "application/json"):
+            return models.CrmPipelinesOneResponse(
+                unexpected_error_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.UnexpectedErrorResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
+
+        content_type = http_res.headers.get("Content-Type")
+        http_res_text = utils.stream_to_text(http_res)
+        raise models.APIError(
+            f"Unexpected response received (code: {http_res.status_code}, type: {content_type})",
+            http_res.status_code,
+            http_res_text,
+            http_res,
+        )
+
+    async def get_async(
+        self,
+        *,
+        id: str,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
+        service_id: Optional[str] = None,
+        raw: Optional[bool] = False,
+        fields: OptionalNullable[str] = UNSET,
+        retries: OptionalNullable[utils.RetryConfig] = UNSET,
+        server_url: Optional[str] = None,
+        timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
+    ) -> models.CrmPipelinesOneResponse:
+        r"""Get pipeline
+
+        Get pipeline
+
+        :param id: ID of the record you are acting upon.
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
+        :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param raw: Include raw response. Mostly used for debugging purposes
+        :param fields: The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded.
+        :param retries: Override the default retry configuration for this method
+        :param server_url: Override the default server URL for this method
+        :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
+        """
+        base_url = None
+        url_variables = None
+        if timeout_ms is None:
+            timeout_ms = self.sdk_configuration.timeout_ms
+
+        if server_url is not None:
+            base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
+
+        request = models.CrmPipelinesOneRequest(
+            id=id,
+            consumer_id=consumer_id,
+            app_id=app_id,
+            service_id=service_id,
+            raw=raw,
+            fields=fields,
+        )
+
+        req = self._build_request_async(
+            method="GET",
+            path="/crm/pipelines/{id}",
+            base_url=base_url,
+            url_variables=url_variables,
+            request=request,
+            request_body_required=False,
+            request_has_path_params=True,
+            request_has_query_params=True,
+            user_agent_header="user-agent",
+            accept_header_value="application/json",
+            http_headers=http_headers,
+            _globals=models.CrmPipelinesOneGlobals(
+                consumer_id=self.sdk_configuration.globals.consumer_id,
+                app_id=self.sdk_configuration.globals.app_id,
+            ),
+            security=self.sdk_configuration.security,
+            timeout_ms=timeout_ms,
+        )
+
+        if retries == UNSET:
+            if self.sdk_configuration.retry_config is not UNSET:
+                retries = self.sdk_configuration.retry_config
+            else:
+                retries = utils.RetryConfig(
+                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 3600000), True
+                )
+
+        retry_config = None
+        if isinstance(retries, utils.RetryConfig):
+            retry_config = (retries, ["5XX"])
+
+        http_res = await self.do_request_async(
+            hook_ctx=HookContext(
+                base_url=base_url or "",
+                operation_id="crm.pipelinesOne",
+                oauth2_scopes=[],
+                security_source=get_security_from_env(
+                    self.sdk_configuration.security, models.Security
+                ),
+            ),
+            request=req,
+            error_status_codes=["400", "401", "402", "404", "422", "4XX", "5XX"],
+            retry_config=retry_config,
+        )
+
+        response_data: Any = None
+        if utils.match_response(http_res, "200", "application/json"):
+            return models.CrmPipelinesOneResponse(
+                get_pipeline_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.GetPipelineResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
+        if utils.match_response(http_res, "400", "application/json"):
+            response_data = utils.unmarshal_json(
+                http_res.text, models.BadRequestResponseData
+            )
+            raise models.BadRequestResponse(data=response_data)
+        if utils.match_response(http_res, "401", "application/json"):
+            response_data = utils.unmarshal_json(
+                http_res.text, models.UnauthorizedResponseData
+            )
+            raise models.UnauthorizedResponse(data=response_data)
+        if utils.match_response(http_res, "402", "application/json"):
+            response_data = utils.unmarshal_json(
+                http_res.text, models.PaymentRequiredResponseData
+            )
+            raise models.PaymentRequiredResponse(data=response_data)
+        if utils.match_response(http_res, "404", "application/json"):
+            response_data = utils.unmarshal_json(
+                http_res.text, models.NotFoundResponseData
+            )
+            raise models.NotFoundResponse(data=response_data)
+        if utils.match_response(http_res, "422", "application/json"):
+            response_data = utils.unmarshal_json(
+                http_res.text, models.UnprocessableResponseData
+            )
+            raise models.UnprocessableResponse(data=response_data)
+        if utils.match_response(http_res, "4XX", "*"):
+            http_res_text = await utils.stream_to_text_async(http_res)
+            raise models.APIError(
+                "API error occurred", http_res.status_code, http_res_text, http_res
+            )
+        if utils.match_response(http_res, "5XX", "*"):
+            http_res_text = await utils.stream_to_text_async(http_res)
+            raise models.APIError(
+                "API error occurred", http_res.status_code, http_res_text, http_res
+            )
+        if utils.match_response(http_res, "default", "application/json"):
+            return models.CrmPipelinesOneResponse(
+                unexpected_error_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.UnexpectedErrorResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
+
+        content_type = http_res.headers.get("Content-Type")
+        http_res_text = await utils.stream_to_text_async(http_res)
+        raise models.APIError(
+            f"Unexpected response received (code: {http_res.status_code}, type: {content_type})",
+            http_res.status_code,
+            http_res_text,
+            http_res,
+        )
+
+    def update(
+        self,
+        *,
+        id_param: str,
+        name: str,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
+        service_id: Optional[str] = None,
+        raw: Optional[bool] = False,
+        id: Optional[str] = None,
+        currency: OptionalNullable[models.Currency] = UNSET,
+        archived: Optional[bool] = None,
+        active: Optional[bool] = None,
+        display_order: OptionalNullable[int] = UNSET,
+        win_probability_enabled: Optional[bool] = None,
+        stages: Optional[
+            Union[List[models.PipelineStages], List[models.PipelineStagesTypedDict]]
+        ] = None,
+        pass_through: Optional[
+            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+        ] = None,
+        retries: OptionalNullable[utils.RetryConfig] = UNSET,
+        server_url: Optional[str] = None,
+        timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
+    ) -> models.CrmPipelinesUpdateResponse:
+        r"""Update pipeline
+
+        Update pipeline
+
+        :param id_param: ID of the record you are acting upon.
+        :param name: The name of the Pipeline.
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
+        :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param raw: Include raw response. Mostly used for debugging purposes
+        :param id: The unique identifier of the Pipeline.
+        :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
+        :param archived: Whether the Pipeline is archived or not.
+        :param active: Whether the Pipeline is active or not.
+        :param display_order: The order in which the Pipeline is displayed in the UI.
+        :param win_probability_enabled: Whether the Pipeline has win probability enabled or not.
+        :param stages: The Pipeline Stages.
+        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
+        :param retries: Override the default retry configuration for this method
+        :param server_url: Override the default server URL for this method
+        :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
+        """
+        base_url = None
+        url_variables = None
+        if timeout_ms is None:
+            timeout_ms = self.sdk_configuration.timeout_ms
+
+        if server_url is not None:
+            base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
+
+        request = models.CrmPipelinesUpdateRequest(
+            id_param=id_param,
+            consumer_id=consumer_id,
+            app_id=app_id,
+            service_id=service_id,
+            raw=raw,
+            pipeline=models.PipelineInput(
+                id=id,
+                name=name,
+                currency=currency,
+                archived=archived,
+                active=active,
+                display_order=display_order,
+                win_probability_enabled=win_probability_enabled,
+                stages=utils.get_pydantic_model(
+                    stages, Optional[List[models.PipelineStages]]
+                ),
+                pass_through=utils.get_pydantic_model(
+                    pass_through, Optional[List[models.PassThroughBody]]
+                ),
+            ),
+        )
+
+        req = self._build_request(
+            method="PATCH",
+            path="/crm/pipelines/{id}",
+            base_url=base_url,
+            url_variables=url_variables,
+            request=request,
+            request_body_required=True,
+            request_has_path_params=True,
+            request_has_query_params=True,
+            user_agent_header="user-agent",
+            accept_header_value="application/json",
+            http_headers=http_headers,
+            _globals=models.CrmPipelinesUpdateGlobals(
+                consumer_id=self.sdk_configuration.globals.consumer_id,
+                app_id=self.sdk_configuration.globals.app_id,
+            ),
+            security=self.sdk_configuration.security,
+            get_serialized_body=lambda: utils.serialize_request_body(
+                request.pipeline, False, False, "json", models.PipelineInput
+            ),
+            timeout_ms=timeout_ms,
+        )
+
+        if retries == UNSET:
+            if self.sdk_configuration.retry_config is not UNSET:
+                retries = self.sdk_configuration.retry_config
+            else:
+                retries = utils.RetryConfig(
+                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 3600000), True
+                )
+
+        retry_config = None
+        if isinstance(retries, utils.RetryConfig):
+            retry_config = (retries, ["5XX"])
+
+        http_res = self.do_request(
+            hook_ctx=HookContext(
+                base_url=base_url or "",
+                operation_id="crm.pipelinesUpdate",
+                oauth2_scopes=[],
+                security_source=get_security_from_env(
+                    self.sdk_configuration.security, models.Security
+                ),
+            ),
+            request=req,
+            error_status_codes=["400", "401", "402", "404", "422", "4XX", "5XX"],
+            retry_config=retry_config,
+        )
+
+        response_data: Any = None
+        if utils.match_response(http_res, "200", "application/json"):
+            return models.CrmPipelinesUpdateResponse(
+                update_pipeline_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.UpdatePipelineResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
+        if utils.match_response(http_res, "400", "application/json"):
+            response_data = utils.unmarshal_json(
+                http_res.text, models.BadRequestResponseData
+            )
+            raise models.BadRequestResponse(data=response_data)
+        if utils.match_response(http_res, "401", "application/json"):
+            response_data = utils.unmarshal_json(
+                http_res.text, models.UnauthorizedResponseData
+            )
+            raise models.UnauthorizedResponse(data=response_data)
+        if utils.match_response(http_res, "402", "application/json"):
+            response_data = utils.unmarshal_json(
+                http_res.text, models.PaymentRequiredResponseData
+            )
+            raise models.PaymentRequiredResponse(data=response_data)
+        if utils.match_response(http_res, "404", "application/json"):
+            response_data = utils.unmarshal_json(
+                http_res.text, models.NotFoundResponseData
+            )
+            raise models.NotFoundResponse(data=response_data)
+        if utils.match_response(http_res, "422", "application/json"):
+            response_data = utils.unmarshal_json(
+                http_res.text, models.UnprocessableResponseData
+            )
+            raise models.UnprocessableResponse(data=response_data)
+        if utils.match_response(http_res, "4XX", "*"):
+            http_res_text = utils.stream_to_text(http_res)
+            raise models.APIError(
+                "API error occurred", http_res.status_code, http_res_text, http_res
+            )
+        if utils.match_response(http_res, "5XX", "*"):
+            http_res_text = utils.stream_to_text(http_res)
+            raise models.APIError(
+                "API error occurred", http_res.status_code, http_res_text, http_res
+            )
+        if utils.match_response(http_res, "default", "application/json"):
+            return models.CrmPipelinesUpdateResponse(
+                unexpected_error_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.UnexpectedErrorResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
+
+        content_type = http_res.headers.get("Content-Type")
+        http_res_text = utils.stream_to_text(http_res)
+        raise models.APIError(
+            f"Unexpected response received (code: {http_res.status_code}, type: {content_type})",
+            http_res.status_code,
+            http_res_text,
+            http_res,
+        )
+
+    async def update_async(
+        self,
+        *,
+        id_param: str,
+        name: str,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
+        service_id: Optional[str] = None,
+        raw: Optional[bool] = False,
+        id: Optional[str] = None,
+        currency: OptionalNullable[models.Currency] = UNSET,
+        archived: Optional[bool] = None,
+        active: Optional[bool] = None,
+        display_order: OptionalNullable[int] = UNSET,
+        win_probability_enabled: Optional[bool] = None,
+        stages: Optional[
+            Union[List[models.PipelineStages], List[models.PipelineStagesTypedDict]]
+        ] = None,
+        pass_through: Optional[
+            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+        ] = None,
+        retries: OptionalNullable[utils.RetryConfig] = UNSET,
+        server_url: Optional[str] = None,
+        timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
+    ) -> models.CrmPipelinesUpdateResponse:
+        r"""Update pipeline
+
+        Update pipeline
+
+        :param id_param: ID of the record you are acting upon.
+        :param name: The name of the Pipeline.
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
+        :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param raw: Include raw response. Mostly used for debugging purposes
+        :param id: The unique identifier of the Pipeline.
+        :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
+        :param archived: Whether the Pipeline is archived or not.
+        :param active: Whether the Pipeline is active or not.
+        :param display_order: The order in which the Pipeline is displayed in the UI.
+        :param win_probability_enabled: Whether the Pipeline has win probability enabled or not.
+        :param stages: The Pipeline Stages.
+        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
+        :param retries: Override the default retry configuration for this method
+        :param server_url: Override the default server URL for this method
+        :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
+        """
+        base_url = None
+        url_variables = None
+        if timeout_ms is None:
+            timeout_ms = self.sdk_configuration.timeout_ms
+
+        if server_url is not None:
+            base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
+
+        request = models.CrmPipelinesUpdateRequest(
+            id_param=id_param,
+            consumer_id=consumer_id,
+            app_id=app_id,
+            service_id=service_id,
+            raw=raw,
+            pipeline=models.PipelineInput(
+                id=id,
+                name=name,
+                currency=currency,
+                archived=archived,
+                active=active,
+                display_order=display_order,
+                win_probability_enabled=win_probability_enabled,
+                stages=utils.get_pydantic_model(
+                    stages, Optional[List[models.PipelineStages]]
+                ),
+                pass_through=utils.get_pydantic_model(
+                    pass_through, Optional[List[models.PassThroughBody]]
+                ),
+            ),
+        )
+
+        req = self._build_request_async(
+            method="PATCH",
+            path="/crm/pipelines/{id}",
+            base_url=base_url,
+            url_variables=url_variables,
+            request=request,
+            request_body_required=True,
+            request_has_path_params=True,
+            request_has_query_params=True,
+            user_agent_header="user-agent",
+            accept_header_value="application/json",
+            http_headers=http_headers,
+            _globals=models.CrmPipelinesUpdateGlobals(
+                consumer_id=self.sdk_configuration.globals.consumer_id,
+                app_id=self.sdk_configuration.globals.app_id,
+            ),
+            security=self.sdk_configuration.security,
+            get_serialized_body=lambda: utils.serialize_request_body(
+                request.pipeline, False, False, "json", models.PipelineInput
+            ),
+            timeout_ms=timeout_ms,
+        )
+
+        if retries == UNSET:
+            if self.sdk_configuration.retry_config is not UNSET:
+                retries = self.sdk_configuration.retry_config
+            else:
+                retries = utils.RetryConfig(
+                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 3600000), True
+                )
+
+        retry_config = None
+        if isinstance(retries, utils.RetryConfig):
+            retry_config = (retries, ["5XX"])
+
+        http_res = await self.do_request_async(
+            hook_ctx=HookContext(
+                base_url=base_url or "",
+                operation_id="crm.pipelinesUpdate",
+                oauth2_scopes=[],
+                security_source=get_security_from_env(
+                    self.sdk_configuration.security, models.Security
+                ),
+            ),
+            request=req,
+            error_status_codes=["400", "401", "402", "404", "422", "4XX", "5XX"],
+            retry_config=retry_config,
+        )
+
+        response_data: Any = None
+        if utils.match_response(http_res, "200", "application/json"):
+            return models.CrmPipelinesUpdateResponse(
+                update_pipeline_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.UpdatePipelineResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
+        if utils.match_response(http_res, "400", "application/json"):
+            response_data = utils.unmarshal_json(
+                http_res.text, models.BadRequestResponseData
+            )
+            raise models.BadRequestResponse(data=response_data)
+        if utils.match_response(http_res, "401", "application/json"):
+            response_data = utils.unmarshal_json(
+                http_res.text, models.UnauthorizedResponseData
+            )
+            raise models.UnauthorizedResponse(data=response_data)
+        if utils.match_response(http_res, "402", "application/json"):
+            response_data = utils.unmarshal_json(
+                http_res.text, models.PaymentRequiredResponseData
+            )
+            raise models.PaymentRequiredResponse(data=response_data)
+        if utils.match_response(http_res, "404", "application/json"):
+            response_data = utils.unmarshal_json(
+                http_res.text, models.NotFoundResponseData
+            )
+            raise models.NotFoundResponse(data=response_data)
+        if utils.match_response(http_res, "422", "application/json"):
+            response_data = utils.unmarshal_json(
+                http_res.text, models.UnprocessableResponseData
+            )
+            raise models.UnprocessableResponse(data=response_data)
+        if utils.match_response(http_res, "4XX", "*"):
+            http_res_text = await utils.stream_to_text_async(http_res)
+            raise models.APIError(
+                "API error occurred", http_res.status_code, http_res_text, http_res
+            )
+        if utils.match_response(http_res, "5XX", "*"):
+            http_res_text = await utils.stream_to_text_async(http_res)
+            raise models.APIError(
+                "API error occurred", http_res.status_code, http_res_text, http_res
+            )
+        if utils.match_response(http_res, "default", "application/json"):
+            return models.CrmPipelinesUpdateResponse(
+                unexpected_error_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.UnexpectedErrorResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
+
+        content_type = http_res.headers.get("Content-Type")
+        http_res_text = await utils.stream_to_text_async(http_res)
+        raise models.APIError(
+            f"Unexpected response received (code: {http_res.status_code}, type: {content_type})",
+            http_res.status_code,
+            http_res_text,
+            http_res,
+        )
+
+    def delete(
+        self,
+        *,
+        id: str,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
+        service_id: Optional[str] = None,
+        raw: Optional[bool] = False,
+        retries: OptionalNullable[utils.RetryConfig] = UNSET,
+        server_url: Optional[str] = None,
+        timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
+    ) -> models.CrmPipelinesDeleteResponse:
+        r"""Delete pipeline
+
+        Delete pipeline
+
+        :param id: ID of the record you are acting upon.
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
+        :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param raw: Include raw response. Mostly used for debugging purposes
+        :param retries: Override the default retry configuration for this method
+        :param server_url: Override the default server URL for this method
+        :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
+        """
+        base_url = None
+        url_variables = None
+        if timeout_ms is None:
+            timeout_ms = self.sdk_configuration.timeout_ms
+
+        if server_url is not None:
+            base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
+
+        request = models.CrmPipelinesDeleteRequest(
+            id=id,
+            consumer_id=consumer_id,
+            app_id=app_id,
+            service_id=service_id,
+            raw=raw,
+        )
+
+        req = self._build_request(
+            method="DELETE",
+            path="/crm/pipelines/{id}",
+            base_url=base_url,
+            url_variables=url_variables,
+            request=request,
+            request_body_required=False,
+            request_has_path_params=True,
+            request_has_query_params=True,
+            user_agent_header="user-agent",
+            accept_header_value="application/json",
+            http_headers=http_headers,
+            _globals=models.CrmPipelinesDeleteGlobals(
+                consumer_id=self.sdk_configuration.globals.consumer_id,
+                app_id=self.sdk_configuration.globals.app_id,
+            ),
+            security=self.sdk_configuration.security,
+            timeout_ms=timeout_ms,
+        )
+
+        if retries == UNSET:
+            if self.sdk_configuration.retry_config is not UNSET:
+                retries = self.sdk_configuration.retry_config
+            else:
+                retries = utils.RetryConfig(
+                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 3600000), True
+                )
+
+        retry_config = None
+        if isinstance(retries, utils.RetryConfig):
+            retry_config = (retries, ["5XX"])
+
+        http_res = self.do_request(
+            hook_ctx=HookContext(
+                base_url=base_url or "",
+                operation_id="crm.pipelinesDelete",
+                oauth2_scopes=[],
+                security_source=get_security_from_env(
+                    self.sdk_configuration.security, models.Security
+                ),
+            ),
+            request=req,
+            error_status_codes=["400", "401", "402", "404", "422", "4XX", "5XX"],
+            retry_config=retry_config,
+        )
+
+        response_data: Any = None
+        if utils.match_response(http_res, "200", "application/json"):
+            return models.CrmPipelinesDeleteResponse(
+                delete_pipeline_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.DeletePipelineResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
+        if utils.match_response(http_res, "400", "application/json"):
+            response_data = utils.unmarshal_json(
+                http_res.text, models.BadRequestResponseData
+            )
+            raise models.BadRequestResponse(data=response_data)
+        if utils.match_response(http_res, "401", "application/json"):
+            response_data = utils.unmarshal_json(
+                http_res.text, models.UnauthorizedResponseData
+            )
+            raise models.UnauthorizedResponse(data=response_data)
+        if utils.match_response(http_res, "402", "application/json"):
+            response_data = utils.unmarshal_json(
+                http_res.text, models.PaymentRequiredResponseData
+            )
+            raise models.PaymentRequiredResponse(data=response_data)
+        if utils.match_response(http_res, "404", "application/json"):
+            response_data = utils.unmarshal_json(
+                http_res.text, models.NotFoundResponseData
+            )
+            raise models.NotFoundResponse(data=response_data)
+        if utils.match_response(http_res, "422", "application/json"):
+            response_data = utils.unmarshal_json(
+                http_res.text, models.UnprocessableResponseData
+            )
+            raise models.UnprocessableResponse(data=response_data)
+        if utils.match_response(http_res, "4XX", "*"):
+            http_res_text = utils.stream_to_text(http_res)
+            raise models.APIError(
+                "API error occurred", http_res.status_code, http_res_text, http_res
+            )
+        if utils.match_response(http_res, "5XX", "*"):
+            http_res_text = utils.stream_to_text(http_res)
+            raise models.APIError(
+                "API error occurred", http_res.status_code, http_res_text, http_res
+            )
+        if utils.match_response(http_res, "default", "application/json"):
+            return models.CrmPipelinesDeleteResponse(
+                unexpected_error_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.UnexpectedErrorResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
+
+        content_type = http_res.headers.get("Content-Type")
+        http_res_text = utils.stream_to_text(http_res)
+        raise models.APIError(
+            f"Unexpected response received (code: {http_res.status_code}, type: {content_type})",
+            http_res.status_code,
+            http_res_text,
+            http_res,
+        )
+
+    async def delete_async(
+        self,
+        *,
+        id: str,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
+        service_id: Optional[str] = None,
+        raw: Optional[bool] = False,
+        retries: OptionalNullable[utils.RetryConfig] = UNSET,
+        server_url: Optional[str] = None,
+        timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
+    ) -> models.CrmPipelinesDeleteResponse:
+        r"""Delete pipeline
+
+        Delete pipeline
+
+        :param id: ID of the record you are acting upon.
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
+        :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param raw: Include raw response. Mostly used for debugging purposes
+        :param retries: Override the default retry configuration for this method
+        :param server_url: Override the default server URL for this method
+        :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
+        """
+        base_url = None
+        url_variables = None
+        if timeout_ms is None:
+            timeout_ms = self.sdk_configuration.timeout_ms
+
+        if server_url is not None:
+            base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
+
+        request = models.CrmPipelinesDeleteRequest(
+            id=id,
+            consumer_id=consumer_id,
+            app_id=app_id,
+            service_id=service_id,
+            raw=raw,
+        )
+
+        req = self._build_request_async(
+            method="DELETE",
+            path="/crm/pipelines/{id}",
+            base_url=base_url,
+            url_variables=url_variables,
+            request=request,
+            request_body_required=False,
+            request_has_path_params=True,
+            request_has_query_params=True,
+            user_agent_header="user-agent",
+            accept_header_value="application/json",
+            http_headers=http_headers,
+            _globals=models.CrmPipelinesDeleteGlobals(
+                consumer_id=self.sdk_configuration.globals.consumer_id,
+                app_id=self.sdk_configuration.globals.app_id,
+            ),
+            security=self.sdk_configuration.security,
+            timeout_ms=timeout_ms,
+        )
+
+        if retries == UNSET:
+            if self.sdk_configuration.retry_config is not UNSET:
+                retries = self.sdk_configuration.retry_config
+            else:
+                retries = utils.RetryConfig(
+                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 3600000), True
+                )
+
+        retry_config = None
+        if isinstance(retries, utils.RetryConfig):
+            retry_config = (retries, ["5XX"])
+
+        http_res = await self.do_request_async(
+            hook_ctx=HookContext(
+                base_url=base_url or "",
+                operation_id="crm.pipelinesDelete",
+                oauth2_scopes=[],
+                security_source=get_security_from_env(
+                    self.sdk_configuration.security, models.Security
+                ),
+            ),
+            request=req,
+            error_status_codes=["400", "401", "402", "404", "422", "4XX", "5XX"],
+            retry_config=retry_config,
+        )
+
+        response_data: Any = None
+        if utils.match_response(http_res, "200", "application/json"):
+            return models.CrmPipelinesDeleteResponse(
+                delete_pipeline_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.DeletePipelineResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
+        if utils.match_response(http_res, "400", "application/json"):
+            response_data = utils.unmarshal_json(
+                http_res.text, models.BadRequestResponseData
+            )
+            raise models.BadRequestResponse(data=response_data)
+        if utils.match_response(http_res, "401", "application/json"):
+            response_data = utils.unmarshal_json(
+                http_res.text, models.UnauthorizedResponseData
+            )
+            raise models.UnauthorizedResponse(data=response_data)
+        if utils.match_response(http_res, "402", "application/json"):
+            response_data = utils.unmarshal_json(
+                http_res.text, models.PaymentRequiredResponseData
+            )
+            raise models.PaymentRequiredResponse(data=response_data)
+        if utils.match_response(http_res, "404", "application/json"):
+            response_data = utils.unmarshal_json(
+                http_res.text, models.NotFoundResponseData
+            )
+            raise models.NotFoundResponse(data=response_data)
+        if utils.match_response(http_res, "422", "application/json"):
+            response_data = utils.unmarshal_json(
+                http_res.text, models.UnprocessableResponseData
+            )
+            raise models.UnprocessableResponse(data=response_data)
+        if utils.match_response(http_res, "4XX", "*"):
+            http_res_text = await utils.stream_to_text_async(http_res)
+            raise models.APIError(
+                "API error occurred", http_res.status_code, http_res_text, http_res
+            )
+        if utils.match_response(http_res, "5XX", "*"):
+            http_res_text = await utils.stream_to_text_async(http_res)
+            raise models.APIError(
+                "API error occurred", http_res.status_code, http_res_text, http_res
+            )
+        if utils.match_response(http_res, "default", "application/json"):
+            return models.CrmPipelinesDeleteResponse(
+                unexpected_error_response=utils.unmarshal_json(
+                    http_res.text, Optional[models.UnexpectedErrorResponse]
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
             )
 
         content_type = http_res.headers.get("Content-Type")

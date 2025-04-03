@@ -1,12 +1,12 @@
 lockVersion: 2.0.0
 id: fca0ac3a-5f4e-452c-bbc7-2311afa8da40
 management:
-  docChecksum: 30587993015f2f55927331cbfde6141f
-  docVersion: 10.12.4
-  speakeasyVersion: 1.523.0
-  generationVersion: 2.559.0
-  releaseVersion: 0.9.1
-  configChecksum: f0e25b1baa73a2e1c67b99d54e63f8b2
+  docChecksum: 662624453f543efd670cc931652a4b56
+  docVersion: 10.14.1
+  speakeasyVersion: 1.528.1
+  generationVersion: 2.565.1
+  releaseVersion: 0.10.0
+  configChecksum: 54ed6ff09e28eca3f654b509400948e8
   repoURL: https://github.com/apideck-libraries/sdk-python.git
   installationURL: https://github.com/apideck-libraries/sdk-python.git
   published: true
@@ -15,7 +15,7 @@ features:
     acceptHeaders: 3.0.0
     additionalDependencies: 1.0.0
     constsAndDefaults: 1.0.5
-    core: 5.12.4
+    core: 5.12.5
     deepObjectParams: 0.1.0
     defaultEnabledRetries: 0.2.0
     deprecations: 3.0.2
@@ -43,6 +43,7 @@ features:
     sdkHooks: 1.0.1
     typeOverrides: 3.0.0
     unions: 3.0.4
+    uploadStreams: 1.0.0
 generatedFiles:
   - .devcontainer/README.md
   - .devcontainer/devcontainer.json
@@ -51,6 +52,9 @@ generatedFiles:
   - .python-version
   - .vscode/settings.json
   - USAGE.md
+  - docs/models/accountingagedcreditorsoneglobals.md
+  - docs/models/accountingagedcreditorsonerequest.md
+  - docs/models/accountingagedcreditorsoneresponse.md
   - docs/models/accountingageddebtorsoneglobals.md
   - docs/models/accountingageddebtorsonerequest.md
   - docs/models/accountingageddebtorsoneresponse.md
@@ -66,6 +70,9 @@ generatedFiles:
   - docs/models/accountingattachmentsoneglobals.md
   - docs/models/accountingattachmentsonerequest.md
   - docs/models/accountingattachmentsoneresponse.md
+  - docs/models/accountingattachmentsuploadglobals.md
+  - docs/models/accountingattachmentsuploadrequest.md
+  - docs/models/accountingattachmentsuploadresponse.md
   - docs/models/accountingbalancesheetoneglobals.md
   - docs/models/accountingbalancesheetonerequest.md
   - docs/models/accountingbalancesheetoneresponse.md
@@ -349,6 +356,7 @@ generatedFiles:
   - docs/models/activitytype.md
   - docs/models/address.md
   - docs/models/addresses.md
+  - docs/models/agedcreditors.md
   - docs/models/ageddebtors.md
   - docs/models/agedreportfilter.md
   - docs/models/allocation.md
@@ -528,6 +536,7 @@ generatedFiles:
   - docs/models/createactivityresponse.md
   - docs/models/createapplicantresponse.md
   - docs/models/createapplicationresponse.md
+  - docs/models/createattachmentresponse.md
   - docs/models/createbillpaymentresponse.md
   - docs/models/createbillresponse.md
   - docs/models/createcallbackstate.md
@@ -557,6 +566,7 @@ generatedFiles:
   - docs/models/createnoteresponse.md
   - docs/models/createopportunityresponse.md
   - docs/models/createpaymentresponse.md
+  - docs/models/createpipelineresponse.md
   - docs/models/createpurchaseorderresponse.md
   - docs/models/createsessionresponse.md
   - docs/models/createsessionresponsedata.md
@@ -670,9 +680,21 @@ generatedFiles:
   - docs/models/crmopportunitiesupdateglobals.md
   - docs/models/crmopportunitiesupdaterequest.md
   - docs/models/crmopportunitiesupdateresponse.md
+  - docs/models/crmpipelinesaddglobals.md
+  - docs/models/crmpipelinesaddrequest.md
+  - docs/models/crmpipelinesaddresponse.md
   - docs/models/crmpipelinesallglobals.md
   - docs/models/crmpipelinesallrequest.md
   - docs/models/crmpipelinesallresponse.md
+  - docs/models/crmpipelinesdeleteglobals.md
+  - docs/models/crmpipelinesdeleterequest.md
+  - docs/models/crmpipelinesdeleteresponse.md
+  - docs/models/crmpipelinesoneglobals.md
+  - docs/models/crmpipelinesonerequest.md
+  - docs/models/crmpipelinesoneresponse.md
+  - docs/models/crmpipelinesupdateglobals.md
+  - docs/models/crmpipelinesupdaterequest.md
+  - docs/models/crmpipelinesupdateresponse.md
   - docs/models/crmusersaddglobals.md
   - docs/models/crmusersaddrequest.md
   - docs/models/crmusersaddresponse.md
@@ -737,6 +759,7 @@ generatedFiles:
   - docs/models/deletenoteresponse.md
   - docs/models/deleteopportunityresponse.md
   - docs/models/deletepaymentresponse.md
+  - docs/models/deletepipelineresponse.md
   - docs/models/deletepurchaseorderresponse.md
   - docs/models/deletesharedlinkresponse.md
   - docs/models/deletesubsidiaryresponse.md
@@ -930,6 +953,9 @@ generatedFiles:
   - docs/models/filestorageuploadsessionsoneglobals.md
   - docs/models/filestorageuploadsessionsonerequest.md
   - docs/models/filestorageuploadsessionsoneresponse.md
+  - docs/models/filestorageuploadsessionsuploadglobals.md
+  - docs/models/filestorageuploadsessionsuploadrequest.md
+  - docs/models/filestorageuploadsessionsuploadresponse.md
   - docs/models/filetype.md
   - docs/models/five.md
   - docs/models/flsastatus.md
@@ -949,6 +975,7 @@ generatedFiles:
   - docs/models/getaccountinglocationsresponse.md
   - docs/models/getactivitiesresponse.md
   - docs/models/getactivityresponse.md
+  - docs/models/getagedcreditorsresponse.md
   - docs/models/getageddebtorsresponse.md
   - docs/models/getapiresourcecoverageresponse.md
   - docs/models/getapiresourceresponse.md
@@ -1035,6 +1062,7 @@ generatedFiles:
   - docs/models/getpaymentsresponse.md
   - docs/models/getpayrollresponse.md
   - docs/models/getpayrollsresponse.md
+  - docs/models/getpipelineresponse.md
   - docs/models/getpipelinesresponse.md
   - docs/models/getproductresponse.md
   - docs/models/getproductsresponse.md
@@ -1289,6 +1317,7 @@ generatedFiles:
   - docs/models/otherincome.md
   - docs/models/outstandingbalancebycurrency.md
   - docs/models/outstandingbalancebycustomer.md
+  - docs/models/outstandingbalancebysupplier.md
   - docs/models/owner.md
   - docs/models/paginationcoverage.md
   - docs/models/paginationcoveragemode.md
@@ -1314,6 +1343,8 @@ generatedFiles:
   - docs/models/phonenumber.md
   - docs/models/phonenumbertype.md
   - docs/models/pipeline.md
+  - docs/models/pipelineinput.md
+  - docs/models/pipelinestages.md
   - docs/models/price.md
   - docs/models/priority.md
   - docs/models/probationperiod.md
@@ -1462,6 +1493,7 @@ generatedFiles:
   - docs/models/updatenoteresponse.md
   - docs/models/updateopportunityresponse.md
   - docs/models/updatepaymentresponse.md
+  - docs/models/updatepipelineresponse.md
   - docs/models/updatepurchaseorderresponse.md
   - docs/models/updatesharedlinkresponse.md
   - docs/models/updatesubsidiaryresponse.md
@@ -1470,6 +1502,7 @@ generatedFiles:
   - docs/models/updateticketresponse.md
   - docs/models/updatetimeoffrequestresponse.md
   - docs/models/updatetrackingcategoryresponse.md
+  - docs/models/updateuploadsessionresponse.md
   - docs/models/updateuserresponse.md
   - docs/models/updatewebhookrequest.md
   - docs/models/updatewebhookresponse.md
@@ -1582,6 +1615,7 @@ generatedFiles:
   - docs/models/workpattern.md
   - docs/sdks/accounting/README.md
   - docs/sdks/activities/README.md
+  - docs/sdks/agedcreditorssdk/README.md
   - docs/sdks/ageddebtorssdk/README.md
   - docs/sdks/apideck/README.md
   - docs/sdks/apideckcompanies/README.md
@@ -1680,6 +1714,7 @@ generatedFiles:
   - src/apideck_unify/_version.py
   - src/apideck_unify/accounting.py
   - src/apideck_unify/activities.py
+  - src/apideck_unify/agedcreditors_sdk.py
   - src/apideck_unify/ageddebtors_sdk.py
   - src/apideck_unify/apideck_companies.py
   - src/apideck_unify/apideck_customers.py
@@ -1743,11 +1778,13 @@ generatedFiles:
   - src/apideck_unify/logs.py
   - src/apideck_unify/messages.py
   - src/apideck_unify/models/__init__.py
+  - src/apideck_unify/models/accounting_agedcreditorsoneop.py
   - src/apideck_unify/models/accounting_ageddebtorsoneop.py
   - src/apideck_unify/models/accounting_attachmentsallop.py
   - src/apideck_unify/models/accounting_attachmentsdeleteop.py
   - src/apideck_unify/models/accounting_attachmentsdownloadop.py
   - src/apideck_unify/models/accounting_attachmentsoneop.py
+  - src/apideck_unify/models/accounting_attachmentsuploadop.py
   - src/apideck_unify/models/accounting_balancesheetoneop.py
   - src/apideck_unify/models/accounting_billpaymentsaddop.py
   - src/apideck_unify/models/accounting_billpaymentsallop.py
@@ -1845,6 +1882,7 @@ generatedFiles:
   - src/apideck_unify/models/activity.py
   - src/apideck_unify/models/activityattendee.py
   - src/apideck_unify/models/address.py
+  - src/apideck_unify/models/agedcreditors.py
   - src/apideck_unify/models/ageddebtors.py
   - src/apideck_unify/models/agedreportfilter.py
   - src/apideck_unify/models/allocation.py
@@ -1932,6 +1970,7 @@ generatedFiles:
   - src/apideck_unify/models/createactivityresponse.py
   - src/apideck_unify/models/createapplicantresponse.py
   - src/apideck_unify/models/createapplicationresponse.py
+  - src/apideck_unify/models/createattachmentresponse.py
   - src/apideck_unify/models/createbillpaymentresponse.py
   - src/apideck_unify/models/createbillresponse.py
   - src/apideck_unify/models/createcallbackstate.py
@@ -1960,6 +1999,7 @@ generatedFiles:
   - src/apideck_unify/models/createnoteresponse.py
   - src/apideck_unify/models/createopportunityresponse.py
   - src/apideck_unify/models/createpaymentresponse.py
+  - src/apideck_unify/models/createpipelineresponse.py
   - src/apideck_unify/models/createpurchaseorderresponse.py
   - src/apideck_unify/models/createsessionresponse.py
   - src/apideck_unify/models/createsharedlinkresponse.py
@@ -2007,7 +2047,11 @@ generatedFiles:
   - src/apideck_unify/models/crm_opportunitiesdeleteop.py
   - src/apideck_unify/models/crm_opportunitiesoneop.py
   - src/apideck_unify/models/crm_opportunitiesupdateop.py
+  - src/apideck_unify/models/crm_pipelinesaddop.py
   - src/apideck_unify/models/crm_pipelinesallop.py
+  - src/apideck_unify/models/crm_pipelinesdeleteop.py
+  - src/apideck_unify/models/crm_pipelinesoneop.py
+  - src/apideck_unify/models/crm_pipelinesupdateop.py
   - src/apideck_unify/models/crm_usersaddop.py
   - src/apideck_unify/models/crm_usersallop.py
   - src/apideck_unify/models/crm_usersdeleteop.py
@@ -2053,6 +2097,7 @@ generatedFiles:
   - src/apideck_unify/models/deletenoteresponse.py
   - src/apideck_unify/models/deleteopportunityresponse.py
   - src/apideck_unify/models/deletepaymentresponse.py
+  - src/apideck_unify/models/deletepipelineresponse.py
   - src/apideck_unify/models/deletepurchaseorderresponse.py
   - src/apideck_unify/models/deletesharedlinkresponse.py
   - src/apideck_unify/models/deletesubsidiaryresponse.py
@@ -2139,6 +2184,7 @@ generatedFiles:
   - src/apideck_unify/models/filestorage_uploadsessionsdeleteop.py
   - src/apideck_unify/models/filestorage_uploadsessionsfinishop.py
   - src/apideck_unify/models/filestorage_uploadsessionsoneop.py
+  - src/apideck_unify/models/filestorage_uploadsessionsuploadop.py
   - src/apideck_unify/models/filetype.py
   - src/apideck_unify/models/folder.py
   - src/apideck_unify/models/formfield.py
@@ -2151,6 +2197,7 @@ generatedFiles:
   - src/apideck_unify/models/getaccountinglocationsresponse.py
   - src/apideck_unify/models/getactivitiesresponse.py
   - src/apideck_unify/models/getactivityresponse.py
+  - src/apideck_unify/models/getagedcreditorsresponse.py
   - src/apideck_unify/models/getageddebtorsresponse.py
   - src/apideck_unify/models/getapiresourcecoverageresponse.py
   - src/apideck_unify/models/getapiresourceresponse.py
@@ -2237,6 +2284,7 @@ generatedFiles:
   - src/apideck_unify/models/getpaymentsresponse.py
   - src/apideck_unify/models/getpayrollresponse.py
   - src/apideck_unify/models/getpayrollsresponse.py
+  - src/apideck_unify/models/getpipelineresponse.py
   - src/apideck_unify/models/getpipelinesresponse.py
   - src/apideck_unify/models/getproductresponse.py
   - src/apideck_unify/models/getproductsresponse.py
@@ -2364,6 +2412,7 @@ generatedFiles:
   - src/apideck_unify/models/orderssort.py
   - src/apideck_unify/models/outstandingbalancebycurrency.py
   - src/apideck_unify/models/outstandingbalancebycustomer.py
+  - src/apideck_unify/models/outstandingbalancebysupplier.py
   - src/apideck_unify/models/owner.py
   - src/apideck_unify/models/paginationcoverage.py
   - src/apideck_unify/models/passthroughbody.py
@@ -2383,6 +2432,7 @@ generatedFiles:
   - src/apideck_unify/models/person_input.py
   - src/apideck_unify/models/phonenumber.py
   - src/apideck_unify/models/pipeline.py
+  - src/apideck_unify/models/pipeline_input.py
   - src/apideck_unify/models/profitandloss.py
   - src/apideck_unify/models/profitandlossfilter.py
   - src/apideck_unify/models/profitandlossindicator.py
@@ -2464,6 +2514,7 @@ generatedFiles:
   - src/apideck_unify/models/updatenoteresponse.py
   - src/apideck_unify/models/updateopportunityresponse.py
   - src/apideck_unify/models/updatepaymentresponse.py
+  - src/apideck_unify/models/updatepipelineresponse.py
   - src/apideck_unify/models/updatepurchaseorderresponse.py
   - src/apideck_unify/models/updatesharedlinkresponse.py
   - src/apideck_unify/models/updatesubsidiaryresponse.py
@@ -2472,6 +2523,7 @@ generatedFiles:
   - src/apideck_unify/models/updateticketresponse.py
   - src/apideck_unify/models/updatetimeoffrequestresponse.py
   - src/apideck_unify/models/updatetrackingcategoryresponse.py
+  - src/apideck_unify/models/updateuploadsessionresponse.py
   - src/apideck_unify/models/updateuserresponse.py
   - src/apideck_unify/models/updatewebhookrequest.py
   - src/apideck_unify/models/updatewebhookresponse.py
@@ -9444,5 +9496,227 @@ examples:
           application/json: {"status_code": 422, "error": "Unprocessable Entity", "type_name": "InvalidStateError", "message": "Invalid State", "detail": {"error": "Unprocessable", "message": "Unprocessable request, please verify your request headers and body."}, "ref": "https://developers.apideck.com/errors#invalidstateerror"}
         default:
           application/json: {"status_code": 400, "error": "Bad Request", "type_name": "RequestHeadersValidationError", "message": "Invalid Params", "detail": "Missing Header: x-apideck-consumer-id", "ref": "https://developers.apideck.com/errors#unauthorizederror"}
+  accounting.attachmentsUpload:
+    "":
+      parameters:
+        path:
+          reference_type: "invoice"
+          reference_id: "123456"
+        query:
+          raw: false
+        header:
+          x-apideck-consumer-id: "test-consumer"
+          x-apideck-app-id: "dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX"
+          x-apideck-service-id: "salesforce"
+      requestBody:
+        '*/*': "x-file: example.file"
+      responses:
+        "201":
+          application/json: {"status_code": 200, "status": "OK", "service": "google-drive", "resource": "files", "operation": "add", "data": {"id": "12345"}}
+        "400":
+          application/json: {"status_code": 400, "error": "Bad Request", "type_name": "RequestValidationError", "message": "Invalid Params", "detail": "Missing property foobar", "ref": "https://developers.apideck.com/errors#requestvalidationerror"}
+        "401":
+          application/json: {"status_code": 401, "error": "Unauthorized", "type_name": "UnauthorizedError", "message": "Unauthorized Request", "detail": {"statusCode": 401, "error": "Unauthorized", "message": "Missing authentication"}, "ref": "https://developers.apideck.com/errors#unauthorizederror"}
+        "402":
+          application/json: {"status_code": 402, "error": "Payment Required", "type_name": "RequestLimitError", "message": "Request Limit Reached", "detail": "You have reached your limit of 2000", "ref": "https://developers.apideck.com/errors#requestlimiterror"}
+        "404":
+          application/json: {"status_code": 404, "error": "Not Found", "type_name": "EntityNotFoundError", "message": "Unknown Widget", "detail": {"not_found": {"entity": "widget", "id": "123"}}, "ref": "https://developers.apideck.com/errors#entitynotfounderror"}
+        "422":
+          application/json: {"status_code": 422, "error": "Unprocessable Entity", "type_name": "InvalidStateError", "message": "Invalid State", "detail": "Unprocessable request, please verify your request headers and body.", "ref": "https://developers.apideck.com/errors#invalidstateerror"}
+        default:
+          application/json: {"status_code": 400, "error": "Bad Request", "type_name": "RequestHeadersValidationError", "message": "Invalid Params", "detail": {"missing": [{"x-apideck-consumer-id": "required"}]}, "ref": "https://developers.apideck.com/errors#unauthorizederror"}
+    basic:
+      parameters:
+        path:
+          reference_type: "invoice"
+          reference_id: "12345"
+        query:
+          raw: false
+        header:
+          x-apideck-metadata: "{\"name\":\"document.pdf\",\"description\":\"Invoice attachment\"}"
+          x-apideck-consumer-id: "test-consumer"
+          x-apideck-app-id: "dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX"
+          x-apideck-service-id: "salesforce"
+      requestBody:
+        '*/*': "x-file: example.file"
+      responses:
+        "201":
+          application/json: {"status_code": 200, "status": "OK", "service": "google-drive", "resource": "files", "operation": "add", "data": {"id": "12345"}}
+        "400":
+          application/json: {"status_code": 400, "error": "Bad Request", "type_name": "RequestValidationError", "message": "Invalid Params", "detail": "Missing property foobar", "ref": "https://developers.apideck.com/errors#requestvalidationerror"}
+        "401":
+          application/json: {"status_code": 401, "error": "Unauthorized", "type_name": "UnauthorizedError", "message": "Unauthorized Request", "detail": "Missing authentication", "ref": "https://developers.apideck.com/errors#unauthorizederror"}
+        "402":
+          application/json: {"status_code": 402, "error": "Payment Required", "type_name": "RequestLimitError", "message": "Request Limit Reached", "detail": "You have reached your limit of 2000", "ref": "https://developers.apideck.com/errors#requestlimiterror"}
+        "404":
+          application/json: {"status_code": 404, "error": "Not Found", "type_name": "EntityNotFoundError", "message": "Unknown Widget", "detail": "Could not find widget with id: '123'", "ref": "https://developers.apideck.com/errors#entitynotfounderror"}
+        "422":
+          application/json: {"status_code": 422, "error": "Unprocessable Entity", "type_name": "InvalidStateError", "message": "Invalid State", "detail": "Unprocessable request, please verify your request headers and body.", "ref": "https://developers.apideck.com/errors#invalidstateerror"}
+        default:
+          application/json: {"status_code": 400, "error": "Bad Request", "type_name": "RequestHeadersValidationError", "message": "Invalid Params", "detail": {"missing": [{"x-apideck-consumer-id": "required"}]}, "ref": "https://developers.apideck.com/errors#unauthorizederror"}
+  accounting.agedCreditorsOne:
+    "":
+      parameters:
+        query:
+          raw: false
+          filter: {"customer_id": "123abc", "supplier_id": "123abc", "report_as_of_date": "2024-01-01", "period_count": 3, "period_length": 30}
+          pass_through: {"search": "San Francisco"}
+          fields: "id,updated_at"
+        header:
+          x-apideck-consumer-id: "test-consumer"
+          x-apideck-app-id: "dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX"
+          x-apideck-service-id: "salesforce"
+      responses:
+        "200":
+          application/json: {"status_code": 200, "status": "OK", "service": "quickbooks", "resource": "AgedCreditors", "operation": "one", "data": {"report_generated_at": "2024-11-14T12:00:00.000Z", "report_as_of_date": "2024-11-13", "period_count": 4, "period_length": 30, "outstanding_balances": [{"supplier_id": "123", "supplier_name": "Super Store", "outstanding_balances_by_currency": [{"currency": "USD", "balances_by_period": [{"start_date": "2024-01-01", "end_date": "2024-01-30", "total_amount": 1500, "balances_by_transaction": [{"transaction_id": "INV-1001", "transaction_date": "2024-01-15", "transaction_type": "invoice", "due_date": "2024-02-15", "original_amount": 1000, "outstanding_balance": 800, "transaction_number": "INV-1001"}, {"transaction_id": "INV-1001", "transaction_date": "2024-01-15", "transaction_type": "invoice", "due_date": "2024-02-15", "original_amount": 1000, "outstanding_balance": 800, "transaction_number": "INV-1001"}]}, {"start_date": "2024-01-01", "end_date": "2024-01-30", "total_amount": 1500, "balances_by_transaction": [{"transaction_id": "INV-1001", "transaction_date": "2024-01-15", "transaction_type": "invoice", "due_date": "2024-02-15", "original_amount": 1000, "outstanding_balance": 800, "transaction_number": "INV-1001"}, {"transaction_id": "INV-1001", "transaction_date": "2024-01-15", "transaction_type": "invoice", "due_date": "2024-02-15", "original_amount": 1000, "outstanding_balance": 800, "transaction_number": "INV-1001"}, {"transaction_id": "INV-1001", "transaction_date": "2024-01-15", "transaction_type": "invoice", "due_date": "2024-02-15", "original_amount": 1000, "outstanding_balance": 800, "transaction_number": "INV-1001"}]}]}, {"currency": "USD", "balances_by_period": [{"start_date": "2024-01-01", "end_date": "2024-01-30", "total_amount": 1500, "balances_by_transaction": [{"transaction_id": "INV-1001", "transaction_date": "2024-01-15", "transaction_type": "invoice", "due_date": "2024-02-15", "original_amount": 1000, "outstanding_balance": 800, "transaction_number": "INV-1001"}, {"transaction_id": "INV-1001", "transaction_date": "2024-01-15", "transaction_type": "invoice", "due_date": "2024-02-15", "original_amount": 1000, "outstanding_balance": 800, "transaction_number": "INV-1001"}]}, {"start_date": "2024-01-01", "end_date": "2024-01-30", "total_amount": 1500, "balances_by_transaction": [{"transaction_id": "INV-1001", "transaction_date": "2024-01-15", "transaction_type": "invoice", "due_date": "2024-02-15", "original_amount": 1000, "outstanding_balance": 800, "transaction_number": "INV-1001"}]}]}]}, {"supplier_id": "123", "supplier_name": "Super Store", "outstanding_balances_by_currency": [{"currency": "USD", "balances_by_period": [{"start_date": "2024-01-01", "end_date": "2024-01-30", "total_amount": 1500, "balances_by_transaction": [{"transaction_id": "INV-1001", "transaction_date": "2024-01-15", "transaction_type": "invoice", "due_date": "2024-02-15", "original_amount": 1000, "outstanding_balance": 800, "transaction_number": "INV-1001"}, {"transaction_id": "INV-1001", "transaction_date": "2024-01-15", "transaction_type": "invoice", "due_date": "2024-02-15", "original_amount": 1000, "outstanding_balance": 800, "transaction_number": "INV-1001"}]}, {"start_date": "2024-01-01", "end_date": "2024-01-30", "total_amount": 1500, "balances_by_transaction": [{"transaction_id": "INV-1001", "transaction_date": "2024-01-15", "transaction_type": "invoice", "due_date": "2024-02-15", "original_amount": 1000, "outstanding_balance": 800, "transaction_number": "INV-1001"}, {"transaction_id": "INV-1001", "transaction_date": "2024-01-15", "transaction_type": "invoice", "due_date": "2024-02-15", "original_amount": 1000, "outstanding_balance": 800, "transaction_number": "INV-1001"}, {"transaction_id": "INV-1001", "transaction_date": "2024-01-15", "transaction_type": "invoice", "due_date": "2024-02-15", "original_amount": 1000, "outstanding_balance": 800, "transaction_number": "INV-1001"}]}, {"start_date": "2024-01-01", "end_date": "2024-01-30", "total_amount": 1500, "balances_by_transaction": [{"transaction_id": "INV-1001", "transaction_date": "2024-01-15", "transaction_type": "invoice", "due_date": "2024-02-15", "original_amount": 1000, "outstanding_balance": 800, "transaction_number": "INV-1001"}]}]}]}, {"supplier_id": "123", "supplier_name": "Super Store", "outstanding_balances_by_currency": [{"currency": "USD", "balances_by_period": [{"start_date": "2024-01-01", "end_date": "2024-01-30", "total_amount": 1500, "balances_by_transaction": [{"transaction_id": "INV-1001", "transaction_date": "2024-01-15", "transaction_type": "invoice", "due_date": "2024-02-15", "original_amount": 1000, "outstanding_balance": 800, "transaction_number": "INV-1001"}]}]}]}]}}
+        "400":
+          application/json: {"status_code": 400, "error": "Bad Request", "type_name": "RequestValidationError", "message": "Invalid Params", "detail": {"missing": [{"foobar": "required"}]}, "ref": "https://developers.apideck.com/errors#requestvalidationerror"}
+        "401":
+          application/json: {"status_code": 401, "error": "Unauthorized", "type_name": "UnauthorizedError", "message": "Unauthorized Request", "detail": {"statusCode": 401, "error": "Unauthorized", "message": "Missing authentication"}, "ref": "https://developers.apideck.com/errors#unauthorizederror"}
+        "402":
+          application/json: {"status_code": 402, "error": "Payment Required", "type_name": "RequestLimitError", "message": "Request Limit Reached", "detail": "You have reached your limit of 2000", "ref": "https://developers.apideck.com/errors#requestlimiterror"}
+        "404":
+          application/json: {"status_code": 404, "error": "Not Found", "type_name": "EntityNotFoundError", "message": "Unknown Widget", "detail": "Could not find widget with id: '123'", "ref": "https://developers.apideck.com/errors#entitynotfounderror"}
+        "422":
+          application/json: {"status_code": 422, "error": "Unprocessable Entity", "type_name": "InvalidStateError", "message": "Invalid State", "detail": {"error": "Unprocessable", "message": "Unprocessable request, please verify your request headers and body."}, "ref": "https://developers.apideck.com/errors#invalidstateerror"}
+        default:
+          application/json: {"status_code": 400, "error": "Bad Request", "type_name": "RequestHeadersValidationError", "message": "Invalid Params", "detail": {"missing": [{"x-apideck-consumer-id": "required"}]}, "ref": "https://developers.apideck.com/errors#unauthorizederror"}
+  crm.pipelinesAdd:
+    "":
+      parameters:
+        query:
+          raw: false
+        header:
+          x-apideck-consumer-id: "test-consumer"
+          x-apideck-app-id: "dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX"
+          x-apideck-service-id: "salesforce"
+      requestBody:
+        application/json: {"id": "default", "name": "Sales Pipeline", "currency": "USD", "archived": false, "active": false, "display_order": 1, "win_probability_enabled": true, "stages": [{"name": "Contract Sent", "value": "CONTRACT_SENT", "win_probability": 50, "display_order": 1}, {"name": "Contract Sent", "value": "CONTRACT_SENT", "win_probability": 50, "display_order": 1}], "pass_through": [{"service_id": "<id>", "extend_paths": [{"path": "$.nested.property", "value": {"TaxClassificationRef": {"value": "EUC-99990201-V1-00020000"}}}, {"path": "$.nested.property", "value": {"TaxClassificationRef": {"value": "EUC-99990201-V1-00020000"}}}]}, {"service_id": "<id>", "extend_paths": [{"path": "$.nested.property", "value": {"TaxClassificationRef": {"value": "EUC-99990201-V1-00020000"}}}]}]}
+      responses:
+        "201":
+          application/json: {"status_code": 200, "status": "OK", "service": "zoho-crm", "resource": "pipelines", "operation": "add", "data": {"id": "12345"}}
+        "400":
+          application/json: {"status_code": 400, "error": "Bad Request", "type_name": "RequestValidationError", "message": "Invalid Params", "detail": "Missing property foobar", "ref": "https://developers.apideck.com/errors#requestvalidationerror"}
+        "401":
+          application/json: {"status_code": 401, "error": "Unauthorized", "type_name": "UnauthorizedError", "message": "Unauthorized Request", "detail": {"statusCode": 401, "error": "Unauthorized", "message": "Missing authentication"}, "ref": "https://developers.apideck.com/errors#unauthorizederror"}
+        "402":
+          application/json: {"status_code": 402, "error": "Payment Required", "type_name": "RequestLimitError", "message": "Request Limit Reached", "detail": "You have reached your limit of 2000", "ref": "https://developers.apideck.com/errors#requestlimiterror"}
+        "404":
+          application/json: {"status_code": 404, "error": "Not Found", "type_name": "EntityNotFoundError", "message": "Unknown Widget", "detail": {"not_found": {"entity": "widget", "id": "123"}}, "ref": "https://developers.apideck.com/errors#entitynotfounderror"}
+        "422":
+          application/json: {"status_code": 422, "error": "Unprocessable Entity", "type_name": "InvalidStateError", "message": "Invalid State", "detail": "Unprocessable request, please verify your request headers and body.", "ref": "https://developers.apideck.com/errors#invalidstateerror"}
+        default:
+          application/json: {"status_code": 400, "error": "Bad Request", "type_name": "RequestHeadersValidationError", "message": "Invalid Params", "detail": "Missing Header: x-apideck-consumer-id", "ref": "https://developers.apideck.com/errors#unauthorizederror"}
+  crm.pipelinesOne:
+    "":
+      parameters:
+        path:
+          id: "<id>"
+        query:
+          raw: false
+          fields: "id,updated_at"
+        header:
+          x-apideck-consumer-id: "test-consumer"
+          x-apideck-app-id: "dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX"
+          x-apideck-service-id: "salesforce"
+      responses:
+        "200":
+          application/json: {"status_code": 200, "status": "OK", "service": "zoho-crm", "resource": "pipelines", "operation": "one", "data": {"id": "default", "name": "Sales Pipeline", "currency": "USD", "archived": false, "active": false, "display_order": 1, "win_probability_enabled": true, "stages": [{"id": "contractsent", "name": "Contract Sent", "value": "CONTRACT_SENT", "win_probability": 50, "display_order": 1}, {"id": "contractsent", "name": "Contract Sent", "value": "CONTRACT_SENT", "win_probability": 50, "display_order": 1}, {"id": "contractsent", "name": "Contract Sent", "value": "CONTRACT_SENT", "win_probability": 50, "display_order": 1}], "updated_at": "2020-09-30T07:43:32.000Z", "created_at": "2020-09-30T07:43:32.000Z", "pass_through": [{"service_id": "<id>", "extend_paths": [{"path": "$.nested.property", "value": {"TaxClassificationRef": {"value": "EUC-99990201-V1-00020000"}}}, {"path": "$.nested.property", "value": {"TaxClassificationRef": {"value": "EUC-99990201-V1-00020000"}}}]}, {"service_id": "<id>", "extend_paths": [{"path": "$.nested.property", "value": {"TaxClassificationRef": {"value": "EUC-99990201-V1-00020000"}}}, {"path": "$.nested.property", "value": {"TaxClassificationRef": {"value": "EUC-99990201-V1-00020000"}}}]}]}}
+        "400":
+          application/json: {"status_code": 400, "error": "Bad Request", "type_name": "RequestValidationError", "message": "Invalid Params", "detail": {"missing": [{"foobar": "required"}]}, "ref": "https://developers.apideck.com/errors#requestvalidationerror"}
+        "401":
+          application/json: {"status_code": 401, "error": "Unauthorized", "type_name": "UnauthorizedError", "message": "Unauthorized Request", "detail": "Missing authentication", "ref": "https://developers.apideck.com/errors#unauthorizederror"}
+        "402":
+          application/json: {"status_code": 402, "error": "Payment Required", "type_name": "RequestLimitError", "message": "Request Limit Reached", "detail": "You have reached your limit of 2000", "ref": "https://developers.apideck.com/errors#requestlimiterror"}
+        "404":
+          application/json: {"status_code": 404, "error": "Not Found", "type_name": "EntityNotFoundError", "message": "Unknown Widget", "detail": "Could not find widget with id: '123'", "ref": "https://developers.apideck.com/errors#entitynotfounderror"}
+        "422":
+          application/json: {"status_code": 422, "error": "Unprocessable Entity", "type_name": "InvalidStateError", "message": "Invalid State", "detail": "Unprocessable request, please verify your request headers and body.", "ref": "https://developers.apideck.com/errors#invalidstateerror"}
+        default:
+          application/json: {"status_code": 400, "error": "Bad Request", "type_name": "RequestHeadersValidationError", "message": "Invalid Params", "detail": "Missing Header: x-apideck-consumer-id", "ref": "https://developers.apideck.com/errors#unauthorizederror"}
+  crm.pipelinesUpdate:
+    "":
+      parameters:
+        path:
+          id: "<value>"
+        query:
+          raw: false
+        header:
+          x-apideck-consumer-id: "test-consumer"
+          x-apideck-app-id: "dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX"
+          x-apideck-service-id: "salesforce"
+      requestBody:
+        application/json: {"id": "default", "name": "Sales Pipeline", "currency": "USD", "archived": false, "active": false, "display_order": 1, "win_probability_enabled": true, "stages": [{"name": "Contract Sent", "value": "CONTRACT_SENT", "win_probability": 50, "display_order": 1}, {"name": "Contract Sent", "value": "CONTRACT_SENT", "win_probability": 50, "display_order": 1}, {"name": "Contract Sent", "value": "CONTRACT_SENT", "win_probability": 50, "display_order": 1}], "pass_through": [{"service_id": "<id>", "extend_paths": [{"path": "$.nested.property", "value": {"TaxClassificationRef": {"value": "EUC-99990201-V1-00020000"}}}, {"path": "$.nested.property", "value": {"TaxClassificationRef": {"value": "EUC-99990201-V1-00020000"}}}]}, {"service_id": "<id>", "extend_paths": [{"path": "$.nested.property", "value": {"TaxClassificationRef": {"value": "EUC-99990201-V1-00020000"}}}, {"path": "$.nested.property", "value": {"TaxClassificationRef": {"value": "EUC-99990201-V1-00020000"}}}, {"path": "$.nested.property", "value": {"TaxClassificationRef": {"value": "EUC-99990201-V1-00020000"}}}]}]}
+      responses:
+        "200":
+          application/json: {"status_code": 200, "status": "OK", "service": "zoho-crm", "resource": "pipelines", "operation": "update", "data": {"id": "12345"}}
+        "400":
+          application/json: {"status_code": 400, "error": "Bad Request", "type_name": "RequestValidationError", "message": "Invalid Params", "detail": {"missing": [{"foobar": "required"}]}, "ref": "https://developers.apideck.com/errors#requestvalidationerror"}
+        "401":
+          application/json: {"status_code": 401, "error": "Unauthorized", "type_name": "UnauthorizedError", "message": "Unauthorized Request", "detail": "Missing authentication", "ref": "https://developers.apideck.com/errors#unauthorizederror"}
+        "402":
+          application/json: {"status_code": 402, "error": "Payment Required", "type_name": "RequestLimitError", "message": "Request Limit Reached", "detail": "You have reached your limit of 2000", "ref": "https://developers.apideck.com/errors#requestlimiterror"}
+        "404":
+          application/json: {"status_code": 404, "error": "Not Found", "type_name": "EntityNotFoundError", "message": "Unknown Widget", "detail": {"not_found": {"entity": "widget", "id": "123"}}, "ref": "https://developers.apideck.com/errors#entitynotfounderror"}
+        "422":
+          application/json: {"status_code": 422, "error": "Unprocessable Entity", "type_name": "InvalidStateError", "message": "Invalid State", "detail": "Unprocessable request, please verify your request headers and body.", "ref": "https://developers.apideck.com/errors#invalidstateerror"}
+        default:
+          application/json: {"status_code": 400, "error": "Bad Request", "type_name": "RequestHeadersValidationError", "message": "Invalid Params", "detail": {"missing": [{"x-apideck-consumer-id": "required"}]}, "ref": "https://developers.apideck.com/errors#unauthorizederror"}
+  crm.pipelinesDelete:
+    "":
+      parameters:
+        path:
+          id: "<id>"
+        query:
+          raw: false
+        header:
+          x-apideck-consumer-id: "test-consumer"
+          x-apideck-app-id: "dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX"
+          x-apideck-service-id: "salesforce"
+      responses:
+        "200":
+          application/json: {"status_code": 200, "status": "OK", "service": "zoho-crm", "resource": "companies", "operation": "delete", "data": {"id": "12345"}}
+        "400":
+          application/json: {"status_code": 400, "error": "Bad Request", "type_name": "RequestValidationError", "message": "Invalid Params", "detail": {"missing": [{"foobar": "required"}]}, "ref": "https://developers.apideck.com/errors#requestvalidationerror"}
+        "401":
+          application/json: {"status_code": 401, "error": "Unauthorized", "type_name": "UnauthorizedError", "message": "Unauthorized Request", "detail": {"statusCode": 401, "error": "Unauthorized", "message": "Missing authentication"}, "ref": "https://developers.apideck.com/errors#unauthorizederror"}
+        "402":
+          application/json: {"status_code": 402, "error": "Payment Required", "type_name": "RequestLimitError", "message": "Request Limit Reached", "detail": "You have reached your limit of 2000", "ref": "https://developers.apideck.com/errors#requestlimiterror"}
+        "404":
+          application/json: {"status_code": 404, "error": "Not Found", "type_name": "EntityNotFoundError", "message": "Unknown Widget", "detail": "Could not find widget with id: '123'", "ref": "https://developers.apideck.com/errors#entitynotfounderror"}
+        "422":
+          application/json: {"status_code": 422, "error": "Unprocessable Entity", "type_name": "InvalidStateError", "message": "Invalid State", "detail": {"error": "Unprocessable", "message": "Unprocessable request, please verify your request headers and body."}, "ref": "https://developers.apideck.com/errors#invalidstateerror"}
+        default:
+          application/json: {"status_code": 400, "error": "Bad Request", "type_name": "RequestHeadersValidationError", "message": "Invalid Params", "detail": {"missing": [{"x-apideck-consumer-id": "required"}]}, "ref": "https://developers.apideck.com/errors#unauthorizederror"}
+  fileStorage.uploadSessionsUpload:
+    "":
+      parameters:
+        path:
+          id: "<id>"
+        query:
+          part_number: 0
+          raw: false
+        header:
+          x-apideck-consumer-id: "test-consumer"
+          x-apideck-app-id: "dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX"
+          x-apideck-service-id: "salesforce"
+          digest: "sha=fpRyg5eVQletdZqEKaFlqwBXJzM="
+      requestBody:
+        '*/*': "<binary string>"
+      responses:
+        "200":
+          application/json: {"status_code": 200, "status": "OK", "service": "dropbox", "resource": "UploadSessions", "operation": "one", "data": {"id": "12345"}}
+        "400":
+          application/json: {"status_code": 400, "error": "Bad Request", "type_name": "RequestValidationError", "message": "Invalid Params", "detail": "Missing property foobar", "ref": "https://developers.apideck.com/errors#requestvalidationerror"}
+        "401":
+          application/json: {"status_code": 401, "error": "Unauthorized", "type_name": "UnauthorizedError", "message": "Unauthorized Request", "detail": {"statusCode": 401, "error": "Unauthorized", "message": "Missing authentication"}, "ref": "https://developers.apideck.com/errors#unauthorizederror"}
+        "402":
+          application/json: {"status_code": 402, "error": "Payment Required", "type_name": "RequestLimitError", "message": "Request Limit Reached", "detail": "You have reached your limit of 2000", "ref": "https://developers.apideck.com/errors#requestlimiterror"}
+        "404":
+          application/json: {"status_code": 404, "error": "Not Found", "type_name": "EntityNotFoundError", "message": "Unknown Widget", "detail": {"not_found": {"entity": "widget", "id": "123"}}, "ref": "https://developers.apideck.com/errors#entitynotfounderror"}
+        "422":
+          application/json: {"status_code": 422, "error": "Unprocessable Entity", "type_name": "InvalidStateError", "message": "Invalid State", "detail": "Unprocessable request, please verify your request headers and body.", "ref": "https://developers.apideck.com/errors#invalidstateerror"}
+        default:
+          application/json: {"status_code": 400, "error": "Bad Request", "type_name": "RequestHeadersValidationError", "message": "Invalid Params", "detail": {"missing": [{"x-apideck-consumer-id": "required"}]}, "ref": "https://developers.apideck.com/errors#unauthorizederror"}
 examplesVersion: 1.0.0
 generatedTests: {}
