@@ -139,8 +139,8 @@ with Apideck(
             "unit_of_measure": "pc.",
             "discount_percentage": 0.01,
             "discount_amount": 19.99,
-            "location_id": "1234",
-            "department_id": "1234",
+            "location_id": "12345",
+            "department_id": "12345",
             "item": {
                 "id": "12344",
                 "code": "120-C",
@@ -195,8 +195,8 @@ with Apideck(
             "unit_of_measure": "pc.",
             "discount_percentage": 0.01,
             "discount_amount": 19.99,
-            "location_id": "1234",
-            "department_id": "1234",
+            "location_id": "12345",
+            "department_id": "12345",
             "item": {
                 "id": "12344",
                 "code": "120-C",
@@ -306,78 +306,28 @@ with Apideck(
             "id": "2389328923893298",
             "name": "employee_level",
             "description": "Employee Level",
+            "value": {},
+        },
+        {
+            "id": "2389328923893298",
+            "name": "employee_level",
+            "description": "Employee Level",
+            "value": [
+                "<value>",
+                "<value>",
+                "<value>",
+            ],
+        },
+        {
+            "id": "2389328923893298",
+            "name": "employee_level",
+            "description": "Employee Level",
             "value": True,
         },
     ], row_version="1-12345", pass_through=[
         {
             "service_id": "<id>",
             "extend_paths": [
-                {
-                    "path": "$.nested.property",
-                    "value": {
-                        "TaxClassificationRef": {
-                            "value": "EUC-99990201-V1-00020000",
-                        },
-                    },
-                },
-                {
-                    "path": "$.nested.property",
-                    "value": {
-                        "TaxClassificationRef": {
-                            "value": "EUC-99990201-V1-00020000",
-                        },
-                    },
-                },
-            ],
-        },
-        {
-            "service_id": "<id>",
-            "extend_paths": [
-                {
-                    "path": "$.nested.property",
-                    "value": {
-                        "TaxClassificationRef": {
-                            "value": "EUC-99990201-V1-00020000",
-                        },
-                    },
-                },
-                {
-                    "path": "$.nested.property",
-                    "value": {
-                        "TaxClassificationRef": {
-                            "value": "EUC-99990201-V1-00020000",
-                        },
-                    },
-                },
-                {
-                    "path": "$.nested.property",
-                    "value": {
-                        "TaxClassificationRef": {
-                            "value": "EUC-99990201-V1-00020000",
-                        },
-                    },
-                },
-            ],
-        },
-        {
-            "service_id": "<id>",
-            "extend_paths": [
-                {
-                    "path": "$.nested.property",
-                    "value": {
-                        "TaxClassificationRef": {
-                            "value": "EUC-99990201-V1-00020000",
-                        },
-                    },
-                },
-                {
-                    "path": "$.nested.property",
-                    "value": {
-                        "TaxClassificationRef": {
-                            "value": "EUC-99990201-V1-00020000",
-                        },
-                    },
-                },
                 {
                     "path": "$.nested.property",
                     "value": {
@@ -567,8 +517,8 @@ with Apideck(
             "unit_of_measure": "pc.",
             "discount_percentage": 0.01,
             "discount_amount": 19.99,
-            "location_id": "1234",
-            "department_id": "1234",
+            "location_id": "12345",
+            "department_id": "12345",
             "item": {
                 "id": "12344",
                 "code": "120-C",
@@ -626,8 +576,8 @@ with Apideck(
             "unit_of_measure": "pc.",
             "discount_percentage": 0.01,
             "discount_amount": 19.99,
-            "location_id": "1234",
-            "department_id": "1234",
+            "location_id": "12345",
+            "department_id": "12345",
             "item": {
                 "id": "12344",
                 "code": "120-C",
@@ -682,8 +632,8 @@ with Apideck(
             "unit_of_measure": "pc.",
             "discount_percentage": 0.01,
             "discount_amount": 19.99,
-            "location_id": "1234",
-            "department_id": "1234",
+            "location_id": "12345",
+            "department_id": "12345",
             "item": {
                 "id": "12344",
                 "code": "120-C",
@@ -773,35 +723,27 @@ with Apideck(
             "id": "2389328923893298",
             "name": "employee_level",
             "description": "Employee Level",
+            "value": 10,
+        },
+        {
+            "id": "2389328923893298",
+            "name": "employee_level",
+            "description": "Employee Level",
+            "value": True,
+        },
+        {
+            "id": "2389328923893298",
+            "name": "employee_level",
+            "description": "Employee Level",
             "value": [
-                {},
+                "<value>",
+                "<value>",
             ],
         },
     ], row_version="1-12345", pass_through=[
         {
             "service_id": "<id>",
             "extend_paths": [
-                {
-                    "path": "$.nested.property",
-                    "value": {
-                        "TaxClassificationRef": {
-                            "value": "EUC-99990201-V1-00020000",
-                        },
-                    },
-                },
-            ],
-        },
-        {
-            "service_id": "<id>",
-            "extend_paths": [
-                {
-                    "path": "$.nested.property",
-                    "value": {
-                        "TaxClassificationRef": {
-                            "value": "EUC-99990201-V1-00020000",
-                        },
-                    },
-                },
                 {
                     "path": "$.nested.property",
                     "value": {

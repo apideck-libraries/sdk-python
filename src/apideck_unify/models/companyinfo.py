@@ -6,7 +6,7 @@ from .currency import Currency
 from .custommappings import CustomMappings, CustomMappingsTypedDict
 from .email import Email, EmailTypedDict
 from .phonenumber import PhoneNumber, PhoneNumberTypedDict
-from .taxrate import TaxRate, TaxRateTypedDict
+from .taxrate_input import TaxRate, TaxRateTypedDict
 from apideck_unify.types import (
     BaseModel,
     Nullable,

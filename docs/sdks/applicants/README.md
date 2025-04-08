@@ -92,13 +92,13 @@ with Apideck(
 
     res = apideck.ats.applicants.create(consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", name="Elon Musk", first_name="Elon", last_name="Musk", middle_name="D.", initials="EM", birthday=dateutil.parser.parse("2000-08-12").date(), cover_letter="I submit this application to express my sincere interest in the API developer position. In the previous role, I was responsible for leadership and ...", photo_url="https://unavatar.io/elon-musk", headline="PepsiCo, Inc, Central Perk", title="CEO", emails=[
         {
-            "email": "elon@musk.com",
             "id": "123",
+            "email": "elon@musk.com",
             "type": apideck_unify.EmailType.PRIMARY,
         },
         {
-            "email": "elon@musk.com",
             "id": "123",
+            "email": "elon@musk.com",
             "type": apideck_unify.EmailType.PRIMARY,
         },
     ], custom_fields=[
@@ -116,10 +116,10 @@ with Apideck(
         },
     ], phone_numbers=[
         {
-            "number": "111-111-1111",
             "id": "12345",
             "country_code": "1",
             "area_code": "323",
+            "number": "111-111-1111",
             "extension": "105",
             "type": apideck_unify.PhoneNumberType.PRIMARY,
         },
@@ -204,24 +204,24 @@ with Apideck(
         },
     ], websites=[
         {
-            "url": "http://example.com",
             "id": "12345",
+            "url": "http://example.com",
             "type": apideck_unify.ApplicantType.PRIMARY,
         },
         {
-            "url": "http://example.com",
             "id": "12345",
+            "url": "http://example.com",
             "type": apideck_unify.ApplicantType.PRIMARY,
         },
         {
-            "url": "http://example.com",
             "id": "12345",
+            "url": "http://example.com",
             "type": apideck_unify.ApplicantType.PRIMARY,
         },
     ], social_links=[
         {
-            "url": "https://www.twitter.com/apideck",
             "id": "12345",
+            "url": "https://www.twitter.com/apideck",
             "type": "twitter",
         },
     ], stage_id="12345", recruiter_id="12345", coordinator_id="12345", application_ids=[
@@ -390,18 +390,18 @@ with Apideck(
 
     res = apideck.ats.applicants.update(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", name="Elon Musk", first_name="Elon", last_name="Musk", middle_name="D.", initials="EM", birthday=dateutil.parser.parse("2000-08-12").date(), cover_letter="I submit this application to express my sincere interest in the API developer position. In the previous role, I was responsible for leadership and ...", photo_url="https://unavatar.io/elon-musk", headline="PepsiCo, Inc, Central Perk", title="CEO", emails=[
         {
-            "email": "elon@musk.com",
             "id": "123",
+            "email": "elon@musk.com",
             "type": apideck_unify.EmailType.PRIMARY,
         },
         {
-            "email": "elon@musk.com",
             "id": "123",
+            "email": "elon@musk.com",
             "type": apideck_unify.EmailType.PRIMARY,
         },
         {
-            "email": "elon@musk.com",
             "id": "123",
+            "email": "elon@musk.com",
             "type": apideck_unify.EmailType.PRIMARY,
         },
     ], custom_fields=[
@@ -422,18 +422,18 @@ with Apideck(
         },
     ], phone_numbers=[
         {
-            "number": "111-111-1111",
             "id": "12345",
             "country_code": "1",
             "area_code": "323",
+            "number": "111-111-1111",
             "extension": "105",
             "type": apideck_unify.PhoneNumberType.PRIMARY,
         },
         {
-            "number": "111-111-1111",
             "id": "12345",
             "country_code": "1",
             "area_code": "323",
+            "number": "111-111-1111",
             "extension": "105",
             "type": apideck_unify.PhoneNumberType.PRIMARY,
         },
@@ -518,24 +518,24 @@ with Apideck(
         },
     ], websites=[
         {
-            "url": "http://example.com",
             "id": "12345",
+            "url": "http://example.com",
             "type": apideck_unify.ApplicantType.PRIMARY,
         },
     ], social_links=[
         {
-            "url": "https://www.twitter.com/apideck",
             "id": "12345",
+            "url": "https://www.twitter.com/apideck",
             "type": "twitter",
         },
         {
-            "url": "https://www.twitter.com/apideck",
             "id": "12345",
+            "url": "https://www.twitter.com/apideck",
             "type": "twitter",
         },
         {
-            "url": "https://www.twitter.com/apideck",
             "id": "12345",
+            "url": "https://www.twitter.com/apideck",
             "type": "twitter",
         },
     ], stage_id="12345", recruiter_id="12345", coordinator_id="12345", application_ids=[

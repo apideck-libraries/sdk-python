@@ -6,7 +6,10 @@ from .createtrackingcategoryresponse import (
     CreateTrackingCategoryResponseTypedDict,
 )
 from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
-from .trackingcategory import TrackingCategoryInput, TrackingCategoryInputTypedDict
+from .trackingcategory_input import (
+    TrackingCategoryInput,
+    TrackingCategoryInputTypedDict,
+)
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,

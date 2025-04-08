@@ -152,146 +152,47 @@ with Apideck(
                     "id": "ProductInterest",
                     "options": [
                         {
+                            "id": "1234",
                             "label": "General Channel",
                             "options": [
                                 {
                                     "label": "General Channel",
+                                    "value": 12.5,
                                     "option_type": apideck_unify.OptionType.SIMPLE,
-                                    "value": 123,
                                 },
                                 {
                                     "label": "General Channel",
-                                    "option_type": apideck_unify.OptionType.SIMPLE,
                                     "value": [
                                         "team",
                                         "general",
                                     ],
-                                },
-                            ],
-                            "option_type": apideck_unify.FormFieldOptionGroupOptionType.GROUP,
-                            "id": "1234",
-                        },
-                        {
-                            "label": "General Channel",
-                            "options": [
-                                {
-                                    "label": "General Channel",
                                     "option_type": apideck_unify.OptionType.SIMPLE,
-                                    "value": [
-                                        "team",
-                                        "general",
-                                    ],
                                 },
                             ],
                             "option_type": apideck_unify.FormFieldOptionGroupOptionType.GROUP,
-                            "id": "1234",
                         },
-                    ],
-                    "value": 10.5,
-                },
-                {
-                    "id": "ProductInterest",
-                    "options": [
                         {
                             "label": "General Channel",
-                            "option_type": apideck_unify.OptionType.SIMPLE,
                             "value": [
                                 "team",
                                 "general",
                             ],
-                        },
-                    ],
-                    "value": True,
-                },
-            ],
-        },
-        {
-            "resource": "leads",
-            "defaults": [
-                {
-                    "id": "ProductInterest",
-                    "options": [
-                        {
-                            "label": "General Channel",
                             "option_type": apideck_unify.OptionType.SIMPLE,
-                            "value": 123,
-                        },
-                    ],
-                    "value": True,
-                },
-                {
-                    "id": "ProductInterest",
-                    "options": [
-                        {
-                            "label": "General Channel",
-                            "option_type": apideck_unify.OptionType.SIMPLE,
-                            "value": "general",
-                        },
-                        {
-                            "label": "General Channel",
-                            "options": [
-                                {
-                                    "label": "General Channel",
-                                    "option_type": apideck_unify.OptionType.SIMPLE,
-                                    "value": 123,
-                                },
-                                {
-                                    "label": "General Channel",
-                                    "option_type": apideck_unify.OptionType.SIMPLE,
-                                    "value": 12.5,
-                                },
-                                {
-                                    "label": "General Channel",
-                                    "option_type": apideck_unify.OptionType.SIMPLE,
-                                    "value": True,
-                                },
-                            ],
-                            "option_type": apideck_unify.FormFieldOptionGroupOptionType.GROUP,
-                            "id": "1234",
-                        },
-                    ],
-                    "value": 10,
-                },
-                {
-                    "id": "ProductInterest",
-                    "options": [
-                        {
-                            "label": "General Channel",
-                            "options": [
-                                {
-                                    "label": "General Channel",
-                                    "option_type": apideck_unify.OptionType.SIMPLE,
-                                    "value": "general",
-                                },
-                            ],
-                            "option_type": apideck_unify.FormFieldOptionGroupOptionType.GROUP,
-                            "id": "1234",
-                        },
-                        {
-                            "label": "General Channel",
-                            "options": [
-                                {
-                                    "label": "General Channel",
-                                    "option_type": apideck_unify.OptionType.SIMPLE,
-                                    "value": 12.5,
-                                },
-                                {
-                                    "label": "General Channel",
-                                    "option_type": apideck_unify.OptionType.SIMPLE,
-                                    "value": 12.5,
-                                },
-                                {
-                                    "label": "General Channel",
-                                    "option_type": apideck_unify.OptionType.SIMPLE,
-                                    "value": "general",
-                                },
-                            ],
-                            "option_type": apideck_unify.FormFieldOptionGroupOptionType.GROUP,
-                            "id": "1234",
                         },
                     ],
                     "value": 10.5,
                 },
+                {
+                    "id": "ProductInterest",
+                    "options": [
+                        {
+                            "label": "General Channel",
+                            "value": "general",
+                            "option_type": apideck_unify.OptionType.SIMPLE,
+                        },
+                    ],
+                    "value": True,
+                },
             ],
         },
         {
@@ -302,38 +203,31 @@ with Apideck(
                     "options": [
                         {
                             "label": "General Channel",
+                            "value": True,
                             "option_type": apideck_unify.OptionType.SIMPLE,
-                            "value": 123,
+                        },
+                    ],
+                    "value": True,
+                },
+                {
+                    "id": "ProductInterest",
+                    "options": [
+                        {
+                            "label": "General Channel",
+                            "value": True,
+                            "option_type": apideck_unify.OptionType.SIMPLE,
                         },
                         {
+                            "id": "1234",
                             "label": "General Channel",
                             "options": [
                                 {
                                     "label": "General Channel",
-                                    "option_type": apideck_unify.OptionType.SIMPLE,
-                                    "value": [
-                                        "team",
-                                        "general",
-                                    ],
-                                },
-                                {
-                                    "label": "General Channel",
-                                    "option_type": apideck_unify.OptionType.SIMPLE,
-                                    "value": True,
-                                },
-                                {
-                                    "label": "General Channel",
-                                    "option_type": apideck_unify.OptionType.SIMPLE,
                                     "value": 12.5,
+                                    "option_type": apideck_unify.OptionType.SIMPLE,
                                 },
                             ],
                             "option_type": apideck_unify.FormFieldOptionGroupOptionType.GROUP,
-                            "id": "1234",
-                        },
-                        {
-                            "label": "General Channel",
-                            "option_type": apideck_unify.OptionType.SIMPLE,
-                            "value": 12.5,
                         },
                     ],
                     "value": "GC5000 series",
@@ -343,35 +237,77 @@ with Apideck(
                     "options": [
                         {
                             "label": "General Channel",
+                            "value": [
+                                "team",
+                                "general",
+                            ],
+                            "option_type": apideck_unify.OptionType.SIMPLE,
+                        },
+                    ],
+                    "value": [
+                        10.5,
+                        10,
+                        "GC6000 series",
+                    ],
+                },
+            ],
+        },
+        {
+            "resource": "leads",
+            "defaults": [
+                {
+                    "id": "ProductInterest",
+                    "options": [
+                        {
+                            "id": "1234",
+                            "label": "General Channel",
                             "options": [
                                 {
                                     "label": "General Channel",
+                                    "value": "general",
                                     "option_type": apideck_unify.OptionType.SIMPLE,
-                                    "value": [
-                                        "team",
-                                        "general",
-                                    ],
                                 },
                                 {
                                     "label": "General Channel",
-                                    "option_type": apideck_unify.OptionType.SIMPLE,
                                     "value": "general",
+                                    "option_type": apideck_unify.OptionType.SIMPLE,
+                                },
+                                {
+                                    "label": "General Channel",
+                                    "value": 123,
+                                    "option_type": apideck_unify.OptionType.SIMPLE,
                                 },
                             ],
                             "option_type": apideck_unify.FormFieldOptionGroupOptionType.GROUP,
-                            "id": "1234",
                         },
                         {
+                            "id": "1234",
                             "label": "General Channel",
-                            "option_type": apideck_unify.OptionType.SIMPLE,
-                            "value": 123,
+                            "options": [
+
+                            ],
+                            "option_type": apideck_unify.FormFieldOptionGroupOptionType.GROUP,
                         },
                     ],
-                    "value": 10.5,
+                    "value": True,
+                },
+                {
+                    "id": "ProductInterest",
+                    "options": [
+                        {
+                            "label": "General Channel",
+                            "value": "general",
+                            "option_type": apideck_unify.OptionType.SIMPLE,
+                        },
+                    ],
+                    "value": True,
                 },
             ],
         },
     ], custom_mappings=[
+        {
+            "value": "$.root.training.first_aid",
+        },
         {
             "value": "$.root.training.first_aid",
         },

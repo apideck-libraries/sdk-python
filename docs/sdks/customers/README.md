@@ -156,36 +156,36 @@ with Apideck(
         },
     ], phone_numbers=[
         {
-            "number": "111-111-1111",
             "id": "12345",
             "country_code": "1",
             "area_code": "323",
+            "number": "111-111-1111",
             "extension": "105",
             "type": apideck_unify.PhoneNumberType.PRIMARY,
         },
         {
-            "number": "111-111-1111",
             "id": "12345",
             "country_code": "1",
             "area_code": "323",
+            "number": "111-111-1111",
             "extension": "105",
             "type": apideck_unify.PhoneNumberType.PRIMARY,
         },
     ], emails=[
         {
-            "email": "elon@musk.com",
             "id": "123",
+            "email": "elon@musk.com",
             "type": apideck_unify.EmailType.PRIMARY,
         },
         {
-            "email": "elon@musk.com",
             "id": "123",
+            "email": "elon@musk.com",
             "type": apideck_unify.EmailType.PRIMARY,
         },
     ], websites=[
         {
-            "url": "http://example.com",
             "id": "12345",
+            "url": "http://example.com",
             "type": apideck_unify.WebsiteType.PRIMARY,
         },
     ], bank_accounts=[
@@ -525,46 +525,46 @@ with Apideck(
         },
     ], phone_numbers=[
         {
-            "number": "111-111-1111",
             "id": "12345",
             "country_code": "1",
             "area_code": "323",
+            "number": "111-111-1111",
             "extension": "105",
             "type": apideck_unify.PhoneNumberType.PRIMARY,
         },
         {
-            "number": "111-111-1111",
             "id": "12345",
             "country_code": "1",
             "area_code": "323",
+            "number": "111-111-1111",
             "extension": "105",
             "type": apideck_unify.PhoneNumberType.PRIMARY,
         },
     ], emails=[
         {
-            "email": "elon@musk.com",
             "id": "123",
+            "email": "elon@musk.com",
             "type": apideck_unify.EmailType.PRIMARY,
         },
         {
-            "email": "elon@musk.com",
             "id": "123",
+            "email": "elon@musk.com",
             "type": apideck_unify.EmailType.PRIMARY,
         },
     ], websites=[
         {
-            "url": "http://example.com",
             "id": "12345",
+            "url": "http://example.com",
             "type": apideck_unify.WebsiteType.PRIMARY,
         },
         {
-            "url": "http://example.com",
             "id": "12345",
+            "url": "http://example.com",
             "type": apideck_unify.WebsiteType.PRIMARY,
         },
         {
-            "url": "http://example.com",
             "id": "12345",
+            "url": "http://example.com",
             "type": apideck_unify.WebsiteType.PRIMARY,
         },
     ], bank_accounts=[

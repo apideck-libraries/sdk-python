@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
-from .subsidiary import SubsidiaryInput, SubsidiaryInputTypedDict
+from .subsidiary_input import SubsidiaryInput, SubsidiaryInputTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,

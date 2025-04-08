@@ -88,12 +88,12 @@ class ExpenseLineItemInput(BaseModel):
             "billable",
         ]
         nullable_fields = [
-            "total_amount",
             "tracking_categories",
             "department_id",
             "location_id",
             "subsidiary_id",
             "description",
+            "total_amount",
         ]
         null_default_fields = []
 

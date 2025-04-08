@@ -3,7 +3,7 @@
 from __future__ import annotations
 from .links import Links, LinksTypedDict
 from .meta import Meta, MetaTypedDict
-from .purchaseorder import PurchaseOrder, PurchaseOrderTypedDict
+from .purchaseorder_input import PurchaseOrder, PurchaseOrderTypedDict
 from apideck_unify.types import (
     BaseModel,
     Nullable,

@@ -97,16 +97,11 @@ with Apideck(
 
     res = apideck.accounting.journal_entries.create(consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", title="Purchase Invoice-Inventory (USD): 2019/02/01 Batch Summary Entry", currency_rate=0.69, currency=apideck_unify.Currency.USD, company_id="12345", line_items=[
         {
-            "type": apideck_unify.JournalEntryLineItemType.DEBIT,
-            "ledger_account": {
-                "id": "123456",
-                "nominal_code": "N091",
-                "code": "453",
-            },
             "description": "Model Y is a fully electric, mid-size SUV, with seating for up to seven, dual motor AWD and unparalleled protection.",
             "tax_amount": 27500,
             "sub_total": 27500,
             "total_amount": 27500,
+            "type": apideck_unify.JournalEntryLineItemType.DEBIT,
             "tax_rate": {
                 "id": "123456",
                 "rate": 10,
@@ -121,6 +116,11 @@ with Apideck(
                     "name": "New York",
                 },
             ],
+            "ledger_account": {
+                "id": "123456",
+                "nominal_code": "N091",
+                "code": "453",
+            },
             "customer": {
                 "id": "12345",
                 "display_name": "Windsurf Shop",
@@ -156,19 +156,16 @@ with Apideck(
                     "row_version": "1-12345",
                 },
             },
+            "department_id": "12345",
+            "location_id": "12345",
             "line_number": 1,
         },
         {
-            "type": apideck_unify.JournalEntryLineItemType.DEBIT,
-            "ledger_account": {
-                "id": "123456",
-                "nominal_code": "N091",
-                "code": "453",
-            },
             "description": "Model Y is a fully electric, mid-size SUV, with seating for up to seven, dual motor AWD and unparalleled protection.",
             "tax_amount": 27500,
             "sub_total": 27500,
             "total_amount": 27500,
+            "type": apideck_unify.JournalEntryLineItemType.DEBIT,
             "tax_rate": {
                 "id": "123456",
                 "rate": 10,
@@ -183,6 +180,11 @@ with Apideck(
                     "name": "New York",
                 },
             ],
+            "ledger_account": {
+                "id": "123456",
+                "nominal_code": "N091",
+                "code": "453",
+            },
             "customer": {
                 "id": "12345",
                 "display_name": "Windsurf Shop",
@@ -218,6 +220,8 @@ with Apideck(
                     "row_version": "1-12345",
                 },
             },
+            "department_id": "12345",
+            "location_id": "12345",
             "line_number": 1,
         },
     ], memo="Thank you for your business and have a great day!", posted_at=dateutil.parser.isoparse("2020-09-30T07:43:32.000Z"), journal_symbol="IND", tax_type="sales", tax_code="1234", number="OIT00546", tracking_categories=[
@@ -374,16 +378,11 @@ with Apideck(
 
     res = apideck.accounting.journal_entries.update(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", title="Purchase Invoice-Inventory (USD): 2019/02/01 Batch Summary Entry", currency_rate=0.69, currency=apideck_unify.Currency.USD, company_id="12345", line_items=[
         {
-            "type": apideck_unify.JournalEntryLineItemType.DEBIT,
-            "ledger_account": {
-                "id": "123456",
-                "nominal_code": "N091",
-                "code": "453",
-            },
             "description": "Model Y is a fully electric, mid-size SUV, with seating for up to seven, dual motor AWD and unparalleled protection.",
             "tax_amount": 27500,
             "sub_total": 27500,
             "total_amount": 27500,
+            "type": apideck_unify.JournalEntryLineItemType.DEBIT,
             "tax_rate": {
                 "id": "123456",
                 "rate": 10,
@@ -398,6 +397,11 @@ with Apideck(
                     "name": "New York",
                 },
             ],
+            "ledger_account": {
+                "id": "123456",
+                "nominal_code": "N091",
+                "code": "453",
+            },
             "customer": {
                 "id": "12345",
                 "display_name": "Windsurf Shop",
@@ -433,19 +437,16 @@ with Apideck(
                     "row_version": "1-12345",
                 },
             },
+            "department_id": "12345",
+            "location_id": "12345",
             "line_number": 1,
         },
         {
-            "type": apideck_unify.JournalEntryLineItemType.DEBIT,
-            "ledger_account": {
-                "id": "123456",
-                "nominal_code": "N091",
-                "code": "453",
-            },
             "description": "Model Y is a fully electric, mid-size SUV, with seating for up to seven, dual motor AWD and unparalleled protection.",
             "tax_amount": 27500,
             "sub_total": 27500,
             "total_amount": 27500,
+            "type": apideck_unify.JournalEntryLineItemType.DEBIT,
             "tax_rate": {
                 "id": "123456",
                 "rate": 10,
@@ -460,6 +461,11 @@ with Apideck(
                     "name": "New York",
                 },
             ],
+            "ledger_account": {
+                "id": "123456",
+                "nominal_code": "N091",
+                "code": "453",
+            },
             "customer": {
                 "id": "12345",
                 "display_name": "Windsurf Shop",
@@ -495,19 +501,16 @@ with Apideck(
                     "row_version": "1-12345",
                 },
             },
+            "department_id": "12345",
+            "location_id": "12345",
             "line_number": 1,
         },
         {
-            "type": apideck_unify.JournalEntryLineItemType.DEBIT,
-            "ledger_account": {
-                "id": "123456",
-                "nominal_code": "N091",
-                "code": "453",
-            },
             "description": "Model Y is a fully electric, mid-size SUV, with seating for up to seven, dual motor AWD and unparalleled protection.",
             "tax_amount": 27500,
             "sub_total": 27500,
             "total_amount": 27500,
+            "type": apideck_unify.JournalEntryLineItemType.DEBIT,
             "tax_rate": {
                 "id": "123456",
                 "rate": 10,
@@ -526,6 +529,11 @@ with Apideck(
                     "name": "New York",
                 },
             ],
+            "ledger_account": {
+                "id": "123456",
+                "nominal_code": "N091",
+                "code": "453",
+            },
             "customer": {
                 "id": "12345",
                 "display_name": "Windsurf Shop",
@@ -561,6 +569,8 @@ with Apideck(
                     "row_version": "1-12345",
                 },
             },
+            "department_id": "12345",
+            "location_id": "12345",
             "line_number": 1,
         },
     ], memo="Thank you for your business and have a great day!", posted_at=dateutil.parser.isoparse("2020-09-30T07:43:32.000Z"), journal_symbol="IND", tax_type="sales", tax_code="1234", number="OIT00546", tracking_categories=[

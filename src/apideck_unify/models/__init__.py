@@ -761,7 +761,7 @@ from .accounting_trackingcategoriesupdateop import (
     AccountingTrackingCategoriesUpdateResponse,
     AccountingTrackingCategoriesUpdateResponseTypedDict,
 )
-from .accountingdepartment import (
+from .accountingdepartment_input import (
     AccountingDepartment,
     AccountingDepartmentInput,
     AccountingDepartmentInputTypedDict,
@@ -785,7 +785,7 @@ from .accountinglocationsfilter import (
 )
 from .activitiesfilter import ActivitiesFilter, ActivitiesFilterTypedDict
 from .activitiessort import ActivitiesSort, ActivitiesSortBy, ActivitiesSortTypedDict
-from .activity import (
+from .activity_input import (
     Activity,
     ActivityInput,
     ActivityInputTypedDict,
@@ -793,7 +793,7 @@ from .activity import (
     ActivityTypedDict,
     ShowAs,
 )
-from .activityattendee import (
+from .activityattendee_input import (
     ActivityAttendee,
     ActivityAttendeeInput,
     ActivityAttendeeInputTypedDict,
@@ -804,7 +804,7 @@ from .address import Address, AddressTypedDict, Type
 from .agedcreditors import AgedCreditors, AgedCreditorsTypedDict
 from .ageddebtors import AgedDebtors, AgedDebtorsTypedDict
 from .agedreportfilter import AgedReportFilter, AgedReportFilterTypedDict
-from .allocation import (
+from .allocation_input import (
     Allocation,
     AllocationInput,
     AllocationInputTypedDict,
@@ -829,7 +829,7 @@ from .apiresourcecoverage import (
 )
 from .apisfilter import ApisFilter, ApisFilterTypedDict
 from .apistatus import APIStatus
-from .applicant import (
+from .applicant_input import (
     Applicant,
     ApplicantInput,
     ApplicantInputTypedDict,
@@ -841,7 +841,7 @@ from .applicant import (
     WebsitesTypedDict,
 )
 from .applicantsfilter import ApplicantsFilter, ApplicantsFilterTypedDict
-from .application import (
+from .application_input import (
     Application,
     ApplicationInput,
     ApplicationInputTypedDict,
@@ -984,7 +984,7 @@ from .balancesheetfilter import (
 )
 from .bankaccount import AccountType, BankAccount, BankAccountTypedDict
 from .benefit import Benefit, BenefitTypedDict
-from .bill import Bill, BillInput, BillInputTypedDict, BillStatus, BillTypedDict
+from .bill_input import Bill, BillInput, BillInputTypedDict, BillStatus, BillTypedDict
 from .billlineitem import (
     BillLineItem,
     BillLineItemInput,
@@ -1041,7 +1041,7 @@ from .companyinfo import (
     TheStartMonthOfFiscalYear,
 )
 from .compensation import Compensation, CompensationTypedDict
-from .connection import (
+from .connection_input import (
     Configuration,
     ConfigurationTypedDict,
     Connection,
@@ -1169,7 +1169,7 @@ from .consumerrequestcountsindaterangeresponse import (
     ConsumerRequestCountsInDateRangeResponseDataTypedDict,
     ConsumerRequestCountsInDateRangeResponseTypedDict,
 )
-from .contact import (
+from .contact_input import (
     Contact,
     ContactGender,
     ContactInput,
@@ -1323,7 +1323,7 @@ from .createuploadsessionresponse import (
 from .createuserresponse import CreateUserResponse, CreateUserResponseTypedDict
 from .createwebhookrequest import CreateWebhookRequest, CreateWebhookRequestTypedDict
 from .createwebhookresponse import CreateWebhookResponse, CreateWebhookResponseTypedDict
-from .creditnote import (
+from .creditnote_input import (
     CreditNote,
     CreditNoteInput,
     CreditNoteInputTypedDict,
@@ -1928,7 +1928,7 @@ from .ecommerceproduct import (
 )
 from .ecommercestore import EcommerceStore, EcommerceStoreTypedDict
 from .email import Email, EmailType, EmailTypedDict
-from .employee import (
+from .employee_input import (
     Employee,
     EmployeeInput,
     EmployeeInputTypedDict,
@@ -1950,7 +1950,7 @@ from .employeecompensation import (
     EmployeeCompensationTypedDict,
     FlsaStatus,
 )
-from .employeejob import (
+from .employeejob_input import (
     EmployeeJob,
     EmployeeJobInput,
     EmployeeJobInputTypedDict,
@@ -2953,7 +2953,7 @@ from .lead import Lead, LeadTypedDict
 from .lead_input import LeadInput, LeadInputTypedDict
 from .leadsfilter import LeadsFilter, LeadsFilterTypedDict
 from .leadssort import LeadsSort, LeadsSortBy, LeadsSortTypedDict
-from .ledgeraccount import (
+from .ledgeraccount_input import (
     AccountStatus,
     Categories,
     CategoriesTypedDict,
@@ -3014,7 +3014,7 @@ from .log import (
     UnifiedAPI,
 )
 from .logsfilter import LogsFilter, LogsFilterTypedDict
-from .message import (
+from .message_input import (
     Direction,
     Error,
     ErrorTypedDict,
@@ -3116,7 +3116,7 @@ from .profitandlossindicator import (
     ProfitAndLossIndicatorTypedDict,
 )
 from .profitandlosstype import ProfitAndLossType
-from .purchaseorder import (
+from .purchaseorder_input import (
     PurchaseOrder,
     PurchaseOrderInput,
     PurchaseOrderInputTypedDict,
@@ -3215,7 +3215,7 @@ from .sms_messagesupdateop import (
 from .sociallink import SocialLink, SocialLinkTypedDict
 from .sortdirection import SortDirection
 from .status import Status
-from .subsidiary import (
+from .subsidiary_input import (
     Subsidiary,
     SubsidiaryInput,
     SubsidiaryInputTypedDict,
@@ -3238,7 +3238,7 @@ from .suppliersfilter import SuppliersFilter, SuppliersFilterTypedDict
 from .supplierssort import SuppliersSort, SuppliersSortBy, SuppliersSortTypedDict
 from .supportedproperty import SupportedProperty, SupportedPropertyTypedDict
 from .tax import Tax, TaxTypedDict
-from .taxrate import (
+from .taxrate_input import (
     Components,
     ComponentsTypedDict,
     SubsidiariesModel,
@@ -3251,9 +3251,15 @@ from .taxrate import (
 )
 from .taxratesfilter import TaxRatesFilter, TaxRatesFilterTypedDict
 from .team import Team, TeamTypedDict
-from .ticket import Priority, Ticket, TicketInput, TicketInputTypedDict, TicketTypedDict
+from .ticket_input import (
+    Priority,
+    Ticket,
+    TicketInput,
+    TicketInputTypedDict,
+    TicketTypedDict,
+)
 from .ticketssort import TicketsSort, TicketsSortBy, TicketsSortTypedDict
-from .timeoffrequest import (
+from .timeoffrequest_input import (
     NotesModel,
     NotesModelTypedDict,
     RequestType,
@@ -3269,7 +3275,7 @@ from .timeoffrequestsfilter import (
     TimeOffRequestsFilter,
     TimeOffRequestsFilterTypedDict,
 )
-from .trackingcategory import (
+from .trackingcategory_input import (
     TrackingCategory,
     TrackingCategoryInput,
     TrackingCategoryInputTypedDict,

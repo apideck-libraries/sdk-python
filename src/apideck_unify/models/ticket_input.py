@@ -30,6 +30,106 @@ class Priority(str, Enum):
     URGENT = "urgent"
 
 
+class TicketInputTypedDict(TypedDict):
+    parent_id: NotRequired[Nullable[str]]
+    r"""The ticket's parent ID"""
+    type: NotRequired[Nullable[str]]
+    r"""The ticket's type"""
+    subject: NotRequired[Nullable[str]]
+    r"""Subject of the ticket"""
+    description: NotRequired[Nullable[str]]
+    r"""The ticket's description. HTML version of description is mapped if supported by the third-party platform"""
+    status: NotRequired[Nullable[str]]
+    r"""The current status of the ticket. Possible values include: open, in_progress, closed, or - in cases where there is no clear mapping - the original value passed through."""
+    priority: NotRequired[Nullable[Priority]]
+    r"""Priority of the ticket"""
+    assignees: NotRequired[List[AssigneeInputTypedDict]]
+    due_date: NotRequired[Nullable[datetime]]
+    r"""Due date of the ticket"""
+    tags: NotRequired[List[CollectionTagInputTypedDict]]
+    pass_through: NotRequired[List[PassThroughBodyTypedDict]]
+    r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
+
+
+class TicketInput(BaseModel):
+    parent_id: OptionalNullable[str] = UNSET
+    r"""The ticket's parent ID"""
+
+    type: OptionalNullable[str] = UNSET
+    r"""The ticket's type"""
+
+    subject: OptionalNullable[str] = UNSET
+    r"""Subject of the ticket"""
+
+    description: OptionalNullable[str] = UNSET
+    r"""The ticket's description. HTML version of description is mapped if supported by the third-party platform"""
+
+    status: OptionalNullable[str] = UNSET
+    r"""The current status of the ticket. Possible values include: open, in_progress, closed, or - in cases where there is no clear mapping - the original value passed through."""
+
+    priority: OptionalNullable[Priority] = UNSET
+    r"""Priority of the ticket"""
+
+    assignees: Optional[List[AssigneeInput]] = None
+
+    due_date: OptionalNullable[datetime] = UNSET
+    r"""Due date of the ticket"""
+
+    tags: Optional[List[CollectionTagInput]] = None
+
+    pass_through: Optional[List[PassThroughBody]] = None
+    r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
+
+    @model_serializer(mode="wrap")
+    def serialize_model(self, handler):
+        optional_fields = [
+            "parent_id",
+            "type",
+            "subject",
+            "description",
+            "status",
+            "priority",
+            "assignees",
+            "due_date",
+            "tags",
+            "pass_through",
+        ]
+        nullable_fields = [
+            "parent_id",
+            "type",
+            "subject",
+            "description",
+            "status",
+            "priority",
+            "due_date",
+        ]
+        null_default_fields = []
+
+        serialized = handler(self)
+
+        m = {}
+
+        for n, f in type(self).model_fields.items():
+            k = f.alias or n
+            val = serialized.get(k)
+            serialized.pop(k, None)
+
+            optional_nullable = k in optional_fields and k in nullable_fields
+            is_set = (
+                self.__pydantic_fields_set__.intersection({n})
+                or k in null_default_fields
+            )  # pylint: disable=no-member
+
+            if val is not None and val != UNSET_SENTINEL:
+                m[k] = val
+            elif val != UNSET_SENTINEL and (
+                not k in optional_fields or (optional_nullable and is_set)
+            ):
+                m[k] = val
+
+        return m
+
+
 class TicketTypedDict(TypedDict):
     id: str
     r"""A unique identifier for an object."""
@@ -149,106 +249,6 @@ class Ticket(BaseModel):
             "due_date",
             "completed_at",
             "custom_mappings",
-        ]
-        null_default_fields = []
-
-        serialized = handler(self)
-
-        m = {}
-
-        for n, f in type(self).model_fields.items():
-            k = f.alias or n
-            val = serialized.get(k)
-            serialized.pop(k, None)
-
-            optional_nullable = k in optional_fields and k in nullable_fields
-            is_set = (
-                self.__pydantic_fields_set__.intersection({n})
-                or k in null_default_fields
-            )  # pylint: disable=no-member
-
-            if val is not None and val != UNSET_SENTINEL:
-                m[k] = val
-            elif val != UNSET_SENTINEL and (
-                not k in optional_fields or (optional_nullable and is_set)
-            ):
-                m[k] = val
-
-        return m
-
-
-class TicketInputTypedDict(TypedDict):
-    parent_id: NotRequired[Nullable[str]]
-    r"""The ticket's parent ID"""
-    type: NotRequired[Nullable[str]]
-    r"""The ticket's type"""
-    subject: NotRequired[Nullable[str]]
-    r"""Subject of the ticket"""
-    description: NotRequired[Nullable[str]]
-    r"""The ticket's description. HTML version of description is mapped if supported by the third-party platform"""
-    status: NotRequired[Nullable[str]]
-    r"""The current status of the ticket. Possible values include: open, in_progress, closed, or - in cases where there is no clear mapping - the original value passed through."""
-    priority: NotRequired[Nullable[Priority]]
-    r"""Priority of the ticket"""
-    assignees: NotRequired[List[AssigneeInputTypedDict]]
-    due_date: NotRequired[Nullable[datetime]]
-    r"""Due date of the ticket"""
-    tags: NotRequired[List[CollectionTagInputTypedDict]]
-    pass_through: NotRequired[List[PassThroughBodyTypedDict]]
-    r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
-
-
-class TicketInput(BaseModel):
-    parent_id: OptionalNullable[str] = UNSET
-    r"""The ticket's parent ID"""
-
-    type: OptionalNullable[str] = UNSET
-    r"""The ticket's type"""
-
-    subject: OptionalNullable[str] = UNSET
-    r"""Subject of the ticket"""
-
-    description: OptionalNullable[str] = UNSET
-    r"""The ticket's description. HTML version of description is mapped if supported by the third-party platform"""
-
-    status: OptionalNullable[str] = UNSET
-    r"""The current status of the ticket. Possible values include: open, in_progress, closed, or - in cases where there is no clear mapping - the original value passed through."""
-
-    priority: OptionalNullable[Priority] = UNSET
-    r"""Priority of the ticket"""
-
-    assignees: Optional[List[AssigneeInput]] = None
-
-    due_date: OptionalNullable[datetime] = UNSET
-    r"""Due date of the ticket"""
-
-    tags: Optional[List[CollectionTagInput]] = None
-
-    pass_through: Optional[List[PassThroughBody]] = None
-    r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
-
-    @model_serializer(mode="wrap")
-    def serialize_model(self, handler):
-        optional_fields = [
-            "parent_id",
-            "type",
-            "subject",
-            "description",
-            "status",
-            "priority",
-            "assignees",
-            "due_date",
-            "tags",
-            "pass_through",
-        ]
-        nullable_fields = [
-            "parent_id",
-            "type",
-            "subject",
-            "description",
-            "status",
-            "priority",
-            "due_date",
         ]
         null_default_fields = []
 

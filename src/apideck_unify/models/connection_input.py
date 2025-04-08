@@ -23,19 +23,6 @@ from typing import Any, Dict, List, Optional, Union
 from typing_extensions import NotRequired, TypeAliasType, TypedDict
 
 
-class ConnectionStatus(str, Enum):
-    r"""Status of the connection."""
-
-    LIVE = "live"
-    UPCOMING = "upcoming"
-    REQUESTED = "requested"
-
-
-class Target(str, Enum):
-    CUSTOM_FIELDS = "custom_fields"
-    RESOURCE = "resource"
-
-
 Value5TypedDict = TypeAliasType("Value5TypedDict", Union[str, int, float])
 
 
@@ -50,6 +37,108 @@ ConnectionValueTypedDict = TypeAliasType(
 ConnectionValue = TypeAliasType(
     "ConnectionValue", Union[str, int, float, bool, List[Value5]]
 )
+
+
+class ConnectionDefaultsTypedDict(TypedDict):
+    id: NotRequired[str]
+    options: NotRequired[List[FormFieldOptionTypedDict]]
+    value: NotRequired[ConnectionValueTypedDict]
+
+
+class ConnectionDefaults(BaseModel):
+    id: Optional[str] = None
+
+    options: Optional[List[FormFieldOption]] = None
+
+    value: Optional[ConnectionValue] = None
+
+
+class ConnectionConfigurationTypedDict(TypedDict):
+    resource: NotRequired[str]
+    defaults: NotRequired[List[ConnectionDefaultsTypedDict]]
+
+
+class ConnectionConfiguration(BaseModel):
+    resource: Optional[str] = None
+
+    defaults: Optional[List[ConnectionDefaults]] = None
+
+
+class ConnectionInputTypedDict(TypedDict):
+    enabled: NotRequired[bool]
+    r"""Whether the connection is enabled or not. You can enable or disable a connection using the Update Connection API."""
+    settings: NotRequired[Nullable[Dict[str, Any]]]
+    r"""Connection settings. Values will persist to `form_fields` with corresponding id"""
+    metadata: NotRequired[Nullable[Dict[str, Any]]]
+    r"""Attach your own consumer specific metadata"""
+    configuration: NotRequired[List[ConnectionConfigurationTypedDict]]
+    custom_mappings: NotRequired[List[CustomMappingInputTypedDict]]
+    r"""List of custom mappings configured for this connection"""
+
+
+class ConnectionInput(BaseModel):
+    enabled: Optional[bool] = None
+    r"""Whether the connection is enabled or not. You can enable or disable a connection using the Update Connection API."""
+
+    settings: OptionalNullable[Dict[str, Any]] = UNSET
+    r"""Connection settings. Values will persist to `form_fields` with corresponding id"""
+
+    metadata: OptionalNullable[Dict[str, Any]] = UNSET
+    r"""Attach your own consumer specific metadata"""
+
+    configuration: Optional[List[ConnectionConfiguration]] = None
+
+    custom_mappings: Optional[List[CustomMappingInput]] = None
+    r"""List of custom mappings configured for this connection"""
+
+    @model_serializer(mode="wrap")
+    def serialize_model(self, handler):
+        optional_fields = [
+            "enabled",
+            "settings",
+            "metadata",
+            "configuration",
+            "custom_mappings",
+        ]
+        nullable_fields = ["settings", "metadata"]
+        null_default_fields = []
+
+        serialized = handler(self)
+
+        m = {}
+
+        for n, f in type(self).model_fields.items():
+            k = f.alias or n
+            val = serialized.get(k)
+            serialized.pop(k, None)
+
+            optional_nullable = k in optional_fields and k in nullable_fields
+            is_set = (
+                self.__pydantic_fields_set__.intersection({n})
+                or k in null_default_fields
+            )  # pylint: disable=no-member
+
+            if val is not None and val != UNSET_SENTINEL:
+                m[k] = val
+            elif val != UNSET_SENTINEL and (
+                not k in optional_fields or (optional_nullable and is_set)
+            ):
+                m[k] = val
+
+        return m
+
+
+class ConnectionStatus(str, Enum):
+    r"""Status of the connection."""
+
+    LIVE = "live"
+    UPCOMING = "upcoming"
+    REQUESTED = "requested"
+
+
+class Target(str, Enum):
+    CUSTOM_FIELDS = "custom_fields"
+    RESOURCE = "resource"
 
 
 class DefaultsTypedDict(TypedDict):
@@ -261,95 +350,6 @@ class Connection(BaseModel):
             "metadata",
             "updated_at",
         ]
-        null_default_fields = []
-
-        serialized = handler(self)
-
-        m = {}
-
-        for n, f in type(self).model_fields.items():
-            k = f.alias or n
-            val = serialized.get(k)
-            serialized.pop(k, None)
-
-            optional_nullable = k in optional_fields and k in nullable_fields
-            is_set = (
-                self.__pydantic_fields_set__.intersection({n})
-                or k in null_default_fields
-            )  # pylint: disable=no-member
-
-            if val is not None and val != UNSET_SENTINEL:
-                m[k] = val
-            elif val != UNSET_SENTINEL and (
-                not k in optional_fields or (optional_nullable and is_set)
-            ):
-                m[k] = val
-
-        return m
-
-
-class ConnectionDefaultsTypedDict(TypedDict):
-    id: NotRequired[str]
-    options: NotRequired[List[FormFieldOptionTypedDict]]
-    value: NotRequired[ConnectionValueTypedDict]
-
-
-class ConnectionDefaults(BaseModel):
-    id: Optional[str] = None
-
-    options: Optional[List[FormFieldOption]] = None
-
-    value: Optional[ConnectionValue] = None
-
-
-class ConnectionConfigurationTypedDict(TypedDict):
-    resource: NotRequired[str]
-    defaults: NotRequired[List[ConnectionDefaultsTypedDict]]
-
-
-class ConnectionConfiguration(BaseModel):
-    resource: Optional[str] = None
-
-    defaults: Optional[List[ConnectionDefaults]] = None
-
-
-class ConnectionInputTypedDict(TypedDict):
-    enabled: NotRequired[bool]
-    r"""Whether the connection is enabled or not. You can enable or disable a connection using the Update Connection API."""
-    settings: NotRequired[Nullable[Dict[str, Any]]]
-    r"""Connection settings. Values will persist to `form_fields` with corresponding id"""
-    metadata: NotRequired[Nullable[Dict[str, Any]]]
-    r"""Attach your own consumer specific metadata"""
-    configuration: NotRequired[List[ConnectionConfigurationTypedDict]]
-    custom_mappings: NotRequired[List[CustomMappingInputTypedDict]]
-    r"""List of custom mappings configured for this connection"""
-
-
-class ConnectionInput(BaseModel):
-    enabled: Optional[bool] = None
-    r"""Whether the connection is enabled or not. You can enable or disable a connection using the Update Connection API."""
-
-    settings: OptionalNullable[Dict[str, Any]] = UNSET
-    r"""Connection settings. Values will persist to `form_fields` with corresponding id"""
-
-    metadata: OptionalNullable[Dict[str, Any]] = UNSET
-    r"""Attach your own consumer specific metadata"""
-
-    configuration: Optional[List[ConnectionConfiguration]] = None
-
-    custom_mappings: Optional[List[CustomMappingInput]] = None
-    r"""List of custom mappings configured for this connection"""
-
-    @model_serializer(mode="wrap")
-    def serialize_model(self, handler):
-        optional_fields = [
-            "enabled",
-            "settings",
-            "metadata",
-            "configuration",
-            "custom_mappings",
-        ]
-        nullable_fields = ["settings", "metadata"]
         null_default_fields = []
 
         serialized = handler(self)

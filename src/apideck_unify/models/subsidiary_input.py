@@ -17,30 +17,46 @@ from typing import List, Optional
 from typing_extensions import NotRequired, TypedDict
 
 
-class ApplicationStatus(str, Enum):
-    OPEN = "open"
-    REJECTED = "rejected"
-    HIRED = "hired"
-    CONVERTED = "converted"
-    OTHER = "other"
+class SubsidiaryStatus(str, Enum):
+    r"""Based on the status some functionality is enabled or disabled."""
+
+    ACTIVE = "active"
+    INACTIVE = "inactive"
 
 
-class StageTypedDict(TypedDict):
-    id: NotRequired[Nullable[str]]
-    r"""Stage the candidate should be in. If omitted, the default stage for this job will be used."""
+class SubsidiaryInputTypedDict(TypedDict):
+    parent_id: NotRequired[Nullable[str]]
+    r"""A unique identifier for an object."""
     name: NotRequired[Nullable[str]]
+    r"""The name of the company."""
+    status: NotRequired[SubsidiaryStatus]
+    r"""Based on the status some functionality is enabled or disabled."""
+    row_version: NotRequired[Nullable[str]]
+    r"""A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object."""
+    pass_through: NotRequired[List[PassThroughBodyTypedDict]]
+    r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
 
 
-class Stage(BaseModel):
-    id: OptionalNullable[str] = UNSET
-    r"""Stage the candidate should be in. If omitted, the default stage for this job will be used."""
+class SubsidiaryInput(BaseModel):
+    parent_id: OptionalNullable[str] = UNSET
+    r"""A unique identifier for an object."""
 
     name: OptionalNullable[str] = UNSET
+    r"""The name of the company."""
+
+    status: Optional[SubsidiaryStatus] = None
+    r"""Based on the status some functionality is enabled or disabled."""
+
+    row_version: OptionalNullable[str] = UNSET
+    r"""A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object."""
+
+    pass_through: Optional[List[PassThroughBody]] = None
+    r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
-        optional_fields = ["id", "name"]
-        nullable_fields = ["id", "name"]
+        optional_fields = ["parent_id", "name", "status", "row_version", "pass_through"]
+        nullable_fields = ["parent_id", "name", "row_version"]
         null_default_fields = []
 
         serialized = handler(self)
@@ -68,15 +84,19 @@ class Stage(BaseModel):
         return m
 
 
-class ApplicationTypedDict(TypedDict):
-    applicant_id: Nullable[str]
-    job_id: Nullable[str]
+class SubsidiaryTypedDict(TypedDict):
     id: NotRequired[str]
     r"""A unique identifier for an object."""
-    status: NotRequired[Nullable[ApplicationStatus]]
-    stage: NotRequired[StageTypedDict]
+    parent_id: NotRequired[Nullable[str]]
+    r"""A unique identifier for an object."""
+    name: NotRequired[Nullable[str]]
+    r"""The name of the company."""
+    status: NotRequired[SubsidiaryStatus]
+    r"""Based on the status some functionality is enabled or disabled."""
     custom_mappings: NotRequired[Nullable[CustomMappingsTypedDict]]
     r"""When custom mappings are configured on the resource, the result is included here."""
+    row_version: NotRequired[Nullable[str]]
+    r"""A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object."""
     updated_by: NotRequired[Nullable[str]]
     r"""The user who last updated the object."""
     created_by: NotRequired[Nullable[str]]
@@ -89,20 +109,24 @@ class ApplicationTypedDict(TypedDict):
     r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
 
 
-class Application(BaseModel):
-    applicant_id: Nullable[str]
-
-    job_id: Nullable[str]
-
+class Subsidiary(BaseModel):
     id: Optional[str] = None
     r"""A unique identifier for an object."""
 
-    status: OptionalNullable[ApplicationStatus] = UNSET
+    parent_id: OptionalNullable[str] = UNSET
+    r"""A unique identifier for an object."""
 
-    stage: Optional[Stage] = None
+    name: OptionalNullable[str] = UNSET
+    r"""The name of the company."""
+
+    status: Optional[SubsidiaryStatus] = None
+    r"""Based on the status some functionality is enabled or disabled."""
 
     custom_mappings: OptionalNullable[CustomMappings] = UNSET
     r"""When custom mappings are configured on the resource, the result is included here."""
+
+    row_version: OptionalNullable[str] = UNSET
+    r"""A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object."""
 
     updated_by: OptionalNullable[str] = UNSET
     r"""The user who last updated the object."""
@@ -123,9 +147,11 @@ class Application(BaseModel):
     def serialize_model(self, handler):
         optional_fields = [
             "id",
+            "parent_id",
+            "name",
             "status",
-            "stage",
             "custom_mappings",
+            "row_version",
             "updated_by",
             "created_by",
             "updated_at",
@@ -133,67 +159,15 @@ class Application(BaseModel):
             "pass_through",
         ]
         nullable_fields = [
-            "applicant_id",
-            "job_id",
-            "status",
+            "parent_id",
+            "name",
             "custom_mappings",
+            "row_version",
             "updated_by",
             "created_by",
             "updated_at",
             "created_at",
         ]
-        null_default_fields = []
-
-        serialized = handler(self)
-
-        m = {}
-
-        for n, f in type(self).model_fields.items():
-            k = f.alias or n
-            val = serialized.get(k)
-            serialized.pop(k, None)
-
-            optional_nullable = k in optional_fields and k in nullable_fields
-            is_set = (
-                self.__pydantic_fields_set__.intersection({n})
-                or k in null_default_fields
-            )  # pylint: disable=no-member
-
-            if val is not None and val != UNSET_SENTINEL:
-                m[k] = val
-            elif val != UNSET_SENTINEL and (
-                not k in optional_fields or (optional_nullable and is_set)
-            ):
-                m[k] = val
-
-        return m
-
-
-class ApplicationInputTypedDict(TypedDict):
-    applicant_id: Nullable[str]
-    job_id: Nullable[str]
-    status: NotRequired[Nullable[ApplicationStatus]]
-    stage: NotRequired[StageTypedDict]
-    pass_through: NotRequired[List[PassThroughBodyTypedDict]]
-    r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
-
-
-class ApplicationInput(BaseModel):
-    applicant_id: Nullable[str]
-
-    job_id: Nullable[str]
-
-    status: OptionalNullable[ApplicationStatus] = UNSET
-
-    stage: Optional[Stage] = None
-
-    pass_through: Optional[List[PassThroughBody]] = None
-    r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
-
-    @model_serializer(mode="wrap")
-    def serialize_model(self, handler):
-        optional_fields = ["status", "stage", "pass_through"]
-        nullable_fields = ["applicant_id", "job_id", "status"]
         null_default_fields = []
 
         serialized = handler(self)

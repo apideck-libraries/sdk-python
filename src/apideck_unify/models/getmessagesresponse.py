@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 from .links import Links, LinksTypedDict
-from .message import Message, MessageTypedDict
+from .message_input import Message, MessageTypedDict
 from .meta import Meta, MetaTypedDict
 from apideck_unify.types import (
     BaseModel,

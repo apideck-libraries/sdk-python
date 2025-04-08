@@ -88,8 +88,8 @@ with Apideck(
 
     res = apideck.crm.users.create(emails=[
         {
-            "email": "elon@musk.com",
             "id": "123",
+            "email": "elon@musk.com",
             "type": apideck_unify.EmailType.PRIMARY,
         },
     ], consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", parent_id="54321", username="masterofcoin", first_name="Elon", last_name="Musk", title="CEO", division="Europe", company_name="SpaceX", employee_number="123456-AB", description="A description", image="https://logo.clearbit.com/spacex.com?s=128", language="EN", status="active", password="supersecretpassword", addresses=[
@@ -147,18 +147,18 @@ with Apideck(
         },
     ], phone_numbers=[
         {
-            "number": "111-111-1111",
             "id": "12345",
             "country_code": "1",
             "area_code": "323",
+            "number": "111-111-1111",
             "extension": "105",
             "type": apideck_unify.PhoneNumberType.PRIMARY,
         },
         {
-            "number": "111-111-1111",
             "id": "12345",
             "country_code": "1",
             "area_code": "323",
+            "number": "111-111-1111",
             "extension": "105",
             "type": apideck_unify.PhoneNumberType.PRIMARY,
         },
@@ -301,8 +301,8 @@ with Apideck(
 
     res = apideck.crm.users.update(id="<id>", emails=[
         {
-            "email": "elon@musk.com",
             "id": "123",
+            "email": "elon@musk.com",
             "type": apideck_unify.EmailType.PRIMARY,
         },
     ], consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", parent_id="54321", username="masterofcoin", first_name="Elon", last_name="Musk", title="CEO", division="Europe", company_name="SpaceX", employee_number="123456-AB", description="A description", image="https://logo.clearbit.com/spacex.com?s=128", language="EN", status="active", password="supersecretpassword", addresses=[
@@ -386,18 +386,18 @@ with Apideck(
         },
     ], phone_numbers=[
         {
-            "number": "111-111-1111",
             "id": "12345",
             "country_code": "1",
             "area_code": "323",
+            "number": "111-111-1111",
             "extension": "105",
             "type": apideck_unify.PhoneNumberType.PRIMARY,
         },
         {
-            "number": "111-111-1111",
             "id": "12345",
             "country_code": "1",
             "area_code": "323",
+            "number": "111-111-1111",
             "extension": "105",
             "type": apideck_unify.PhoneNumberType.PRIMARY,
         },

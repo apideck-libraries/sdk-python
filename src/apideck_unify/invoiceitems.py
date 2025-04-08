@@ -107,7 +107,7 @@ class InvoiceItems(BaseSDK):
 
         retry_config = None
         if isinstance(retries, utils.RetryConfig):
-            retry_config = (retries, ["5XX"])
+            retry_config = (retries, ["408", "500", "502", "503", "504"])
 
         http_res = self.do_request(
             hook_ctx=HookContext(
@@ -306,7 +306,7 @@ class InvoiceItems(BaseSDK):
 
         retry_config = None
         if isinstance(retries, utils.RetryConfig):
-            retry_config = (retries, ["5XX"])
+            retry_config = (retries, ["408", "500", "502", "503", "504"])
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
@@ -615,7 +615,7 @@ class InvoiceItems(BaseSDK):
 
         retry_config = None
         if isinstance(retries, utils.RetryConfig):
-            retry_config = (retries, ["5XX"])
+            retry_config = (retries, ["408", "500", "502", "503", "504"])
 
         http_res = self.do_request(
             hook_ctx=HookContext(
@@ -897,7 +897,7 @@ class InvoiceItems(BaseSDK):
 
         retry_config = None
         if isinstance(retries, utils.RetryConfig):
-            retry_config = (retries, ["5XX"])
+            retry_config = (retries, ["408", "500", "502", "503", "504"])
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
@@ -1058,7 +1058,7 @@ class InvoiceItems(BaseSDK):
 
         retry_config = None
         if isinstance(retries, utils.RetryConfig):
-            retry_config = (retries, ["5XX"])
+            retry_config = (retries, ["408", "500", "502", "503", "504"])
 
         http_res = self.do_request(
             hook_ctx=HookContext(
@@ -1219,7 +1219,7 @@ class InvoiceItems(BaseSDK):
 
         retry_config = None
         if isinstance(retries, utils.RetryConfig):
-            retry_config = (retries, ["5XX"])
+            retry_config = (retries, ["408", "500", "502", "503", "504"])
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
@@ -1504,7 +1504,7 @@ class InvoiceItems(BaseSDK):
 
         retry_config = None
         if isinstance(retries, utils.RetryConfig):
-            retry_config = (retries, ["5XX"])
+            retry_config = (retries, ["408", "500", "502", "503", "504"])
 
         http_res = self.do_request(
             hook_ctx=HookContext(
@@ -1789,7 +1789,7 @@ class InvoiceItems(BaseSDK):
 
         retry_config = None
         if isinstance(retries, utils.RetryConfig):
-            retry_config = (retries, ["5XX"])
+            retry_config = (retries, ["408", "500", "502", "503", "504"])
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
@@ -1940,7 +1940,7 @@ class InvoiceItems(BaseSDK):
 
         retry_config = None
         if isinstance(retries, utils.RetryConfig):
-            retry_config = (retries, ["5XX"])
+            retry_config = (retries, ["408", "500", "502", "503", "504"])
 
         http_res = self.do_request(
             hook_ctx=HookContext(
@@ -2091,7 +2091,7 @@ class InvoiceItems(BaseSDK):
 
         retry_config = None
         if isinstance(retries, utils.RetryConfig):
-            retry_config = (retries, ["5XX"])
+            retry_config = (retries, ["408", "500", "502", "503", "504"])
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(

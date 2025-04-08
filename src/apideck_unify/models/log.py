@@ -180,7 +180,7 @@ class Log(BaseModel):
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
         optional_fields = ["error_message", "source_ip"]
-        nullable_fields = ["parent_id", "error_message", "source_ip"]
+        nullable_fields = ["error_message", "parent_id", "source_ip"]
         null_default_fields = []
 
         serialized = handler(self)

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
-from .timeoffrequest import TimeOffRequestInput, TimeOffRequestInputTypedDict
+from .timeoffrequest_input import TimeOffRequestInput, TimeOffRequestInputTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
