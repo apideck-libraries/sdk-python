@@ -125,8 +125,8 @@ with Apideck(
             "unit_of_measure": "pc.",
             "discount_percentage": 0.01,
             "discount_amount": 19.99,
-            "location_id": "1234",
-            "department_id": "1234",
+            "location_id": "12345",
+            "department_id": "12345",
             "item": {
                 "id": "12344",
                 "code": "120-C",
@@ -175,8 +175,8 @@ with Apideck(
             "unit_of_measure": "pc.",
             "discount_percentage": 0.01,
             "discount_amount": 19.99,
-            "location_id": "1234",
-            "department_id": "1234",
+            "location_id": "12345",
+            "department_id": "12345",
             "item": {
                 "id": "12344",
                 "code": "120-C",
@@ -510,8 +510,8 @@ with Apideck(
             "unit_of_measure": "pc.",
             "discount_percentage": 0.01,
             "discount_amount": 19.99,
-            "location_id": "1234",
-            "department_id": "1234",
+            "location_id": "12345",
+            "department_id": "12345",
             "item": {
                 "id": "12344",
                 "code": "120-C",
@@ -572,8 +572,8 @@ with Apideck(
             "unit_of_measure": "pc.",
             "discount_percentage": 0.01,
             "discount_amount": 19.99,
-            "location_id": "1234",
-            "department_id": "1234",
+            "location_id": "12345",
+            "department_id": "12345",
             "item": {
                 "id": "12344",
                 "code": "120-C",

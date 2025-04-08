@@ -85,7 +85,6 @@ with Apideck(
 
     res = apideck.accounting.expenses.create(transaction_date=dateutil.parser.isoparse("2021-05-01T12:00:00.000Z"), account_id="123456", line_items=[
         {
-            "total_amount": 275,
             "tracking_categories": [
                 {
                     "id": "123456",
@@ -100,11 +99,13 @@ with Apideck(
             "customer_id": "12345",
             "department_id": "12345",
             "location_id": "12345",
+            "subsidiary_id": "12345",
             "tax_rate": {
                 "id": "123456",
                 "rate": 10,
             },
             "description": "Travel US.",
+            "total_amount": 275,
             "billable": True,
         },
     ], consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", number="OIT00546", customer_id="12345", supplier_id="12345", company_id="12345", department_id="12345", payment_type=apideck_unify.ExpensePaymentType.CASH, currency=apideck_unify.Currency.USD, currency_rate=0.69, type_=apideck_unify.ExpenseType.EXPENSE, memo="For travel expenses incurred on 2024-05-15", tax_rate={
@@ -304,7 +305,6 @@ with Apideck(
 
     res = apideck.accounting.expenses.update(id="<id>", transaction_date=dateutil.parser.isoparse("2021-05-01T12:00:00.000Z"), account_id="123456", line_items=[
         {
-            "total_amount": 275,
             "tracking_categories": [
                 {
                     "id": "123456",
@@ -319,15 +319,16 @@ with Apideck(
             "customer_id": "12345",
             "department_id": "12345",
             "location_id": "12345",
+            "subsidiary_id": "12345",
             "tax_rate": {
                 "id": "123456",
                 "rate": 10,
             },
             "description": "Travel US.",
+            "total_amount": 275,
             "billable": True,
         },
         {
-            "total_amount": 275,
             "tracking_categories": [
                 {
                     "id": "123456",
@@ -342,15 +343,16 @@ with Apideck(
             "customer_id": "12345",
             "department_id": "12345",
             "location_id": "12345",
+            "subsidiary_id": "12345",
             "tax_rate": {
                 "id": "123456",
                 "rate": 10,
             },
             "description": "Travel US.",
+            "total_amount": 275,
             "billable": True,
         },
         {
-            "total_amount": 275,
             "tracking_categories": [
                 {
                     "id": "123456",
@@ -369,11 +371,13 @@ with Apideck(
             "customer_id": "12345",
             "department_id": "12345",
             "location_id": "12345",
+            "subsidiary_id": "12345",
             "tax_rate": {
                 "id": "123456",
                 "rate": 10,
             },
             "description": "Travel US.",
+            "total_amount": 275,
             "billable": True,
         },
     ], consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", number="OIT00546", customer_id="12345", supplier_id="12345", company_id="12345", department_id="12345", payment_type=apideck_unify.ExpensePaymentType.CASH, currency=apideck_unify.Currency.USD, currency_rate=0.69, type_=apideck_unify.ExpenseType.EXPENSE, memo="For travel expenses incurred on 2024-05-15", tax_rate={

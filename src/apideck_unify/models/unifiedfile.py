@@ -156,10 +156,10 @@ class UnifiedFile(BaseModel):
             "created_at",
         ]
         nullable_fields = [
-            "name",
-            "type",
             "downstream_id",
+            "name",
             "description",
+            "type",
             "path",
             "mime_type",
             "size",

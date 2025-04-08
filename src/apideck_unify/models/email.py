@@ -46,7 +46,7 @@ class Email(BaseModel):
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
         optional_fields = ["id", "type"]
-        nullable_fields = ["email", "id", "type"]
+        nullable_fields = ["id", "email", "type"]
         null_default_fields = []
 
         serialized = handler(self)

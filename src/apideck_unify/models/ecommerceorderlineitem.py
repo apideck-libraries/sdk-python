@@ -172,14 +172,13 @@ class EcommerceOrderLineItem(BaseModel):
             "discounts",
         ]
         nullable_fields = [
-            "name",
-            "quantity",
-            "total_amount",
             "id",
             "product_id",
             "variant_id",
             "sku",
+            "name",
             "description",
+            "quantity",
             "unit_price",
             "tax_rate",
             "tax_amount",
@@ -187,6 +186,7 @@ class EcommerceOrderLineItem(BaseModel):
             "refunded_amount",
             "refunded_quantity",
             "sub_total",
+            "total_amount",
         ]
         null_default_fields = []
 

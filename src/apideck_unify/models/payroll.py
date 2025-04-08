@@ -81,12 +81,12 @@ class Payroll(BaseModel):
         ]
         nullable_fields = [
             "id",
+            "company_id",
             "processed",
+            "processed_date",
             "check_date",
             "start_date",
             "end_date",
-            "company_id",
-            "processed_date",
             "custom_mappings",
         ]
         null_default_fields = []

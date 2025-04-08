@@ -59,7 +59,7 @@ class Income(BaseModel):
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
         optional_fields = ["id", "code", "title", "type"]
-        nullable_fields = ["total", "type"]
+        nullable_fields = ["type", "total"]
         null_default_fields = []
 
         serialized = handler(self)
@@ -126,7 +126,7 @@ class CostOfGoodsSold(BaseModel):
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
         optional_fields = ["id", "code", "title", "type"]
-        nullable_fields = ["total", "type"]
+        nullable_fields = ["type", "total"]
         null_default_fields = []
 
         serialized = handler(self)
@@ -193,7 +193,7 @@ class ExpensesModel(BaseModel):
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
         optional_fields = ["id", "code", "title", "type"]
-        nullable_fields = ["total", "type"]
+        nullable_fields = ["type", "total"]
         null_default_fields = []
 
         serialized = handler(self)
@@ -260,7 +260,7 @@ class OtherIncome(BaseModel):
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
         optional_fields = ["id", "code", "title", "type"]
-        nullable_fields = ["total", "type"]
+        nullable_fields = ["type", "total"]
         null_default_fields = []
 
         serialized = handler(self)
@@ -327,7 +327,7 @@ class OtherExpenses(BaseModel):
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
         optional_fields = ["id", "code", "title", "type"]
-        nullable_fields = ["total", "type"]
+        nullable_fields = ["type", "total"]
         null_default_fields = []
 
         serialized = handler(self)
@@ -394,7 +394,7 @@ class UncategorizedAccounts(BaseModel):
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
         optional_fields = ["id", "code", "title", "type"]
-        nullable_fields = ["total", "type"]
+        nullable_fields = ["type", "total"]
         null_default_fields = []
 
         serialized = handler(self)

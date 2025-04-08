@@ -6,7 +6,7 @@ from .createpurchaseorderresponse import (
     CreatePurchaseOrderResponseTypedDict,
 )
 from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
-from .purchaseorder import PurchaseOrderInput, PurchaseOrderInputTypedDict
+from .purchaseorder_input import PurchaseOrderInput, PurchaseOrderInputTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,

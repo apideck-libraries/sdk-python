@@ -150,7 +150,7 @@ class SharedLinkInput(BaseModel):
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
         optional_fields = ["download_url", "scope", "password", "pass_through"]
-        nullable_fields = ["target_id", "download_url", "scope", "password"]
+        nullable_fields = ["download_url", "target_id", "scope", "password"]
         null_default_fields = []
 
         serialized = handler(self)

@@ -141,13 +141,13 @@ class JournalEntryLineItem(BaseModel):
             "line_number",
         ]
         nullable_fields = [
-            "ledger_account",
             "description",
             "tax_amount",
             "sub_total",
             "total_amount",
             "tracking_category",
             "tracking_categories",
+            "ledger_account",
             "customer",
             "supplier",
             "department_id",
@@ -275,13 +275,13 @@ class JournalEntryLineItemInput(BaseModel):
             "line_number",
         ]
         nullable_fields = [
-            "ledger_account",
             "description",
             "tax_amount",
             "sub_total",
             "total_amount",
             "tracking_category",
             "tracking_categories",
+            "ledger_account",
             "customer",
             "supplier",
             "department_id",

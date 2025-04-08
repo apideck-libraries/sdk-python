@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
-from .ledgeraccount import LedgerAccountInput, LedgerAccountInputTypedDict
+from .ledgeraccount_input import LedgerAccountInput, LedgerAccountInputTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,

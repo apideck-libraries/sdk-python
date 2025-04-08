@@ -172,8 +172,8 @@ class Expense(BaseModel):
             "pass_through",
         ]
         nullable_fields = [
-            "transaction_date",
             "number",
+            "transaction_date",
             "company_id",
             "department_id",
             "payment_type",
@@ -324,8 +324,8 @@ class ExpenseInput(BaseModel):
             "pass_through",
         ]
         nullable_fields = [
-            "transaction_date",
             "number",
+            "transaction_date",
             "company_id",
             "department_id",
             "payment_type",

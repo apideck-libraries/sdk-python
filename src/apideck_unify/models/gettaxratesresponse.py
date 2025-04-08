@@ -3,7 +3,7 @@
 from __future__ import annotations
 from .links import Links, LinksTypedDict
 from .meta import Meta, MetaTypedDict
-from .taxrate import TaxRate, TaxRateTypedDict
+from .taxrate_input import TaxRate, TaxRateTypedDict
 from apideck_unify.types import (
     BaseModel,
     Nullable,

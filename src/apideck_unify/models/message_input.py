@@ -26,6 +26,59 @@ class MessageType(str, Enum):
     MMS = "mms"
 
 
+class MessageInputTypedDict(TypedDict):
+    from_: str
+    r"""The phone number that initiated the message."""
+    to: str
+    r"""The phone number that received the message."""
+    body: str
+    r"""The message text."""
+    subject: NotRequired[str]
+    type: NotRequired[MessageType]
+    r"""Set to sms for SMS messages and mms for MMS messages."""
+    scheduled_at: NotRequired[datetime]
+    r"""The scheduled date and time of the message."""
+    webhook_url: NotRequired[str]
+    r"""Define a webhook to receive delivery notifications."""
+    reference: NotRequired[str]
+    r"""A client reference."""
+    messaging_service_id: NotRequired[str]
+    r"""The ID of the Messaging Service used with the message. In case of Plivo this links to the Powerpack ID."""
+    pass_through: NotRequired[List[PassThroughBodyTypedDict]]
+    r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
+
+
+class MessageInput(BaseModel):
+    from_: Annotated[str, pydantic.Field(alias="from")]
+    r"""The phone number that initiated the message."""
+
+    to: str
+    r"""The phone number that received the message."""
+
+    body: str
+    r"""The message text."""
+
+    subject: Optional[str] = None
+
+    type: Optional[MessageType] = None
+    r"""Set to sms for SMS messages and mms for MMS messages."""
+
+    scheduled_at: Optional[datetime] = None
+    r"""The scheduled date and time of the message."""
+
+    webhook_url: Optional[str] = None
+    r"""Define a webhook to receive delivery notifications."""
+
+    reference: Optional[str] = None
+    r"""A client reference."""
+
+    messaging_service_id: Optional[str] = None
+    r"""The ID of the Messaging Service used with the message. In case of Plivo this links to the Powerpack ID."""
+
+    pass_through: Optional[List[PassThroughBody]] = None
+    r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
+
+
 class Direction(str, Enum):
     r"""The direction of the message."""
 
@@ -293,56 +346,3 @@ class Message(BaseModel):
                 m[k] = val
 
         return m
-
-
-class MessageInputTypedDict(TypedDict):
-    from_: str
-    r"""The phone number that initiated the message."""
-    to: str
-    r"""The phone number that received the message."""
-    body: str
-    r"""The message text."""
-    subject: NotRequired[str]
-    type: NotRequired[MessageType]
-    r"""Set to sms for SMS messages and mms for MMS messages."""
-    scheduled_at: NotRequired[datetime]
-    r"""The scheduled date and time of the message."""
-    webhook_url: NotRequired[str]
-    r"""Define a webhook to receive delivery notifications."""
-    reference: NotRequired[str]
-    r"""A client reference."""
-    messaging_service_id: NotRequired[str]
-    r"""The ID of the Messaging Service used with the message. In case of Plivo this links to the Powerpack ID."""
-    pass_through: NotRequired[List[PassThroughBodyTypedDict]]
-    r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
-
-
-class MessageInput(BaseModel):
-    from_: Annotated[str, pydantic.Field(alias="from")]
-    r"""The phone number that initiated the message."""
-
-    to: str
-    r"""The phone number that received the message."""
-
-    body: str
-    r"""The message text."""
-
-    subject: Optional[str] = None
-
-    type: Optional[MessageType] = None
-    r"""Set to sms for SMS messages and mms for MMS messages."""
-
-    scheduled_at: Optional[datetime] = None
-    r"""The scheduled date and time of the message."""
-
-    webhook_url: Optional[str] = None
-    r"""Define a webhook to receive delivery notifications."""
-
-    reference: Optional[str] = None
-    r"""A client reference."""
-
-    messaging_service_id: Optional[str] = None
-    r"""The ID of the Messaging Service used with the message. In case of Plivo this links to the Powerpack ID."""
-
-    pass_through: Optional[List[PassThroughBody]] = None
-    r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""

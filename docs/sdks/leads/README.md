@@ -98,13 +98,13 @@ with Apideck(
 
     res = apideck.crm.leads.create(name="Elon Musk", company_name="Spacex", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", owner_id="54321", owner_name="John Doe", company_id="2", lead_id="2", lead_source="Cold Call", first_name="Elon", last_name="Musk", description="A thinker", prefix="Sir", title="CEO", language="EN", status="New", monetary_amount=75000, currency=apideck_unify.Currency.USD, fax="+12129876543", websites=[
         {
-            "url": "http://example.com",
             "id": "12345",
+            "url": "http://example.com",
             "type": apideck_unify.WebsiteType.PRIMARY,
         },
         {
-            "url": "http://example.com",
             "id": "12345",
+            "url": "http://example.com",
             "type": apideck_unify.WebsiteType.PRIMARY,
         },
     ], addresses=[
@@ -162,28 +162,28 @@ with Apideck(
         },
     ], social_links=[
         {
-            "url": "https://www.twitter.com/apideck",
             "id": "12345",
+            "url": "https://www.twitter.com/apideck",
             "type": "twitter",
         },
         {
-            "url": "https://www.twitter.com/apideck",
             "id": "12345",
+            "url": "https://www.twitter.com/apideck",
             "type": "twitter",
         },
     ], phone_numbers=[
         {
-            "number": "111-111-1111",
             "id": "12345",
             "country_code": "1",
             "area_code": "323",
+            "number": "111-111-1111",
             "extension": "105",
             "type": apideck_unify.PhoneNumberType.PRIMARY,
         },
     ], emails=[
         {
-            "email": "elon@musk.com",
             "id": "123",
+            "email": "elon@musk.com",
             "type": apideck_unify.EmailType.PRIMARY,
         },
     ], custom_fields=[
@@ -419,18 +419,18 @@ with Apideck(
 
     res = apideck.crm.leads.update(id="<id>", name="Elon Musk", company_name="Spacex", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", owner_id="54321", owner_name="John Doe", company_id="2", lead_id="2", lead_source="Cold Call", first_name="Elon", last_name="Musk", description="A thinker", prefix="Sir", title="CEO", language="EN", status="New", monetary_amount=75000, currency=apideck_unify.Currency.USD, fax="+12129876543", websites=[
         {
-            "url": "http://example.com",
             "id": "12345",
+            "url": "http://example.com",
             "type": apideck_unify.WebsiteType.PRIMARY,
         },
         {
-            "url": "http://example.com",
             "id": "12345",
+            "url": "http://example.com",
             "type": apideck_unify.WebsiteType.PRIMARY,
         },
         {
-            "url": "http://example.com",
             "id": "12345",
+            "url": "http://example.com",
             "type": apideck_unify.WebsiteType.PRIMARY,
         },
     ], addresses=[
@@ -488,49 +488,49 @@ with Apideck(
         },
     ], social_links=[
         {
-            "url": "https://www.twitter.com/apideck",
             "id": "12345",
+            "url": "https://www.twitter.com/apideck",
             "type": "twitter",
         },
         {
-            "url": "https://www.twitter.com/apideck",
             "id": "12345",
+            "url": "https://www.twitter.com/apideck",
             "type": "twitter",
         },
     ], phone_numbers=[
         {
-            "number": "111-111-1111",
             "id": "12345",
             "country_code": "1",
             "area_code": "323",
+            "number": "111-111-1111",
             "extension": "105",
             "type": apideck_unify.PhoneNumberType.PRIMARY,
         },
         {
-            "number": "111-111-1111",
             "id": "12345",
             "country_code": "1",
             "area_code": "323",
+            "number": "111-111-1111",
             "extension": "105",
             "type": apideck_unify.PhoneNumberType.PRIMARY,
         },
         {
-            "number": "111-111-1111",
             "id": "12345",
             "country_code": "1",
             "area_code": "323",
+            "number": "111-111-1111",
             "extension": "105",
             "type": apideck_unify.PhoneNumberType.PRIMARY,
         },
     ], emails=[
         {
-            "email": "elon@musk.com",
             "id": "123",
+            "email": "elon@musk.com",
             "type": apideck_unify.EmailType.PRIMARY,
         },
         {
-            "email": "elon@musk.com",
             "id": "123",
+            "email": "elon@musk.com",
             "type": apideck_unify.EmailType.PRIMARY,
         },
     ], custom_fields=[

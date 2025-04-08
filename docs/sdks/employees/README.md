@@ -268,25 +268,25 @@ with Apideck(
         },
     ], phone_numbers=[
         {
-            "number": "111-111-1111",
             "id": "12345",
             "country_code": "1",
             "area_code": "323",
+            "number": "111-111-1111",
             "extension": "105",
             "type": apideck_unify.PhoneNumberType.PRIMARY,
         },
         {
-            "number": "111-111-1111",
             "id": "12345",
             "country_code": "1",
             "area_code": "323",
+            "number": "111-111-1111",
             "extension": "105",
             "type": apideck_unify.PhoneNumberType.PRIMARY,
         },
     ], emails=[
         {
-            "email": "elon@musk.com",
             "id": "123",
+            "email": "elon@musk.com",
             "type": apideck_unify.EmailType.PRIMARY,
         },
     ], custom_fields=[
@@ -302,8 +302,8 @@ with Apideck(
         },
     ], social_links=[
         {
-            "url": "https://www.twitter.com/apideck",
             "id": "12345",
+            "url": "https://www.twitter.com/apideck",
             "type": "twitter",
         },
     ], bank_accounts=[
@@ -735,35 +735,35 @@ with Apideck(
         },
     ], phone_numbers=[
         {
-            "number": "111-111-1111",
             "id": "12345",
             "country_code": "1",
             "area_code": "323",
+            "number": "111-111-1111",
             "extension": "105",
             "type": apideck_unify.PhoneNumberType.PRIMARY,
         },
         {
-            "number": "111-111-1111",
             "id": "12345",
             "country_code": "1",
             "area_code": "323",
+            "number": "111-111-1111",
             "extension": "105",
             "type": apideck_unify.PhoneNumberType.PRIMARY,
         },
     ], emails=[
         {
-            "email": "elon@musk.com",
             "id": "123",
+            "email": "elon@musk.com",
             "type": apideck_unify.EmailType.PRIMARY,
         },
         {
-            "email": "elon@musk.com",
             "id": "123",
+            "email": "elon@musk.com",
             "type": apideck_unify.EmailType.PRIMARY,
         },
         {
-            "email": "elon@musk.com",
             "id": "123",
+            "email": "elon@musk.com",
             "type": apideck_unify.EmailType.PRIMARY,
         },
     ], custom_fields=[
@@ -781,18 +781,18 @@ with Apideck(
         },
     ], social_links=[
         {
-            "url": "https://www.twitter.com/apideck",
             "id": "12345",
+            "url": "https://www.twitter.com/apideck",
             "type": "twitter",
         },
         {
-            "url": "https://www.twitter.com/apideck",
             "id": "12345",
+            "url": "https://www.twitter.com/apideck",
             "type": "twitter",
         },
         {
-            "url": "https://www.twitter.com/apideck",
             "id": "12345",
+            "url": "https://www.twitter.com/apideck",
             "type": "twitter",
         },
     ], bank_accounts=[
