@@ -1,0 +1,10 @@
+# PaymentAllocations
+
+
+## Fields
+
+| Field                                                                | Type                                                                 | Required                                                             | Description                                                          | Example                                                              |
+| -------------------------------------------------------------------- | -------------------------------------------------------------------- | -------------------------------------------------------------------- | -------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| `id`                                                                 | *Optional[str]*                                                      | :heavy_minus_sign:                                                   | ID of the payment                                                    | 123456                                                               |
+| `allocated_amount`                                                   | *OptionalNullable[float]*                                            | :heavy_minus_sign:                                                   | Amount of the payment allocated to the invoice                       | 1000                                                                 |
+| `date_`                                                              | [date](https://docs.python.org/3/library/datetime.html#date-objects) | :heavy_minus_sign:                                                   | Date of the payment                                                  | 2020-09-30T07:43:32.000Z                                             |

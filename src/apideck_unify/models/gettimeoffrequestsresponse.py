@@ -3,7 +3,7 @@
 from __future__ import annotations
 from .links import Links, LinksTypedDict
 from .meta import Meta, MetaTypedDict
-from .timeoffrequest_input import TimeOffRequest, TimeOffRequestTypedDict
+from .timeoffrequest import TimeOffRequest, TimeOffRequestTypedDict
 from apideck_unify.types import (
     BaseModel,
     Nullable,

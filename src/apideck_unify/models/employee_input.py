@@ -6,13 +6,13 @@ from .bankaccount import BankAccount, BankAccountTypedDict
 from .customfield import CustomField, CustomFieldTypedDict
 from .custommappings import CustomMappings, CustomMappingsTypedDict
 from .email import Email, EmailTypedDict
-from .employeecompensation import (
+from .employeecompensation_input import (
     EmployeeCompensation,
     EmployeeCompensationInput,
     EmployeeCompensationInputTypedDict,
     EmployeeCompensationTypedDict,
 )
-from .employeejob_input import (
+from .employeejob import (
     EmployeeJob,
     EmployeeJobInput,
     EmployeeJobInputTypedDict,

@@ -6,7 +6,7 @@ from .bankaccount import BankAccount, BankAccountTypedDict
 from .currency import Currency
 from .customfield import CustomField, CustomFieldTypedDict
 from .custommappings import CustomMappings, CustomMappingsTypedDict
-from .invoicelineitem import (
+from .invoicelineitem_input import (
     InvoiceLineItem,
     InvoiceLineItemInput,
     InvoiceLineItemInputTypedDict,

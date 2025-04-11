@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
-from .invoice import InvoiceInput, InvoiceInputTypedDict
+from .invoice_input import InvoiceInput, InvoiceInputTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,

@@ -793,7 +793,7 @@ from .activity_input import (
     ActivityTypedDict,
     ShowAs,
 )
-from .activityattendee_input import (
+from .activityattendee import (
     ActivityAttendee,
     ActivityAttendeeInput,
     ActivityAttendeeInputTypedDict,
@@ -804,7 +804,7 @@ from .address import Address, AddressTypedDict, Type
 from .agedcreditors import AgedCreditors, AgedCreditorsTypedDict
 from .ageddebtors import AgedDebtors, AgedDebtorsTypedDict
 from .agedreportfilter import AgedReportFilter, AgedReportFilterTypedDict
-from .allocation_input import (
+from .allocation import (
     Allocation,
     AllocationInput,
     AllocationInputTypedDict,
@@ -829,7 +829,7 @@ from .apiresourcecoverage import (
 )
 from .apisfilter import ApisFilter, ApisFilterTypedDict
 from .apistatus import APIStatus
-from .applicant_input import (
+from .applicant import (
     Applicant,
     ApplicantInput,
     ApplicantInputTypedDict,
@@ -992,7 +992,7 @@ from .billlineitem import (
     BillLineItemType,
     BillLineItemTypedDict,
 )
-from .billpayment import (
+from .billpayment_input import (
     Allocations,
     AllocationsTypedDict,
     BillPayment,
@@ -1026,7 +1026,7 @@ from .collectionuser import CollectionUser, CollectionUserTypedDict
 from .commentssort import CommentsSort, CommentsSortBy, CommentsSortTypedDict
 from .companiesfilter import CompaniesFilter, CompaniesFilterTypedDict
 from .companiessort import CompaniesSort, CompaniesSortBy, CompaniesSortTypedDict
-from .company import (
+from .company_input import (
     Company,
     CompanyInput,
     CompanyInputTypedDict,
@@ -1041,7 +1041,7 @@ from .companyinfo import (
     TheStartMonthOfFiscalYear,
 )
 from .compensation import Compensation, CompensationTypedDict
-from .connection_input import (
+from .connection import (
     Configuration,
     ConfigurationTypedDict,
     Connection,
@@ -1169,7 +1169,7 @@ from .consumerrequestcountsindaterangeresponse import (
     ConsumerRequestCountsInDateRangeResponseDataTypedDict,
     ConsumerRequestCountsInDateRangeResponseTypedDict,
 )
-from .contact_input import (
+from .contact import (
     Contact,
     ContactGender,
     ContactInput,
@@ -1943,14 +1943,14 @@ from .employee_input import (
     ProbationPeriod,
     ProbationPeriodTypedDict,
 )
-from .employeecompensation import (
+from .employeecompensation_input import (
     EmployeeCompensation,
     EmployeeCompensationInput,
     EmployeeCompensationInputTypedDict,
     EmployeeCompensationTypedDict,
     FlsaStatus,
 )
-from .employeejob_input import (
+from .employeejob import (
     EmployeeJob,
     EmployeeJobInput,
     EmployeeJobInputTypedDict,
@@ -1967,7 +1967,7 @@ from .employeesfilter import (
 from .employeesonefilter import EmployeesOneFilter, EmployeesOneFilterTypedDict
 from .employeessort import EmployeesSort, EmployeesSortBy, EmployeesSortTypedDict
 from .employmentstatus import EmploymentStatus
-from .expense import (
+from .expense_input import (
     Expense,
     ExpenseInput,
     ExpenseInputTypedDict,
@@ -2740,7 +2740,7 @@ from .hris_timeoffrequestsupdateop import (
     HrisTimeOffRequestsUpdateResponse,
     HrisTimeOffRequestsUpdateResponseTypedDict,
 )
-from .hriscompany import (
+from .hriscompany_input import (
     HrisCompany,
     HrisCompanyInput,
     HrisCompanyInputTypedDict,
@@ -2749,13 +2749,15 @@ from .hriscompany import (
 )
 from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .integrationstate import IntegrationState
-from .invoice import (
+from .invoice_input import (
     Invoice,
     InvoiceInput,
     InvoiceInputTypedDict,
     InvoiceStatus,
     InvoiceType,
     InvoiceTypedDict,
+    PaymentAllocations,
+    PaymentAllocationsTypedDict,
 )
 from .invoiceitem import (
     InvoiceItem,
@@ -2787,7 +2789,7 @@ from .invoiceitemssort import (
     InvoiceItemsSortBy,
     InvoiceItemsSortTypedDict,
 )
-from .invoicelineitem import (
+from .invoicelineitem_input import (
     InvoiceLineItem,
     InvoiceLineItemInput,
     InvoiceLineItemInputTypedDict,
@@ -3227,7 +3229,7 @@ from .subsidiaryreference_input import (
     SubsidiaryReferenceInput,
     SubsidiaryReferenceInputTypedDict,
 )
-from .supplier import (
+from .supplier_input import (
     Supplier,
     SupplierInput,
     SupplierInputTypedDict,
@@ -3238,7 +3240,7 @@ from .suppliersfilter import SuppliersFilter, SuppliersFilterTypedDict
 from .supplierssort import SuppliersSort, SuppliersSortBy, SuppliersSortTypedDict
 from .supportedproperty import SupportedProperty, SupportedPropertyTypedDict
 from .tax import Tax, TaxTypedDict
-from .taxrate_input import (
+from .taxrate import (
     Components,
     ComponentsTypedDict,
     SubsidiariesModel,
@@ -3259,7 +3261,7 @@ from .ticket_input import (
     TicketTypedDict,
 )
 from .ticketssort import TicketsSort, TicketsSortBy, TicketsSortTypedDict
-from .timeoffrequest_input import (
+from .timeoffrequest import (
     NotesModel,
     NotesModelTypedDict,
     RequestType,
@@ -6148,6 +6150,8 @@ __all__ = [
     "PassThroughBody",
     "PassThroughBodyTypedDict",
     "Payment",
+    "PaymentAllocations",
+    "PaymentAllocationsTypedDict",
     "PaymentFrequency",
     "PaymentInput",
     "PaymentInputTypedDict",

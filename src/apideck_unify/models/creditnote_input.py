@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 from .address import Address, AddressTypedDict
-from .allocation_input import (
+from .allocation import (
     Allocation,
     AllocationInput,
     AllocationInputTypedDict,
@@ -11,7 +11,7 @@ from .allocation_input import (
 from .currency import Currency
 from .customfield import CustomField, CustomFieldTypedDict
 from .custommappings import CustomMappings, CustomMappingsTypedDict
-from .invoicelineitem import (
+from .invoicelineitem_input import (
     InvoiceLineItem,
     InvoiceLineItemInput,
     InvoiceLineItemInputTypedDict,

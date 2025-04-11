@@ -459,6 +459,12 @@ class Invoices(BaseSDK):
         ] = None,
         template_id: OptionalNullable[str] = UNSET,
         source_document_url: OptionalNullable[str] = UNSET,
+        payment_allocations: OptionalNullable[
+            Union[
+                List[models.PaymentAllocations],
+                List[models.PaymentAllocationsTypedDict],
+            ]
+        ] = UNSET,
         payment_method: OptionalNullable[str] = UNSET,
         channel: OptionalNullable[str] = UNSET,
         language: OptionalNullable[str] = UNSET,
@@ -522,6 +528,7 @@ class Invoices(BaseSDK):
         :param shipping_address:
         :param template_id: Optional invoice template
         :param source_document_url: URL link to a source document - shown as 'Go to [appName]' in the downstream app. Currently only supported for Xero.
+        :param payment_allocations: IDs of payments made on the invoice
         :param payment_method: Payment method used for the transaction, such as cash, credit card, bank transfer, or check
         :param channel: The channel through which the transaction is processed.
         :param language: language code according to ISO 639-1. For the United States - EN
@@ -596,6 +603,10 @@ class Invoices(BaseSDK):
                 ),
                 template_id=template_id,
                 source_document_url=source_document_url,
+                payment_allocations=utils.get_pydantic_model(
+                    payment_allocations,
+                    OptionalNullable[List[models.PaymentAllocations]],
+                ),
                 payment_method=payment_method,
                 channel=channel,
                 language=language,
@@ -783,6 +794,12 @@ class Invoices(BaseSDK):
         ] = None,
         template_id: OptionalNullable[str] = UNSET,
         source_document_url: OptionalNullable[str] = UNSET,
+        payment_allocations: OptionalNullable[
+            Union[
+                List[models.PaymentAllocations],
+                List[models.PaymentAllocationsTypedDict],
+            ]
+        ] = UNSET,
         payment_method: OptionalNullable[str] = UNSET,
         channel: OptionalNullable[str] = UNSET,
         language: OptionalNullable[str] = UNSET,
@@ -846,6 +863,7 @@ class Invoices(BaseSDK):
         :param shipping_address:
         :param template_id: Optional invoice template
         :param source_document_url: URL link to a source document - shown as 'Go to [appName]' in the downstream app. Currently only supported for Xero.
+        :param payment_allocations: IDs of payments made on the invoice
         :param payment_method: Payment method used for the transaction, such as cash, credit card, bank transfer, or check
         :param channel: The channel through which the transaction is processed.
         :param language: language code according to ISO 639-1. For the United States - EN
@@ -920,6 +938,10 @@ class Invoices(BaseSDK):
                 ),
                 template_id=template_id,
                 source_document_url=source_document_url,
+                payment_allocations=utils.get_pydantic_model(
+                    payment_allocations,
+                    OptionalNullable[List[models.PaymentAllocations]],
+                ),
                 payment_method=payment_method,
                 channel=channel,
                 language=language,
@@ -1416,6 +1438,12 @@ class Invoices(BaseSDK):
         ] = None,
         template_id: OptionalNullable[str] = UNSET,
         source_document_url: OptionalNullable[str] = UNSET,
+        payment_allocations: OptionalNullable[
+            Union[
+                List[models.PaymentAllocations],
+                List[models.PaymentAllocationsTypedDict],
+            ]
+        ] = UNSET,
         payment_method: OptionalNullable[str] = UNSET,
         channel: OptionalNullable[str] = UNSET,
         language: OptionalNullable[str] = UNSET,
@@ -1480,6 +1508,7 @@ class Invoices(BaseSDK):
         :param shipping_address:
         :param template_id: Optional invoice template
         :param source_document_url: URL link to a source document - shown as 'Go to [appName]' in the downstream app. Currently only supported for Xero.
+        :param payment_allocations: IDs of payments made on the invoice
         :param payment_method: Payment method used for the transaction, such as cash, credit card, bank transfer, or check
         :param channel: The channel through which the transaction is processed.
         :param language: language code according to ISO 639-1. For the United States - EN
@@ -1555,6 +1584,10 @@ class Invoices(BaseSDK):
                 ),
                 template_id=template_id,
                 source_document_url=source_document_url,
+                payment_allocations=utils.get_pydantic_model(
+                    payment_allocations,
+                    OptionalNullable[List[models.PaymentAllocations]],
+                ),
                 payment_method=payment_method,
                 channel=channel,
                 language=language,
@@ -1743,6 +1776,12 @@ class Invoices(BaseSDK):
         ] = None,
         template_id: OptionalNullable[str] = UNSET,
         source_document_url: OptionalNullable[str] = UNSET,
+        payment_allocations: OptionalNullable[
+            Union[
+                List[models.PaymentAllocations],
+                List[models.PaymentAllocationsTypedDict],
+            ]
+        ] = UNSET,
         payment_method: OptionalNullable[str] = UNSET,
         channel: OptionalNullable[str] = UNSET,
         language: OptionalNullable[str] = UNSET,
@@ -1807,6 +1846,7 @@ class Invoices(BaseSDK):
         :param shipping_address:
         :param template_id: Optional invoice template
         :param source_document_url: URL link to a source document - shown as 'Go to [appName]' in the downstream app. Currently only supported for Xero.
+        :param payment_allocations: IDs of payments made on the invoice
         :param payment_method: Payment method used for the transaction, such as cash, credit card, bank transfer, or check
         :param channel: The channel through which the transaction is processed.
         :param language: language code according to ISO 639-1. For the United States - EN
@@ -1882,6 +1922,10 @@ class Invoices(BaseSDK):
                 ),
                 template_id=template_id,
                 source_document_url=source_document_url,
+                payment_allocations=utils.get_pydantic_model(
+                    payment_allocations,
+                    OptionalNullable[List[models.PaymentAllocations]],
+                ),
                 payment_method=payment_method,
                 channel=channel,
                 language=language,

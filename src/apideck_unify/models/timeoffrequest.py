@@ -89,143 +89,6 @@ class NotesModel(BaseModel):
         return m
 
 
-class TimeOffRequestInputTypedDict(TypedDict):
-    employee_id: NotRequired[Nullable[str]]
-    r"""ID of the employee"""
-    policy_id: NotRequired[Nullable[str]]
-    r"""ID of the policy"""
-    status: NotRequired[Nullable[TimeOffRequestStatusStatus]]
-    r"""The status of the time off request."""
-    description: NotRequired[Nullable[str]]
-    r"""Description of the time off request."""
-    start_date: NotRequired[Nullable[str]]
-    r"""The start date of the time off request."""
-    end_date: NotRequired[Nullable[str]]
-    r"""The end date of the time off request."""
-    request_date: NotRequired[Nullable[str]]
-    r"""The date the request was made."""
-    request_type: NotRequired[Nullable[RequestType]]
-    r"""The type of request"""
-    approval_date: NotRequired[Nullable[str]]
-    r"""The date the request was approved"""
-    units: NotRequired[Nullable[Units]]
-    r"""The unit of time off requested. Possible values include: `hours`, `days`, or `other`."""
-    amount: NotRequired[Nullable[float]]
-    r"""The amount of time off requested."""
-    day_part: NotRequired[Nullable[str]]
-    r"""The day part of the time off request."""
-    notes: NotRequired[NotesModelTypedDict]
-    pass_through: NotRequired[List[PassThroughBodyTypedDict]]
-    r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
-    policy_type: NotRequired[str]
-    r"""The policy type of the time off request"""
-
-
-class TimeOffRequestInput(BaseModel):
-    employee_id: OptionalNullable[str] = UNSET
-    r"""ID of the employee"""
-
-    policy_id: OptionalNullable[str] = UNSET
-    r"""ID of the policy"""
-
-    status: OptionalNullable[TimeOffRequestStatusStatus] = UNSET
-    r"""The status of the time off request."""
-
-    description: OptionalNullable[str] = UNSET
-    r"""Description of the time off request."""
-
-    start_date: OptionalNullable[str] = UNSET
-    r"""The start date of the time off request."""
-
-    end_date: OptionalNullable[str] = UNSET
-    r"""The end date of the time off request."""
-
-    request_date: OptionalNullable[str] = UNSET
-    r"""The date the request was made."""
-
-    request_type: OptionalNullable[RequestType] = UNSET
-    r"""The type of request"""
-
-    approval_date: OptionalNullable[str] = UNSET
-    r"""The date the request was approved"""
-
-    units: OptionalNullable[Units] = UNSET
-    r"""The unit of time off requested. Possible values include: `hours`, `days`, or `other`."""
-
-    amount: OptionalNullable[float] = UNSET
-    r"""The amount of time off requested."""
-
-    day_part: OptionalNullable[str] = UNSET
-    r"""The day part of the time off request."""
-
-    notes: Optional[NotesModel] = None
-
-    pass_through: Optional[List[PassThroughBody]] = None
-    r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
-
-    policy_type: Optional[str] = None
-    r"""The policy type of the time off request"""
-
-    @model_serializer(mode="wrap")
-    def serialize_model(self, handler):
-        optional_fields = [
-            "employee_id",
-            "policy_id",
-            "status",
-            "description",
-            "start_date",
-            "end_date",
-            "request_date",
-            "request_type",
-            "approval_date",
-            "units",
-            "amount",
-            "day_part",
-            "notes",
-            "pass_through",
-            "policy_type",
-        ]
-        nullable_fields = [
-            "employee_id",
-            "policy_id",
-            "status",
-            "description",
-            "start_date",
-            "end_date",
-            "request_date",
-            "request_type",
-            "approval_date",
-            "units",
-            "amount",
-            "day_part",
-        ]
-        null_default_fields = []
-
-        serialized = handler(self)
-
-        m = {}
-
-        for n, f in type(self).model_fields.items():
-            k = f.alias or n
-            val = serialized.get(k)
-            serialized.pop(k, None)
-
-            optional_nullable = k in optional_fields and k in nullable_fields
-            is_set = (
-                self.__pydantic_fields_set__.intersection({n})
-                or k in null_default_fields
-            )  # pylint: disable=no-member
-
-            if val is not None and val != UNSET_SENTINEL:
-                m[k] = val
-            elif val != UNSET_SENTINEL and (
-                not k in optional_fields or (optional_nullable and is_set)
-            ):
-                m[k] = val
-
-        return m
-
-
 class TimeOffRequestTypedDict(TypedDict):
     id: NotRequired[str]
     r"""A unique identifier for an object."""
@@ -376,6 +239,143 @@ class TimeOffRequest(BaseModel):
             "created_by",
             "updated_at",
             "created_at",
+        ]
+        null_default_fields = []
+
+        serialized = handler(self)
+
+        m = {}
+
+        for n, f in type(self).model_fields.items():
+            k = f.alias or n
+            val = serialized.get(k)
+            serialized.pop(k, None)
+
+            optional_nullable = k in optional_fields and k in nullable_fields
+            is_set = (
+                self.__pydantic_fields_set__.intersection({n})
+                or k in null_default_fields
+            )  # pylint: disable=no-member
+
+            if val is not None and val != UNSET_SENTINEL:
+                m[k] = val
+            elif val != UNSET_SENTINEL and (
+                not k in optional_fields or (optional_nullable and is_set)
+            ):
+                m[k] = val
+
+        return m
+
+
+class TimeOffRequestInputTypedDict(TypedDict):
+    employee_id: NotRequired[Nullable[str]]
+    r"""ID of the employee"""
+    policy_id: NotRequired[Nullable[str]]
+    r"""ID of the policy"""
+    status: NotRequired[Nullable[TimeOffRequestStatusStatus]]
+    r"""The status of the time off request."""
+    description: NotRequired[Nullable[str]]
+    r"""Description of the time off request."""
+    start_date: NotRequired[Nullable[str]]
+    r"""The start date of the time off request."""
+    end_date: NotRequired[Nullable[str]]
+    r"""The end date of the time off request."""
+    request_date: NotRequired[Nullable[str]]
+    r"""The date the request was made."""
+    request_type: NotRequired[Nullable[RequestType]]
+    r"""The type of request"""
+    approval_date: NotRequired[Nullable[str]]
+    r"""The date the request was approved"""
+    units: NotRequired[Nullable[Units]]
+    r"""The unit of time off requested. Possible values include: `hours`, `days`, or `other`."""
+    amount: NotRequired[Nullable[float]]
+    r"""The amount of time off requested."""
+    day_part: NotRequired[Nullable[str]]
+    r"""The day part of the time off request."""
+    notes: NotRequired[NotesModelTypedDict]
+    pass_through: NotRequired[List[PassThroughBodyTypedDict]]
+    r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
+    policy_type: NotRequired[str]
+    r"""The policy type of the time off request"""
+
+
+class TimeOffRequestInput(BaseModel):
+    employee_id: OptionalNullable[str] = UNSET
+    r"""ID of the employee"""
+
+    policy_id: OptionalNullable[str] = UNSET
+    r"""ID of the policy"""
+
+    status: OptionalNullable[TimeOffRequestStatusStatus] = UNSET
+    r"""The status of the time off request."""
+
+    description: OptionalNullable[str] = UNSET
+    r"""Description of the time off request."""
+
+    start_date: OptionalNullable[str] = UNSET
+    r"""The start date of the time off request."""
+
+    end_date: OptionalNullable[str] = UNSET
+    r"""The end date of the time off request."""
+
+    request_date: OptionalNullable[str] = UNSET
+    r"""The date the request was made."""
+
+    request_type: OptionalNullable[RequestType] = UNSET
+    r"""The type of request"""
+
+    approval_date: OptionalNullable[str] = UNSET
+    r"""The date the request was approved"""
+
+    units: OptionalNullable[Units] = UNSET
+    r"""The unit of time off requested. Possible values include: `hours`, `days`, or `other`."""
+
+    amount: OptionalNullable[float] = UNSET
+    r"""The amount of time off requested."""
+
+    day_part: OptionalNullable[str] = UNSET
+    r"""The day part of the time off request."""
+
+    notes: Optional[NotesModel] = None
+
+    pass_through: Optional[List[PassThroughBody]] = None
+    r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
+
+    policy_type: Optional[str] = None
+    r"""The policy type of the time off request"""
+
+    @model_serializer(mode="wrap")
+    def serialize_model(self, handler):
+        optional_fields = [
+            "employee_id",
+            "policy_id",
+            "status",
+            "description",
+            "start_date",
+            "end_date",
+            "request_date",
+            "request_type",
+            "approval_date",
+            "units",
+            "amount",
+            "day_part",
+            "notes",
+            "pass_through",
+            "policy_type",
+        ]
+        nullable_fields = [
+            "employee_id",
+            "policy_id",
+            "status",
+            "description",
+            "start_date",
+            "end_date",
+            "request_date",
+            "request_type",
+            "approval_date",
+            "units",
+            "amount",
+            "day_part",
         ]
         null_default_fields = []
 
