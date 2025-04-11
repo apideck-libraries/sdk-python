@@ -29,6 +29,102 @@ class HrisCompanyStatus(str, Enum):
     OTHER = "other"
 
 
+class HrisCompanyInputTypedDict(TypedDict):
+    legal_name: Nullable[str]
+    display_name: NotRequired[Nullable[str]]
+    subdomain: NotRequired[Nullable[str]]
+    status: NotRequired[HrisCompanyStatus]
+    company_number: NotRequired[Nullable[str]]
+    r"""An Company Number, Company ID or Company Code, is a unique number that has been assigned to each company."""
+    currency: NotRequired[Nullable[Currency]]
+    r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
+    addresses: NotRequired[List[AddressTypedDict]]
+    phone_numbers: NotRequired[List[PhoneNumberTypedDict]]
+    emails: NotRequired[List[EmailTypedDict]]
+    websites: NotRequired[List[WebsiteTypedDict]]
+    debtor_id: NotRequired[Nullable[str]]
+    pass_through: NotRequired[List[PassThroughBodyTypedDict]]
+    r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
+
+
+class HrisCompanyInput(BaseModel):
+    legal_name: Nullable[str]
+
+    display_name: OptionalNullable[str] = UNSET
+
+    subdomain: OptionalNullable[str] = UNSET
+
+    status: Optional[HrisCompanyStatus] = None
+
+    company_number: OptionalNullable[str] = UNSET
+    r"""An Company Number, Company ID or Company Code, is a unique number that has been assigned to each company."""
+
+    currency: OptionalNullable[Currency] = UNSET
+    r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
+
+    addresses: Optional[List[Address]] = None
+
+    phone_numbers: Optional[List[PhoneNumber]] = None
+
+    emails: Optional[List[Email]] = None
+
+    websites: Optional[List[Website]] = None
+
+    debtor_id: OptionalNullable[str] = UNSET
+
+    pass_through: Optional[List[PassThroughBody]] = None
+    r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
+
+    @model_serializer(mode="wrap")
+    def serialize_model(self, handler):
+        optional_fields = [
+            "display_name",
+            "subdomain",
+            "status",
+            "company_number",
+            "currency",
+            "addresses",
+            "phone_numbers",
+            "emails",
+            "websites",
+            "debtor_id",
+            "pass_through",
+        ]
+        nullable_fields = [
+            "legal_name",
+            "display_name",
+            "subdomain",
+            "company_number",
+            "currency",
+            "debtor_id",
+        ]
+        null_default_fields = []
+
+        serialized = handler(self)
+
+        m = {}
+
+        for n, f in type(self).model_fields.items():
+            k = f.alias or n
+            val = serialized.get(k)
+            serialized.pop(k, None)
+
+            optional_nullable = k in optional_fields and k in nullable_fields
+            is_set = (
+                self.__pydantic_fields_set__.intersection({n})
+                or k in null_default_fields
+            )  # pylint: disable=no-member
+
+            if val is not None and val != UNSET_SENTINEL:
+                m[k] = val
+            elif val != UNSET_SENTINEL and (
+                not k in optional_fields or (optional_nullable and is_set)
+            ):
+                m[k] = val
+
+        return m
+
+
 class HrisCompanyTypedDict(TypedDict):
     legal_name: Nullable[str]
     id: NotRequired[str]
@@ -142,102 +238,6 @@ class HrisCompany(BaseModel):
             "created_by",
             "updated_at",
             "created_at",
-        ]
-        null_default_fields = []
-
-        serialized = handler(self)
-
-        m = {}
-
-        for n, f in type(self).model_fields.items():
-            k = f.alias or n
-            val = serialized.get(k)
-            serialized.pop(k, None)
-
-            optional_nullable = k in optional_fields and k in nullable_fields
-            is_set = (
-                self.__pydantic_fields_set__.intersection({n})
-                or k in null_default_fields
-            )  # pylint: disable=no-member
-
-            if val is not None and val != UNSET_SENTINEL:
-                m[k] = val
-            elif val != UNSET_SENTINEL and (
-                not k in optional_fields or (optional_nullable and is_set)
-            ):
-                m[k] = val
-
-        return m
-
-
-class HrisCompanyInputTypedDict(TypedDict):
-    legal_name: Nullable[str]
-    display_name: NotRequired[Nullable[str]]
-    subdomain: NotRequired[Nullable[str]]
-    status: NotRequired[HrisCompanyStatus]
-    company_number: NotRequired[Nullable[str]]
-    r"""An Company Number, Company ID or Company Code, is a unique number that has been assigned to each company."""
-    currency: NotRequired[Nullable[Currency]]
-    r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
-    addresses: NotRequired[List[AddressTypedDict]]
-    phone_numbers: NotRequired[List[PhoneNumberTypedDict]]
-    emails: NotRequired[List[EmailTypedDict]]
-    websites: NotRequired[List[WebsiteTypedDict]]
-    debtor_id: NotRequired[Nullable[str]]
-    pass_through: NotRequired[List[PassThroughBodyTypedDict]]
-    r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
-
-
-class HrisCompanyInput(BaseModel):
-    legal_name: Nullable[str]
-
-    display_name: OptionalNullable[str] = UNSET
-
-    subdomain: OptionalNullable[str] = UNSET
-
-    status: Optional[HrisCompanyStatus] = None
-
-    company_number: OptionalNullable[str] = UNSET
-    r"""An Company Number, Company ID or Company Code, is a unique number that has been assigned to each company."""
-
-    currency: OptionalNullable[Currency] = UNSET
-    r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
-
-    addresses: Optional[List[Address]] = None
-
-    phone_numbers: Optional[List[PhoneNumber]] = None
-
-    emails: Optional[List[Email]] = None
-
-    websites: Optional[List[Website]] = None
-
-    debtor_id: OptionalNullable[str] = UNSET
-
-    pass_through: Optional[List[PassThroughBody]] = None
-    r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
-
-    @model_serializer(mode="wrap")
-    def serialize_model(self, handler):
-        optional_fields = [
-            "display_name",
-            "subdomain",
-            "status",
-            "company_number",
-            "currency",
-            "addresses",
-            "phone_numbers",
-            "emails",
-            "websites",
-            "debtor_id",
-            "pass_through",
-        ]
-        nullable_fields = [
-            "legal_name",
-            "display_name",
-            "subdomain",
-            "company_number",
-            "currency",
-            "debtor_id",
         ]
         null_default_fields = []
 

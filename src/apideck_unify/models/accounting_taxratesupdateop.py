@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
-from .taxrate_input import TaxRateInput, TaxRateInputTypedDict
+from .taxrate import TaxRateInput, TaxRateInputTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,

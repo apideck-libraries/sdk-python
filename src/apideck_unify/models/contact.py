@@ -41,259 +41,6 @@ class ContactGender(str, Enum):
     UNISEX = "unisex"
 
 
-class ContactInputTypedDict(TypedDict):
-    name: Nullable[str]
-    r"""Full name of the contact."""
-    owner_id: NotRequired[Nullable[str]]
-    r"""The owner of the contact."""
-    type: NotRequired[Nullable[ContactType]]
-    r"""The type of the contact."""
-    company_id: NotRequired[Nullable[str]]
-    r"""The company the contact is associated with."""
-    company_name: NotRequired[Nullable[str]]
-    r"""The name of the company the contact is associated with."""
-    lead_id: NotRequired[Nullable[str]]
-    r"""The lead the contact is associated with."""
-    first_name: NotRequired[Nullable[str]]
-    r"""The first name of the contact."""
-    middle_name: NotRequired[Nullable[str]]
-    r"""The middle name of the contact."""
-    last_name: NotRequired[Nullable[str]]
-    r"""The last name of the contact."""
-    prefix: NotRequired[Nullable[str]]
-    r"""The prefix of the contact."""
-    suffix: NotRequired[Nullable[str]]
-    r"""The suffix of the contact."""
-    title: NotRequired[Nullable[str]]
-    r"""The job title of the contact."""
-    department: NotRequired[Nullable[str]]
-    r"""The department of the contact."""
-    language: NotRequired[Nullable[str]]
-    r"""language code according to ISO 639-1. For the United States - EN"""
-    gender: NotRequired[Nullable[ContactGender]]
-    r"""The gender of the contact."""
-    birthday: NotRequired[Nullable[str]]
-    r"""The birthday of the contact."""
-    image: NotRequired[Nullable[str]]
-    photo_url: NotRequired[Nullable[str]]
-    r"""The URL of the photo of a person."""
-    lead_source: NotRequired[Nullable[str]]
-    r"""The lead source of the contact."""
-    fax: NotRequired[Nullable[str]]
-    r"""The fax number of the contact."""
-    description: NotRequired[Nullable[str]]
-    r"""The description of the contact."""
-    current_balance: NotRequired[Nullable[float]]
-    r"""The current balance of the contact."""
-    status: NotRequired[Nullable[str]]
-    r"""The status of the contact."""
-    active: NotRequired[Nullable[bool]]
-    r"""The active status of the contact."""
-    websites: NotRequired[List[WebsiteTypedDict]]
-    addresses: NotRequired[List[AddressTypedDict]]
-    social_links: NotRequired[List[SocialLinkTypedDict]]
-    phone_numbers: NotRequired[List[PhoneNumberTypedDict]]
-    emails: NotRequired[List[EmailTypedDict]]
-    email_domain: NotRequired[Nullable[str]]
-    custom_fields: NotRequired[List[CustomFieldTypedDict]]
-    tags: NotRequired[Nullable[List[str]]]
-    opportunity_ids: NotRequired[List[str]]
-    r"""The opportunity ids of the contact."""
-    pass_through: NotRequired[List[PassThroughBodyTypedDict]]
-    r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
-
-
-class ContactInput(BaseModel):
-    name: Nullable[str]
-    r"""Full name of the contact."""
-
-    owner_id: OptionalNullable[str] = UNSET
-    r"""The owner of the contact."""
-
-    type: OptionalNullable[ContactType] = UNSET
-    r"""The type of the contact."""
-
-    company_id: OptionalNullable[str] = UNSET
-    r"""The company the contact is associated with."""
-
-    company_name: OptionalNullable[str] = UNSET
-    r"""The name of the company the contact is associated with."""
-
-    lead_id: OptionalNullable[str] = UNSET
-    r"""The lead the contact is associated with."""
-
-    first_name: OptionalNullable[str] = UNSET
-    r"""The first name of the contact."""
-
-    middle_name: OptionalNullable[str] = UNSET
-    r"""The middle name of the contact."""
-
-    last_name: OptionalNullable[str] = UNSET
-    r"""The last name of the contact."""
-
-    prefix: OptionalNullable[str] = UNSET
-    r"""The prefix of the contact."""
-
-    suffix: OptionalNullable[str] = UNSET
-    r"""The suffix of the contact."""
-
-    title: OptionalNullable[str] = UNSET
-    r"""The job title of the contact."""
-
-    department: OptionalNullable[str] = UNSET
-    r"""The department of the contact."""
-
-    language: OptionalNullable[str] = UNSET
-    r"""language code according to ISO 639-1. For the United States - EN"""
-
-    gender: OptionalNullable[ContactGender] = UNSET
-    r"""The gender of the contact."""
-
-    birthday: OptionalNullable[str] = UNSET
-    r"""The birthday of the contact."""
-
-    image: Annotated[
-        OptionalNullable[str],
-        pydantic.Field(
-            deprecated="warning: ** DEPRECATED ** - This will be removed in a future release, please migrate away from it as soon as possible."
-        ),
-    ] = UNSET
-
-    photo_url: OptionalNullable[str] = UNSET
-    r"""The URL of the photo of a person."""
-
-    lead_source: OptionalNullable[str] = UNSET
-    r"""The lead source of the contact."""
-
-    fax: OptionalNullable[str] = UNSET
-    r"""The fax number of the contact."""
-
-    description: OptionalNullable[str] = UNSET
-    r"""The description of the contact."""
-
-    current_balance: OptionalNullable[float] = UNSET
-    r"""The current balance of the contact."""
-
-    status: OptionalNullable[str] = UNSET
-    r"""The status of the contact."""
-
-    active: OptionalNullable[bool] = UNSET
-    r"""The active status of the contact."""
-
-    websites: Optional[List[Website]] = None
-
-    addresses: Optional[List[Address]] = None
-
-    social_links: Optional[List[SocialLink]] = None
-
-    phone_numbers: Optional[List[PhoneNumber]] = None
-
-    emails: Optional[List[Email]] = None
-
-    email_domain: OptionalNullable[str] = UNSET
-
-    custom_fields: Optional[List[CustomField]] = None
-
-    tags: OptionalNullable[List[str]] = UNSET
-
-    opportunity_ids: Optional[List[str]] = None
-    r"""The opportunity ids of the contact."""
-
-    pass_through: Optional[List[PassThroughBody]] = None
-    r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
-
-    @model_serializer(mode="wrap")
-    def serialize_model(self, handler):
-        optional_fields = [
-            "owner_id",
-            "type",
-            "company_id",
-            "company_name",
-            "lead_id",
-            "first_name",
-            "middle_name",
-            "last_name",
-            "prefix",
-            "suffix",
-            "title",
-            "department",
-            "language",
-            "gender",
-            "birthday",
-            "image",
-            "photo_url",
-            "lead_source",
-            "fax",
-            "description",
-            "current_balance",
-            "status",
-            "active",
-            "websites",
-            "addresses",
-            "social_links",
-            "phone_numbers",
-            "emails",
-            "email_domain",
-            "custom_fields",
-            "tags",
-            "opportunity_ids",
-            "pass_through",
-        ]
-        nullable_fields = [
-            "name",
-            "owner_id",
-            "type",
-            "company_id",
-            "company_name",
-            "lead_id",
-            "first_name",
-            "middle_name",
-            "last_name",
-            "prefix",
-            "suffix",
-            "title",
-            "department",
-            "language",
-            "gender",
-            "birthday",
-            "image",
-            "photo_url",
-            "lead_source",
-            "fax",
-            "description",
-            "current_balance",
-            "status",
-            "active",
-            "email_domain",
-            "tags",
-        ]
-        null_default_fields = []
-
-        serialized = handler(self)
-
-        m = {}
-
-        for n, f in type(self).model_fields.items():
-            k = f.alias or n
-            val = serialized.get(k)
-            serialized.pop(k, None)
-
-            optional_nullable = k in optional_fields and k in nullable_fields
-            is_set = (
-                self.__pydantic_fields_set__.intersection({n})
-                or k in null_default_fields
-            )  # pylint: disable=no-member
-
-            if val is not None and val != UNSET_SENTINEL:
-                m[k] = val
-            elif val != UNSET_SENTINEL and (
-                not k in optional_fields or (optional_nullable and is_set)
-            ):
-                m[k] = val
-
-        return m
-
-
 class ContactTypedDict(TypedDict):
     name: Nullable[str]
     r"""Full name of the contact."""
@@ -567,6 +314,259 @@ class Contact(BaseModel):
             "custom_mappings",
             "updated_at",
             "created_at",
+        ]
+        null_default_fields = []
+
+        serialized = handler(self)
+
+        m = {}
+
+        for n, f in type(self).model_fields.items():
+            k = f.alias or n
+            val = serialized.get(k)
+            serialized.pop(k, None)
+
+            optional_nullable = k in optional_fields and k in nullable_fields
+            is_set = (
+                self.__pydantic_fields_set__.intersection({n})
+                or k in null_default_fields
+            )  # pylint: disable=no-member
+
+            if val is not None and val != UNSET_SENTINEL:
+                m[k] = val
+            elif val != UNSET_SENTINEL and (
+                not k in optional_fields or (optional_nullable and is_set)
+            ):
+                m[k] = val
+
+        return m
+
+
+class ContactInputTypedDict(TypedDict):
+    name: Nullable[str]
+    r"""Full name of the contact."""
+    owner_id: NotRequired[Nullable[str]]
+    r"""The owner of the contact."""
+    type: NotRequired[Nullable[ContactType]]
+    r"""The type of the contact."""
+    company_id: NotRequired[Nullable[str]]
+    r"""The company the contact is associated with."""
+    company_name: NotRequired[Nullable[str]]
+    r"""The name of the company the contact is associated with."""
+    lead_id: NotRequired[Nullable[str]]
+    r"""The lead the contact is associated with."""
+    first_name: NotRequired[Nullable[str]]
+    r"""The first name of the contact."""
+    middle_name: NotRequired[Nullable[str]]
+    r"""The middle name of the contact."""
+    last_name: NotRequired[Nullable[str]]
+    r"""The last name of the contact."""
+    prefix: NotRequired[Nullable[str]]
+    r"""The prefix of the contact."""
+    suffix: NotRequired[Nullable[str]]
+    r"""The suffix of the contact."""
+    title: NotRequired[Nullable[str]]
+    r"""The job title of the contact."""
+    department: NotRequired[Nullable[str]]
+    r"""The department of the contact."""
+    language: NotRequired[Nullable[str]]
+    r"""language code according to ISO 639-1. For the United States - EN"""
+    gender: NotRequired[Nullable[ContactGender]]
+    r"""The gender of the contact."""
+    birthday: NotRequired[Nullable[str]]
+    r"""The birthday of the contact."""
+    image: NotRequired[Nullable[str]]
+    photo_url: NotRequired[Nullable[str]]
+    r"""The URL of the photo of a person."""
+    lead_source: NotRequired[Nullable[str]]
+    r"""The lead source of the contact."""
+    fax: NotRequired[Nullable[str]]
+    r"""The fax number of the contact."""
+    description: NotRequired[Nullable[str]]
+    r"""The description of the contact."""
+    current_balance: NotRequired[Nullable[float]]
+    r"""The current balance of the contact."""
+    status: NotRequired[Nullable[str]]
+    r"""The status of the contact."""
+    active: NotRequired[Nullable[bool]]
+    r"""The active status of the contact."""
+    websites: NotRequired[List[WebsiteTypedDict]]
+    addresses: NotRequired[List[AddressTypedDict]]
+    social_links: NotRequired[List[SocialLinkTypedDict]]
+    phone_numbers: NotRequired[List[PhoneNumberTypedDict]]
+    emails: NotRequired[List[EmailTypedDict]]
+    email_domain: NotRequired[Nullable[str]]
+    custom_fields: NotRequired[List[CustomFieldTypedDict]]
+    tags: NotRequired[Nullable[List[str]]]
+    opportunity_ids: NotRequired[List[str]]
+    r"""The opportunity ids of the contact."""
+    pass_through: NotRequired[List[PassThroughBodyTypedDict]]
+    r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
+
+
+class ContactInput(BaseModel):
+    name: Nullable[str]
+    r"""Full name of the contact."""
+
+    owner_id: OptionalNullable[str] = UNSET
+    r"""The owner of the contact."""
+
+    type: OptionalNullable[ContactType] = UNSET
+    r"""The type of the contact."""
+
+    company_id: OptionalNullable[str] = UNSET
+    r"""The company the contact is associated with."""
+
+    company_name: OptionalNullable[str] = UNSET
+    r"""The name of the company the contact is associated with."""
+
+    lead_id: OptionalNullable[str] = UNSET
+    r"""The lead the contact is associated with."""
+
+    first_name: OptionalNullable[str] = UNSET
+    r"""The first name of the contact."""
+
+    middle_name: OptionalNullable[str] = UNSET
+    r"""The middle name of the contact."""
+
+    last_name: OptionalNullable[str] = UNSET
+    r"""The last name of the contact."""
+
+    prefix: OptionalNullable[str] = UNSET
+    r"""The prefix of the contact."""
+
+    suffix: OptionalNullable[str] = UNSET
+    r"""The suffix of the contact."""
+
+    title: OptionalNullable[str] = UNSET
+    r"""The job title of the contact."""
+
+    department: OptionalNullable[str] = UNSET
+    r"""The department of the contact."""
+
+    language: OptionalNullable[str] = UNSET
+    r"""language code according to ISO 639-1. For the United States - EN"""
+
+    gender: OptionalNullable[ContactGender] = UNSET
+    r"""The gender of the contact."""
+
+    birthday: OptionalNullable[str] = UNSET
+    r"""The birthday of the contact."""
+
+    image: Annotated[
+        OptionalNullable[str],
+        pydantic.Field(
+            deprecated="warning: ** DEPRECATED ** - This will be removed in a future release, please migrate away from it as soon as possible."
+        ),
+    ] = UNSET
+
+    photo_url: OptionalNullable[str] = UNSET
+    r"""The URL of the photo of a person."""
+
+    lead_source: OptionalNullable[str] = UNSET
+    r"""The lead source of the contact."""
+
+    fax: OptionalNullable[str] = UNSET
+    r"""The fax number of the contact."""
+
+    description: OptionalNullable[str] = UNSET
+    r"""The description of the contact."""
+
+    current_balance: OptionalNullable[float] = UNSET
+    r"""The current balance of the contact."""
+
+    status: OptionalNullable[str] = UNSET
+    r"""The status of the contact."""
+
+    active: OptionalNullable[bool] = UNSET
+    r"""The active status of the contact."""
+
+    websites: Optional[List[Website]] = None
+
+    addresses: Optional[List[Address]] = None
+
+    social_links: Optional[List[SocialLink]] = None
+
+    phone_numbers: Optional[List[PhoneNumber]] = None
+
+    emails: Optional[List[Email]] = None
+
+    email_domain: OptionalNullable[str] = UNSET
+
+    custom_fields: Optional[List[CustomField]] = None
+
+    tags: OptionalNullable[List[str]] = UNSET
+
+    opportunity_ids: Optional[List[str]] = None
+    r"""The opportunity ids of the contact."""
+
+    pass_through: Optional[List[PassThroughBody]] = None
+    r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
+
+    @model_serializer(mode="wrap")
+    def serialize_model(self, handler):
+        optional_fields = [
+            "owner_id",
+            "type",
+            "company_id",
+            "company_name",
+            "lead_id",
+            "first_name",
+            "middle_name",
+            "last_name",
+            "prefix",
+            "suffix",
+            "title",
+            "department",
+            "language",
+            "gender",
+            "birthday",
+            "image",
+            "photo_url",
+            "lead_source",
+            "fax",
+            "description",
+            "current_balance",
+            "status",
+            "active",
+            "websites",
+            "addresses",
+            "social_links",
+            "phone_numbers",
+            "emails",
+            "email_domain",
+            "custom_fields",
+            "tags",
+            "opportunity_ids",
+            "pass_through",
+        ]
+        nullable_fields = [
+            "name",
+            "owner_id",
+            "type",
+            "company_id",
+            "company_name",
+            "lead_id",
+            "first_name",
+            "middle_name",
+            "last_name",
+            "prefix",
+            "suffix",
+            "title",
+            "department",
+            "language",
+            "gender",
+            "birthday",
+            "image",
+            "photo_url",
+            "lead_source",
+            "fax",
+            "description",
+            "current_balance",
+            "status",
+            "active",
+            "email_domain",
+            "tags",
         ]
         null_default_fields = []
 
