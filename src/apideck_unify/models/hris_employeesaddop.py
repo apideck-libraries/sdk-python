@@ -5,7 +5,7 @@ from .createemployeeresponse import (
     CreateEmployeeResponse,
     CreateEmployeeResponseTypedDict,
 )
-from .employee_input import EmployeeInput, EmployeeInputTypedDict
+from .employee import EmployeeInput, EmployeeInputTypedDict
 from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,

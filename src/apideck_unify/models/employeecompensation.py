@@ -26,85 +26,6 @@ class FlsaStatus(str, Enum):
     OTHER = "other"
 
 
-class EmployeeCompensationInputTypedDict(TypedDict):
-    rate: NotRequired[Nullable[float]]
-    r"""The amount paid per payment unit."""
-    payment_unit: NotRequired[Nullable[PaymentUnit]]
-    r"""Unit of measurement for employee compensation."""
-    currency: NotRequired[Nullable[Currency]]
-    r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
-    flsa_status: NotRequired[Nullable[FlsaStatus]]
-    r"""The FLSA status for this compensation."""
-    effective_date: NotRequired[Nullable[str]]
-    r"""The date on which a change to an employee's compensation takes effect."""
-    payment_frequency: NotRequired[Nullable[PaymentFrequency]]
-    r"""Frequency of employee compensation."""
-
-
-class EmployeeCompensationInput(BaseModel):
-    rate: OptionalNullable[float] = UNSET
-    r"""The amount paid per payment unit."""
-
-    payment_unit: OptionalNullable[PaymentUnit] = UNSET
-    r"""Unit of measurement for employee compensation."""
-
-    currency: OptionalNullable[Currency] = UNSET
-    r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
-
-    flsa_status: OptionalNullable[FlsaStatus] = UNSET
-    r"""The FLSA status for this compensation."""
-
-    effective_date: OptionalNullable[str] = UNSET
-    r"""The date on which a change to an employee's compensation takes effect."""
-
-    payment_frequency: OptionalNullable[PaymentFrequency] = UNSET
-    r"""Frequency of employee compensation."""
-
-    @model_serializer(mode="wrap")
-    def serialize_model(self, handler):
-        optional_fields = [
-            "rate",
-            "payment_unit",
-            "currency",
-            "flsa_status",
-            "effective_date",
-            "payment_frequency",
-        ]
-        nullable_fields = [
-            "rate",
-            "payment_unit",
-            "currency",
-            "flsa_status",
-            "effective_date",
-            "payment_frequency",
-        ]
-        null_default_fields = []
-
-        serialized = handler(self)
-
-        m = {}
-
-        for n, f in type(self).model_fields.items():
-            k = f.alias or n
-            val = serialized.get(k)
-            serialized.pop(k, None)
-
-            optional_nullable = k in optional_fields and k in nullable_fields
-            is_set = (
-                self.__pydantic_fields_set__.intersection({n})
-                or k in null_default_fields
-            )  # pylint: disable=no-member
-
-            if val is not None and val != UNSET_SENTINEL:
-                m[k] = val
-            elif val != UNSET_SENTINEL and (
-                not k in optional_fields or (optional_nullable and is_set)
-            ):
-                m[k] = val
-
-        return m
-
-
 class EmployeeCompensationTypedDict(TypedDict):
     id: NotRequired[Nullable[str]]
     r"""A unique identifier for an object."""
@@ -164,6 +85,85 @@ class EmployeeCompensation(BaseModel):
         nullable_fields = [
             "id",
             "job_id",
+            "rate",
+            "payment_unit",
+            "currency",
+            "flsa_status",
+            "effective_date",
+            "payment_frequency",
+        ]
+        null_default_fields = []
+
+        serialized = handler(self)
+
+        m = {}
+
+        for n, f in type(self).model_fields.items():
+            k = f.alias or n
+            val = serialized.get(k)
+            serialized.pop(k, None)
+
+            optional_nullable = k in optional_fields and k in nullable_fields
+            is_set = (
+                self.__pydantic_fields_set__.intersection({n})
+                or k in null_default_fields
+            )  # pylint: disable=no-member
+
+            if val is not None and val != UNSET_SENTINEL:
+                m[k] = val
+            elif val != UNSET_SENTINEL and (
+                not k in optional_fields or (optional_nullable and is_set)
+            ):
+                m[k] = val
+
+        return m
+
+
+class EmployeeCompensationInputTypedDict(TypedDict):
+    rate: NotRequired[Nullable[float]]
+    r"""The amount paid per payment unit."""
+    payment_unit: NotRequired[Nullable[PaymentUnit]]
+    r"""Unit of measurement for employee compensation."""
+    currency: NotRequired[Nullable[Currency]]
+    r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
+    flsa_status: NotRequired[Nullable[FlsaStatus]]
+    r"""The FLSA status for this compensation."""
+    effective_date: NotRequired[Nullable[str]]
+    r"""The date on which a change to an employee's compensation takes effect."""
+    payment_frequency: NotRequired[Nullable[PaymentFrequency]]
+    r"""Frequency of employee compensation."""
+
+
+class EmployeeCompensationInput(BaseModel):
+    rate: OptionalNullable[float] = UNSET
+    r"""The amount paid per payment unit."""
+
+    payment_unit: OptionalNullable[PaymentUnit] = UNSET
+    r"""Unit of measurement for employee compensation."""
+
+    currency: OptionalNullable[Currency] = UNSET
+    r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
+
+    flsa_status: OptionalNullable[FlsaStatus] = UNSET
+    r"""The FLSA status for this compensation."""
+
+    effective_date: OptionalNullable[str] = UNSET
+    r"""The date on which a change to an employee's compensation takes effect."""
+
+    payment_frequency: OptionalNullable[PaymentFrequency] = UNSET
+    r"""Frequency of employee compensation."""
+
+    @model_serializer(mode="wrap")
+    def serialize_model(self, handler):
+        optional_fields = [
+            "rate",
+            "payment_unit",
+            "currency",
+            "flsa_status",
+            "effective_date",
+            "payment_frequency",
+        ]
+        nullable_fields = [
             "rate",
             "payment_unit",
             "currency",

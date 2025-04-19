@@ -35,179 +35,8 @@ class InvoiceLineItemType(str, Enum):
     DISCOUNT = "discount"
     INFO = "info"
     SUB_TOTAL = "sub_total"
+    SERVICE = "service"
     OTHER = "other"
-
-
-class InvoiceLineItemInputTypedDict(TypedDict):
-    id: NotRequired[Nullable[str]]
-    r"""A unique identifier for an object."""
-    row_id: NotRequired[str]
-    r"""Row ID"""
-    code: NotRequired[Nullable[str]]
-    r"""User defined item code"""
-    line_number: NotRequired[Nullable[int]]
-    r"""Line number of the resource"""
-    description: NotRequired[Nullable[str]]
-    r"""User defined description"""
-    type: NotRequired[Nullable[InvoiceLineItemType]]
-    r"""Item type"""
-    tax_amount: NotRequired[Nullable[float]]
-    r"""Tax amount"""
-    total_amount: NotRequired[Nullable[float]]
-    r"""Total amount of the line item"""
-    quantity: NotRequired[Nullable[float]]
-    unit_price: NotRequired[Nullable[float]]
-    unit_of_measure: NotRequired[Nullable[str]]
-    r"""Description of the unit type the item is sold as, ie: kg, hour."""
-    discount_percentage: NotRequired[Nullable[float]]
-    r"""Discount percentage applied to the line item when supported downstream."""
-    discount_amount: NotRequired[Nullable[float]]
-    r"""Discount amount applied to the line item when supported downstream."""
-    location_id: NotRequired[Nullable[str]]
-    r"""The ID of the location"""
-    department_id: NotRequired[Nullable[str]]
-    r"""The ID of the department"""
-    item: NotRequired[LinkedInvoiceItemTypedDict]
-    tax_rate: NotRequired[LinkedTaxRateInputTypedDict]
-    tracking_categories: NotRequired[
-        Nullable[List[Nullable[LinkedTrackingCategoryTypedDict]]]
-    ]
-    r"""A list of linked tracking categories."""
-    ledger_account: NotRequired[Nullable[LinkedLedgerAccountInputTypedDict]]
-    custom_fields: NotRequired[List[CustomFieldTypedDict]]
-    row_version: NotRequired[Nullable[str]]
-    r"""A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object."""
-
-
-class InvoiceLineItemInput(BaseModel):
-    id: OptionalNullable[str] = UNSET
-    r"""A unique identifier for an object."""
-
-    row_id: Optional[str] = None
-    r"""Row ID"""
-
-    code: OptionalNullable[str] = UNSET
-    r"""User defined item code"""
-
-    line_number: OptionalNullable[int] = UNSET
-    r"""Line number of the resource"""
-
-    description: OptionalNullable[str] = UNSET
-    r"""User defined description"""
-
-    type: OptionalNullable[InvoiceLineItemType] = UNSET
-    r"""Item type"""
-
-    tax_amount: OptionalNullable[float] = UNSET
-    r"""Tax amount"""
-
-    total_amount: OptionalNullable[float] = UNSET
-    r"""Total amount of the line item"""
-
-    quantity: OptionalNullable[float] = UNSET
-
-    unit_price: OptionalNullable[float] = UNSET
-
-    unit_of_measure: OptionalNullable[str] = UNSET
-    r"""Description of the unit type the item is sold as, ie: kg, hour."""
-
-    discount_percentage: OptionalNullable[float] = UNSET
-    r"""Discount percentage applied to the line item when supported downstream."""
-
-    discount_amount: OptionalNullable[float] = UNSET
-    r"""Discount amount applied to the line item when supported downstream."""
-
-    location_id: OptionalNullable[str] = UNSET
-    r"""The ID of the location"""
-
-    department_id: OptionalNullable[str] = UNSET
-    r"""The ID of the department"""
-
-    item: Optional[LinkedInvoiceItem] = None
-
-    tax_rate: Optional[LinkedTaxRateInput] = None
-
-    tracking_categories: OptionalNullable[List[Nullable[LinkedTrackingCategory]]] = (
-        UNSET
-    )
-    r"""A list of linked tracking categories."""
-
-    ledger_account: OptionalNullable[LinkedLedgerAccountInput] = UNSET
-
-    custom_fields: Optional[List[CustomField]] = None
-
-    row_version: OptionalNullable[str] = UNSET
-    r"""A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object."""
-
-    @model_serializer(mode="wrap")
-    def serialize_model(self, handler):
-        optional_fields = [
-            "id",
-            "row_id",
-            "code",
-            "line_number",
-            "description",
-            "type",
-            "tax_amount",
-            "total_amount",
-            "quantity",
-            "unit_price",
-            "unit_of_measure",
-            "discount_percentage",
-            "discount_amount",
-            "location_id",
-            "department_id",
-            "item",
-            "tax_rate",
-            "tracking_categories",
-            "ledger_account",
-            "custom_fields",
-            "row_version",
-        ]
-        nullable_fields = [
-            "id",
-            "code",
-            "line_number",
-            "description",
-            "type",
-            "tax_amount",
-            "total_amount",
-            "quantity",
-            "unit_price",
-            "unit_of_measure",
-            "discount_percentage",
-            "discount_amount",
-            "location_id",
-            "department_id",
-            "tracking_categories",
-            "ledger_account",
-            "row_version",
-        ]
-        null_default_fields = []
-
-        serialized = handler(self)
-
-        m = {}
-
-        for n, f in type(self).model_fields.items():
-            k = f.alias or n
-            val = serialized.get(k)
-            serialized.pop(k, None)
-
-            optional_nullable = k in optional_fields and k in nullable_fields
-            is_set = (
-                self.__pydantic_fields_set__.intersection({n})
-                or k in null_default_fields
-            )  # pylint: disable=no-member
-
-            if val is not None and val != UNSET_SENTINEL:
-                m[k] = val
-            elif val != UNSET_SENTINEL and (
-                not k in optional_fields or (optional_nullable and is_set)
-            ):
-                m[k] = val
-
-        return m
 
 
 class InvoiceLineItemTypedDict(TypedDict):
@@ -382,6 +211,178 @@ class InvoiceLineItem(BaseModel):
             "created_by",
             "created_at",
             "updated_at",
+        ]
+        null_default_fields = []
+
+        serialized = handler(self)
+
+        m = {}
+
+        for n, f in type(self).model_fields.items():
+            k = f.alias or n
+            val = serialized.get(k)
+            serialized.pop(k, None)
+
+            optional_nullable = k in optional_fields and k in nullable_fields
+            is_set = (
+                self.__pydantic_fields_set__.intersection({n})
+                or k in null_default_fields
+            )  # pylint: disable=no-member
+
+            if val is not None and val != UNSET_SENTINEL:
+                m[k] = val
+            elif val != UNSET_SENTINEL and (
+                not k in optional_fields or (optional_nullable and is_set)
+            ):
+                m[k] = val
+
+        return m
+
+
+class InvoiceLineItemInputTypedDict(TypedDict):
+    id: NotRequired[Nullable[str]]
+    r"""A unique identifier for an object."""
+    row_id: NotRequired[str]
+    r"""Row ID"""
+    code: NotRequired[Nullable[str]]
+    r"""User defined item code"""
+    line_number: NotRequired[Nullable[int]]
+    r"""Line number of the resource"""
+    description: NotRequired[Nullable[str]]
+    r"""User defined description"""
+    type: NotRequired[Nullable[InvoiceLineItemType]]
+    r"""Item type"""
+    tax_amount: NotRequired[Nullable[float]]
+    r"""Tax amount"""
+    total_amount: NotRequired[Nullable[float]]
+    r"""Total amount of the line item"""
+    quantity: NotRequired[Nullable[float]]
+    unit_price: NotRequired[Nullable[float]]
+    unit_of_measure: NotRequired[Nullable[str]]
+    r"""Description of the unit type the item is sold as, ie: kg, hour."""
+    discount_percentage: NotRequired[Nullable[float]]
+    r"""Discount percentage applied to the line item when supported downstream."""
+    discount_amount: NotRequired[Nullable[float]]
+    r"""Discount amount applied to the line item when supported downstream."""
+    location_id: NotRequired[Nullable[str]]
+    r"""The ID of the location"""
+    department_id: NotRequired[Nullable[str]]
+    r"""The ID of the department"""
+    item: NotRequired[LinkedInvoiceItemTypedDict]
+    tax_rate: NotRequired[LinkedTaxRateInputTypedDict]
+    tracking_categories: NotRequired[
+        Nullable[List[Nullable[LinkedTrackingCategoryTypedDict]]]
+    ]
+    r"""A list of linked tracking categories."""
+    ledger_account: NotRequired[Nullable[LinkedLedgerAccountInputTypedDict]]
+    custom_fields: NotRequired[List[CustomFieldTypedDict]]
+    row_version: NotRequired[Nullable[str]]
+    r"""A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object."""
+
+
+class InvoiceLineItemInput(BaseModel):
+    id: OptionalNullable[str] = UNSET
+    r"""A unique identifier for an object."""
+
+    row_id: Optional[str] = None
+    r"""Row ID"""
+
+    code: OptionalNullable[str] = UNSET
+    r"""User defined item code"""
+
+    line_number: OptionalNullable[int] = UNSET
+    r"""Line number of the resource"""
+
+    description: OptionalNullable[str] = UNSET
+    r"""User defined description"""
+
+    type: OptionalNullable[InvoiceLineItemType] = UNSET
+    r"""Item type"""
+
+    tax_amount: OptionalNullable[float] = UNSET
+    r"""Tax amount"""
+
+    total_amount: OptionalNullable[float] = UNSET
+    r"""Total amount of the line item"""
+
+    quantity: OptionalNullable[float] = UNSET
+
+    unit_price: OptionalNullable[float] = UNSET
+
+    unit_of_measure: OptionalNullable[str] = UNSET
+    r"""Description of the unit type the item is sold as, ie: kg, hour."""
+
+    discount_percentage: OptionalNullable[float] = UNSET
+    r"""Discount percentage applied to the line item when supported downstream."""
+
+    discount_amount: OptionalNullable[float] = UNSET
+    r"""Discount amount applied to the line item when supported downstream."""
+
+    location_id: OptionalNullable[str] = UNSET
+    r"""The ID of the location"""
+
+    department_id: OptionalNullable[str] = UNSET
+    r"""The ID of the department"""
+
+    item: Optional[LinkedInvoiceItem] = None
+
+    tax_rate: Optional[LinkedTaxRateInput] = None
+
+    tracking_categories: OptionalNullable[List[Nullable[LinkedTrackingCategory]]] = (
+        UNSET
+    )
+    r"""A list of linked tracking categories."""
+
+    ledger_account: OptionalNullable[LinkedLedgerAccountInput] = UNSET
+
+    custom_fields: Optional[List[CustomField]] = None
+
+    row_version: OptionalNullable[str] = UNSET
+    r"""A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object."""
+
+    @model_serializer(mode="wrap")
+    def serialize_model(self, handler):
+        optional_fields = [
+            "id",
+            "row_id",
+            "code",
+            "line_number",
+            "description",
+            "type",
+            "tax_amount",
+            "total_amount",
+            "quantity",
+            "unit_price",
+            "unit_of_measure",
+            "discount_percentage",
+            "discount_amount",
+            "location_id",
+            "department_id",
+            "item",
+            "tax_rate",
+            "tracking_categories",
+            "ledger_account",
+            "custom_fields",
+            "row_version",
+        ]
+        nullable_fields = [
+            "id",
+            "code",
+            "line_number",
+            "description",
+            "type",
+            "tax_amount",
+            "total_amount",
+            "quantity",
+            "unit_price",
+            "unit_of_measure",
+            "discount_percentage",
+            "discount_amount",
+            "location_id",
+            "department_id",
+            "tracking_categories",
+            "ledger_account",
+            "row_version",
         ]
         null_default_fields = []
 

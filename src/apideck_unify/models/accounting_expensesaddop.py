@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 from .createexpenseresponse import CreateExpenseResponse, CreateExpenseResponseTypedDict
-from .expense_input import ExpenseInput, ExpenseInputTypedDict
+from .expense import ExpenseInput, ExpenseInputTypedDict
 from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,

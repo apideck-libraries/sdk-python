@@ -3,7 +3,7 @@
 from __future__ import annotations
 from .links import Links, LinksTypedDict
 from .meta import Meta, MetaTypedDict
-from .trackingcategory_input import TrackingCategory, TrackingCategoryTypedDict
+from .trackingcategory import TrackingCategory, TrackingCategoryTypedDict
 from apideck_unify.types import (
     BaseModel,
     Nullable,

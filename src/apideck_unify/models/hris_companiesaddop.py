@@ -5,7 +5,7 @@ from .createhriscompanyresponse import (
     CreateHrisCompanyResponse,
     CreateHrisCompanyResponseTypedDict,
 )
-from .hriscompany_input import HrisCompanyInput, HrisCompanyInputTypedDict
+from .hriscompany import HrisCompanyInput, HrisCompanyInputTypedDict
 from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
