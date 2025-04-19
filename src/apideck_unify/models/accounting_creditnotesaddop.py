@@ -5,7 +5,7 @@ from .createcreditnoteresponse import (
     CreateCreditNoteResponse,
     CreateCreditNoteResponseTypedDict,
 )
-from .creditnote_input import CreditNoteInput, CreditNoteInputTypedDict
+from .creditnote import CreditNoteInput, CreditNoteInputTypedDict
 from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,

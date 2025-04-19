@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
-from .message_input import MessageInput, MessageInputTypedDict
+from .message import MessageInput, MessageInputTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,

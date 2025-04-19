@@ -29,76 +29,6 @@ class DepartmentStatus(str, Enum):
     INACTIVE = "inactive"
 
 
-class AccountingDepartmentInputTypedDict(TypedDict):
-    parent_id: NotRequired[Nullable[str]]
-    r"""A unique identifier for an object."""
-    name: NotRequired[Nullable[str]]
-    r"""The name of the department."""
-    status: NotRequired[DepartmentStatus]
-    r"""Based on the status some functionality is enabled or disabled."""
-    subsidiaries: NotRequired[List[SubsidiaryReferenceInputTypedDict]]
-    row_version: NotRequired[Nullable[str]]
-    r"""A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object."""
-    pass_through: NotRequired[List[PassThroughBodyTypedDict]]
-    r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
-
-
-class AccountingDepartmentInput(BaseModel):
-    parent_id: OptionalNullable[str] = UNSET
-    r"""A unique identifier for an object."""
-
-    name: OptionalNullable[str] = UNSET
-    r"""The name of the department."""
-
-    status: Optional[DepartmentStatus] = None
-    r"""Based on the status some functionality is enabled or disabled."""
-
-    subsidiaries: Optional[List[SubsidiaryReferenceInput]] = None
-
-    row_version: OptionalNullable[str] = UNSET
-    r"""A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object."""
-
-    pass_through: Optional[List[PassThroughBody]] = None
-    r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
-
-    @model_serializer(mode="wrap")
-    def serialize_model(self, handler):
-        optional_fields = [
-            "parent_id",
-            "name",
-            "status",
-            "subsidiaries",
-            "row_version",
-            "pass_through",
-        ]
-        nullable_fields = ["parent_id", "name", "row_version"]
-        null_default_fields = []
-
-        serialized = handler(self)
-
-        m = {}
-
-        for n, f in type(self).model_fields.items():
-            k = f.alias or n
-            val = serialized.get(k)
-            serialized.pop(k, None)
-
-            optional_nullable = k in optional_fields and k in nullable_fields
-            is_set = (
-                self.__pydantic_fields_set__.intersection({n})
-                or k in null_default_fields
-            )  # pylint: disable=no-member
-
-            if val is not None and val != UNSET_SENTINEL:
-                m[k] = val
-            elif val != UNSET_SENTINEL and (
-                not k in optional_fields or (optional_nullable and is_set)
-            ):
-                m[k] = val
-
-        return m
-
-
 class AccountingDepartmentTypedDict(TypedDict):
     id: NotRequired[str]
     r"""A unique identifier for an object."""
@@ -109,6 +39,8 @@ class AccountingDepartmentTypedDict(TypedDict):
     status: NotRequired[DepartmentStatus]
     r"""Based on the status some functionality is enabled or disabled."""
     subsidiaries: NotRequired[List[SubsidiaryReferenceTypedDict]]
+    code: NotRequired[str]
+    r"""The code of the department."""
     custom_mappings: NotRequired[Nullable[CustomMappingsTypedDict]]
     r"""When custom mappings are configured on the resource, the result is included here."""
     row_version: NotRequired[Nullable[str]]
@@ -140,6 +72,9 @@ class AccountingDepartment(BaseModel):
 
     subsidiaries: Optional[List[SubsidiaryReference]] = None
 
+    code: Optional[str] = None
+    r"""The code of the department."""
+
     custom_mappings: OptionalNullable[CustomMappings] = UNSET
     r"""When custom mappings are configured on the resource, the result is included here."""
 
@@ -169,6 +104,7 @@ class AccountingDepartment(BaseModel):
             "name",
             "status",
             "subsidiaries",
+            "code",
             "custom_mappings",
             "row_version",
             "updated_by",
@@ -187,6 +123,82 @@ class AccountingDepartment(BaseModel):
             "updated_at",
             "created_at",
         ]
+        null_default_fields = []
+
+        serialized = handler(self)
+
+        m = {}
+
+        for n, f in type(self).model_fields.items():
+            k = f.alias or n
+            val = serialized.get(k)
+            serialized.pop(k, None)
+
+            optional_nullable = k in optional_fields and k in nullable_fields
+            is_set = (
+                self.__pydantic_fields_set__.intersection({n})
+                or k in null_default_fields
+            )  # pylint: disable=no-member
+
+            if val is not None and val != UNSET_SENTINEL:
+                m[k] = val
+            elif val != UNSET_SENTINEL and (
+                not k in optional_fields or (optional_nullable and is_set)
+            ):
+                m[k] = val
+
+        return m
+
+
+class AccountingDepartmentInputTypedDict(TypedDict):
+    parent_id: NotRequired[Nullable[str]]
+    r"""A unique identifier for an object."""
+    name: NotRequired[Nullable[str]]
+    r"""The name of the department."""
+    status: NotRequired[DepartmentStatus]
+    r"""Based on the status some functionality is enabled or disabled."""
+    subsidiaries: NotRequired[List[SubsidiaryReferenceInputTypedDict]]
+    code: NotRequired[str]
+    r"""The code of the department."""
+    row_version: NotRequired[Nullable[str]]
+    r"""A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object."""
+    pass_through: NotRequired[List[PassThroughBodyTypedDict]]
+    r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
+
+
+class AccountingDepartmentInput(BaseModel):
+    parent_id: OptionalNullable[str] = UNSET
+    r"""A unique identifier for an object."""
+
+    name: OptionalNullable[str] = UNSET
+    r"""The name of the department."""
+
+    status: Optional[DepartmentStatus] = None
+    r"""Based on the status some functionality is enabled or disabled."""
+
+    subsidiaries: Optional[List[SubsidiaryReferenceInput]] = None
+
+    code: Optional[str] = None
+    r"""The code of the department."""
+
+    row_version: OptionalNullable[str] = UNSET
+    r"""A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object."""
+
+    pass_through: Optional[List[PassThroughBody]] = None
+    r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
+
+    @model_serializer(mode="wrap")
+    def serialize_model(self, handler):
+        optional_fields = [
+            "parent_id",
+            "name",
+            "status",
+            "subsidiaries",
+            "code",
+            "row_version",
+            "pass_through",
+        ]
+        nullable_fields = ["parent_id", "name", "row_version"]
         null_default_fields = []
 
         serialized = handler(self)
