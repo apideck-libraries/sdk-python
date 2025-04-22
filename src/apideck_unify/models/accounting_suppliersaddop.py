@@ -6,7 +6,7 @@ from .createsupplierresponse import (
     CreateSupplierResponseTypedDict,
 )
 from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
-from .supplier_input import SupplierInput, SupplierInputTypedDict
+from .supplier import SupplierInput, SupplierInputTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,

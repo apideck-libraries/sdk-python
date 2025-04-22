@@ -20,7 +20,7 @@ List Credit Notes
 ```python
 import apideck_unify
 from apideck_unify import Apideck
-import dateutil.parser
+from apideck_unify.utils import parse_datetime
 import os
 
 
@@ -31,7 +31,7 @@ with Apideck(
 ) as apideck:
 
     res = apideck.accounting.credit_notes.list(consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", filter_={
-        "updated_since": dateutil.parser.isoparse("2020-09-30T07:43:32.000Z"),
+        "updated_since": parse_datetime("2020-09-30T07:43:32.000Z"),
     }, sort={
         "by": apideck_unify.CreditNotesSortBy.UPDATED_AT,
     }, pass_through={
@@ -85,7 +85,7 @@ Create Credit Note
 ```python
 import apideck_unify
 from apideck_unify import Apideck
-import dateutil.parser
+from apideck_unify.utils import parse_datetime
 import os
 
 
@@ -99,7 +99,7 @@ with Apideck(
         "id": "12345",
         "display_name": "Windsurf Shop",
         "email": "boring@boring.com",
-    }, company_id="12345", currency=apideck_unify.Currency.USD, currency_rate=0.69, tax_inclusive=True, sub_total=27500, total_tax=2500, tax_code="1234", balance=27500, remaining_credit=27500, status=apideck_unify.CreditNoteStatus.AUTHORISED, reference="123456", date_issued=dateutil.parser.isoparse("2021-05-01T12:00:00.000Z"), date_paid=dateutil.parser.isoparse("2021-05-01T12:00:00.000Z"), type_=apideck_unify.CreditNoteType.ACCOUNTS_RECEIVABLE_CREDIT, account={
+    }, company_id="12345", currency=apideck_unify.Currency.USD, currency_rate=0.69, tax_inclusive=True, sub_total=27500, total_tax=2500, tax_code="1234", balance=27500, remaining_credit=27500, status=apideck_unify.CreditNoteStatus.AUTHORISED, reference="123456", date_issued=parse_datetime("2021-05-01T12:00:00.000Z"), date_paid=parse_datetime("2021-05-01T12:00:00.000Z"), type_=apideck_unify.CreditNoteType.ACCOUNTS_RECEIVABLE_CREDIT, account={
         "id": "123456",
         "nominal_code": "N091",
         "code": "453",
@@ -460,7 +460,7 @@ Update Credit Note
 ```python
 import apideck_unify
 from apideck_unify import Apideck
-import dateutil.parser
+from apideck_unify.utils import parse_datetime
 import os
 
 
@@ -474,7 +474,7 @@ with Apideck(
         "id": "12345",
         "display_name": "Windsurf Shop",
         "email": "boring@boring.com",
-    }, company_id="12345", currency=apideck_unify.Currency.USD, currency_rate=0.69, tax_inclusive=True, sub_total=27500, total_tax=2500, tax_code="1234", balance=27500, remaining_credit=27500, status=apideck_unify.CreditNoteStatus.AUTHORISED, reference="123456", date_issued=dateutil.parser.isoparse("2021-05-01T12:00:00.000Z"), date_paid=dateutil.parser.isoparse("2021-05-01T12:00:00.000Z"), type_=apideck_unify.CreditNoteType.ACCOUNTS_RECEIVABLE_CREDIT, account={
+    }, company_id="12345", currency=apideck_unify.Currency.USD, currency_rate=0.69, tax_inclusive=True, sub_total=27500, total_tax=2500, tax_code="1234", balance=27500, remaining_credit=27500, status=apideck_unify.CreditNoteStatus.AUTHORISED, reference="123456", date_issued=parse_datetime("2021-05-01T12:00:00.000Z"), date_paid=parse_datetime("2021-05-01T12:00:00.000Z"), type_=apideck_unify.CreditNoteType.ACCOUNTS_RECEIVABLE_CREDIT, account={
         "id": "123456",
         "nominal_code": "N091",
         "code": "453",

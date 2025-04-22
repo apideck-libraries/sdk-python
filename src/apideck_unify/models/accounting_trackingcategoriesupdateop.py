@@ -2,10 +2,7 @@
 
 from __future__ import annotations
 from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
-from .trackingcategory_input import (
-    TrackingCategoryInput,
-    TrackingCategoryInputTypedDict,
-)
+from .trackingcategory import TrackingCategoryInput, TrackingCategoryInputTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,

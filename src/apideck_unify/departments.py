@@ -118,7 +118,7 @@ class Departments(BaseSDK):
         )
 
         def next_func() -> Optional[models.AccountingDepartmentsAllResponse]:
-            body = utils.unmarshal_json(http_res.text, Dict[Any, Any])
+            body = utils.unmarshal_json(http_res.text, Union[Dict[Any, Any], List[Any]])
             next_cursor = JSONPath("$.meta.cursors.next").parse(body)
 
             if len(next_cursor) == 0:
@@ -310,7 +310,7 @@ class Departments(BaseSDK):
         )
 
         def next_func() -> Optional[models.AccountingDepartmentsAllResponse]:
-            body = utils.unmarshal_json(http_res.text, Dict[Any, Any])
+            body = utils.unmarshal_json(http_res.text, Union[Dict[Any, Any], List[Any]])
             next_cursor = JSONPath("$.meta.cursors.next").parse(body)
 
             if len(next_cursor) == 0:
@@ -410,6 +410,7 @@ class Departments(BaseSDK):
                 List[models.SubsidiaryReferenceInputTypedDict],
             ]
         ] = None,
+        code: Optional[str] = None,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
@@ -431,6 +432,7 @@ class Departments(BaseSDK):
         :param name: The name of the department.
         :param status: Based on the status some functionality is enabled or disabled.
         :param subsidiaries:
+        :param code: The code of the department.
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
@@ -460,6 +462,7 @@ class Departments(BaseSDK):
                 subsidiaries=utils.get_pydantic_model(
                     subsidiaries, Optional[List[models.SubsidiaryReferenceInput]]
                 ),
+                code=code,
                 row_version=row_version,
                 pass_through=utils.get_pydantic_model(
                     pass_through, Optional[List[models.PassThroughBody]]
@@ -596,6 +599,7 @@ class Departments(BaseSDK):
                 List[models.SubsidiaryReferenceInputTypedDict],
             ]
         ] = None,
+        code: Optional[str] = None,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
@@ -617,6 +621,7 @@ class Departments(BaseSDK):
         :param name: The name of the department.
         :param status: Based on the status some functionality is enabled or disabled.
         :param subsidiaries:
+        :param code: The code of the department.
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
@@ -646,6 +651,7 @@ class Departments(BaseSDK):
                 subsidiaries=utils.get_pydantic_model(
                     subsidiaries, Optional[List[models.SubsidiaryReferenceInput]]
                 ),
+                code=code,
                 row_version=row_version,
                 pass_through=utils.get_pydantic_model(
                     pass_through, Optional[List[models.PassThroughBody]]
@@ -1091,6 +1097,7 @@ class Departments(BaseSDK):
                 List[models.SubsidiaryReferenceInputTypedDict],
             ]
         ] = None,
+        code: Optional[str] = None,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
@@ -1113,6 +1120,7 @@ class Departments(BaseSDK):
         :param name: The name of the department.
         :param status: Based on the status some functionality is enabled or disabled.
         :param subsidiaries:
+        :param code: The code of the department.
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
@@ -1143,6 +1151,7 @@ class Departments(BaseSDK):
                 subsidiaries=utils.get_pydantic_model(
                     subsidiaries, Optional[List[models.SubsidiaryReferenceInput]]
                 ),
+                code=code,
                 row_version=row_version,
                 pass_through=utils.get_pydantic_model(
                     pass_through, Optional[List[models.PassThroughBody]]
@@ -1280,6 +1289,7 @@ class Departments(BaseSDK):
                 List[models.SubsidiaryReferenceInputTypedDict],
             ]
         ] = None,
+        code: Optional[str] = None,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
@@ -1302,6 +1312,7 @@ class Departments(BaseSDK):
         :param name: The name of the department.
         :param status: Based on the status some functionality is enabled or disabled.
         :param subsidiaries:
+        :param code: The code of the department.
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
@@ -1332,6 +1343,7 @@ class Departments(BaseSDK):
                 subsidiaries=utils.get_pydantic_model(
                     subsidiaries, Optional[List[models.SubsidiaryReferenceInput]]
                 ),
+                code=code,
                 row_version=row_version,
                 pass_through=utils.get_pydantic_model(
                     pass_through, Optional[List[models.PassThroughBody]]

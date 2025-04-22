@@ -3,7 +3,7 @@
 from __future__ import annotations
 from .links import Links, LinksTypedDict
 from .meta import Meta, MetaTypedDict
-from .supplier_input import Supplier, SupplierTypedDict
+from .supplier import Supplier, SupplierTypedDict
 from apideck_unify.types import (
     BaseModel,
     Nullable,

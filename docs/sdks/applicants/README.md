@@ -80,7 +80,7 @@ Create Applicant
 ```python
 import apideck_unify
 from apideck_unify import Apideck
-import dateutil.parser
+from datetime import date
 import os
 
 
@@ -90,7 +90,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.ats.applicants.create(consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", name="Elon Musk", first_name="Elon", last_name="Musk", middle_name="D.", initials="EM", birthday=dateutil.parser.parse("2000-08-12").date(), cover_letter="I submit this application to express my sincere interest in the API developer position. In the previous role, I was responsible for leadership and ...", photo_url="https://unavatar.io/elon-musk", headline="PepsiCo, Inc, Central Perk", title="CEO", emails=[
+    res = apideck.ats.applicants.create(consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", name="Elon Musk", first_name="Elon", last_name="Musk", middle_name="D.", initials="EM", birthday=date.fromisoformat("2000-08-12"), cover_letter="I submit this application to express my sincere interest in the API developer position. In the previous role, I was responsible for leadership and ...", photo_url="https://unavatar.io/elon-musk", headline="PepsiCo, Inc, Central Perk", title="CEO", emails=[
         {
             "id": "123",
             "email": "elon@musk.com",
@@ -378,7 +378,7 @@ Update Applicant
 ```python
 import apideck_unify
 from apideck_unify import Apideck
-import dateutil.parser
+from datetime import date
 import os
 
 
@@ -388,7 +388,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.ats.applicants.update(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", name="Elon Musk", first_name="Elon", last_name="Musk", middle_name="D.", initials="EM", birthday=dateutil.parser.parse("2000-08-12").date(), cover_letter="I submit this application to express my sincere interest in the API developer position. In the previous role, I was responsible for leadership and ...", photo_url="https://unavatar.io/elon-musk", headline="PepsiCo, Inc, Central Perk", title="CEO", emails=[
+    res = apideck.ats.applicants.update(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", name="Elon Musk", first_name="Elon", last_name="Musk", middle_name="D.", initials="EM", birthday=date.fromisoformat("2000-08-12"), cover_letter="I submit this application to express my sincere interest in the API developer position. In the previous role, I was responsible for leadership and ...", photo_url="https://unavatar.io/elon-musk", headline="PepsiCo, Inc, Central Perk", title="CEO", emails=[
         {
             "id": "123",
             "email": "elon@musk.com",

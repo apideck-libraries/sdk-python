@@ -8,7 +8,7 @@ from apideck_unify.utils import get_security_from_env
 from enum import Enum
 import io
 from jsonpath import JSONPath
-from typing import Any, Dict, IO, Mapping, Optional, Union
+from typing import Any, Dict, IO, List, Mapping, Optional, Union
 
 
 class DownloadAcceptEnum(str, Enum):
@@ -121,7 +121,7 @@ class Attachments(BaseSDK):
         )
 
         def next_func() -> Optional[models.AccountingAttachmentsAllResponse]:
-            body = utils.unmarshal_json(http_res.text, Dict[Any, Any])
+            body = utils.unmarshal_json(http_res.text, Union[Dict[Any, Any], List[Any]])
             next_cursor = JSONPath("$.meta.cursors.next").parse(body)
 
             if len(next_cursor) == 0:
@@ -310,7 +310,7 @@ class Attachments(BaseSDK):
         )
 
         def next_func() -> Optional[models.AccountingAttachmentsAllResponse]:
-            body = utils.unmarshal_json(http_res.text, Dict[Any, Any])
+            body = utils.unmarshal_json(http_res.text, Union[Dict[Any, Any], List[Any]])
             next_cursor = JSONPath("$.meta.cursors.next").parse(body)
 
             if len(next_cursor) == 0:

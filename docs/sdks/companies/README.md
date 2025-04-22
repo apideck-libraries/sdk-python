@@ -84,7 +84,7 @@ Create company
 ```python
 import apideck_unify
 from apideck_unify import Apideck
-import dateutil.parser
+from datetime import date
 import os
 
 
@@ -240,7 +240,7 @@ with Apideck(
         },
     ], tags=[
         "New",
-    ], read_only=False, salutation="Mr", birthday=dateutil.parser.parse("2000-08-12").date(), pass_through=[
+    ], read_only=False, salutation="Mr", birthday=date.fromisoformat("2000-08-12"), pass_through=[
         {
             "service_id": "<id>",
             "extend_paths": [
@@ -448,7 +448,7 @@ Update company
 ```python
 import apideck_unify
 from apideck_unify import Apideck
-import dateutil.parser
+from datetime import date
 import os
 
 
@@ -632,7 +632,7 @@ with Apideck(
         },
     ], tags=[
         "New",
-    ], read_only=False, salutation="Mr", birthday=dateutil.parser.parse("2000-08-12").date(), pass_through=[
+    ], read_only=False, salutation="Mr", birthday=date.fromisoformat("2000-08-12"), pass_through=[
         {
             "service_id": "<id>",
             "extend_paths": [

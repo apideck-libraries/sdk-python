@@ -39,6 +39,8 @@ with Apideck(
         "employment_status": apideck_unify.EmployeesFilterEmploymentStatus.ACTIVE,
         "employee_number": "123456-AB",
         "department_id": "1234",
+        "city": "San Francisco",
+        "country": "US",
     }, sort={
         "by": apideck_unify.EmployeesSortBy.CREATED_AT,
     }, pass_through={
@@ -62,7 +64,7 @@ with Apideck(
 | `service_id`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | *Optional[str]*                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | :heavy_minus_sign:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | salesforce                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | `cursor`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | *OptionalNullable[str]*                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | :heavy_minus_sign:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | `limit`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | *Optional[int]*                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | :heavy_minus_sign:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Number of results to return. Minimum 1, Maximum 200, Default 20                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
-| `filter_`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       | [Optional[models.EmployeesFilter]](../../models/employeesfilter.md)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             | :heavy_minus_sign:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Apply filters                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | {<br/>"company_id": "1234",<br/>"email": "elon@tesla.com",<br/>"first_name": "Elon",<br/>"last_name": "Musk",<br/>"title": "Manager",<br/>"manager_id": "1234",<br/>"employment_status": "active",<br/>"employee_number": "123456-AB",<br/>"department_id": "1234"<br/>}                                                                                                                                                                                                                                                                                                                                        |
+| `filter_`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       | [Optional[models.EmployeesFilter]](../../models/employeesfilter.md)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             | :heavy_minus_sign:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Apply filters                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | {<br/>"company_id": "1234",<br/>"email": "elon@tesla.com",<br/>"first_name": "Elon",<br/>"last_name": "Musk",<br/>"title": "Manager",<br/>"manager_id": "1234",<br/>"employment_status": "active",<br/>"employee_number": "123456-AB",<br/>"department_id": "1234",<br/>"city": "San Francisco",<br/>"country": "US"<br/>}                                                                                                                                                                                                                                                                                      |
 | `sort`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          | [Optional[models.EmployeesSort]](../../models/employeessort.md)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | :heavy_minus_sign:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Apply sorting                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | {<br/>"by": "created_at",<br/>"direction": "desc"<br/>}                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | `pass_through`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  | Dict[str, *Any*]                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | :heavy_minus_sign:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Optional unmapped key/values that will be passed through to downstream as query parameters. Ie: ?pass_through[search]=leads becomes ?search=leads                                                                                                                                                                                                                                                                                                                                                                                                                                                               | {<br/>"search": "San Francisco"<br/>}                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | `fields`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | *OptionalNullable[str]*                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | :heavy_minus_sign:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields "name", "email" and "addresses.city". If any other fields are available, they will be excluded. | id,updated_at                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
@@ -92,7 +94,7 @@ Create Employee
 ```python
 import apideck_unify
 from apideck_unify import Apideck
-import dateutil.parser
+from datetime import date
 import os
 
 
@@ -108,8 +110,8 @@ with Apideck(
         "middle_name": "D.",
         "gender": apideck_unify.Gender.MALE,
         "initials": "EM",
-        "birthday": dateutil.parser.parse("2000-08-12").date(),
-        "deceased_on": dateutil.parser.parse("2000-08-12").date(),
+        "birthday": date.fromisoformat("2000-08-12"),
+        "deceased_on": date.fromisoformat("2000-08-12"),
     }, division="Europe", division_id="12345", department_id="12345", department_name="12345", team={
         "id": "1234",
         "name": "Full Stack Engineers",
@@ -123,7 +125,7 @@ with Apideck(
     }, direct_reports=[
         "a0d636c6-43b3-4bde-8c70-85b707d992f4",
         "a98lfd96-43b3-4bde-8c70-85b707d992e6",
-    ], social_security_number="123456789", birthday=dateutil.parser.parse("2000-08-12").date(), deceased_on=dateutil.parser.parse("2000-08-12").date(), country_of_birth="US", description="A description", gender=apideck_unify.Gender.MALE, pronouns="she,her", preferred_language="EN", languages=[
+    ], social_security_number="123456789", birthday=date.fromisoformat("2000-08-12"), deceased_on=date.fromisoformat("2000-08-12"), country_of_birth="US", description="A description", gender=apideck_unify.Gender.MALE, pronouns="she,her", preferred_language="EN", languages=[
         "EN",
     ], nationalities=[
         "US",
@@ -131,12 +133,12 @@ with Apideck(
         {
             "title": "CEO",
             "role": "Sales",
-            "start_date": dateutil.parser.parse("2020-08-12").date(),
-            "end_date": dateutil.parser.parse("2020-08-12").date(),
+            "start_date": date.fromisoformat("2020-08-12"),
+            "end_date": date.fromisoformat("2020-08-12"),
             "compensation_rate": 72000,
             "currency": apideck_unify.Currency.USD,
             "payment_unit": apideck_unify.PaymentUnit.YEAR,
-            "hired_at": dateutil.parser.parse("2020-08-12").date(),
+            "hired_at": date.fromisoformat("2020-08-12"),
             "is_primary": True,
             "is_manager": True,
             "status": apideck_unify.EmployeeJobStatus.ACTIVE,
@@ -170,12 +172,12 @@ with Apideck(
         {
             "title": "CEO",
             "role": "Sales",
-            "start_date": dateutil.parser.parse("2020-08-12").date(),
-            "end_date": dateutil.parser.parse("2020-08-12").date(),
+            "start_date": date.fromisoformat("2020-08-12"),
+            "end_date": date.fromisoformat("2020-08-12"),
             "compensation_rate": 72000,
             "currency": apideck_unify.Currency.USD,
             "payment_unit": apideck_unify.PaymentUnit.YEAR,
-            "hired_at": dateutil.parser.parse("2020-08-12").date(),
+            "hired_at": date.fromisoformat("2020-08-12"),
             "is_primary": True,
             "is_manager": True,
             "status": apideck_unify.EmployeeJobStatus.ACTIVE,
@@ -323,8 +325,8 @@ with Apideck(
     ], tax_code="1111", tax_id="234-32-0000", dietary_preference="Veggie", food_allergies=[
         "No allergies",
     ], probation_period={
-        "start_date": dateutil.parser.parse("2021-10-01").date(),
-        "end_date": dateutil.parser.parse("2021-11-28").date(),
+        "start_date": date.fromisoformat("2021-10-01"),
+        "end_date": date.fromisoformat("2021-11-28"),
     }, tags=[
         "New",
     ], row_version="1-12345", deleted=True, pass_through=[
@@ -520,7 +522,7 @@ Update Employee
 ```python
 import apideck_unify
 from apideck_unify import Apideck
-import dateutil.parser
+from datetime import date
 import os
 
 
@@ -536,8 +538,8 @@ with Apideck(
         "middle_name": "D.",
         "gender": apideck_unify.Gender.MALE,
         "initials": "EM",
-        "birthday": dateutil.parser.parse("2000-08-12").date(),
-        "deceased_on": dateutil.parser.parse("2000-08-12").date(),
+        "birthday": date.fromisoformat("2000-08-12"),
+        "deceased_on": date.fromisoformat("2000-08-12"),
     }, division="Europe", division_id="12345", department_id="12345", department_name="12345", team={
         "id": "1234",
         "name": "Full Stack Engineers",
@@ -551,7 +553,7 @@ with Apideck(
     }, direct_reports=[
         "a0d636c6-43b3-4bde-8c70-85b707d992f4",
         "a98lfd96-43b3-4bde-8c70-85b707d992e6",
-    ], social_security_number="123456789", birthday=dateutil.parser.parse("2000-08-12").date(), deceased_on=dateutil.parser.parse("2000-08-12").date(), country_of_birth="US", description="A description", gender=apideck_unify.Gender.MALE, pronouns="she,her", preferred_language="EN", languages=[
+    ], social_security_number="123456789", birthday=date.fromisoformat("2000-08-12"), deceased_on=date.fromisoformat("2000-08-12"), country_of_birth="US", description="A description", gender=apideck_unify.Gender.MALE, pronouns="she,her", preferred_language="EN", languages=[
         "EN",
     ], nationalities=[
         "US",
@@ -559,12 +561,12 @@ with Apideck(
         {
             "title": "CEO",
             "role": "Sales",
-            "start_date": dateutil.parser.parse("2020-08-12").date(),
-            "end_date": dateutil.parser.parse("2020-08-12").date(),
+            "start_date": date.fromisoformat("2020-08-12"),
+            "end_date": date.fromisoformat("2020-08-12"),
             "compensation_rate": 72000,
             "currency": apideck_unify.Currency.USD,
             "payment_unit": apideck_unify.PaymentUnit.YEAR,
-            "hired_at": dateutil.parser.parse("2020-08-12").date(),
+            "hired_at": date.fromisoformat("2020-08-12"),
             "is_primary": True,
             "is_manager": True,
             "status": apideck_unify.EmployeeJobStatus.ACTIVE,
@@ -598,12 +600,12 @@ with Apideck(
         {
             "title": "CEO",
             "role": "Sales",
-            "start_date": dateutil.parser.parse("2020-08-12").date(),
-            "end_date": dateutil.parser.parse("2020-08-12").date(),
+            "start_date": date.fromisoformat("2020-08-12"),
+            "end_date": date.fromisoformat("2020-08-12"),
             "compensation_rate": 72000,
             "currency": apideck_unify.Currency.USD,
             "payment_unit": apideck_unify.PaymentUnit.YEAR,
-            "hired_at": dateutil.parser.parse("2020-08-12").date(),
+            "hired_at": date.fromisoformat("2020-08-12"),
             "is_primary": True,
             "is_manager": True,
             "status": apideck_unify.EmployeeJobStatus.ACTIVE,
@@ -637,12 +639,12 @@ with Apideck(
         {
             "title": "CEO",
             "role": "Sales",
-            "start_date": dateutil.parser.parse("2020-08-12").date(),
-            "end_date": dateutil.parser.parse("2020-08-12").date(),
+            "start_date": date.fromisoformat("2020-08-12"),
+            "end_date": date.fromisoformat("2020-08-12"),
             "compensation_rate": 72000,
             "currency": apideck_unify.Currency.USD,
             "payment_unit": apideck_unify.PaymentUnit.YEAR,
-            "hired_at": dateutil.parser.parse("2020-08-12").date(),
+            "hired_at": date.fromisoformat("2020-08-12"),
             "is_primary": True,
             "is_manager": True,
             "status": apideck_unify.EmployeeJobStatus.ACTIVE,
@@ -825,8 +827,8 @@ with Apideck(
     ], tax_code="1111", tax_id="234-32-0000", dietary_preference="Veggie", food_allergies=[
         "No allergies",
     ], probation_period={
-        "start_date": dateutil.parser.parse("2021-10-01").date(),
-        "end_date": dateutil.parser.parse("2021-11-28").date(),
+        "start_date": date.fromisoformat("2021-10-01"),
+        "end_date": date.fromisoformat("2021-11-28"),
     }, tags=[
         "New",
     ], row_version="1-12345", deleted=True, pass_through=[

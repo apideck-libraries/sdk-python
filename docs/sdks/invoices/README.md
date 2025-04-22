@@ -20,7 +20,7 @@ List Invoices
 ```python
 import apideck_unify
 from apideck_unify import Apideck
-import dateutil.parser
+from apideck_unify.utils import parse_datetime
 import os
 
 
@@ -31,8 +31,8 @@ with Apideck(
 ) as apideck:
 
     res = apideck.accounting.invoices.list(consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", filter_={
-        "updated_since": dateutil.parser.isoparse("2020-09-30T07:43:32.000Z"),
-        "created_since": dateutil.parser.isoparse("2020-09-30T07:43:32.000Z"),
+        "updated_since": parse_datetime("2020-09-30T07:43:32.000Z"),
+        "created_since": parse_datetime("2020-09-30T07:43:32.000Z"),
         "number": "OIT00546",
     }, sort={
         "by": apideck_unify.InvoicesSortBy.UPDATED_AT,
@@ -87,7 +87,8 @@ Create Invoice
 ```python
 import apideck_unify
 from apideck_unify import Apideck
-import dateutil.parser
+from apideck_unify.utils import parse_datetime
+from datetime import date
 import os
 
 
@@ -101,7 +102,7 @@ with Apideck(
         "id": "12345",
         "display_name": "Windsurf Shop",
         "email": "boring@boring.com",
-    }, company_id="12345", invoice_date=dateutil.parser.parse("2020-09-30").date(), due_date=dateutil.parser.parse("2020-09-30").date(), terms="Net 30 days", po_number="90000117", reference="123456", status=apideck_unify.InvoiceStatus.DRAFT, invoice_sent=True, currency=apideck_unify.Currency.USD, currency_rate=0.69, tax_inclusive=True, sub_total=27500, total_tax=2500, tax_code="1234", discount_percentage=5.5, discount_amount=25, total=27500, balance=27500, deposit=0, customer_memo="Thank you for your business and have a great day!", tracking_categories=[
+    }, company_id="12345", invoice_date=date.fromisoformat("2020-09-30"), due_date=date.fromisoformat("2020-09-30"), terms="Net 30 days", po_number="90000117", reference="123456", status=apideck_unify.InvoiceStatus.DRAFT, invoice_sent=True, currency=apideck_unify.Currency.USD, currency_rate=0.69, tax_inclusive=True, sub_total=27500, total_tax=2500, tax_code="1234", discount_percentage=5.5, discount_amount=25, total=27500, balance=27500, deposit=0, customer_memo="Thank you for your business and have a great day!", tracking_categories=[
         {
             "id": "123456",
             "name": "New York",
@@ -281,7 +282,7 @@ with Apideck(
         {
             "id": "123456",
             "allocated_amount": 1000,
-            "date_": dateutil.parser.isoparse("2020-09-30T07:43:32.000Z"),
+            "date_": parse_datetime("2020-09-30T07:43:32.000Z"),
         },
     ], payment_method="cash", channel="email", language="EN", accounting_by_row=False, bank_account={
         "bank_name": "Monzo",
@@ -475,7 +476,8 @@ Update Invoice
 ```python
 import apideck_unify
 from apideck_unify import Apideck
-import dateutil.parser
+from apideck_unify.utils import parse_datetime
+from datetime import date
 import os
 
 
@@ -489,7 +491,7 @@ with Apideck(
         "id": "12345",
         "display_name": "Windsurf Shop",
         "email": "boring@boring.com",
-    }, company_id="12345", invoice_date=dateutil.parser.parse("2020-09-30").date(), due_date=dateutil.parser.parse("2020-09-30").date(), terms="Net 30 days", po_number="90000117", reference="123456", status=apideck_unify.InvoiceStatus.DRAFT, invoice_sent=True, currency=apideck_unify.Currency.USD, currency_rate=0.69, tax_inclusive=True, sub_total=27500, total_tax=2500, tax_code="1234", discount_percentage=5.5, discount_amount=25, total=27500, balance=27500, deposit=0, customer_memo="Thank you for your business and have a great day!", tracking_categories=[
+    }, company_id="12345", invoice_date=date.fromisoformat("2020-09-30"), due_date=date.fromisoformat("2020-09-30"), terms="Net 30 days", po_number="90000117", reference="123456", status=apideck_unify.InvoiceStatus.DRAFT, invoice_sent=True, currency=apideck_unify.Currency.USD, currency_rate=0.69, tax_inclusive=True, sub_total=27500, total_tax=2500, tax_code="1234", discount_percentage=5.5, discount_amount=25, total=27500, balance=27500, deposit=0, customer_memo="Thank you for your business and have a great day!", tracking_categories=[
         {
             "id": "123456",
             "name": "New York",
@@ -679,7 +681,7 @@ with Apideck(
         {
             "id": "123456",
             "allocated_amount": 1000,
-            "date_": dateutil.parser.isoparse("2020-09-30T07:43:32.000Z"),
+            "date_": parse_datetime("2020-09-30T07:43:32.000Z"),
         },
     ], payment_method="cash", channel="email", language="EN", accounting_by_row=False, bank_account={
         "bank_name": "Monzo",

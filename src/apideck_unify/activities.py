@@ -123,7 +123,7 @@ class Activities(BaseSDK):
         )
 
         def next_func() -> Optional[models.CrmActivitiesAllResponse]:
-            body = utils.unmarshal_json(http_res.text, Dict[Any, Any])
+            body = utils.unmarshal_json(http_res.text, Union[Dict[Any, Any], List[Any]])
             next_cursor = JSONPath("$.meta.cursors.next").parse(body)
 
             if len(next_cursor) == 0:
@@ -322,7 +322,7 @@ class Activities(BaseSDK):
         )
 
         def next_func() -> Optional[models.CrmActivitiesAllResponse]:
-            body = utils.unmarshal_json(http_res.text, Dict[Any, Any])
+            body = utils.unmarshal_json(http_res.text, Union[Dict[Any, Any], List[Any]])
             next_cursor = JSONPath("$.meta.cursors.next").parse(body)
 
             if len(next_cursor) == 0:
