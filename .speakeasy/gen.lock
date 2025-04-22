@@ -1,12 +1,12 @@
 lockVersion: 2.0.0
 id: fca0ac3a-5f4e-452c-bbc7-2311afa8da40
 management:
-  docChecksum: 927e13d5ee7f835f3b9a000c906d220d
-  docVersion: 10.15.2
-  speakeasyVersion: 1.531.0
-  generationVersion: 2.568.2
-  releaseVersion: 0.11.1
-  configChecksum: 76ab06a159b661c2570c18d975d6af6d
+  docChecksum: f0f26945510a93694cd9e1619b9b6658
+  docVersion: 10.16.2
+  speakeasyVersion: 1.537.0
+  generationVersion: 2.588.0
+  releaseVersion: 0.12.0
+  configChecksum: f1e5830036a3743d70aea7139af18a5b
   repoURL: https://github.com/apideck-libraries/sdk-python.git
   installationURL: https://github.com/apideck-libraries/sdk-python.git
   published: true
@@ -15,7 +15,7 @@ features:
     acceptHeaders: 3.0.0
     additionalDependencies: 1.0.0
     constsAndDefaults: 1.0.5
-    core: 5.12.6
+    core: 5.15.0
     deepObjectParams: 0.1.0
     defaultEnabledRetries: 0.2.0
     deprecations: 3.0.2
@@ -37,7 +37,7 @@ features:
     methodServerURLs: 3.1.1
     nameOverrides: 3.0.1
     nullables: 1.0.1
-    pagination: 3.0.4
+    pagination: 3.0.5
     responseFormat: 1.0.1
     retries: 3.0.2
     sdkHooks: 1.0.1
@@ -1874,13 +1874,13 @@ generatedFiles:
   - src/apideck_unify/models/accounting_trackingcategoriesdeleteop.py
   - src/apideck_unify/models/accounting_trackingcategoriesoneop.py
   - src/apideck_unify/models/accounting_trackingcategoriesupdateop.py
-  - src/apideck_unify/models/accountingdepartment_input.py
+  - src/apideck_unify/models/accountingdepartment.py
   - src/apideck_unify/models/accountingdepartmentsfilter.py
   - src/apideck_unify/models/accountinglocation.py
   - src/apideck_unify/models/accountinglocationsfilter.py
   - src/apideck_unify/models/activitiesfilter.py
   - src/apideck_unify/models/activitiessort.py
-  - src/apideck_unify/models/activity_input.py
+  - src/apideck_unify/models/activity.py
   - src/apideck_unify/models/activityattendee.py
   - src/apideck_unify/models/address.py
   - src/apideck_unify/models/agedcreditors.py
@@ -1895,7 +1895,7 @@ generatedFiles:
   - src/apideck_unify/models/apistatus.py
   - src/apideck_unify/models/applicant.py
   - src/apideck_unify/models/applicantsfilter.py
-  - src/apideck_unify/models/application_input.py
+  - src/apideck_unify/models/application.py
   - src/apideck_unify/models/assignee.py
   - src/apideck_unify/models/assignee_input.py
   - src/apideck_unify/models/ats_applicantsaddop.py
@@ -1921,9 +1921,9 @@ generatedFiles:
   - src/apideck_unify/models/balancesheetfilter.py
   - src/apideck_unify/models/bankaccount.py
   - src/apideck_unify/models/benefit.py
-  - src/apideck_unify/models/bill_input.py
+  - src/apideck_unify/models/bill.py
   - src/apideck_unify/models/billlineitem.py
-  - src/apideck_unify/models/billpayment_input.py
+  - src/apideck_unify/models/billpayment.py
   - src/apideck_unify/models/billsfilter.py
   - src/apideck_unify/models/billssort.py
   - src/apideck_unify/models/collection.py
@@ -1936,7 +1936,7 @@ generatedFiles:
   - src/apideck_unify/models/commentssort.py
   - src/apideck_unify/models/companiesfilter.py
   - src/apideck_unify/models/companiessort.py
-  - src/apideck_unify/models/company_input.py
+  - src/apideck_unify/models/company.py
   - src/apideck_unify/models/companyinfo.py
   - src/apideck_unify/models/compensation.py
   - src/apideck_unify/models/connection.py
@@ -2015,7 +2015,7 @@ generatedFiles:
   - src/apideck_unify/models/createuserresponse.py
   - src/apideck_unify/models/createwebhookrequest.py
   - src/apideck_unify/models/createwebhookresponse.py
-  - src/apideck_unify/models/creditnote_input.py
+  - src/apideck_unify/models/creditnote.py
   - src/apideck_unify/models/creditnotesfilter.py
   - src/apideck_unify/models/creditnotessort.py
   - src/apideck_unify/models/crm_activitiesaddop.py
@@ -2139,8 +2139,8 @@ generatedFiles:
   - src/apideck_unify/models/ecommerceproduct.py
   - src/apideck_unify/models/ecommercestore.py
   - src/apideck_unify/models/email.py
-  - src/apideck_unify/models/employee_input.py
-  - src/apideck_unify/models/employeecompensation_input.py
+  - src/apideck_unify/models/employee.py
+  - src/apideck_unify/models/employeecompensation.py
   - src/apideck_unify/models/employeejob.py
   - src/apideck_unify/models/employeepayroll.py
   - src/apideck_unify/models/employeeschedules.py
@@ -2148,7 +2148,7 @@ generatedFiles:
   - src/apideck_unify/models/employeesonefilter.py
   - src/apideck_unify/models/employeessort.py
   - src/apideck_unify/models/employmentstatus.py
-  - src/apideck_unify/models/expense_input.py
+  - src/apideck_unify/models/expense.py
   - src/apideck_unify/models/expenselineitem.py
   - src/apideck_unify/models/expenselineitem_input.py
   - src/apideck_unify/models/filesfilter.py
@@ -2338,17 +2338,17 @@ generatedFiles:
   - src/apideck_unify/models/hris_timeoffrequestsdeleteop.py
   - src/apideck_unify/models/hris_timeoffrequestsoneop.py
   - src/apideck_unify/models/hris_timeoffrequestsupdateop.py
-  - src/apideck_unify/models/hriscompany_input.py
+  - src/apideck_unify/models/hriscompany.py
   - src/apideck_unify/models/httpmetadata.py
   - src/apideck_unify/models/integrationstate.py
   - src/apideck_unify/models/internal/__init__.py
   - src/apideck_unify/models/internal/globals.py
-  - src/apideck_unify/models/invoice_input.py
+  - src/apideck_unify/models/invoice.py
   - src/apideck_unify/models/invoiceitem.py
   - src/apideck_unify/models/invoiceitemfilter.py
   - src/apideck_unify/models/invoiceitemsfilter.py
   - src/apideck_unify/models/invoiceitemssort.py
-  - src/apideck_unify/models/invoicelineitem_input.py
+  - src/apideck_unify/models/invoicelineitem.py
   - src/apideck_unify/models/invoiceresponse.py
   - src/apideck_unify/models/invoicesfilter.py
   - src/apideck_unify/models/invoicessort.py
@@ -2379,7 +2379,7 @@ generatedFiles:
   - src/apideck_unify/models/lead_input.py
   - src/apideck_unify/models/leadsfilter.py
   - src/apideck_unify/models/leadssort.py
-  - src/apideck_unify/models/ledgeraccount_input.py
+  - src/apideck_unify/models/ledgeraccount.py
   - src/apideck_unify/models/ledgeraccountsfilter.py
   - src/apideck_unify/models/ledgeraccountssort.py
   - src/apideck_unify/models/linkedconnectorresource.py
@@ -2400,7 +2400,7 @@ generatedFiles:
   - src/apideck_unify/models/links.py
   - src/apideck_unify/models/log.py
   - src/apideck_unify/models/logsfilter.py
-  - src/apideck_unify/models/message_input.py
+  - src/apideck_unify/models/message.py
   - src/apideck_unify/models/meta.py
   - src/apideck_unify/models/note.py
   - src/apideck_unify/models/note_input.py
@@ -2438,7 +2438,7 @@ generatedFiles:
   - src/apideck_unify/models/profitandlossfilter.py
   - src/apideck_unify/models/profitandlossindicator.py
   - src/apideck_unify/models/profitandlosstype.py
-  - src/apideck_unify/models/purchaseorder_input.py
+  - src/apideck_unify/models/purchaseorder.py
   - src/apideck_unify/models/purchaseordersfilter.py
   - src/apideck_unify/models/purchaseorderssort.py
   - src/apideck_unify/models/requestcountallocation.py
@@ -2458,10 +2458,10 @@ generatedFiles:
   - src/apideck_unify/models/sociallink.py
   - src/apideck_unify/models/sortdirection.py
   - src/apideck_unify/models/status.py
-  - src/apideck_unify/models/subsidiary_input.py
+  - src/apideck_unify/models/subsidiary.py
   - src/apideck_unify/models/subsidiaryreference.py
   - src/apideck_unify/models/subsidiaryreference_input.py
-  - src/apideck_unify/models/supplier_input.py
+  - src/apideck_unify/models/supplier.py
   - src/apideck_unify/models/suppliersfilter.py
   - src/apideck_unify/models/supplierssort.py
   - src/apideck_unify/models/supportedproperty.py
@@ -2469,11 +2469,11 @@ generatedFiles:
   - src/apideck_unify/models/taxrate.py
   - src/apideck_unify/models/taxratesfilter.py
   - src/apideck_unify/models/team.py
-  - src/apideck_unify/models/ticket_input.py
+  - src/apideck_unify/models/ticket.py
   - src/apideck_unify/models/ticketssort.py
   - src/apideck_unify/models/timeoffrequest.py
   - src/apideck_unify/models/timeoffrequestsfilter.py
-  - src/apideck_unify/models/trackingcategory_input.py
+  - src/apideck_unify/models/trackingcategory.py
   - src/apideck_unify/models/trackingitem.py
   - src/apideck_unify/models/unauthorizedresponse.py
   - src/apideck_unify/models/unexpectederrorresponse.py
@@ -2593,6 +2593,7 @@ generatedFiles:
   - src/apideck_unify/users.py
   - src/apideck_unify/utils/__init__.py
   - src/apideck_unify/utils/annotations.py
+  - src/apideck_unify/utils/datetimes.py
   - src/apideck_unify/utils/enums.py
   - src/apideck_unify/utils/eventstreaming.py
   - src/apideck_unify/utils/forms.py
@@ -7680,7 +7681,7 @@ examples:
         query:
           raw: false
           limit: 20
-          filter: {"company_id": "1234", "email": "elon@tesla.com", "first_name": "Elon", "title": "Manager", "last_name": "Musk", "manager_id": "1234", "employment_status": "active", "employee_number": "123456-AB", "department_id": "1234"}
+          filter: {"company_id": "1234", "email": "elon@tesla.com", "first_name": "Elon", "title": "Manager", "last_name": "Musk", "manager_id": "1234", "employment_status": "active", "employee_number": "123456-AB", "department_id": "1234", "city": "San Francisco", "country": "US"}
           sort: {"by": "created_at", "direction": "desc"}
           pass_through: {"search": "San Francisco"}
           fields: "id,updated_at"

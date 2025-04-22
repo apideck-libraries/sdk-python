@@ -20,7 +20,7 @@ List Journal Entries
 ```python
 import apideck_unify
 from apideck_unify import Apideck
-import dateutil.parser
+from apideck_unify.utils import parse_datetime
 import os
 
 
@@ -31,7 +31,7 @@ with Apideck(
 ) as apideck:
 
     res = apideck.accounting.journal_entries.list(consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", filter_={
-        "updated_since": dateutil.parser.isoparse("2020-09-30T07:43:32.000Z"),
+        "updated_since": parse_datetime("2020-09-30T07:43:32.000Z"),
     }, sort={
         "by": apideck_unify.JournalEntriesSortBy.UPDATED_AT,
     }, pass_through={
@@ -85,7 +85,7 @@ Create Journal Entry
 ```python
 import apideck_unify
 from apideck_unify import Apideck
-import dateutil.parser
+from apideck_unify.utils import parse_datetime
 import os
 
 
@@ -224,7 +224,7 @@ with Apideck(
             "location_id": "12345",
             "line_number": 1,
         },
-    ], memo="Thank you for your business and have a great day!", posted_at=dateutil.parser.isoparse("2020-09-30T07:43:32.000Z"), journal_symbol="IND", tax_type="sales", tax_code="1234", number="OIT00546", tracking_categories=[
+    ], memo="Thank you for your business and have a great day!", posted_at=parse_datetime("2020-09-30T07:43:32.000Z"), journal_symbol="IND", tax_type="sales", tax_code="1234", number="OIT00546", tracking_categories=[
         {
             "id": "123456",
             "name": "New York",
@@ -366,7 +366,7 @@ Update Journal Entry
 ```python
 import apideck_unify
 from apideck_unify import Apideck
-import dateutil.parser
+from apideck_unify.utils import parse_datetime
 import os
 
 
@@ -573,7 +573,7 @@ with Apideck(
             "location_id": "12345",
             "line_number": 1,
         },
-    ], memo="Thank you for your business and have a great day!", posted_at=dateutil.parser.isoparse("2020-09-30T07:43:32.000Z"), journal_symbol="IND", tax_type="sales", tax_code="1234", number="OIT00546", tracking_categories=[
+    ], memo="Thank you for your business and have a great day!", posted_at=parse_datetime("2020-09-30T07:43:32.000Z"), journal_symbol="IND", tax_type="sales", tax_code="1234", number="OIT00546", tracking_categories=[
         {
             "id": "123456",
             "name": "New York",

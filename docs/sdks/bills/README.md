@@ -20,7 +20,7 @@ List Bills
 ```python
 import apideck_unify
 from apideck_unify import Apideck
-import dateutil.parser
+from apideck_unify.utils import parse_datetime
 import os
 
 
@@ -31,7 +31,7 @@ with Apideck(
 ) as apideck:
 
     res = apideck.accounting.bills.list(consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", filter_={
-        "updated_since": dateutil.parser.isoparse("2020-09-30T07:43:32.000Z"),
+        "updated_since": parse_datetime("2020-09-30T07:43:32.000Z"),
     }, sort={
         "by": apideck_unify.By.UPDATED_AT,
     }, pass_through={
@@ -85,7 +85,7 @@ Create Bill
 ```python
 import apideck_unify
 from apideck_unify import Apideck
-import dateutil.parser
+from datetime import date
 import os
 
 
@@ -124,7 +124,7 @@ with Apideck(
             "notes": "Address notes or delivery instructions.",
             "row_version": "1-12345",
         },
-    }, company_id="12345", currency=apideck_unify.Currency.USD, currency_rate=0.69, tax_inclusive=True, bill_date=dateutil.parser.parse("2020-09-30").date(), due_date=dateutil.parser.parse("2020-10-30").date(), paid_date=dateutil.parser.parse("2020-10-30").date(), po_number="90000117", reference="123456", line_items=[
+    }, company_id="12345", currency=apideck_unify.Currency.USD, currency_rate=0.69, tax_inclusive=True, bill_date=date.fromisoformat("2020-09-30"), due_date=date.fromisoformat("2020-10-30"), paid_date=date.fromisoformat("2020-10-30"), po_number="90000117", reference="123456", line_items=[
         {
             "row_id": "12345",
             "code": "120-C",
@@ -383,7 +383,7 @@ Update Bill
 ```python
 import apideck_unify
 from apideck_unify import Apideck
-import dateutil.parser
+from datetime import date
 import os
 
 
@@ -422,7 +422,7 @@ with Apideck(
             "notes": "Address notes or delivery instructions.",
             "row_version": "1-12345",
         },
-    }, company_id="12345", currency=apideck_unify.Currency.USD, currency_rate=0.69, tax_inclusive=True, bill_date=dateutil.parser.parse("2020-09-30").date(), due_date=dateutil.parser.parse("2020-10-30").date(), paid_date=dateutil.parser.parse("2020-10-30").date(), po_number="90000117", reference="123456", line_items=[
+    }, company_id="12345", currency=apideck_unify.Currency.USD, currency_rate=0.69, tax_inclusive=True, bill_date=date.fromisoformat("2020-09-30"), due_date=date.fromisoformat("2020-10-30"), paid_date=date.fromisoformat("2020-10-30"), po_number="90000117", reference="123456", line_items=[
         {
             "row_id": "12345",
             "code": "120-C",

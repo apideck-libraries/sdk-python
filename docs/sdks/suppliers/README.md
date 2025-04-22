@@ -20,7 +20,7 @@ List Suppliers
 ```python
 import apideck_unify
 from apideck_unify import Apideck
-import dateutil.parser
+from apideck_unify.utils import parse_datetime
 import os
 
 
@@ -36,7 +36,7 @@ with Apideck(
         "first_name": "Elon",
         "last_name": "Musk",
         "email": "elon@musk.com",
-        "updated_since": dateutil.parser.isoparse("2020-09-30T07:43:32.000Z"),
+        "updated_since": parse_datetime("2020-09-30T07:43:32.000Z"),
     }, sort={
         "by": apideck_unify.SuppliersSortBy.UPDATED_AT,
     }, pass_through={

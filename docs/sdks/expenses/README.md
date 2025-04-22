@@ -73,7 +73,7 @@ Create Expense
 ```python
 import apideck_unify
 from apideck_unify import Apideck
-import dateutil.parser
+from apideck_unify.utils import parse_datetime
 import os
 
 
@@ -83,7 +83,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.accounting.expenses.create(transaction_date=dateutil.parser.isoparse("2021-05-01T12:00:00.000Z"), account_id="123456", line_items=[
+    res = apideck.accounting.expenses.create(transaction_date=parse_datetime("2021-05-01T12:00:00.000Z"), account_id="123456", line_items=[
         {
             "tracking_categories": [
                 {
@@ -293,7 +293,7 @@ Update Expense
 ```python
 import apideck_unify
 from apideck_unify import Apideck
-import dateutil.parser
+from apideck_unify.utils import parse_datetime
 import os
 
 
@@ -303,7 +303,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.accounting.expenses.update(id="<id>", transaction_date=dateutil.parser.isoparse("2021-05-01T12:00:00.000Z"), account_id="123456", line_items=[
+    res = apideck.accounting.expenses.update(id="<id>", transaction_date=parse_datetime("2021-05-01T12:00:00.000Z"), account_id="123456", line_items=[
         {
             "tracking_categories": [
                 {

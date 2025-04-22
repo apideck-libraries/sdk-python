@@ -38,6 +38,8 @@ class EmployeesFilterTypedDict(TypedDict):
     r"""ID of the department to filter on"""
     city: NotRequired[str]
     r"""City to filter on"""
+    country: NotRequired[str]
+    r"""Country to filter on"""
 
 
 class EmployeesFilter(BaseModel):
@@ -72,3 +74,6 @@ class EmployeesFilter(BaseModel):
 
     city: Annotated[Optional[str], FieldMetadata(query=True)] = None
     r"""City to filter on"""
+
+    country: Annotated[Optional[str], FieldMetadata(query=True)] = None
+    r"""Country to filter on"""

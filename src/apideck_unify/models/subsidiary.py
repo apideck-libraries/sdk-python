@@ -17,74 +17,97 @@ from typing import List, Optional
 from typing_extensions import NotRequired, TypedDict
 
 
-class TrackingCategoryStatus(str, Enum):
+class SubsidiaryStatus(str, Enum):
     r"""Based on the status some functionality is enabled or disabled."""
 
     ACTIVE = "active"
     INACTIVE = "inactive"
 
 
-class TrackingCategorySubsidiariesTypedDict(TypedDict):
+class SubsidiaryTypedDict(TypedDict):
     id: NotRequired[str]
-    r"""The ID of the subsidiary."""
-
-
-class TrackingCategorySubsidiaries(BaseModel):
-    id: Optional[str] = None
-    r"""The ID of the subsidiary."""
-
-
-class TrackingCategoryInputTypedDict(TypedDict):
+    r"""A unique identifier for an object."""
     parent_id: NotRequired[Nullable[str]]
     r"""A unique identifier for an object."""
-    name: NotRequired[str]
-    r"""The name of the tracking category."""
-    code: NotRequired[Nullable[str]]
-    r"""The code of the tracking category."""
-    status: NotRequired[TrackingCategoryStatus]
+    name: NotRequired[Nullable[str]]
+    r"""The name of the company."""
+    status: NotRequired[SubsidiaryStatus]
     r"""Based on the status some functionality is enabled or disabled."""
+    custom_mappings: NotRequired[Nullable[CustomMappingsTypedDict]]
+    r"""When custom mappings are configured on the resource, the result is included here."""
     row_version: NotRequired[Nullable[str]]
     r"""A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object."""
+    updated_by: NotRequired[Nullable[str]]
+    r"""The user who last updated the object."""
+    created_by: NotRequired[Nullable[str]]
+    r"""The user who created the object."""
+    updated_at: NotRequired[Nullable[datetime]]
+    r"""The date and time when the object was last updated."""
+    created_at: NotRequired[Nullable[datetime]]
+    r"""The date and time when the object was created."""
     pass_through: NotRequired[List[PassThroughBodyTypedDict]]
     r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
-    subsidiaries: NotRequired[List[TrackingCategorySubsidiariesTypedDict]]
-    r"""The subsidiaries the account belongs to."""
 
 
-class TrackingCategoryInput(BaseModel):
+class Subsidiary(BaseModel):
+    id: Optional[str] = None
+    r"""A unique identifier for an object."""
+
     parent_id: OptionalNullable[str] = UNSET
     r"""A unique identifier for an object."""
 
-    name: Optional[str] = None
-    r"""The name of the tracking category."""
+    name: OptionalNullable[str] = UNSET
+    r"""The name of the company."""
 
-    code: OptionalNullable[str] = UNSET
-    r"""The code of the tracking category."""
-
-    status: Optional[TrackingCategoryStatus] = None
+    status: Optional[SubsidiaryStatus] = None
     r"""Based on the status some functionality is enabled or disabled."""
+
+    custom_mappings: OptionalNullable[CustomMappings] = UNSET
+    r"""When custom mappings are configured on the resource, the result is included here."""
 
     row_version: OptionalNullable[str] = UNSET
     r"""A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object."""
 
+    updated_by: OptionalNullable[str] = UNSET
+    r"""The user who last updated the object."""
+
+    created_by: OptionalNullable[str] = UNSET
+    r"""The user who created the object."""
+
+    updated_at: OptionalNullable[datetime] = UNSET
+    r"""The date and time when the object was last updated."""
+
+    created_at: OptionalNullable[datetime] = UNSET
+    r"""The date and time when the object was created."""
+
     pass_through: Optional[List[PassThroughBody]] = None
     r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
-
-    subsidiaries: Optional[List[TrackingCategorySubsidiaries]] = None
-    r"""The subsidiaries the account belongs to."""
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
         optional_fields = [
+            "id",
             "parent_id",
             "name",
-            "code",
             "status",
+            "custom_mappings",
             "row_version",
+            "updated_by",
+            "created_by",
+            "updated_at",
+            "created_at",
             "pass_through",
-            "subsidiaries",
         ]
-        nullable_fields = ["parent_id", "code", "row_version"]
+        nullable_fields = [
+            "parent_id",
+            "name",
+            "custom_mappings",
+            "row_version",
+            "updated_by",
+            "created_by",
+            "updated_at",
+            "created_at",
+        ]
         null_default_fields = []
 
         serialized = handler(self)
@@ -112,102 +135,39 @@ class TrackingCategoryInput(BaseModel):
         return m
 
 
-class TrackingCategoryTypedDict(TypedDict):
-    id: NotRequired[str]
-    r"""A unique identifier for an object."""
+class SubsidiaryInputTypedDict(TypedDict):
     parent_id: NotRequired[Nullable[str]]
     r"""A unique identifier for an object."""
-    name: NotRequired[str]
-    r"""The name of the tracking category."""
-    code: NotRequired[Nullable[str]]
-    r"""The code of the tracking category."""
-    status: NotRequired[TrackingCategoryStatus]
+    name: NotRequired[Nullable[str]]
+    r"""The name of the company."""
+    status: NotRequired[SubsidiaryStatus]
     r"""Based on the status some functionality is enabled or disabled."""
-    custom_mappings: NotRequired[Nullable[CustomMappingsTypedDict]]
-    r"""When custom mappings are configured on the resource, the result is included here."""
     row_version: NotRequired[Nullable[str]]
     r"""A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object."""
-    updated_by: NotRequired[Nullable[str]]
-    r"""The user who last updated the object."""
-    created_by: NotRequired[Nullable[str]]
-    r"""The user who created the object."""
-    updated_at: NotRequired[Nullable[datetime]]
-    r"""The date and time when the object was last updated."""
-    created_at: NotRequired[Nullable[datetime]]
-    r"""The date and time when the object was created."""
     pass_through: NotRequired[List[PassThroughBodyTypedDict]]
     r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
-    subsidiaries: NotRequired[List[TrackingCategorySubsidiariesTypedDict]]
-    r"""The subsidiaries the account belongs to."""
 
 
-class TrackingCategory(BaseModel):
-    id: Optional[str] = None
-    r"""A unique identifier for an object."""
-
+class SubsidiaryInput(BaseModel):
     parent_id: OptionalNullable[str] = UNSET
     r"""A unique identifier for an object."""
 
-    name: Optional[str] = None
-    r"""The name of the tracking category."""
+    name: OptionalNullable[str] = UNSET
+    r"""The name of the company."""
 
-    code: OptionalNullable[str] = UNSET
-    r"""The code of the tracking category."""
-
-    status: Optional[TrackingCategoryStatus] = None
+    status: Optional[SubsidiaryStatus] = None
     r"""Based on the status some functionality is enabled or disabled."""
-
-    custom_mappings: OptionalNullable[CustomMappings] = UNSET
-    r"""When custom mappings are configured on the resource, the result is included here."""
 
     row_version: OptionalNullable[str] = UNSET
     r"""A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object."""
 
-    updated_by: OptionalNullable[str] = UNSET
-    r"""The user who last updated the object."""
-
-    created_by: OptionalNullable[str] = UNSET
-    r"""The user who created the object."""
-
-    updated_at: OptionalNullable[datetime] = UNSET
-    r"""The date and time when the object was last updated."""
-
-    created_at: OptionalNullable[datetime] = UNSET
-    r"""The date and time when the object was created."""
-
     pass_through: Optional[List[PassThroughBody]] = None
     r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
 
-    subsidiaries: Optional[List[TrackingCategorySubsidiaries]] = None
-    r"""The subsidiaries the account belongs to."""
-
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
-        optional_fields = [
-            "id",
-            "parent_id",
-            "name",
-            "code",
-            "status",
-            "custom_mappings",
-            "row_version",
-            "updated_by",
-            "created_by",
-            "updated_at",
-            "created_at",
-            "pass_through",
-            "subsidiaries",
-        ]
-        nullable_fields = [
-            "parent_id",
-            "code",
-            "custom_mappings",
-            "row_version",
-            "updated_by",
-            "created_by",
-            "updated_at",
-            "created_at",
-        ]
+        optional_fields = ["parent_id", "name", "status", "row_version", "pass_through"]
+        nullable_fields = ["parent_id", "name", "row_version"]
         null_default_fields = []
 
         serialized = handler(self)

@@ -3,7 +3,7 @@
 from __future__ import annotations
 from .links import Links, LinksTypedDict
 from .meta import Meta, MetaTypedDict
-from .subsidiary_input import Subsidiary, SubsidiaryTypedDict
+from .subsidiary import Subsidiary, SubsidiaryTypedDict
 from apideck_unify.types import (
     BaseModel,
     Nullable,

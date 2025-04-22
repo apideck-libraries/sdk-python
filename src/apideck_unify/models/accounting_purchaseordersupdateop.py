@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
-from .purchaseorder_input import PurchaseOrderInput, PurchaseOrderInputTypedDict
+from .purchaseorder import PurchaseOrderInput, PurchaseOrderInputTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,

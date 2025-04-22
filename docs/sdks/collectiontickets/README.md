@@ -87,7 +87,7 @@ Create Ticket
 ```python
 import apideck_unify
 from apideck_unify import Apideck
-import dateutil.parser
+from apideck_unify.utils import parse_datetime
 import os
 
 
@@ -104,7 +104,7 @@ with Apideck(
         {
             "id": "12345",
         },
-    ], due_date=dateutil.parser.isoparse("2020-09-30T07:43:32.000Z"), tags=[
+    ], due_date=parse_datetime("2020-09-30T07:43:32.000Z"), tags=[
         {
             "id": "12345",
         },
@@ -246,7 +246,7 @@ Update Ticket
 ```python
 import apideck_unify
 from apideck_unify import Apideck
-import dateutil.parser
+from apideck_unify.utils import parse_datetime
 import os
 
 
@@ -266,7 +266,7 @@ with Apideck(
         {
             "id": "12345",
         },
-    ], due_date=dateutil.parser.isoparse("2020-09-30T07:43:32.000Z"), tags=[
+    ], due_date=parse_datetime("2020-09-30T07:43:32.000Z"), tags=[
         {
             "id": "12345",
         },

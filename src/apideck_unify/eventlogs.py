@@ -6,7 +6,7 @@ from apideck_unify._hooks import HookContext
 from apideck_unify.types import OptionalNullable, UNSET
 from apideck_unify.utils import get_security_from_env
 from jsonpath import JSONPath
-from typing import Any, Dict, Mapping, Optional, Union
+from typing import Any, Dict, List, Mapping, Optional, Union
 
 
 class EventLogs(BaseSDK):
@@ -102,7 +102,7 @@ class EventLogs(BaseSDK):
         )
 
         def next_func() -> Optional[models.WebhookEventLogsAllResponse]:
-            body = utils.unmarshal_json(http_res.text, Dict[Any, Any])
+            body = utils.unmarshal_json(http_res.text, Union[Dict[Any, Any], List[Any]])
             next_cursor = JSONPath("$.meta.cursors.next").parse(body)
 
             if len(next_cursor) == 0:
@@ -274,7 +274,7 @@ class EventLogs(BaseSDK):
         )
 
         def next_func() -> Optional[models.WebhookEventLogsAllResponse]:
-            body = utils.unmarshal_json(http_res.text, Dict[Any, Any])
+            body = utils.unmarshal_json(http_res.text, Union[Dict[Any, Any], List[Any]])
             next_cursor = JSONPath("$.meta.cursors.next").parse(body)
 
             if len(next_cursor) == 0:

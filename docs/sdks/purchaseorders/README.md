@@ -20,7 +20,7 @@ List Purchase Orders
 ```python
 import apideck_unify
 from apideck_unify import Apideck
-import dateutil.parser
+from apideck_unify.utils import parse_datetime
 import os
 
 
@@ -33,7 +33,7 @@ with Apideck(
     res = apideck.accounting.purchase_orders.list(consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", pass_through={
         "search": "San Francisco",
     }, filter_={
-        "updated_since": dateutil.parser.isoparse("2020-09-30T07:43:32.000Z"),
+        "updated_since": parse_datetime("2020-09-30T07:43:32.000Z"),
         "supplier_id": "1234",
     }, sort={
         "by": apideck_unify.PurchaseOrdersSortBy.UPDATED_AT,
@@ -85,7 +85,7 @@ Create Purchase Order
 ```python
 import apideck_unify
 from apideck_unify import Apideck
-import dateutil.parser
+from datetime import date
 import os
 
 
@@ -124,7 +124,7 @@ with Apideck(
             "notes": "Address notes or delivery instructions.",
             "row_version": "1-12345",
         },
-    }, company_id="12345", status=apideck_unify.PurchaseOrderStatus.OPEN, issued_date=dateutil.parser.parse("2020-09-30").date(), delivery_date=dateutil.parser.parse("2020-09-30").date(), expected_arrival_date=dateutil.parser.parse("2020-09-30").date(), currency=apideck_unify.Currency.USD, currency_rate=0.69, sub_total=27500, total_tax=2500, total=27500, tax_inclusive=True, line_items=[
+    }, company_id="12345", status=apideck_unify.PurchaseOrderStatus.OPEN, issued_date=date.fromisoformat("2020-09-30"), delivery_date=date.fromisoformat("2020-09-30"), expected_arrival_date=date.fromisoformat("2020-09-30"), currency=apideck_unify.Currency.USD, currency_rate=0.69, sub_total=27500, total_tax=2500, total=27500, tax_inclusive=True, line_items=[
         {
             "id": "12345",
             "row_id": "12345",
@@ -288,7 +288,7 @@ with Apideck(
         "branch_identifier": "001",
         "bank_code": "BNH",
         "currency": apideck_unify.Currency.USD,
-    }, accounting_by_row=False, due_date=dateutil.parser.parse("2020-10-30").date(), payment_method="cash", tax_code="1234", channel="email", memo="Thank you for the partnership and have a great day!", tracking_categories=[
+    }, accounting_by_row=False, due_date=date.fromisoformat("2020-10-30"), payment_method="cash", tax_code="1234", channel="email", memo="Thank you for the partnership and have a great day!", tracking_categories=[
         {
             "id": "123456",
             "name": "New York",
@@ -463,7 +463,7 @@ Update Purchase Order
 ```python
 import apideck_unify
 from apideck_unify import Apideck
-import dateutil.parser
+from datetime import date
 import os
 
 
@@ -502,7 +502,7 @@ with Apideck(
             "notes": "Address notes or delivery instructions.",
             "row_version": "1-12345",
         },
-    }, company_id="12345", status=apideck_unify.PurchaseOrderStatus.OPEN, issued_date=dateutil.parser.parse("2020-09-30").date(), delivery_date=dateutil.parser.parse("2020-09-30").date(), expected_arrival_date=dateutil.parser.parse("2020-09-30").date(), currency=apideck_unify.Currency.USD, currency_rate=0.69, sub_total=27500, total_tax=2500, total=27500, tax_inclusive=True, line_items=[
+    }, company_id="12345", status=apideck_unify.PurchaseOrderStatus.OPEN, issued_date=date.fromisoformat("2020-09-30"), delivery_date=date.fromisoformat("2020-09-30"), expected_arrival_date=date.fromisoformat("2020-09-30"), currency=apideck_unify.Currency.USD, currency_rate=0.69, sub_total=27500, total_tax=2500, total=27500, tax_inclusive=True, line_items=[
         {
             "id": "12345",
             "row_id": "12345",
@@ -705,7 +705,7 @@ with Apideck(
         "branch_identifier": "001",
         "bank_code": "BNH",
         "currency": apideck_unify.Currency.USD,
-    }, accounting_by_row=False, due_date=dateutil.parser.parse("2020-10-30").date(), payment_method="cash", tax_code="1234", channel="email", memo="Thank you for the partnership and have a great day!", tracking_categories=[
+    }, accounting_by_row=False, due_date=date.fromisoformat("2020-10-30"), payment_method="cash", tax_code="1234", channel="email", memo="Thank you for the partnership and have a great day!", tracking_categories=[
         {
             "id": "123456",
             "name": "New York",

@@ -3,7 +3,7 @@
 from __future__ import annotations
 from .links import Links, LinksTypedDict
 from .meta import Meta, MetaTypedDict
-from .ticket_input import Ticket, TicketTypedDict
+from .ticket import Ticket, TicketTypedDict
 from apideck_unify.types import (
     BaseModel,
     Nullable,
