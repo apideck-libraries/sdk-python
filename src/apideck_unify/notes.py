@@ -393,6 +393,7 @@ class Notes(BaseSDK):
         contact_id: OptionalNullable[str] = UNSET,
         company_id: OptionalNullable[str] = UNSET,
         opportunity_id: OptionalNullable[str] = UNSET,
+        activity_id: OptionalNullable[str] = UNSET,
         lead_id: OptionalNullable[str] = UNSET,
         active: OptionalNullable[bool] = UNSET,
         pass_through: Optional[
@@ -417,6 +418,7 @@ class Notes(BaseSDK):
         :param contact_id: The contact that is related to the note.
         :param company_id: The company that is related to the note.
         :param opportunity_id: The opportunity that is related to the note.
+        :param activity_id: The activity that is related to the note.
         :param lead_id: The lead that is related to the note.
         :param active: Whether the Note is active or not.
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
@@ -447,6 +449,7 @@ class Notes(BaseSDK):
                 contact_id=contact_id,
                 company_id=company_id,
                 opportunity_id=opportunity_id,
+                activity_id=activity_id,
                 lead_id=lead_id,
                 active=active,
                 pass_through=utils.get_pydantic_model(
@@ -577,6 +580,7 @@ class Notes(BaseSDK):
         contact_id: OptionalNullable[str] = UNSET,
         company_id: OptionalNullable[str] = UNSET,
         opportunity_id: OptionalNullable[str] = UNSET,
+        activity_id: OptionalNullable[str] = UNSET,
         lead_id: OptionalNullable[str] = UNSET,
         active: OptionalNullable[bool] = UNSET,
         pass_through: Optional[
@@ -601,6 +605,7 @@ class Notes(BaseSDK):
         :param contact_id: The contact that is related to the note.
         :param company_id: The company that is related to the note.
         :param opportunity_id: The opportunity that is related to the note.
+        :param activity_id: The activity that is related to the note.
         :param lead_id: The lead that is related to the note.
         :param active: Whether the Note is active or not.
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
@@ -631,6 +636,7 @@ class Notes(BaseSDK):
                 contact_id=contact_id,
                 company_id=company_id,
                 opportunity_id=opportunity_id,
+                activity_id=activity_id,
                 lead_id=lead_id,
                 active=active,
                 pass_through=utils.get_pydantic_model(
@@ -1070,6 +1076,7 @@ class Notes(BaseSDK):
         contact_id: OptionalNullable[str] = UNSET,
         company_id: OptionalNullable[str] = UNSET,
         opportunity_id: OptionalNullable[str] = UNSET,
+        activity_id: OptionalNullable[str] = UNSET,
         lead_id: OptionalNullable[str] = UNSET,
         active: OptionalNullable[bool] = UNSET,
         pass_through: Optional[
@@ -1095,6 +1102,7 @@ class Notes(BaseSDK):
         :param contact_id: The contact that is related to the note.
         :param company_id: The company that is related to the note.
         :param opportunity_id: The opportunity that is related to the note.
+        :param activity_id: The activity that is related to the note.
         :param lead_id: The lead that is related to the note.
         :param active: Whether the Note is active or not.
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
@@ -1126,6 +1134,7 @@ class Notes(BaseSDK):
                 contact_id=contact_id,
                 company_id=company_id,
                 opportunity_id=opportunity_id,
+                activity_id=activity_id,
                 lead_id=lead_id,
                 active=active,
                 pass_through=utils.get_pydantic_model(
@@ -1257,6 +1266,7 @@ class Notes(BaseSDK):
         contact_id: OptionalNullable[str] = UNSET,
         company_id: OptionalNullable[str] = UNSET,
         opportunity_id: OptionalNullable[str] = UNSET,
+        activity_id: OptionalNullable[str] = UNSET,
         lead_id: OptionalNullable[str] = UNSET,
         active: OptionalNullable[bool] = UNSET,
         pass_through: Optional[
@@ -1282,6 +1292,7 @@ class Notes(BaseSDK):
         :param contact_id: The contact that is related to the note.
         :param company_id: The company that is related to the note.
         :param opportunity_id: The opportunity that is related to the note.
+        :param activity_id: The activity that is related to the note.
         :param lead_id: The lead that is related to the note.
         :param active: Whether the Note is active or not.
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
@@ -1313,6 +1324,7 @@ class Notes(BaseSDK):
                 contact_id=contact_id,
                 company_id=company_id,
                 opportunity_id=opportunity_id,
+                activity_id=activity_id,
                 lead_id=lead_id,
                 active=active,
                 pass_through=utils.get_pydantic_model(
