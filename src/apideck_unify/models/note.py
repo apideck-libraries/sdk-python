@@ -30,6 +30,8 @@ class NoteTypedDict(TypedDict):
     r"""The company that is related to the note."""
     opportunity_id: NotRequired[Nullable[str]]
     r"""The opportunity that is related to the note."""
+    activity_id: NotRequired[Nullable[str]]
+    r"""The activity that is related to the note."""
     lead_id: NotRequired[Nullable[str]]
     r"""The lead that is related to the note."""
     active: NotRequired[Nullable[bool]]
@@ -70,6 +72,9 @@ class Note(BaseModel):
     opportunity_id: OptionalNullable[str] = UNSET
     r"""The opportunity that is related to the note."""
 
+    activity_id: OptionalNullable[str] = UNSET
+    r"""The activity that is related to the note."""
+
     lead_id: OptionalNullable[str] = UNSET
     r"""The lead that is related to the note."""
 
@@ -104,6 +109,7 @@ class Note(BaseModel):
             "contact_id",
             "company_id",
             "opportunity_id",
+            "activity_id",
             "lead_id",
             "active",
             "custom_mappings",
@@ -120,6 +126,7 @@ class Note(BaseModel):
             "contact_id",
             "company_id",
             "opportunity_id",
+            "activity_id",
             "lead_id",
             "active",
             "custom_mappings",
