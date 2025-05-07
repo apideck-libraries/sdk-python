@@ -5,4 +5,4 @@ info:
 actions:
   - target: $["components"]["parameters"]["format"]
     update:
-      name: file_format
+      x-speakeasy-name-override: file_format
