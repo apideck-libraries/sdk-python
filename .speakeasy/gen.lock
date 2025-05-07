@@ -1,12 +1,12 @@
 lockVersion: 2.0.0
 id: fca0ac3a-5f4e-452c-bbc7-2311afa8da40
 management:
-  docChecksum: fcfb6c83905f31bfcbb62124ff8d6114
-  docVersion: 10.16.4
-  speakeasyVersion: 1.540.0
-  generationVersion: 2.593.3
-  releaseVersion: 0.13.0
-  configChecksum: d9551e721e236581d4311e17e44de1c8
+  docChecksum: 14ed38db9a4af4d6b2892aea130bf389
+  docVersion: 10.16.5
+  speakeasyVersion: 1.542.3
+  generationVersion: 2.597.9
+  releaseVersion: 0.14.0
+  configChecksum: fe802b0121d229e0c0d3d87493c8ba09
   repoURL: https://github.com/apideck-libraries/sdk-python.git
   installationURL: https://github.com/apideck-libraries/sdk-python.git
   published: true
@@ -15,7 +15,7 @@ features:
     acceptHeaders: 3.0.0
     additionalDependencies: 1.0.0
     constsAndDefaults: 1.0.5
-    core: 5.16.0
+    core: 5.17.1
     deepObjectParams: 0.1.0
     defaultEnabledRetries: 0.2.0
     deprecations: 3.0.2
@@ -6980,6 +6980,7 @@ examples:
         query:
           fields: "id,updated_at"
           file_format: "pdf"
+          format: "pdf"
         header:
           x-apideck-consumer-id: "test-consumer"
           x-apideck-app-id: "dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX"

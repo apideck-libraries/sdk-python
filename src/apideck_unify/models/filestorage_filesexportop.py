@@ -71,7 +71,9 @@ class FileStorageFilesExportRequest(BaseModel):
     r"""ID of the record you are acting upon."""
 
     file_format: Annotated[
-        str, FieldMetadata(query=QueryParamMetadata(style="form", explode=True))
+        str,
+        pydantic.Field(alias="format"),
+        FieldMetadata(query=QueryParamMetadata(style="form", explode=True)),
     ]
     r"""File format to export this file to. A list of available file formats for the current file is available as `export_formats` on the File resource."""
 
