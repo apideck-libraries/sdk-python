@@ -71,8 +71,6 @@ class EcommerceOrderLineItemTypedDict(TypedDict):
     r"""The name of the product or variant associated with the line item."""
     quantity: Nullable[str]
     r"""The quantity of the product or variant associated with the line item."""
-    total_amount: Nullable[str]
-    r"""The total amount for the product(s) or variant associated with the line item, including taxes and discounts."""
     id: NotRequired[Nullable[str]]
     r"""A unique identifier for an object."""
     product_id: NotRequired[Nullable[str]]
@@ -98,6 +96,8 @@ class EcommerceOrderLineItemTypedDict(TypedDict):
     r"""The quantity of the line item that has been refunded."""
     sub_total: NotRequired[Nullable[str]]
     r"""The sub total for the product(s) or variant associated with the line item, excluding taxes and discounts."""
+    total_amount: NotRequired[Nullable[str]]
+    r"""The total amount for the product(s) or variant associated with the line item, including taxes and discounts."""
     discounts: NotRequired[List[EcommerceDiscountTypedDict]]
 
 
@@ -109,9 +109,6 @@ class EcommerceOrderLineItem(BaseModel):
 
     quantity: Nullable[str]
     r"""The quantity of the product or variant associated with the line item."""
-
-    total_amount: Nullable[str]
-    r"""The total amount for the product(s) or variant associated with the line item, including taxes and discounts."""
 
     id: OptionalNullable[str] = UNSET
     r"""A unique identifier for an object."""
@@ -151,6 +148,9 @@ class EcommerceOrderLineItem(BaseModel):
     sub_total: OptionalNullable[str] = UNSET
     r"""The sub total for the product(s) or variant associated with the line item, excluding taxes and discounts."""
 
+    total_amount: OptionalNullable[str] = UNSET
+    r"""The total amount for the product(s) or variant associated with the line item, including taxes and discounts."""
+
     discounts: Optional[List[EcommerceDiscount]] = None
 
     @model_serializer(mode="wrap")
@@ -169,6 +169,7 @@ class EcommerceOrderLineItem(BaseModel):
             "refunded_amount",
             "refunded_quantity",
             "sub_total",
+            "total_amount",
             "discounts",
         ]
         nullable_fields = [
