@@ -6,6 +6,8 @@ from apideck_unify.agedcreditors_sdk import AgedCreditorsSDK
 from apideck_unify.ageddebtors_sdk import AgedDebtorsSDK
 from apideck_unify.attachments import Attachments
 from apideck_unify.balancesheet_sdk import BalanceSheetSDK
+from apideck_unify.bankfeedaccounts import BankFeedAccounts
+from apideck_unify.bankfeedstatements import BankFeedStatements
 from apideck_unify.billpayments import BillPayments
 from apideck_unify.bills import Bills
 from apideck_unify.companyinfo_sdk import CompanyInfoSDK
@@ -51,6 +53,8 @@ class Accounting(BaseSDK):
     expenses: Expenses
     aged_creditors: AgedCreditorsSDK
     aged_debtors: AgedDebtorsSDK
+    bank_feed_accounts: BankFeedAccounts
+    bank_feed_statements: BankFeedStatements
 
     def __init__(self, sdk_config: SDKConfiguration) -> None:
         BaseSDK.__init__(self, sdk_config)
@@ -81,3 +85,5 @@ class Accounting(BaseSDK):
         self.expenses = Expenses(self.sdk_configuration)
         self.aged_creditors = AgedCreditorsSDK(self.sdk_configuration)
         self.aged_debtors = AgedDebtorsSDK(self.sdk_configuration)
+        self.bank_feed_accounts = BankFeedAccounts(self.sdk_configuration)
+        self.bank_feed_statements = BankFeedStatements(self.sdk_configuration)

@@ -1,0 +1,10 @@
+# AccountingBankFeedAccountsOneResponse
+
+
+## Fields
+
+| Field                                                                                  | Type                                                                                   | Required                                                                               | Description                                                                            |
+| -------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| `http_meta`                                                                            | [models.HTTPMetadata](../models/httpmetadata.md)                                       | :heavy_check_mark:                                                                     | N/A                                                                                    |
+| `get_bank_feed_account_response`                                                       | [Optional[models.GetBankFeedAccountResponse]](../models/getbankfeedaccountresponse.md) | :heavy_minus_sign:                                                                     | Bank Feed Accounts                                                                     |
+| `unexpected_error_response`                                                            | [Optional[models.UnexpectedErrorResponse]](../models/unexpectederrorresponse.md)       | :heavy_minus_sign:                                                                     | Unexpected error                                                                       |

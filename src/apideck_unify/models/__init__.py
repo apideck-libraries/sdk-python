@@ -65,6 +65,86 @@ from .accounting_balancesheetoneop import (
     AccountingBalanceSheetOneResponse,
     AccountingBalanceSheetOneResponseTypedDict,
 )
+from .accounting_bankfeedaccountsaddop import (
+    AccountingBankFeedAccountsAddGlobals,
+    AccountingBankFeedAccountsAddGlobalsTypedDict,
+    AccountingBankFeedAccountsAddRequest,
+    AccountingBankFeedAccountsAddRequestTypedDict,
+    AccountingBankFeedAccountsAddResponse,
+    AccountingBankFeedAccountsAddResponseTypedDict,
+)
+from .accounting_bankfeedaccountsallop import (
+    AccountingBankFeedAccountsAllGlobals,
+    AccountingBankFeedAccountsAllGlobalsTypedDict,
+    AccountingBankFeedAccountsAllRequest,
+    AccountingBankFeedAccountsAllRequestTypedDict,
+    AccountingBankFeedAccountsAllResponse,
+    AccountingBankFeedAccountsAllResponseTypedDict,
+)
+from .accounting_bankfeedaccountsdeleteop import (
+    AccountingBankFeedAccountsDeleteGlobals,
+    AccountingBankFeedAccountsDeleteGlobalsTypedDict,
+    AccountingBankFeedAccountsDeleteRequest,
+    AccountingBankFeedAccountsDeleteRequestTypedDict,
+    AccountingBankFeedAccountsDeleteResponse,
+    AccountingBankFeedAccountsDeleteResponseTypedDict,
+)
+from .accounting_bankfeedaccountsoneop import (
+    AccountingBankFeedAccountsOneGlobals,
+    AccountingBankFeedAccountsOneGlobalsTypedDict,
+    AccountingBankFeedAccountsOneRequest,
+    AccountingBankFeedAccountsOneRequestTypedDict,
+    AccountingBankFeedAccountsOneResponse,
+    AccountingBankFeedAccountsOneResponseTypedDict,
+)
+from .accounting_bankfeedaccountsupdateop import (
+    AccountingBankFeedAccountsUpdateGlobals,
+    AccountingBankFeedAccountsUpdateGlobalsTypedDict,
+    AccountingBankFeedAccountsUpdateRequest,
+    AccountingBankFeedAccountsUpdateRequestTypedDict,
+    AccountingBankFeedAccountsUpdateResponse,
+    AccountingBankFeedAccountsUpdateResponseTypedDict,
+)
+from .accounting_bankfeedstatementsaddop import (
+    AccountingBankFeedStatementsAddGlobals,
+    AccountingBankFeedStatementsAddGlobalsTypedDict,
+    AccountingBankFeedStatementsAddRequest,
+    AccountingBankFeedStatementsAddRequestTypedDict,
+    AccountingBankFeedStatementsAddResponse,
+    AccountingBankFeedStatementsAddResponseTypedDict,
+)
+from .accounting_bankfeedstatementsallop import (
+    AccountingBankFeedStatementsAllGlobals,
+    AccountingBankFeedStatementsAllGlobalsTypedDict,
+    AccountingBankFeedStatementsAllRequest,
+    AccountingBankFeedStatementsAllRequestTypedDict,
+    AccountingBankFeedStatementsAllResponse,
+    AccountingBankFeedStatementsAllResponseTypedDict,
+)
+from .accounting_bankfeedstatementsdeleteop import (
+    AccountingBankFeedStatementsDeleteGlobals,
+    AccountingBankFeedStatementsDeleteGlobalsTypedDict,
+    AccountingBankFeedStatementsDeleteRequest,
+    AccountingBankFeedStatementsDeleteRequestTypedDict,
+    AccountingBankFeedStatementsDeleteResponse,
+    AccountingBankFeedStatementsDeleteResponseTypedDict,
+)
+from .accounting_bankfeedstatementsoneop import (
+    AccountingBankFeedStatementsOneGlobals,
+    AccountingBankFeedStatementsOneGlobalsTypedDict,
+    AccountingBankFeedStatementsOneRequest,
+    AccountingBankFeedStatementsOneRequestTypedDict,
+    AccountingBankFeedStatementsOneResponse,
+    AccountingBankFeedStatementsOneResponseTypedDict,
+)
+from .accounting_bankfeedstatementsupdateop import (
+    AccountingBankFeedStatementsUpdateGlobals,
+    AccountingBankFeedStatementsUpdateGlobalsTypedDict,
+    AccountingBankFeedStatementsUpdateRequest,
+    AccountingBankFeedStatementsUpdateRequestTypedDict,
+    AccountingBankFeedStatementsUpdateResponse,
+    AccountingBankFeedStatementsUpdateResponseTypedDict,
+)
 from .accounting_billpaymentsaddop import (
     AccountingBillPaymentsAddGlobals,
     AccountingBillPaymentsAddGlobalsTypedDict,
@@ -983,6 +1063,24 @@ from .balancesheetfilter import (
     PeriodType,
 )
 from .bankaccount import AccountType, BankAccount, BankAccountTypedDict
+from .bankfeedaccount import (
+    BankAccountType,
+    BankFeedAccount,
+    BankFeedAccountInput,
+    BankFeedAccountInputTypedDict,
+    BankFeedAccountTypedDict,
+    FeedStatus,
+)
+from .bankfeedstatement import (
+    BankFeedStatement,
+    BankFeedStatementInput,
+    BankFeedStatementInputTypedDict,
+    BankFeedStatementTransactionType,
+    BankFeedStatementTypedDict,
+    StatementStatus,
+    Transactions,
+    TransactionsTypedDict,
+)
 from .benefit import Benefit, BenefitTypedDict
 from .bill import Bill, BillInput, BillInputTypedDict, BillStatus, BillTypedDict
 from .billlineitem import (
@@ -1204,6 +1302,14 @@ from .createattachmentresponse import (
     CreateAttachmentResponse,
     CreateAttachmentResponseTypedDict,
 )
+from .createbankfeedaccountresponse import (
+    CreateBankFeedAccountResponse,
+    CreateBankFeedAccountResponseTypedDict,
+)
+from .createbankfeedstatementresponse import (
+    CreateBankFeedStatementResponse,
+    CreateBankFeedStatementResponseTypedDict,
+)
 from .createbillpaymentresponse import (
     CreateBillPaymentResponse,
     CreateBillPaymentResponseTypedDict,
@@ -1337,6 +1443,7 @@ from .creditnotessort import (
     CreditNotesSortBy,
     CreditNotesSortTypedDict,
 )
+from .creditordebit import CreditOrDebit
 from .crm_activitiesaddop import (
     CrmActivitiesAddGlobals,
     CrmActivitiesAddGlobalsTypedDict,
@@ -1709,6 +1816,14 @@ from .deleteapplicationresponse import (
 from .deleteattachmentresponse import (
     DeleteAttachmentResponse,
     DeleteAttachmentResponseTypedDict,
+)
+from .deletebankfeedaccountresponse import (
+    DeleteBankFeedAccountResponse,
+    DeleteBankFeedAccountResponseTypedDict,
+)
+from .deletebankfeedstatementresponse import (
+    DeleteBankFeedStatementResponse,
+    DeleteBankFeedStatementResponseTypedDict,
 )
 from .deletebillpaymentresponse import (
     DeleteBillPaymentResponse,
@@ -2306,6 +2421,22 @@ from .getattachmentsresponse import (
 from .getbalancesheetresponse import (
     GetBalanceSheetResponse,
     GetBalanceSheetResponseTypedDict,
+)
+from .getbankfeedaccountresponse import (
+    GetBankFeedAccountResponse,
+    GetBankFeedAccountResponseTypedDict,
+)
+from .getbankfeedaccountsresponse import (
+    GetBankFeedAccountsResponse,
+    GetBankFeedAccountsResponseTypedDict,
+)
+from .getbankfeedstatementresponse import (
+    GetBankFeedStatementResponse,
+    GetBankFeedStatementResponseTypedDict,
+)
+from .getbankfeedstatementsresponse import (
+    GetBankFeedStatementsResponse,
+    GetBankFeedStatementsResponseTypedDict,
 )
 from .getbillpaymentresponse import (
     GetBillPaymentResponse,
@@ -3325,6 +3456,14 @@ from .updateapplicationresponse import (
     UpdateApplicationResponse,
     UpdateApplicationResponseTypedDict,
 )
+from .updatebankfeedaccountresponse import (
+    UpdateBankFeedAccountResponse,
+    UpdateBankFeedAccountResponseTypedDict,
+)
+from .updatebankfeedstatementresponse import (
+    UpdateBankFeedStatementResponse,
+    UpdateBankFeedStatementResponseTypedDict,
+)
 from .updatebillpaymentresponse import (
     UpdateBillPaymentResponse,
     UpdateBillPaymentResponseTypedDict,
@@ -3754,6 +3893,66 @@ __all__ = [
     "AccountingBalanceSheetOneRequestTypedDict",
     "AccountingBalanceSheetOneResponse",
     "AccountingBalanceSheetOneResponseTypedDict",
+    "AccountingBankFeedAccountsAddGlobals",
+    "AccountingBankFeedAccountsAddGlobalsTypedDict",
+    "AccountingBankFeedAccountsAddRequest",
+    "AccountingBankFeedAccountsAddRequestTypedDict",
+    "AccountingBankFeedAccountsAddResponse",
+    "AccountingBankFeedAccountsAddResponseTypedDict",
+    "AccountingBankFeedAccountsAllGlobals",
+    "AccountingBankFeedAccountsAllGlobalsTypedDict",
+    "AccountingBankFeedAccountsAllRequest",
+    "AccountingBankFeedAccountsAllRequestTypedDict",
+    "AccountingBankFeedAccountsAllResponse",
+    "AccountingBankFeedAccountsAllResponseTypedDict",
+    "AccountingBankFeedAccountsDeleteGlobals",
+    "AccountingBankFeedAccountsDeleteGlobalsTypedDict",
+    "AccountingBankFeedAccountsDeleteRequest",
+    "AccountingBankFeedAccountsDeleteRequestTypedDict",
+    "AccountingBankFeedAccountsDeleteResponse",
+    "AccountingBankFeedAccountsDeleteResponseTypedDict",
+    "AccountingBankFeedAccountsOneGlobals",
+    "AccountingBankFeedAccountsOneGlobalsTypedDict",
+    "AccountingBankFeedAccountsOneRequest",
+    "AccountingBankFeedAccountsOneRequestTypedDict",
+    "AccountingBankFeedAccountsOneResponse",
+    "AccountingBankFeedAccountsOneResponseTypedDict",
+    "AccountingBankFeedAccountsUpdateGlobals",
+    "AccountingBankFeedAccountsUpdateGlobalsTypedDict",
+    "AccountingBankFeedAccountsUpdateRequest",
+    "AccountingBankFeedAccountsUpdateRequestTypedDict",
+    "AccountingBankFeedAccountsUpdateResponse",
+    "AccountingBankFeedAccountsUpdateResponseTypedDict",
+    "AccountingBankFeedStatementsAddGlobals",
+    "AccountingBankFeedStatementsAddGlobalsTypedDict",
+    "AccountingBankFeedStatementsAddRequest",
+    "AccountingBankFeedStatementsAddRequestTypedDict",
+    "AccountingBankFeedStatementsAddResponse",
+    "AccountingBankFeedStatementsAddResponseTypedDict",
+    "AccountingBankFeedStatementsAllGlobals",
+    "AccountingBankFeedStatementsAllGlobalsTypedDict",
+    "AccountingBankFeedStatementsAllRequest",
+    "AccountingBankFeedStatementsAllRequestTypedDict",
+    "AccountingBankFeedStatementsAllResponse",
+    "AccountingBankFeedStatementsAllResponseTypedDict",
+    "AccountingBankFeedStatementsDeleteGlobals",
+    "AccountingBankFeedStatementsDeleteGlobalsTypedDict",
+    "AccountingBankFeedStatementsDeleteRequest",
+    "AccountingBankFeedStatementsDeleteRequestTypedDict",
+    "AccountingBankFeedStatementsDeleteResponse",
+    "AccountingBankFeedStatementsDeleteResponseTypedDict",
+    "AccountingBankFeedStatementsOneGlobals",
+    "AccountingBankFeedStatementsOneGlobalsTypedDict",
+    "AccountingBankFeedStatementsOneRequest",
+    "AccountingBankFeedStatementsOneRequestTypedDict",
+    "AccountingBankFeedStatementsOneResponse",
+    "AccountingBankFeedStatementsOneResponseTypedDict",
+    "AccountingBankFeedStatementsUpdateGlobals",
+    "AccountingBankFeedStatementsUpdateGlobalsTypedDict",
+    "AccountingBankFeedStatementsUpdateRequest",
+    "AccountingBankFeedStatementsUpdateRequestTypedDict",
+    "AccountingBankFeedStatementsUpdateResponse",
+    "AccountingBankFeedStatementsUpdateResponseTypedDict",
     "AccountingBillPaymentsAddGlobals",
     "AccountingBillPaymentsAddGlobalsTypedDict",
     "AccountingBillPaymentsAddRequest",
@@ -4440,7 +4639,17 @@ __all__ = [
     "BalanceSheetUncategorizedItemsAccount",
     "BalanceSheetUncategorizedItemsAccountTypedDict",
     "BankAccount",
+    "BankAccountType",
     "BankAccountTypedDict",
+    "BankFeedAccount",
+    "BankFeedAccountInput",
+    "BankFeedAccountInputTypedDict",
+    "BankFeedAccountTypedDict",
+    "BankFeedStatement",
+    "BankFeedStatementInput",
+    "BankFeedStatementInputTypedDict",
+    "BankFeedStatementTransactionType",
+    "BankFeedStatementTypedDict",
     "Benefit",
     "BenefitTypedDict",
     "Bill",
@@ -4632,6 +4841,10 @@ __all__ = [
     "CreateApplicationResponseTypedDict",
     "CreateAttachmentResponse",
     "CreateAttachmentResponseTypedDict",
+    "CreateBankFeedAccountResponse",
+    "CreateBankFeedAccountResponseTypedDict",
+    "CreateBankFeedStatementResponse",
+    "CreateBankFeedStatementResponseTypedDict",
     "CreateBillPaymentResponse",
     "CreateBillPaymentResponseTypedDict",
     "CreateBillResponse",
@@ -4735,6 +4948,7 @@ __all__ = [
     "CreditNotesSort",
     "CreditNotesSortBy",
     "CreditNotesSortTypedDict",
+    "CreditOrDebit",
     "CrmActivitiesAddGlobals",
     "CrmActivitiesAddGlobalsTypedDict",
     "CrmActivitiesAddRequest",
@@ -5018,6 +5232,10 @@ __all__ = [
     "DeleteApplicationResponseTypedDict",
     "DeleteAttachmentResponse",
     "DeleteAttachmentResponseTypedDict",
+    "DeleteBankFeedAccountResponse",
+    "DeleteBankFeedAccountResponseTypedDict",
+    "DeleteBankFeedStatementResponse",
+    "DeleteBankFeedStatementResponseTypedDict",
     "DeleteBillPaymentResponse",
     "DeleteBillPaymentResponseTypedDict",
     "DeleteBillResponse",
@@ -5247,6 +5465,7 @@ __all__ = [
     "FILE_STORAGE_UPLOAD_SESSIONS_FINISH_OP_SERVERS",
     "FILE_STORAGE_UPLOAD_SESSIONS_ONE_OP_SERVERS",
     "FILE_STORAGE_UPLOAD_SESSIONS_UPLOAD_OP_SERVERS",
+    "FeedStatus",
     "FileStorageDriveGroupsAddGlobals",
     "FileStorageDriveGroupsAddGlobalsTypedDict",
     "FileStorageDriveGroupsAddRequest",
@@ -5505,6 +5724,14 @@ __all__ = [
     "GetAttachmentsResponseTypedDict",
     "GetBalanceSheetResponse",
     "GetBalanceSheetResponseTypedDict",
+    "GetBankFeedAccountResponse",
+    "GetBankFeedAccountResponseTypedDict",
+    "GetBankFeedAccountsResponse",
+    "GetBankFeedAccountsResponseTypedDict",
+    "GetBankFeedStatementResponse",
+    "GetBankFeedStatementResponseTypedDict",
+    "GetBankFeedStatementsResponse",
+    "GetBankFeedStatementsResponseTypedDict",
     "GetBillPaymentResponse",
     "GetBillPaymentResponseTypedDict",
     "GetBillPaymentsResponse",
@@ -6290,6 +6517,7 @@ __all__ = [
     "StageTypedDict",
     "Stages",
     "StagesTypedDict",
+    "StatementStatus",
     "Status",
     "SubAccounts",
     "SubAccountsTypedDict",
@@ -6359,6 +6587,8 @@ __all__ = [
     "TrackingItem",
     "TrackingItemTypedDict",
     "TransactionType",
+    "Transactions",
+    "TransactionsTypedDict",
     "Type",
     "UnauthorizedResponse",
     "UnauthorizedResponseData",
@@ -6390,6 +6620,10 @@ __all__ = [
     "UpdateApplicantResponseTypedDict",
     "UpdateApplicationResponse",
     "UpdateApplicationResponseTypedDict",
+    "UpdateBankFeedAccountResponse",
+    "UpdateBankFeedAccountResponseTypedDict",
+    "UpdateBankFeedStatementResponse",
+    "UpdateBankFeedStatementResponseTypedDict",
     "UpdateBillPaymentResponse",
     "UpdateBillPaymentResponseTypedDict",
     "UpdateBillResponse",

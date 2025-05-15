@@ -248,6 +248,22 @@ with Apideck(
 
 * [get](docs/sdks/balancesheetsdk/README.md#get) - Get BalanceSheet
 
+#### [accounting.bank_feed_accounts](docs/sdks/bankfeedaccounts/README.md)
+
+* [list](docs/sdks/bankfeedaccounts/README.md#list) - List Bank Feed Accounts
+* [create](docs/sdks/bankfeedaccounts/README.md#create) - Create Bank Feed Account
+* [get](docs/sdks/bankfeedaccounts/README.md#get) - Get Bank Feed Account
+* [update](docs/sdks/bankfeedaccounts/README.md#update) - Update Bank Feed Account
+* [delete](docs/sdks/bankfeedaccounts/README.md#delete) - Delete Bank Feed Account
+
+#### [accounting.bank_feed_statements](docs/sdks/bankfeedstatements/README.md)
+
+* [list](docs/sdks/bankfeedstatements/README.md#list) - List Bank Feed Statements
+* [create](docs/sdks/bankfeedstatements/README.md#create) - Create Bank Feed Statement
+* [get](docs/sdks/bankfeedstatements/README.md#get) - Get Bank Feed Statement
+* [update](docs/sdks/bankfeedstatements/README.md#update) - Update Bank Feed Statement
+* [delete](docs/sdks/bankfeedstatements/README.md#delete) - Delete Bank Feed Statement
+
 #### [accounting.bill_payments](docs/sdks/billpayments/README.md)
 
 * [list](docs/sdks/billpayments/README.md#list) - List Bill Payments
