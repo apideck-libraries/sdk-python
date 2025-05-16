@@ -58,6 +58,8 @@ class PurchaseOrderTypedDict(TypedDict):
     r"""Optional purchase order reference."""
     supplier: NotRequired[Nullable[LinkedSupplierTypedDict]]
     r"""The supplier this entity is linked to."""
+    subsidiary_id: NotRequired[Nullable[str]]
+    r"""The ID of the subsidiary"""
     company_id: NotRequired[Nullable[str]]
     r"""The company or subsidiary id the transaction belongs to"""
     status: NotRequired[Nullable[PurchaseOrderStatus]]
@@ -135,6 +137,9 @@ class PurchaseOrder(BaseModel):
 
     supplier: OptionalNullable[LinkedSupplier] = UNSET
     r"""The supplier this entity is linked to."""
+
+    subsidiary_id: OptionalNullable[str] = UNSET
+    r"""The ID of the subsidiary"""
 
     company_id: OptionalNullable[str] = UNSET
     r"""The company or subsidiary id the transaction belongs to"""
@@ -236,6 +241,7 @@ class PurchaseOrder(BaseModel):
             "po_number",
             "reference",
             "supplier",
+            "subsidiary_id",
             "company_id",
             "status",
             "issued_date",
@@ -274,6 +280,7 @@ class PurchaseOrder(BaseModel):
             "po_number",
             "reference",
             "supplier",
+            "subsidiary_id",
             "company_id",
             "status",
             "issued_date",
@@ -336,6 +343,8 @@ class PurchaseOrderInputTypedDict(TypedDict):
     r"""Optional purchase order reference."""
     supplier: NotRequired[Nullable[LinkedSupplierInputTypedDict]]
     r"""The supplier this entity is linked to."""
+    subsidiary_id: NotRequired[Nullable[str]]
+    r"""The ID of the subsidiary"""
     company_id: NotRequired[Nullable[str]]
     r"""The company or subsidiary id the transaction belongs to"""
     status: NotRequired[Nullable[PurchaseOrderStatus]]
@@ -397,6 +406,9 @@ class PurchaseOrderInput(BaseModel):
 
     supplier: OptionalNullable[LinkedSupplierInput] = UNSET
     r"""The supplier this entity is linked to."""
+
+    subsidiary_id: OptionalNullable[str] = UNSET
+    r"""The ID of the subsidiary"""
 
     company_id: OptionalNullable[str] = UNSET
     r"""The company or subsidiary id the transaction belongs to"""
@@ -481,6 +493,7 @@ class PurchaseOrderInput(BaseModel):
             "po_number",
             "reference",
             "supplier",
+            "subsidiary_id",
             "company_id",
             "status",
             "issued_date",
@@ -513,6 +526,7 @@ class PurchaseOrderInput(BaseModel):
             "po_number",
             "reference",
             "supplier",
+            "subsidiary_id",
             "company_id",
             "status",
             "issued_date",

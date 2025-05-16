@@ -92,7 +92,38 @@ with Apideck(
             "email": "elon@musk.com",
             "type": apideck_unify.EmailType.PRIMARY,
         },
+        {
+            "id": "123",
+            "email": "elon@musk.com",
+            "type": apideck_unify.EmailType.PRIMARY,
+        },
     ], consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", parent_id="54321", username="masterofcoin", first_name="Elon", last_name="Musk", title="CEO", division="Europe", company_name="SpaceX", employee_number="123456-AB", description="A description", image="https://logo.clearbit.com/spacex.com?s=128", language="EN", status="active", password="supersecretpassword", addresses=[
+        {
+            "id": "123",
+            "type": apideck_unify.Type.PRIMARY,
+            "string": "25 Spring Street, Blackburn, VIC 3130",
+            "name": "HQ US",
+            "line1": "Main street",
+            "line2": "apt #",
+            "line3": "Suite #",
+            "line4": "delivery instructions",
+            "street_number": "25",
+            "city": "San Francisco",
+            "state": "CA",
+            "postal_code": "94104",
+            "country": "US",
+            "latitude": "40.759211",
+            "longitude": "-73.984638",
+            "county": "Santa Clara",
+            "contact_name": "Elon Musk",
+            "salutation": "Mr",
+            "phone_number": "111-111-1111",
+            "fax": "122-111-1111",
+            "email": "elon@musk.com",
+            "website": "https://elonmusk.com",
+            "notes": "Address notes or delivery instructions.",
+            "row_version": "1-12345",
+        },
         {
             "id": "123",
             "type": apideck_unify.Type.PRIMARY,
@@ -163,6 +194,32 @@ with Apideck(
             "type": apideck_unify.PhoneNumberType.PRIMARY,
         },
     ], pass_through=[
+        {
+            "service_id": "<id>",
+            "extend_paths": [
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
+            ],
+        },
+        {
+            "service_id": "<id>",
+            "extend_paths": [
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
+            ],
+        },
         {
             "service_id": "<id>",
             "extend_paths": [
@@ -305,33 +362,12 @@ with Apideck(
             "email": "elon@musk.com",
             "type": apideck_unify.EmailType.PRIMARY,
         },
-    ], consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", parent_id="54321", username="masterofcoin", first_name="Elon", last_name="Musk", title="CEO", division="Europe", company_name="SpaceX", employee_number="123456-AB", description="A description", image="https://logo.clearbit.com/spacex.com?s=128", language="EN", status="active", password="supersecretpassword", addresses=[
         {
             "id": "123",
-            "type": apideck_unify.Type.PRIMARY,
-            "string": "25 Spring Street, Blackburn, VIC 3130",
-            "name": "HQ US",
-            "line1": "Main street",
-            "line2": "apt #",
-            "line3": "Suite #",
-            "line4": "delivery instructions",
-            "street_number": "25",
-            "city": "San Francisco",
-            "state": "CA",
-            "postal_code": "94104",
-            "country": "US",
-            "latitude": "40.759211",
-            "longitude": "-73.984638",
-            "county": "Santa Clara",
-            "contact_name": "Elon Musk",
-            "salutation": "Mr",
-            "phone_number": "111-111-1111",
-            "fax": "122-111-1111",
             "email": "elon@musk.com",
-            "website": "https://elonmusk.com",
-            "notes": "Address notes or delivery instructions.",
-            "row_version": "1-12345",
+            "type": apideck_unify.EmailType.PRIMARY,
         },
+    ], consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", parent_id="54321", username="masterofcoin", first_name="Elon", last_name="Musk", title="CEO", division="Europe", company_name="SpaceX", employee_number="123456-AB", description="A description", image="https://logo.clearbit.com/spacex.com?s=128", language="EN", status="active", password="supersecretpassword", addresses=[
         {
             "id": "123",
             "type": apideck_unify.Type.PRIMARY,
@@ -402,48 +438,6 @@ with Apideck(
             "type": apideck_unify.PhoneNumberType.PRIMARY,
         },
     ], pass_through=[
-        {
-            "service_id": "<id>",
-            "extend_paths": [
-                {
-                    "path": "$.nested.property",
-                    "value": {
-                        "TaxClassificationRef": {
-                            "value": "EUC-99990201-V1-00020000",
-                        },
-                    },
-                },
-                {
-                    "path": "$.nested.property",
-                    "value": {
-                        "TaxClassificationRef": {
-                            "value": "EUC-99990201-V1-00020000",
-                        },
-                    },
-                },
-            ],
-        },
-        {
-            "service_id": "<id>",
-            "extend_paths": [
-                {
-                    "path": "$.nested.property",
-                    "value": {
-                        "TaxClassificationRef": {
-                            "value": "EUC-99990201-V1-00020000",
-                        },
-                    },
-                },
-                {
-                    "path": "$.nested.property",
-                    "value": {
-                        "TaxClassificationRef": {
-                            "value": "EUC-99990201-V1-00020000",
-                        },
-                    },
-                },
-            ],
-        },
         {
             "service_id": "<id>",
             "extend_paths": [

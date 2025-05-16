@@ -111,12 +111,63 @@ with Apideck(
             "id": "2389328923893298",
             "name": "employee_level",
             "description": "Employee Level",
-            "value": True,
+            "value": {},
+        },
+        {
+            "id": "2389328923893298",
+            "name": "employee_level",
+            "description": "Employee Level",
+            "value": {},
         },
     ], stage_last_changed_at=parse_datetime("2020-09-30T07:43:32.000Z"), pass_through=[
         {
             "service_id": "<id>",
             "extend_paths": [
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
+            ],
+        },
+        {
+            "service_id": "<id>",
+            "extend_paths": [
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
                 {
                     "path": "$.nested.property",
                     "value": {
@@ -272,22 +323,19 @@ with Apideck(
             "id": "2389328923893298",
             "name": "employee_level",
             "description": "Employee Level",
-            "value": {},
+            "value": 10,
         },
         {
             "id": "2389328923893298",
             "name": "employee_level",
             "description": "Employee Level",
-            "value": True,
+            "value": 10,
         },
         {
             "id": "2389328923893298",
             "name": "employee_level",
             "description": "Employee Level",
-            "value": [
-                {},
-                {},
-            ],
+            "value": 10,
         },
     ], stage_last_changed_at=parse_datetime("2020-09-30T07:43:32.000Z"), pass_through=[
         {
@@ -309,19 +357,6 @@ with Apideck(
                         },
                     },
                 },
-                {
-                    "path": "$.nested.property",
-                    "value": {
-                        "TaxClassificationRef": {
-                            "value": "EUC-99990201-V1-00020000",
-                        },
-                    },
-                },
-            ],
-        },
-        {
-            "service_id": "<id>",
-            "extend_paths": [
                 {
                     "path": "$.nested.property",
                     "value": {

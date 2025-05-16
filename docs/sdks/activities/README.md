@@ -124,13 +124,7 @@ with Apideck(
             "id": "2389328923893298",
             "name": "employee_level",
             "description": "Employee Level",
-            "value": {},
-        },
-        {
-            "id": "2389328923893298",
-            "name": "employee_level",
-            "description": "Employee Level",
-            "value": True,
+            "value": "Uses Salesforce and Marketo",
         },
     ], attendees=[
         {
@@ -148,22 +142,6 @@ with Apideck(
         {
             "service_id": "<id>",
             "extend_paths": [
-                {
-                    "path": "$.nested.property",
-                    "value": {
-                        "TaxClassificationRef": {
-                            "value": "EUC-99990201-V1-00020000",
-                        },
-                    },
-                },
-                {
-                    "path": "$.nested.property",
-                    "value": {
-                        "TaxClassificationRef": {
-                            "value": "EUC-99990201-V1-00020000",
-                        },
-                    },
-                },
                 {
                     "path": "$.nested.property",
                     "value": {
@@ -359,18 +337,20 @@ with Apideck(
             "id": "2389328923893298",
             "name": "employee_level",
             "description": "Employee Level",
-            "value": True,
-        },
-        {
-            "id": "2389328923893298",
-            "name": "employee_level",
-            "description": "Employee Level",
-            "value": [
-                {},
-                {},
-            ],
+            "value": {},
         },
     ], attendees=[
+        {
+            "name": "Elon Musk",
+            "first_name": "Elon",
+            "middle_name": "D.",
+            "last_name": "Musk",
+            "prefix": "Mr.",
+            "suffix": "PhD",
+            "email_address": "elon@musk.com",
+            "is_organizer": True,
+            "status": apideck_unify.ActivityAttendeeStatus.ACCEPTED,
+        },
         {
             "name": "Elon Musk",
             "first_name": "Elon",
@@ -405,11 +385,6 @@ with Apideck(
                         },
                     },
                 },
-            ],
-        },
-        {
-            "service_id": "<id>",
-            "extend_paths": [
                 {
                     "path": "$.nested.property",
                     "value": {
@@ -418,6 +393,11 @@ with Apideck(
                         },
                     },
                 },
+            ],
+        },
+        {
+            "service_id": "<id>",
+            "extend_paths": [
                 {
                     "path": "$.nested.property",
                     "value": {

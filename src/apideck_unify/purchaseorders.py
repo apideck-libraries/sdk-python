@@ -413,6 +413,7 @@ class PurchaseOrders(BaseSDK):
         supplier: OptionalNullable[
             Union[models.LinkedSupplierInput, models.LinkedSupplierInputTypedDict]
         ] = UNSET,
+        subsidiary_id: OptionalNullable[str] = UNSET,
         company_id: OptionalNullable[str] = UNSET,
         status: OptionalNullable[models.PurchaseOrderStatus] = UNSET,
         issued_date: OptionalNullable[date] = UNSET,
@@ -479,6 +480,7 @@ class PurchaseOrders(BaseSDK):
         :param po_number: A PO Number uniquely identifies a purchase order and is generally defined by the buyer.
         :param reference: Optional purchase order reference.
         :param supplier: The supplier this entity is linked to.
+        :param subsidiary_id: The ID of the subsidiary
         :param company_id: The company or subsidiary id the transaction belongs to
         :param status:
         :param issued_date: Date purchase order was issued - YYYY-MM-DD.
@@ -532,6 +534,7 @@ class PurchaseOrders(BaseSDK):
                 supplier=utils.get_pydantic_model(
                     supplier, OptionalNullable[models.LinkedSupplierInput]
                 ),
+                subsidiary_id=subsidiary_id,
                 company_id=company_id,
                 status=status,
                 issued_date=issued_date,
@@ -698,6 +701,7 @@ class PurchaseOrders(BaseSDK):
         supplier: OptionalNullable[
             Union[models.LinkedSupplierInput, models.LinkedSupplierInputTypedDict]
         ] = UNSET,
+        subsidiary_id: OptionalNullable[str] = UNSET,
         company_id: OptionalNullable[str] = UNSET,
         status: OptionalNullable[models.PurchaseOrderStatus] = UNSET,
         issued_date: OptionalNullable[date] = UNSET,
@@ -764,6 +768,7 @@ class PurchaseOrders(BaseSDK):
         :param po_number: A PO Number uniquely identifies a purchase order and is generally defined by the buyer.
         :param reference: Optional purchase order reference.
         :param supplier: The supplier this entity is linked to.
+        :param subsidiary_id: The ID of the subsidiary
         :param company_id: The company or subsidiary id the transaction belongs to
         :param status:
         :param issued_date: Date purchase order was issued - YYYY-MM-DD.
@@ -817,6 +822,7 @@ class PurchaseOrders(BaseSDK):
                 supplier=utils.get_pydantic_model(
                     supplier, OptionalNullable[models.LinkedSupplierInput]
                 ),
+                subsidiary_id=subsidiary_id,
                 company_id=company_id,
                 status=status,
                 issued_date=issued_date,
@@ -1286,6 +1292,7 @@ class PurchaseOrders(BaseSDK):
         supplier: OptionalNullable[
             Union[models.LinkedSupplierInput, models.LinkedSupplierInputTypedDict]
         ] = UNSET,
+        subsidiary_id: OptionalNullable[str] = UNSET,
         company_id: OptionalNullable[str] = UNSET,
         status: OptionalNullable[models.PurchaseOrderStatus] = UNSET,
         issued_date: OptionalNullable[date] = UNSET,
@@ -1353,6 +1360,7 @@ class PurchaseOrders(BaseSDK):
         :param po_number: A PO Number uniquely identifies a purchase order and is generally defined by the buyer.
         :param reference: Optional purchase order reference.
         :param supplier: The supplier this entity is linked to.
+        :param subsidiary_id: The ID of the subsidiary
         :param company_id: The company or subsidiary id the transaction belongs to
         :param status:
         :param issued_date: Date purchase order was issued - YYYY-MM-DD.
@@ -1407,6 +1415,7 @@ class PurchaseOrders(BaseSDK):
                 supplier=utils.get_pydantic_model(
                     supplier, OptionalNullable[models.LinkedSupplierInput]
                 ),
+                subsidiary_id=subsidiary_id,
                 company_id=company_id,
                 status=status,
                 issued_date=issued_date,
@@ -1574,6 +1583,7 @@ class PurchaseOrders(BaseSDK):
         supplier: OptionalNullable[
             Union[models.LinkedSupplierInput, models.LinkedSupplierInputTypedDict]
         ] = UNSET,
+        subsidiary_id: OptionalNullable[str] = UNSET,
         company_id: OptionalNullable[str] = UNSET,
         status: OptionalNullable[models.PurchaseOrderStatus] = UNSET,
         issued_date: OptionalNullable[date] = UNSET,
@@ -1641,6 +1651,7 @@ class PurchaseOrders(BaseSDK):
         :param po_number: A PO Number uniquely identifies a purchase order and is generally defined by the buyer.
         :param reference: Optional purchase order reference.
         :param supplier: The supplier this entity is linked to.
+        :param subsidiary_id: The ID of the subsidiary
         :param company_id: The company or subsidiary id the transaction belongs to
         :param status:
         :param issued_date: Date purchase order was issued - YYYY-MM-DD.
@@ -1695,6 +1706,7 @@ class PurchaseOrders(BaseSDK):
                 supplier=utils.get_pydantic_model(
                     supplier, OptionalNullable[models.LinkedSupplierInput]
                 ),
+                subsidiary_id=subsidiary_id,
                 company_id=company_id,
                 status=status,
                 issued_date=issued_date,

@@ -40,6 +40,8 @@ class ExpenseLineItemInputTypedDict(TypedDict):
     r"""The expense line item description"""
     billable: NotRequired[bool]
     r"""Boolean that indicates if the line item is billable or not."""
+    line_number: NotRequired[Nullable[int]]
+    r"""Line number of the resource"""
 
 
 class ExpenseLineItemInput(BaseModel):
@@ -74,6 +76,9 @@ class ExpenseLineItemInput(BaseModel):
     billable: Optional[bool] = None
     r"""Boolean that indicates if the line item is billable or not."""
 
+    line_number: OptionalNullable[int] = UNSET
+    r"""Line number of the resource"""
+
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
         optional_fields = [
@@ -86,6 +91,7 @@ class ExpenseLineItemInput(BaseModel):
             "tax_rate",
             "description",
             "billable",
+            "line_number",
         ]
         nullable_fields = [
             "tracking_categories",
@@ -94,6 +100,7 @@ class ExpenseLineItemInput(BaseModel):
             "subsidiary_id",
             "description",
             "total_amount",
+            "line_number",
         ]
         null_default_fields = []
 
