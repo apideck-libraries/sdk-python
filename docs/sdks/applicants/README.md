@@ -96,23 +96,18 @@ with Apideck(
             "email": "elon@musk.com",
             "type": apideck_unify.EmailType.PRIMARY,
         },
-        {
-            "id": "123",
-            "email": "elon@musk.com",
-            "type": apideck_unify.EmailType.PRIMARY,
-        },
     ], custom_fields=[
         {
             "id": "2389328923893298",
             "name": "employee_level",
             "description": "Employee Level",
-            "value": True,
+            "value": {},
         },
         {
             "id": "2389328923893298",
             "name": "employee_level",
             "description": "Employee Level",
-            "value": "Uses Salesforce and Marketo",
+            "value": {},
         },
     ], phone_numbers=[
         {
@@ -123,33 +118,15 @@ with Apideck(
             "extension": "105",
             "type": apideck_unify.PhoneNumberType.PRIMARY,
         },
-    ], addresses=[
         {
-            "id": "123",
-            "type": apideck_unify.Type.PRIMARY,
-            "string": "25 Spring Street, Blackburn, VIC 3130",
-            "name": "HQ US",
-            "line1": "Main street",
-            "line2": "apt #",
-            "line3": "Suite #",
-            "line4": "delivery instructions",
-            "street_number": "25",
-            "city": "San Francisco",
-            "state": "CA",
-            "postal_code": "94104",
-            "country": "US",
-            "latitude": "40.759211",
-            "longitude": "-73.984638",
-            "county": "Santa Clara",
-            "contact_name": "Elon Musk",
-            "salutation": "Mr",
-            "phone_number": "111-111-1111",
-            "fax": "122-111-1111",
-            "email": "elon@musk.com",
-            "website": "https://elonmusk.com",
-            "notes": "Address notes or delivery instructions.",
-            "row_version": "1-12345",
+            "id": "12345",
+            "country_code": "1",
+            "area_code": "323",
+            "number": "111-111-1111",
+            "extension": "105",
+            "type": apideck_unify.PhoneNumberType.PRIMARY,
         },
+    ], addresses=[
         {
             "id": "123",
             "type": apideck_unify.Type.PRIMARY,
@@ -224,6 +201,11 @@ with Apideck(
             "url": "https://www.twitter.com/apideck",
             "type": "twitter",
         },
+        {
+            "id": "12345",
+            "url": "https://www.twitter.com/apideck",
+            "type": "twitter",
+        },
     ], stage_id="12345", recruiter_id="12345", coordinator_id="12345", application_ids=[
         "a0d636c6-43b3-4bde-8c70-85b707d992f4",
         "a98lfd96-43b3-4bde-8c70-85b707d992e6",
@@ -238,6 +220,32 @@ with Apideck(
     ], confidential=False, anonymized=True, tags=[
         "New",
     ], archived=False, owner_id="54321", record_url="https://app.intercom.io/contacts/12345", deleted=True, pass_through=[
+        {
+            "service_id": "<id>",
+            "extend_paths": [
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
+            ],
+        },
+        {
+            "service_id": "<id>",
+            "extend_paths": [
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
+            ],
+        },
         {
             "service_id": "<id>",
             "extend_paths": [
@@ -409,18 +417,20 @@ with Apideck(
             "id": "2389328923893298",
             "name": "employee_level",
             "description": "Employee Level",
-            "value": True,
-        },
-        {
-            "id": "2389328923893298",
-            "name": "employee_level",
-            "description": "Employee Level",
             "value": [
                 {},
                 {},
             ],
         },
     ], phone_numbers=[
+        {
+            "id": "12345",
+            "country_code": "1",
+            "area_code": "323",
+            "number": "111-111-1111",
+            "extension": "105",
+            "type": apideck_unify.PhoneNumberType.PRIMARY,
+        },
         {
             "id": "12345",
             "country_code": "1",
@@ -490,49 +500,23 @@ with Apideck(
             "notes": "Address notes or delivery instructions.",
             "row_version": "1-12345",
         },
-        {
-            "id": "123",
-            "type": apideck_unify.Type.PRIMARY,
-            "string": "25 Spring Street, Blackburn, VIC 3130",
-            "name": "HQ US",
-            "line1": "Main street",
-            "line2": "apt #",
-            "line3": "Suite #",
-            "line4": "delivery instructions",
-            "street_number": "25",
-            "city": "San Francisco",
-            "state": "CA",
-            "postal_code": "94104",
-            "country": "US",
-            "latitude": "40.759211",
-            "longitude": "-73.984638",
-            "county": "Santa Clara",
-            "contact_name": "Elon Musk",
-            "salutation": "Mr",
-            "phone_number": "111-111-1111",
-            "fax": "122-111-1111",
-            "email": "elon@musk.com",
-            "website": "https://elonmusk.com",
-            "notes": "Address notes or delivery instructions.",
-            "row_version": "1-12345",
-        },
     ], websites=[
         {
             "id": "12345",
             "url": "http://example.com",
             "type": apideck_unify.ApplicantType.PRIMARY,
         },
+        {
+            "id": "12345",
+            "url": "http://example.com",
+            "type": apideck_unify.ApplicantType.PRIMARY,
+        },
+        {
+            "id": "12345",
+            "url": "http://example.com",
+            "type": apideck_unify.ApplicantType.PRIMARY,
+        },
     ], social_links=[
-        {
-            "id": "12345",
-            "url": "https://www.twitter.com/apideck",
-            "type": "twitter",
-        },
-        {
-            "id": "12345",
-            "url": "https://www.twitter.com/apideck",
-            "type": "twitter",
-        },
         {
             "id": "12345",
             "url": "https://www.twitter.com/apideck",
@@ -563,11 +547,72 @@ with Apideck(
                         },
                     },
                 },
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
             ],
         },
         {
             "service_id": "<id>",
             "extend_paths": [
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
+            ],
+        },
+        {
+            "service_id": "<id>",
+            "extend_paths": [
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
                 {
                     "path": "$.nested.property",
                     "value": {

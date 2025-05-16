@@ -32,6 +32,7 @@ with Apideck(
 
     res = apideck.accounting.bill_payments.list(consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", filter_={
         "updated_since": parse_datetime("2020-09-30T07:43:32.000Z"),
+        "invoice_id": "123",
     }, sort={
         "by": apideck_unify.PaymentsSortBy.UPDATED_AT,
     }, pass_through={
@@ -55,7 +56,7 @@ with Apideck(
 | `service_id`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | *Optional[str]*                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | :heavy_minus_sign:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | salesforce                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | `cursor`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | *OptionalNullable[str]*                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | :heavy_minus_sign:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | `limit`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | *Optional[int]*                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | :heavy_minus_sign:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Number of results to return. Minimum 1, Maximum 200, Default 20                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
-| `filter_`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       | [Optional[models.PaymentsFilter]](../../models/paymentsfilter.md)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | :heavy_minus_sign:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Apply filters                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | {<br/>"updated_since": "2020-09-30T07:43:32.000Z"<br/>}                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| `filter_`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       | [Optional[models.PaymentsFilter]](../../models/paymentsfilter.md)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | :heavy_minus_sign:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Apply filters                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | {<br/>"updated_since": "2020-09-30T07:43:32.000Z",<br/>"invoice_id": "123"<br/>}                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
 | `sort`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          | [Optional[models.PaymentsSort]](../../models/paymentssort.md)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | :heavy_minus_sign:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Apply sorting                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | {<br/>"by": "updated_at",<br/>"direction": "desc"<br/>}                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | `pass_through`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  | Dict[str, *Any*]                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | :heavy_minus_sign:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Optional unmapped key/values that will be passed through to downstream as query parameters. Ie: ?pass_through[search]=leads becomes ?search=leads                                                                                                                                                                                                                                                                                                                                                                                                                                                               | {<br/>"search": "San Francisco"<br/>}                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | `fields`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | *OptionalNullable[str]*                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | :heavy_minus_sign:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields "name", "email" and "addresses.city". If any other fields are available, they will be excluded. | id,updated_at                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
@@ -141,11 +142,13 @@ with Apideck(
             "amount": 49.99,
             "allocation_id": "123456",
         },
-    ], note="Some notes about this transaction", number="123456", tracking_categories=[
         {
-            "id": "123456",
-            "name": "New York",
+            "id": "12345",
+            "type": apideck_unify.BillPaymentAllocationType.BILL,
+            "amount": 49.99,
+            "allocation_id": "123456",
         },
+    ], note="Some notes about this transaction", number="123456", tracking_categories=[
         {
             "id": "123456",
             "name": "New York",
@@ -155,13 +158,25 @@ with Apideck(
             "id": "2389328923893298",
             "name": "employee_level",
             "description": "Employee Level",
-            "value": "Uses Salesforce and Marketo",
+            "value": [
+                {},
+            ],
         },
         {
             "id": "2389328923893298",
             "name": "employee_level",
             "description": "Employee Level",
-            "value": "Uses Salesforce and Marketo",
+            "value": [
+                {},
+            ],
+        },
+        {
+            "id": "2389328923893298",
+            "name": "employee_level",
+            "description": "Employee Level",
+            "value": [
+                {},
+            ],
         },
     ], row_version="1-12345", display_id="123456", pass_through=[
         {
@@ -204,11 +219,43 @@ with Apideck(
                         },
                     },
                 },
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
             ],
         },
         {
             "service_id": "<id>",
             "extend_paths": [
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
                 {
                     "path": "$.nested.property",
                     "value": {
@@ -387,18 +434,6 @@ with Apideck(
             "amount": 49.99,
             "allocation_id": "123456",
         },
-        {
-            "id": "12345",
-            "type": apideck_unify.BillPaymentAllocationType.BILL,
-            "amount": 49.99,
-            "allocation_id": "123456",
-        },
-        {
-            "id": "12345",
-            "type": apideck_unify.BillPaymentAllocationType.BILL,
-            "amount": 49.99,
-            "allocation_id": "123456",
-        },
     ], note="Some notes about this transaction", number="123456", tracking_categories=[
         {
             "id": "123456",
@@ -413,16 +448,19 @@ with Apideck(
             "id": "2389328923893298",
             "name": "employee_level",
             "description": "Employee Level",
-            "value": [
-                {},
-                {},
-            ],
+            "value": "Uses Salesforce and Marketo",
         },
         {
             "id": "2389328923893298",
             "name": "employee_level",
             "description": "Employee Level",
-            "value": True,
+            "value": "Uses Salesforce and Marketo",
+        },
+        {
+            "id": "2389328923893298",
+            "name": "employee_level",
+            "description": "Employee Level",
+            "value": "Uses Salesforce and Marketo",
         },
     ], row_version="1-12345", display_id="123456", pass_through=[
         {
@@ -436,40 +474,6 @@ with Apideck(
                         },
                     },
                 },
-            ],
-        },
-        {
-            "service_id": "<id>",
-            "extend_paths": [
-                {
-                    "path": "$.nested.property",
-                    "value": {
-                        "TaxClassificationRef": {
-                            "value": "EUC-99990201-V1-00020000",
-                        },
-                    },
-                },
-                {
-                    "path": "$.nested.property",
-                    "value": {
-                        "TaxClassificationRef": {
-                            "value": "EUC-99990201-V1-00020000",
-                        },
-                    },
-                },
-                {
-                    "path": "$.nested.property",
-                    "value": {
-                        "TaxClassificationRef": {
-                            "value": "EUC-99990201-V1-00020000",
-                        },
-                    },
-                },
-            ],
-        },
-        {
-            "service_id": "<id>",
-            "extend_paths": [
                 {
                     "path": "$.nested.property",
                     "value": {

@@ -19,7 +19,7 @@ generation:
     oAuth2ClientCredentialsEnabled: true
     oAuth2PasswordEnabled: true
 python:
-  version: 0.15.0
+  version: 0.15.1
   additionalDependencies:
     dev: {}
     main: {}
@@ -47,8 +47,10 @@ python:
   inputModelSuffix: input
   maxMethodParams: 999
   methodArguments: infer-optional-args
+  moduleName: ""
   outputModelSuffix: output
   packageName: apideck-unify
+  pytestFilterWarnings: []
   pytestTimeout: 0
   responseFormat: envelope-http
   templateVersion: v2

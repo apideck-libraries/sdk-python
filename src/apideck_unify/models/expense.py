@@ -79,6 +79,10 @@ class ExpenseTypedDict(TypedDict):
     r"""The date and time when the object was created."""
     row_version: NotRequired[Nullable[str]]
     r"""A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object."""
+    updated_by: NotRequired[Nullable[str]]
+    r"""The user who last updated the object."""
+    created_by: NotRequired[Nullable[str]]
+    r"""The user who created the object."""
     pass_through: NotRequired[List[PassThroughBodyTypedDict]]
     r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
 
@@ -145,6 +149,12 @@ class Expense(BaseModel):
     row_version: OptionalNullable[str] = UNSET
     r"""A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object."""
 
+    updated_by: OptionalNullable[str] = UNSET
+    r"""The user who last updated the object."""
+
+    created_by: OptionalNullable[str] = UNSET
+    r"""The user who created the object."""
+
     pass_through: Optional[List[PassThroughBody]] = None
     r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
 
@@ -169,6 +179,8 @@ class Expense(BaseModel):
             "updated_at",
             "created_at",
             "row_version",
+            "updated_by",
+            "created_by",
             "pass_through",
         ]
         nullable_fields = [
@@ -186,6 +198,8 @@ class Expense(BaseModel):
             "updated_at",
             "created_at",
             "row_version",
+            "updated_by",
+            "created_by",
         ]
         null_default_fields = []
 

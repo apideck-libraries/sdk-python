@@ -104,7 +104,13 @@ with Apideck(
         {
             "id": "12345",
         },
+        {
+            "id": "12345",
+        },
     ], due_date=parse_datetime("2020-09-30T07:43:32.000Z"), tags=[
+        {
+            "id": "12345",
+        },
         {
             "id": "12345",
         },
@@ -123,11 +129,48 @@ with Apideck(
                         },
                     },
                 },
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
             ],
         },
         {
             "service_id": "<id>",
             "extend_paths": [
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
+            ],
+        },
+        {
+            "service_id": "<id>",
+            "extend_paths": [
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
                 {
                     "path": "$.nested.property",
                     "value": {
@@ -263,13 +306,7 @@ with Apideck(
         {
             "id": "12345",
         },
-        {
-            "id": "12345",
-        },
     ], due_date=parse_datetime("2020-09-30T07:43:32.000Z"), tags=[
-        {
-            "id": "12345",
-        },
         {
             "id": "12345",
         },
@@ -285,6 +322,19 @@ with Apideck(
                         },
                     },
                 },
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
+            ],
+        },
+        {
+            "service_id": "<id>",
+            "extend_paths": [
                 {
                     "path": "$.nested.property",
                     "value": {

@@ -10,7 +10,10 @@ from typing_extensions import Annotated, NotRequired, TypedDict
 
 class PaymentsFilterTypedDict(TypedDict):
     updated_since: NotRequired[datetime]
+    invoice_id: NotRequired[str]
 
 
 class PaymentsFilter(BaseModel):
     updated_since: Annotated[Optional[datetime], FieldMetadata(query=True)] = None
+
+    invoice_id: Annotated[Optional[str], FieldMetadata(query=True)] = None

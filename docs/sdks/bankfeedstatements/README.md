@@ -108,6 +108,16 @@ with Apideck(
             "reference": "INV-2025-01",
             "transaction_type": apideck_unify.BankFeedStatementTransactionType.PAYMENT,
         },
+        {
+            "posted_date": parse_datetime("2025-01-15T12:00:00.000Z"),
+            "description": "Payment received from ACME Corp",
+            "amount": 250,
+            "credit_or_debit": apideck_unify.CreditOrDebit.DEBIT,
+            "source_transaction_id": "txn_987",
+            "counterparty": "ACME Corp",
+            "reference": "INV-2025-01",
+            "transaction_type": apideck_unify.BankFeedStatementTransactionType.PAYMENT,
+        },
     ])
 
     assert res.create_bank_feed_statement_response is not None
@@ -224,16 +234,6 @@ with Apideck(
 ) as apideck:
 
     res = apideck.accounting.bank_feed_statements.update(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", bank_feed_account_id="acc_456", status=apideck_unify.StatementStatus.PENDING, start_date=parse_datetime("2021-05-01T12:00:00.000Z"), end_date=parse_datetime("2025-01-31T12:00:00.000Z"), start_balance=10500.25, start_balance_credit_or_debit=apideck_unify.CreditOrDebit.DEBIT, end_balance=9800.5, end_balance_credit_or_debit=apideck_unify.CreditOrDebit.DEBIT, transactions=[
-        {
-            "posted_date": parse_datetime("2025-01-15T12:00:00.000Z"),
-            "description": "Payment received from ACME Corp",
-            "amount": 250,
-            "credit_or_debit": apideck_unify.CreditOrDebit.DEBIT,
-            "source_transaction_id": "txn_987",
-            "counterparty": "ACME Corp",
-            "reference": "INV-2025-01",
-            "transaction_type": apideck_unify.BankFeedStatementTransactionType.PAYMENT,
-        },
         {
             "posted_date": parse_datetime("2025-01-15T12:00:00.000Z"),
             "description": "Payment received from ACME Corp",

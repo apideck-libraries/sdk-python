@@ -111,14 +111,6 @@ with Apideck(
                         },
                     },
                 },
-                {
-                    "path": "$.nested.property",
-                    "value": {
-                        "TaxClassificationRef": {
-                            "value": "EUC-99990201-V1-00020000",
-                        },
-                    },
-                },
             ],
         },
         {
@@ -261,16 +253,18 @@ with Apideck(
             "win_probability": 50,
             "display_order": 1,
         },
-        {
-            "name": "Contract Sent",
-            "value": "CONTRACT_SENT",
-            "win_probability": 50,
-            "display_order": 1,
-        },
     ], pass_through=[
         {
             "service_id": "<id>",
             "extend_paths": [
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
                 {
                     "path": "$.nested.property",
                     "value": {
