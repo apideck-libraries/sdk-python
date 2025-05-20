@@ -114,14 +114,18 @@ except apideck.ApiException as e:
     print("Exception when calling CrmApi->contacts_all: %s\n" % e)
 
 # New SDK
-from apideck_unify.errors import ApiError, ValidationError
+from apideck_unify import Apideck, models
 
 try:
     result = client.crm.contacts.list()
-except ValidationError as e:
-    print("Validation error:", e.message)
-except ApiError as e:
-    print("API error:", e.message, e.status_code)
+except models.BadRequestResponse as e:
+        # handle e.data: models.BadRequestResponseData
+        raise(e)
+except models.UnauthorizedResponse as e:
+    # handle e.data: models.UnauthorizedResponseData
+    raise(e)
+except models.ApiError as e:
+    raise(e)
 ```
 
 For more information about error handling, please check our [documentation](https://github.com/apideck-libraries/sdk-python?tab=readme-ov-file#error-handling)
