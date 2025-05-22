@@ -445,9 +445,9 @@ class Contacts(BaseSDK):
         ] = None,
         emails: Optional[Union[List[models.Email], List[models.EmailTypedDict]]] = None,
         email_domain: OptionalNullable[str] = UNSET,
-        custom_fields: Optional[
+        custom_fields: OptionalNullable[
             Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
-        ] = None,
+        ] = UNSET,
         tags: OptionalNullable[List[str]] = UNSET,
         opportunity_ids: Optional[List[str]] = None,
         pass_through: Optional[
@@ -560,7 +560,7 @@ class Contacts(BaseSDK):
                 emails=utils.get_pydantic_model(emails, Optional[List[models.Email]]),
                 email_domain=email_domain,
                 custom_fields=utils.get_pydantic_model(
-                    custom_fields, Optional[List[models.CustomField]]
+                    custom_fields, OptionalNullable[List[models.CustomField]]
                 ),
                 tags=tags,
                 opportunity_ids=opportunity_ids,
@@ -724,9 +724,9 @@ class Contacts(BaseSDK):
         ] = None,
         emails: Optional[Union[List[models.Email], List[models.EmailTypedDict]]] = None,
         email_domain: OptionalNullable[str] = UNSET,
-        custom_fields: Optional[
+        custom_fields: OptionalNullable[
             Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
-        ] = None,
+        ] = UNSET,
         tags: OptionalNullable[List[str]] = UNSET,
         opportunity_ids: Optional[List[str]] = None,
         pass_through: Optional[
@@ -839,7 +839,7 @@ class Contacts(BaseSDK):
                 emails=utils.get_pydantic_model(emails, Optional[List[models.Email]]),
                 email_domain=email_domain,
                 custom_fields=utils.get_pydantic_model(
-                    custom_fields, Optional[List[models.CustomField]]
+                    custom_fields, OptionalNullable[List[models.CustomField]]
                 ),
                 tags=tags,
                 opportunity_ids=opportunity_ids,
@@ -1322,9 +1322,9 @@ class Contacts(BaseSDK):
         ] = None,
         emails: Optional[Union[List[models.Email], List[models.EmailTypedDict]]] = None,
         email_domain: OptionalNullable[str] = UNSET,
-        custom_fields: Optional[
+        custom_fields: OptionalNullable[
             Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
-        ] = None,
+        ] = UNSET,
         tags: OptionalNullable[List[str]] = UNSET,
         opportunity_ids: Optional[List[str]] = None,
         pass_through: Optional[
@@ -1439,7 +1439,7 @@ class Contacts(BaseSDK):
                 emails=utils.get_pydantic_model(emails, Optional[List[models.Email]]),
                 email_domain=email_domain,
                 custom_fields=utils.get_pydantic_model(
-                    custom_fields, Optional[List[models.CustomField]]
+                    custom_fields, OptionalNullable[List[models.CustomField]]
                 ),
                 tags=tags,
                 opportunity_ids=opportunity_ids,
@@ -1604,9 +1604,9 @@ class Contacts(BaseSDK):
         ] = None,
         emails: Optional[Union[List[models.Email], List[models.EmailTypedDict]]] = None,
         email_domain: OptionalNullable[str] = UNSET,
-        custom_fields: Optional[
+        custom_fields: OptionalNullable[
             Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
-        ] = None,
+        ] = UNSET,
         tags: OptionalNullable[List[str]] = UNSET,
         opportunity_ids: Optional[List[str]] = None,
         pass_through: Optional[
@@ -1721,7 +1721,7 @@ class Contacts(BaseSDK):
                 emails=utils.get_pydantic_model(emails, Optional[List[models.Email]]),
                 email_domain=email_domain,
                 custom_fields=utils.get_pydantic_model(
-                    custom_fields, Optional[List[models.CustomField]]
+                    custom_fields, OptionalNullable[List[models.CustomField]]
                 ),
                 tags=tags,
                 opportunity_ids=opportunity_ids,

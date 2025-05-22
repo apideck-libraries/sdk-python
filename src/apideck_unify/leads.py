@@ -3,7 +3,7 @@
 from .basesdk import BaseSDK
 from apideck_unify import models, utils
 from apideck_unify._hooks import HookContext
-from apideck_unify.types import Nullable, OptionalNullable, UNSET
+from apideck_unify.types import OptionalNullable, UNSET
 from apideck_unify.utils import get_security_from_env
 from jsonpath import JSONPath
 from typing import Any, Dict, List, Mapping, Optional, Union
@@ -404,11 +404,11 @@ class Leads(BaseSDK):
         self,
         *,
         name: str,
-        company_name: Nullable[str],
         raw: Optional[bool] = False,
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
+        company_name: OptionalNullable[str] = UNSET,
         owner_id: OptionalNullable[str] = UNSET,
         owner_name: OptionalNullable[str] = UNSET,
         company_id: OptionalNullable[str] = UNSET,
@@ -437,9 +437,9 @@ class Leads(BaseSDK):
             Union[List[models.PhoneNumber], List[models.PhoneNumberTypedDict]]
         ] = None,
         emails: Optional[Union[List[models.Email], List[models.EmailTypedDict]]] = None,
-        custom_fields: Optional[
+        custom_fields: OptionalNullable[
             Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
-        ] = None,
+        ] = UNSET,
         tags: OptionalNullable[List[str]] = UNSET,
         pass_through: Optional[
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
@@ -454,11 +454,11 @@ class Leads(BaseSDK):
         Create lead
 
         :param name: Full name of the lead.
-        :param company_name: The name of the company the lead is associated with.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param company_name: The name of the company the lead is associated with.
         :param owner_id: The owner of the lead.
         :param owner_name: The name of the owner of the lead.
         :param company_id: The company the lead is associated with.
@@ -534,7 +534,7 @@ class Leads(BaseSDK):
                 ),
                 emails=utils.get_pydantic_model(emails, Optional[List[models.Email]]),
                 custom_fields=utils.get_pydantic_model(
-                    custom_fields, Optional[List[models.CustomField]]
+                    custom_fields, OptionalNullable[List[models.CustomField]]
                 ),
                 tags=tags,
                 pass_through=utils.get_pydantic_model(
@@ -656,11 +656,11 @@ class Leads(BaseSDK):
         self,
         *,
         name: str,
-        company_name: Nullable[str],
         raw: Optional[bool] = False,
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
+        company_name: OptionalNullable[str] = UNSET,
         owner_id: OptionalNullable[str] = UNSET,
         owner_name: OptionalNullable[str] = UNSET,
         company_id: OptionalNullable[str] = UNSET,
@@ -689,9 +689,9 @@ class Leads(BaseSDK):
             Union[List[models.PhoneNumber], List[models.PhoneNumberTypedDict]]
         ] = None,
         emails: Optional[Union[List[models.Email], List[models.EmailTypedDict]]] = None,
-        custom_fields: Optional[
+        custom_fields: OptionalNullable[
             Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
-        ] = None,
+        ] = UNSET,
         tags: OptionalNullable[List[str]] = UNSET,
         pass_through: Optional[
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
@@ -706,11 +706,11 @@ class Leads(BaseSDK):
         Create lead
 
         :param name: Full name of the lead.
-        :param company_name: The name of the company the lead is associated with.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param company_name: The name of the company the lead is associated with.
         :param owner_id: The owner of the lead.
         :param owner_name: The name of the owner of the lead.
         :param company_id: The company the lead is associated with.
@@ -786,7 +786,7 @@ class Leads(BaseSDK):
                 ),
                 emails=utils.get_pydantic_model(emails, Optional[List[models.Email]]),
                 custom_fields=utils.get_pydantic_model(
-                    custom_fields, Optional[List[models.CustomField]]
+                    custom_fields, OptionalNullable[List[models.CustomField]]
                 ),
                 tags=tags,
                 pass_through=utils.get_pydantic_model(
@@ -1217,11 +1217,11 @@ class Leads(BaseSDK):
         *,
         id: str,
         name: str,
-        company_name: Nullable[str],
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
+        company_name: OptionalNullable[str] = UNSET,
         owner_id: OptionalNullable[str] = UNSET,
         owner_name: OptionalNullable[str] = UNSET,
         company_id: OptionalNullable[str] = UNSET,
@@ -1250,9 +1250,9 @@ class Leads(BaseSDK):
             Union[List[models.PhoneNumber], List[models.PhoneNumberTypedDict]]
         ] = None,
         emails: Optional[Union[List[models.Email], List[models.EmailTypedDict]]] = None,
-        custom_fields: Optional[
+        custom_fields: OptionalNullable[
             Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
-        ] = None,
+        ] = UNSET,
         tags: OptionalNullable[List[str]] = UNSET,
         pass_through: Optional[
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
@@ -1268,11 +1268,11 @@ class Leads(BaseSDK):
 
         :param id: ID of the record you are acting upon.
         :param name: Full name of the lead.
-        :param company_name: The name of the company the lead is associated with.
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param company_name: The name of the company the lead is associated with.
         :param owner_id: The owner of the lead.
         :param owner_name: The name of the owner of the lead.
         :param company_id: The company the lead is associated with.
@@ -1349,7 +1349,7 @@ class Leads(BaseSDK):
                 ),
                 emails=utils.get_pydantic_model(emails, Optional[List[models.Email]]),
                 custom_fields=utils.get_pydantic_model(
-                    custom_fields, Optional[List[models.CustomField]]
+                    custom_fields, OptionalNullable[List[models.CustomField]]
                 ),
                 tags=tags,
                 pass_through=utils.get_pydantic_model(
@@ -1472,11 +1472,11 @@ class Leads(BaseSDK):
         *,
         id: str,
         name: str,
-        company_name: Nullable[str],
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
+        company_name: OptionalNullable[str] = UNSET,
         owner_id: OptionalNullable[str] = UNSET,
         owner_name: OptionalNullable[str] = UNSET,
         company_id: OptionalNullable[str] = UNSET,
@@ -1505,9 +1505,9 @@ class Leads(BaseSDK):
             Union[List[models.PhoneNumber], List[models.PhoneNumberTypedDict]]
         ] = None,
         emails: Optional[Union[List[models.Email], List[models.EmailTypedDict]]] = None,
-        custom_fields: Optional[
+        custom_fields: OptionalNullable[
             Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
-        ] = None,
+        ] = UNSET,
         tags: OptionalNullable[List[str]] = UNSET,
         pass_through: Optional[
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
@@ -1523,11 +1523,11 @@ class Leads(BaseSDK):
 
         :param id: ID of the record you are acting upon.
         :param name: Full name of the lead.
-        :param company_name: The name of the company the lead is associated with.
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param company_name: The name of the company the lead is associated with.
         :param owner_id: The owner of the lead.
         :param owner_name: The name of the owner of the lead.
         :param company_id: The company the lead is associated with.
@@ -1604,7 +1604,7 @@ class Leads(BaseSDK):
                 ),
                 emails=utils.get_pydantic_model(emails, Optional[List[models.Email]]),
                 custom_fields=utils.get_pydantic_model(
-                    custom_fields, Optional[List[models.CustomField]]
+                    custom_fields, OptionalNullable[List[models.CustomField]]
                 ),
                 tags=tags,
                 pass_through=utils.get_pydantic_model(

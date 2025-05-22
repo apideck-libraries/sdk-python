@@ -4,7 +4,6 @@ from __future__ import annotations
 from .address import Address, AddressTypedDict
 from .currency import Currency
 from .customfield import CustomField, CustomFieldTypedDict
-from .custommappings import CustomMappings, CustomMappingsTypedDict
 from .email import Email, EmailTypedDict
 from .passthroughbody import PassThroughBody, PassThroughBodyTypedDict
 from .phonenumber import PhoneNumber, PhoneNumberTypedDict
@@ -18,17 +17,17 @@ from apideck_unify.types import (
     UNSET_SENTINEL,
 )
 from pydantic import model_serializer
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 from typing_extensions import NotRequired, TypedDict
 
 
 class LeadTypedDict(TypedDict):
     name: str
     r"""Full name of the lead."""
-    company_name: Nullable[str]
-    r"""The name of the company the lead is associated with."""
     id: NotRequired[str]
     r"""Unique identifier for the contact."""
+    company_name: NotRequired[Nullable[str]]
+    r"""The name of the company the lead is associated with."""
     owner_id: NotRequired[Nullable[str]]
     r"""The owner of the lead."""
     owner_name: NotRequired[Nullable[str]]
@@ -63,9 +62,9 @@ class LeadTypedDict(TypedDict):
     social_links: NotRequired[List[SocialLinkTypedDict]]
     phone_numbers: NotRequired[List[PhoneNumberTypedDict]]
     emails: NotRequired[List[EmailTypedDict]]
-    custom_fields: NotRequired[List[CustomFieldTypedDict]]
+    custom_fields: NotRequired[Nullable[List[CustomFieldTypedDict]]]
     tags: NotRequired[Nullable[List[str]]]
-    custom_mappings: NotRequired[Nullable[CustomMappingsTypedDict]]
+    custom_mappings: NotRequired[Nullable[Dict[str, Any]]]
     r"""When custom mappings are configured on the resource, the result is included here."""
     updated_at: NotRequired[Nullable[str]]
     r"""Date updated in ISO 8601 format"""
@@ -79,11 +78,11 @@ class Lead(BaseModel):
     name: str
     r"""Full name of the lead."""
 
-    company_name: Nullable[str]
-    r"""The name of the company the lead is associated with."""
-
     id: Optional[str] = None
     r"""Unique identifier for the contact."""
+
+    company_name: OptionalNullable[str] = UNSET
+    r"""The name of the company the lead is associated with."""
 
     owner_id: OptionalNullable[str] = UNSET
     r"""The owner of the lead."""
@@ -139,11 +138,11 @@ class Lead(BaseModel):
 
     emails: Optional[List[Email]] = None
 
-    custom_fields: Optional[List[CustomField]] = None
+    custom_fields: OptionalNullable[List[CustomField]] = UNSET
 
     tags: OptionalNullable[List[str]] = UNSET
 
-    custom_mappings: OptionalNullable[CustomMappings] = UNSET
+    custom_mappings: OptionalNullable[Dict[str, Any]] = UNSET
     r"""When custom mappings are configured on the resource, the result is included here."""
 
     updated_at: OptionalNullable[str] = UNSET
@@ -159,6 +158,7 @@ class Lead(BaseModel):
     def serialize_model(self, handler):
         optional_fields = [
             "id",
+            "company_name",
             "owner_id",
             "owner_name",
             "company_id",
@@ -203,6 +203,7 @@ class Lead(BaseModel):
             "monetary_amount",
             "currency",
             "fax",
+            "custom_fields",
             "tags",
             "custom_mappings",
             "updated_at",

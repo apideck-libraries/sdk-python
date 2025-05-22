@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 from .currency import Currency
-from .custommappings import CustomMappings, CustomMappingsTypedDict
 from .email import Email, EmailTypedDict
 from .linkedecommerceorder import LinkedEcommerceOrder, LinkedEcommerceOrderTypedDict
 from .phonenumber import PhoneNumber, PhoneNumberTypedDict
@@ -16,7 +15,7 @@ from apideck_unify.types import (
 from datetime import datetime
 from enum import Enum
 from pydantic import model_serializer
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 from typing_extensions import NotRequired, TypedDict
 
 
@@ -145,7 +144,7 @@ class EcommerceCustomerTypedDict(TypedDict):
     addresses: NotRequired[List[AddressesTypedDict]]
     r"""An array of addresses for the customer."""
     orders: NotRequired[List[LinkedEcommerceOrderTypedDict]]
-    custom_mappings: NotRequired[Nullable[CustomMappingsTypedDict]]
+    custom_mappings: NotRequired[Nullable[Dict[str, Any]]]
     r"""When custom mappings are configured on the resource, the result is included here."""
     created_at: NotRequired[Nullable[datetime]]
     r"""The date and time when the object was created."""
@@ -186,7 +185,7 @@ class EcommerceCustomer(BaseModel):
 
     orders: Optional[List[LinkedEcommerceOrder]] = None
 
-    custom_mappings: OptionalNullable[CustomMappings] = UNSET
+    custom_mappings: OptionalNullable[Dict[str, Any]] = UNSET
     r"""When custom mappings are configured on the resource, the result is included here."""
 
     created_at: OptionalNullable[datetime] = UNSET

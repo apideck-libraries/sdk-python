@@ -5,7 +5,6 @@ from .assignee import Assignee, AssigneeTypedDict
 from .assignee_input import AssigneeInput, AssigneeInputTypedDict
 from .collectiontag import CollectionTag, CollectionTagTypedDict
 from .collectiontag_input import CollectionTagInput, CollectionTagInputTypedDict
-from .custommappings import CustomMappings, CustomMappingsTypedDict
 from .passthroughbody import PassThroughBody, PassThroughBodyTypedDict
 from apideck_unify.types import (
     BaseModel,
@@ -17,7 +16,7 @@ from apideck_unify.types import (
 from datetime import datetime
 from enum import Enum
 from pydantic import model_serializer
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 from typing_extensions import NotRequired, TypedDict
 
 
@@ -59,7 +58,7 @@ class TicketTypedDict(TypedDict):
     completed_at: NotRequired[Nullable[datetime]]
     r"""When the ticket was completed"""
     tags: NotRequired[List[CollectionTagTypedDict]]
-    custom_mappings: NotRequired[Nullable[CustomMappingsTypedDict]]
+    custom_mappings: NotRequired[Nullable[Dict[str, Any]]]
     r"""When custom mappings are configured on the resource, the result is included here."""
     pass_through: NotRequired[List[PassThroughBodyTypedDict]]
     r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
@@ -109,7 +108,7 @@ class Ticket(BaseModel):
 
     tags: Optional[List[CollectionTag]] = None
 
-    custom_mappings: OptionalNullable[CustomMappings] = UNSET
+    custom_mappings: OptionalNullable[Dict[str, Any]] = UNSET
     r"""When custom mappings are configured on the resource, the result is included here."""
 
     pass_through: Optional[List[PassThroughBody]] = None

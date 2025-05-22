@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 from .compensation import Compensation, CompensationTypedDict
-from .custommappings import CustomMappings, CustomMappingsTypedDict
 from .payrolltotals import PayrollTotals, PayrollTotalsTypedDict
 from apideck_unify.types import (
     BaseModel,
@@ -12,7 +11,7 @@ from apideck_unify.types import (
     UNSET_SENTINEL,
 )
 from pydantic import model_serializer
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 from typing_extensions import NotRequired, TypedDict
 
 
@@ -35,7 +34,7 @@ class PayrollTypedDict(TypedDict):
     r"""The overview of the payroll totals."""
     compensations: NotRequired[List[CompensationTypedDict]]
     r"""An array of compensations for the payroll."""
-    custom_mappings: NotRequired[Nullable[CustomMappingsTypedDict]]
+    custom_mappings: NotRequired[Nullable[Dict[str, Any]]]
     r"""When custom mappings are configured on the resource, the result is included here."""
 
 
@@ -67,7 +66,7 @@ class Payroll(BaseModel):
     compensations: Optional[List[Compensation]] = None
     r"""An array of compensations for the payroll."""
 
-    custom_mappings: OptionalNullable[CustomMappings] = UNSET
+    custom_mappings: OptionalNullable[Dict[str, Any]] = UNSET
     r"""When custom mappings are configured on the resource, the result is included here."""
 
     @model_serializer(mode="wrap")

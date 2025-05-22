@@ -3,7 +3,6 @@
 from __future__ import annotations
 from .address import Address, AddressTypedDict
 from .customfield import CustomField, CustomFieldTypedDict
-from .custommappings import CustomMappings, CustomMappingsTypedDict
 from .email import Email, EmailTypedDict
 from .passthroughbody import PassThroughBody, PassThroughBodyTypedDict
 from .phonenumber import PhoneNumber, PhoneNumberTypedDict
@@ -20,7 +19,7 @@ from datetime import datetime
 from enum import Enum
 import pydantic
 from pydantic import model_serializer
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
@@ -97,7 +96,7 @@ class ContactTypedDict(TypedDict):
     phone_numbers: NotRequired[List[PhoneNumberTypedDict]]
     emails: NotRequired[List[EmailTypedDict]]
     email_domain: NotRequired[Nullable[str]]
-    custom_fields: NotRequired[List[CustomFieldTypedDict]]
+    custom_fields: NotRequired[Nullable[List[CustomFieldTypedDict]]]
     tags: NotRequired[Nullable[List[str]]]
     first_call_at: NotRequired[Nullable[datetime]]
     r"""The first call date of the contact."""
@@ -105,7 +104,7 @@ class ContactTypedDict(TypedDict):
     r"""The first email date of the contact."""
     last_activity_at: NotRequired[Nullable[datetime]]
     r"""The last activity date of the contact."""
-    custom_mappings: NotRequired[Nullable[CustomMappingsTypedDict]]
+    custom_mappings: NotRequired[Nullable[Dict[str, Any]]]
     r"""When custom mappings are configured on the resource, the result is included here."""
     updated_at: NotRequired[Nullable[datetime]]
     r"""The last update date of the contact."""
@@ -209,7 +208,7 @@ class Contact(BaseModel):
 
     email_domain: OptionalNullable[str] = UNSET
 
-    custom_fields: Optional[List[CustomField]] = None
+    custom_fields: OptionalNullable[List[CustomField]] = UNSET
 
     tags: OptionalNullable[List[str]] = UNSET
 
@@ -222,7 +221,7 @@ class Contact(BaseModel):
     last_activity_at: OptionalNullable[datetime] = UNSET
     r"""The last activity date of the contact."""
 
-    custom_mappings: OptionalNullable[CustomMappings] = UNSET
+    custom_mappings: OptionalNullable[Dict[str, Any]] = UNSET
     r"""When custom mappings are configured on the resource, the result is included here."""
 
     updated_at: OptionalNullable[datetime] = UNSET
@@ -307,6 +306,7 @@ class Contact(BaseModel):
             "status",
             "active",
             "email_domain",
+            "custom_fields",
             "tags",
             "first_call_at",
             "first_email_at",
@@ -396,7 +396,7 @@ class ContactInputTypedDict(TypedDict):
     phone_numbers: NotRequired[List[PhoneNumberTypedDict]]
     emails: NotRequired[List[EmailTypedDict]]
     email_domain: NotRequired[Nullable[str]]
-    custom_fields: NotRequired[List[CustomFieldTypedDict]]
+    custom_fields: NotRequired[Nullable[List[CustomFieldTypedDict]]]
     tags: NotRequired[Nullable[List[str]]]
     opportunity_ids: NotRequired[List[str]]
     r"""The opportunity ids of the contact."""
@@ -493,7 +493,7 @@ class ContactInput(BaseModel):
 
     email_domain: OptionalNullable[str] = UNSET
 
-    custom_fields: Optional[List[CustomField]] = None
+    custom_fields: OptionalNullable[List[CustomField]] = UNSET
 
     tags: OptionalNullable[List[str]] = UNSET
 
@@ -566,6 +566,7 @@ class ContactInput(BaseModel):
             "status",
             "active",
             "email_domain",
+            "custom_fields",
             "tags",
         ]
         null_default_fields = []

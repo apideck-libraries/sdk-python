@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 from .currency import Currency
-from .custommappings import CustomMappings, CustomMappingsTypedDict
 from .passthroughbody import PassThroughBody, PassThroughBodyTypedDict
 from apideck_unify.types import (
     BaseModel,
@@ -15,7 +14,7 @@ from datetime import datetime
 from enum import Enum
 import pydantic
 from pydantic import model_serializer
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
@@ -154,7 +153,7 @@ class MessageTypedDict(TypedDict):
     r"""The error returned if your message status is failed or undelivered."""
     messaging_service_id: NotRequired[str]
     r"""The ID of the Messaging Service used with the message. In case of Plivo this links to the Powerpack ID."""
-    custom_mappings: NotRequired[Nullable[CustomMappingsTypedDict]]
+    custom_mappings: NotRequired[Nullable[Dict[str, Any]]]
     r"""When custom mappings are configured on the resource, the result is included here."""
     updated_by: NotRequired[Nullable[str]]
     r"""The user who last updated the object."""
@@ -219,7 +218,7 @@ class Message(BaseModel):
     messaging_service_id: Optional[str] = None
     r"""The ID of the Messaging Service used with the message. In case of Plivo this links to the Powerpack ID."""
 
-    custom_mappings: OptionalNullable[CustomMappings] = UNSET
+    custom_mappings: OptionalNullable[Dict[str, Any]] = UNSET
     r"""When custom mappings are configured on the resource, the result is included here."""
 
     updated_by: OptionalNullable[str] = UNSET

@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 from .currency import Currency
-from .custommappings import CustomMappings, CustomMappingsTypedDict
 from .profitandlossindicator import (
     ProfitAndLossIndicator,
     ProfitAndLossIndicatorTypedDict,
@@ -16,7 +15,7 @@ from apideck_unify.types import (
     UNSET_SENTINEL,
 )
 from pydantic import model_serializer
-from typing import Any, Optional
+from typing import Any, Dict, Optional
 from typing_extensions import NotRequired, TypedDict
 
 
@@ -224,8 +223,6 @@ class ExpensesModel(BaseModel):
 class OtherIncomeTypedDict(TypedDict):
     r"""The other income accounts"""
 
-    total: Nullable[float]
-    r"""The aggregated total of all accounts within this category."""
     records: Any
     id: NotRequired[str]
     r"""A unique identifier for an object."""
@@ -235,13 +232,12 @@ class OtherIncomeTypedDict(TypedDict):
     r"""The name of the account."""
     type: NotRequired[Nullable[ProfitAndLossType]]
     r"""The type of profit and loss"""
+    total: NotRequired[Nullable[float]]
+    r"""The aggregated total of all accounts within this category."""
 
 
 class OtherIncome(BaseModel):
     r"""The other income accounts"""
-
-    total: Nullable[float]
-    r"""The aggregated total of all accounts within this category."""
 
     records: Any
 
@@ -257,9 +253,12 @@ class OtherIncome(BaseModel):
     type: OptionalNullable[ProfitAndLossType] = UNSET
     r"""The type of profit and loss"""
 
+    total: OptionalNullable[float] = UNSET
+    r"""The aggregated total of all accounts within this category."""
+
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
-        optional_fields = ["id", "code", "title", "type"]
+        optional_fields = ["id", "code", "title", "type", "total"]
         nullable_fields = ["type", "total"]
         null_default_fields = []
 
@@ -291,8 +290,6 @@ class OtherIncome(BaseModel):
 class OtherExpensesTypedDict(TypedDict):
     r"""The other expenses accounts"""
 
-    total: Nullable[float]
-    r"""The aggregated total of all accounts within this category."""
     records: Any
     id: NotRequired[str]
     r"""A unique identifier for an object."""
@@ -302,13 +299,12 @@ class OtherExpensesTypedDict(TypedDict):
     r"""The name of the account."""
     type: NotRequired[Nullable[ProfitAndLossType]]
     r"""The type of profit and loss"""
+    total: NotRequired[Nullable[float]]
+    r"""The aggregated total of all accounts within this category."""
 
 
 class OtherExpenses(BaseModel):
     r"""The other expenses accounts"""
-
-    total: Nullable[float]
-    r"""The aggregated total of all accounts within this category."""
 
     records: Any
 
@@ -324,9 +320,12 @@ class OtherExpenses(BaseModel):
     type: OptionalNullable[ProfitAndLossType] = UNSET
     r"""The type of profit and loss"""
 
+    total: OptionalNullable[float] = UNSET
+    r"""The aggregated total of all accounts within this category."""
+
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
-        optional_fields = ["id", "code", "title", "type"]
+        optional_fields = ["id", "code", "title", "type", "total"]
         nullable_fields = ["type", "total"]
         null_default_fields = []
 
@@ -448,7 +447,7 @@ class ProfitAndLossTypedDict(TypedDict):
     gross_profit: NotRequired[ProfitAndLossIndicatorTypedDict]
     net_operating_income: NotRequired[ProfitAndLossIndicatorTypedDict]
     net_income: NotRequired[ProfitAndLossIndicatorTypedDict]
-    custom_mappings: NotRequired[Nullable[CustomMappingsTypedDict]]
+    custom_mappings: NotRequired[Nullable[Dict[str, Any]]]
     r"""When custom mappings are configured on the resource, the result is included here."""
     customer: NotRequired[str]
     r"""The customer id"""
@@ -494,7 +493,7 @@ class ProfitAndLoss(BaseModel):
 
     net_income: Optional[ProfitAndLossIndicator] = None
 
-    custom_mappings: OptionalNullable[CustomMappings] = UNSET
+    custom_mappings: OptionalNullable[Dict[str, Any]] = UNSET
     r"""When custom mappings are configured on the resource, the result is included here."""
 
     customer: Optional[str] = None

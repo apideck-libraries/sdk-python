@@ -4,7 +4,6 @@ from __future__ import annotations
 from .address import Address, AddressTypedDict
 from .currency import Currency
 from .customfield import CustomField, CustomFieldTypedDict
-from .custommappings import CustomMappings, CustomMappingsTypedDict
 from .department import Department, DepartmentTypedDict
 from .jobstatus import JobStatus
 from apideck_unify.types import (
@@ -18,7 +17,7 @@ from datetime import date, datetime
 from enum import Enum
 import pydantic
 from pydantic import model_serializer
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
@@ -200,7 +199,7 @@ class JobTypedDict(TypedDict):
     r"""Flag to indicate if the object is deleted."""
     owner_id: NotRequired[Nullable[str]]
     published_at: NotRequired[Nullable[datetime]]
-    custom_mappings: NotRequired[Nullable[CustomMappingsTypedDict]]
+    custom_mappings: NotRequired[Nullable[Dict[str, Any]]]
     r"""When custom mappings are configured on the resource, the result is included here."""
     updated_by: NotRequired[Nullable[str]]
     r"""The user who last updated the object."""
@@ -322,7 +321,7 @@ class Job(BaseModel):
 
     published_at: OptionalNullable[datetime] = UNSET
 
-    custom_mappings: OptionalNullable[CustomMappings] = UNSET
+    custom_mappings: OptionalNullable[Dict[str, Any]] = UNSET
     r"""When custom mappings are configured on the resource, the result is included here."""
 
     updated_by: OptionalNullable[str] = UNSET

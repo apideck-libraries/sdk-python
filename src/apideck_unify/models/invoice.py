@@ -5,7 +5,6 @@ from .address import Address, AddressTypedDict
 from .bankaccount import BankAccount, BankAccountTypedDict
 from .currency import Currency
 from .customfield import CustomField, CustomFieldTypedDict
-from .custommappings import CustomMappings, CustomMappingsTypedDict
 from .deprecatedlinkedtrackingcategory import (
     DeprecatedLinkedTrackingCategory,
     DeprecatedLinkedTrackingCategoryTypedDict,
@@ -39,7 +38,7 @@ from datetime import date, datetime
 from enum import Enum
 import pydantic
 from pydantic import model_serializer
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
@@ -192,7 +191,7 @@ class InvoiceTypedDict(TypedDict):
     r"""Indicates if accounting by row is used (true) or not (false). Accounting by row means that a separate ledger transaction is created for each row."""
     bank_account: NotRequired[BankAccountTypedDict]
     ledger_account: NotRequired[Nullable[LinkedLedgerAccountTypedDict]]
-    custom_mappings: NotRequired[Nullable[CustomMappingsTypedDict]]
+    custom_mappings: NotRequired[Nullable[Dict[str, Any]]]
     r"""When custom mappings are configured on the resource, the result is included here."""
     custom_fields: NotRequired[List[CustomFieldTypedDict]]
     row_version: NotRequired[Nullable[str]]
@@ -328,7 +327,7 @@ class Invoice(BaseModel):
 
     ledger_account: OptionalNullable[LinkedLedgerAccount] = UNSET
 
-    custom_mappings: OptionalNullable[CustomMappings] = UNSET
+    custom_mappings: OptionalNullable[Dict[str, Any]] = UNSET
     r"""When custom mappings are configured on the resource, the result is included here."""
 
     custom_fields: Optional[List[CustomField]] = None

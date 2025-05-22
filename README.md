@@ -738,9 +738,9 @@ with Apideck(
 
 * [list](docs/sdks/customfields/README.md#list) - Get resource custom fields
 
-#### [vault.custom_mappings](docs/sdks/custommappingssdk/README.md)
+#### [vault.custom_mappings](docs/sdks/custommappings/README.md)
 
-* [list](docs/sdks/custommappingssdk/README.md#list) - List custom mappings
+* [list](docs/sdks/custommappings/README.md#list) - List custom mappings
 
 #### [vault.logs](docs/sdks/logs/README.md)
 

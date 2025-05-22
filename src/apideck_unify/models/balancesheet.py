@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 from .currency import Currency
-from .custommappings import CustomMappings, CustomMappingsTypedDict
 from apideck_unify.types import (
     BaseModel,
     Nullable,
@@ -12,7 +11,7 @@ from apideck_unify.types import (
 )
 from datetime import datetime
 from pydantic import model_serializer
-from typing import Any, List, Optional
+from typing import Any, Dict, List, Optional
 from typing_extensions import NotRequired, TypedDict
 
 
@@ -171,7 +170,7 @@ class ReportsTypedDict(TypedDict):
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
     net_assets: NotRequired[float]
     r"""The net assets of the balance sheet"""
-    custom_mappings: NotRequired[Nullable[CustomMappingsTypedDict]]
+    custom_mappings: NotRequired[Nullable[Dict[str, Any]]]
     r"""When custom mappings are configured on the resource, the result is included here."""
     updated_by: NotRequired[Nullable[str]]
     r"""The user who last updated the object."""
@@ -213,7 +212,7 @@ class Reports(BaseModel):
     net_assets: Optional[float] = None
     r"""The net assets of the balance sheet"""
 
-    custom_mappings: OptionalNullable[CustomMappings] = UNSET
+    custom_mappings: OptionalNullable[Dict[str, Any]] = UNSET
     r"""When custom mappings are configured on the resource, the result is included here."""
 
     updated_by: OptionalNullable[str] = UNSET

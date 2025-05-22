@@ -4,7 +4,6 @@ from __future__ import annotations
 from .bankaccount import BankAccount, BankAccountTypedDict
 from .currency import Currency
 from .customfield import CustomField, CustomFieldTypedDict
-from .custommappings import CustomMappings, CustomMappingsTypedDict
 from .linkedtaxrate import LinkedTaxRate, LinkedTaxRateTypedDict
 from .linkedtaxrate_input import LinkedTaxRateInput, LinkedTaxRateInputTypedDict
 from .passthroughbody import PassThroughBody, PassThroughBodyTypedDict
@@ -19,7 +18,7 @@ from datetime import date, datetime
 from enum import Enum
 import pydantic
 from pydantic import model_serializer
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
@@ -178,7 +177,7 @@ class LedgerAccountTypedDict(TypedDict):
     r"""Reconciliation Date means the last calendar day of each Reconciliation Period."""
     subsidiaries: NotRequired[List[LedgerAccountSubsidiariesTypedDict]]
     r"""The subsidiaries the account belongs to."""
-    custom_mappings: NotRequired[Nullable[CustomMappingsTypedDict]]
+    custom_mappings: NotRequired[Nullable[Dict[str, Any]]]
     r"""When custom mappings are configured on the resource, the result is included here."""
     custom_fields: NotRequired[List[CustomFieldTypedDict]]
     row_version: NotRequired[Nullable[str]]
@@ -275,7 +274,7 @@ class LedgerAccount(BaseModel):
     subsidiaries: Optional[List[LedgerAccountSubsidiaries]] = None
     r"""The subsidiaries the account belongs to."""
 
-    custom_mappings: OptionalNullable[CustomMappings] = UNSET
+    custom_mappings: OptionalNullable[Dict[str, Any]] = UNSET
     r"""When custom mappings are configured on the resource, the result is included here."""
 
     custom_fields: Optional[List[CustomField]] = None

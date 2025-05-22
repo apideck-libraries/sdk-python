@@ -9,7 +9,7 @@ from apideck_unify.consumerrequestcounts import ConsumerRequestCounts
 from apideck_unify.consumers import Consumers
 from apideck_unify.createcallback import CreateCallback
 from apideck_unify.customfields import CustomFields
-from apideck_unify.custommappings_sdk import CustomMappingsSDK
+from apideck_unify.custommappings import CustomMappings
 from apideck_unify.logs import Logs
 from apideck_unify.sessions import Sessions
 from apideck_unify.validateconnection import ValidateConnection
@@ -24,7 +24,7 @@ class Vault(BaseSDK):
     connection_settings: ConnectionSettings
     custom_fields: CustomFields
     connection_custom_mappings: ConnectionCustomMappings
-    custom_mappings: CustomMappingsSDK
+    custom_mappings: CustomMappings
     sessions: Sessions
     logs: Logs
 
@@ -44,6 +44,6 @@ class Vault(BaseSDK):
         self.connection_custom_mappings = ConnectionCustomMappings(
             self.sdk_configuration
         )
-        self.custom_mappings = CustomMappingsSDK(self.sdk_configuration)
+        self.custom_mappings = CustomMappings(self.sdk_configuration)
         self.sessions = Sessions(self.sdk_configuration)
         self.logs = Logs(self.sdk_configuration)

@@ -4,7 +4,6 @@ from __future__ import annotations
 from .address import Address, AddressTypedDict
 from .bankaccount import BankAccount, BankAccountTypedDict
 from .customfield import CustomField, CustomFieldTypedDict
-from .custommappings import CustomMappings, CustomMappingsTypedDict
 from .email import Email, EmailTypedDict
 from .employeecompensation import (
     EmployeeCompensation,
@@ -37,7 +36,7 @@ from datetime import date, datetime
 from enum import Enum
 import pydantic
 from pydantic import model_serializer
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
@@ -341,7 +340,7 @@ class EmployeeTypedDict(TypedDict):
     r"""Indicate the employee's food allergies."""
     probation_period: NotRequired[ProbationPeriodTypedDict]
     tags: NotRequired[Nullable[List[str]]]
-    custom_mappings: NotRequired[Nullable[CustomMappingsTypedDict]]
+    custom_mappings: NotRequired[Nullable[Dict[str, Any]]]
     r"""When custom mappings are configured on the resource, the result is included here."""
     row_version: NotRequired[Nullable[str]]
     r"""A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object."""
@@ -524,7 +523,7 @@ class Employee(BaseModel):
 
     tags: OptionalNullable[List[str]] = UNSET
 
-    custom_mappings: OptionalNullable[CustomMappings] = UNSET
+    custom_mappings: OptionalNullable[Dict[str, Any]] = UNSET
     r"""When custom mappings are configured on the resource, the result is included here."""
 
     row_version: OptionalNullable[str] = UNSET
