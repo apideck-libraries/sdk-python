@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 from .address import Address, AddressTypedDict
-from .custommappings import CustomMappings, CustomMappingsTypedDict
 from .email import Email, EmailTypedDict
 from .passthroughbody import PassThroughBody, PassThroughBodyTypedDict
 from .phonenumber import PhoneNumber, PhoneNumberTypedDict
@@ -15,7 +14,7 @@ from apideck_unify.types import (
 )
 import pydantic
 from pydantic import model_serializer
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
@@ -51,7 +50,7 @@ class UserTypedDict(TypedDict):
     r"""The status of the user"""
     addresses: NotRequired[List[AddressTypedDict]]
     phone_numbers: NotRequired[List[PhoneNumberTypedDict]]
-    custom_mappings: NotRequired[Nullable[CustomMappingsTypedDict]]
+    custom_mappings: NotRequired[Nullable[Dict[str, Any]]]
     r"""When custom mappings are configured on the resource, the result is included here."""
     updated_at: NotRequired[Nullable[str]]
     r"""The date and time when the user was last updated."""
@@ -115,7 +114,7 @@ class User(BaseModel):
 
     phone_numbers: Optional[List[PhoneNumber]] = None
 
-    custom_mappings: OptionalNullable[CustomMappings] = UNSET
+    custom_mappings: OptionalNullable[Dict[str, Any]] = UNSET
     r"""When custom mappings are configured on the resource, the result is included here."""
 
     updated_at: OptionalNullable[str] = UNSET

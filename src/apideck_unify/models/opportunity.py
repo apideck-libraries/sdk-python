@@ -3,7 +3,6 @@
 from __future__ import annotations
 from .currency import Currency
 from .customfield import CustomField, CustomFieldTypedDict
-from .custommappings import CustomMappings, CustomMappingsTypedDict
 from .passthroughbody import PassThroughBody, PassThroughBodyTypedDict
 from apideck_unify.types import (
     BaseModel,
@@ -14,7 +13,7 @@ from apideck_unify.types import (
 )
 from datetime import date, datetime
 from pydantic import model_serializer
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 from typing_extensions import NotRequired, TypedDict
 
 
@@ -89,7 +88,7 @@ class OpportunityTypedDict(TypedDict):
     r"""The date and time when the opportunity was last contacted."""
     date_lead_created: NotRequired[Nullable[datetime]]
     r"""The date and time when the lead associated with the opportunity was created."""
-    custom_mappings: NotRequired[Nullable[CustomMappingsTypedDict]]
+    custom_mappings: NotRequired[Nullable[Dict[str, Any]]]
     r"""When custom mappings are configured on the resource, the result is included here."""
     updated_by: NotRequired[Nullable[str]]
     r"""The unique identifier of the user who last updated the opportunity."""
@@ -210,7 +209,7 @@ class Opportunity(BaseModel):
     date_lead_created: OptionalNullable[datetime] = UNSET
     r"""The date and time when the lead associated with the opportunity was created."""
 
-    custom_mappings: OptionalNullable[CustomMappings] = UNSET
+    custom_mappings: OptionalNullable[Dict[str, Any]] = UNSET
     r"""When custom mappings are configured on the resource, the result is included here."""
 
     updated_by: OptionalNullable[str] = UNSET

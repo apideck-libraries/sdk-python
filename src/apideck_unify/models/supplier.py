@@ -5,7 +5,6 @@ from .address import Address, AddressTypedDict
 from .bankaccount import BankAccount, BankAccountTypedDict
 from .currency import Currency
 from .customfield import CustomField, CustomFieldTypedDict
-from .custommappings import CustomMappings, CustomMappingsTypedDict
 from .email import Email, EmailTypedDict
 from .linkedledgeraccount import LinkedLedgerAccount, LinkedLedgerAccountTypedDict
 from .linkedledgeraccount_input import (
@@ -27,7 +26,7 @@ from apideck_unify.types import (
 from datetime import datetime
 from enum import Enum
 from pydantic import model_serializer
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 from typing_extensions import NotRequired, TypedDict
 
 
@@ -83,7 +82,7 @@ class SupplierTypedDict(TypedDict):
     r"""Payment method used for the transaction, such as cash, credit card, bank transfer, or check"""
     channel: NotRequired[Nullable[str]]
     r"""The channel through which the transaction is processed."""
-    custom_mappings: NotRequired[Nullable[CustomMappingsTypedDict]]
+    custom_mappings: NotRequired[Nullable[Dict[str, Any]]]
     r"""When custom mappings are configured on the resource, the result is included here."""
     custom_fields: NotRequired[List[CustomFieldTypedDict]]
     updated_by: NotRequired[Nullable[str]]
@@ -169,7 +168,7 @@ class Supplier(BaseModel):
     channel: OptionalNullable[str] = UNSET
     r"""The channel through which the transaction is processed."""
 
-    custom_mappings: OptionalNullable[CustomMappings] = UNSET
+    custom_mappings: OptionalNullable[Dict[str, Any]] = UNSET
     r"""When custom mappings are configured on the resource, the result is included here."""
 
     custom_fields: Optional[List[CustomField]] = None

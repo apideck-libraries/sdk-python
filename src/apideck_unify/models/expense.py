@@ -3,7 +3,6 @@
 from __future__ import annotations
 from .currency import Currency
 from .customfield import CustomField, CustomFieldTypedDict
-from .custommappings import CustomMappings, CustomMappingsTypedDict
 from .expenselineitem import ExpenseLineItem, ExpenseLineItemTypedDict
 from .expenselineitem_input import ExpenseLineItemInput, ExpenseLineItemInputTypedDict
 from .linkedtaxrate import LinkedTaxRate, LinkedTaxRateTypedDict
@@ -19,7 +18,7 @@ from apideck_unify.types import (
 from datetime import datetime
 from enum import Enum
 from pydantic import model_serializer
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 from typing_extensions import NotRequired, TypedDict
 
 
@@ -71,7 +70,7 @@ class ExpenseTypedDict(TypedDict):
     total_amount: NotRequired[Nullable[float]]
     r"""The total amount of the expense line item."""
     custom_fields: NotRequired[List[CustomFieldTypedDict]]
-    custom_mappings: NotRequired[Nullable[CustomMappingsTypedDict]]
+    custom_mappings: NotRequired[Nullable[Dict[str, Any]]]
     r"""When custom mappings are configured on the resource, the result is included here."""
     updated_at: NotRequired[Nullable[datetime]]
     r"""The date and time when the object was last updated."""
@@ -137,7 +136,7 @@ class Expense(BaseModel):
 
     custom_fields: Optional[List[CustomField]] = None
 
-    custom_mappings: OptionalNullable[CustomMappings] = UNSET
+    custom_mappings: OptionalNullable[Dict[str, Any]] = UNSET
     r"""When custom mappings are configured on the resource, the result is included here."""
 
     updated_at: OptionalNullable[datetime] = UNSET

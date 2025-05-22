@@ -10,7 +10,6 @@ from .billlineitem import (
 )
 from .currency import Currency
 from .customfield import CustomField, CustomFieldTypedDict
-from .custommappings import CustomMappings, CustomMappingsTypedDict
 from .linkedledgeraccount import LinkedLedgerAccount, LinkedLedgerAccountTypedDict
 from .linkedledgeraccount_input import (
     LinkedLedgerAccountInput,
@@ -33,7 +32,7 @@ from apideck_unify.types import (
 from datetime import date, datetime
 from enum import Enum
 from pydantic import model_serializer
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 from typing_extensions import NotRequired, TypedDict
 
 
@@ -124,7 +123,7 @@ class BillTypedDict(TypedDict):
     row_version: NotRequired[Nullable[str]]
     r"""A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object."""
     custom_fields: NotRequired[List[CustomFieldTypedDict]]
-    custom_mappings: NotRequired[Nullable[CustomMappingsTypedDict]]
+    custom_mappings: NotRequired[Nullable[Dict[str, Any]]]
     r"""When custom mappings are configured on the resource, the result is included here."""
     pass_through: NotRequired[List[PassThroughBodyTypedDict]]
     r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
@@ -244,7 +243,7 @@ class Bill(BaseModel):
 
     custom_fields: Optional[List[CustomField]] = None
 
-    custom_mappings: OptionalNullable[CustomMappings] = UNSET
+    custom_mappings: OptionalNullable[Dict[str, Any]] = UNSET
     r"""When custom mappings are configured on the resource, the result is included here."""
 
     pass_through: Optional[List[PassThroughBody]] = None

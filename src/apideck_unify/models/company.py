@@ -5,7 +5,6 @@ from .address import Address, AddressTypedDict
 from .bankaccount import BankAccount, BankAccountTypedDict
 from .currency import Currency
 from .customfield import CustomField, CustomFieldTypedDict
-from .custommappings import CustomMappings, CustomMappingsTypedDict
 from .email import Email, EmailTypedDict
 from .passthroughbody import PassThroughBody, PassThroughBodyTypedDict
 from .phonenumber import PhoneNumber, PhoneNumberTypedDict
@@ -20,7 +19,7 @@ from apideck_unify.types import (
 )
 from datetime import date, datetime
 from pydantic import model_serializer
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 from typing_extensions import NotRequired, TypedDict
 
 
@@ -129,7 +128,7 @@ class CompanyTypedDict(TypedDict):
     r"""A formal salutation for the person. For example, 'Mr', 'Mrs'"""
     birthday: NotRequired[Nullable[date]]
     r"""The date of birth of the person."""
-    custom_mappings: NotRequired[Nullable[CustomMappingsTypedDict]]
+    custom_mappings: NotRequired[Nullable[Dict[str, Any]]]
     r"""When custom mappings are configured on the resource, the result is included here."""
     updated_by: NotRequired[Nullable[str]]
     r"""Updated by user ID"""
@@ -243,7 +242,7 @@ class Company(BaseModel):
     birthday: OptionalNullable[date] = UNSET
     r"""The date of birth of the person."""
 
-    custom_mappings: OptionalNullable[CustomMappings] = UNSET
+    custom_mappings: OptionalNullable[Dict[str, Any]] = UNSET
     r"""When custom mappings are configured on the resource, the result is included here."""
 
     updated_by: OptionalNullable[str] = UNSET

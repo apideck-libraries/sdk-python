@@ -8,7 +8,7 @@ from apideck_unify.utils import get_security_from_env
 from typing import Any, Mapping, Optional
 
 
-class CustomMappingsSDK(BaseSDK):
+class CustomMappings(BaseSDK):
     def list(
         self,
         *,

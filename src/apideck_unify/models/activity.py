@@ -9,7 +9,6 @@ from .activityattendee import (
 )
 from .address import Address, AddressTypedDict
 from .customfield import CustomField, CustomFieldTypedDict
-from .custommappings import CustomMappings, CustomMappingsTypedDict
 from .passthroughbody import PassThroughBody, PassThroughBodyTypedDict
 from apideck_unify.types import (
     BaseModel,
@@ -20,7 +19,7 @@ from apideck_unify.types import (
 )
 from enum import Enum
 from pydantic import model_serializer
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 from typing_extensions import NotRequired, TypedDict
 
 
@@ -133,7 +132,7 @@ class ActivityTypedDict(TypedDict):
     custom_fields: NotRequired[List[CustomFieldTypedDict]]
     r"""Custom fields of the activity"""
     attendees: NotRequired[List[ActivityAttendeeTypedDict]]
-    custom_mappings: NotRequired[Nullable[CustomMappingsTypedDict]]
+    custom_mappings: NotRequired[Nullable[Dict[str, Any]]]
     r"""When custom mappings are configured on the resource, the result is included here."""
     updated_by: NotRequired[Nullable[str]]
     r"""The user who last updated the activity"""
@@ -283,7 +282,7 @@ class Activity(BaseModel):
 
     attendees: Optional[List[ActivityAttendee]] = None
 
-    custom_mappings: OptionalNullable[CustomMappings] = UNSET
+    custom_mappings: OptionalNullable[Dict[str, Any]] = UNSET
     r"""When custom mappings are configured on the resource, the result is included here."""
 
     updated_by: OptionalNullable[str] = UNSET

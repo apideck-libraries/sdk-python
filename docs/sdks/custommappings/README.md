@@ -1,4 +1,4 @@
-# CustomMappingsSDK
+# CustomMappings
 (*vault.custom_mappings*)
 
 ## Overview

@@ -3,7 +3,6 @@
 from __future__ import annotations
 from .address import Address, AddressTypedDict
 from .currency import Currency
-from .custommappings import CustomMappings, CustomMappingsTypedDict
 from .email import Email, EmailTypedDict
 from .phonenumber import PhoneNumber, PhoneNumberTypedDict
 from .taxrate import TaxRate, TaxRateTypedDict
@@ -17,7 +16,7 @@ from apideck_unify.types import (
 from datetime import date, datetime
 from enum import Enum
 from pydantic import model_serializer
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 from typing_extensions import NotRequired, TypedDict
 
 
@@ -73,7 +72,7 @@ class CompanyInfoTypedDict(TypedDict):
     addresses: NotRequired[List[AddressTypedDict]]
     phone_numbers: NotRequired[List[PhoneNumberTypedDict]]
     emails: NotRequired[List[EmailTypedDict]]
-    custom_mappings: NotRequired[Nullable[CustomMappingsTypedDict]]
+    custom_mappings: NotRequired[Nullable[Dict[str, Any]]]
     r"""When custom mappings are configured on the resource, the result is included here."""
     row_version: NotRequired[Nullable[str]]
     r"""A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object."""
@@ -131,7 +130,7 @@ class CompanyInfo(BaseModel):
 
     emails: Optional[List[Email]] = None
 
-    custom_mappings: OptionalNullable[CustomMappings] = UNSET
+    custom_mappings: OptionalNullable[Dict[str, Any]] = UNSET
     r"""When custom mappings are configured on the resource, the result is included here."""
 
     row_version: OptionalNullable[str] = UNSET

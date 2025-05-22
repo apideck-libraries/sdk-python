@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 from .address import Address, AddressTypedDict
-from .custommappings import CustomMappings, CustomMappingsTypedDict
 from .passthroughbody import PassThroughBody, PassThroughBodyTypedDict
 from .subsidiaryreference import SubsidiaryReference, SubsidiaryReferenceTypedDict
 from .subsidiaryreference_input import (
@@ -19,7 +18,7 @@ from apideck_unify.types import (
 from datetime import datetime
 from enum import Enum
 from pydantic import model_serializer
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 from typing_extensions import NotRequired, TypedDict
 
 
@@ -43,7 +42,7 @@ class AccountingLocationTypedDict(TypedDict):
     r"""Based on the status some functionality is enabled or disabled."""
     addresses: NotRequired[List[AddressTypedDict]]
     subsidiaries: NotRequired[List[SubsidiaryReferenceTypedDict]]
-    custom_mappings: NotRequired[Nullable[CustomMappingsTypedDict]]
+    custom_mappings: NotRequired[Nullable[Dict[str, Any]]]
     r"""When custom mappings are configured on the resource, the result is included here."""
     row_version: NotRequired[Nullable[str]]
     r"""A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object."""
@@ -79,7 +78,7 @@ class AccountingLocation(BaseModel):
 
     subsidiaries: Optional[List[SubsidiaryReference]] = None
 
-    custom_mappings: OptionalNullable[CustomMappings] = UNSET
+    custom_mappings: OptionalNullable[Dict[str, Any]] = UNSET
     r"""When custom mappings are configured on the resource, the result is included here."""
 
     row_version: OptionalNullable[str] = UNSET

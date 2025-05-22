@@ -3,7 +3,6 @@
 from __future__ import annotations
 from .currency import Currency
 from .customfield import CustomField, CustomFieldTypedDict
-from .custommappings import CustomMappings, CustomMappingsTypedDict
 from apideck_unify.types import (
     BaseModel,
     Nullable,
@@ -14,7 +13,7 @@ from apideck_unify.types import (
 from datetime import datetime
 from enum import Enum
 from pydantic import model_serializer
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 from typing_extensions import NotRequired, TypedDict
 
 
@@ -52,7 +51,7 @@ class BankFeedAccountTypedDict(TypedDict):
     country: NotRequired[Nullable[str]]
     r"""Country code according to ISO 3166-1 alpha-2."""
     custom_fields: NotRequired[List[CustomFieldTypedDict]]
-    custom_mappings: NotRequired[Nullable[CustomMappingsTypedDict]]
+    custom_mappings: NotRequired[Nullable[Dict[str, Any]]]
     r"""When custom mappings are configured on the resource, the result is included here."""
     created_at: NotRequired[Nullable[datetime]]
     r"""The date and time when the object was created."""
@@ -94,7 +93,7 @@ class BankFeedAccount(BaseModel):
 
     custom_fields: Optional[List[CustomField]] = None
 
-    custom_mappings: OptionalNullable[CustomMappings] = UNSET
+    custom_mappings: OptionalNullable[Dict[str, Any]] = UNSET
     r"""When custom mappings are configured on the resource, the result is included here."""
 
     created_at: OptionalNullable[datetime] = UNSET

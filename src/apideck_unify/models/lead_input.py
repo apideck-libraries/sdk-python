@@ -24,7 +24,7 @@ from typing_extensions import NotRequired, TypedDict
 class LeadInputTypedDict(TypedDict):
     name: str
     r"""Full name of the lead."""
-    company_name: Nullable[str]
+    company_name: NotRequired[Nullable[str]]
     r"""The name of the company the lead is associated with."""
     owner_id: NotRequired[Nullable[str]]
     r"""The owner of the lead."""
@@ -60,7 +60,7 @@ class LeadInputTypedDict(TypedDict):
     social_links: NotRequired[List[SocialLinkTypedDict]]
     phone_numbers: NotRequired[List[PhoneNumberTypedDict]]
     emails: NotRequired[List[EmailTypedDict]]
-    custom_fields: NotRequired[List[CustomFieldTypedDict]]
+    custom_fields: NotRequired[Nullable[List[CustomFieldTypedDict]]]
     tags: NotRequired[Nullable[List[str]]]
     pass_through: NotRequired[List[PassThroughBodyTypedDict]]
     r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
@@ -70,7 +70,7 @@ class LeadInput(BaseModel):
     name: str
     r"""Full name of the lead."""
 
-    company_name: Nullable[str]
+    company_name: OptionalNullable[str] = UNSET
     r"""The name of the company the lead is associated with."""
 
     owner_id: OptionalNullable[str] = UNSET
@@ -127,7 +127,7 @@ class LeadInput(BaseModel):
 
     emails: Optional[List[Email]] = None
 
-    custom_fields: Optional[List[CustomField]] = None
+    custom_fields: OptionalNullable[List[CustomField]] = UNSET
 
     tags: OptionalNullable[List[str]] = UNSET
 
@@ -137,6 +137,7 @@ class LeadInput(BaseModel):
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
         optional_fields = [
+            "company_name",
             "owner_id",
             "owner_name",
             "company_id",
@@ -178,6 +179,7 @@ class LeadInput(BaseModel):
             "monetary_amount",
             "currency",
             "fax",
+            "custom_fields",
             "tags",
         ]
         null_default_fields = []

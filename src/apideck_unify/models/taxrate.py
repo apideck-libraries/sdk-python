@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 from .customfield import CustomField, CustomFieldTypedDict
-from .custommappings import CustomMappings, CustomMappingsTypedDict
 from .passthroughbody import PassThroughBody, PassThroughBodyTypedDict
 from apideck_unify.types import (
     BaseModel,
@@ -14,7 +13,7 @@ from apideck_unify.types import (
 from datetime import datetime
 from enum import Enum
 from pydantic import model_serializer
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 from typing_extensions import NotRequired, TypedDict
 
 
@@ -109,7 +108,7 @@ class TaxRateTypedDict(TypedDict):
     r"""ID of the original tax rate from which the new tax rate is derived. Helps to understand the relationship between corresponding tax rate entities."""
     status: NotRequired[Nullable[TaxRateStatus]]
     r"""Tax rate status"""
-    custom_mappings: NotRequired[Nullable[CustomMappingsTypedDict]]
+    custom_mappings: NotRequired[Nullable[Dict[str, Any]]]
     r"""When custom mappings are configured on the resource, the result is included here."""
     row_version: NotRequired[Nullable[str]]
     r"""A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object."""
@@ -167,7 +166,7 @@ class TaxRate(BaseModel):
     status: OptionalNullable[TaxRateStatus] = UNSET
     r"""Tax rate status"""
 
-    custom_mappings: OptionalNullable[CustomMappings] = UNSET
+    custom_mappings: OptionalNullable[Dict[str, Any]] = UNSET
     r"""When custom mappings are configured on the resource, the result is included here."""
 
     row_version: OptionalNullable[str] = UNSET
