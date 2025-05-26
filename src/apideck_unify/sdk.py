@@ -7,22 +7,25 @@ from .utils.logger import Logger, get_default_logger
 from .utils.retries import RetryConfig
 from apideck_unify import models, utils
 from apideck_unify._hooks import SDKHooks
-from apideck_unify.accounting import Accounting
-from apideck_unify.ats import Ats
-from apideck_unify.connector_sdk import ConnectorSDK
-from apideck_unify.crm import Crm
-from apideck_unify.ecommerce import Ecommerce
-from apideck_unify.filestorage import FileStorage
-from apideck_unify.hris import Hris
-from apideck_unify.issuetracking import IssueTracking
 from apideck_unify.models import internal
-from apideck_unify.sms import Sms
 from apideck_unify.types import OptionalNullable, UNSET
-from apideck_unify.vault import Vault
-from apideck_unify.webhook_sdk import WebhookSDK
 import httpx
-from typing import Any, Callable, Dict, Optional, Union, cast
+import importlib
+from typing import Any, Callable, Dict, Optional, TYPE_CHECKING, Union, cast
 import weakref
+
+if TYPE_CHECKING:
+    from apideck_unify.accounting import Accounting
+    from apideck_unify.ats import Ats
+    from apideck_unify.connector_sdk import ConnectorSDK
+    from apideck_unify.crm import Crm
+    from apideck_unify.ecommerce import Ecommerce
+    from apideck_unify.filestorage import FileStorage
+    from apideck_unify.hris import Hris
+    from apideck_unify.issuetracking import IssueTracking
+    from apideck_unify.sms import Sms
+    from apideck_unify.vault import Vault
+    from apideck_unify.webhook_sdk import WebhookSDK
 
 
 class Apideck(BaseSDK):
@@ -30,17 +33,30 @@ class Apideck(BaseSDK):
     https://developers.apideck.com - Apideck Developer Docs
     """
 
-    accounting: Accounting
-    ats: Ats
-    crm: Crm
-    ecommerce: Ecommerce
-    file_storage: FileStorage
-    hris: Hris
-    sms: Sms
-    issue_tracking: IssueTracking
-    connector: ConnectorSDK
-    vault: Vault
-    webhook: WebhookSDK
+    accounting: "Accounting"
+    ats: "Ats"
+    crm: "Crm"
+    ecommerce: "Ecommerce"
+    file_storage: "FileStorage"
+    hris: "Hris"
+    sms: "Sms"
+    issue_tracking: "IssueTracking"
+    connector: "ConnectorSDK"
+    vault: "Vault"
+    webhook: "WebhookSDK"
+    _sub_sdk_map = {
+        "accounting": ("apideck_unify.accounting", "Accounting"),
+        "ats": ("apideck_unify.ats", "Ats"),
+        "crm": ("apideck_unify.crm", "Crm"),
+        "ecommerce": ("apideck_unify.ecommerce", "Ecommerce"),
+        "file_storage": ("apideck_unify.filestorage", "FileStorage"),
+        "hris": ("apideck_unify.hris", "Hris"),
+        "sms": ("apideck_unify.sms", "Sms"),
+        "issue_tracking": ("apideck_unify.issuetracking", "IssueTracking"),
+        "connector": ("apideck_unify.connector_sdk", "ConnectorSDK"),
+        "vault": ("apideck_unify.vault", "Vault"),
+        "webhook": ("apideck_unify.webhook_sdk", "WebhookSDK"),
+    }
 
     def __init__(
         self,
@@ -147,20 +163,32 @@ class Apideck(BaseSDK):
             self.sdk_configuration.async_client_supplied,
         )
 
-        self._init_sdks()
+    def __getattr__(self, name: str):
+        if name in self._sub_sdk_map:
+            module_path, class_name = self._sub_sdk_map[name]
+            try:
+                module = importlib.import_module(module_path)
+                klass = getattr(module, class_name)
+                instance = klass(self.sdk_configuration)
+                setattr(self, name, instance)
+                return instance
+            except ImportError as e:
+                raise AttributeError(
+                    f"Failed to import module {module_path} for attribute {name}: {e}"
+                ) from e
+            except AttributeError as e:
+                raise AttributeError(
+                    f"Failed to find class {class_name} in module {module_path} for attribute {name}: {e}"
+                ) from e
 
-    def _init_sdks(self):
-        self.accounting = Accounting(self.sdk_configuration)
-        self.ats = Ats(self.sdk_configuration)
-        self.crm = Crm(self.sdk_configuration)
-        self.ecommerce = Ecommerce(self.sdk_configuration)
-        self.file_storage = FileStorage(self.sdk_configuration)
-        self.hris = Hris(self.sdk_configuration)
-        self.sms = Sms(self.sdk_configuration)
-        self.issue_tracking = IssueTracking(self.sdk_configuration)
-        self.connector = ConnectorSDK(self.sdk_configuration)
-        self.vault = Vault(self.sdk_configuration)
-        self.webhook = WebhookSDK(self.sdk_configuration)
+        raise AttributeError(
+            f"'{type(self).__name__}' object has no attribute '{name}'"
+        )
+
+    def __dir__(self):
+        default_attrs = list(super().__dir__())
+        lazy_attrs = list(self._sub_sdk_map.keys())
+        return sorted(list(set(default_attrs + lazy_attrs)))
 
     def __enter__(self):
         return self
