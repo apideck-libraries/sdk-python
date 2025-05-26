@@ -8,6 +8,7 @@ from .ecommerceorderlineitem import (
     EcommerceOrderLineItem,
     EcommerceOrderLineItemTypedDict,
 )
+from .ecommerceorderrefund import EcommerceOrderRefund, EcommerceOrderRefundTypedDict
 from .ecommerceorderstatus import EcommerceOrderStatus
 from .linkedecommercecustomer import (
     LinkedEcommerceCustomer,
@@ -92,6 +93,7 @@ class EcommerceOrderTypedDict(TypedDict):
     line_items: NotRequired[List[EcommerceOrderLineItemTypedDict]]
     note: NotRequired[Nullable[str]]
     r"""Note for the order."""
+    refunds: NotRequired[List[EcommerceOrderRefundTypedDict]]
     custom_mappings: NotRequired[Nullable[Dict[str, Any]]]
     r"""When custom mappings are configured on the resource, the result is included here."""
     created_at: NotRequired[Nullable[datetime]]
@@ -161,6 +163,8 @@ class EcommerceOrder(BaseModel):
     note: OptionalNullable[str] = UNSET
     r"""Note for the order."""
 
+    refunds: Optional[List[EcommerceOrderRefund]] = None
+
     custom_mappings: OptionalNullable[Dict[str, Any]] = UNSET
     r"""When custom mappings are configured on the resource, the result is included here."""
 
@@ -193,6 +197,7 @@ class EcommerceOrder(BaseModel):
             "tracking",
             "line_items",
             "note",
+            "refunds",
             "custom_mappings",
             "created_at",
             "updated_at",
