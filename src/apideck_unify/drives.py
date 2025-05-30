@@ -100,6 +100,7 @@ class Drives(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="fileStorage.drivesAll",
                 oauth2_scopes=[],
@@ -287,6 +288,7 @@ class Drives(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="fileStorage.drivesAll",
                 oauth2_scopes=[],
@@ -478,6 +480,7 @@ class Drives(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="fileStorage.drivesAdd",
                 oauth2_scopes=[],
@@ -644,6 +647,7 @@ class Drives(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="fileStorage.drivesAdd",
                 oauth2_scopes=[],
@@ -798,6 +802,7 @@ class Drives(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="fileStorage.drivesOne",
                 oauth2_scopes=[],
@@ -952,6 +957,7 @@ class Drives(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="fileStorage.drivesOne",
                 oauth2_scopes=[],
@@ -1121,6 +1127,7 @@ class Drives(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="fileStorage.drivesUpdate",
                 oauth2_scopes=[],
@@ -1290,6 +1297,7 @@ class Drives(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="fileStorage.drivesUpdate",
                 oauth2_scopes=[],
@@ -1441,6 +1449,7 @@ class Drives(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="fileStorage.drivesDelete",
                 oauth2_scopes=[],
@@ -1592,6 +1601,7 @@ class Drives(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="fileStorage.drivesDelete",
                 oauth2_scopes=[],

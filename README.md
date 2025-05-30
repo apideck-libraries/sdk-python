@@ -489,6 +489,22 @@ with Apideck(
 * [update](docs/sdks/contacts/README.md#update) - Update contact
 * [delete](docs/sdks/contacts/README.md#delete) - Delete contact
 
+#### [crm.custom_object_schemas](docs/sdks/customobjectschemas/README.md)
+
+* [list](docs/sdks/customobjectschemas/README.md#list) - List custom object schemas
+* [create](docs/sdks/customobjectschemas/README.md#create) - Create custom object schema
+* [get](docs/sdks/customobjectschemas/README.md#get) - Get custom object schema
+* [update](docs/sdks/customobjectschemas/README.md#update) - Update custom object schema
+* [delete](docs/sdks/customobjectschemas/README.md#delete) - Delete custom object schema
+
+#### [crm.custom_objects](docs/sdks/customobjects/README.md)
+
+* [list](docs/sdks/customobjects/README.md#list) - List custom objects
+* [create](docs/sdks/customobjects/README.md#create) - Create custom object
+* [get](docs/sdks/customobjects/README.md#get) - Get custom object
+* [update](docs/sdks/customobjects/README.md#update) - Update custom object
+* [delete](docs/sdks/customobjects/README.md#delete) - Delete custom object
+
 #### [crm.leads](docs/sdks/leads/README.md)
 
 * [list](docs/sdks/leads/README.md#list) - List leads

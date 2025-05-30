@@ -1,0 +1,10 @@
+# CrmCustomObjectSchemasAddResponse
+
+
+## Fields
+
+| Field                                                                                              | Type                                                                                               | Required                                                                                           | Description                                                                                        |
+| -------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| `http_meta`                                                                                        | [models.HTTPMetadata](../models/httpmetadata.md)                                                   | :heavy_check_mark:                                                                                 | N/A                                                                                                |
+| `create_custom_object_schema_response`                                                             | [Optional[models.CreateCustomObjectSchemaResponse]](../models/createcustomobjectschemaresponse.md) | :heavy_minus_sign:                                                                                 | Custom object schema created                                                                       |
+| `unexpected_error_response`                                                                        | [Optional[models.UnexpectedErrorResponse]](../models/unexpectederrorresponse.md)                   | :heavy_minus_sign:                                                                                 | Unexpected error                                                                                   |

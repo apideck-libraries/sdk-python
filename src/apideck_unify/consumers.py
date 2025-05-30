@@ -91,6 +91,7 @@ class Consumers(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="vault.consumersAdd",
                 oauth2_scopes=[],
@@ -244,6 +245,7 @@ class Consumers(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="vault.consumersAdd",
                 oauth2_scopes=[],
@@ -389,6 +391,7 @@ class Consumers(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="vault.consumersAll",
                 oauth2_scopes=[],
@@ -554,6 +557,7 @@ class Consumers(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="vault.consumersAll",
                 oauth2_scopes=[],
@@ -716,6 +720,7 @@ class Consumers(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="vault.consumersOne",
                 oauth2_scopes=[],
@@ -858,6 +863,7 @@ class Consumers(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="vault.consumersOne",
                 oauth2_scopes=[],
@@ -1015,6 +1021,7 @@ class Consumers(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="vault.consumersUpdate",
                 oauth2_scopes=[],
@@ -1172,6 +1179,7 @@ class Consumers(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="vault.consumersUpdate",
                 oauth2_scopes=[],
@@ -1313,6 +1321,7 @@ class Consumers(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="vault.consumersDelete",
                 oauth2_scopes=[],
@@ -1454,6 +1463,7 @@ class Consumers(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="vault.consumersDelete",
                 oauth2_scopes=[],

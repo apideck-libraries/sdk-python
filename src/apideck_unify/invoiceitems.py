@@ -111,6 +111,7 @@ class InvoiceItems(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="accounting.invoiceItemsAll",
                 oauth2_scopes=[],
@@ -310,6 +311,7 @@ class InvoiceItems(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="accounting.invoiceItemsAll",
                 oauth2_scopes=[],
@@ -619,6 +621,7 @@ class InvoiceItems(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="accounting.invoiceItemsAdd",
                 oauth2_scopes=[],
@@ -901,6 +904,7 @@ class InvoiceItems(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="accounting.invoiceItemsAdd",
                 oauth2_scopes=[],
@@ -1062,6 +1066,7 @@ class InvoiceItems(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="accounting.invoiceItemsOne",
                 oauth2_scopes=[],
@@ -1223,6 +1228,7 @@ class InvoiceItems(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="accounting.invoiceItemsOne",
                 oauth2_scopes=[],
@@ -1508,6 +1514,7 @@ class InvoiceItems(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="accounting.invoiceItemsUpdate",
                 oauth2_scopes=[],
@@ -1793,6 +1800,7 @@ class InvoiceItems(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="accounting.invoiceItemsUpdate",
                 oauth2_scopes=[],
@@ -1944,6 +1952,7 @@ class InvoiceItems(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="accounting.invoiceItemsDelete",
                 oauth2_scopes=[],
@@ -2095,6 +2104,7 @@ class InvoiceItems(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="accounting.invoiceItemsDelete",
                 oauth2_scopes=[],

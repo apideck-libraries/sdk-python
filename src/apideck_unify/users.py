@@ -98,6 +98,7 @@ class Users(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="crm.usersAll",
                 oauth2_scopes=[],
@@ -283,6 +284,7 @@ class Users(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="crm.usersAll",
                 oauth2_scopes=[],
@@ -527,6 +529,7 @@ class Users(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="crm.usersAdd",
                 oauth2_scopes=[],
@@ -746,6 +749,7 @@ class Users(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="crm.usersAdd",
                 oauth2_scopes=[],
@@ -900,6 +904,7 @@ class Users(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="crm.usersOne",
                 oauth2_scopes=[],
@@ -1054,6 +1059,7 @@ class Users(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="crm.usersOne",
                 oauth2_scopes=[],
@@ -1276,6 +1282,7 @@ class Users(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="crm.usersUpdate",
                 oauth2_scopes=[],
@@ -1498,6 +1505,7 @@ class Users(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="crm.usersUpdate",
                 oauth2_scopes=[],
@@ -1649,6 +1657,7 @@ class Users(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="crm.usersDelete",
                 oauth2_scopes=[],
@@ -1800,6 +1809,7 @@ class Users(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="crm.usersDelete",
                 oauth2_scopes=[],
