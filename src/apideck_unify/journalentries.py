@@ -111,6 +111,7 @@ class JournalEntries(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="accounting.journalEntriesAll",
                 oauth2_scopes=[],
@@ -310,6 +311,7 @@ class JournalEntries(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="accounting.journalEntriesAll",
                 oauth2_scopes=[],
@@ -426,6 +428,7 @@ class JournalEntries(BaseSDK):
                 List[models.JournalEntryLineItemInputTypedDict],
             ]
         ] = None,
+        status: OptionalNullable[models.JournalEntryStatus] = UNSET,
         memo: OptionalNullable[str] = UNSET,
         posted_at: Optional[datetime] = None,
         journal_symbol: OptionalNullable[str] = UNSET,
@@ -464,6 +467,7 @@ class JournalEntries(BaseSDK):
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
         :param company_id: The company or subsidiary id the transaction belongs to
         :param line_items: Requires a minimum of 2 line items that sum to 0
+        :param status: Journal entry status
         :param memo: Reference for the journal entry.
         :param posted_at: This is the date on which the journal entry was added. This can be different from the creation date and can also be backdated.
         :param journal_symbol: Journal symbol of the entry. For example IND for indirect costs
@@ -503,6 +507,7 @@ class JournalEntries(BaseSDK):
                 line_items=utils.get_pydantic_model(
                     line_items, Optional[List[models.JournalEntryLineItemInput]]
                 ),
+                status=status,
                 memo=memo,
                 posted_at=posted_at,
                 journal_symbol=journal_symbol,
@@ -561,6 +566,7 @@ class JournalEntries(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="accounting.journalEntriesAdd",
                 oauth2_scopes=[],
@@ -650,6 +656,7 @@ class JournalEntries(BaseSDK):
                 List[models.JournalEntryLineItemInputTypedDict],
             ]
         ] = None,
+        status: OptionalNullable[models.JournalEntryStatus] = UNSET,
         memo: OptionalNullable[str] = UNSET,
         posted_at: Optional[datetime] = None,
         journal_symbol: OptionalNullable[str] = UNSET,
@@ -688,6 +695,7 @@ class JournalEntries(BaseSDK):
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
         :param company_id: The company or subsidiary id the transaction belongs to
         :param line_items: Requires a minimum of 2 line items that sum to 0
+        :param status: Journal entry status
         :param memo: Reference for the journal entry.
         :param posted_at: This is the date on which the journal entry was added. This can be different from the creation date and can also be backdated.
         :param journal_symbol: Journal symbol of the entry. For example IND for indirect costs
@@ -727,6 +735,7 @@ class JournalEntries(BaseSDK):
                 line_items=utils.get_pydantic_model(
                     line_items, Optional[List[models.JournalEntryLineItemInput]]
                 ),
+                status=status,
                 memo=memo,
                 posted_at=posted_at,
                 journal_symbol=journal_symbol,
@@ -785,6 +794,7 @@ class JournalEntries(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="accounting.journalEntriesAdd",
                 oauth2_scopes=[],
@@ -939,6 +949,7 @@ class JournalEntries(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="accounting.journalEntriesOne",
                 oauth2_scopes=[],
@@ -1093,6 +1104,7 @@ class JournalEntries(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="accounting.journalEntriesOne",
                 oauth2_scopes=[],
@@ -1183,6 +1195,7 @@ class JournalEntries(BaseSDK):
                 List[models.JournalEntryLineItemInputTypedDict],
             ]
         ] = None,
+        status: OptionalNullable[models.JournalEntryStatus] = UNSET,
         memo: OptionalNullable[str] = UNSET,
         posted_at: Optional[datetime] = None,
         journal_symbol: OptionalNullable[str] = UNSET,
@@ -1222,6 +1235,7 @@ class JournalEntries(BaseSDK):
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
         :param company_id: The company or subsidiary id the transaction belongs to
         :param line_items: Requires a minimum of 2 line items that sum to 0
+        :param status: Journal entry status
         :param memo: Reference for the journal entry.
         :param posted_at: This is the date on which the journal entry was added. This can be different from the creation date and can also be backdated.
         :param journal_symbol: Journal symbol of the entry. For example IND for indirect costs
@@ -1262,6 +1276,7 @@ class JournalEntries(BaseSDK):
                 line_items=utils.get_pydantic_model(
                     line_items, Optional[List[models.JournalEntryLineItemInput]]
                 ),
+                status=status,
                 memo=memo,
                 posted_at=posted_at,
                 journal_symbol=journal_symbol,
@@ -1320,6 +1335,7 @@ class JournalEntries(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="accounting.journalEntriesUpdate",
                 oauth2_scopes=[],
@@ -1410,6 +1426,7 @@ class JournalEntries(BaseSDK):
                 List[models.JournalEntryLineItemInputTypedDict],
             ]
         ] = None,
+        status: OptionalNullable[models.JournalEntryStatus] = UNSET,
         memo: OptionalNullable[str] = UNSET,
         posted_at: Optional[datetime] = None,
         journal_symbol: OptionalNullable[str] = UNSET,
@@ -1449,6 +1466,7 @@ class JournalEntries(BaseSDK):
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
         :param company_id: The company or subsidiary id the transaction belongs to
         :param line_items: Requires a minimum of 2 line items that sum to 0
+        :param status: Journal entry status
         :param memo: Reference for the journal entry.
         :param posted_at: This is the date on which the journal entry was added. This can be different from the creation date and can also be backdated.
         :param journal_symbol: Journal symbol of the entry. For example IND for indirect costs
@@ -1489,6 +1507,7 @@ class JournalEntries(BaseSDK):
                 line_items=utils.get_pydantic_model(
                     line_items, Optional[List[models.JournalEntryLineItemInput]]
                 ),
+                status=status,
                 memo=memo,
                 posted_at=posted_at,
                 journal_symbol=journal_symbol,
@@ -1547,6 +1566,7 @@ class JournalEntries(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="accounting.journalEntriesUpdate",
                 oauth2_scopes=[],
@@ -1698,6 +1718,7 @@ class JournalEntries(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="accounting.journalEntriesDelete",
                 oauth2_scopes=[],
@@ -1849,6 +1870,7 @@ class JournalEntries(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="accounting.journalEntriesDelete",
                 oauth2_scopes=[],

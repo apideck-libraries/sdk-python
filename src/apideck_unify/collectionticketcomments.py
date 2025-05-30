@@ -107,6 +107,7 @@ class CollectionTicketComments(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="issueTracking.collectionTicketCommentsAll",
                 oauth2_scopes=[],
@@ -306,6 +307,7 @@ class CollectionTicketComments(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="issueTracking.collectionTicketCommentsAll",
                 oauth2_scopes=[],
@@ -509,6 +511,7 @@ class CollectionTicketComments(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="issueTracking.collectionTicketCommentsAdd",
                 oauth2_scopes=[],
@@ -682,6 +685,7 @@ class CollectionTicketComments(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="issueTracking.collectionTicketCommentsAdd",
                 oauth2_scopes=[],
@@ -848,6 +852,7 @@ class CollectionTicketComments(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="issueTracking.collectionTicketCommentsOne",
                 oauth2_scopes=[],
@@ -1043,6 +1048,7 @@ class CollectionTicketComments(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="issueTracking.collectionTicketCommentsOne",
                 oauth2_scopes=[],
@@ -1248,6 +1254,7 @@ class CollectionTicketComments(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="issueTracking.collectionTicketCommentsUpdate",
                 oauth2_scopes=[],
@@ -1424,6 +1431,7 @@ class CollectionTicketComments(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="issueTracking.collectionTicketCommentsUpdate",
                 oauth2_scopes=[],
@@ -1581,6 +1589,7 @@ class CollectionTicketComments(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="issueTracking.collectionTicketCommentsDelete",
                 oauth2_scopes=[],
@@ -1738,6 +1747,7 @@ class CollectionTicketComments(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="issueTracking.collectionTicketCommentsDelete",
                 oauth2_scopes=[],

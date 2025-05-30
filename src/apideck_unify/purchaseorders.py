@@ -108,6 +108,7 @@ class PurchaseOrders(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="accounting.purchaseOrdersAll",
                 oauth2_scopes=[],
@@ -303,6 +304,7 @@ class PurchaseOrders(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="accounting.purchaseOrdersAll",
                 oauth2_scopes=[],
@@ -617,6 +619,7 @@ class PurchaseOrders(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="accounting.purchaseOrdersAdd",
                 oauth2_scopes=[],
@@ -905,6 +908,7 @@ class PurchaseOrders(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="accounting.purchaseOrdersAdd",
                 oauth2_scopes=[],
@@ -1056,6 +1060,7 @@ class PurchaseOrders(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="accounting.purchaseOrdersOne",
                 oauth2_scopes=[],
@@ -1207,6 +1212,7 @@ class PurchaseOrders(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="accounting.purchaseOrdersOne",
                 oauth2_scopes=[],
@@ -1498,6 +1504,7 @@ class PurchaseOrders(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="accounting.purchaseOrdersUpdate",
                 oauth2_scopes=[],
@@ -1789,6 +1796,7 @@ class PurchaseOrders(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="accounting.purchaseOrdersUpdate",
                 oauth2_scopes=[],
@@ -1940,6 +1948,7 @@ class PurchaseOrders(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="accounting.purchaseOrdersDelete",
                 oauth2_scopes=[],
@@ -2091,6 +2100,7 @@ class PurchaseOrders(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="accounting.purchaseOrdersDelete",
                 oauth2_scopes=[],

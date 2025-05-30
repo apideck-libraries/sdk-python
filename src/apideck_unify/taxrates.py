@@ -104,6 +104,7 @@ class TaxRates(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="accounting.taxRatesAll",
                 oauth2_scopes=[],
@@ -296,6 +297,7 @@ class TaxRates(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="accounting.taxRatesAll",
                 oauth2_scopes=[],
@@ -544,6 +546,7 @@ class TaxRates(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="accounting.taxRatesAdd",
                 oauth2_scopes=[],
@@ -766,6 +769,7 @@ class TaxRates(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="accounting.taxRatesAdd",
                 oauth2_scopes=[],
@@ -921,6 +925,7 @@ class TaxRates(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="accounting.taxRatesOne",
                 oauth2_scopes=[],
@@ -1076,6 +1081,7 @@ class TaxRates(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="accounting.taxRatesOne",
                 oauth2_scopes=[],
@@ -1301,6 +1307,7 @@ class TaxRates(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="accounting.taxRatesUpdate",
                 oauth2_scopes=[],
@@ -1526,6 +1533,7 @@ class TaxRates(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="accounting.taxRatesUpdate",
                 oauth2_scopes=[],
@@ -1677,6 +1685,7 @@ class TaxRates(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="accounting.taxRatesDelete",
                 oauth2_scopes=[],
@@ -1828,6 +1837,7 @@ class TaxRates(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="accounting.taxRatesDelete",
                 oauth2_scopes=[],

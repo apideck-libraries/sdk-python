@@ -108,6 +108,7 @@ class Suppliers(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="accounting.suppliersAll",
                 oauth2_scopes=[],
@@ -305,6 +306,7 @@ class Suppliers(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="accounting.suppliersAll",
                 oauth2_scopes=[],
@@ -601,6 +603,7 @@ class Suppliers(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="accounting.suppliersAdd",
                 oauth2_scopes=[],
@@ -870,6 +873,7 @@ class Suppliers(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="accounting.suppliersAdd",
                 oauth2_scopes=[],
@@ -1024,6 +1028,7 @@ class Suppliers(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="accounting.suppliersOne",
                 oauth2_scopes=[],
@@ -1178,6 +1183,7 @@ class Suppliers(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="accounting.suppliersOne",
                 oauth2_scopes=[],
@@ -1450,6 +1456,7 @@ class Suppliers(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="accounting.suppliersUpdate",
                 oauth2_scopes=[],
@@ -1722,6 +1729,7 @@ class Suppliers(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="accounting.suppliersUpdate",
                 oauth2_scopes=[],
@@ -1873,6 +1881,7 @@ class Suppliers(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="accounting.suppliersDelete",
                 oauth2_scopes=[],
@@ -2024,6 +2033,7 @@ class Suppliers(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="accounting.suppliersDelete",
                 oauth2_scopes=[],

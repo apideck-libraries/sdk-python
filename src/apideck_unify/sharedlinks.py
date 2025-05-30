@@ -98,6 +98,7 @@ class SharedLinks(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="fileStorage.sharedLinksAll",
                 oauth2_scopes=[],
@@ -283,6 +284,7 @@ class SharedLinks(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="fileStorage.sharedLinksAll",
                 oauth2_scopes=[],
@@ -480,6 +482,7 @@ class SharedLinks(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="fileStorage.sharedLinksAdd",
                 oauth2_scopes=[],
@@ -652,6 +655,7 @@ class SharedLinks(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="fileStorage.sharedLinksAdd",
                 oauth2_scopes=[],
@@ -806,6 +810,7 @@ class SharedLinks(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="fileStorage.sharedLinksOne",
                 oauth2_scopes=[],
@@ -960,6 +965,7 @@ class SharedLinks(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="fileStorage.sharedLinksOne",
                 oauth2_scopes=[],
@@ -1135,6 +1141,7 @@ class SharedLinks(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="fileStorage.sharedLinksUpdate",
                 oauth2_scopes=[],
@@ -1310,6 +1317,7 @@ class SharedLinks(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="fileStorage.sharedLinksUpdate",
                 oauth2_scopes=[],
@@ -1461,6 +1469,7 @@ class SharedLinks(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="fileStorage.sharedLinksDelete",
                 oauth2_scopes=[],
@@ -1612,6 +1621,7 @@ class SharedLinks(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="fileStorage.sharedLinksDelete",
                 oauth2_scopes=[],

@@ -117,6 +117,7 @@ class Files(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="fileStorage.filesAll",
                 oauth2_scopes=[],
@@ -312,6 +313,7 @@ class Files(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="fileStorage.filesAll",
                 oauth2_scopes=[],
@@ -522,6 +524,7 @@ class Files(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="fileStorage.filesSearch",
                 oauth2_scopes=[],
@@ -705,6 +708,7 @@ class Files(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="fileStorage.filesSearch",
                 oauth2_scopes=[],
@@ -859,6 +863,7 @@ class Files(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="fileStorage.filesOne",
                 oauth2_scopes=[],
@@ -1013,6 +1018,7 @@ class Files(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="fileStorage.filesOne",
                 oauth2_scopes=[],
@@ -1189,6 +1195,7 @@ class Files(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="fileStorage.filesUpdate",
                 oauth2_scopes=[],
@@ -1365,6 +1372,7 @@ class Files(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="fileStorage.filesUpdate",
                 oauth2_scopes=[],
@@ -1516,6 +1524,7 @@ class Files(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="fileStorage.filesDelete",
                 oauth2_scopes=[],
@@ -1667,6 +1676,7 @@ class Files(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="fileStorage.filesDelete",
                 oauth2_scopes=[],
@@ -1822,6 +1832,7 @@ class Files(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="fileStorage.filesDownload",
                 oauth2_scopes=[],
@@ -1982,6 +1993,7 @@ class Files(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="fileStorage.filesDownload",
                 oauth2_scopes=[],
@@ -2145,6 +2157,7 @@ class Files(BaseSDK):
 
         http_res = self.do_request(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="fileStorage.filesExport",
                 oauth2_scopes=[],
@@ -2308,6 +2321,7 @@ class Files(BaseSDK):
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
+                config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="fileStorage.filesExport",
                 oauth2_scopes=[],

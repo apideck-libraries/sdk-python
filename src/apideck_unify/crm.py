@@ -5,6 +5,8 @@ from .sdkconfiguration import SDKConfiguration
 from apideck_unify.activities import Activities
 from apideck_unify.companies import Companies
 from apideck_unify.contacts import Contacts
+from apideck_unify.customobjects import CustomObjects
+from apideck_unify.customobjectschemas import CustomObjectSchemas
 from apideck_unify.leads import Leads
 from apideck_unify.notes import Notes
 from apideck_unify.opportunities import Opportunities
@@ -21,6 +23,8 @@ class Crm(BaseSDK):
     notes: Notes
     users: Users
     activities: Activities
+    custom_object_schemas: CustomObjectSchemas
+    custom_objects: CustomObjects
 
     def __init__(self, sdk_config: SDKConfiguration) -> None:
         BaseSDK.__init__(self, sdk_config)
@@ -36,3 +40,5 @@ class Crm(BaseSDK):
         self.notes = Notes(self.sdk_configuration)
         self.users = Users(self.sdk_configuration)
         self.activities = Activities(self.sdk_configuration)
+        self.custom_object_schemas = CustomObjectSchemas(self.sdk_configuration)
+        self.custom_objects = CustomObjects(self.sdk_configuration)
