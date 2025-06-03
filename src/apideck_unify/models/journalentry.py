@@ -38,6 +38,7 @@ class JournalEntryStatus(str, Enum):
     VOIDED = "voided"
     REJECTED = "rejected"
     DELETED = "deleted"
+    OTHER = "other"
 
 
 class JournalEntryTypedDict(TypedDict):

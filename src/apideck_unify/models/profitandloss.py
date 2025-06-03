@@ -89,8 +89,6 @@ class Income(BaseModel):
 class CostOfGoodsSoldTypedDict(TypedDict):
     r"""The cost of goods sold accounts"""
 
-    total: Nullable[float]
-    r"""The aggregated total of all accounts within this category."""
     records: Any
     id: NotRequired[str]
     r"""A unique identifier for an object."""
@@ -100,13 +98,12 @@ class CostOfGoodsSoldTypedDict(TypedDict):
     r"""The name of the account."""
     type: NotRequired[Nullable[ProfitAndLossType]]
     r"""The type of profit and loss"""
+    total: NotRequired[Nullable[float]]
+    r"""The aggregated total of all accounts within this category."""
 
 
 class CostOfGoodsSold(BaseModel):
     r"""The cost of goods sold accounts"""
-
-    total: Nullable[float]
-    r"""The aggregated total of all accounts within this category."""
 
     records: Any
 
@@ -122,9 +119,12 @@ class CostOfGoodsSold(BaseModel):
     type: OptionalNullable[ProfitAndLossType] = UNSET
     r"""The type of profit and loss"""
 
+    total: OptionalNullable[float] = UNSET
+    r"""The aggregated total of all accounts within this category."""
+
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
-        optional_fields = ["id", "code", "title", "type"]
+        optional_fields = ["id", "code", "title", "type", "total"]
         nullable_fields = ["type", "total"]
         null_default_fields = []
 
@@ -424,8 +424,6 @@ class UncategorizedAccounts(BaseModel):
 class ProfitAndLossTypedDict(TypedDict):
     report_name: str
     r"""The name of the report"""
-    currency: Nullable[Currency]
-    r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
     income: IncomeTypedDict
     r"""The operating income accounts"""
     expenses: ExpensesModelTypedDict
@@ -436,6 +434,8 @@ class ProfitAndLossTypedDict(TypedDict):
     r"""The start date of the report"""
     end_date: NotRequired[str]
     r"""The end date of the report"""
+    currency: NotRequired[Nullable[Currency]]
+    r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
     cost_of_goods_sold: NotRequired[CostOfGoodsSoldTypedDict]
     r"""The cost of goods sold accounts"""
     other_income: NotRequired[OtherIncomeTypedDict]
@@ -457,9 +457,6 @@ class ProfitAndLoss(BaseModel):
     report_name: str
     r"""The name of the report"""
 
-    currency: Nullable[Currency]
-    r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
-
     income: Income
     r"""The operating income accounts"""
 
@@ -474,6 +471,9 @@ class ProfitAndLoss(BaseModel):
 
     end_date: Optional[str] = None
     r"""The end date of the report"""
+
+    currency: OptionalNullable[Currency] = UNSET
+    r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
 
     cost_of_goods_sold: Optional[CostOfGoodsSold] = None
     r"""The cost of goods sold accounts"""
@@ -505,6 +505,7 @@ class ProfitAndLoss(BaseModel):
             "id",
             "start_date",
             "end_date",
+            "currency",
             "cost_of_goods_sold",
             "other_income",
             "other_expenses",
