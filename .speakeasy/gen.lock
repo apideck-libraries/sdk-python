@@ -1,12 +1,12 @@
 lockVersion: 2.0.0
 id: fca0ac3a-5f4e-452c-bbc7-2311afa8da40
 management:
-  docChecksum: da9ea34e473e742ac93aebf1e0757d93
+  docChecksum: cd774a87e62240831b5a6ac2f1f1de5f
   docVersion: 10.17.2
-  speakeasyVersion: 1.554.1
-  generationVersion: 2.616.1
-  releaseVersion: 0.17.1
-  configChecksum: 024478e15c199fd21f4a7c8684f2137e
+  speakeasyVersion: 1.555.0
+  generationVersion: 2.618.0
+  releaseVersion: 0.17.2
+  configChecksum: 6fbac077793600dbe5719f9da20ed210
   repoURL: https://github.com/apideck-libraries/sdk-python.git
   installationURL: https://github.com/apideck-libraries/sdk-python.git
   published: true
