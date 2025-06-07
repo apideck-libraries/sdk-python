@@ -23,12 +23,12 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.file_storage.folders.create(name="Documents", parent_folder_id="1234", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", fields="id,updated_at", description="My Personal Documents", drive_id="1234", pass_through=[
+    res = apideck.file_storage.folders.create(name="Documents", parent_folder_id="1234", raw=False, service_id="salesforce", fields="id,updated_at", description="My Personal Documents", drive_id="1234", pass_through=[
         {
             "service_id": "<id>",
             "extend_paths": [
@@ -94,12 +94,12 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.file_storage.folders.get(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", fields="id,updated_at")
+    res = apideck.file_storage.folders.get(id="<id>", service_id="salesforce", raw=False, fields="id,updated_at")
 
     assert res.get_folder_response is not None
 
@@ -147,12 +147,12 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.file_storage.folders.update(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", name="Documents", description="My Personal Documents", parent_folder_id="1234", pass_through=[
+    res = apideck.file_storage.folders.update(id="<id>", service_id="salesforce", raw=False, name="Documents", description="My Personal Documents", parent_folder_id="1234", pass_through=[
         {
             "service_id": "<id>",
             "extend_paths": [
@@ -225,12 +225,12 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.file_storage.folders.delete(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce")
+    res = apideck.file_storage.folders.delete(id="<id>", service_id="salesforce", raw=False)
 
     assert res.delete_folder_response is not None
 
@@ -277,12 +277,12 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.file_storage.folders.copy(id="<id>", parent_folder_id="1234", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", fields="id,updated_at", name="Documents", pass_through=[
+    res = apideck.file_storage.folders.copy(id="<id>", parent_folder_id="1234", service_id="salesforce", raw=False, fields="id,updated_at", name="Documents", pass_through=[
         {
             "service_id": "<id>",
             "extend_paths": [

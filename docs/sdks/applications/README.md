@@ -23,14 +23,14 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.ats.applications.list(consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", pass_through={
+    res = apideck.ats.applications.list(raw=False, service_id="salesforce", pass_through={
         "search": "San Francisco",
-    })
+    }, limit=20)
 
     while res is not None:
         # Handle items
@@ -80,12 +80,12 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.ats.applications.create(applicant_id="12345", job_id="12345", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", status=apideck_unify.ApplicationStatus.OPEN, stage={
+    res = apideck.ats.applications.create(applicant_id="12345", job_id="12345", raw=False, service_id="salesforce", status=apideck_unify.ApplicationStatus.OPEN, stage={
         "id": "12345",
         "name": "12345",
     }, pass_through=[
@@ -161,12 +161,12 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.ats.applications.get(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce")
+    res = apideck.ats.applications.get(id="<id>", service_id="salesforce", raw=False)
 
     assert res.get_application_response is not None
 
@@ -214,12 +214,12 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.ats.applications.update(id="<id>", applicant_id="12345", job_id="12345", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", status=apideck_unify.ApplicationStatus.OPEN, stage={
+    res = apideck.ats.applications.update(id="<id>", applicant_id="12345", job_id="12345", service_id="salesforce", raw=False, status=apideck_unify.ApplicationStatus.OPEN, stage={
         "id": "12345",
         "name": "12345",
     }, pass_through=[
@@ -362,12 +362,12 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.ats.applications.delete(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce")
+    res = apideck.ats.applications.delete(id="<id>", service_id="salesforce", raw=False)
 
     assert res.delete_application_response is not None
 

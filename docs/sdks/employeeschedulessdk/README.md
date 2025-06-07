@@ -19,12 +19,12 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.hris.employee_schedules.list(employee_id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", pass_through={
+    res = apideck.hris.employee_schedules.list(employee_id="<id>", raw=False, service_id="salesforce", pass_through={
         "search": "San Francisco",
     }, fields="id,updated_at")
 

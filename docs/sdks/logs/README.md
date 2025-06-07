@@ -20,16 +20,16 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
-    consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    consumer_id="test-consumer",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.vault.logs.list(app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", consumer_id="test-consumer", filter_={
+    res = apideck.vault.logs.list(filter_={
         "connector_id": "crm+salesforce",
         "status_code": 201,
         "exclude_unified_apis": "vault,proxy",
-    })
+    }, limit=20)
 
     while res is not None:
         # Handle items

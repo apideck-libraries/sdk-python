@@ -25,18 +25,19 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.accounting.purchase_orders.list(consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", pass_through={
+    res = apideck.accounting.purchase_orders.list(raw=False, service_id="salesforce", pass_through={
         "search": "San Francisco",
-    }, filter_={
+    }, limit=20, filter_={
         "updated_since": parse_datetime("2020-09-30T07:43:32.000Z"),
         "supplier_id": "1234",
     }, sort={
         "by": apideck_unify.PurchaseOrdersSortBy.UPDATED_AT,
+        "direction": apideck_unify.SortDirection.DESC,
     })
 
     while res is not None:
@@ -90,12 +91,12 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.accounting.purchase_orders.create(consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", po_number="90000117", reference="123456", supplier={
+    res = apideck.accounting.purchase_orders.create(raw=False, service_id="salesforce", po_number="90000117", reference="123456", supplier={
         "id": "12345",
         "display_name": "Windsurf Shop",
         "address": {
@@ -388,12 +389,12 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.accounting.purchase_orders.get(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce")
+    res = apideck.accounting.purchase_orders.get(id="<id>", service_id="salesforce", raw=False)
 
     assert res.get_purchase_order_response is not None
 
@@ -442,12 +443,12 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.accounting.purchase_orders.update(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", po_number="90000117", reference="123456", supplier={
+    res = apideck.accounting.purchase_orders.update(id="<id>", service_id="salesforce", raw=False, po_number="90000117", reference="123456", supplier={
         "id": "12345",
         "display_name": "Windsurf Shop",
         "address": {
@@ -715,12 +716,12 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.accounting.purchase_orders.delete(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce")
+    res = apideck.accounting.purchase_orders.delete(id="<id>", service_id="salesforce", raw=False)
 
     assert res.delete_purchase_order_response is not None
 

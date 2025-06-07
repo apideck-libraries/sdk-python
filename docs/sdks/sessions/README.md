@@ -24,12 +24,12 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.vault.sessions.create(consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", session={
+    res = apideck.vault.sessions.create(session={
         "consumer_metadata": {
             "account_name": "SpaceX",
             "user_name": "Elon Musk",
@@ -41,6 +41,7 @@ with Apideck(
             "unified_apis": [
                 apideck_unify.UnifiedAPIID.CRM,
             ],
+            "session_length": "30m",
         },
         "theme": {
             "favicon": "https://res.cloudinary.com/apideck/icons/intercom",

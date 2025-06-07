@@ -23,12 +23,11 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
-    consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.webhook.webhooks.list(app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX")
+    res = apideck.webhook.webhooks.list(limit=20)
 
     while res is not None:
         # Handle items
@@ -74,15 +73,14 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
-    consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
     res = apideck.webhook.webhooks.create(unified_api=apideck_unify.UnifiedAPIID.CRM, status=apideck_unify.Status.ENABLED, delivery_url="https://example.com/my/webhook/endpoint", events=[
         apideck_unify.WebhookEventType.VAULT_CONNECTION_CREATED,
         apideck_unify.WebhookEventType.VAULT_CONNECTION_UPDATED,
-    ], app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", description="A description")
+    ], description="A description")
 
     assert res.create_webhook_response is not None
 
@@ -130,12 +128,11 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
-    consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.webhook.webhooks.get(id="<id>", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX")
+    res = apideck.webhook.webhooks.get(id="<id>")
 
     assert res.get_webhook_response is not None
 
@@ -180,12 +177,11 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
-    consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.webhook.webhooks.update(id="<id>", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", description="A description", status=apideck_unify.Status.ENABLED, delivery_url="https://example.com/my/webhook/endpoint", events=[
+    res = apideck.webhook.webhooks.update(id="<id>", description="A description", status=apideck_unify.Status.ENABLED, delivery_url="https://example.com/my/webhook/endpoint", events=[
         apideck_unify.WebhookEventType.VAULT_CONNECTION_CREATED,
         apideck_unify.WebhookEventType.VAULT_CONNECTION_UPDATED,
     ])
@@ -236,12 +232,11 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
-    consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.webhook.webhooks.delete(id="<id>", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX")
+    res = apideck.webhook.webhooks.delete(id="<id>")
 
     assert res.delete_webhook_response is not None
 
