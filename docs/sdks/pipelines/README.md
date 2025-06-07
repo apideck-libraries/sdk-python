@@ -23,12 +23,12 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.crm.pipelines.list(consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", pass_through={
+    res = apideck.crm.pipelines.list(raw=False, service_id="salesforce", limit=20, pass_through={
         "search": "San Francisco",
     }, fields="id,updated_at")
 
@@ -81,12 +81,12 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.crm.pipelines.create(name="Sales Pipeline", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", id="default", currency=apideck_unify.Currency.USD, archived=False, active=False, display_order=1, win_probability_enabled=True, stages=[
+    res = apideck.crm.pipelines.create(name="Sales Pipeline", raw=False, service_id="salesforce", id="default", currency=apideck_unify.Currency.USD, archived=False, active=False, display_order=1, win_probability_enabled=True, stages=[
         {
             "name": "Contract Sent",
             "value": "CONTRACT_SENT",
@@ -181,12 +181,12 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.crm.pipelines.get(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", fields="id,updated_at")
+    res = apideck.crm.pipelines.get(id="<id>", service_id="salesforce", raw=False, fields="id,updated_at")
 
     assert res.get_pipeline_response is not None
 
@@ -235,12 +235,12 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.crm.pipelines.update(id_param="<value>", name="Sales Pipeline", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", id="default", currency=apideck_unify.Currency.USD, archived=False, active=False, display_order=1, win_probability_enabled=True, stages=[
+    res = apideck.crm.pipelines.update(id_param="<value>", name="Sales Pipeline", service_id="salesforce", raw=False, id="default", currency=apideck_unify.Currency.USD, archived=False, active=False, display_order=1, win_probability_enabled=True, stages=[
         {
             "name": "Contract Sent",
             "value": "CONTRACT_SENT",
@@ -368,12 +368,12 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.crm.pipelines.delete(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce")
+    res = apideck.crm.pipelines.delete(id="<id>", service_id="salesforce", raw=False)
 
     assert res.delete_pipeline_response is not None
 

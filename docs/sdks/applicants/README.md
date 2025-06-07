@@ -23,12 +23,12 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.ats.applicants.list(consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", filter_={
+    res = apideck.ats.applicants.list(raw=False, service_id="salesforce", limit=20, filter_={
         "job_id": "1234",
     }, pass_through={
         "search": "San Francisco",
@@ -85,12 +85,12 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.ats.applicants.create(consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", name="Elon Musk", first_name="Elon", last_name="Musk", middle_name="D.", initials="EM", birthday=date.fromisoformat("2000-08-12"), cover_letter="I submit this application to express my sincere interest in the API developer position. In the previous role, I was responsible for leadership and ...", photo_url="https://unavatar.io/elon-musk", headline="PepsiCo, Inc, Central Perk", title="CEO", emails=[
+    res = apideck.ats.applicants.create(raw=False, service_id="salesforce", name="Elon Musk", first_name="Elon", last_name="Musk", middle_name="D.", initials="EM", birthday=date.fromisoformat("2000-08-12"), cover_letter="I submit this application to express my sincere interest in the API developer position. In the previous role, I was responsible for leadership and ...", photo_url="https://unavatar.io/elon-musk", headline="PepsiCo, Inc, Central Perk", title="CEO", emails=[
         {
             "id": "123",
             "email": "elon@musk.com",
@@ -336,12 +336,12 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.ats.applicants.get(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", fields="id,updated_at")
+    res = apideck.ats.applicants.get(id="<id>", service_id="salesforce", raw=False, fields="id,updated_at")
 
     assert res.get_applicant_response is not None
 
@@ -391,12 +391,12 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.ats.applicants.update(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", name="Elon Musk", first_name="Elon", last_name="Musk", middle_name="D.", initials="EM", birthday=date.fromisoformat("2000-08-12"), cover_letter="I submit this application to express my sincere interest in the API developer position. In the previous role, I was responsible for leadership and ...", photo_url="https://unavatar.io/elon-musk", headline="PepsiCo, Inc, Central Perk", title="CEO", emails=[
+    res = apideck.ats.applicants.update(id="<id>", service_id="salesforce", raw=False, name="Elon Musk", first_name="Elon", last_name="Musk", middle_name="D.", initials="EM", birthday=date.fromisoformat("2000-08-12"), cover_letter="I submit this application to express my sincere interest in the API developer position. In the previous role, I was responsible for leadership and ...", photo_url="https://unavatar.io/elon-musk", headline="PepsiCo, Inc, Central Perk", title="CEO", emails=[
         {
             "id": "123",
             "email": "elon@musk.com",
@@ -701,12 +701,12 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.ats.applicants.delete(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce")
+    res = apideck.ats.applicants.delete(id="<id>", service_id="salesforce", raw=False)
 
     assert res.delete_applicant_response is not None
 

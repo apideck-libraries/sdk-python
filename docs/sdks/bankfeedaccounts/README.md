@@ -23,12 +23,12 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.accounting.bank_feed_accounts.list(consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", pass_through={
+    res = apideck.accounting.bank_feed_accounts.list(raw=False, service_id="salesforce", limit=20, pass_through={
         "search": "San Francisco",
     }, fields="id,updated_at")
 
@@ -81,12 +81,12 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.accounting.bank_feed_accounts.create(consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", bank_account_type=apideck_unify.BankAccountType.BANK, source_account_id="src_456", target_account_id="tgt_789", target_account_name="Main Company Checking", target_account_number="NL91ABNA0417164300", currency=apideck_unify.Currency.USD, feed_status=apideck_unify.FeedStatus.PENDING, country="US", custom_fields=[
+    res = apideck.accounting.bank_feed_accounts.create(raw=False, service_id="salesforce", bank_account_type=apideck_unify.BankAccountType.BANK, source_account_id="src_456", target_account_id="tgt_789", target_account_name="Main Company Checking", target_account_number="NL91ABNA0417164300", currency=apideck_unify.Currency.USD, feed_status=apideck_unify.FeedStatus.PENDING, country="US", custom_fields=[
         {
             "id": "2389328923893298",
             "name": "employee_level",
@@ -160,12 +160,12 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.accounting.bank_feed_accounts.get(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", fields="id,updated_at")
+    res = apideck.accounting.bank_feed_accounts.get(id="<id>", service_id="salesforce", raw=False, fields="id,updated_at")
 
     assert res.get_bank_feed_account_response is not None
 
@@ -214,12 +214,12 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.accounting.bank_feed_accounts.update(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", bank_account_type=apideck_unify.BankAccountType.BANK, source_account_id="src_456", target_account_id="tgt_789", target_account_name="Main Company Checking", target_account_number="NL91ABNA0417164300", currency=apideck_unify.Currency.USD, feed_status=apideck_unify.FeedStatus.PENDING, country="US", custom_fields=[
+    res = apideck.accounting.bank_feed_accounts.update(id="<id>", service_id="salesforce", raw=False, bank_account_type=apideck_unify.BankAccountType.BANK, source_account_id="src_456", target_account_id="tgt_789", target_account_name="Main Company Checking", target_account_number="NL91ABNA0417164300", currency=apideck_unify.Currency.USD, feed_status=apideck_unify.FeedStatus.PENDING, country="US", custom_fields=[
         {
             "id": "2389328923893298",
             "name": "employee_level",
@@ -288,12 +288,12 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.accounting.bank_feed_accounts.delete(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce")
+    res = apideck.accounting.bank_feed_accounts.delete(id="<id>", service_id="salesforce", raw=False)
 
     assert res.delete_bank_feed_account_response is not None
 

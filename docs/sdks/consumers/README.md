@@ -23,12 +23,11 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
-    consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.vault.consumers.create(consumer_id="test_consumer_id", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", metadata={
+    res = apideck.vault.consumers.create(consumer_id="test_consumer_id", metadata={
         "account_name": "SpaceX",
         "user_name": "Elon Musk",
         "email": "elon@musk.com",
@@ -79,12 +78,11 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
-    consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.vault.consumers.list(app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX")
+    res = apideck.vault.consumers.list(limit=20)
 
     while res is not None:
         # Handle items
@@ -130,12 +128,11 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
-    consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.vault.consumers.get(consumer_id="test_user_id", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX")
+    res = apideck.vault.consumers.get(consumer_id="test_user_id")
 
     assert res.get_consumer_response is not None
 
@@ -179,12 +176,11 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
-    consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.vault.consumers.update(consumer_id="test_user_id", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", metadata={
+    res = apideck.vault.consumers.update(consumer_id="test_user_id", metadata={
         "account_name": "SpaceX",
         "user_name": "Elon Musk",
         "email": "elon@musk.com",
@@ -234,12 +230,11 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
-    consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.vault.consumers.delete(consumer_id="test_user_id", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX")
+    res = apideck.vault.consumers.delete(consumer_id="test_user_id")
 
     assert res.delete_consumer_response is not None
 

@@ -20,12 +20,12 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.vault.create_callback.state(service_id="pipedrive", unified_api="crm", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", redirect_uri="https://example.com/callback")
+    res = apideck.vault.create_callback.state(service_id="pipedrive", unified_api="crm", redirect_uri="https://example.com/callback")
 
     assert res.create_callback_state_response is not None
 

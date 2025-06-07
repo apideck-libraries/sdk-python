@@ -24,16 +24,17 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.accounting.invoice_items.list(consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", filter_={
+    res = apideck.accounting.invoice_items.list(raw=False, service_id="salesforce", limit=20, filter_={
         "name": "Widgets Large",
         "type": apideck_unify.InvoiceItemType.SERVICE,
     }, sort={
         "by": apideck_unify.InvoiceItemsSortBy.UPDATED_AT,
+        "direction": apideck_unify.SortDirection.DESC,
     }, pass_through={
         "search": "San Francisco",
     }, fields="id,updated_at")
@@ -90,12 +91,12 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.accounting.invoice_items.create(consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", name="Model Y", description="Model Y is a fully electric, mid-size SUV, with seating for up to seven, dual motor AWD and unparalleled protection.", code="120-C", sold=True, purchased=True, tracked=True, taxable=True, inventory_date=date.fromisoformat("2020-10-30"), type_=apideck_unify.InvoiceItemTypeType.INVENTORY, sales_details={
+    res = apideck.accounting.invoice_items.create(raw=False, service_id="salesforce", name="Model Y", description="Model Y is a fully electric, mid-size SUV, with seating for up to seven, dual motor AWD and unparalleled protection.", code="120-C", sold=True, purchased=True, tracked=True, taxable=True, inventory_date=date.fromisoformat("2020-10-30"), type_=apideck_unify.InvoiceItemTypeType.INVENTORY, sales_details={
         "unit_price": 27500.5,
         "unit_of_measure": "pc.",
         "tax_inclusive": True,
@@ -292,12 +293,12 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.accounting.invoice_items.get(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", fields="id,updated_at", filter_={
+    res = apideck.accounting.invoice_items.get(id="<id>", service_id="salesforce", raw=False, fields="id,updated_at", filter_={
         "type": apideck_unify.InvoiceItemFilterInvoiceItemType.SERVICE,
     })
 
@@ -350,12 +351,12 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.accounting.invoice_items.update(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", name="Model Y", description="Model Y is a fully electric, mid-size SUV, with seating for up to seven, dual motor AWD and unparalleled protection.", code="120-C", sold=True, purchased=True, tracked=True, taxable=True, inventory_date=date.fromisoformat("2020-10-30"), type_=apideck_unify.InvoiceItemTypeType.INVENTORY, sales_details={
+    res = apideck.accounting.invoice_items.update(id="<id>", service_id="salesforce", raw=False, name="Model Y", description="Model Y is a fully electric, mid-size SUV, with seating for up to seven, dual motor AWD and unparalleled protection.", code="120-C", sold=True, purchased=True, tracked=True, taxable=True, inventory_date=date.fromisoformat("2020-10-30"), type_=apideck_unify.InvoiceItemTypeType.INVENTORY, sales_details={
         "unit_price": 27500.5,
         "unit_of_measure": "pc.",
         "tax_inclusive": True,
@@ -474,12 +475,12 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.accounting.invoice_items.delete(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce")
+    res = apideck.accounting.invoice_items.delete(id="<id>", service_id="salesforce", raw=False)
 
     assert res.delete_tax_rate_response is not None
 

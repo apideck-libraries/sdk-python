@@ -23,12 +23,12 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.file_storage.drive_groups.list(consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", filter_={
+    res = apideck.file_storage.drive_groups.list(raw=False, service_id="salesforce", limit=20, filter_={
         "parent_group_id": "1234",
     }, pass_through={
         "search": "San Francisco",
@@ -83,12 +83,12 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.file_storage.drive_groups.create(name="accounting", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", display_name="accounting", description="A description", pass_through=[
+    res = apideck.file_storage.drive_groups.create(name="accounting", raw=False, service_id="salesforce", display_name="accounting", description="A description", pass_through=[
         {
             "service_id": "<id>",
             "extend_paths": [
@@ -181,12 +181,12 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.file_storage.drive_groups.get(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", fields="id,updated_at")
+    res = apideck.file_storage.drive_groups.get(id="<id>", service_id="salesforce", raw=False, fields="id,updated_at")
 
     assert res.get_drive_group_response is not None
 
@@ -234,12 +234,12 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.file_storage.drive_groups.update(id="<id>", name="accounting", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", display_name="accounting", description="A description", pass_through=[
+    res = apideck.file_storage.drive_groups.update(id="<id>", name="accounting", service_id="salesforce", raw=False, display_name="accounting", description="A description", pass_through=[
         {
             "service_id": "<id>",
             "extend_paths": [
@@ -354,12 +354,12 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.file_storage.drive_groups.delete(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce")
+    res = apideck.file_storage.drive_groups.delete(id="<id>", service_id="salesforce", raw=False)
 
     assert res.delete_drive_group_response is not None
 

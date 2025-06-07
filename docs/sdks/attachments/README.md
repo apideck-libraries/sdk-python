@@ -24,12 +24,12 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.accounting.attachments.list(reference_type=apideck_unify.AttachmentReferenceType.INVOICE, reference_id="123456", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", fields="id,updated_at")
+    res = apideck.accounting.attachments.list(reference_type=apideck_unify.AttachmentReferenceType.INVOICE, reference_id="123456", raw=False, service_id="salesforce", limit=20, fields="id,updated_at")
 
     while res is not None:
         # Handle items
@@ -81,12 +81,12 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.accounting.attachments.upload(reference_type=apideck_unify.AttachmentReferenceType.INVOICE, reference_id="123456", request_body=open("example.file", "rb"), x_apideck_metadata="{\"name\":\"document.pdf\",\"description\":\"Invoice attachment\"}", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce")
+    res = apideck.accounting.attachments.upload(reference_type=apideck_unify.AttachmentReferenceType.INVOICE, reference_id="123456", request_body=open("example.file", "rb"), raw=False, x_apideck_metadata="{\"name\":\"document.pdf\",\"description\":\"Invoice attachment\"}", service_id="salesforce")
 
     assert res.create_attachment_response is not None
 
@@ -138,12 +138,12 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.accounting.attachments.get(reference_type=apideck_unify.AttachmentReferenceType.INVOICE, reference_id="123456", id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", fields="id,updated_at")
+    res = apideck.accounting.attachments.get(reference_type=apideck_unify.AttachmentReferenceType.INVOICE, reference_id="123456", id="<id>", service_id="salesforce", raw=False, fields="id,updated_at")
 
     assert res.get_attachment_response is not None
 
@@ -194,12 +194,12 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.accounting.attachments.delete(reference_type=apideck_unify.AttachmentReferenceType.INVOICE, reference_id="123456", id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce")
+    res = apideck.accounting.attachments.delete(reference_type=apideck_unify.AttachmentReferenceType.INVOICE, reference_id="123456", id="<id>", service_id="salesforce", raw=False)
 
     assert res.delete_attachment_response is not None
 
@@ -249,12 +249,12 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.accounting.attachments.download(reference_type=apideck_unify.AttachmentReferenceType.INVOICE, reference_id="123456", id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", fields="id,updated_at")
+    res = apideck.accounting.attachments.download(reference_type=apideck_unify.AttachmentReferenceType.INVOICE, reference_id="123456", id="<id>", service_id="salesforce", fields="id,updated_at")
 
     assert res.get_attachment_download_response is not None
 

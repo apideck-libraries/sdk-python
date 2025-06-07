@@ -24,13 +24,14 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.issue_tracking.collection_ticket_comments.list(collection_id="apideck-io", ticket_id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", sort={
+    res = apideck.issue_tracking.collection_ticket_comments.list(collection_id="apideck-io", ticket_id="<id>", raw=False, service_id="salesforce", limit=20, sort={
         "by": apideck_unify.CommentsSortBy.CREATED_AT,
+        "direction": apideck_unify.SortDirection.DESC,
     }, pass_through={
         "search": "San Francisco",
     }, fields="id,updated_at")
@@ -86,12 +87,12 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.issue_tracking.collection_ticket_comments.create(collection_id="apideck-io", ticket_id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", body="What internet provider do you use?", pass_through=[
+    res = apideck.issue_tracking.collection_ticket_comments.create(collection_id="apideck-io", ticket_id="<id>", raw=False, service_id="salesforce", body="What internet provider do you use?", pass_through=[
         {
             "service_id": "<id>",
             "extend_paths": [
@@ -200,12 +201,12 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.issue_tracking.collection_ticket_comments.get(id="<id>", collection_id="apideck-io", ticket_id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", fields="id,updated_at")
+    res = apideck.issue_tracking.collection_ticket_comments.get(id="<id>", collection_id="apideck-io", ticket_id="<id>", raw=False, service_id="salesforce", limit=20, fields="id,updated_at")
 
     while res is not None:
         # Handle items
@@ -257,12 +258,12 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.issue_tracking.collection_ticket_comments.update(id="<id>", collection_id="apideck-io", ticket_id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", body="What internet provider do you use?", pass_through=[
+    res = apideck.issue_tracking.collection_ticket_comments.update(id="<id>", collection_id="apideck-io", ticket_id="<id>", service_id="salesforce", raw=False, body="What internet provider do you use?", pass_through=[
         {
             "service_id": "<id>",
             "extend_paths": [
@@ -335,12 +336,12 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.issue_tracking.collection_ticket_comments.delete(id="<id>", collection_id="apideck-io", ticket_id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce")
+    res = apideck.issue_tracking.collection_ticket_comments.delete(id="<id>", collection_id="apideck-io", ticket_id="<id>", service_id="salesforce", raw=False)
 
     assert res.delete_comment_response is not None
 

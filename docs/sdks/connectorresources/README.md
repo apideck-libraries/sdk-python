@@ -20,12 +20,11 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
-    consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.connector.connector_resources.get(id="<id>", resource_id="<id>", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", unified_api=apideck_unify.UnifiedAPIID.CRM)
+    res = apideck.connector.connector_resources.get(id="<id>", resource_id="<id>", unified_api=apideck_unify.UnifiedAPIID.CRM)
 
     assert res.get_connector_resource_response is not None
 

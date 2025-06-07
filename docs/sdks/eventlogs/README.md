@@ -19,12 +19,11 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
-    consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.webhook.event_logs.list(app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", filter_={
+    res = apideck.webhook.event_logs.list(limit=20, filter_={
         "exclude_apis": "vault,proxy",
         "consumer_id": "test_user_id",
         "entity_type": "Connection",

@@ -23,12 +23,12 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.hris.companies.list(consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", pass_through={
+    res = apideck.hris.companies.list(raw=False, service_id="salesforce", limit=20, pass_through={
         "search": "San Francisco",
     }, fields="id,updated_at")
 
@@ -81,12 +81,12 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.hris.companies.create(legal_name="SpaceX", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", display_name="SpaceX", subdomain="company", status=apideck_unify.HrisCompanyStatus.ACTIVE, company_number="123456-AB", currency=apideck_unify.Currency.USD, addresses=[
+    res = apideck.hris.companies.create(legal_name="SpaceX", raw=False, service_id="salesforce", display_name="SpaceX", subdomain="company", status=apideck_unify.HrisCompanyStatus.ACTIVE, company_number="123456-AB", currency=apideck_unify.Currency.USD, addresses=[
         {
             "id": "123",
             "type": apideck_unify.Type.PRIMARY,
@@ -292,12 +292,12 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.hris.companies.get(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", fields="id,updated_at")
+    res = apideck.hris.companies.get(id="<id>", service_id="salesforce", raw=False, fields="id,updated_at")
 
     assert res.get_hris_company_response is not None
 
@@ -346,12 +346,12 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.hris.companies.update(id="<id>", legal_name="SpaceX", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", display_name="SpaceX", subdomain="company", status=apideck_unify.HrisCompanyStatus.ACTIVE, company_number="123456-AB", currency=apideck_unify.Currency.USD, addresses=[
+    res = apideck.hris.companies.update(id="<id>", legal_name="SpaceX", service_id="salesforce", raw=False, display_name="SpaceX", subdomain="company", status=apideck_unify.HrisCompanyStatus.ACTIVE, company_number="123456-AB", currency=apideck_unify.Currency.USD, addresses=[
         {
             "id": "123",
             "type": apideck_unify.Type.PRIMARY,
@@ -558,12 +558,12 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.hris.companies.delete(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce")
+    res = apideck.hris.companies.delete(id="<id>", service_id="salesforce", raw=False)
 
     assert res.delete_hris_company_response is not None
 
