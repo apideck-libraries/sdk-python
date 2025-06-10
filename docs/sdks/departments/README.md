@@ -23,12 +23,12 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.accounting.departments.list(consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", fields="id,updated_at", filter_={
+    res = apideck.accounting.departments.list(raw=False, service_id="salesforce", limit=20, fields="id,updated_at", filter_={
         "subsidiary": "1",
     })
 
@@ -81,12 +81,12 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.accounting.departments.create(consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", parent_id="12345", name="Sales", status=apideck_unify.DepartmentStatus.ACTIVE, subsidiaries=[
+    res = apideck.accounting.departments.create(raw=False, service_id="salesforce", parent_id="12345", name="Sales", status=apideck_unify.DepartmentStatus.ACTIVE, subsidiaries=[
         {
             "name": "SpaceX",
         },
@@ -163,12 +163,12 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.accounting.departments.get(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", fields="id,updated_at")
+    res = apideck.accounting.departments.get(id="<id>", service_id="salesforce", raw=False, fields="id,updated_at")
 
     assert res.get_accounting_department_response is not None
 
@@ -217,12 +217,12 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.accounting.departments.update(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", parent_id="12345", name="Sales", status=apideck_unify.DepartmentStatus.ACTIVE, subsidiaries=[
+    res = apideck.accounting.departments.update(id="<id>", service_id="salesforce", raw=False, parent_id="12345", name="Sales", status=apideck_unify.DepartmentStatus.ACTIVE, subsidiaries=[
         {
             "name": "SpaceX",
         },
@@ -316,12 +316,12 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.accounting.departments.delete(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce")
+    res = apideck.accounting.departments.delete(id="<id>", service_id="salesforce", raw=False)
 
     assert res.delete_accounting_department_response is not None
 

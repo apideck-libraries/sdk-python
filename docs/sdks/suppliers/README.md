@@ -25,12 +25,12 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.accounting.suppliers.list(consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", filter_={
+    res = apideck.accounting.suppliers.list(raw=False, service_id="salesforce", limit=20, filter_={
         "company_name": "SpaceX",
         "display_name": "Elon Musk",
         "first_name": "Elon",
@@ -39,6 +39,7 @@ with Apideck(
         "updated_since": parse_datetime("2020-09-30T07:43:32.000Z"),
     }, sort={
         "by": apideck_unify.SuppliersSortBy.UPDATED_AT,
+        "direction": apideck_unify.SortDirection.DESC,
     }, pass_through={
         "search": "San Francisco",
     }, fields="id,updated_at")
@@ -94,12 +95,12 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.accounting.suppliers.create(consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", display_id="EMP00101", display_name="Windsurf Shop", company_name="SpaceX", company_id="12345", title="CEO", first_name="Elon", middle_name="D.", last_name="Musk", suffix="Jr.", individual=True, addresses=[
+    res = apideck.accounting.suppliers.create(raw=False, service_id="salesforce", display_id="EMP00101", display_name="Windsurf Shop", company_name="SpaceX", company_id="12345", title="CEO", first_name="Elon", middle_name="D.", last_name="Musk", suffix="Jr.", individual=True, addresses=[
         {
             "id": "123",
             "type": apideck_unify.Type.PRIMARY,
@@ -288,12 +289,12 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.accounting.suppliers.get(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", fields="id,updated_at")
+    res = apideck.accounting.suppliers.get(id="<id>", service_id="salesforce", raw=False, fields="id,updated_at")
 
     assert res.get_supplier_response is not None
 
@@ -342,12 +343,12 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.accounting.suppliers.update(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", display_id="EMP00101", display_name="Windsurf Shop", company_name="SpaceX", company_id="12345", title="CEO", first_name="Elon", middle_name="D.", last_name="Musk", suffix="Jr.", individual=True, addresses=[
+    res = apideck.accounting.suppliers.update(id="<id>", service_id="salesforce", raw=False, display_id="EMP00101", display_name="Windsurf Shop", company_name="SpaceX", company_id="12345", title="CEO", first_name="Elon", middle_name="D.", last_name="Musk", suffix="Jr.", individual=True, addresses=[
         {
             "id": "123",
             "type": apideck_unify.Type.PRIMARY,
@@ -558,12 +559,12 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.accounting.suppliers.delete(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce")
+    res = apideck.accounting.suppliers.delete(id="<id>", service_id="salesforce", raw=False)
 
     assert res.delete_supplier_response is not None
 

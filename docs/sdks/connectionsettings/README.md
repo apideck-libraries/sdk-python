@@ -21,12 +21,12 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.vault.connection_settings.list(unified_api="crm", service_id="pipedrive", resource="leads", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX")
+    res = apideck.vault.connection_settings.list(unified_api="crm", service_id="pipedrive", resource="leads")
 
     assert res.get_connection_response is not None
 
@@ -74,12 +74,12 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.vault.connection_settings.update(service_id="pipedrive", unified_api="crm", resource="leads", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", enabled=True, settings={
+    res = apideck.vault.connection_settings.update(service_id="pipedrive", unified_api="crm", resource="leads", enabled=True, settings={
         "instance_url": "https://eu28.salesforce.com",
         "api_key": "12345xxxxxx",
     }, metadata={

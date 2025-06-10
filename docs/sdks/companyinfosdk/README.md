@@ -19,12 +19,12 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.accounting.company_info.get(consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", fields="id,updated_at")
+    res = apideck.accounting.company_info.get(raw=False, service_id="salesforce", fields="id,updated_at")
 
     assert res.get_company_info_response is not None
 

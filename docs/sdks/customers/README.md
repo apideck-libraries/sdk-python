@@ -25,12 +25,12 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.accounting.customers.list(consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", filter_={
+    res = apideck.accounting.customers.list(raw=False, service_id="salesforce", limit=20, filter_={
         "company_name": "SpaceX",
         "display_name": "Elon Musk",
         "first_name": "Elon",
@@ -41,6 +41,7 @@ with Apideck(
         "supplier_id": "123",
     }, sort={
         "by": apideck_unify.CustomersSortBy.UPDATED_AT,
+        "direction": apideck_unify.SortDirection.DESC,
     }, pass_through={
         "search": "San Francisco",
     }, fields="id,updated_at")
@@ -96,12 +97,12 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.accounting.customers.create(consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", display_id="EMP00101", display_name="Windsurf Shop", company_name="SpaceX", company_id="12345", title="CEO", first_name="Elon", middle_name="D.", last_name="Musk", suffix="Jr.", individual=True, project=False, addresses=[
+    res = apideck.accounting.customers.create(raw=False, service_id="salesforce", display_id="EMP00101", display_name="Windsurf Shop", company_name="SpaceX", company_id="12345", title="CEO", first_name="Elon", middle_name="D.", last_name="Musk", suffix="Jr.", individual=True, project=False, addresses=[
         {
             "id": "123",
             "type": apideck_unify.Type.PRIMARY,
@@ -317,12 +318,12 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.accounting.customers.get(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", fields="id,updated_at")
+    res = apideck.accounting.customers.get(id="<id>", service_id="salesforce", raw=False, fields="id,updated_at")
 
     assert res.get_customer_response is not None
 
@@ -371,12 +372,12 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.accounting.customers.update(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", display_id="EMP00101", display_name="Windsurf Shop", company_name="SpaceX", company_id="12345", title="CEO", first_name="Elon", middle_name="D.", last_name="Musk", suffix="Jr.", individual=True, project=False, addresses=[
+    res = apideck.accounting.customers.update(id="<id>", service_id="salesforce", raw=False, display_id="EMP00101", display_name="Windsurf Shop", company_name="SpaceX", company_id="12345", title="CEO", first_name="Elon", middle_name="D.", last_name="Musk", suffix="Jr.", individual=True, project=False, addresses=[
         {
             "id": "123",
             "type": apideck_unify.Type.PRIMARY,
@@ -601,12 +602,12 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.accounting.customers.delete(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce")
+    res = apideck.accounting.customers.delete(id="<id>", service_id="salesforce", raw=False)
 
     assert res.delete_customer_response is not None
 

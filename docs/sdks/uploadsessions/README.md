@@ -23,12 +23,12 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.file_storage.upload_sessions.create(name="Documents", parent_folder_id="1234", size=1810673, consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", drive_id="1234", pass_through=[
+    res = apideck.file_storage.upload_sessions.create(name="Documents", parent_folder_id="1234", size=1810673, raw=False, service_id="salesforce", drive_id="1234", pass_through=[
         {
             "service_id": "<id>",
             "extend_paths": [
@@ -168,12 +168,12 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.file_storage.upload_sessions.get(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", fields="id,updated_at")
+    res = apideck.file_storage.upload_sessions.get(id="<id>", service_id="salesforce", raw=False, fields="id,updated_at")
 
     assert res.get_upload_session_response is not None
 
@@ -223,12 +223,12 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.file_storage.upload_sessions.upload(id="<id>", part_number=0, request_body=io.BytesIO("<binary string>".encode()), consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", digest="sha=fpRyg5eVQletdZqEKaFlqwBXJzM=")
+    res = apideck.file_storage.upload_sessions.upload(id="<id>", part_number=0, request_body=io.BytesIO("<binary string>".encode()), service_id="salesforce", digest="sha=fpRyg5eVQletdZqEKaFlqwBXJzM=", raw=False)
 
     assert res.update_upload_session_response is not None
 
@@ -279,12 +279,12 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.file_storage.upload_sessions.delete(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce")
+    res = apideck.file_storage.upload_sessions.delete(id="<id>", service_id="salesforce", raw=False)
 
     assert res.delete_upload_session_response is not None
 
@@ -331,12 +331,12 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.file_storage.upload_sessions.finish(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", digest="sha=fpRyg5eVQletdZqEKaFlqwBXJzM=")
+    res = apideck.file_storage.upload_sessions.finish(id="<id>", raw=False, service_id="salesforce", digest="sha=fpRyg5eVQletdZqEKaFlqwBXJzM=")
 
     assert res.get_file_response is not None
 

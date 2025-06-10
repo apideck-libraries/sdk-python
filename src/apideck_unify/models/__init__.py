@@ -1172,8 +1172,6 @@ if TYPE_CHECKING:
         ConnectionImportDataTypedDict,
         Credentials,
         CredentialsTypedDict,
-        Settings,
-        SettingsTypedDict,
     )
     from .connectionstate import ConnectionState
     from .connector import (
@@ -3573,9 +3571,9 @@ if TYPE_CHECKING:
     from .session import (
         AllowActions,
         Session,
-        SessionSettings,
-        SessionSettingsTypedDict,
         SessionTypedDict,
+        Settings,
+        SettingsTypedDict,
         Theme,
         ThemeTypedDict,
     )
@@ -6895,8 +6893,6 @@ __all__ = [
     "Service",
     "ServiceTypedDict",
     "Session",
-    "SessionSettings",
-    "SessionSettingsTypedDict",
     "SessionTypedDict",
     "Settings",
     "SettingsTypedDict",
@@ -8277,8 +8273,6 @@ _dynamic_imports: dict[str, str] = {
     "ConnectionImportDataTypedDict": ".connectionimportdata",
     "Credentials": ".connectionimportdata",
     "CredentialsTypedDict": ".connectionimportdata",
-    "Settings": ".connectionimportdata",
-    "SettingsTypedDict": ".connectionimportdata",
     "ConnectionState": ".connectionstate",
     "Connector": ".connector",
     "ConnectorAuthType": ".connector",
@@ -10095,9 +10089,9 @@ _dynamic_imports: dict[str, str] = {
     "SecurityTypedDict": ".security",
     "AllowActions": ".session",
     "Session": ".session",
-    "SessionSettings": ".session",
-    "SessionSettingsTypedDict": ".session",
     "SessionTypedDict": ".session",
+    "Settings": ".session",
+    "SettingsTypedDict": ".session",
     "Theme": ".session",
     "ThemeTypedDict": ".session",
     "Scope": ".sharedlink",
