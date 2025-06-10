@@ -24,12 +24,12 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.accounting.tax_rates.list(consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", filter_={
+    res = apideck.accounting.tax_rates.list(raw=False, service_id="salesforce", limit=20, filter_={
         "assets": True,
         "equity": True,
         "expenses": True,
@@ -89,12 +89,12 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.accounting.tax_rates.create(consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", id="1234", name="GST on Purchases", code="ABN", description="Reduced rate GST Purchases", effective_tax_rate=10, total_tax_rate=10, tax_payable_account_id="123456", tax_remitted_account_id="123456", components=[
+    res = apideck.accounting.tax_rates.create(raw=False, service_id="salesforce", id="1234", name="GST on Purchases", code="ABN", description="Reduced rate GST Purchases", effective_tax_rate=10, total_tax_rate=10, tax_payable_account_id="123456", tax_remitted_account_id="123456", components=[
         {
             "id": "10",
             "name": "GST",
@@ -214,12 +214,12 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.accounting.tax_rates.get(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", fields="id,updated_at")
+    res = apideck.accounting.tax_rates.get(id="<id>", service_id="salesforce", raw=False, fields="id,updated_at")
 
     assert res.get_tax_rate_response is not None
 
@@ -268,12 +268,12 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.accounting.tax_rates.update(id_param="<value>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", id="1234", name="GST on Purchases", code="ABN", description="Reduced rate GST Purchases", effective_tax_rate=10, total_tax_rate=10, tax_payable_account_id="123456", tax_remitted_account_id="123456", components=[
+    res = apideck.accounting.tax_rates.update(id_param="<value>", service_id="salesforce", raw=False, id="1234", name="GST on Purchases", code="ABN", description="Reduced rate GST Purchases", effective_tax_rate=10, total_tax_rate=10, tax_payable_account_id="123456", tax_remitted_account_id="123456", components=[
         {
             "id": "10",
             "name": "GST",
@@ -427,12 +427,12 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.accounting.tax_rates.delete(id="<id>", consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce")
+    res = apideck.accounting.tax_rates.delete(id="<id>", service_id="salesforce", raw=False)
 
     assert res.delete_tax_rate_response is not None
 

@@ -6,12 +6,12 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.accounting.tax_rates.list(consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", filter_={
+    res = apideck.accounting.tax_rates.list(raw=False, service_id="salesforce", limit=20, filter_={
         "assets": True,
         "equity": True,
         "expenses": True,
@@ -39,12 +39,12 @@ import os
 async def main():
 
     async with Apideck(
-        api_key=os.getenv("APIDECK_API_KEY", ""),
         consumer_id="test-consumer",
         app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+        api_key=os.getenv("APIDECK_API_KEY", ""),
     ) as apideck:
 
-        res = await apideck.accounting.tax_rates.list_async(consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", filter_={
+        res = await apideck.accounting.tax_rates.list_async(raw=False, service_id="salesforce", limit=20, filter_={
             "assets": True,
             "equity": True,
             "expenses": True,

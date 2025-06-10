@@ -20,19 +20,19 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
     consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.accounting.balance_sheet.get(consumer_id="test-consumer", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX", service_id="salesforce", pass_through={
+    res = apideck.accounting.balance_sheet.get(service_id="salesforce", pass_through={
         "search": "San Francisco",
     }, filter_={
         "start_date": "2021-01-01",
         "end_date": "2021-12-31",
         "period_count": 3,
         "period_type": apideck_unify.PeriodType.MONTH,
-    })
+    }, raw=False)
 
     assert res.get_balance_sheet_response is not None
 

@@ -16,7 +16,7 @@ class AllowActions(str, Enum):
     DISABLE = "disable"
 
 
-class SessionSettingsTypedDict(TypedDict):
+class SettingsTypedDict(TypedDict):
     r"""Settings to change the way the Vault is displayed."""
 
     unified_apis: NotRequired[List[UnifiedAPIID]]
@@ -46,7 +46,7 @@ class SessionSettingsTypedDict(TypedDict):
     """
 
 
-class SessionSettings(BaseModel):
+class Settings(BaseModel):
     r"""Settings to change the way the Vault is displayed."""
 
     unified_apis: Optional[List[UnifiedAPIID]] = None
@@ -140,7 +140,7 @@ class SessionTypedDict(TypedDict):
     r"""The metadata of the consumer. This is used to display the consumer in the sidebar. This is optional, but recommended."""
     redirect_uri: NotRequired[str]
     r"""The URL to redirect the user to after the session has been configured."""
-    settings: NotRequired[SessionSettingsTypedDict]
+    settings: NotRequired[SettingsTypedDict]
     r"""Settings to change the way the Vault is displayed."""
     theme: NotRequired[ThemeTypedDict]
     r"""Theming options to change the look and feel of Vault."""
@@ -155,7 +155,7 @@ class Session(BaseModel):
     redirect_uri: Optional[str] = None
     r"""The URL to redirect the user to after the session has been configured."""
 
-    settings: Optional[SessionSettings] = None
+    settings: Optional[Settings] = None
     r"""Settings to change the way the Vault is displayed."""
 
     theme: Optional[Theme] = None

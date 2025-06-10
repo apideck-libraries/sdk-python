@@ -19,12 +19,11 @@ import os
 
 
 with Apideck(
-    api_key=os.getenv("APIDECK_API_KEY", ""),
-    consumer_id="test-consumer",
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.connector.connector_docs.get(id="<id>", doc_id="application_owner+oauth_credentials", app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX")
+    res = apideck.connector.connector_docs.get(id="<id>", doc_id="application_owner+oauth_credentials")
 
     assert res.get_connector_doc_response is not None
 
