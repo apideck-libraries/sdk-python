@@ -41,10 +41,10 @@ class ContactGender(str, Enum):
 
 
 class ContactTypedDict(TypedDict):
-    name: Nullable[str]
-    r"""Full name of the contact."""
     id: NotRequired[str]
     r"""Unique identifier for the contact."""
+    name: NotRequired[Nullable[str]]
+    r"""Full name of the contact."""
     owner_id: NotRequired[Nullable[str]]
     r"""The owner of the contact."""
     type: NotRequired[Nullable[ContactType]]
@@ -117,11 +117,11 @@ class ContactTypedDict(TypedDict):
 
 
 class Contact(BaseModel):
-    name: Nullable[str]
-    r"""Full name of the contact."""
-
     id: Optional[str] = None
     r"""Unique identifier for the contact."""
+
+    name: OptionalNullable[str] = UNSET
+    r"""Full name of the contact."""
 
     owner_id: OptionalNullable[str] = UNSET
     r"""The owner of the contact."""
@@ -240,6 +240,7 @@ class Contact(BaseModel):
     def serialize_model(self, handler):
         optional_fields = [
             "id",
+            "name",
             "owner_id",
             "type",
             "company_id",
@@ -343,7 +344,7 @@ class Contact(BaseModel):
 
 
 class ContactInputTypedDict(TypedDict):
-    name: Nullable[str]
+    name: NotRequired[Nullable[str]]
     r"""Full name of the contact."""
     owner_id: NotRequired[Nullable[str]]
     r"""The owner of the contact."""
@@ -405,7 +406,7 @@ class ContactInputTypedDict(TypedDict):
 
 
 class ContactInput(BaseModel):
-    name: Nullable[str]
+    name: OptionalNullable[str] = UNSET
     r"""Full name of the contact."""
 
     owner_id: OptionalNullable[str] = UNSET
@@ -506,6 +507,7 @@ class ContactInput(BaseModel):
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
         optional_fields = [
+            "name",
             "owner_id",
             "type",
             "company_id",
