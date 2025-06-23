@@ -280,6 +280,11 @@ with Apideck(
 * [update](docs/sdks/bills/README.md#update) - Update Bill
 * [delete](docs/sdks/bills/README.md#delete) - Delete Bill
 
+#### [accounting.categories](docs/sdks/categories/README.md)
+
+* [list](docs/sdks/categories/README.md#list) - List Categories
+* [get](docs/sdks/categories/README.md#get) - Get Category
+
 #### [accounting.company_info](docs/sdks/companyinfosdk/README.md)
 
 * [get](docs/sdks/companyinfosdk/README.md#get) - Get company info

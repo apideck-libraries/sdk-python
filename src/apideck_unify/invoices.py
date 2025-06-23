@@ -508,7 +508,7 @@ class Invoices(BaseSDK):
         :param due_date: The invoice due date is the date on which a payment or invoice is scheduled to be received by the seller - YYYY-MM-DD.
         :param terms: Terms of payment.
         :param po_number: A PO Number uniquely identifies a purchase order and is generally defined by the buyer. The buyer will match the PO number in the invoice to the Purchase Order.
-        :param reference: Optional invoice reference.
+        :param reference: Optional reference identifier for the transaction.
         :param status: Invoice status
         :param invoice_sent: Invoice sent to contact/customer.
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
@@ -844,7 +844,7 @@ class Invoices(BaseSDK):
         :param due_date: The invoice due date is the date on which a payment or invoice is scheduled to be received by the seller - YYYY-MM-DD.
         :param terms: Terms of payment.
         :param po_number: A PO Number uniquely identifies a purchase order and is generally defined by the buyer. The buyer will match the PO number in the invoice to the Purchase Order.
-        :param reference: Optional invoice reference.
+        :param reference: Optional reference identifier for the transaction.
         :param status: Invoice status
         :param invoice_sent: Invoice sent to contact/customer.
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
@@ -1492,7 +1492,7 @@ class Invoices(BaseSDK):
         :param due_date: The invoice due date is the date on which a payment or invoice is scheduled to be received by the seller - YYYY-MM-DD.
         :param terms: Terms of payment.
         :param po_number: A PO Number uniquely identifies a purchase order and is generally defined by the buyer. The buyer will match the PO number in the invoice to the Purchase Order.
-        :param reference: Optional invoice reference.
+        :param reference: Optional reference identifier for the transaction.
         :param status: Invoice status
         :param invoice_sent: Invoice sent to contact/customer.
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
@@ -1831,7 +1831,7 @@ class Invoices(BaseSDK):
         :param due_date: The invoice due date is the date on which a payment or invoice is scheduled to be received by the seller - YYYY-MM-DD.
         :param terms: Terms of payment.
         :param po_number: A PO Number uniquely identifies a purchase order and is generally defined by the buyer. The buyer will match the PO number in the invoice to the Purchase Order.
-        :param reference: Optional invoice reference.
+        :param reference: Optional reference identifier for the transaction.
         :param status: Invoice status
         :param invoice_sent: Invoice sent to contact/customer.
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).

@@ -3,7 +3,7 @@
 from .basesdk import BaseSDK
 from apideck_unify import models, utils
 from apideck_unify._hooks import HookContext
-from apideck_unify.types import Nullable, OptionalNullable, UNSET
+from apideck_unify.types import OptionalNullable, UNSET
 from apideck_unify.utils import get_security_from_env
 from jsonpath import JSONPath
 from typing import Any, Dict, List, Mapping, Optional, Union
@@ -405,11 +405,11 @@ class Contacts(BaseSDK):
     def create(
         self,
         *,
-        name: Nullable[str],
         raw: Optional[bool] = False,
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
+        name: OptionalNullable[str] = UNSET,
         owner_id: OptionalNullable[str] = UNSET,
         type_: OptionalNullable[models.ContactType] = UNSET,
         company_id: OptionalNullable[str] = UNSET,
@@ -464,11 +464,11 @@ class Contacts(BaseSDK):
 
         Create contact
 
-        :param name: Full name of the contact.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param name: Full name of the contact.
         :param owner_id: The owner of the contact.
         :param type: The type of the contact.
         :param company_id: The company the contact is associated with.
@@ -685,11 +685,11 @@ class Contacts(BaseSDK):
     async def create_async(
         self,
         *,
-        name: Nullable[str],
         raw: Optional[bool] = False,
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
+        name: OptionalNullable[str] = UNSET,
         owner_id: OptionalNullable[str] = UNSET,
         type_: OptionalNullable[models.ContactType] = UNSET,
         company_id: OptionalNullable[str] = UNSET,
@@ -744,11 +744,11 @@ class Contacts(BaseSDK):
 
         Create contact
 
-        :param name: Full name of the contact.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param name: Full name of the contact.
         :param owner_id: The owner of the contact.
         :param type: The type of the contact.
         :param company_id: The company the contact is associated with.
@@ -1286,11 +1286,11 @@ class Contacts(BaseSDK):
         self,
         *,
         id: str,
-        name: Nullable[str],
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
+        name: OptionalNullable[str] = UNSET,
         owner_id: OptionalNullable[str] = UNSET,
         type_: OptionalNullable[models.ContactType] = UNSET,
         company_id: OptionalNullable[str] = UNSET,
@@ -1346,11 +1346,11 @@ class Contacts(BaseSDK):
         Update contact
 
         :param id: ID of the record you are acting upon.
-        :param name: Full name of the contact.
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param name: Full name of the contact.
         :param owner_id: The owner of the contact.
         :param type: The type of the contact.
         :param company_id: The company the contact is associated with.
@@ -1569,11 +1569,11 @@ class Contacts(BaseSDK):
         self,
         *,
         id: str,
-        name: Nullable[str],
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
+        name: OptionalNullable[str] = UNSET,
         owner_id: OptionalNullable[str] = UNSET,
         type_: OptionalNullable[models.ContactType] = UNSET,
         company_id: OptionalNullable[str] = UNSET,
@@ -1629,11 +1629,11 @@ class Contacts(BaseSDK):
         Update contact
 
         :param id: ID of the record you are acting upon.
-        :param name: Full name of the contact.
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param name: Full name of the contact.
         :param owner_id: The owner of the contact.
         :param type: The type of the contact.
         :param company_id: The company the contact is associated with.

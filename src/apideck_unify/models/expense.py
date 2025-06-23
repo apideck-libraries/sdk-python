@@ -69,6 +69,8 @@ class ExpenseTypedDict(TypedDict):
     tax_rate: NotRequired[LinkedTaxRateTypedDict]
     total_amount: NotRequired[Nullable[float]]
     r"""The total amount of the expense line item."""
+    reference: NotRequired[Nullable[str]]
+    r"""Optional reference identifier for the transaction."""
     custom_fields: NotRequired[List[CustomFieldTypedDict]]
     custom_mappings: NotRequired[Nullable[Dict[str, Any]]]
     r"""When custom mappings are configured on the resource, the result is included here."""
@@ -134,6 +136,9 @@ class Expense(BaseModel):
     total_amount: OptionalNullable[float] = UNSET
     r"""The total amount of the expense line item."""
 
+    reference: OptionalNullable[str] = UNSET
+    r"""Optional reference identifier for the transaction."""
+
     custom_fields: Optional[List[CustomField]] = None
 
     custom_mappings: OptionalNullable[Dict[str, Any]] = UNSET
@@ -173,6 +178,7 @@ class Expense(BaseModel):
             "memo",
             "tax_rate",
             "total_amount",
+            "reference",
             "custom_fields",
             "custom_mappings",
             "updated_at",
@@ -193,6 +199,7 @@ class Expense(BaseModel):
             "type",
             "memo",
             "total_amount",
+            "reference",
             "custom_mappings",
             "updated_at",
             "created_at",
@@ -257,6 +264,8 @@ class ExpenseInputTypedDict(TypedDict):
     tax_rate: NotRequired[LinkedTaxRateInputTypedDict]
     total_amount: NotRequired[Nullable[float]]
     r"""The total amount of the expense line item."""
+    reference: NotRequired[Nullable[str]]
+    r"""Optional reference identifier for the transaction."""
     custom_fields: NotRequired[List[CustomFieldTypedDict]]
     row_version: NotRequired[Nullable[str]]
     r"""A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object."""
@@ -309,6 +318,9 @@ class ExpenseInput(BaseModel):
     total_amount: OptionalNullable[float] = UNSET
     r"""The total amount of the expense line item."""
 
+    reference: OptionalNullable[str] = UNSET
+    r"""Optional reference identifier for the transaction."""
+
     custom_fields: Optional[List[CustomField]] = None
 
     row_version: OptionalNullable[str] = UNSET
@@ -332,6 +344,7 @@ class ExpenseInput(BaseModel):
             "memo",
             "tax_rate",
             "total_amount",
+            "reference",
             "custom_fields",
             "row_version",
             "pass_through",
@@ -347,6 +360,7 @@ class ExpenseInput(BaseModel):
             "type",
             "memo",
             "total_amount",
+            "reference",
             "row_version",
         ]
         null_default_fields = []

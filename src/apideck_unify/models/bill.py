@@ -75,7 +75,7 @@ class BillTypedDict(TypedDict):
     po_number: NotRequired[Nullable[str]]
     r"""A PO Number uniquely identifies a purchase order and is generally defined by the buyer. The buyer will match the PO number in the invoice to the Purchase Order."""
     reference: NotRequired[Nullable[str]]
-    r"""Optional bill reference."""
+    r"""Optional reference identifier for the transaction."""
     line_items: NotRequired[List[BillLineItemTypedDict]]
     terms: NotRequired[Nullable[str]]
     r"""Terms of payment."""
@@ -169,7 +169,7 @@ class Bill(BaseModel):
     r"""A PO Number uniquely identifies a purchase order and is generally defined by the buyer. The buyer will match the PO number in the invoice to the Purchase Order."""
 
     reference: OptionalNullable[str] = UNSET
-    r"""Optional bill reference."""
+    r"""Optional reference identifier for the transaction."""
 
     line_items: Optional[List[BillLineItem]] = None
 
@@ -384,7 +384,7 @@ class BillInputTypedDict(TypedDict):
     po_number: NotRequired[Nullable[str]]
     r"""A PO Number uniquely identifies a purchase order and is generally defined by the buyer. The buyer will match the PO number in the invoice to the Purchase Order."""
     reference: NotRequired[Nullable[str]]
-    r"""Optional bill reference."""
+    r"""Optional reference identifier for the transaction."""
     line_items: NotRequired[List[BillLineItemInputTypedDict]]
     terms: NotRequired[Nullable[str]]
     r"""Terms of payment."""
@@ -462,7 +462,7 @@ class BillInput(BaseModel):
     r"""A PO Number uniquely identifies a purchase order and is generally defined by the buyer. The buyer will match the PO number in the invoice to the Purchase Order."""
 
     reference: OptionalNullable[str] = UNSET
-    r"""Optional bill reference."""
+    r"""Optional reference identifier for the transaction."""
 
     line_items: Optional[List[BillLineItemInput]] = None
 

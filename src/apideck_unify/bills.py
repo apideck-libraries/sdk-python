@@ -489,7 +489,7 @@ class Bills(BaseSDK):
         :param due_date: The due date is the date on which a payment is scheduled to be received - YYYY-MM-DD.
         :param paid_date: The paid date is the date on which a payment was sent to the supplier - YYYY-MM-DD.
         :param po_number: A PO Number uniquely identifies a purchase order and is generally defined by the buyer. The buyer will match the PO number in the invoice to the Purchase Order.
-        :param reference: Optional bill reference.
+        :param reference: Optional reference identifier for the transaction.
         :param line_items:
         :param terms: Terms of payment.
         :param balance: Balance of bill due.
@@ -782,7 +782,7 @@ class Bills(BaseSDK):
         :param due_date: The due date is the date on which a payment is scheduled to be received - YYYY-MM-DD.
         :param paid_date: The paid date is the date on which a payment was sent to the supplier - YYYY-MM-DD.
         :param po_number: A PO Number uniquely identifies a purchase order and is generally defined by the buyer. The buyer will match the PO number in the invoice to the Purchase Order.
-        :param reference: Optional bill reference.
+        :param reference: Optional reference identifier for the transaction.
         :param line_items:
         :param terms: Terms of payment.
         :param balance: Balance of bill due.
@@ -1387,7 +1387,7 @@ class Bills(BaseSDK):
         :param due_date: The due date is the date on which a payment is scheduled to be received - YYYY-MM-DD.
         :param paid_date: The paid date is the date on which a payment was sent to the supplier - YYYY-MM-DD.
         :param po_number: A PO Number uniquely identifies a purchase order and is generally defined by the buyer. The buyer will match the PO number in the invoice to the Purchase Order.
-        :param reference: Optional bill reference.
+        :param reference: Optional reference identifier for the transaction.
         :param line_items:
         :param terms: Terms of payment.
         :param balance: Balance of bill due.
@@ -1683,7 +1683,7 @@ class Bills(BaseSDK):
         :param due_date: The due date is the date on which a payment is scheduled to be received - YYYY-MM-DD.
         :param paid_date: The paid date is the date on which a payment was sent to the supplier - YYYY-MM-DD.
         :param po_number: A PO Number uniquely identifies a purchase order and is generally defined by the buyer. The buyer will match the PO number in the invoice to the Purchase Order.
-        :param reference: Optional bill reference.
+        :param reference: Optional reference identifier for the transaction.
         :param line_items:
         :param terms: Terms of payment.
         :param balance: Balance of bill due.
