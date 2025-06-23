@@ -229,6 +229,22 @@ if TYPE_CHECKING:
         AccountingBillsUpdateResponse,
         AccountingBillsUpdateResponseTypedDict,
     )
+    from .accounting_categoriesallop import (
+        AccountingCategoriesAllGlobals,
+        AccountingCategoriesAllGlobalsTypedDict,
+        AccountingCategoriesAllRequest,
+        AccountingCategoriesAllRequestTypedDict,
+        AccountingCategoriesAllResponse,
+        AccountingCategoriesAllResponseTypedDict,
+    )
+    from .accounting_categoriesoneop import (
+        AccountingCategoriesOneGlobals,
+        AccountingCategoriesOneGlobalsTypedDict,
+        AccountingCategoriesOneRequest,
+        AccountingCategoriesOneRequestTypedDict,
+        AccountingCategoriesOneResponse,
+        AccountingCategoriesOneResponseTypedDict,
+    )
     from .accounting_companyinfooneop import (
         AccountingCompanyInfoOneGlobals,
         AccountingCompanyInfoOneGlobalsTypedDict,
@@ -1112,6 +1128,7 @@ if TYPE_CHECKING:
     )
     from .billsfilter import BillsFilter, BillsFilterTypedDict
     from .billssort import BillsSort, BillsSortTypedDict, By
+    from .category import Category, CategoryStatus, CategoryTypedDict
     from .collection import Collection, CollectionTypedDict
     from .collectionssort import (
         CollectionsSort,
@@ -2659,6 +2676,11 @@ if TYPE_CHECKING:
     )
     from .getbillresponse import GetBillResponse, GetBillResponseTypedDict
     from .getbillsresponse import GetBillsResponse, GetBillsResponseTypedDict
+    from .getcategoriesresponse import (
+        GetCategoriesResponse,
+        GetCategoriesResponseTypedDict,
+    )
+    from .getcategoryresponse import GetCategoryResponse, GetCategoryResponseTypedDict
     from .getcollectionresponse import (
         GetCollectionResponse,
         GetCollectionResponseTypedDict,
@@ -3365,8 +3387,8 @@ if TYPE_CHECKING:
     from .leadssort import LeadsSort, LeadsSortBy, LeadsSortTypedDict
     from .ledgeraccount import (
         AccountStatus,
-        Categories,
-        CategoriesTypedDict,
+        CategoriesModel,
+        CategoriesModelTypedDict,
         Classification,
         LedgerAccount,
         LedgerAccountInput,
@@ -4354,6 +4376,18 @@ __all__ = [
     "AccountingBillsUpdateRequestTypedDict",
     "AccountingBillsUpdateResponse",
     "AccountingBillsUpdateResponseTypedDict",
+    "AccountingCategoriesAllGlobals",
+    "AccountingCategoriesAllGlobalsTypedDict",
+    "AccountingCategoriesAllRequest",
+    "AccountingCategoriesAllRequestTypedDict",
+    "AccountingCategoriesAllResponse",
+    "AccountingCategoriesAllResponseTypedDict",
+    "AccountingCategoriesOneGlobals",
+    "AccountingCategoriesOneGlobalsTypedDict",
+    "AccountingCategoriesOneRequest",
+    "AccountingCategoriesOneRequestTypedDict",
+    "AccountingCategoriesOneResponse",
+    "AccountingCategoriesOneResponseTypedDict",
     "AccountingCompanyInfoOneGlobals",
     "AccountingCompanyInfoOneGlobalsTypedDict",
     "AccountingCompanyInfoOneRequest",
@@ -5020,8 +5054,11 @@ __all__ = [
     "Branch",
     "BranchTypedDict",
     "By",
-    "Categories",
-    "CategoriesTypedDict",
+    "CategoriesModel",
+    "CategoriesModelTypedDict",
+    "Category",
+    "CategoryStatus",
+    "CategoryTypedDict",
     "Classification",
     "Collection",
     "CollectionTag",
@@ -6164,6 +6201,10 @@ __all__ = [
     "GetBillResponseTypedDict",
     "GetBillsResponse",
     "GetBillsResponseTypedDict",
+    "GetCategoriesResponse",
+    "GetCategoriesResponseTypedDict",
+    "GetCategoryResponse",
+    "GetCategoryResponseTypedDict",
     "GetCollectionResponse",
     "GetCollectionResponseTypedDict",
     "GetCollectionTagsResponse",
@@ -7524,6 +7565,18 @@ _dynamic_imports: dict[str, str] = {
     "AccountingBillsUpdateRequestTypedDict": ".accounting_billsupdateop",
     "AccountingBillsUpdateResponse": ".accounting_billsupdateop",
     "AccountingBillsUpdateResponseTypedDict": ".accounting_billsupdateop",
+    "AccountingCategoriesAllGlobals": ".accounting_categoriesallop",
+    "AccountingCategoriesAllGlobalsTypedDict": ".accounting_categoriesallop",
+    "AccountingCategoriesAllRequest": ".accounting_categoriesallop",
+    "AccountingCategoriesAllRequestTypedDict": ".accounting_categoriesallop",
+    "AccountingCategoriesAllResponse": ".accounting_categoriesallop",
+    "AccountingCategoriesAllResponseTypedDict": ".accounting_categoriesallop",
+    "AccountingCategoriesOneGlobals": ".accounting_categoriesoneop",
+    "AccountingCategoriesOneGlobalsTypedDict": ".accounting_categoriesoneop",
+    "AccountingCategoriesOneRequest": ".accounting_categoriesoneop",
+    "AccountingCategoriesOneRequestTypedDict": ".accounting_categoriesoneop",
+    "AccountingCategoriesOneResponse": ".accounting_categoriesoneop",
+    "AccountingCategoriesOneResponseTypedDict": ".accounting_categoriesoneop",
     "AccountingCompanyInfoOneGlobals": ".accounting_companyinfooneop",
     "AccountingCompanyInfoOneGlobalsTypedDict": ".accounting_companyinfooneop",
     "AccountingCompanyInfoOneRequest": ".accounting_companyinfooneop",
@@ -8216,6 +8269,9 @@ _dynamic_imports: dict[str, str] = {
     "BillsSort": ".billssort",
     "BillsSortTypedDict": ".billssort",
     "By": ".billssort",
+    "Category": ".category",
+    "CategoryStatus": ".category",
+    "CategoryTypedDict": ".category",
     "Collection": ".collection",
     "CollectionTypedDict": ".collection",
     "CollectionsSort": ".collectionssort",
@@ -9360,6 +9416,10 @@ _dynamic_imports: dict[str, str] = {
     "GetBillResponseTypedDict": ".getbillresponse",
     "GetBillsResponse": ".getbillsresponse",
     "GetBillsResponseTypedDict": ".getbillsresponse",
+    "GetCategoriesResponse": ".getcategoriesresponse",
+    "GetCategoriesResponseTypedDict": ".getcategoriesresponse",
+    "GetCategoryResponse": ".getcategoryresponse",
+    "GetCategoryResponseTypedDict": ".getcategoryresponse",
     "GetCollectionResponse": ".getcollectionresponse",
     "GetCollectionResponseTypedDict": ".getcollectionresponse",
     "GetCollectionsResponse": ".getcollectionsresponse",
@@ -9897,8 +9957,8 @@ _dynamic_imports: dict[str, str] = {
     "LeadsSortBy": ".leadssort",
     "LeadsSortTypedDict": ".leadssort",
     "AccountStatus": ".ledgeraccount",
-    "Categories": ".ledgeraccount",
-    "CategoriesTypedDict": ".ledgeraccount",
+    "CategoriesModel": ".ledgeraccount",
+    "CategoriesModelTypedDict": ".ledgeraccount",
     "Classification": ".ledgeraccount",
     "LedgerAccount": ".ledgeraccount",
     "LedgerAccountInput": ".ledgeraccount",

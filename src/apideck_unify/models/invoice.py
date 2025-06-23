@@ -138,7 +138,7 @@ class InvoiceTypedDict(TypedDict):
     po_number: NotRequired[Nullable[str]]
     r"""A PO Number uniquely identifies a purchase order and is generally defined by the buyer. The buyer will match the PO number in the invoice to the Purchase Order."""
     reference: NotRequired[Nullable[str]]
-    r"""Optional invoice reference."""
+    r"""Optional reference identifier for the transaction."""
     status: NotRequired[Nullable[InvoiceStatus]]
     r"""Invoice status"""
     invoice_sent: NotRequired[bool]
@@ -240,7 +240,7 @@ class Invoice(BaseModel):
     r"""A PO Number uniquely identifies a purchase order and is generally defined by the buyer. The buyer will match the PO number in the invoice to the Purchase Order."""
 
     reference: OptionalNullable[str] = UNSET
-    r"""Optional invoice reference."""
+    r"""Optional reference identifier for the transaction."""
 
     status: OptionalNullable[InvoiceStatus] = UNSET
     r"""Invoice status"""
@@ -487,7 +487,7 @@ class InvoiceInputTypedDict(TypedDict):
     po_number: NotRequired[Nullable[str]]
     r"""A PO Number uniquely identifies a purchase order and is generally defined by the buyer. The buyer will match the PO number in the invoice to the Purchase Order."""
     reference: NotRequired[Nullable[str]]
-    r"""Optional invoice reference."""
+    r"""Optional reference identifier for the transaction."""
     status: NotRequired[Nullable[InvoiceStatus]]
     r"""Invoice status"""
     invoice_sent: NotRequired[bool]
@@ -573,7 +573,7 @@ class InvoiceInput(BaseModel):
     r"""A PO Number uniquely identifies a purchase order and is generally defined by the buyer. The buyer will match the PO number in the invoice to the Purchase Order."""
 
     reference: OptionalNullable[str] = UNSET
-    r"""Optional invoice reference."""
+    r"""Optional reference identifier for the transaction."""
 
     status: OptionalNullable[InvoiceStatus] = UNSET
     r"""Invoice status"""

@@ -417,6 +417,7 @@ class Suppliers(BaseSDK):
         display_name: OptionalNullable[str] = UNSET,
         company_name: OptionalNullable[str] = UNSET,
         company_id: OptionalNullable[str] = UNSET,
+        supplier_category: OptionalNullable[str] = UNSET,
         title: OptionalNullable[str] = UNSET,
         first_name: OptionalNullable[str] = UNSET,
         middle_name: OptionalNullable[str] = UNSET,
@@ -476,6 +477,7 @@ class Suppliers(BaseSDK):
         :param display_name: Display name
         :param company_name: The name of the company.
         :param company_id: The company or subsidiary id the transaction belongs to
+        :param supplier_category: The category/type of the supplier
         :param title: The job title of the person.
         :param first_name: The first name of the person.
         :param middle_name: Middle name of the person.
@@ -524,6 +526,7 @@ class Suppliers(BaseSDK):
                 display_name=display_name,
                 company_name=company_name,
                 company_id=company_id,
+                supplier_category=supplier_category,
                 title=title,
                 first_name=first_name,
                 middle_name=middle_name,
@@ -687,6 +690,7 @@ class Suppliers(BaseSDK):
         display_name: OptionalNullable[str] = UNSET,
         company_name: OptionalNullable[str] = UNSET,
         company_id: OptionalNullable[str] = UNSET,
+        supplier_category: OptionalNullable[str] = UNSET,
         title: OptionalNullable[str] = UNSET,
         first_name: OptionalNullable[str] = UNSET,
         middle_name: OptionalNullable[str] = UNSET,
@@ -746,6 +750,7 @@ class Suppliers(BaseSDK):
         :param display_name: Display name
         :param company_name: The name of the company.
         :param company_id: The company or subsidiary id the transaction belongs to
+        :param supplier_category: The category/type of the supplier
         :param title: The job title of the person.
         :param first_name: The first name of the person.
         :param middle_name: Middle name of the person.
@@ -794,6 +799,7 @@ class Suppliers(BaseSDK):
                 display_name=display_name,
                 company_name=company_name,
                 company_id=company_id,
+                supplier_category=supplier_category,
                 title=title,
                 first_name=first_name,
                 middle_name=middle_name,
@@ -1268,6 +1274,7 @@ class Suppliers(BaseSDK):
         display_name: OptionalNullable[str] = UNSET,
         company_name: OptionalNullable[str] = UNSET,
         company_id: OptionalNullable[str] = UNSET,
+        supplier_category: OptionalNullable[str] = UNSET,
         title: OptionalNullable[str] = UNSET,
         first_name: OptionalNullable[str] = UNSET,
         middle_name: OptionalNullable[str] = UNSET,
@@ -1328,6 +1335,7 @@ class Suppliers(BaseSDK):
         :param display_name: Display name
         :param company_name: The name of the company.
         :param company_id: The company or subsidiary id the transaction belongs to
+        :param supplier_category: The category/type of the supplier
         :param title: The job title of the person.
         :param first_name: The first name of the person.
         :param middle_name: Middle name of the person.
@@ -1377,6 +1385,7 @@ class Suppliers(BaseSDK):
                 display_name=display_name,
                 company_name=company_name,
                 company_id=company_id,
+                supplier_category=supplier_category,
                 title=title,
                 first_name=first_name,
                 middle_name=middle_name,
@@ -1541,6 +1550,7 @@ class Suppliers(BaseSDK):
         display_name: OptionalNullable[str] = UNSET,
         company_name: OptionalNullable[str] = UNSET,
         company_id: OptionalNullable[str] = UNSET,
+        supplier_category: OptionalNullable[str] = UNSET,
         title: OptionalNullable[str] = UNSET,
         first_name: OptionalNullable[str] = UNSET,
         middle_name: OptionalNullable[str] = UNSET,
@@ -1601,6 +1611,7 @@ class Suppliers(BaseSDK):
         :param display_name: Display name
         :param company_name: The name of the company.
         :param company_id: The company or subsidiary id the transaction belongs to
+        :param supplier_category: The category/type of the supplier
         :param title: The job title of the person.
         :param first_name: The first name of the person.
         :param middle_name: Middle name of the person.
@@ -1650,6 +1661,7 @@ class Suppliers(BaseSDK):
                 display_name=display_name,
                 company_name=company_name,
                 company_id=company_id,
+                supplier_category=supplier_category,
                 title=title,
                 first_name=first_name,
                 middle_name=middle_name,

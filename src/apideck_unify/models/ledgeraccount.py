@@ -70,13 +70,13 @@ class AccountStatus(str, Enum):
     ARCHIVED = "archived"
 
 
-class CategoriesTypedDict(TypedDict):
+class CategoriesModelTypedDict(TypedDict):
     id: NotRequired[str]
     name: NotRequired[str]
     r"""The name of the category."""
 
 
-class Categories(BaseModel):
+class CategoriesModel(BaseModel):
     id: Optional[str] = None
 
     name: Optional[str] = None
@@ -166,7 +166,7 @@ class LedgerAccountTypedDict(TypedDict):
     header: NotRequired[Nullable[bool]]
     r"""Whether the account is a header or not."""
     bank_account: NotRequired[BankAccountTypedDict]
-    categories: NotRequired[List[CategoriesTypedDict]]
+    categories: NotRequired[List[CategoriesModelTypedDict]]
     r"""The categories of the account."""
     parent_account: NotRequired[ParentAccountTypedDict]
     sub_account: NotRequired[Nullable[bool]]
@@ -257,7 +257,7 @@ class LedgerAccount(BaseModel):
 
     bank_account: Optional[BankAccount] = None
 
-    categories: Optional[List[Categories]] = None
+    categories: Optional[List[CategoriesModel]] = None
     r"""The categories of the account."""
 
     parent_account: Optional[ParentAccount] = None

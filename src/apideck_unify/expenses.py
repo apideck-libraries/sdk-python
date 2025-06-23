@@ -394,6 +394,7 @@ class Expenses(BaseSDK):
             Union[models.LinkedTaxRateInput, models.LinkedTaxRateInputTypedDict]
         ] = None,
         total_amount: OptionalNullable[float] = UNSET,
+        reference: OptionalNullable[str] = UNSET,
         custom_fields: Optional[
             Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
         ] = None,
@@ -429,6 +430,7 @@ class Expenses(BaseSDK):
         :param memo: The memo of the expense.
         :param tax_rate:
         :param total_amount: The total amount of the expense line item.
+        :param reference: Optional reference identifier for the transaction.
         :param custom_fields:
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
@@ -472,6 +474,7 @@ class Expenses(BaseSDK):
                 line_items=utils.get_pydantic_model(
                     line_items, List[models.ExpenseLineItemInput]
                 ),
+                reference=reference,
                 custom_fields=utils.get_pydantic_model(
                     custom_fields, Optional[List[models.CustomField]]
                 ),
@@ -619,6 +622,7 @@ class Expenses(BaseSDK):
             Union[models.LinkedTaxRateInput, models.LinkedTaxRateInputTypedDict]
         ] = None,
         total_amount: OptionalNullable[float] = UNSET,
+        reference: OptionalNullable[str] = UNSET,
         custom_fields: Optional[
             Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
         ] = None,
@@ -654,6 +658,7 @@ class Expenses(BaseSDK):
         :param memo: The memo of the expense.
         :param tax_rate:
         :param total_amount: The total amount of the expense line item.
+        :param reference: Optional reference identifier for the transaction.
         :param custom_fields:
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
@@ -697,6 +702,7 @@ class Expenses(BaseSDK):
                 line_items=utils.get_pydantic_model(
                     line_items, List[models.ExpenseLineItemInput]
                 ),
+                reference=reference,
                 custom_fields=utils.get_pydantic_model(
                     custom_fields, Optional[List[models.CustomField]]
                 ),
@@ -1149,6 +1155,7 @@ class Expenses(BaseSDK):
             Union[models.LinkedTaxRateInput, models.LinkedTaxRateInputTypedDict]
         ] = None,
         total_amount: OptionalNullable[float] = UNSET,
+        reference: OptionalNullable[str] = UNSET,
         custom_fields: Optional[
             Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
         ] = None,
@@ -1185,6 +1192,7 @@ class Expenses(BaseSDK):
         :param memo: The memo of the expense.
         :param tax_rate:
         :param total_amount: The total amount of the expense line item.
+        :param reference: Optional reference identifier for the transaction.
         :param custom_fields:
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
@@ -1229,6 +1237,7 @@ class Expenses(BaseSDK):
                 line_items=utils.get_pydantic_model(
                     line_items, List[models.ExpenseLineItemInput]
                 ),
+                reference=reference,
                 custom_fields=utils.get_pydantic_model(
                     custom_fields, Optional[List[models.CustomField]]
                 ),
@@ -1377,6 +1386,7 @@ class Expenses(BaseSDK):
             Union[models.LinkedTaxRateInput, models.LinkedTaxRateInputTypedDict]
         ] = None,
         total_amount: OptionalNullable[float] = UNSET,
+        reference: OptionalNullable[str] = UNSET,
         custom_fields: Optional[
             Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
         ] = None,
@@ -1413,6 +1423,7 @@ class Expenses(BaseSDK):
         :param memo: The memo of the expense.
         :param tax_rate:
         :param total_amount: The total amount of the expense line item.
+        :param reference: Optional reference identifier for the transaction.
         :param custom_fields:
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
@@ -1457,6 +1468,7 @@ class Expenses(BaseSDK):
                 line_items=utils.get_pydantic_model(
                     line_items, List[models.ExpenseLineItemInput]
                 ),
+                reference=reference,
                 custom_fields=utils.get_pydantic_model(
                     custom_fields, Optional[List[models.CustomField]]
                 ),

@@ -53,6 +53,8 @@ class SupplierTypedDict(TypedDict):
     r"""The name of the company."""
     company_id: NotRequired[Nullable[str]]
     r"""The company or subsidiary id the transaction belongs to"""
+    supplier_category: NotRequired[Nullable[str]]
+    r"""The category/type of the supplier"""
     title: NotRequired[Nullable[str]]
     r"""The job title of the person."""
     first_name: NotRequired[Nullable[str]]
@@ -119,6 +121,9 @@ class Supplier(BaseModel):
 
     company_id: OptionalNullable[str] = UNSET
     r"""The company or subsidiary id the transaction belongs to"""
+
+    supplier_category: OptionalNullable[str] = UNSET
+    r"""The category/type of the supplier"""
 
     title: OptionalNullable[str] = UNSET
     r"""The job title of the person."""
@@ -202,6 +207,7 @@ class Supplier(BaseModel):
             "display_name",
             "company_name",
             "company_id",
+            "supplier_category",
             "title",
             "first_name",
             "middle_name",
@@ -237,6 +243,7 @@ class Supplier(BaseModel):
             "display_name",
             "company_name",
             "company_id",
+            "supplier_category",
             "title",
             "first_name",
             "middle_name",
@@ -293,6 +300,8 @@ class SupplierInputTypedDict(TypedDict):
     r"""The name of the company."""
     company_id: NotRequired[Nullable[str]]
     r"""The company or subsidiary id the transaction belongs to"""
+    supplier_category: NotRequired[Nullable[str]]
+    r"""The category/type of the supplier"""
     title: NotRequired[Nullable[str]]
     r"""The job title of the person."""
     first_name: NotRequired[Nullable[str]]
@@ -343,6 +352,9 @@ class SupplierInput(BaseModel):
 
     company_id: OptionalNullable[str] = UNSET
     r"""The company or subsidiary id the transaction belongs to"""
+
+    supplier_category: OptionalNullable[str] = UNSET
+    r"""The category/type of the supplier"""
 
     title: OptionalNullable[str] = UNSET
     r"""The job title of the person."""
@@ -410,6 +422,7 @@ class SupplierInput(BaseModel):
             "display_name",
             "company_name",
             "company_id",
+            "supplier_category",
             "title",
             "first_name",
             "middle_name",
@@ -439,6 +452,7 @@ class SupplierInput(BaseModel):
             "display_name",
             "company_name",
             "company_id",
+            "supplier_category",
             "title",
             "first_name",
             "middle_name",
