@@ -22,7 +22,7 @@ from typing import Any, Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
-class Classification(str, Enum):
+class LedgerAccountClassification(str, Enum):
     r"""The classification of account."""
 
     ASSET = "asset"
@@ -137,7 +137,7 @@ class LedgerAccountTypedDict(TypedDict):
     r"""The nominal code of the ledger account."""
     code: NotRequired[Nullable[str]]
     r"""The code assigned to the account."""
-    classification: NotRequired[Nullable[Classification]]
+    classification: NotRequired[Nullable[LedgerAccountClassification]]
     r"""The classification of account."""
     type: NotRequired[LedgerAccountType]
     r"""The type of account."""
@@ -212,7 +212,7 @@ class LedgerAccount(BaseModel):
     code: OptionalNullable[str] = UNSET
     r"""The code assigned to the account."""
 
-    classification: OptionalNullable[Classification] = UNSET
+    classification: OptionalNullable[LedgerAccountClassification] = UNSET
     r"""The classification of account."""
 
     type: Optional[LedgerAccountType] = None
@@ -394,7 +394,7 @@ class LedgerAccountInputTypedDict(TypedDict):
     r"""The nominal code of the ledger account."""
     code: NotRequired[Nullable[str]]
     r"""The code assigned to the account."""
-    classification: NotRequired[Nullable[Classification]]
+    classification: NotRequired[Nullable[LedgerAccountClassification]]
     r"""The classification of account."""
     type: NotRequired[LedgerAccountType]
     r"""The type of account."""
@@ -452,7 +452,7 @@ class LedgerAccountInput(BaseModel):
     code: OptionalNullable[str] = UNSET
     r"""The code assigned to the account."""
 
-    classification: OptionalNullable[Classification] = UNSET
+    classification: OptionalNullable[LedgerAccountClassification] = UNSET
     r"""The classification of account."""
 
     type: Optional[LedgerAccountType] = None

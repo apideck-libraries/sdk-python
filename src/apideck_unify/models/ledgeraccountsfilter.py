@@ -4,13 +4,36 @@ from __future__ import annotations
 from apideck_unify.types import BaseModel
 from apideck_unify.utils import FieldMetadata
 from datetime import datetime
+from enum import Enum
 from typing import Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
+class Classification(str, Enum):
+    r"""Filter by account classification."""
+
+    ASSET = "asset"
+    EQUITY = "equity"
+    EXPENSE = "expense"
+    LIABILITY = "liability"
+    REVENUE = "revenue"
+    INCOME = "income"
+    OTHER_INCOME = "other_income"
+    OTHER_EXPENSE = "other_expense"
+    COSTS_OF_SALES = "costs_of_sales"
+    OTHER = "other"
+
+
 class LedgerAccountsFilterTypedDict(TypedDict):
     updated_since: NotRequired[datetime]
+    classification: NotRequired[Classification]
+    r"""Filter by account classification."""
 
 
 class LedgerAccountsFilter(BaseModel):
     updated_since: Annotated[Optional[datetime], FieldMetadata(query=True)] = None
+
+    classification: Annotated[Optional[Classification], FieldMetadata(query=True)] = (
+        None
+    )
+    r"""Filter by account classification."""
