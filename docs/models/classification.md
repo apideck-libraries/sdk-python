@@ -1,6 +1,6 @@
 # Classification
 
-The classification of account.
+Filter by account classification.
 
 
 ## Values

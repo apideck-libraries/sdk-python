@@ -3389,8 +3389,8 @@ if TYPE_CHECKING:
         AccountStatus,
         CategoriesModel,
         CategoriesModelTypedDict,
-        Classification,
         LedgerAccount,
+        LedgerAccountClassification,
         LedgerAccountInput,
         LedgerAccountInputTypedDict,
         LedgerAccountSubsidiaries,
@@ -3403,6 +3403,7 @@ if TYPE_CHECKING:
         SubAccountsTypedDict,
     )
     from .ledgeraccountsfilter import (
+        Classification,
         LedgerAccountsFilter,
         LedgerAccountsFilterTypedDict,
     )
@@ -6731,6 +6732,7 @@ __all__ = [
     "LeadsSortTypedDict",
     "LeavingReason",
     "LedgerAccount",
+    "LedgerAccountClassification",
     "LedgerAccountInput",
     "LedgerAccountInputTypedDict",
     "LedgerAccountSubsidiaries",
@@ -9959,8 +9961,8 @@ _dynamic_imports: dict[str, str] = {
     "AccountStatus": ".ledgeraccount",
     "CategoriesModel": ".ledgeraccount",
     "CategoriesModelTypedDict": ".ledgeraccount",
-    "Classification": ".ledgeraccount",
     "LedgerAccount": ".ledgeraccount",
+    "LedgerAccountClassification": ".ledgeraccount",
     "LedgerAccountInput": ".ledgeraccount",
     "LedgerAccountInputTypedDict": ".ledgeraccount",
     "LedgerAccountSubsidiaries": ".ledgeraccount",
@@ -9971,6 +9973,7 @@ _dynamic_imports: dict[str, str] = {
     "ParentAccountTypedDict": ".ledgeraccount",
     "SubAccounts": ".ledgeraccount",
     "SubAccountsTypedDict": ".ledgeraccount",
+    "Classification": ".ledgeraccountsfilter",
     "LedgerAccountsFilter": ".ledgeraccountsfilter",
     "LedgerAccountsFilterTypedDict": ".ledgeraccountsfilter",
     "LedgerAccountsSort": ".ledgeraccountssort",
