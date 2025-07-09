@@ -82,6 +82,8 @@ class SupplierTypedDict(TypedDict):
     r"""Supplier status"""
     payment_method: NotRequired[Nullable[str]]
     r"""Payment method used for the transaction, such as cash, credit card, bank transfer, or check"""
+    terms: NotRequired[Nullable[str]]
+    r"""Terms of payment."""
     channel: NotRequired[Nullable[str]]
     r"""The channel through which the transaction is processed."""
     custom_mappings: NotRequired[Nullable[Dict[str, Any]]]
@@ -170,6 +172,9 @@ class Supplier(BaseModel):
     payment_method: OptionalNullable[str] = UNSET
     r"""Payment method used for the transaction, such as cash, credit card, bank transfer, or check"""
 
+    terms: OptionalNullable[str] = UNSET
+    r"""Terms of payment."""
+
     channel: OptionalNullable[str] = UNSET
     r"""The channel through which the transaction is processed."""
 
@@ -226,6 +231,7 @@ class Supplier(BaseModel):
             "account",
             "status",
             "payment_method",
+            "terms",
             "channel",
             "custom_mappings",
             "custom_fields",
@@ -256,6 +262,7 @@ class Supplier(BaseModel):
             "account",
             "status",
             "payment_method",
+            "terms",
             "channel",
             "custom_mappings",
             "updated_by",
@@ -329,6 +336,8 @@ class SupplierInputTypedDict(TypedDict):
     r"""Supplier status"""
     payment_method: NotRequired[Nullable[str]]
     r"""Payment method used for the transaction, such as cash, credit card, bank transfer, or check"""
+    terms: NotRequired[Nullable[str]]
+    r"""Terms of payment."""
     channel: NotRequired[Nullable[str]]
     r"""The channel through which the transaction is processed."""
     custom_fields: NotRequired[List[CustomFieldTypedDict]]
@@ -401,6 +410,9 @@ class SupplierInput(BaseModel):
     payment_method: OptionalNullable[str] = UNSET
     r"""Payment method used for the transaction, such as cash, credit card, bank transfer, or check"""
 
+    terms: OptionalNullable[str] = UNSET
+    r"""Terms of payment."""
+
     channel: OptionalNullable[str] = UNSET
     r"""The channel through which the transaction is processed."""
 
@@ -441,6 +453,7 @@ class SupplierInput(BaseModel):
             "account",
             "status",
             "payment_method",
+            "terms",
             "channel",
             "custom_fields",
             "row_version",
@@ -465,6 +478,7 @@ class SupplierInput(BaseModel):
             "account",
             "status",
             "payment_method",
+            "terms",
             "channel",
             "row_version",
         ]

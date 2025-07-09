@@ -74,6 +74,8 @@ class CompanyInfoTypedDict(TypedDict):
     emails: NotRequired[List[EmailTypedDict]]
     custom_mappings: NotRequired[Nullable[Dict[str, Any]]]
     r"""When custom mappings are configured on the resource, the result is included here."""
+    tracking_categories_enabled: NotRequired[bool]
+    r"""Whether tracking categories are enabled for the company on transactions"""
     row_version: NotRequired[Nullable[str]]
     r"""A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object."""
     updated_by: NotRequired[Nullable[str]]
@@ -133,6 +135,9 @@ class CompanyInfo(BaseModel):
     custom_mappings: OptionalNullable[Dict[str, Any]] = UNSET
     r"""When custom mappings are configured on the resource, the result is included here."""
 
+    tracking_categories_enabled: Optional[bool] = None
+    r"""Whether tracking categories are enabled for the company on transactions"""
+
     row_version: OptionalNullable[str] = UNSET
     r"""A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object."""
 
@@ -168,6 +173,7 @@ class CompanyInfo(BaseModel):
             "phone_numbers",
             "emails",
             "custom_mappings",
+            "tracking_categories_enabled",
             "row_version",
             "updated_by",
             "created_by",

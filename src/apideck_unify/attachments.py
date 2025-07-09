@@ -5,6 +5,7 @@ from apideck_unify import models, utils
 from apideck_unify._hooks import HookContext
 from apideck_unify.types import OptionalNullable, UNSET
 from apideck_unify.utils import get_security_from_env
+from apideck_unify.utils.unmarshal_json_response import unmarshal_json_response
 from enum import Enum
 import io
 from jsonpath import JSONPath
@@ -148,64 +149,53 @@ class Attachments(BaseSDK):
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingAttachmentsAllResponse(
-                get_attachments_response=utils.unmarshal_json(
-                    http_res.text, Optional[models.GetAttachmentsResponse]
+                get_attachments_response=unmarshal_json_response(
+                    Optional[models.GetAttachmentsResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
             )
         if utils.match_response(http_res, "400", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.BadRequestResponseData
+            response_data = unmarshal_json_response(
+                models.BadRequestResponseData, http_res
             )
-            raise models.BadRequestResponse(data=response_data)
+            raise models.BadRequestResponse(response_data, http_res)
         if utils.match_response(http_res, "401", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.UnauthorizedResponseData
+            response_data = unmarshal_json_response(
+                models.UnauthorizedResponseData, http_res
             )
-            raise models.UnauthorizedResponse(data=response_data)
+            raise models.UnauthorizedResponse(response_data, http_res)
         if utils.match_response(http_res, "402", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.PaymentRequiredResponseData
+            response_data = unmarshal_json_response(
+                models.PaymentRequiredResponseData, http_res
             )
-            raise models.PaymentRequiredResponse(data=response_data)
+            raise models.PaymentRequiredResponse(response_data, http_res)
         if utils.match_response(http_res, "404", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.NotFoundResponseData
+            response_data = unmarshal_json_response(
+                models.NotFoundResponseData, http_res
             )
-            raise models.NotFoundResponse(data=response_data)
+            raise models.NotFoundResponse(response_data, http_res)
         if utils.match_response(http_res, "422", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.UnprocessableResponseData
+            response_data = unmarshal_json_response(
+                models.UnprocessableResponseData, http_res
             )
-            raise models.UnprocessableResponse(data=response_data)
+            raise models.UnprocessableResponse(response_data, http_res)
         if utils.match_response(http_res, "4XX", "*"):
             http_res_text = utils.stream_to_text(http_res)
-            raise models.APIError(
-                "API error occurred", http_res.status_code, http_res_text, http_res
-            )
+            raise models.APIError("API error occurred", http_res, http_res_text)
         if utils.match_response(http_res, "5XX", "*"):
             http_res_text = utils.stream_to_text(http_res)
-            raise models.APIError(
-                "API error occurred", http_res.status_code, http_res_text, http_res
-            )
+            raise models.APIError("API error occurred", http_res, http_res_text)
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingAttachmentsAllResponse(
-                unexpected_error_response=utils.unmarshal_json(
-                    http_res.text, Optional[models.UnexpectedErrorResponse]
+                unexpected_error_response=unmarshal_json_response(
+                    Optional[models.UnexpectedErrorResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
             )
 
-        content_type = http_res.headers.get("Content-Type")
-        http_res_text = utils.stream_to_text(http_res)
-        raise models.APIError(
-            f"Unexpected response received (code: {http_res.status_code}, type: {content_type})",
-            http_res.status_code,
-            http_res_text,
-            http_res,
-        )
+        raise models.APIError("Unexpected response received", http_res)
 
     async def list_async(
         self,
@@ -338,64 +328,53 @@ class Attachments(BaseSDK):
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingAttachmentsAllResponse(
-                get_attachments_response=utils.unmarshal_json(
-                    http_res.text, Optional[models.GetAttachmentsResponse]
+                get_attachments_response=unmarshal_json_response(
+                    Optional[models.GetAttachmentsResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
             )
         if utils.match_response(http_res, "400", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.BadRequestResponseData
+            response_data = unmarshal_json_response(
+                models.BadRequestResponseData, http_res
             )
-            raise models.BadRequestResponse(data=response_data)
+            raise models.BadRequestResponse(response_data, http_res)
         if utils.match_response(http_res, "401", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.UnauthorizedResponseData
+            response_data = unmarshal_json_response(
+                models.UnauthorizedResponseData, http_res
             )
-            raise models.UnauthorizedResponse(data=response_data)
+            raise models.UnauthorizedResponse(response_data, http_res)
         if utils.match_response(http_res, "402", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.PaymentRequiredResponseData
+            response_data = unmarshal_json_response(
+                models.PaymentRequiredResponseData, http_res
             )
-            raise models.PaymentRequiredResponse(data=response_data)
+            raise models.PaymentRequiredResponse(response_data, http_res)
         if utils.match_response(http_res, "404", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.NotFoundResponseData
+            response_data = unmarshal_json_response(
+                models.NotFoundResponseData, http_res
             )
-            raise models.NotFoundResponse(data=response_data)
+            raise models.NotFoundResponse(response_data, http_res)
         if utils.match_response(http_res, "422", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.UnprocessableResponseData
+            response_data = unmarshal_json_response(
+                models.UnprocessableResponseData, http_res
             )
-            raise models.UnprocessableResponse(data=response_data)
+            raise models.UnprocessableResponse(response_data, http_res)
         if utils.match_response(http_res, "4XX", "*"):
             http_res_text = await utils.stream_to_text_async(http_res)
-            raise models.APIError(
-                "API error occurred", http_res.status_code, http_res_text, http_res
-            )
+            raise models.APIError("API error occurred", http_res, http_res_text)
         if utils.match_response(http_res, "5XX", "*"):
             http_res_text = await utils.stream_to_text_async(http_res)
-            raise models.APIError(
-                "API error occurred", http_res.status_code, http_res_text, http_res
-            )
+            raise models.APIError("API error occurred", http_res, http_res_text)
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingAttachmentsAllResponse(
-                unexpected_error_response=utils.unmarshal_json(
-                    http_res.text, Optional[models.UnexpectedErrorResponse]
+                unexpected_error_response=unmarshal_json_response(
+                    Optional[models.UnexpectedErrorResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
             )
 
-        content_type = http_res.headers.get("Content-Type")
-        http_res_text = await utils.stream_to_text_async(http_res)
-        raise models.APIError(
-            f"Unexpected response received (code: {http_res.status_code}, type: {content_type})",
-            http_res.status_code,
-            http_res_text,
-            http_res,
-        )
+        raise models.APIError("Unexpected response received", http_res)
 
     def upload(
         self,
@@ -508,62 +487,51 @@ class Attachments(BaseSDK):
         response_data: Any = None
         if utils.match_response(http_res, "201", "application/json"):
             return models.AccountingAttachmentsUploadResponse(
-                create_attachment_response=utils.unmarshal_json(
-                    http_res.text, Optional[models.CreateAttachmentResponse]
+                create_attachment_response=unmarshal_json_response(
+                    Optional[models.CreateAttachmentResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
             )
         if utils.match_response(http_res, "400", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.BadRequestResponseData
+            response_data = unmarshal_json_response(
+                models.BadRequestResponseData, http_res
             )
-            raise models.BadRequestResponse(data=response_data)
+            raise models.BadRequestResponse(response_data, http_res)
         if utils.match_response(http_res, "401", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.UnauthorizedResponseData
+            response_data = unmarshal_json_response(
+                models.UnauthorizedResponseData, http_res
             )
-            raise models.UnauthorizedResponse(data=response_data)
+            raise models.UnauthorizedResponse(response_data, http_res)
         if utils.match_response(http_res, "402", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.PaymentRequiredResponseData
+            response_data = unmarshal_json_response(
+                models.PaymentRequiredResponseData, http_res
             )
-            raise models.PaymentRequiredResponse(data=response_data)
+            raise models.PaymentRequiredResponse(response_data, http_res)
         if utils.match_response(http_res, "404", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.NotFoundResponseData
+            response_data = unmarshal_json_response(
+                models.NotFoundResponseData, http_res
             )
-            raise models.NotFoundResponse(data=response_data)
+            raise models.NotFoundResponse(response_data, http_res)
         if utils.match_response(http_res, "422", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.UnprocessableResponseData
+            response_data = unmarshal_json_response(
+                models.UnprocessableResponseData, http_res
             )
-            raise models.UnprocessableResponse(data=response_data)
+            raise models.UnprocessableResponse(response_data, http_res)
         if utils.match_response(http_res, "4XX", "*"):
             http_res_text = utils.stream_to_text(http_res)
-            raise models.APIError(
-                "API error occurred", http_res.status_code, http_res_text, http_res
-            )
+            raise models.APIError("API error occurred", http_res, http_res_text)
         if utils.match_response(http_res, "5XX", "*"):
             http_res_text = utils.stream_to_text(http_res)
-            raise models.APIError(
-                "API error occurred", http_res.status_code, http_res_text, http_res
-            )
+            raise models.APIError("API error occurred", http_res, http_res_text)
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingAttachmentsUploadResponse(
-                unexpected_error_response=utils.unmarshal_json(
-                    http_res.text, Optional[models.UnexpectedErrorResponse]
+                unexpected_error_response=unmarshal_json_response(
+                    Optional[models.UnexpectedErrorResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
             )
 
-        content_type = http_res.headers.get("Content-Type")
-        http_res_text = utils.stream_to_text(http_res)
-        raise models.APIError(
-            f"Unexpected response received (code: {http_res.status_code}, type: {content_type})",
-            http_res.status_code,
-            http_res_text,
-            http_res,
-        )
+        raise models.APIError("Unexpected response received", http_res)
 
     async def upload_async(
         self,
@@ -676,62 +644,51 @@ class Attachments(BaseSDK):
         response_data: Any = None
         if utils.match_response(http_res, "201", "application/json"):
             return models.AccountingAttachmentsUploadResponse(
-                create_attachment_response=utils.unmarshal_json(
-                    http_res.text, Optional[models.CreateAttachmentResponse]
+                create_attachment_response=unmarshal_json_response(
+                    Optional[models.CreateAttachmentResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
             )
         if utils.match_response(http_res, "400", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.BadRequestResponseData
+            response_data = unmarshal_json_response(
+                models.BadRequestResponseData, http_res
             )
-            raise models.BadRequestResponse(data=response_data)
+            raise models.BadRequestResponse(response_data, http_res)
         if utils.match_response(http_res, "401", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.UnauthorizedResponseData
+            response_data = unmarshal_json_response(
+                models.UnauthorizedResponseData, http_res
             )
-            raise models.UnauthorizedResponse(data=response_data)
+            raise models.UnauthorizedResponse(response_data, http_res)
         if utils.match_response(http_res, "402", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.PaymentRequiredResponseData
+            response_data = unmarshal_json_response(
+                models.PaymentRequiredResponseData, http_res
             )
-            raise models.PaymentRequiredResponse(data=response_data)
+            raise models.PaymentRequiredResponse(response_data, http_res)
         if utils.match_response(http_res, "404", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.NotFoundResponseData
+            response_data = unmarshal_json_response(
+                models.NotFoundResponseData, http_res
             )
-            raise models.NotFoundResponse(data=response_data)
+            raise models.NotFoundResponse(response_data, http_res)
         if utils.match_response(http_res, "422", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.UnprocessableResponseData
+            response_data = unmarshal_json_response(
+                models.UnprocessableResponseData, http_res
             )
-            raise models.UnprocessableResponse(data=response_data)
+            raise models.UnprocessableResponse(response_data, http_res)
         if utils.match_response(http_res, "4XX", "*"):
             http_res_text = await utils.stream_to_text_async(http_res)
-            raise models.APIError(
-                "API error occurred", http_res.status_code, http_res_text, http_res
-            )
+            raise models.APIError("API error occurred", http_res, http_res_text)
         if utils.match_response(http_res, "5XX", "*"):
             http_res_text = await utils.stream_to_text_async(http_res)
-            raise models.APIError(
-                "API error occurred", http_res.status_code, http_res_text, http_res
-            )
+            raise models.APIError("API error occurred", http_res, http_res_text)
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingAttachmentsUploadResponse(
-                unexpected_error_response=utils.unmarshal_json(
-                    http_res.text, Optional[models.UnexpectedErrorResponse]
+                unexpected_error_response=unmarshal_json_response(
+                    Optional[models.UnexpectedErrorResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
             )
 
-        content_type = http_res.headers.get("Content-Type")
-        http_res_text = await utils.stream_to_text_async(http_res)
-        raise models.APIError(
-            f"Unexpected response received (code: {http_res.status_code}, type: {content_type})",
-            http_res.status_code,
-            http_res_text,
-            http_res,
-        )
+        raise models.APIError("Unexpected response received", http_res)
 
     def get(
         self,
@@ -837,62 +794,51 @@ class Attachments(BaseSDK):
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingAttachmentsOneResponse(
-                get_attachment_response=utils.unmarshal_json(
-                    http_res.text, Optional[models.GetAttachmentResponse]
+                get_attachment_response=unmarshal_json_response(
+                    Optional[models.GetAttachmentResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
             )
         if utils.match_response(http_res, "400", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.BadRequestResponseData
+            response_data = unmarshal_json_response(
+                models.BadRequestResponseData, http_res
             )
-            raise models.BadRequestResponse(data=response_data)
+            raise models.BadRequestResponse(response_data, http_res)
         if utils.match_response(http_res, "401", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.UnauthorizedResponseData
+            response_data = unmarshal_json_response(
+                models.UnauthorizedResponseData, http_res
             )
-            raise models.UnauthorizedResponse(data=response_data)
+            raise models.UnauthorizedResponse(response_data, http_res)
         if utils.match_response(http_res, "402", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.PaymentRequiredResponseData
+            response_data = unmarshal_json_response(
+                models.PaymentRequiredResponseData, http_res
             )
-            raise models.PaymentRequiredResponse(data=response_data)
+            raise models.PaymentRequiredResponse(response_data, http_res)
         if utils.match_response(http_res, "404", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.NotFoundResponseData
+            response_data = unmarshal_json_response(
+                models.NotFoundResponseData, http_res
             )
-            raise models.NotFoundResponse(data=response_data)
+            raise models.NotFoundResponse(response_data, http_res)
         if utils.match_response(http_res, "422", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.UnprocessableResponseData
+            response_data = unmarshal_json_response(
+                models.UnprocessableResponseData, http_res
             )
-            raise models.UnprocessableResponse(data=response_data)
+            raise models.UnprocessableResponse(response_data, http_res)
         if utils.match_response(http_res, "4XX", "*"):
             http_res_text = utils.stream_to_text(http_res)
-            raise models.APIError(
-                "API error occurred", http_res.status_code, http_res_text, http_res
-            )
+            raise models.APIError("API error occurred", http_res, http_res_text)
         if utils.match_response(http_res, "5XX", "*"):
             http_res_text = utils.stream_to_text(http_res)
-            raise models.APIError(
-                "API error occurred", http_res.status_code, http_res_text, http_res
-            )
+            raise models.APIError("API error occurred", http_res, http_res_text)
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingAttachmentsOneResponse(
-                unexpected_error_response=utils.unmarshal_json(
-                    http_res.text, Optional[models.UnexpectedErrorResponse]
+                unexpected_error_response=unmarshal_json_response(
+                    Optional[models.UnexpectedErrorResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
             )
 
-        content_type = http_res.headers.get("Content-Type")
-        http_res_text = utils.stream_to_text(http_res)
-        raise models.APIError(
-            f"Unexpected response received (code: {http_res.status_code}, type: {content_type})",
-            http_res.status_code,
-            http_res_text,
-            http_res,
-        )
+        raise models.APIError("Unexpected response received", http_res)
 
     async def get_async(
         self,
@@ -998,62 +944,51 @@ class Attachments(BaseSDK):
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingAttachmentsOneResponse(
-                get_attachment_response=utils.unmarshal_json(
-                    http_res.text, Optional[models.GetAttachmentResponse]
+                get_attachment_response=unmarshal_json_response(
+                    Optional[models.GetAttachmentResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
             )
         if utils.match_response(http_res, "400", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.BadRequestResponseData
+            response_data = unmarshal_json_response(
+                models.BadRequestResponseData, http_res
             )
-            raise models.BadRequestResponse(data=response_data)
+            raise models.BadRequestResponse(response_data, http_res)
         if utils.match_response(http_res, "401", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.UnauthorizedResponseData
+            response_data = unmarshal_json_response(
+                models.UnauthorizedResponseData, http_res
             )
-            raise models.UnauthorizedResponse(data=response_data)
+            raise models.UnauthorizedResponse(response_data, http_res)
         if utils.match_response(http_res, "402", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.PaymentRequiredResponseData
+            response_data = unmarshal_json_response(
+                models.PaymentRequiredResponseData, http_res
             )
-            raise models.PaymentRequiredResponse(data=response_data)
+            raise models.PaymentRequiredResponse(response_data, http_res)
         if utils.match_response(http_res, "404", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.NotFoundResponseData
+            response_data = unmarshal_json_response(
+                models.NotFoundResponseData, http_res
             )
-            raise models.NotFoundResponse(data=response_data)
+            raise models.NotFoundResponse(response_data, http_res)
         if utils.match_response(http_res, "422", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.UnprocessableResponseData
+            response_data = unmarshal_json_response(
+                models.UnprocessableResponseData, http_res
             )
-            raise models.UnprocessableResponse(data=response_data)
+            raise models.UnprocessableResponse(response_data, http_res)
         if utils.match_response(http_res, "4XX", "*"):
             http_res_text = await utils.stream_to_text_async(http_res)
-            raise models.APIError(
-                "API error occurred", http_res.status_code, http_res_text, http_res
-            )
+            raise models.APIError("API error occurred", http_res, http_res_text)
         if utils.match_response(http_res, "5XX", "*"):
             http_res_text = await utils.stream_to_text_async(http_res)
-            raise models.APIError(
-                "API error occurred", http_res.status_code, http_res_text, http_res
-            )
+            raise models.APIError("API error occurred", http_res, http_res_text)
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingAttachmentsOneResponse(
-                unexpected_error_response=utils.unmarshal_json(
-                    http_res.text, Optional[models.UnexpectedErrorResponse]
+                unexpected_error_response=unmarshal_json_response(
+                    Optional[models.UnexpectedErrorResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
             )
 
-        content_type = http_res.headers.get("Content-Type")
-        http_res_text = await utils.stream_to_text_async(http_res)
-        raise models.APIError(
-            f"Unexpected response received (code: {http_res.status_code}, type: {content_type})",
-            http_res.status_code,
-            http_res_text,
-            http_res,
-        )
+        raise models.APIError("Unexpected response received", http_res)
 
     def delete(
         self,
@@ -1156,62 +1091,51 @@ class Attachments(BaseSDK):
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingAttachmentsDeleteResponse(
-                delete_attachment_response=utils.unmarshal_json(
-                    http_res.text, Optional[models.DeleteAttachmentResponse]
+                delete_attachment_response=unmarshal_json_response(
+                    Optional[models.DeleteAttachmentResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
             )
         if utils.match_response(http_res, "400", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.BadRequestResponseData
+            response_data = unmarshal_json_response(
+                models.BadRequestResponseData, http_res
             )
-            raise models.BadRequestResponse(data=response_data)
+            raise models.BadRequestResponse(response_data, http_res)
         if utils.match_response(http_res, "401", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.UnauthorizedResponseData
+            response_data = unmarshal_json_response(
+                models.UnauthorizedResponseData, http_res
             )
-            raise models.UnauthorizedResponse(data=response_data)
+            raise models.UnauthorizedResponse(response_data, http_res)
         if utils.match_response(http_res, "402", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.PaymentRequiredResponseData
+            response_data = unmarshal_json_response(
+                models.PaymentRequiredResponseData, http_res
             )
-            raise models.PaymentRequiredResponse(data=response_data)
+            raise models.PaymentRequiredResponse(response_data, http_res)
         if utils.match_response(http_res, "404", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.NotFoundResponseData
+            response_data = unmarshal_json_response(
+                models.NotFoundResponseData, http_res
             )
-            raise models.NotFoundResponse(data=response_data)
+            raise models.NotFoundResponse(response_data, http_res)
         if utils.match_response(http_res, "422", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.UnprocessableResponseData
+            response_data = unmarshal_json_response(
+                models.UnprocessableResponseData, http_res
             )
-            raise models.UnprocessableResponse(data=response_data)
+            raise models.UnprocessableResponse(response_data, http_res)
         if utils.match_response(http_res, "4XX", "*"):
             http_res_text = utils.stream_to_text(http_res)
-            raise models.APIError(
-                "API error occurred", http_res.status_code, http_res_text, http_res
-            )
+            raise models.APIError("API error occurred", http_res, http_res_text)
         if utils.match_response(http_res, "5XX", "*"):
             http_res_text = utils.stream_to_text(http_res)
-            raise models.APIError(
-                "API error occurred", http_res.status_code, http_res_text, http_res
-            )
+            raise models.APIError("API error occurred", http_res, http_res_text)
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingAttachmentsDeleteResponse(
-                unexpected_error_response=utils.unmarshal_json(
-                    http_res.text, Optional[models.UnexpectedErrorResponse]
+                unexpected_error_response=unmarshal_json_response(
+                    Optional[models.UnexpectedErrorResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
             )
 
-        content_type = http_res.headers.get("Content-Type")
-        http_res_text = utils.stream_to_text(http_res)
-        raise models.APIError(
-            f"Unexpected response received (code: {http_res.status_code}, type: {content_type})",
-            http_res.status_code,
-            http_res_text,
-            http_res,
-        )
+        raise models.APIError("Unexpected response received", http_res)
 
     async def delete_async(
         self,
@@ -1314,62 +1238,51 @@ class Attachments(BaseSDK):
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingAttachmentsDeleteResponse(
-                delete_attachment_response=utils.unmarshal_json(
-                    http_res.text, Optional[models.DeleteAttachmentResponse]
+                delete_attachment_response=unmarshal_json_response(
+                    Optional[models.DeleteAttachmentResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
             )
         if utils.match_response(http_res, "400", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.BadRequestResponseData
+            response_data = unmarshal_json_response(
+                models.BadRequestResponseData, http_res
             )
-            raise models.BadRequestResponse(data=response_data)
+            raise models.BadRequestResponse(response_data, http_res)
         if utils.match_response(http_res, "401", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.UnauthorizedResponseData
+            response_data = unmarshal_json_response(
+                models.UnauthorizedResponseData, http_res
             )
-            raise models.UnauthorizedResponse(data=response_data)
+            raise models.UnauthorizedResponse(response_data, http_res)
         if utils.match_response(http_res, "402", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.PaymentRequiredResponseData
+            response_data = unmarshal_json_response(
+                models.PaymentRequiredResponseData, http_res
             )
-            raise models.PaymentRequiredResponse(data=response_data)
+            raise models.PaymentRequiredResponse(response_data, http_res)
         if utils.match_response(http_res, "404", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.NotFoundResponseData
+            response_data = unmarshal_json_response(
+                models.NotFoundResponseData, http_res
             )
-            raise models.NotFoundResponse(data=response_data)
+            raise models.NotFoundResponse(response_data, http_res)
         if utils.match_response(http_res, "422", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.UnprocessableResponseData
+            response_data = unmarshal_json_response(
+                models.UnprocessableResponseData, http_res
             )
-            raise models.UnprocessableResponse(data=response_data)
+            raise models.UnprocessableResponse(response_data, http_res)
         if utils.match_response(http_res, "4XX", "*"):
             http_res_text = await utils.stream_to_text_async(http_res)
-            raise models.APIError(
-                "API error occurred", http_res.status_code, http_res_text, http_res
-            )
+            raise models.APIError("API error occurred", http_res, http_res_text)
         if utils.match_response(http_res, "5XX", "*"):
             http_res_text = await utils.stream_to_text_async(http_res)
-            raise models.APIError(
-                "API error occurred", http_res.status_code, http_res_text, http_res
-            )
+            raise models.APIError("API error occurred", http_res, http_res_text)
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingAttachmentsDeleteResponse(
-                unexpected_error_response=utils.unmarshal_json(
-                    http_res.text, Optional[models.UnexpectedErrorResponse]
+                unexpected_error_response=unmarshal_json_response(
+                    Optional[models.UnexpectedErrorResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
             )
 
-        content_type = http_res.headers.get("Content-Type")
-        http_res_text = await utils.stream_to_text_async(http_res)
-        raise models.APIError(
-            f"Unexpected response received (code: {http_res.status_code}, type: {content_type})",
-            http_res.status_code,
-            http_res_text,
-            http_res,
-        )
+        raise models.APIError("Unexpected response received", http_res)
 
     def download(
         self,
@@ -1482,61 +1395,51 @@ class Attachments(BaseSDK):
             )
         if utils.match_response(http_res, "400", "application/json"):
             http_res_text = utils.stream_to_text(http_res)
-            response_data = utils.unmarshal_json(
-                http_res_text, models.BadRequestResponseData
+            response_data = unmarshal_json_response(
+                models.BadRequestResponseData, http_res, http_res_text
             )
-            raise models.BadRequestResponse(data=response_data)
+            raise models.BadRequestResponse(response_data, http_res, http_res_text)
         if utils.match_response(http_res, "401", "application/json"):
             http_res_text = utils.stream_to_text(http_res)
-            response_data = utils.unmarshal_json(
-                http_res_text, models.UnauthorizedResponseData
+            response_data = unmarshal_json_response(
+                models.UnauthorizedResponseData, http_res, http_res_text
             )
-            raise models.UnauthorizedResponse(data=response_data)
+            raise models.UnauthorizedResponse(response_data, http_res, http_res_text)
         if utils.match_response(http_res, "402", "application/json"):
             http_res_text = utils.stream_to_text(http_res)
-            response_data = utils.unmarshal_json(
-                http_res_text, models.PaymentRequiredResponseData
+            response_data = unmarshal_json_response(
+                models.PaymentRequiredResponseData, http_res, http_res_text
             )
-            raise models.PaymentRequiredResponse(data=response_data)
+            raise models.PaymentRequiredResponse(response_data, http_res, http_res_text)
         if utils.match_response(http_res, "404", "application/json"):
             http_res_text = utils.stream_to_text(http_res)
-            response_data = utils.unmarshal_json(
-                http_res_text, models.NotFoundResponseData
+            response_data = unmarshal_json_response(
+                models.NotFoundResponseData, http_res, http_res_text
             )
-            raise models.NotFoundResponse(data=response_data)
+            raise models.NotFoundResponse(response_data, http_res, http_res_text)
         if utils.match_response(http_res, "422", "application/json"):
             http_res_text = utils.stream_to_text(http_res)
-            response_data = utils.unmarshal_json(
-                http_res_text, models.UnprocessableResponseData
+            response_data = unmarshal_json_response(
+                models.UnprocessableResponseData, http_res, http_res_text
             )
-            raise models.UnprocessableResponse(data=response_data)
+            raise models.UnprocessableResponse(response_data, http_res, http_res_text)
         if utils.match_response(http_res, "4XX", "*"):
             http_res_text = utils.stream_to_text(http_res)
-            raise models.APIError(
-                "API error occurred", http_res.status_code, http_res_text, http_res
-            )
+            raise models.APIError("API error occurred", http_res, http_res_text)
         if utils.match_response(http_res, "5XX", "*"):
             http_res_text = utils.stream_to_text(http_res)
-            raise models.APIError(
-                "API error occurred", http_res.status_code, http_res_text, http_res
-            )
+            raise models.APIError("API error occurred", http_res, http_res_text)
         if utils.match_response(http_res, "default", "application/json"):
-            http_response_text = utils.stream_to_text(http_res)
+            http_res_text = utils.stream_to_text(http_res)
             return models.AccountingAttachmentsDownloadResponse(
-                unexpected_error_response=utils.unmarshal_json(
-                    http_response_text, Optional[models.UnexpectedErrorResponse]
+                unexpected_error_response=unmarshal_json_response(
+                    Optional[models.UnexpectedErrorResponse], http_res, http_res_text
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
             )
 
-        content_type = http_res.headers.get("Content-Type")
         http_res_text = utils.stream_to_text(http_res)
-        raise models.APIError(
-            f"Unexpected response received (code: {http_res.status_code}, type: {content_type})",
-            http_res.status_code,
-            http_res_text,
-            http_res,
-        )
+        raise models.APIError("Unexpected response received", http_res, http_res_text)
 
     async def download_async(
         self,
@@ -1649,58 +1552,48 @@ class Attachments(BaseSDK):
             )
         if utils.match_response(http_res, "400", "application/json"):
             http_res_text = await utils.stream_to_text_async(http_res)
-            response_data = utils.unmarshal_json(
-                http_res_text, models.BadRequestResponseData
+            response_data = unmarshal_json_response(
+                models.BadRequestResponseData, http_res, http_res_text
             )
-            raise models.BadRequestResponse(data=response_data)
+            raise models.BadRequestResponse(response_data, http_res, http_res_text)
         if utils.match_response(http_res, "401", "application/json"):
             http_res_text = await utils.stream_to_text_async(http_res)
-            response_data = utils.unmarshal_json(
-                http_res_text, models.UnauthorizedResponseData
+            response_data = unmarshal_json_response(
+                models.UnauthorizedResponseData, http_res, http_res_text
             )
-            raise models.UnauthorizedResponse(data=response_data)
+            raise models.UnauthorizedResponse(response_data, http_res, http_res_text)
         if utils.match_response(http_res, "402", "application/json"):
             http_res_text = await utils.stream_to_text_async(http_res)
-            response_data = utils.unmarshal_json(
-                http_res_text, models.PaymentRequiredResponseData
+            response_data = unmarshal_json_response(
+                models.PaymentRequiredResponseData, http_res, http_res_text
             )
-            raise models.PaymentRequiredResponse(data=response_data)
+            raise models.PaymentRequiredResponse(response_data, http_res, http_res_text)
         if utils.match_response(http_res, "404", "application/json"):
             http_res_text = await utils.stream_to_text_async(http_res)
-            response_data = utils.unmarshal_json(
-                http_res_text, models.NotFoundResponseData
+            response_data = unmarshal_json_response(
+                models.NotFoundResponseData, http_res, http_res_text
             )
-            raise models.NotFoundResponse(data=response_data)
+            raise models.NotFoundResponse(response_data, http_res, http_res_text)
         if utils.match_response(http_res, "422", "application/json"):
             http_res_text = await utils.stream_to_text_async(http_res)
-            response_data = utils.unmarshal_json(
-                http_res_text, models.UnprocessableResponseData
+            response_data = unmarshal_json_response(
+                models.UnprocessableResponseData, http_res, http_res_text
             )
-            raise models.UnprocessableResponse(data=response_data)
+            raise models.UnprocessableResponse(response_data, http_res, http_res_text)
         if utils.match_response(http_res, "4XX", "*"):
             http_res_text = await utils.stream_to_text_async(http_res)
-            raise models.APIError(
-                "API error occurred", http_res.status_code, http_res_text, http_res
-            )
+            raise models.APIError("API error occurred", http_res, http_res_text)
         if utils.match_response(http_res, "5XX", "*"):
             http_res_text = await utils.stream_to_text_async(http_res)
-            raise models.APIError(
-                "API error occurred", http_res.status_code, http_res_text, http_res
-            )
+            raise models.APIError("API error occurred", http_res, http_res_text)
         if utils.match_response(http_res, "default", "application/json"):
-            http_response_text = await utils.stream_to_text_async(http_res)
+            http_res_text = await utils.stream_to_text_async(http_res)
             return models.AccountingAttachmentsDownloadResponse(
-                unexpected_error_response=utils.unmarshal_json(
-                    http_response_text, Optional[models.UnexpectedErrorResponse]
+                unexpected_error_response=unmarshal_json_response(
+                    Optional[models.UnexpectedErrorResponse], http_res, http_res_text
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
             )
 
-        content_type = http_res.headers.get("Content-Type")
         http_res_text = await utils.stream_to_text_async(http_res)
-        raise models.APIError(
-            f"Unexpected response received (code: {http_res.status_code}, type: {content_type})",
-            http_res.status_code,
-            http_res_text,
-            http_res,
-        )
+        raise models.APIError("Unexpected response received", http_res, http_res_text)

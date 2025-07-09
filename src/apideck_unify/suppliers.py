@@ -5,6 +5,7 @@ from apideck_unify import models, utils
 from apideck_unify._hooks import HookContext
 from apideck_unify.types import OptionalNullable, UNSET
 from apideck_unify.utils import get_security_from_env
+from apideck_unify.utils.unmarshal_json_response import unmarshal_json_response
 from jsonpath import JSONPath
 from typing import Any, Dict, List, Mapping, Optional, Union
 
@@ -149,64 +150,53 @@ class Suppliers(BaseSDK):
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingSuppliersAllResponse(
-                get_suppliers_response=utils.unmarshal_json(
-                    http_res.text, Optional[models.GetSuppliersResponse]
+                get_suppliers_response=unmarshal_json_response(
+                    Optional[models.GetSuppliersResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
             )
         if utils.match_response(http_res, "400", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.BadRequestResponseData
+            response_data = unmarshal_json_response(
+                models.BadRequestResponseData, http_res
             )
-            raise models.BadRequestResponse(data=response_data)
+            raise models.BadRequestResponse(response_data, http_res)
         if utils.match_response(http_res, "401", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.UnauthorizedResponseData
+            response_data = unmarshal_json_response(
+                models.UnauthorizedResponseData, http_res
             )
-            raise models.UnauthorizedResponse(data=response_data)
+            raise models.UnauthorizedResponse(response_data, http_res)
         if utils.match_response(http_res, "402", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.PaymentRequiredResponseData
+            response_data = unmarshal_json_response(
+                models.PaymentRequiredResponseData, http_res
             )
-            raise models.PaymentRequiredResponse(data=response_data)
+            raise models.PaymentRequiredResponse(response_data, http_res)
         if utils.match_response(http_res, "404", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.NotFoundResponseData
+            response_data = unmarshal_json_response(
+                models.NotFoundResponseData, http_res
             )
-            raise models.NotFoundResponse(data=response_data)
+            raise models.NotFoundResponse(response_data, http_res)
         if utils.match_response(http_res, "422", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.UnprocessableResponseData
+            response_data = unmarshal_json_response(
+                models.UnprocessableResponseData, http_res
             )
-            raise models.UnprocessableResponse(data=response_data)
+            raise models.UnprocessableResponse(response_data, http_res)
         if utils.match_response(http_res, "4XX", "*"):
             http_res_text = utils.stream_to_text(http_res)
-            raise models.APIError(
-                "API error occurred", http_res.status_code, http_res_text, http_res
-            )
+            raise models.APIError("API error occurred", http_res, http_res_text)
         if utils.match_response(http_res, "5XX", "*"):
             http_res_text = utils.stream_to_text(http_res)
-            raise models.APIError(
-                "API error occurred", http_res.status_code, http_res_text, http_res
-            )
+            raise models.APIError("API error occurred", http_res, http_res_text)
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingSuppliersAllResponse(
-                unexpected_error_response=utils.unmarshal_json(
-                    http_res.text, Optional[models.UnexpectedErrorResponse]
+                unexpected_error_response=unmarshal_json_response(
+                    Optional[models.UnexpectedErrorResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
             )
 
-        content_type = http_res.headers.get("Content-Type")
-        http_res_text = utils.stream_to_text(http_res)
-        raise models.APIError(
-            f"Unexpected response received (code: {http_res.status_code}, type: {content_type})",
-            http_res.status_code,
-            http_res_text,
-            http_res,
-        )
+        raise models.APIError("Unexpected response received", http_res)
 
     async def list_async(
         self,
@@ -347,64 +337,53 @@ class Suppliers(BaseSDK):
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingSuppliersAllResponse(
-                get_suppliers_response=utils.unmarshal_json(
-                    http_res.text, Optional[models.GetSuppliersResponse]
+                get_suppliers_response=unmarshal_json_response(
+                    Optional[models.GetSuppliersResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
             )
         if utils.match_response(http_res, "400", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.BadRequestResponseData
+            response_data = unmarshal_json_response(
+                models.BadRequestResponseData, http_res
             )
-            raise models.BadRequestResponse(data=response_data)
+            raise models.BadRequestResponse(response_data, http_res)
         if utils.match_response(http_res, "401", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.UnauthorizedResponseData
+            response_data = unmarshal_json_response(
+                models.UnauthorizedResponseData, http_res
             )
-            raise models.UnauthorizedResponse(data=response_data)
+            raise models.UnauthorizedResponse(response_data, http_res)
         if utils.match_response(http_res, "402", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.PaymentRequiredResponseData
+            response_data = unmarshal_json_response(
+                models.PaymentRequiredResponseData, http_res
             )
-            raise models.PaymentRequiredResponse(data=response_data)
+            raise models.PaymentRequiredResponse(response_data, http_res)
         if utils.match_response(http_res, "404", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.NotFoundResponseData
+            response_data = unmarshal_json_response(
+                models.NotFoundResponseData, http_res
             )
-            raise models.NotFoundResponse(data=response_data)
+            raise models.NotFoundResponse(response_data, http_res)
         if utils.match_response(http_res, "422", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.UnprocessableResponseData
+            response_data = unmarshal_json_response(
+                models.UnprocessableResponseData, http_res
             )
-            raise models.UnprocessableResponse(data=response_data)
+            raise models.UnprocessableResponse(response_data, http_res)
         if utils.match_response(http_res, "4XX", "*"):
             http_res_text = await utils.stream_to_text_async(http_res)
-            raise models.APIError(
-                "API error occurred", http_res.status_code, http_res_text, http_res
-            )
+            raise models.APIError("API error occurred", http_res, http_res_text)
         if utils.match_response(http_res, "5XX", "*"):
             http_res_text = await utils.stream_to_text_async(http_res)
-            raise models.APIError(
-                "API error occurred", http_res.status_code, http_res_text, http_res
-            )
+            raise models.APIError("API error occurred", http_res, http_res_text)
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingSuppliersAllResponse(
-                unexpected_error_response=utils.unmarshal_json(
-                    http_res.text, Optional[models.UnexpectedErrorResponse]
+                unexpected_error_response=unmarshal_json_response(
+                    Optional[models.UnexpectedErrorResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
             )
 
-        content_type = http_res.headers.get("Content-Type")
-        http_res_text = await utils.stream_to_text_async(http_res)
-        raise models.APIError(
-            f"Unexpected response received (code: {http_res.status_code}, type: {content_type})",
-            http_res.status_code,
-            http_res_text,
-            http_res,
-        )
+        raise models.APIError("Unexpected response received", http_res)
 
     def create(
         self,
@@ -451,6 +430,7 @@ class Suppliers(BaseSDK):
         ] = UNSET,
         status: OptionalNullable[models.SupplierStatus] = UNSET,
         payment_method: OptionalNullable[str] = UNSET,
+        terms: OptionalNullable[str] = UNSET,
         channel: OptionalNullable[str] = UNSET,
         custom_fields: Optional[
             Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
@@ -496,6 +476,7 @@ class Suppliers(BaseSDK):
         :param account:
         :param status: Supplier status
         :param payment_method: Payment method used for the transaction, such as cash, credit card, bank transfer, or check
+        :param terms: Terms of payment.
         :param channel: The channel through which the transaction is processed.
         :param custom_fields:
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
@@ -557,6 +538,7 @@ class Suppliers(BaseSDK):
                 ),
                 status=status,
                 payment_method=payment_method,
+                terms=terms,
                 channel=channel,
                 custom_fields=utils.get_pydantic_model(
                     custom_fields, Optional[List[models.CustomField]]
@@ -622,62 +604,51 @@ class Suppliers(BaseSDK):
         response_data: Any = None
         if utils.match_response(http_res, "201", "application/json"):
             return models.AccountingSuppliersAddResponse(
-                create_supplier_response=utils.unmarshal_json(
-                    http_res.text, Optional[models.CreateSupplierResponse]
+                create_supplier_response=unmarshal_json_response(
+                    Optional[models.CreateSupplierResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
             )
         if utils.match_response(http_res, "400", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.BadRequestResponseData
+            response_data = unmarshal_json_response(
+                models.BadRequestResponseData, http_res
             )
-            raise models.BadRequestResponse(data=response_data)
+            raise models.BadRequestResponse(response_data, http_res)
         if utils.match_response(http_res, "401", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.UnauthorizedResponseData
+            response_data = unmarshal_json_response(
+                models.UnauthorizedResponseData, http_res
             )
-            raise models.UnauthorizedResponse(data=response_data)
+            raise models.UnauthorizedResponse(response_data, http_res)
         if utils.match_response(http_res, "402", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.PaymentRequiredResponseData
+            response_data = unmarshal_json_response(
+                models.PaymentRequiredResponseData, http_res
             )
-            raise models.PaymentRequiredResponse(data=response_data)
+            raise models.PaymentRequiredResponse(response_data, http_res)
         if utils.match_response(http_res, "404", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.NotFoundResponseData
+            response_data = unmarshal_json_response(
+                models.NotFoundResponseData, http_res
             )
-            raise models.NotFoundResponse(data=response_data)
+            raise models.NotFoundResponse(response_data, http_res)
         if utils.match_response(http_res, "422", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.UnprocessableResponseData
+            response_data = unmarshal_json_response(
+                models.UnprocessableResponseData, http_res
             )
-            raise models.UnprocessableResponse(data=response_data)
+            raise models.UnprocessableResponse(response_data, http_res)
         if utils.match_response(http_res, "4XX", "*"):
             http_res_text = utils.stream_to_text(http_res)
-            raise models.APIError(
-                "API error occurred", http_res.status_code, http_res_text, http_res
-            )
+            raise models.APIError("API error occurred", http_res, http_res_text)
         if utils.match_response(http_res, "5XX", "*"):
             http_res_text = utils.stream_to_text(http_res)
-            raise models.APIError(
-                "API error occurred", http_res.status_code, http_res_text, http_res
-            )
+            raise models.APIError("API error occurred", http_res, http_res_text)
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingSuppliersAddResponse(
-                unexpected_error_response=utils.unmarshal_json(
-                    http_res.text, Optional[models.UnexpectedErrorResponse]
+                unexpected_error_response=unmarshal_json_response(
+                    Optional[models.UnexpectedErrorResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
             )
 
-        content_type = http_res.headers.get("Content-Type")
-        http_res_text = utils.stream_to_text(http_res)
-        raise models.APIError(
-            f"Unexpected response received (code: {http_res.status_code}, type: {content_type})",
-            http_res.status_code,
-            http_res_text,
-            http_res,
-        )
+        raise models.APIError("Unexpected response received", http_res)
 
     async def create_async(
         self,
@@ -724,6 +695,7 @@ class Suppliers(BaseSDK):
         ] = UNSET,
         status: OptionalNullable[models.SupplierStatus] = UNSET,
         payment_method: OptionalNullable[str] = UNSET,
+        terms: OptionalNullable[str] = UNSET,
         channel: OptionalNullable[str] = UNSET,
         custom_fields: Optional[
             Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
@@ -769,6 +741,7 @@ class Suppliers(BaseSDK):
         :param account:
         :param status: Supplier status
         :param payment_method: Payment method used for the transaction, such as cash, credit card, bank transfer, or check
+        :param terms: Terms of payment.
         :param channel: The channel through which the transaction is processed.
         :param custom_fields:
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
@@ -830,6 +803,7 @@ class Suppliers(BaseSDK):
                 ),
                 status=status,
                 payment_method=payment_method,
+                terms=terms,
                 channel=channel,
                 custom_fields=utils.get_pydantic_model(
                     custom_fields, Optional[List[models.CustomField]]
@@ -895,62 +869,51 @@ class Suppliers(BaseSDK):
         response_data: Any = None
         if utils.match_response(http_res, "201", "application/json"):
             return models.AccountingSuppliersAddResponse(
-                create_supplier_response=utils.unmarshal_json(
-                    http_res.text, Optional[models.CreateSupplierResponse]
+                create_supplier_response=unmarshal_json_response(
+                    Optional[models.CreateSupplierResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
             )
         if utils.match_response(http_res, "400", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.BadRequestResponseData
+            response_data = unmarshal_json_response(
+                models.BadRequestResponseData, http_res
             )
-            raise models.BadRequestResponse(data=response_data)
+            raise models.BadRequestResponse(response_data, http_res)
         if utils.match_response(http_res, "401", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.UnauthorizedResponseData
+            response_data = unmarshal_json_response(
+                models.UnauthorizedResponseData, http_res
             )
-            raise models.UnauthorizedResponse(data=response_data)
+            raise models.UnauthorizedResponse(response_data, http_res)
         if utils.match_response(http_res, "402", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.PaymentRequiredResponseData
+            response_data = unmarshal_json_response(
+                models.PaymentRequiredResponseData, http_res
             )
-            raise models.PaymentRequiredResponse(data=response_data)
+            raise models.PaymentRequiredResponse(response_data, http_res)
         if utils.match_response(http_res, "404", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.NotFoundResponseData
+            response_data = unmarshal_json_response(
+                models.NotFoundResponseData, http_res
             )
-            raise models.NotFoundResponse(data=response_data)
+            raise models.NotFoundResponse(response_data, http_res)
         if utils.match_response(http_res, "422", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.UnprocessableResponseData
+            response_data = unmarshal_json_response(
+                models.UnprocessableResponseData, http_res
             )
-            raise models.UnprocessableResponse(data=response_data)
+            raise models.UnprocessableResponse(response_data, http_res)
         if utils.match_response(http_res, "4XX", "*"):
             http_res_text = await utils.stream_to_text_async(http_res)
-            raise models.APIError(
-                "API error occurred", http_res.status_code, http_res_text, http_res
-            )
+            raise models.APIError("API error occurred", http_res, http_res_text)
         if utils.match_response(http_res, "5XX", "*"):
             http_res_text = await utils.stream_to_text_async(http_res)
-            raise models.APIError(
-                "API error occurred", http_res.status_code, http_res_text, http_res
-            )
+            raise models.APIError("API error occurred", http_res, http_res_text)
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingSuppliersAddResponse(
-                unexpected_error_response=utils.unmarshal_json(
-                    http_res.text, Optional[models.UnexpectedErrorResponse]
+                unexpected_error_response=unmarshal_json_response(
+                    Optional[models.UnexpectedErrorResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
             )
 
-        content_type = http_res.headers.get("Content-Type")
-        http_res_text = await utils.stream_to_text_async(http_res)
-        raise models.APIError(
-            f"Unexpected response received (code: {http_res.status_code}, type: {content_type})",
-            http_res.status_code,
-            http_res_text,
-            http_res,
-        )
+        raise models.APIError("Unexpected response received", http_res)
 
     def get(
         self,
@@ -1050,62 +1013,51 @@ class Suppliers(BaseSDK):
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingSuppliersOneResponse(
-                get_supplier_response=utils.unmarshal_json(
-                    http_res.text, Optional[models.GetSupplierResponse]
+                get_supplier_response=unmarshal_json_response(
+                    Optional[models.GetSupplierResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
             )
         if utils.match_response(http_res, "400", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.BadRequestResponseData
+            response_data = unmarshal_json_response(
+                models.BadRequestResponseData, http_res
             )
-            raise models.BadRequestResponse(data=response_data)
+            raise models.BadRequestResponse(response_data, http_res)
         if utils.match_response(http_res, "401", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.UnauthorizedResponseData
+            response_data = unmarshal_json_response(
+                models.UnauthorizedResponseData, http_res
             )
-            raise models.UnauthorizedResponse(data=response_data)
+            raise models.UnauthorizedResponse(response_data, http_res)
         if utils.match_response(http_res, "402", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.PaymentRequiredResponseData
+            response_data = unmarshal_json_response(
+                models.PaymentRequiredResponseData, http_res
             )
-            raise models.PaymentRequiredResponse(data=response_data)
+            raise models.PaymentRequiredResponse(response_data, http_res)
         if utils.match_response(http_res, "404", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.NotFoundResponseData
+            response_data = unmarshal_json_response(
+                models.NotFoundResponseData, http_res
             )
-            raise models.NotFoundResponse(data=response_data)
+            raise models.NotFoundResponse(response_data, http_res)
         if utils.match_response(http_res, "422", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.UnprocessableResponseData
+            response_data = unmarshal_json_response(
+                models.UnprocessableResponseData, http_res
             )
-            raise models.UnprocessableResponse(data=response_data)
+            raise models.UnprocessableResponse(response_data, http_res)
         if utils.match_response(http_res, "4XX", "*"):
             http_res_text = utils.stream_to_text(http_res)
-            raise models.APIError(
-                "API error occurred", http_res.status_code, http_res_text, http_res
-            )
+            raise models.APIError("API error occurred", http_res, http_res_text)
         if utils.match_response(http_res, "5XX", "*"):
             http_res_text = utils.stream_to_text(http_res)
-            raise models.APIError(
-                "API error occurred", http_res.status_code, http_res_text, http_res
-            )
+            raise models.APIError("API error occurred", http_res, http_res_text)
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingSuppliersOneResponse(
-                unexpected_error_response=utils.unmarshal_json(
-                    http_res.text, Optional[models.UnexpectedErrorResponse]
+                unexpected_error_response=unmarshal_json_response(
+                    Optional[models.UnexpectedErrorResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
             )
 
-        content_type = http_res.headers.get("Content-Type")
-        http_res_text = utils.stream_to_text(http_res)
-        raise models.APIError(
-            f"Unexpected response received (code: {http_res.status_code}, type: {content_type})",
-            http_res.status_code,
-            http_res_text,
-            http_res,
-        )
+        raise models.APIError("Unexpected response received", http_res)
 
     async def get_async(
         self,
@@ -1205,62 +1157,51 @@ class Suppliers(BaseSDK):
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingSuppliersOneResponse(
-                get_supplier_response=utils.unmarshal_json(
-                    http_res.text, Optional[models.GetSupplierResponse]
+                get_supplier_response=unmarshal_json_response(
+                    Optional[models.GetSupplierResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
             )
         if utils.match_response(http_res, "400", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.BadRequestResponseData
+            response_data = unmarshal_json_response(
+                models.BadRequestResponseData, http_res
             )
-            raise models.BadRequestResponse(data=response_data)
+            raise models.BadRequestResponse(response_data, http_res)
         if utils.match_response(http_res, "401", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.UnauthorizedResponseData
+            response_data = unmarshal_json_response(
+                models.UnauthorizedResponseData, http_res
             )
-            raise models.UnauthorizedResponse(data=response_data)
+            raise models.UnauthorizedResponse(response_data, http_res)
         if utils.match_response(http_res, "402", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.PaymentRequiredResponseData
+            response_data = unmarshal_json_response(
+                models.PaymentRequiredResponseData, http_res
             )
-            raise models.PaymentRequiredResponse(data=response_data)
+            raise models.PaymentRequiredResponse(response_data, http_res)
         if utils.match_response(http_res, "404", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.NotFoundResponseData
+            response_data = unmarshal_json_response(
+                models.NotFoundResponseData, http_res
             )
-            raise models.NotFoundResponse(data=response_data)
+            raise models.NotFoundResponse(response_data, http_res)
         if utils.match_response(http_res, "422", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.UnprocessableResponseData
+            response_data = unmarshal_json_response(
+                models.UnprocessableResponseData, http_res
             )
-            raise models.UnprocessableResponse(data=response_data)
+            raise models.UnprocessableResponse(response_data, http_res)
         if utils.match_response(http_res, "4XX", "*"):
             http_res_text = await utils.stream_to_text_async(http_res)
-            raise models.APIError(
-                "API error occurred", http_res.status_code, http_res_text, http_res
-            )
+            raise models.APIError("API error occurred", http_res, http_res_text)
         if utils.match_response(http_res, "5XX", "*"):
             http_res_text = await utils.stream_to_text_async(http_res)
-            raise models.APIError(
-                "API error occurred", http_res.status_code, http_res_text, http_res
-            )
+            raise models.APIError("API error occurred", http_res, http_res_text)
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingSuppliersOneResponse(
-                unexpected_error_response=utils.unmarshal_json(
-                    http_res.text, Optional[models.UnexpectedErrorResponse]
+                unexpected_error_response=unmarshal_json_response(
+                    Optional[models.UnexpectedErrorResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
             )
 
-        content_type = http_res.headers.get("Content-Type")
-        http_res_text = await utils.stream_to_text_async(http_res)
-        raise models.APIError(
-            f"Unexpected response received (code: {http_res.status_code}, type: {content_type})",
-            http_res.status_code,
-            http_res_text,
-            http_res,
-        )
+        raise models.APIError("Unexpected response received", http_res)
 
     def update(
         self,
@@ -1308,6 +1249,7 @@ class Suppliers(BaseSDK):
         ] = UNSET,
         status: OptionalNullable[models.SupplierStatus] = UNSET,
         payment_method: OptionalNullable[str] = UNSET,
+        terms: OptionalNullable[str] = UNSET,
         channel: OptionalNullable[str] = UNSET,
         custom_fields: Optional[
             Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
@@ -1354,6 +1296,7 @@ class Suppliers(BaseSDK):
         :param account:
         :param status: Supplier status
         :param payment_method: Payment method used for the transaction, such as cash, credit card, bank transfer, or check
+        :param terms: Terms of payment.
         :param channel: The channel through which the transaction is processed.
         :param custom_fields:
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
@@ -1416,6 +1359,7 @@ class Suppliers(BaseSDK):
                 ),
                 status=status,
                 payment_method=payment_method,
+                terms=terms,
                 channel=channel,
                 custom_fields=utils.get_pydantic_model(
                     custom_fields, Optional[List[models.CustomField]]
@@ -1481,62 +1425,51 @@ class Suppliers(BaseSDK):
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingSuppliersUpdateResponse(
-                update_supplier_response=utils.unmarshal_json(
-                    http_res.text, Optional[models.UpdateSupplierResponse]
+                update_supplier_response=unmarshal_json_response(
+                    Optional[models.UpdateSupplierResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
             )
         if utils.match_response(http_res, "400", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.BadRequestResponseData
+            response_data = unmarshal_json_response(
+                models.BadRequestResponseData, http_res
             )
-            raise models.BadRequestResponse(data=response_data)
+            raise models.BadRequestResponse(response_data, http_res)
         if utils.match_response(http_res, "401", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.UnauthorizedResponseData
+            response_data = unmarshal_json_response(
+                models.UnauthorizedResponseData, http_res
             )
-            raise models.UnauthorizedResponse(data=response_data)
+            raise models.UnauthorizedResponse(response_data, http_res)
         if utils.match_response(http_res, "402", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.PaymentRequiredResponseData
+            response_data = unmarshal_json_response(
+                models.PaymentRequiredResponseData, http_res
             )
-            raise models.PaymentRequiredResponse(data=response_data)
+            raise models.PaymentRequiredResponse(response_data, http_res)
         if utils.match_response(http_res, "404", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.NotFoundResponseData
+            response_data = unmarshal_json_response(
+                models.NotFoundResponseData, http_res
             )
-            raise models.NotFoundResponse(data=response_data)
+            raise models.NotFoundResponse(response_data, http_res)
         if utils.match_response(http_res, "422", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.UnprocessableResponseData
+            response_data = unmarshal_json_response(
+                models.UnprocessableResponseData, http_res
             )
-            raise models.UnprocessableResponse(data=response_data)
+            raise models.UnprocessableResponse(response_data, http_res)
         if utils.match_response(http_res, "4XX", "*"):
             http_res_text = utils.stream_to_text(http_res)
-            raise models.APIError(
-                "API error occurred", http_res.status_code, http_res_text, http_res
-            )
+            raise models.APIError("API error occurred", http_res, http_res_text)
         if utils.match_response(http_res, "5XX", "*"):
             http_res_text = utils.stream_to_text(http_res)
-            raise models.APIError(
-                "API error occurred", http_res.status_code, http_res_text, http_res
-            )
+            raise models.APIError("API error occurred", http_res, http_res_text)
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingSuppliersUpdateResponse(
-                unexpected_error_response=utils.unmarshal_json(
-                    http_res.text, Optional[models.UnexpectedErrorResponse]
+                unexpected_error_response=unmarshal_json_response(
+                    Optional[models.UnexpectedErrorResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
             )
 
-        content_type = http_res.headers.get("Content-Type")
-        http_res_text = utils.stream_to_text(http_res)
-        raise models.APIError(
-            f"Unexpected response received (code: {http_res.status_code}, type: {content_type})",
-            http_res.status_code,
-            http_res_text,
-            http_res,
-        )
+        raise models.APIError("Unexpected response received", http_res)
 
     async def update_async(
         self,
@@ -1584,6 +1517,7 @@ class Suppliers(BaseSDK):
         ] = UNSET,
         status: OptionalNullable[models.SupplierStatus] = UNSET,
         payment_method: OptionalNullable[str] = UNSET,
+        terms: OptionalNullable[str] = UNSET,
         channel: OptionalNullable[str] = UNSET,
         custom_fields: Optional[
             Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
@@ -1630,6 +1564,7 @@ class Suppliers(BaseSDK):
         :param account:
         :param status: Supplier status
         :param payment_method: Payment method used for the transaction, such as cash, credit card, bank transfer, or check
+        :param terms: Terms of payment.
         :param channel: The channel through which the transaction is processed.
         :param custom_fields:
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
@@ -1692,6 +1627,7 @@ class Suppliers(BaseSDK):
                 ),
                 status=status,
                 payment_method=payment_method,
+                terms=terms,
                 channel=channel,
                 custom_fields=utils.get_pydantic_model(
                     custom_fields, Optional[List[models.CustomField]]
@@ -1757,62 +1693,51 @@ class Suppliers(BaseSDK):
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingSuppliersUpdateResponse(
-                update_supplier_response=utils.unmarshal_json(
-                    http_res.text, Optional[models.UpdateSupplierResponse]
+                update_supplier_response=unmarshal_json_response(
+                    Optional[models.UpdateSupplierResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
             )
         if utils.match_response(http_res, "400", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.BadRequestResponseData
+            response_data = unmarshal_json_response(
+                models.BadRequestResponseData, http_res
             )
-            raise models.BadRequestResponse(data=response_data)
+            raise models.BadRequestResponse(response_data, http_res)
         if utils.match_response(http_res, "401", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.UnauthorizedResponseData
+            response_data = unmarshal_json_response(
+                models.UnauthorizedResponseData, http_res
             )
-            raise models.UnauthorizedResponse(data=response_data)
+            raise models.UnauthorizedResponse(response_data, http_res)
         if utils.match_response(http_res, "402", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.PaymentRequiredResponseData
+            response_data = unmarshal_json_response(
+                models.PaymentRequiredResponseData, http_res
             )
-            raise models.PaymentRequiredResponse(data=response_data)
+            raise models.PaymentRequiredResponse(response_data, http_res)
         if utils.match_response(http_res, "404", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.NotFoundResponseData
+            response_data = unmarshal_json_response(
+                models.NotFoundResponseData, http_res
             )
-            raise models.NotFoundResponse(data=response_data)
+            raise models.NotFoundResponse(response_data, http_res)
         if utils.match_response(http_res, "422", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.UnprocessableResponseData
+            response_data = unmarshal_json_response(
+                models.UnprocessableResponseData, http_res
             )
-            raise models.UnprocessableResponse(data=response_data)
+            raise models.UnprocessableResponse(response_data, http_res)
         if utils.match_response(http_res, "4XX", "*"):
             http_res_text = await utils.stream_to_text_async(http_res)
-            raise models.APIError(
-                "API error occurred", http_res.status_code, http_res_text, http_res
-            )
+            raise models.APIError("API error occurred", http_res, http_res_text)
         if utils.match_response(http_res, "5XX", "*"):
             http_res_text = await utils.stream_to_text_async(http_res)
-            raise models.APIError(
-                "API error occurred", http_res.status_code, http_res_text, http_res
-            )
+            raise models.APIError("API error occurred", http_res, http_res_text)
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingSuppliersUpdateResponse(
-                unexpected_error_response=utils.unmarshal_json(
-                    http_res.text, Optional[models.UnexpectedErrorResponse]
+                unexpected_error_response=unmarshal_json_response(
+                    Optional[models.UnexpectedErrorResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
             )
 
-        content_type = http_res.headers.get("Content-Type")
-        http_res_text = await utils.stream_to_text_async(http_res)
-        raise models.APIError(
-            f"Unexpected response received (code: {http_res.status_code}, type: {content_type})",
-            http_res.status_code,
-            http_res_text,
-            http_res,
-        )
+        raise models.APIError("Unexpected response received", http_res)
 
     def delete(
         self,
@@ -1909,62 +1834,51 @@ class Suppliers(BaseSDK):
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingSuppliersDeleteResponse(
-                delete_supplier_response=utils.unmarshal_json(
-                    http_res.text, Optional[models.DeleteSupplierResponse]
+                delete_supplier_response=unmarshal_json_response(
+                    Optional[models.DeleteSupplierResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
             )
         if utils.match_response(http_res, "400", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.BadRequestResponseData
+            response_data = unmarshal_json_response(
+                models.BadRequestResponseData, http_res
             )
-            raise models.BadRequestResponse(data=response_data)
+            raise models.BadRequestResponse(response_data, http_res)
         if utils.match_response(http_res, "401", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.UnauthorizedResponseData
+            response_data = unmarshal_json_response(
+                models.UnauthorizedResponseData, http_res
             )
-            raise models.UnauthorizedResponse(data=response_data)
+            raise models.UnauthorizedResponse(response_data, http_res)
         if utils.match_response(http_res, "402", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.PaymentRequiredResponseData
+            response_data = unmarshal_json_response(
+                models.PaymentRequiredResponseData, http_res
             )
-            raise models.PaymentRequiredResponse(data=response_data)
+            raise models.PaymentRequiredResponse(response_data, http_res)
         if utils.match_response(http_res, "404", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.NotFoundResponseData
+            response_data = unmarshal_json_response(
+                models.NotFoundResponseData, http_res
             )
-            raise models.NotFoundResponse(data=response_data)
+            raise models.NotFoundResponse(response_data, http_res)
         if utils.match_response(http_res, "422", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.UnprocessableResponseData
+            response_data = unmarshal_json_response(
+                models.UnprocessableResponseData, http_res
             )
-            raise models.UnprocessableResponse(data=response_data)
+            raise models.UnprocessableResponse(response_data, http_res)
         if utils.match_response(http_res, "4XX", "*"):
             http_res_text = utils.stream_to_text(http_res)
-            raise models.APIError(
-                "API error occurred", http_res.status_code, http_res_text, http_res
-            )
+            raise models.APIError("API error occurred", http_res, http_res_text)
         if utils.match_response(http_res, "5XX", "*"):
             http_res_text = utils.stream_to_text(http_res)
-            raise models.APIError(
-                "API error occurred", http_res.status_code, http_res_text, http_res
-            )
+            raise models.APIError("API error occurred", http_res, http_res_text)
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingSuppliersDeleteResponse(
-                unexpected_error_response=utils.unmarshal_json(
-                    http_res.text, Optional[models.UnexpectedErrorResponse]
+                unexpected_error_response=unmarshal_json_response(
+                    Optional[models.UnexpectedErrorResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
             )
 
-        content_type = http_res.headers.get("Content-Type")
-        http_res_text = utils.stream_to_text(http_res)
-        raise models.APIError(
-            f"Unexpected response received (code: {http_res.status_code}, type: {content_type})",
-            http_res.status_code,
-            http_res_text,
-            http_res,
-        )
+        raise models.APIError("Unexpected response received", http_res)
 
     async def delete_async(
         self,
@@ -2061,59 +1975,48 @@ class Suppliers(BaseSDK):
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingSuppliersDeleteResponse(
-                delete_supplier_response=utils.unmarshal_json(
-                    http_res.text, Optional[models.DeleteSupplierResponse]
+                delete_supplier_response=unmarshal_json_response(
+                    Optional[models.DeleteSupplierResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
             )
         if utils.match_response(http_res, "400", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.BadRequestResponseData
+            response_data = unmarshal_json_response(
+                models.BadRequestResponseData, http_res
             )
-            raise models.BadRequestResponse(data=response_data)
+            raise models.BadRequestResponse(response_data, http_res)
         if utils.match_response(http_res, "401", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.UnauthorizedResponseData
+            response_data = unmarshal_json_response(
+                models.UnauthorizedResponseData, http_res
             )
-            raise models.UnauthorizedResponse(data=response_data)
+            raise models.UnauthorizedResponse(response_data, http_res)
         if utils.match_response(http_res, "402", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.PaymentRequiredResponseData
+            response_data = unmarshal_json_response(
+                models.PaymentRequiredResponseData, http_res
             )
-            raise models.PaymentRequiredResponse(data=response_data)
+            raise models.PaymentRequiredResponse(response_data, http_res)
         if utils.match_response(http_res, "404", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.NotFoundResponseData
+            response_data = unmarshal_json_response(
+                models.NotFoundResponseData, http_res
             )
-            raise models.NotFoundResponse(data=response_data)
+            raise models.NotFoundResponse(response_data, http_res)
         if utils.match_response(http_res, "422", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.UnprocessableResponseData
+            response_data = unmarshal_json_response(
+                models.UnprocessableResponseData, http_res
             )
-            raise models.UnprocessableResponse(data=response_data)
+            raise models.UnprocessableResponse(response_data, http_res)
         if utils.match_response(http_res, "4XX", "*"):
             http_res_text = await utils.stream_to_text_async(http_res)
-            raise models.APIError(
-                "API error occurred", http_res.status_code, http_res_text, http_res
-            )
+            raise models.APIError("API error occurred", http_res, http_res_text)
         if utils.match_response(http_res, "5XX", "*"):
             http_res_text = await utils.stream_to_text_async(http_res)
-            raise models.APIError(
-                "API error occurred", http_res.status_code, http_res_text, http_res
-            )
+            raise models.APIError("API error occurred", http_res, http_res_text)
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingSuppliersDeleteResponse(
-                unexpected_error_response=utils.unmarshal_json(
-                    http_res.text, Optional[models.UnexpectedErrorResponse]
+                unexpected_error_response=unmarshal_json_response(
+                    Optional[models.UnexpectedErrorResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
             )
 
-        content_type = http_res.headers.get("Content-Type")
-        http_res_text = await utils.stream_to_text_async(http_res)
-        raise models.APIError(
-            f"Unexpected response received (code: {http_res.status_code}, type: {content_type})",
-            http_res.status_code,
-            http_res_text,
-            http_res,
-        )
+        raise models.APIError("Unexpected response received", http_res)

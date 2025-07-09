@@ -5,6 +5,7 @@ from apideck_unify import models, utils
 from apideck_unify._hooks import HookContext
 from apideck_unify.types import OptionalNullable, UNSET
 from apideck_unify.utils import get_security_from_env
+from apideck_unify.utils.unmarshal_json_response import unmarshal_json_response
 from jsonpath import JSONPath
 from typing import Any, Dict, List, Mapping, Optional, Union
 
@@ -144,64 +145,53 @@ class TaxRates(BaseSDK):
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingTaxRatesAllResponse(
-                get_tax_rates_response=utils.unmarshal_json(
-                    http_res.text, Optional[models.GetTaxRatesResponse]
+                get_tax_rates_response=unmarshal_json_response(
+                    Optional[models.GetTaxRatesResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
             )
         if utils.match_response(http_res, "400", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.BadRequestResponseData
+            response_data = unmarshal_json_response(
+                models.BadRequestResponseData, http_res
             )
-            raise models.BadRequestResponse(data=response_data)
+            raise models.BadRequestResponse(response_data, http_res)
         if utils.match_response(http_res, "401", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.UnauthorizedResponseData
+            response_data = unmarshal_json_response(
+                models.UnauthorizedResponseData, http_res
             )
-            raise models.UnauthorizedResponse(data=response_data)
+            raise models.UnauthorizedResponse(response_data, http_res)
         if utils.match_response(http_res, "402", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.PaymentRequiredResponseData
+            response_data = unmarshal_json_response(
+                models.PaymentRequiredResponseData, http_res
             )
-            raise models.PaymentRequiredResponse(data=response_data)
+            raise models.PaymentRequiredResponse(response_data, http_res)
         if utils.match_response(http_res, "404", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.NotFoundResponseData
+            response_data = unmarshal_json_response(
+                models.NotFoundResponseData, http_res
             )
-            raise models.NotFoundResponse(data=response_data)
+            raise models.NotFoundResponse(response_data, http_res)
         if utils.match_response(http_res, "422", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.UnprocessableResponseData
+            response_data = unmarshal_json_response(
+                models.UnprocessableResponseData, http_res
             )
-            raise models.UnprocessableResponse(data=response_data)
+            raise models.UnprocessableResponse(response_data, http_res)
         if utils.match_response(http_res, "4XX", "*"):
             http_res_text = utils.stream_to_text(http_res)
-            raise models.APIError(
-                "API error occurred", http_res.status_code, http_res_text, http_res
-            )
+            raise models.APIError("API error occurred", http_res, http_res_text)
         if utils.match_response(http_res, "5XX", "*"):
             http_res_text = utils.stream_to_text(http_res)
-            raise models.APIError(
-                "API error occurred", http_res.status_code, http_res_text, http_res
-            )
+            raise models.APIError("API error occurred", http_res, http_res_text)
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingTaxRatesAllResponse(
-                unexpected_error_response=utils.unmarshal_json(
-                    http_res.text, Optional[models.UnexpectedErrorResponse]
+                unexpected_error_response=unmarshal_json_response(
+                    Optional[models.UnexpectedErrorResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
             )
 
-        content_type = http_res.headers.get("Content-Type")
-        http_res_text = utils.stream_to_text(http_res)
-        raise models.APIError(
-            f"Unexpected response received (code: {http_res.status_code}, type: {content_type})",
-            http_res.status_code,
-            http_res_text,
-            http_res,
-        )
+        raise models.APIError("Unexpected response received", http_res)
 
     async def list_async(
         self,
@@ -337,64 +327,53 @@ class TaxRates(BaseSDK):
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingTaxRatesAllResponse(
-                get_tax_rates_response=utils.unmarshal_json(
-                    http_res.text, Optional[models.GetTaxRatesResponse]
+                get_tax_rates_response=unmarshal_json_response(
+                    Optional[models.GetTaxRatesResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
             )
         if utils.match_response(http_res, "400", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.BadRequestResponseData
+            response_data = unmarshal_json_response(
+                models.BadRequestResponseData, http_res
             )
-            raise models.BadRequestResponse(data=response_data)
+            raise models.BadRequestResponse(response_data, http_res)
         if utils.match_response(http_res, "401", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.UnauthorizedResponseData
+            response_data = unmarshal_json_response(
+                models.UnauthorizedResponseData, http_res
             )
-            raise models.UnauthorizedResponse(data=response_data)
+            raise models.UnauthorizedResponse(response_data, http_res)
         if utils.match_response(http_res, "402", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.PaymentRequiredResponseData
+            response_data = unmarshal_json_response(
+                models.PaymentRequiredResponseData, http_res
             )
-            raise models.PaymentRequiredResponse(data=response_data)
+            raise models.PaymentRequiredResponse(response_data, http_res)
         if utils.match_response(http_res, "404", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.NotFoundResponseData
+            response_data = unmarshal_json_response(
+                models.NotFoundResponseData, http_res
             )
-            raise models.NotFoundResponse(data=response_data)
+            raise models.NotFoundResponse(response_data, http_res)
         if utils.match_response(http_res, "422", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.UnprocessableResponseData
+            response_data = unmarshal_json_response(
+                models.UnprocessableResponseData, http_res
             )
-            raise models.UnprocessableResponse(data=response_data)
+            raise models.UnprocessableResponse(response_data, http_res)
         if utils.match_response(http_res, "4XX", "*"):
             http_res_text = await utils.stream_to_text_async(http_res)
-            raise models.APIError(
-                "API error occurred", http_res.status_code, http_res_text, http_res
-            )
+            raise models.APIError("API error occurred", http_res, http_res_text)
         if utils.match_response(http_res, "5XX", "*"):
             http_res_text = await utils.stream_to_text_async(http_res)
-            raise models.APIError(
-                "API error occurred", http_res.status_code, http_res_text, http_res
-            )
+            raise models.APIError("API error occurred", http_res, http_res_text)
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingTaxRatesAllResponse(
-                unexpected_error_response=utils.unmarshal_json(
-                    http_res.text, Optional[models.UnexpectedErrorResponse]
+                unexpected_error_response=unmarshal_json_response(
+                    Optional[models.UnexpectedErrorResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
             )
 
-        content_type = http_res.headers.get("Content-Type")
-        http_res_text = await utils.stream_to_text_async(http_res)
-        raise models.APIError(
-            f"Unexpected response received (code: {http_res.status_code}, type: {content_type})",
-            http_res.status_code,
-            http_res_text,
-            http_res,
-        )
+        raise models.APIError("Unexpected response received", http_res)
 
     def create(
         self,
@@ -562,62 +541,51 @@ class TaxRates(BaseSDK):
         response_data: Any = None
         if utils.match_response(http_res, "201", "application/json"):
             return models.AccountingTaxRatesAddResponse(
-                create_tax_rate_response=utils.unmarshal_json(
-                    http_res.text, Optional[models.CreateTaxRateResponse]
+                create_tax_rate_response=unmarshal_json_response(
+                    Optional[models.CreateTaxRateResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
             )
         if utils.match_response(http_res, "400", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.BadRequestResponseData
+            response_data = unmarshal_json_response(
+                models.BadRequestResponseData, http_res
             )
-            raise models.BadRequestResponse(data=response_data)
+            raise models.BadRequestResponse(response_data, http_res)
         if utils.match_response(http_res, "401", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.UnauthorizedResponseData
+            response_data = unmarshal_json_response(
+                models.UnauthorizedResponseData, http_res
             )
-            raise models.UnauthorizedResponse(data=response_data)
+            raise models.UnauthorizedResponse(response_data, http_res)
         if utils.match_response(http_res, "402", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.PaymentRequiredResponseData
+            response_data = unmarshal_json_response(
+                models.PaymentRequiredResponseData, http_res
             )
-            raise models.PaymentRequiredResponse(data=response_data)
+            raise models.PaymentRequiredResponse(response_data, http_res)
         if utils.match_response(http_res, "404", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.NotFoundResponseData
+            response_data = unmarshal_json_response(
+                models.NotFoundResponseData, http_res
             )
-            raise models.NotFoundResponse(data=response_data)
+            raise models.NotFoundResponse(response_data, http_res)
         if utils.match_response(http_res, "422", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.UnprocessableResponseData
+            response_data = unmarshal_json_response(
+                models.UnprocessableResponseData, http_res
             )
-            raise models.UnprocessableResponse(data=response_data)
+            raise models.UnprocessableResponse(response_data, http_res)
         if utils.match_response(http_res, "4XX", "*"):
             http_res_text = utils.stream_to_text(http_res)
-            raise models.APIError(
-                "API error occurred", http_res.status_code, http_res_text, http_res
-            )
+            raise models.APIError("API error occurred", http_res, http_res_text)
         if utils.match_response(http_res, "5XX", "*"):
             http_res_text = utils.stream_to_text(http_res)
-            raise models.APIError(
-                "API error occurred", http_res.status_code, http_res_text, http_res
-            )
+            raise models.APIError("API error occurred", http_res, http_res_text)
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingTaxRatesAddResponse(
-                unexpected_error_response=utils.unmarshal_json(
-                    http_res.text, Optional[models.UnexpectedErrorResponse]
+                unexpected_error_response=unmarshal_json_response(
+                    Optional[models.UnexpectedErrorResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
             )
 
-        content_type = http_res.headers.get("Content-Type")
-        http_res_text = utils.stream_to_text(http_res)
-        raise models.APIError(
-            f"Unexpected response received (code: {http_res.status_code}, type: {content_type})",
-            http_res.status_code,
-            http_res_text,
-            http_res,
-        )
+        raise models.APIError("Unexpected response received", http_res)
 
     async def create_async(
         self,
@@ -785,62 +753,51 @@ class TaxRates(BaseSDK):
         response_data: Any = None
         if utils.match_response(http_res, "201", "application/json"):
             return models.AccountingTaxRatesAddResponse(
-                create_tax_rate_response=utils.unmarshal_json(
-                    http_res.text, Optional[models.CreateTaxRateResponse]
+                create_tax_rate_response=unmarshal_json_response(
+                    Optional[models.CreateTaxRateResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
             )
         if utils.match_response(http_res, "400", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.BadRequestResponseData
+            response_data = unmarshal_json_response(
+                models.BadRequestResponseData, http_res
             )
-            raise models.BadRequestResponse(data=response_data)
+            raise models.BadRequestResponse(response_data, http_res)
         if utils.match_response(http_res, "401", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.UnauthorizedResponseData
+            response_data = unmarshal_json_response(
+                models.UnauthorizedResponseData, http_res
             )
-            raise models.UnauthorizedResponse(data=response_data)
+            raise models.UnauthorizedResponse(response_data, http_res)
         if utils.match_response(http_res, "402", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.PaymentRequiredResponseData
+            response_data = unmarshal_json_response(
+                models.PaymentRequiredResponseData, http_res
             )
-            raise models.PaymentRequiredResponse(data=response_data)
+            raise models.PaymentRequiredResponse(response_data, http_res)
         if utils.match_response(http_res, "404", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.NotFoundResponseData
+            response_data = unmarshal_json_response(
+                models.NotFoundResponseData, http_res
             )
-            raise models.NotFoundResponse(data=response_data)
+            raise models.NotFoundResponse(response_data, http_res)
         if utils.match_response(http_res, "422", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.UnprocessableResponseData
+            response_data = unmarshal_json_response(
+                models.UnprocessableResponseData, http_res
             )
-            raise models.UnprocessableResponse(data=response_data)
+            raise models.UnprocessableResponse(response_data, http_res)
         if utils.match_response(http_res, "4XX", "*"):
             http_res_text = await utils.stream_to_text_async(http_res)
-            raise models.APIError(
-                "API error occurred", http_res.status_code, http_res_text, http_res
-            )
+            raise models.APIError("API error occurred", http_res, http_res_text)
         if utils.match_response(http_res, "5XX", "*"):
             http_res_text = await utils.stream_to_text_async(http_res)
-            raise models.APIError(
-                "API error occurred", http_res.status_code, http_res_text, http_res
-            )
+            raise models.APIError("API error occurred", http_res, http_res_text)
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingTaxRatesAddResponse(
-                unexpected_error_response=utils.unmarshal_json(
-                    http_res.text, Optional[models.UnexpectedErrorResponse]
+                unexpected_error_response=unmarshal_json_response(
+                    Optional[models.UnexpectedErrorResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
             )
 
-        content_type = http_res.headers.get("Content-Type")
-        http_res_text = await utils.stream_to_text_async(http_res)
-        raise models.APIError(
-            f"Unexpected response received (code: {http_res.status_code}, type: {content_type})",
-            http_res.status_code,
-            http_res_text,
-            http_res,
-        )
+        raise models.APIError("Unexpected response received", http_res)
 
     def get(
         self,
@@ -941,62 +898,51 @@ class TaxRates(BaseSDK):
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingTaxRatesOneResponse(
-                get_tax_rate_response=utils.unmarshal_json(
-                    http_res.text, Optional[models.GetTaxRateResponse]
+                get_tax_rate_response=unmarshal_json_response(
+                    Optional[models.GetTaxRateResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
             )
         if utils.match_response(http_res, "400", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.BadRequestResponseData
+            response_data = unmarshal_json_response(
+                models.BadRequestResponseData, http_res
             )
-            raise models.BadRequestResponse(data=response_data)
+            raise models.BadRequestResponse(response_data, http_res)
         if utils.match_response(http_res, "401", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.UnauthorizedResponseData
+            response_data = unmarshal_json_response(
+                models.UnauthorizedResponseData, http_res
             )
-            raise models.UnauthorizedResponse(data=response_data)
+            raise models.UnauthorizedResponse(response_data, http_res)
         if utils.match_response(http_res, "402", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.PaymentRequiredResponseData
+            response_data = unmarshal_json_response(
+                models.PaymentRequiredResponseData, http_res
             )
-            raise models.PaymentRequiredResponse(data=response_data)
+            raise models.PaymentRequiredResponse(response_data, http_res)
         if utils.match_response(http_res, "404", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.NotFoundResponseData
+            response_data = unmarshal_json_response(
+                models.NotFoundResponseData, http_res
             )
-            raise models.NotFoundResponse(data=response_data)
+            raise models.NotFoundResponse(response_data, http_res)
         if utils.match_response(http_res, "422", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.UnprocessableResponseData
+            response_data = unmarshal_json_response(
+                models.UnprocessableResponseData, http_res
             )
-            raise models.UnprocessableResponse(data=response_data)
+            raise models.UnprocessableResponse(response_data, http_res)
         if utils.match_response(http_res, "4XX", "*"):
             http_res_text = utils.stream_to_text(http_res)
-            raise models.APIError(
-                "API error occurred", http_res.status_code, http_res_text, http_res
-            )
+            raise models.APIError("API error occurred", http_res, http_res_text)
         if utils.match_response(http_res, "5XX", "*"):
             http_res_text = utils.stream_to_text(http_res)
-            raise models.APIError(
-                "API error occurred", http_res.status_code, http_res_text, http_res
-            )
+            raise models.APIError("API error occurred", http_res, http_res_text)
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingTaxRatesOneResponse(
-                unexpected_error_response=utils.unmarshal_json(
-                    http_res.text, Optional[models.UnexpectedErrorResponse]
+                unexpected_error_response=unmarshal_json_response(
+                    Optional[models.UnexpectedErrorResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
             )
 
-        content_type = http_res.headers.get("Content-Type")
-        http_res_text = utils.stream_to_text(http_res)
-        raise models.APIError(
-            f"Unexpected response received (code: {http_res.status_code}, type: {content_type})",
-            http_res.status_code,
-            http_res_text,
-            http_res,
-        )
+        raise models.APIError("Unexpected response received", http_res)
 
     async def get_async(
         self,
@@ -1097,62 +1043,51 @@ class TaxRates(BaseSDK):
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingTaxRatesOneResponse(
-                get_tax_rate_response=utils.unmarshal_json(
-                    http_res.text, Optional[models.GetTaxRateResponse]
+                get_tax_rate_response=unmarshal_json_response(
+                    Optional[models.GetTaxRateResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
             )
         if utils.match_response(http_res, "400", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.BadRequestResponseData
+            response_data = unmarshal_json_response(
+                models.BadRequestResponseData, http_res
             )
-            raise models.BadRequestResponse(data=response_data)
+            raise models.BadRequestResponse(response_data, http_res)
         if utils.match_response(http_res, "401", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.UnauthorizedResponseData
+            response_data = unmarshal_json_response(
+                models.UnauthorizedResponseData, http_res
             )
-            raise models.UnauthorizedResponse(data=response_data)
+            raise models.UnauthorizedResponse(response_data, http_res)
         if utils.match_response(http_res, "402", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.PaymentRequiredResponseData
+            response_data = unmarshal_json_response(
+                models.PaymentRequiredResponseData, http_res
             )
-            raise models.PaymentRequiredResponse(data=response_data)
+            raise models.PaymentRequiredResponse(response_data, http_res)
         if utils.match_response(http_res, "404", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.NotFoundResponseData
+            response_data = unmarshal_json_response(
+                models.NotFoundResponseData, http_res
             )
-            raise models.NotFoundResponse(data=response_data)
+            raise models.NotFoundResponse(response_data, http_res)
         if utils.match_response(http_res, "422", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.UnprocessableResponseData
+            response_data = unmarshal_json_response(
+                models.UnprocessableResponseData, http_res
             )
-            raise models.UnprocessableResponse(data=response_data)
+            raise models.UnprocessableResponse(response_data, http_res)
         if utils.match_response(http_res, "4XX", "*"):
             http_res_text = await utils.stream_to_text_async(http_res)
-            raise models.APIError(
-                "API error occurred", http_res.status_code, http_res_text, http_res
-            )
+            raise models.APIError("API error occurred", http_res, http_res_text)
         if utils.match_response(http_res, "5XX", "*"):
             http_res_text = await utils.stream_to_text_async(http_res)
-            raise models.APIError(
-                "API error occurred", http_res.status_code, http_res_text, http_res
-            )
+            raise models.APIError("API error occurred", http_res, http_res_text)
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingTaxRatesOneResponse(
-                unexpected_error_response=utils.unmarshal_json(
-                    http_res.text, Optional[models.UnexpectedErrorResponse]
+                unexpected_error_response=unmarshal_json_response(
+                    Optional[models.UnexpectedErrorResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
             )
 
-        content_type = http_res.headers.get("Content-Type")
-        http_res_text = await utils.stream_to_text_async(http_res)
-        raise models.APIError(
-            f"Unexpected response received (code: {http_res.status_code}, type: {content_type})",
-            http_res.status_code,
-            http_res_text,
-            http_res,
-        )
+        raise models.APIError("Unexpected response received", http_res)
 
     def update(
         self,
@@ -1323,62 +1258,51 @@ class TaxRates(BaseSDK):
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingTaxRatesUpdateResponse(
-                update_tax_rate_response=utils.unmarshal_json(
-                    http_res.text, Optional[models.UpdateTaxRateResponse]
+                update_tax_rate_response=unmarshal_json_response(
+                    Optional[models.UpdateTaxRateResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
             )
         if utils.match_response(http_res, "400", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.BadRequestResponseData
+            response_data = unmarshal_json_response(
+                models.BadRequestResponseData, http_res
             )
-            raise models.BadRequestResponse(data=response_data)
+            raise models.BadRequestResponse(response_data, http_res)
         if utils.match_response(http_res, "401", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.UnauthorizedResponseData
+            response_data = unmarshal_json_response(
+                models.UnauthorizedResponseData, http_res
             )
-            raise models.UnauthorizedResponse(data=response_data)
+            raise models.UnauthorizedResponse(response_data, http_res)
         if utils.match_response(http_res, "402", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.PaymentRequiredResponseData
+            response_data = unmarshal_json_response(
+                models.PaymentRequiredResponseData, http_res
             )
-            raise models.PaymentRequiredResponse(data=response_data)
+            raise models.PaymentRequiredResponse(response_data, http_res)
         if utils.match_response(http_res, "404", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.NotFoundResponseData
+            response_data = unmarshal_json_response(
+                models.NotFoundResponseData, http_res
             )
-            raise models.NotFoundResponse(data=response_data)
+            raise models.NotFoundResponse(response_data, http_res)
         if utils.match_response(http_res, "422", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.UnprocessableResponseData
+            response_data = unmarshal_json_response(
+                models.UnprocessableResponseData, http_res
             )
-            raise models.UnprocessableResponse(data=response_data)
+            raise models.UnprocessableResponse(response_data, http_res)
         if utils.match_response(http_res, "4XX", "*"):
             http_res_text = utils.stream_to_text(http_res)
-            raise models.APIError(
-                "API error occurred", http_res.status_code, http_res_text, http_res
-            )
+            raise models.APIError("API error occurred", http_res, http_res_text)
         if utils.match_response(http_res, "5XX", "*"):
             http_res_text = utils.stream_to_text(http_res)
-            raise models.APIError(
-                "API error occurred", http_res.status_code, http_res_text, http_res
-            )
+            raise models.APIError("API error occurred", http_res, http_res_text)
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingTaxRatesUpdateResponse(
-                unexpected_error_response=utils.unmarshal_json(
-                    http_res.text, Optional[models.UnexpectedErrorResponse]
+                unexpected_error_response=unmarshal_json_response(
+                    Optional[models.UnexpectedErrorResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
             )
 
-        content_type = http_res.headers.get("Content-Type")
-        http_res_text = utils.stream_to_text(http_res)
-        raise models.APIError(
-            f"Unexpected response received (code: {http_res.status_code}, type: {content_type})",
-            http_res.status_code,
-            http_res_text,
-            http_res,
-        )
+        raise models.APIError("Unexpected response received", http_res)
 
     async def update_async(
         self,
@@ -1549,62 +1473,51 @@ class TaxRates(BaseSDK):
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingTaxRatesUpdateResponse(
-                update_tax_rate_response=utils.unmarshal_json(
-                    http_res.text, Optional[models.UpdateTaxRateResponse]
+                update_tax_rate_response=unmarshal_json_response(
+                    Optional[models.UpdateTaxRateResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
             )
         if utils.match_response(http_res, "400", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.BadRequestResponseData
+            response_data = unmarshal_json_response(
+                models.BadRequestResponseData, http_res
             )
-            raise models.BadRequestResponse(data=response_data)
+            raise models.BadRequestResponse(response_data, http_res)
         if utils.match_response(http_res, "401", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.UnauthorizedResponseData
+            response_data = unmarshal_json_response(
+                models.UnauthorizedResponseData, http_res
             )
-            raise models.UnauthorizedResponse(data=response_data)
+            raise models.UnauthorizedResponse(response_data, http_res)
         if utils.match_response(http_res, "402", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.PaymentRequiredResponseData
+            response_data = unmarshal_json_response(
+                models.PaymentRequiredResponseData, http_res
             )
-            raise models.PaymentRequiredResponse(data=response_data)
+            raise models.PaymentRequiredResponse(response_data, http_res)
         if utils.match_response(http_res, "404", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.NotFoundResponseData
+            response_data = unmarshal_json_response(
+                models.NotFoundResponseData, http_res
             )
-            raise models.NotFoundResponse(data=response_data)
+            raise models.NotFoundResponse(response_data, http_res)
         if utils.match_response(http_res, "422", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.UnprocessableResponseData
+            response_data = unmarshal_json_response(
+                models.UnprocessableResponseData, http_res
             )
-            raise models.UnprocessableResponse(data=response_data)
+            raise models.UnprocessableResponse(response_data, http_res)
         if utils.match_response(http_res, "4XX", "*"):
             http_res_text = await utils.stream_to_text_async(http_res)
-            raise models.APIError(
-                "API error occurred", http_res.status_code, http_res_text, http_res
-            )
+            raise models.APIError("API error occurred", http_res, http_res_text)
         if utils.match_response(http_res, "5XX", "*"):
             http_res_text = await utils.stream_to_text_async(http_res)
-            raise models.APIError(
-                "API error occurred", http_res.status_code, http_res_text, http_res
-            )
+            raise models.APIError("API error occurred", http_res, http_res_text)
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingTaxRatesUpdateResponse(
-                unexpected_error_response=utils.unmarshal_json(
-                    http_res.text, Optional[models.UnexpectedErrorResponse]
+                unexpected_error_response=unmarshal_json_response(
+                    Optional[models.UnexpectedErrorResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
             )
 
-        content_type = http_res.headers.get("Content-Type")
-        http_res_text = await utils.stream_to_text_async(http_res)
-        raise models.APIError(
-            f"Unexpected response received (code: {http_res.status_code}, type: {content_type})",
-            http_res.status_code,
-            http_res_text,
-            http_res,
-        )
+        raise models.APIError("Unexpected response received", http_res)
 
     def delete(
         self,
@@ -1701,62 +1614,51 @@ class TaxRates(BaseSDK):
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingTaxRatesDeleteResponse(
-                delete_tax_rate_response=utils.unmarshal_json(
-                    http_res.text, Optional[models.DeleteTaxRateResponse]
+                delete_tax_rate_response=unmarshal_json_response(
+                    Optional[models.DeleteTaxRateResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
             )
         if utils.match_response(http_res, "400", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.BadRequestResponseData
+            response_data = unmarshal_json_response(
+                models.BadRequestResponseData, http_res
             )
-            raise models.BadRequestResponse(data=response_data)
+            raise models.BadRequestResponse(response_data, http_res)
         if utils.match_response(http_res, "401", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.UnauthorizedResponseData
+            response_data = unmarshal_json_response(
+                models.UnauthorizedResponseData, http_res
             )
-            raise models.UnauthorizedResponse(data=response_data)
+            raise models.UnauthorizedResponse(response_data, http_res)
         if utils.match_response(http_res, "402", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.PaymentRequiredResponseData
+            response_data = unmarshal_json_response(
+                models.PaymentRequiredResponseData, http_res
             )
-            raise models.PaymentRequiredResponse(data=response_data)
+            raise models.PaymentRequiredResponse(response_data, http_res)
         if utils.match_response(http_res, "404", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.NotFoundResponseData
+            response_data = unmarshal_json_response(
+                models.NotFoundResponseData, http_res
             )
-            raise models.NotFoundResponse(data=response_data)
+            raise models.NotFoundResponse(response_data, http_res)
         if utils.match_response(http_res, "422", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.UnprocessableResponseData
+            response_data = unmarshal_json_response(
+                models.UnprocessableResponseData, http_res
             )
-            raise models.UnprocessableResponse(data=response_data)
+            raise models.UnprocessableResponse(response_data, http_res)
         if utils.match_response(http_res, "4XX", "*"):
             http_res_text = utils.stream_to_text(http_res)
-            raise models.APIError(
-                "API error occurred", http_res.status_code, http_res_text, http_res
-            )
+            raise models.APIError("API error occurred", http_res, http_res_text)
         if utils.match_response(http_res, "5XX", "*"):
             http_res_text = utils.stream_to_text(http_res)
-            raise models.APIError(
-                "API error occurred", http_res.status_code, http_res_text, http_res
-            )
+            raise models.APIError("API error occurred", http_res, http_res_text)
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingTaxRatesDeleteResponse(
-                unexpected_error_response=utils.unmarshal_json(
-                    http_res.text, Optional[models.UnexpectedErrorResponse]
+                unexpected_error_response=unmarshal_json_response(
+                    Optional[models.UnexpectedErrorResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
             )
 
-        content_type = http_res.headers.get("Content-Type")
-        http_res_text = utils.stream_to_text(http_res)
-        raise models.APIError(
-            f"Unexpected response received (code: {http_res.status_code}, type: {content_type})",
-            http_res.status_code,
-            http_res_text,
-            http_res,
-        )
+        raise models.APIError("Unexpected response received", http_res)
 
     async def delete_async(
         self,
@@ -1853,59 +1755,48 @@ class TaxRates(BaseSDK):
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return models.AccountingTaxRatesDeleteResponse(
-                delete_tax_rate_response=utils.unmarshal_json(
-                    http_res.text, Optional[models.DeleteTaxRateResponse]
+                delete_tax_rate_response=unmarshal_json_response(
+                    Optional[models.DeleteTaxRateResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
             )
         if utils.match_response(http_res, "400", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.BadRequestResponseData
+            response_data = unmarshal_json_response(
+                models.BadRequestResponseData, http_res
             )
-            raise models.BadRequestResponse(data=response_data)
+            raise models.BadRequestResponse(response_data, http_res)
         if utils.match_response(http_res, "401", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.UnauthorizedResponseData
+            response_data = unmarshal_json_response(
+                models.UnauthorizedResponseData, http_res
             )
-            raise models.UnauthorizedResponse(data=response_data)
+            raise models.UnauthorizedResponse(response_data, http_res)
         if utils.match_response(http_res, "402", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.PaymentRequiredResponseData
+            response_data = unmarshal_json_response(
+                models.PaymentRequiredResponseData, http_res
             )
-            raise models.PaymentRequiredResponse(data=response_data)
+            raise models.PaymentRequiredResponse(response_data, http_res)
         if utils.match_response(http_res, "404", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.NotFoundResponseData
+            response_data = unmarshal_json_response(
+                models.NotFoundResponseData, http_res
             )
-            raise models.NotFoundResponse(data=response_data)
+            raise models.NotFoundResponse(response_data, http_res)
         if utils.match_response(http_res, "422", "application/json"):
-            response_data = utils.unmarshal_json(
-                http_res.text, models.UnprocessableResponseData
+            response_data = unmarshal_json_response(
+                models.UnprocessableResponseData, http_res
             )
-            raise models.UnprocessableResponse(data=response_data)
+            raise models.UnprocessableResponse(response_data, http_res)
         if utils.match_response(http_res, "4XX", "*"):
             http_res_text = await utils.stream_to_text_async(http_res)
-            raise models.APIError(
-                "API error occurred", http_res.status_code, http_res_text, http_res
-            )
+            raise models.APIError("API error occurred", http_res, http_res_text)
         if utils.match_response(http_res, "5XX", "*"):
             http_res_text = await utils.stream_to_text_async(http_res)
-            raise models.APIError(
-                "API error occurred", http_res.status_code, http_res_text, http_res
-            )
+            raise models.APIError("API error occurred", http_res, http_res_text)
         if utils.match_response(http_res, "default", "application/json"):
             return models.AccountingTaxRatesDeleteResponse(
-                unexpected_error_response=utils.unmarshal_json(
-                    http_res.text, Optional[models.UnexpectedErrorResponse]
+                unexpected_error_response=unmarshal_json_response(
+                    Optional[models.UnexpectedErrorResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
             )
 
-        content_type = http_res.headers.get("Content-Type")
-        http_res_text = await utils.stream_to_text_async(http_res)
-        raise models.APIError(
-            f"Unexpected response received (code: {http_res.status_code}, type: {content_type})",
-            http_res.status_code,
-            http_res_text,
-            http_res,
-        )
+        raise models.APIError("Unexpected response received", http_res)
