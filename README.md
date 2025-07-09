@@ -933,31 +933,20 @@ with Apideck(
 <!-- Start Error Handling [errors] -->
 ## Error Handling
 
-Handling errors in this SDK should largely match your expectations. All operations return a response object or raise an exception.
+[`ApideckError`](./src/apideck_unify/models/apideckerror.py) is the base class for all HTTP error responses. It has the following properties:
 
-By default, an API error will raise a models.APIError exception, which has the following properties:
-
-| Property        | Type             | Description           |
-|-----------------|------------------|-----------------------|
-| `.status_code`  | *int*            | The HTTP status code  |
-| `.message`      | *str*            | The error message     |
-| `.raw_response` | *httpx.Response* | The raw HTTP response |
-| `.body`         | *str*            | The response content  |
-
-When custom error responses are specified for an operation, the SDK may also raise their associated exceptions. You can refer to respective *Errors* tables in SDK docs for more details on possible exception types for each operation. For example, the `list_async` method may raise the following exceptions:
-
-| Error Type                     | Status Code | Content Type     |
-| ------------------------------ | ----------- | ---------------- |
-| models.BadRequestResponse      | 400         | application/json |
-| models.UnauthorizedResponse    | 401         | application/json |
-| models.PaymentRequiredResponse | 402         | application/json |
-| models.NotFoundResponse        | 404         | application/json |
-| models.UnprocessableResponse   | 422         | application/json |
-| models.APIError                | 4XX, 5XX    | \*/\*            |
+| Property           | Type             | Description                                                                             |
+| ------------------ | ---------------- | --------------------------------------------------------------------------------------- |
+| `err.message`      | `str`            | Error message                                                                           |
+| `err.status_code`  | `int`            | HTTP response status code eg `404`                                                      |
+| `err.headers`      | `httpx.Headers`  | HTTP response headers                                                                   |
+| `err.body`         | `str`            | HTTP body. Can be empty string if no body is returned.                                  |
+| `err.raw_response` | `httpx.Response` | Raw HTTP response                                                                       |
+| `err.data`         |                  | Optional. Some errors may contain structured data. [See Error Classes](#error-classes). |
 
 ### Example
-
 ```python
+import apideck_unify
 from apideck_unify import Apideck, models
 import os
 
@@ -985,25 +974,49 @@ with Apideck(
 
             res = res.next()
 
-    except models.BadRequestResponse as e:
-        # handle e.data: models.BadRequestResponseData
-        raise(e)
-    except models.UnauthorizedResponse as e:
-        # handle e.data: models.UnauthorizedResponseData
-        raise(e)
-    except models.PaymentRequiredResponse as e:
-        # handle e.data: models.PaymentRequiredResponseData
-        raise(e)
-    except models.NotFoundResponse as e:
-        # handle e.data: models.NotFoundResponseData
-        raise(e)
-    except models.UnprocessableResponse as e:
-        # handle e.data: models.UnprocessableResponseData
-        raise(e)
-    except models.APIError as e:
-        # handle exception
-        raise(e)
+
+    except models.ApideckError as e:
+        # The base class for HTTP error responses
+        print(e.message)
+        print(e.status_code)
+        print(e.body)
+        print(e.headers)
+        print(e.raw_response)
+
+        # Depending on the method different errors may be thrown
+        if isinstance(e, models.BadRequestResponse):
+            print(e.data.status_code)  # Optional[float]
+            print(e.data.error)  # Optional[str]
+            print(e.data.type_name)  # Optional[str]
+            print(e.data.message)  # Optional[str]
+            print(e.data.detail)  # Optional[apideck_unify.BadRequestResponseDetail]
 ```
+
+### Error Classes
+**Primary errors:**
+* [`ApideckError`](./src/apideck_unify/models/apideckerror.py): The base class for HTTP error responses.
+  * [`UnauthorizedResponse`](./src/apideck_unify/models/unauthorizedresponse.py): Unauthorized. Status code `401`.
+  * [`PaymentRequiredResponse`](./src/apideck_unify/models/paymentrequiredresponse.py): Payment Required. Status code `402`.
+  * [`NotFoundResponse`](./src/apideck_unify/models/notfoundresponse.py): The specified resource was not found. Status code `404`. *
+  * [`BadRequestResponse`](./src/apideck_unify/models/badrequestresponse.py): Bad Request. Status code `400`. *
+  * [`UnprocessableResponse`](./src/apideck_unify/models/unprocessableresponse.py): Unprocessable. Status code `422`. *
+
+<details><summary>Less common errors (5)</summary>
+
+<br />
+
+**Network errors:**
+* [`httpx.RequestError`](https://www.python-httpx.org/exceptions/#httpx.RequestError): Base class for request errors.
+    * [`httpx.ConnectError`](https://www.python-httpx.org/exceptions/#httpx.ConnectError): HTTP client was unable to make a request to a server.
+    * [`httpx.TimeoutException`](https://www.python-httpx.org/exceptions/#httpx.TimeoutException): HTTP request timed out.
+
+
+**Inherit from [`ApideckError`](./src/apideck_unify/models/apideckerror.py)**:
+* [`ResponseValidationError`](./src/apideck_unify/models/responsevalidationerror.py): Type mismatch between the response data and the expected Pydantic model. Provides access to the Pydantic validation error via the `cause` attribute.
+
+</details>
+
+\* Check [the method documentation](#available-resources-and-operations) to see if the error is applicable.
 <!-- End Error Handling [errors] -->
 
 <!-- Start Server Selection [server] -->

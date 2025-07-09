@@ -45,6 +45,8 @@ class BankAccountTypedDict(TypedDict):
     r"""A bank code is a code assigned by a central bank, a bank supervisory body or a Bankers Association in a country to all its licensed member banks or financial institutions."""
     currency: NotRequired[Nullable[Currency]]
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
+    country: NotRequired[Nullable[str]]
+    r"""Country code according to ISO 3166-1 alpha-2."""
 
 
 class BankAccount(BaseModel):
@@ -81,6 +83,9 @@ class BankAccount(BaseModel):
     currency: OptionalNullable[Currency] = UNSET
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
 
+    country: OptionalNullable[str] = UNSET
+    r"""Country code according to ISO 3166-1 alpha-2."""
+
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
         optional_fields = [
@@ -95,6 +100,7 @@ class BankAccount(BaseModel):
             "branch_identifier",
             "bank_code",
             "currency",
+            "country",
         ]
         nullable_fields = [
             "bank_name",
@@ -108,6 +114,7 @@ class BankAccount(BaseModel):
             "branch_identifier",
             "bank_code",
             "currency",
+            "country",
         ]
         null_default_fields = []
 

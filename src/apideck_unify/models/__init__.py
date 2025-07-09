@@ -916,6 +916,7 @@ if TYPE_CHECKING:
         AllocationTypedDict,
     )
     from .api import API, APIType, APITypedDict, Resources, ResourcesTypedDict
+    from .apideckerror import ApideckError
     from .apierror import APIError
     from .apiresource import (
         APIResource,
@@ -1087,6 +1088,11 @@ if TYPE_CHECKING:
         PeriodType,
     )
     from .bankaccount import AccountType, BankAccount, BankAccountTypedDict
+    from .bankaccount1 import (
+        BankAccount1,
+        BankAccount1AccountType,
+        BankAccount1TypedDict,
+    )
     from .bankfeedaccount import (
         BankAccountType,
         BankFeedAccount,
@@ -1149,13 +1155,13 @@ if TYPE_CHECKING:
     from .commentssort import CommentsSort, CommentsSortBy, CommentsSortTypedDict
     from .companiesfilter import CompaniesFilter, CompaniesFilterTypedDict
     from .companiessort import CompaniesSort, CompaniesSortBy, CompaniesSortTypedDict
-    from .company import (
-        Company,
-        CompanyInput,
-        CompanyInputTypedDict,
+    from .company1 import (
+        Company1,
+        Company1Input,
+        Company1InputTypedDict,
+        Company1TypedDict,
         CompanyRowType,
         CompanyRowTypeTypedDict,
-        CompanyTypedDict,
     )
     from .companyinfo import (
         CompanyInfo,
@@ -3470,6 +3476,7 @@ if TYPE_CHECKING:
         PriceTypedDict,
     )
     from .meta import Cursors, CursorsTypedDict, Meta, MetaTypedDict
+    from .no_response_error import NoResponseError
     from .note import Note, NoteTypedDict
     from .note_input import NoteInput, NoteInputTypedDict
     from .notfoundresponse import (
@@ -3579,6 +3586,7 @@ if TYPE_CHECKING:
         RequestCountAllocationTypedDict,
     )
     from .resourcestatus import ResourceStatus
+    from .responsevalidationerror import ResponseValidationError
     from .schedule import (
         EvenWeeks,
         EvenWeeksTypedDict,
@@ -4896,6 +4904,7 @@ __all__ = [
     "Allocations",
     "AllocationsTypedDict",
     "AllowActions",
+    "ApideckError",
     "ApisFilter",
     "ApisFilterTypedDict",
     "Applicant",
@@ -5015,6 +5024,9 @@ __all__ = [
     "BalanceSheetUncategorizedItemsAccount",
     "BalanceSheetUncategorizedItemsAccountTypedDict",
     "BankAccount",
+    "BankAccount1",
+    "BankAccount1AccountType",
+    "BankAccount1TypedDict",
     "BankAccountType",
     "BankAccountTypedDict",
     "BankFeedAccount",
@@ -5084,15 +5096,15 @@ __all__ = [
     "CompaniesSort",
     "CompaniesSortBy",
     "CompaniesSortTypedDict",
-    "Company",
+    "Company1",
+    "Company1Input",
+    "Company1InputTypedDict",
+    "Company1TypedDict",
     "CompanyInfo",
     "CompanyInfoTypedDict",
-    "CompanyInput",
-    "CompanyInputTypedDict",
     "CompanyRowType",
     "CompanyRowTypeTypedDict",
     "CompanyStatus",
-    "CompanyTypedDict",
     "Compensation",
     "CompensationTypedDict",
     "Components",
@@ -6795,6 +6807,7 @@ __all__ = [
     "Meta",
     "MetaTypedDict",
     "Mode",
+    "NoResponseError",
     "NotFoundResponse",
     "NotFoundResponseData",
     "NotFoundResponseDetail",
@@ -6920,6 +6933,7 @@ __all__ = [
     "ResourceStatus",
     "Resources",
     "ResourcesTypedDict",
+    "ResponseValidationError",
     "Salary",
     "SalaryTypedDict",
     "SalesDetails",
@@ -8090,6 +8104,7 @@ _dynamic_imports: dict[str, str] = {
     "APITypedDict": ".api",
     "Resources": ".api",
     "ResourcesTypedDict": ".api",
+    "ApideckError": ".apideckerror",
     "APIError": ".apierror",
     "APIResource": ".apiresource",
     "APIResourceTypedDict": ".apiresource",
@@ -8230,6 +8245,9 @@ _dynamic_imports: dict[str, str] = {
     "AccountType": ".bankaccount",
     "BankAccount": ".bankaccount",
     "BankAccountTypedDict": ".bankaccount",
+    "BankAccount1": ".bankaccount1",
+    "BankAccount1AccountType": ".bankaccount1",
+    "BankAccount1TypedDict": ".bankaccount1",
     "BankAccountType": ".bankfeedaccount",
     "BankFeedAccount": ".bankfeedaccount",
     "BankFeedAccountInput": ".bankfeedaccount",
@@ -8297,12 +8315,12 @@ _dynamic_imports: dict[str, str] = {
     "CompaniesSort": ".companiessort",
     "CompaniesSortBy": ".companiessort",
     "CompaniesSortTypedDict": ".companiessort",
-    "Company": ".company",
-    "CompanyInput": ".company",
-    "CompanyInputTypedDict": ".company",
-    "CompanyRowType": ".company",
-    "CompanyRowTypeTypedDict": ".company",
-    "CompanyTypedDict": ".company",
+    "Company1": ".company1",
+    "Company1Input": ".company1",
+    "Company1InputTypedDict": ".company1",
+    "Company1TypedDict": ".company1",
+    "CompanyRowType": ".company1",
+    "CompanyRowTypeTypedDict": ".company1",
     "CompanyInfo": ".companyinfo",
     "CompanyInfoTypedDict": ".companyinfo",
     "CompanyStatus": ".companyinfo",
@@ -10035,6 +10053,7 @@ _dynamic_imports: dict[str, str] = {
     "CursorsTypedDict": ".meta",
     "Meta": ".meta",
     "MetaTypedDict": ".meta",
+    "NoResponseError": ".no_response_error",
     "Note": ".note",
     "NoteTypedDict": ".note",
     "NoteInput": ".note_input",
@@ -10138,6 +10157,7 @@ _dynamic_imports: dict[str, str] = {
     "RequestCountAllocation": ".requestcountallocation",
     "RequestCountAllocationTypedDict": ".requestcountallocation",
     "ResourceStatus": ".resourcestatus",
+    "ResponseValidationError": ".responsevalidationerror",
     "EvenWeeks": ".schedule",
     "EvenWeeksTypedDict": ".schedule",
     "OddWeeks": ".schedule",
