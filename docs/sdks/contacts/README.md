@@ -554,28 +554,28 @@ with Apideck(
             "id": "2389328923893298",
             "name": "employee_level",
             "description": "Employee Level",
-            "value": [
-                "<value 1>",
-                "<value 2>",
-            ],
+            "value": {
+                "0": "<value 1>",
+                "1": "<value 2>",
+            },
         },
         {
             "id": "2389328923893298",
             "name": "employee_level",
             "description": "Employee Level",
-            "value": [
-                "<value 1>",
-                "<value 2>",
-            ],
+            "value": {
+                "0": "<value 1>",
+                "1": "<value 2>",
+            },
         },
         {
             "id": "2389328923893298",
             "name": "employee_level",
             "description": "Employee Level",
-            "value": [
-                "<value 1>",
-                "<value 2>",
-            ],
+            "value": {
+                "0": "<value 1>",
+                "1": "<value 2>",
+            },
         },
     ], tags=[
         "New",

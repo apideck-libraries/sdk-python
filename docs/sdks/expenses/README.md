@@ -112,30 +112,36 @@ with Apideck(
     ], raw=False, service_id="salesforce", number="OIT00546", customer_id="12345", supplier_id="12345", company_id="12345", department_id="12345", payment_type=apideck_unify.ExpensePaymentType.CASH, currency=apideck_unify.Currency.USD, currency_rate=0.69, type_=apideck_unify.ExpenseType.EXPENSE, memo="For travel expenses incurred on 2024-05-15", tax_rate={
         "id": "123456",
         "rate": 10,
-    }, total_amount=275, reference="INV-2024-001", custom_fields=[
+    }, total_amount=275, reference="INV-2024-001", source_document_url="https://www.invoicesolution.com/expense/123456", custom_fields=[
         {
             "id": "2389328923893298",
             "name": "employee_level",
             "description": "Employee Level",
-            "value": [
-                {},
-            ],
+            "value": {
+                "0": {
+
+                },
+            },
         },
         {
             "id": "2389328923893298",
             "name": "employee_level",
             "description": "Employee Level",
-            "value": [
-                {},
-            ],
+            "value": {
+                "0": {
+
+                },
+            },
         },
         {
             "id": "2389328923893298",
             "name": "employee_level",
             "description": "Employee Level",
-            "value": [
-                {},
-            ],
+            "value": {
+                "0": {
+
+                },
+            },
         },
     ], row_version="1-12345", pass_through=[
         {
@@ -229,6 +235,7 @@ with Apideck(
 | `tax_rate`                                                                                                                                              | [Optional[models.LinkedTaxRateInput]](../../models/linkedtaxrateinput.md)                                                                               | :heavy_minus_sign:                                                                                                                                      | N/A                                                                                                                                                     |                                                                                                                                                         |
 | `total_amount`                                                                                                                                          | *OptionalNullable[float]*                                                                                                                               | :heavy_minus_sign:                                                                                                                                      | The total amount of the expense line item.                                                                                                              | 275                                                                                                                                                     |
 | `reference`                                                                                                                                             | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | Optional reference identifier for the transaction.                                                                                                      | INV-2024-001                                                                                                                                            |
+| `source_document_url`                                                                                                                                   | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | URL link to a source document - shown as 'Go to [appName]' in the downstream app. Currently only supported for Xero.                                    | https://www.invoicesolution.com/expense/123456                                                                                                          |
 | `custom_fields`                                                                                                                                         | List[[models.CustomField](../../models/customfield.md)]                                                                                                 | :heavy_minus_sign:                                                                                                                                      | N/A                                                                                                                                                     |                                                                                                                                                         |
 | `row_version`                                                                                                                                           | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.              | 1-12345                                                                                                                                                 |
 | `pass_through`                                                                                                                                          | List[[models.PassThroughBody](../../models/passthroughbody.md)]                                                                                         | :heavy_minus_sign:                                                                                                                                      | The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources. |                                                                                                                                                         |
@@ -349,7 +356,7 @@ with Apideck(
     ], service_id="salesforce", raw=False, number="OIT00546", customer_id="12345", supplier_id="12345", company_id="12345", department_id="12345", payment_type=apideck_unify.ExpensePaymentType.CASH, currency=apideck_unify.Currency.USD, currency_rate=0.69, type_=apideck_unify.ExpenseType.EXPENSE, memo="For travel expenses incurred on 2024-05-15", tax_rate={
         "id": "123456",
         "rate": 10,
-    }, total_amount=275, reference="INV-2024-001", custom_fields=[
+    }, total_amount=275, reference="INV-2024-001", source_document_url="https://www.invoicesolution.com/expense/123456", custom_fields=[
         {
             "id": "2389328923893298",
             "name": "employee_level",
@@ -490,6 +497,7 @@ with Apideck(
 | `tax_rate`                                                                                                                                              | [Optional[models.LinkedTaxRateInput]](../../models/linkedtaxrateinput.md)                                                                               | :heavy_minus_sign:                                                                                                                                      | N/A                                                                                                                                                     |                                                                                                                                                         |
 | `total_amount`                                                                                                                                          | *OptionalNullable[float]*                                                                                                                               | :heavy_minus_sign:                                                                                                                                      | The total amount of the expense line item.                                                                                                              | 275                                                                                                                                                     |
 | `reference`                                                                                                                                             | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | Optional reference identifier for the transaction.                                                                                                      | INV-2024-001                                                                                                                                            |
+| `source_document_url`                                                                                                                                   | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | URL link to a source document - shown as 'Go to [appName]' in the downstream app. Currently only supported for Xero.                                    | https://www.invoicesolution.com/expense/123456                                                                                                          |
 | `custom_fields`                                                                                                                                         | List[[models.CustomField](../../models/customfield.md)]                                                                                                 | :heavy_minus_sign:                                                                                                                                      | N/A                                                                                                                                                     |                                                                                                                                                         |
 | `row_version`                                                                                                                                           | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.              | 1-12345                                                                                                                                                 |
 | `pass_through`                                                                                                                                          | List[[models.PassThroughBody](../../models/passthroughbody.md)]                                                                                         | :heavy_minus_sign:                                                                                                                                      | The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources. |                                                                                                                                                         |

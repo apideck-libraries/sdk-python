@@ -1,4 +1,4 @@
-# SimpleFormFieldOptionValue
+# ConnectionValue5
 
 
 ## Supported Types
@@ -19,17 +19,5 @@ value: int = /* values here */
 
 ```python
 value: float = /* values here */
-```
-
-### `bool`
-
-```python
-value: bool = /* values here */
-```
-
-### `List[models.Value5]`
-
-```python
-value: List[models.Value5] = /* values here */
 ```
 
