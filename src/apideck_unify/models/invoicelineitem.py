@@ -64,6 +64,8 @@ class InvoiceLineItemTypedDict(TypedDict):
     r"""Discount percentage applied to the line item when supported downstream."""
     discount_amount: NotRequired[Nullable[float]]
     r"""Discount amount applied to the line item when supported downstream."""
+    category_id: NotRequired[Nullable[str]]
+    r"""ID of the category of the line item"""
     location_id: NotRequired[Nullable[str]]
     r"""The ID of the location"""
     department_id: NotRequired[Nullable[str]]
@@ -126,6 +128,9 @@ class InvoiceLineItem(BaseModel):
     discount_amount: OptionalNullable[float] = UNSET
     r"""Discount amount applied to the line item when supported downstream."""
 
+    category_id: OptionalNullable[str] = UNSET
+    r"""ID of the category of the line item"""
+
     location_id: OptionalNullable[str] = UNSET
     r"""The ID of the location"""
 
@@ -176,6 +181,7 @@ class InvoiceLineItem(BaseModel):
             "unit_of_measure",
             "discount_percentage",
             "discount_amount",
+            "category_id",
             "location_id",
             "department_id",
             "item",
@@ -202,6 +208,7 @@ class InvoiceLineItem(BaseModel):
             "unit_of_measure",
             "discount_percentage",
             "discount_amount",
+            "category_id",
             "location_id",
             "department_id",
             "tracking_categories",
@@ -264,6 +271,8 @@ class InvoiceLineItemInputTypedDict(TypedDict):
     r"""Discount percentage applied to the line item when supported downstream."""
     discount_amount: NotRequired[Nullable[float]]
     r"""Discount amount applied to the line item when supported downstream."""
+    category_id: NotRequired[Nullable[str]]
+    r"""ID of the category of the line item"""
     location_id: NotRequired[Nullable[str]]
     r"""The ID of the location"""
     department_id: NotRequired[Nullable[str]]
@@ -318,6 +327,9 @@ class InvoiceLineItemInput(BaseModel):
     discount_amount: OptionalNullable[float] = UNSET
     r"""Discount amount applied to the line item when supported downstream."""
 
+    category_id: OptionalNullable[str] = UNSET
+    r"""ID of the category of the line item"""
+
     location_id: OptionalNullable[str] = UNSET
     r"""The ID of the location"""
 
@@ -356,6 +368,7 @@ class InvoiceLineItemInput(BaseModel):
             "unit_of_measure",
             "discount_percentage",
             "discount_amount",
+            "category_id",
             "location_id",
             "department_id",
             "item",
@@ -378,6 +391,7 @@ class InvoiceLineItemInput(BaseModel):
             "unit_of_measure",
             "discount_percentage",
             "discount_amount",
+            "category_id",
             "location_id",
             "department_id",
             "tracking_categories",

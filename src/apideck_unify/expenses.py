@@ -374,6 +374,7 @@ class Expenses(BaseSDK):
         ] = None,
         total_amount: OptionalNullable[float] = UNSET,
         reference: OptionalNullable[str] = UNSET,
+        source_document_url: OptionalNullable[str] = UNSET,
         custom_fields: Optional[
             Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
         ] = None,
@@ -410,6 +411,7 @@ class Expenses(BaseSDK):
         :param tax_rate:
         :param total_amount: The total amount of the expense line item.
         :param reference: Optional reference identifier for the transaction.
+        :param source_document_url: URL link to a source document - shown as 'Go to [appName]' in the downstream app. Currently only supported for Xero.
         :param custom_fields:
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
@@ -454,6 +456,7 @@ class Expenses(BaseSDK):
                     line_items, List[models.ExpenseLineItemInput]
                 ),
                 reference=reference,
+                source_document_url=source_document_url,
                 custom_fields=utils.get_pydantic_model(
                     custom_fields, Optional[List[models.CustomField]]
                 ),
@@ -591,6 +594,7 @@ class Expenses(BaseSDK):
         ] = None,
         total_amount: OptionalNullable[float] = UNSET,
         reference: OptionalNullable[str] = UNSET,
+        source_document_url: OptionalNullable[str] = UNSET,
         custom_fields: Optional[
             Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
         ] = None,
@@ -627,6 +631,7 @@ class Expenses(BaseSDK):
         :param tax_rate:
         :param total_amount: The total amount of the expense line item.
         :param reference: Optional reference identifier for the transaction.
+        :param source_document_url: URL link to a source document - shown as 'Go to [appName]' in the downstream app. Currently only supported for Xero.
         :param custom_fields:
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
@@ -671,6 +676,7 @@ class Expenses(BaseSDK):
                     line_items, List[models.ExpenseLineItemInput]
                 ),
                 reference=reference,
+                source_document_url=source_document_url,
                 custom_fields=utils.get_pydantic_model(
                     custom_fields, Optional[List[models.CustomField]]
                 ),
@@ -1091,6 +1097,7 @@ class Expenses(BaseSDK):
         ] = None,
         total_amount: OptionalNullable[float] = UNSET,
         reference: OptionalNullable[str] = UNSET,
+        source_document_url: OptionalNullable[str] = UNSET,
         custom_fields: Optional[
             Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
         ] = None,
@@ -1128,6 +1135,7 @@ class Expenses(BaseSDK):
         :param tax_rate:
         :param total_amount: The total amount of the expense line item.
         :param reference: Optional reference identifier for the transaction.
+        :param source_document_url: URL link to a source document - shown as 'Go to [appName]' in the downstream app. Currently only supported for Xero.
         :param custom_fields:
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
@@ -1173,6 +1181,7 @@ class Expenses(BaseSDK):
                     line_items, List[models.ExpenseLineItemInput]
                 ),
                 reference=reference,
+                source_document_url=source_document_url,
                 custom_fields=utils.get_pydantic_model(
                     custom_fields, Optional[List[models.CustomField]]
                 ),
@@ -1311,6 +1320,7 @@ class Expenses(BaseSDK):
         ] = None,
         total_amount: OptionalNullable[float] = UNSET,
         reference: OptionalNullable[str] = UNSET,
+        source_document_url: OptionalNullable[str] = UNSET,
         custom_fields: Optional[
             Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
         ] = None,
@@ -1348,6 +1358,7 @@ class Expenses(BaseSDK):
         :param tax_rate:
         :param total_amount: The total amount of the expense line item.
         :param reference: Optional reference identifier for the transaction.
+        :param source_document_url: URL link to a source document - shown as 'Go to [appName]' in the downstream app. Currently only supported for Xero.
         :param custom_fields:
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
@@ -1393,6 +1404,7 @@ class Expenses(BaseSDK):
                     line_items, List[models.ExpenseLineItemInput]
                 ),
                 reference=reference,
+                source_document_url=source_document_url,
                 custom_fields=utils.get_pydantic_model(
                     custom_fields, Optional[List[models.CustomField]]
                 ),

@@ -9,33 +9,25 @@ from apideck_unify.types import (
     UNSET_SENTINEL,
 )
 from pydantic import model_serializer
-from typing import List, Union
+from typing import Any, Dict, List, Union
 from typing_extensions import NotRequired, TypeAliasType, TypedDict
 
 
-class SixTypedDict(TypedDict):
-    pass
+FiveTypedDict = TypeAliasType("FiveTypedDict", Union[str, float, bool, Dict[str, Any]])
 
 
-class Six(BaseModel):
-    pass
-
-
-class FourTypedDict(TypedDict):
-    pass
-
-
-class Four(BaseModel):
-    pass
+Five = TypeAliasType("Five", Union[str, float, bool, Dict[str, Any]])
 
 
 ValueTypedDict = TypeAliasType(
     "ValueTypedDict",
-    Union[FourTypedDict, str, float, bool, List[str], List[SixTypedDict]],
+    Union[str, float, bool, Dict[str, Any], List[Nullable[FiveTypedDict]]],
 )
 
 
-Value = TypeAliasType("Value", Union[Four, str, float, bool, List[str], List[Six]])
+Value = TypeAliasType(
+    "Value", Union[str, float, bool, Dict[str, Any], List[Nullable[Five]]]
+)
 
 
 class CustomFieldTypedDict(TypedDict):

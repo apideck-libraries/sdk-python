@@ -7,20 +7,20 @@ from typing import List, Optional, Union
 from typing_extensions import NotRequired, TypeAliasType, TypedDict
 
 
-FiveTypedDict = TypeAliasType("FiveTypedDict", Union[str, int, float])
+Value5TypedDict = TypeAliasType("Value5TypedDict", Union[str, int, float])
 
 
-Five = TypeAliasType("Five", Union[str, int, float])
+Value5 = TypeAliasType("Value5", Union[str, int, float])
 
 
 SimpleFormFieldOptionValueTypedDict = TypeAliasType(
     "SimpleFormFieldOptionValueTypedDict",
-    Union[str, int, float, bool, List[FiveTypedDict]],
+    Union[str, int, float, bool, List[Value5TypedDict]],
 )
 
 
 SimpleFormFieldOptionValue = TypeAliasType(
-    "SimpleFormFieldOptionValue", Union[str, int, float, bool, List[Five]]
+    "SimpleFormFieldOptionValue", Union[str, int, float, bool, List[Value5]]
 )
 
 
