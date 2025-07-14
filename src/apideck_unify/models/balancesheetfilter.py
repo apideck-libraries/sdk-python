@@ -26,6 +26,8 @@ class BalanceSheetFilterTypedDict(TypedDict):
     r"""The number of periods to include in the resource."""
     period_type: NotRequired[PeriodType]
     r"""The type of period to include in the resource: month, quarter, year."""
+    location_id: NotRequired[str]
+    r"""The ID of the location to include in the resource."""
 
 
 class BalanceSheetFilter(BaseModel):
@@ -46,3 +48,6 @@ class BalanceSheetFilter(BaseModel):
 
     period_type: Annotated[Optional[PeriodType], FieldMetadata(query=True)] = None
     r"""The type of period to include in the resource: month, quarter, year."""
+
+    location_id: Annotated[Optional[str], FieldMetadata(query=True)] = None
+    r"""The ID of the location to include in the resource."""
