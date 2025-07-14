@@ -14,6 +14,8 @@ class ProfitAndLossFilterTypedDict(TypedDict):
     r"""Filter by start date. If start date is given, end date is required."""
     end_date: NotRequired[str]
     r"""Filter by end date. If end date is given, start date is required."""
+    location_id: NotRequired[str]
+    r"""Filter by location id"""
 
 
 class ProfitAndLossFilter(BaseModel):
@@ -25,3 +27,6 @@ class ProfitAndLossFilter(BaseModel):
 
     end_date: Annotated[Optional[str], FieldMetadata(query=True)] = None
     r"""Filter by end date. If end date is given, start date is required."""
+
+    location_id: Annotated[Optional[str], FieldMetadata(query=True)] = None
+    r"""Filter by location id"""

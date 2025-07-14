@@ -21,21 +21,15 @@ value: float = /* values here */
 value: bool = /* values here */
 ```
 
-### `models.Four`
+### `Dict[str, Any]`
 
 ```python
-value: models.Four = /* values here */
+value: Dict[str, Any] = /* values here */
 ```
 
-### `List[str]`
+### `List[Nullable[models.Five]]`
 
 ```python
-value: List[str] = /* values here */
-```
-
-### `List[models.Six]`
-
-```python
-value: List[models.Six] = /* values here */
+value: List[Nullable[models.Five]] = /* values here */
 ```
 

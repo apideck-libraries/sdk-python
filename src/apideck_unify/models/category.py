@@ -16,6 +16,14 @@ from typing import Any, Dict, List, Optional
 from typing_extensions import NotRequired, TypedDict
 
 
+class CategoryType(str, Enum):
+    r"""The type of the category."""
+
+    SUPPLIER = "supplier"
+    EXPENSE = "expense"
+    REVENUE = "revenue"
+
+
 class CategoryStatus(str, Enum):
     r"""Based on the status some functionality is enabled or disabled."""
 
@@ -28,6 +36,8 @@ class CategoryTypedDict(TypedDict):
     r"""A unique identifier for an object."""
     name: NotRequired[str]
     r"""The name of the category."""
+    type: NotRequired[CategoryType]
+    r"""The type of the category."""
     status: NotRequired[CategoryStatus]
     r"""Based on the status some functionality is enabled or disabled."""
     custom_mappings: NotRequired[Nullable[Dict[str, Any]]]
@@ -52,6 +62,9 @@ class Category(BaseModel):
 
     name: Optional[str] = None
     r"""The name of the category."""
+
+    type: Optional[CategoryType] = None
+    r"""The type of the category."""
 
     status: Optional[CategoryStatus] = None
     r"""Based on the status some functionality is enabled or disabled."""
@@ -82,6 +95,7 @@ class Category(BaseModel):
         optional_fields = [
             "id",
             "name",
+            "type",
             "status",
             "custom_mappings",
             "row_version",

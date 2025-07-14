@@ -21,6 +21,9 @@ class Categories(BaseSDK):
         cursor: OptionalNullable[str] = UNSET,
         limit: Optional[int] = 20,
         fields: OptionalNullable[str] = UNSET,
+        filter_: Optional[
+            Union[models.CategoriesFilter, models.CategoriesFilterTypedDict]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -37,6 +40,7 @@ class Categories(BaseSDK):
         :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
         :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
         :param fields: The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded.
+        :param filter_: Apply filters
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -60,6 +64,9 @@ class Categories(BaseSDK):
             cursor=cursor,
             limit=limit,
             fields=fields,
+            filter_=utils.get_pydantic_model(
+                filter_, Optional[models.CategoriesFilter]
+            ),
         )
 
         req = self._build_request(
@@ -128,6 +135,7 @@ class Categories(BaseSDK):
                 cursor=next_cursor,
                 limit=limit,
                 fields=fields,
+                filter_=filter_,
                 retries=retries,
             )
 
@@ -192,6 +200,9 @@ class Categories(BaseSDK):
         cursor: OptionalNullable[str] = UNSET,
         limit: Optional[int] = 20,
         fields: OptionalNullable[str] = UNSET,
+        filter_: Optional[
+            Union[models.CategoriesFilter, models.CategoriesFilterTypedDict]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -208,6 +219,7 @@ class Categories(BaseSDK):
         :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
         :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
         :param fields: The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded.
+        :param filter_: Apply filters
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -231,6 +243,9 @@ class Categories(BaseSDK):
             cursor=cursor,
             limit=limit,
             fields=fields,
+            filter_=utils.get_pydantic_model(
+                filter_, Optional[models.CategoriesFilter]
+            ),
         )
 
         req = self._build_request_async(
@@ -299,6 +314,7 @@ class Categories(BaseSDK):
                 cursor=next_cursor,
                 limit=limit,
                 fields=fields,
+                filter_=filter_,
                 retries=retries,
             )
 
@@ -362,6 +378,9 @@ class Categories(BaseSDK):
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
         fields: OptionalNullable[str] = UNSET,
+        filter_: Optional[
+            Union[models.CategoriesFilter, models.CategoriesFilterTypedDict]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -377,6 +396,7 @@ class Categories(BaseSDK):
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param fields: The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded.
+        :param filter_: Apply filters
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -399,6 +419,9 @@ class Categories(BaseSDK):
             service_id=service_id,
             raw=raw,
             fields=fields,
+            filter_=utils.get_pydantic_model(
+                filter_, Optional[models.CategoriesFilter]
+            ),
         )
 
         req = self._build_request(
@@ -506,6 +529,9 @@ class Categories(BaseSDK):
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
         fields: OptionalNullable[str] = UNSET,
+        filter_: Optional[
+            Union[models.CategoriesFilter, models.CategoriesFilterTypedDict]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -521,6 +547,7 @@ class Categories(BaseSDK):
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param fields: The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded.
+        :param filter_: Apply filters
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -543,6 +570,9 @@ class Categories(BaseSDK):
             service_id=service_id,
             raw=raw,
             fields=fields,
+            filter_=utils.get_pydantic_model(
+                filter_, Optional[models.CategoriesFilter]
+            ),
         )
 
         req = self._build_request_async(
