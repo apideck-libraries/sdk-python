@@ -1,12 +1,12 @@
 lockVersion: 2.0.0
 id: fca0ac3a-5f4e-452c-bbc7-2311afa8da40
 management:
-  docChecksum: 01cb84705577c94a864dd2999223809e
-  docVersion: 10.18.2
-  speakeasyVersion: 1.581.0
-  generationVersion: 2.656.5
-  releaseVersion: 0.20.1
-  configChecksum: 1c04c7d506936ee454f4f37edd35ae42
+  docChecksum: 2293be711f3904fd2213796a6bab1ad9
+  docVersion: 10.18.3
+  speakeasyVersion: 1.583.0
+  generationVersion: 2.658.3
+  releaseVersion: 0.20.2
+  configChecksum: 697750e797c9400d45baad827be55efe
   repoURL: https://github.com/apideck-libraries/sdk-python.git
   installationURL: https://github.com/apideck-libraries/sdk-python.git
   published: true
@@ -1469,6 +1469,8 @@ generatedFiles:
   - docs/models/purchaseorderssort.md
   - docs/models/purchaseorderssortby.md
   - docs/models/purchaseorderstatus.md
+  - docs/models/rebilling.md
+  - docs/models/rebillstatus.md
   - docs/models/reports.md
   - docs/models/requestcountallocation.md
   - docs/models/requestrate.md
@@ -2612,6 +2614,7 @@ generatedFiles:
   - src/apideck_unify/models/purchaseorder.py
   - src/apideck_unify/models/purchaseordersfilter.py
   - src/apideck_unify/models/purchaseorderssort.py
+  - src/apideck_unify/models/rebilling.py
   - src/apideck_unify/models/requestcountallocation.py
   - src/apideck_unify/models/resourcestatus.py
   - src/apideck_unify/models/responsevalidationerror.py
