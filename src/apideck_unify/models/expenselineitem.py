@@ -6,6 +6,7 @@ from .linkedtrackingcategory import (
     LinkedTrackingCategory,
     LinkedTrackingCategoryTypedDict,
 )
+from .rebilling import Rebilling, RebillingTypedDict
 from apideck_unify.types import (
     BaseModel,
     Nullable,
@@ -44,6 +45,8 @@ class ExpenseLineItemTypedDict(TypedDict):
     r"""Boolean that indicates if the line item is billable or not."""
     line_number: NotRequired[Nullable[int]]
     r"""Line number of the resource"""
+    rebilling: NotRequired[Nullable[RebillingTypedDict]]
+    r"""Rebilling metadata for this line item."""
 
 
 class ExpenseLineItem(BaseModel):
@@ -84,6 +87,9 @@ class ExpenseLineItem(BaseModel):
     line_number: OptionalNullable[int] = UNSET
     r"""Line number of the resource"""
 
+    rebilling: OptionalNullable[Rebilling] = UNSET
+    r"""Rebilling metadata for this line item."""
+
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
         optional_fields = [
@@ -98,6 +104,7 @@ class ExpenseLineItem(BaseModel):
             "description",
             "billable",
             "line_number",
+            "rebilling",
         ]
         nullable_fields = [
             "tracking_categories",
@@ -107,6 +114,7 @@ class ExpenseLineItem(BaseModel):
             "description",
             "total_amount",
             "line_number",
+            "rebilling",
         ]
         null_default_fields = []
 
