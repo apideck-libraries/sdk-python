@@ -3584,6 +3584,7 @@ if TYPE_CHECKING:
         PurchaseOrdersSortBy,
         PurchaseOrdersSortTypedDict,
     )
+    from .rebilling import RebillStatus, Rebilling, RebillingTypedDict
     from .requestcountallocation import (
         RequestCountAllocation,
         RequestCountAllocationTypedDict,
@@ -6930,6 +6931,9 @@ __all__ = [
     "PurchaseOrdersSort",
     "PurchaseOrdersSortBy",
     "PurchaseOrdersSortTypedDict",
+    "RebillStatus",
+    "Rebilling",
+    "RebillingTypedDict",
     "Reports",
     "ReportsTypedDict",
     "RequestCountAllocation",
@@ -10161,6 +10165,9 @@ _dynamic_imports: dict[str, str] = {
     "PurchaseOrdersSort": ".purchaseorderssort",
     "PurchaseOrdersSortBy": ".purchaseorderssort",
     "PurchaseOrdersSortTypedDict": ".purchaseorderssort",
+    "RebillStatus": ".rebilling",
+    "Rebilling": ".rebilling",
+    "RebillingTypedDict": ".rebilling",
     "RequestCountAllocation": ".requestcountallocation",
     "RequestCountAllocationTypedDict": ".requestcountallocation",
     "ResourceStatus": ".resourcestatus",
