@@ -429,9 +429,11 @@ class PurchaseOrders(BaseSDK):
         accounting_by_row: OptionalNullable[bool] = UNSET,
         due_date: OptionalNullable[date] = UNSET,
         payment_method: OptionalNullable[str] = UNSET,
+        amortization_type: OptionalNullable[models.AmortizationType] = UNSET,
         tax_code: OptionalNullable[str] = UNSET,
         channel: OptionalNullable[str] = UNSET,
         memo: OptionalNullable[str] = UNSET,
+        notes: OptionalNullable[str] = UNSET,
         tracking_categories: OptionalNullable[
             Union[
                 List[Nullable[models.LinkedTrackingCategory]],
@@ -482,9 +484,11 @@ class PurchaseOrders(BaseSDK):
         :param accounting_by_row: Indicates if accounting by row is used (true) or not (false). Accounting by row means that a separate ledger transaction is created for each row.
         :param due_date: The due date is the date on which a payment is scheduled to be received - YYYY-MM-DD.
         :param payment_method: Payment method used for the transaction, such as cash, credit card, bank transfer, or check
+        :param amortization_type: Type of amortization
         :param tax_code: Applicable tax id/code override if tax is not supplied on a line item basis.
         :param channel: The channel through which the transaction is processed.
         :param memo: Message for the supplier. This text appears on the Purchase Order.
+        :param notes: Internal notes for the purchase order.
         :param tracking_categories: A list of linked tracking categories.
         :param custom_fields:
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
@@ -544,9 +548,11 @@ class PurchaseOrders(BaseSDK):
                 accounting_by_row=accounting_by_row,
                 due_date=due_date,
                 payment_method=payment_method,
+                amortization_type=amortization_type,
                 tax_code=tax_code,
                 channel=channel,
                 memo=memo,
+                notes=notes,
                 tracking_categories=utils.get_pydantic_model(
                     tracking_categories,
                     OptionalNullable[List[Nullable[models.LinkedTrackingCategory]]],
@@ -707,9 +713,11 @@ class PurchaseOrders(BaseSDK):
         accounting_by_row: OptionalNullable[bool] = UNSET,
         due_date: OptionalNullable[date] = UNSET,
         payment_method: OptionalNullable[str] = UNSET,
+        amortization_type: OptionalNullable[models.AmortizationType] = UNSET,
         tax_code: OptionalNullable[str] = UNSET,
         channel: OptionalNullable[str] = UNSET,
         memo: OptionalNullable[str] = UNSET,
+        notes: OptionalNullable[str] = UNSET,
         tracking_categories: OptionalNullable[
             Union[
                 List[Nullable[models.LinkedTrackingCategory]],
@@ -760,9 +768,11 @@ class PurchaseOrders(BaseSDK):
         :param accounting_by_row: Indicates if accounting by row is used (true) or not (false). Accounting by row means that a separate ledger transaction is created for each row.
         :param due_date: The due date is the date on which a payment is scheduled to be received - YYYY-MM-DD.
         :param payment_method: Payment method used for the transaction, such as cash, credit card, bank transfer, or check
+        :param amortization_type: Type of amortization
         :param tax_code: Applicable tax id/code override if tax is not supplied on a line item basis.
         :param channel: The channel through which the transaction is processed.
         :param memo: Message for the supplier. This text appears on the Purchase Order.
+        :param notes: Internal notes for the purchase order.
         :param tracking_categories: A list of linked tracking categories.
         :param custom_fields:
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
@@ -822,9 +832,11 @@ class PurchaseOrders(BaseSDK):
                 accounting_by_row=accounting_by_row,
                 due_date=due_date,
                 payment_method=payment_method,
+                amortization_type=amortization_type,
                 tax_code=tax_code,
                 channel=channel,
                 memo=memo,
+                notes=notes,
                 tracking_categories=utils.get_pydantic_model(
                     tracking_categories,
                     OptionalNullable[List[Nullable[models.LinkedTrackingCategory]]],
@@ -1268,9 +1280,11 @@ class PurchaseOrders(BaseSDK):
         accounting_by_row: OptionalNullable[bool] = UNSET,
         due_date: OptionalNullable[date] = UNSET,
         payment_method: OptionalNullable[str] = UNSET,
+        amortization_type: OptionalNullable[models.AmortizationType] = UNSET,
         tax_code: OptionalNullable[str] = UNSET,
         channel: OptionalNullable[str] = UNSET,
         memo: OptionalNullable[str] = UNSET,
+        notes: OptionalNullable[str] = UNSET,
         tracking_categories: OptionalNullable[
             Union[
                 List[Nullable[models.LinkedTrackingCategory]],
@@ -1322,9 +1336,11 @@ class PurchaseOrders(BaseSDK):
         :param accounting_by_row: Indicates if accounting by row is used (true) or not (false). Accounting by row means that a separate ledger transaction is created for each row.
         :param due_date: The due date is the date on which a payment is scheduled to be received - YYYY-MM-DD.
         :param payment_method: Payment method used for the transaction, such as cash, credit card, bank transfer, or check
+        :param amortization_type: Type of amortization
         :param tax_code: Applicable tax id/code override if tax is not supplied on a line item basis.
         :param channel: The channel through which the transaction is processed.
         :param memo: Message for the supplier. This text appears on the Purchase Order.
+        :param notes: Internal notes for the purchase order.
         :param tracking_categories: A list of linked tracking categories.
         :param custom_fields:
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
@@ -1385,9 +1401,11 @@ class PurchaseOrders(BaseSDK):
                 accounting_by_row=accounting_by_row,
                 due_date=due_date,
                 payment_method=payment_method,
+                amortization_type=amortization_type,
                 tax_code=tax_code,
                 channel=channel,
                 memo=memo,
+                notes=notes,
                 tracking_categories=utils.get_pydantic_model(
                     tracking_categories,
                     OptionalNullable[List[Nullable[models.LinkedTrackingCategory]]],
@@ -1549,9 +1567,11 @@ class PurchaseOrders(BaseSDK):
         accounting_by_row: OptionalNullable[bool] = UNSET,
         due_date: OptionalNullable[date] = UNSET,
         payment_method: OptionalNullable[str] = UNSET,
+        amortization_type: OptionalNullable[models.AmortizationType] = UNSET,
         tax_code: OptionalNullable[str] = UNSET,
         channel: OptionalNullable[str] = UNSET,
         memo: OptionalNullable[str] = UNSET,
+        notes: OptionalNullable[str] = UNSET,
         tracking_categories: OptionalNullable[
             Union[
                 List[Nullable[models.LinkedTrackingCategory]],
@@ -1603,9 +1623,11 @@ class PurchaseOrders(BaseSDK):
         :param accounting_by_row: Indicates if accounting by row is used (true) or not (false). Accounting by row means that a separate ledger transaction is created for each row.
         :param due_date: The due date is the date on which a payment is scheduled to be received - YYYY-MM-DD.
         :param payment_method: Payment method used for the transaction, such as cash, credit card, bank transfer, or check
+        :param amortization_type: Type of amortization
         :param tax_code: Applicable tax id/code override if tax is not supplied on a line item basis.
         :param channel: The channel through which the transaction is processed.
         :param memo: Message for the supplier. This text appears on the Purchase Order.
+        :param notes: Internal notes for the purchase order.
         :param tracking_categories: A list of linked tracking categories.
         :param custom_fields:
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
@@ -1666,9 +1688,11 @@ class PurchaseOrders(BaseSDK):
                 accounting_by_row=accounting_by_row,
                 due_date=due_date,
                 payment_method=payment_method,
+                amortization_type=amortization_type,
                 tax_code=tax_code,
                 channel=channel,
                 memo=memo,
+                notes=notes,
                 tracking_categories=utils.get_pydantic_model(
                     tracking_categories,
                     OptionalNullable[List[Nullable[models.LinkedTrackingCategory]]],

@@ -9,6 +9,7 @@ from .linkedledgeraccount_input import (
     LinkedLedgerAccountInput,
     LinkedLedgerAccountInputTypedDict,
 )
+from .linkedpurchaseorder import LinkedPurchaseOrder, LinkedPurchaseOrderTypedDict
 from .linkedtaxrate import LinkedTaxRate, LinkedTaxRateTypedDict
 from .linkedtaxrate_input import LinkedTaxRateInput, LinkedTaxRateInputTypedDict
 from .linkedtrackingcategory import (
@@ -67,9 +68,14 @@ class BillLineItemTypedDict(TypedDict):
     r"""The ID of the location"""
     department_id: NotRequired[Nullable[str]]
     r"""The ID of the department"""
+    subsidiary_id: NotRequired[Nullable[str]]
+    r"""The ID of the subsidiary"""
+    category_id: NotRequired[Nullable[str]]
+    r"""ID of the category of the line item"""
     item: NotRequired[LinkedInvoiceItemTypedDict]
     tax_rate: NotRequired[LinkedTaxRateTypedDict]
     ledger_account: NotRequired[Nullable[LinkedLedgerAccountTypedDict]]
+    purchase_order: NotRequired[Nullable[LinkedPurchaseOrderTypedDict]]
     tracking_categories: NotRequired[
         Nullable[List[Nullable[LinkedTrackingCategoryTypedDict]]]
     ]
@@ -134,11 +140,19 @@ class BillLineItem(BaseModel):
     department_id: OptionalNullable[str] = UNSET
     r"""The ID of the department"""
 
+    subsidiary_id: OptionalNullable[str] = UNSET
+    r"""The ID of the subsidiary"""
+
+    category_id: OptionalNullable[str] = UNSET
+    r"""ID of the category of the line item"""
+
     item: Optional[LinkedInvoiceItem] = None
 
     tax_rate: Optional[LinkedTaxRate] = None
 
     ledger_account: OptionalNullable[LinkedLedgerAccount] = UNSET
+
+    purchase_order: OptionalNullable[LinkedPurchaseOrder] = UNSET
 
     tracking_categories: OptionalNullable[List[Nullable[LinkedTrackingCategory]]] = (
         UNSET
@@ -184,9 +198,12 @@ class BillLineItem(BaseModel):
             "discount_amount",
             "location_id",
             "department_id",
+            "subsidiary_id",
+            "category_id",
             "item",
             "tax_rate",
             "ledger_account",
+            "purchase_order",
             "tracking_categories",
             "customer",
             "rebilling",
@@ -210,7 +227,10 @@ class BillLineItem(BaseModel):
             "discount_amount",
             "location_id",
             "department_id",
+            "subsidiary_id",
+            "category_id",
             "ledger_account",
+            "purchase_order",
             "tracking_categories",
             "customer",
             "rebilling",
@@ -274,9 +294,14 @@ class BillLineItemInputTypedDict(TypedDict):
     r"""The ID of the location"""
     department_id: NotRequired[Nullable[str]]
     r"""The ID of the department"""
+    subsidiary_id: NotRequired[Nullable[str]]
+    r"""The ID of the subsidiary"""
+    category_id: NotRequired[Nullable[str]]
+    r"""ID of the category of the line item"""
     item: NotRequired[LinkedInvoiceItemTypedDict]
     tax_rate: NotRequired[LinkedTaxRateInputTypedDict]
     ledger_account: NotRequired[Nullable[LinkedLedgerAccountInputTypedDict]]
+    purchase_order: NotRequired[Nullable[LinkedPurchaseOrderTypedDict]]
     tracking_categories: NotRequired[
         Nullable[List[Nullable[LinkedTrackingCategoryTypedDict]]]
     ]
@@ -330,11 +355,19 @@ class BillLineItemInput(BaseModel):
     department_id: OptionalNullable[str] = UNSET
     r"""The ID of the department"""
 
+    subsidiary_id: OptionalNullable[str] = UNSET
+    r"""The ID of the subsidiary"""
+
+    category_id: OptionalNullable[str] = UNSET
+    r"""ID of the category of the line item"""
+
     item: Optional[LinkedInvoiceItem] = None
 
     tax_rate: Optional[LinkedTaxRateInput] = None
 
     ledger_account: OptionalNullable[LinkedLedgerAccountInput] = UNSET
+
+    purchase_order: OptionalNullable[LinkedPurchaseOrder] = UNSET
 
     tracking_categories: OptionalNullable[List[Nullable[LinkedTrackingCategory]]] = (
         UNSET
@@ -367,9 +400,12 @@ class BillLineItemInput(BaseModel):
             "discount_amount",
             "location_id",
             "department_id",
+            "subsidiary_id",
+            "category_id",
             "item",
             "tax_rate",
             "ledger_account",
+            "purchase_order",
             "tracking_categories",
             "customer",
             "rebilling",
@@ -389,7 +425,10 @@ class BillLineItemInput(BaseModel):
             "discount_amount",
             "location_id",
             "department_id",
+            "subsidiary_id",
+            "category_id",
             "ledger_account",
+            "purchase_order",
             "tracking_categories",
             "customer",
             "rebilling",
