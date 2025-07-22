@@ -70,6 +70,10 @@ class InvoiceLineItemTypedDict(TypedDict):
     r"""The ID of the location"""
     department_id: NotRequired[Nullable[str]]
     r"""The ID of the department"""
+    subsidiary_id: NotRequired[Nullable[str]]
+    r"""The ID of the subsidiary"""
+    prepaid: NotRequired[Nullable[bool]]
+    r"""Whether the line item is prepaid"""
     item: NotRequired[LinkedInvoiceItemTypedDict]
     tax_rate: NotRequired[LinkedTaxRateTypedDict]
     tracking_categories: NotRequired[
@@ -137,6 +141,12 @@ class InvoiceLineItem(BaseModel):
     department_id: OptionalNullable[str] = UNSET
     r"""The ID of the department"""
 
+    subsidiary_id: OptionalNullable[str] = UNSET
+    r"""The ID of the subsidiary"""
+
+    prepaid: OptionalNullable[bool] = UNSET
+    r"""Whether the line item is prepaid"""
+
     item: Optional[LinkedInvoiceItem] = None
 
     tax_rate: Optional[LinkedTaxRate] = None
@@ -184,6 +194,8 @@ class InvoiceLineItem(BaseModel):
             "category_id",
             "location_id",
             "department_id",
+            "subsidiary_id",
+            "prepaid",
             "item",
             "tax_rate",
             "tracking_categories",
@@ -211,6 +223,8 @@ class InvoiceLineItem(BaseModel):
             "category_id",
             "location_id",
             "department_id",
+            "subsidiary_id",
+            "prepaid",
             "tracking_categories",
             "ledger_account",
             "row_version",
@@ -277,6 +291,10 @@ class InvoiceLineItemInputTypedDict(TypedDict):
     r"""The ID of the location"""
     department_id: NotRequired[Nullable[str]]
     r"""The ID of the department"""
+    subsidiary_id: NotRequired[Nullable[str]]
+    r"""The ID of the subsidiary"""
+    prepaid: NotRequired[Nullable[bool]]
+    r"""Whether the line item is prepaid"""
     item: NotRequired[LinkedInvoiceItemTypedDict]
     tax_rate: NotRequired[LinkedTaxRateInputTypedDict]
     tracking_categories: NotRequired[
@@ -336,6 +354,12 @@ class InvoiceLineItemInput(BaseModel):
     department_id: OptionalNullable[str] = UNSET
     r"""The ID of the department"""
 
+    subsidiary_id: OptionalNullable[str] = UNSET
+    r"""The ID of the subsidiary"""
+
+    prepaid: OptionalNullable[bool] = UNSET
+    r"""Whether the line item is prepaid"""
+
     item: Optional[LinkedInvoiceItem] = None
 
     tax_rate: Optional[LinkedTaxRateInput] = None
@@ -371,6 +395,8 @@ class InvoiceLineItemInput(BaseModel):
             "category_id",
             "location_id",
             "department_id",
+            "subsidiary_id",
+            "prepaid",
             "item",
             "tax_rate",
             "tracking_categories",
@@ -394,6 +420,8 @@ class InvoiceLineItemInput(BaseModel):
             "category_id",
             "location_id",
             "department_id",
+            "subsidiary_id",
+            "prepaid",
             "tracking_categories",
             "ledger_account",
             "row_version",

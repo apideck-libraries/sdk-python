@@ -46,6 +46,15 @@ class PurchaseOrderStatus(str, Enum):
     OTHER = "other"
 
 
+class AmortizationType(str, Enum):
+    r"""Type of amortization"""
+
+    MANUAL = "manual"
+    RECEIPT = "receipt"
+    SCHEDULE = "schedule"
+    OTHER = "other"
+
+
 class PurchaseOrderTypedDict(TypedDict):
     id: NotRequired[str]
     r"""A unique identifier for an object."""
@@ -94,12 +103,16 @@ class PurchaseOrderTypedDict(TypedDict):
     r"""The due date is the date on which a payment is scheduled to be received - YYYY-MM-DD."""
     payment_method: NotRequired[Nullable[str]]
     r"""Payment method used for the transaction, such as cash, credit card, bank transfer, or check"""
+    amortization_type: NotRequired[Nullable[AmortizationType]]
+    r"""Type of amortization"""
     tax_code: NotRequired[Nullable[str]]
     r"""Applicable tax id/code override if tax is not supplied on a line item basis."""
     channel: NotRequired[Nullable[str]]
     r"""The channel through which the transaction is processed."""
     memo: NotRequired[Nullable[str]]
     r"""Message for the supplier. This text appears on the Purchase Order."""
+    notes: NotRequired[Nullable[str]]
+    r"""Internal notes for the purchase order."""
     tracking_categories: NotRequired[
         Nullable[List[Nullable[LinkedTrackingCategoryTypedDict]]]
     ]
@@ -195,6 +208,9 @@ class PurchaseOrder(BaseModel):
     payment_method: OptionalNullable[str] = UNSET
     r"""Payment method used for the transaction, such as cash, credit card, bank transfer, or check"""
 
+    amortization_type: OptionalNullable[AmortizationType] = UNSET
+    r"""Type of amortization"""
+
     tax_code: OptionalNullable[str] = UNSET
     r"""Applicable tax id/code override if tax is not supplied on a line item basis."""
 
@@ -203,6 +219,9 @@ class PurchaseOrder(BaseModel):
 
     memo: OptionalNullable[str] = UNSET
     r"""Message for the supplier. This text appears on the Purchase Order."""
+
+    notes: OptionalNullable[str] = UNSET
+    r"""Internal notes for the purchase order."""
 
     tracking_categories: OptionalNullable[List[Nullable[LinkedTrackingCategory]]] = (
         UNSET
@@ -261,9 +280,11 @@ class PurchaseOrder(BaseModel):
             "accounting_by_row",
             "due_date",
             "payment_method",
+            "amortization_type",
             "tax_code",
             "channel",
             "memo",
+            "notes",
             "tracking_categories",
             "custom_mappings",
             "custom_fields",
@@ -297,9 +318,11 @@ class PurchaseOrder(BaseModel):
             "accounting_by_row",
             "due_date",
             "payment_method",
+            "amortization_type",
             "tax_code",
             "channel",
             "memo",
+            "notes",
             "tracking_categories",
             "custom_mappings",
             "row_version",
@@ -379,12 +402,16 @@ class PurchaseOrderInputTypedDict(TypedDict):
     r"""The due date is the date on which a payment is scheduled to be received - YYYY-MM-DD."""
     payment_method: NotRequired[Nullable[str]]
     r"""Payment method used for the transaction, such as cash, credit card, bank transfer, or check"""
+    amortization_type: NotRequired[Nullable[AmortizationType]]
+    r"""Type of amortization"""
     tax_code: NotRequired[Nullable[str]]
     r"""Applicable tax id/code override if tax is not supplied on a line item basis."""
     channel: NotRequired[Nullable[str]]
     r"""The channel through which the transaction is processed."""
     memo: NotRequired[Nullable[str]]
     r"""Message for the supplier. This text appears on the Purchase Order."""
+    notes: NotRequired[Nullable[str]]
+    r"""Internal notes for the purchase order."""
     tracking_categories: NotRequired[
         Nullable[List[Nullable[LinkedTrackingCategoryTypedDict]]]
     ]
@@ -464,6 +491,9 @@ class PurchaseOrderInput(BaseModel):
     payment_method: OptionalNullable[str] = UNSET
     r"""Payment method used for the transaction, such as cash, credit card, bank transfer, or check"""
 
+    amortization_type: OptionalNullable[AmortizationType] = UNSET
+    r"""Type of amortization"""
+
     tax_code: OptionalNullable[str] = UNSET
     r"""Applicable tax id/code override if tax is not supplied on a line item basis."""
 
@@ -472,6 +502,9 @@ class PurchaseOrderInput(BaseModel):
 
     memo: OptionalNullable[str] = UNSET
     r"""Message for the supplier. This text appears on the Purchase Order."""
+
+    notes: OptionalNullable[str] = UNSET
+    r"""Internal notes for the purchase order."""
 
     tracking_categories: OptionalNullable[List[Nullable[LinkedTrackingCategory]]] = (
         UNSET
@@ -513,9 +546,11 @@ class PurchaseOrderInput(BaseModel):
             "accounting_by_row",
             "due_date",
             "payment_method",
+            "amortization_type",
             "tax_code",
             "channel",
             "memo",
+            "notes",
             "tracking_categories",
             "custom_fields",
             "row_version",
@@ -543,9 +578,11 @@ class PurchaseOrderInput(BaseModel):
             "accounting_by_row",
             "due_date",
             "payment_method",
+            "amortization_type",
             "tax_code",
             "channel",
             "memo",
+            "notes",
             "tracking_categories",
             "row_version",
         ]

@@ -3446,6 +3446,7 @@ if TYPE_CHECKING:
         LinkedParentCustomer,
         LinkedParentCustomerTypedDict,
     )
+    from .linkedpurchaseorder import LinkedPurchaseOrder, LinkedPurchaseOrderTypedDict
     from .linkedsupplier import LinkedSupplier, LinkedSupplierTypedDict
     from .linkedsupplier_input import LinkedSupplierInput, LinkedSupplierInputTypedDict
     from .linkedtaxrate import LinkedTaxRate, LinkedTaxRateTypedDict
@@ -3569,6 +3570,7 @@ if TYPE_CHECKING:
     )
     from .profitandlosstype import ProfitAndLossType
     from .purchaseorder import (
+        AmortizationType,
         PurchaseOrder,
         PurchaseOrderInput,
         PurchaseOrderInputTypedDict,
@@ -4908,6 +4910,7 @@ __all__ = [
     "Allocations",
     "AllocationsTypedDict",
     "AllowActions",
+    "AmortizationType",
     "ApideckError",
     "ApisFilter",
     "ApisFilterTypedDict",
@@ -6784,6 +6787,8 @@ __all__ = [
     "LinkedLedgerAccountTypedDict",
     "LinkedParentCustomer",
     "LinkedParentCustomerTypedDict",
+    "LinkedPurchaseOrder",
+    "LinkedPurchaseOrderTypedDict",
     "LinkedResources",
     "LinkedResourcesTypedDict",
     "LinkedSupplier",
@@ -10028,6 +10033,8 @@ _dynamic_imports: dict[str, str] = {
     "LinkedLedgerAccountInputTypedDict": ".linkedledgeraccount_input",
     "LinkedParentCustomer": ".linkedparentcustomer",
     "LinkedParentCustomerTypedDict": ".linkedparentcustomer",
+    "LinkedPurchaseOrder": ".linkedpurchaseorder",
+    "LinkedPurchaseOrderTypedDict": ".linkedpurchaseorder",
     "LinkedSupplier": ".linkedsupplier",
     "LinkedSupplierTypedDict": ".linkedsupplier",
     "LinkedSupplierInput": ".linkedsupplier_input",
@@ -10155,6 +10162,7 @@ _dynamic_imports: dict[str, str] = {
     "ProfitAndLossIndicator": ".profitandlossindicator",
     "ProfitAndLossIndicatorTypedDict": ".profitandlossindicator",
     "ProfitAndLossType": ".profitandlosstype",
+    "AmortizationType": ".purchaseorder",
     "PurchaseOrder": ".purchaseorder",
     "PurchaseOrderInput": ".purchaseorder",
     "PurchaseOrderInputTypedDict": ".purchaseorder",
