@@ -39,6 +39,14 @@ class InvoiceLineItemType(str, Enum):
     OTHER = "other"
 
 
+class Budget(str, Enum):
+    r"""Budget of the line item"""
+
+    OUT_OF_BUDGET = "out_of_budget"
+    IN_BUDGET = "in_budget"
+    OTHER = "other"
+
+
 class InvoiceLineItemTypedDict(TypedDict):
     id: NotRequired[Nullable[str]]
     r"""A unique identifier for an object."""
@@ -72,9 +80,23 @@ class InvoiceLineItemTypedDict(TypedDict):
     r"""The ID of the department"""
     subsidiary_id: NotRequired[Nullable[str]]
     r"""The ID of the subsidiary"""
+    shipping_id: NotRequired[Nullable[str]]
+    r"""ID of the shipping of the line item"""
+    memo: NotRequired[Nullable[str]]
+    r"""Memo"""
     prepaid: NotRequired[Nullable[bool]]
     r"""Whether the line item is prepaid"""
     item: NotRequired[LinkedInvoiceItemTypedDict]
+    tax_applicable_on: NotRequired[Nullable[str]]
+    r"""Tax applicable on"""
+    tax_recoverability: NotRequired[Nullable[str]]
+    r"""Tax recoverability"""
+    tax_method: NotRequired[Nullable[str]]
+    r"""Method of tax calculation"""
+    budget: NotRequired[Nullable[Budget]]
+    r"""Budget of the line item"""
+    project_id: NotRequired[Nullable[str]]
+    r"""ID of the project of the line item"""
     tax_rate: NotRequired[LinkedTaxRateTypedDict]
     tracking_categories: NotRequired[
         Nullable[List[Nullable[LinkedTrackingCategoryTypedDict]]]
@@ -144,10 +166,31 @@ class InvoiceLineItem(BaseModel):
     subsidiary_id: OptionalNullable[str] = UNSET
     r"""The ID of the subsidiary"""
 
+    shipping_id: OptionalNullable[str] = UNSET
+    r"""ID of the shipping of the line item"""
+
+    memo: OptionalNullable[str] = UNSET
+    r"""Memo"""
+
     prepaid: OptionalNullable[bool] = UNSET
     r"""Whether the line item is prepaid"""
 
     item: Optional[LinkedInvoiceItem] = None
+
+    tax_applicable_on: OptionalNullable[str] = UNSET
+    r"""Tax applicable on"""
+
+    tax_recoverability: OptionalNullable[str] = UNSET
+    r"""Tax recoverability"""
+
+    tax_method: OptionalNullable[str] = UNSET
+    r"""Method of tax calculation"""
+
+    budget: OptionalNullable[Budget] = UNSET
+    r"""Budget of the line item"""
+
+    project_id: OptionalNullable[str] = UNSET
+    r"""ID of the project of the line item"""
 
     tax_rate: Optional[LinkedTaxRate] = None
 
@@ -195,8 +238,15 @@ class InvoiceLineItem(BaseModel):
             "location_id",
             "department_id",
             "subsidiary_id",
+            "shipping_id",
+            "memo",
             "prepaid",
             "item",
+            "tax_applicable_on",
+            "tax_recoverability",
+            "tax_method",
+            "budget",
+            "project_id",
             "tax_rate",
             "tracking_categories",
             "ledger_account",
@@ -224,7 +274,14 @@ class InvoiceLineItem(BaseModel):
             "location_id",
             "department_id",
             "subsidiary_id",
+            "shipping_id",
+            "memo",
             "prepaid",
+            "tax_applicable_on",
+            "tax_recoverability",
+            "tax_method",
+            "budget",
+            "project_id",
             "tracking_categories",
             "ledger_account",
             "row_version",
@@ -293,9 +350,23 @@ class InvoiceLineItemInputTypedDict(TypedDict):
     r"""The ID of the department"""
     subsidiary_id: NotRequired[Nullable[str]]
     r"""The ID of the subsidiary"""
+    shipping_id: NotRequired[Nullable[str]]
+    r"""ID of the shipping of the line item"""
+    memo: NotRequired[Nullable[str]]
+    r"""Memo"""
     prepaid: NotRequired[Nullable[bool]]
     r"""Whether the line item is prepaid"""
     item: NotRequired[LinkedInvoiceItemTypedDict]
+    tax_applicable_on: NotRequired[Nullable[str]]
+    r"""Tax applicable on"""
+    tax_recoverability: NotRequired[Nullable[str]]
+    r"""Tax recoverability"""
+    tax_method: NotRequired[Nullable[str]]
+    r"""Method of tax calculation"""
+    budget: NotRequired[Nullable[Budget]]
+    r"""Budget of the line item"""
+    project_id: NotRequired[Nullable[str]]
+    r"""ID of the project of the line item"""
     tax_rate: NotRequired[LinkedTaxRateInputTypedDict]
     tracking_categories: NotRequired[
         Nullable[List[Nullable[LinkedTrackingCategoryTypedDict]]]
@@ -357,10 +428,31 @@ class InvoiceLineItemInput(BaseModel):
     subsidiary_id: OptionalNullable[str] = UNSET
     r"""The ID of the subsidiary"""
 
+    shipping_id: OptionalNullable[str] = UNSET
+    r"""ID of the shipping of the line item"""
+
+    memo: OptionalNullable[str] = UNSET
+    r"""Memo"""
+
     prepaid: OptionalNullable[bool] = UNSET
     r"""Whether the line item is prepaid"""
 
     item: Optional[LinkedInvoiceItem] = None
+
+    tax_applicable_on: OptionalNullable[str] = UNSET
+    r"""Tax applicable on"""
+
+    tax_recoverability: OptionalNullable[str] = UNSET
+    r"""Tax recoverability"""
+
+    tax_method: OptionalNullable[str] = UNSET
+    r"""Method of tax calculation"""
+
+    budget: OptionalNullable[Budget] = UNSET
+    r"""Budget of the line item"""
+
+    project_id: OptionalNullable[str] = UNSET
+    r"""ID of the project of the line item"""
 
     tax_rate: Optional[LinkedTaxRateInput] = None
 
@@ -396,8 +488,15 @@ class InvoiceLineItemInput(BaseModel):
             "location_id",
             "department_id",
             "subsidiary_id",
+            "shipping_id",
+            "memo",
             "prepaid",
             "item",
+            "tax_applicable_on",
+            "tax_recoverability",
+            "tax_method",
+            "budget",
+            "project_id",
             "tax_rate",
             "tracking_categories",
             "ledger_account",
@@ -421,7 +520,14 @@ class InvoiceLineItemInput(BaseModel):
             "location_id",
             "department_id",
             "subsidiary_id",
+            "shipping_id",
+            "memo",
             "prepaid",
+            "tax_applicable_on",
+            "tax_recoverability",
+            "tax_method",
+            "budget",
+            "project_id",
             "tracking_categories",
             "ledger_account",
             "row_version",

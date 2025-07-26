@@ -90,6 +90,7 @@ class PurchaseOrderTypedDict(TypedDict):
     tax_inclusive: NotRequired[Nullable[bool]]
     r"""Amounts are including tax"""
     line_items: NotRequired[List[InvoiceLineItemTypedDict]]
+    billing_address: NotRequired[AddressTypedDict]
     shipping_address: NotRequired[AddressTypedDict]
     ledger_account: NotRequired[Nullable[LinkedLedgerAccountTypedDict]]
     template_id: NotRequired[Nullable[str]]
@@ -103,10 +104,18 @@ class PurchaseOrderTypedDict(TypedDict):
     r"""The due date is the date on which a payment is scheduled to be received - YYYY-MM-DD."""
     payment_method: NotRequired[Nullable[str]]
     r"""Payment method used for the transaction, such as cash, credit card, bank transfer, or check"""
+    terms: NotRequired[Nullable[str]]
+    r"""Terms of payment."""
     amortization_type: NotRequired[Nullable[AmortizationType]]
     r"""Type of amortization"""
     tax_code: NotRequired[Nullable[str]]
     r"""Applicable tax id/code override if tax is not supplied on a line item basis."""
+    tax_method: NotRequired[Nullable[str]]
+    r"""Method of tax calculation"""
+    issued_method: NotRequired[Nullable[str]]
+    r"""Method of issuance of the purchase order"""
+    issued_email: NotRequired[Nullable[str]]
+    r"""Email address of the person who issued the purchase order"""
     channel: NotRequired[Nullable[str]]
     r"""The channel through which the transaction is processed."""
     memo: NotRequired[Nullable[str]]
@@ -187,6 +196,8 @@ class PurchaseOrder(BaseModel):
 
     line_items: Optional[List[InvoiceLineItem]] = None
 
+    billing_address: Optional[Address] = None
+
     shipping_address: Optional[Address] = None
 
     ledger_account: OptionalNullable[LinkedLedgerAccount] = UNSET
@@ -208,11 +219,23 @@ class PurchaseOrder(BaseModel):
     payment_method: OptionalNullable[str] = UNSET
     r"""Payment method used for the transaction, such as cash, credit card, bank transfer, or check"""
 
+    terms: OptionalNullable[str] = UNSET
+    r"""Terms of payment."""
+
     amortization_type: OptionalNullable[AmortizationType] = UNSET
     r"""Type of amortization"""
 
     tax_code: OptionalNullable[str] = UNSET
     r"""Applicable tax id/code override if tax is not supplied on a line item basis."""
+
+    tax_method: OptionalNullable[str] = UNSET
+    r"""Method of tax calculation"""
+
+    issued_method: OptionalNullable[str] = UNSET
+    r"""Method of issuance of the purchase order"""
+
+    issued_email: OptionalNullable[str] = UNSET
+    r"""Email address of the person who issued the purchase order"""
 
     channel: OptionalNullable[str] = UNSET
     r"""The channel through which the transaction is processed."""
@@ -272,6 +295,7 @@ class PurchaseOrder(BaseModel):
             "total",
             "tax_inclusive",
             "line_items",
+            "billing_address",
             "shipping_address",
             "ledger_account",
             "template_id",
@@ -280,8 +304,12 @@ class PurchaseOrder(BaseModel):
             "accounting_by_row",
             "due_date",
             "payment_method",
+            "terms",
             "amortization_type",
             "tax_code",
+            "tax_method",
+            "issued_method",
+            "issued_email",
             "channel",
             "memo",
             "notes",
@@ -318,8 +346,12 @@ class PurchaseOrder(BaseModel):
             "accounting_by_row",
             "due_date",
             "payment_method",
+            "terms",
             "amortization_type",
             "tax_code",
+            "tax_method",
+            "issued_method",
+            "issued_email",
             "channel",
             "memo",
             "notes",
@@ -389,6 +421,7 @@ class PurchaseOrderInputTypedDict(TypedDict):
     tax_inclusive: NotRequired[Nullable[bool]]
     r"""Amounts are including tax"""
     line_items: NotRequired[List[InvoiceLineItemInputTypedDict]]
+    billing_address: NotRequired[AddressTypedDict]
     shipping_address: NotRequired[AddressTypedDict]
     ledger_account: NotRequired[Nullable[LinkedLedgerAccountInputTypedDict]]
     template_id: NotRequired[Nullable[str]]
@@ -402,10 +435,18 @@ class PurchaseOrderInputTypedDict(TypedDict):
     r"""The due date is the date on which a payment is scheduled to be received - YYYY-MM-DD."""
     payment_method: NotRequired[Nullable[str]]
     r"""Payment method used for the transaction, such as cash, credit card, bank transfer, or check"""
+    terms: NotRequired[Nullable[str]]
+    r"""Terms of payment."""
     amortization_type: NotRequired[Nullable[AmortizationType]]
     r"""Type of amortization"""
     tax_code: NotRequired[Nullable[str]]
     r"""Applicable tax id/code override if tax is not supplied on a line item basis."""
+    tax_method: NotRequired[Nullable[str]]
+    r"""Method of tax calculation"""
+    issued_method: NotRequired[Nullable[str]]
+    r"""Method of issuance of the purchase order"""
+    issued_email: NotRequired[Nullable[str]]
+    r"""Email address of the person who issued the purchase order"""
     channel: NotRequired[Nullable[str]]
     r"""The channel through which the transaction is processed."""
     memo: NotRequired[Nullable[str]]
@@ -470,6 +511,8 @@ class PurchaseOrderInput(BaseModel):
 
     line_items: Optional[List[InvoiceLineItemInput]] = None
 
+    billing_address: Optional[Address] = None
+
     shipping_address: Optional[Address] = None
 
     ledger_account: OptionalNullable[LinkedLedgerAccountInput] = UNSET
@@ -491,11 +534,23 @@ class PurchaseOrderInput(BaseModel):
     payment_method: OptionalNullable[str] = UNSET
     r"""Payment method used for the transaction, such as cash, credit card, bank transfer, or check"""
 
+    terms: OptionalNullable[str] = UNSET
+    r"""Terms of payment."""
+
     amortization_type: OptionalNullable[AmortizationType] = UNSET
     r"""Type of amortization"""
 
     tax_code: OptionalNullable[str] = UNSET
     r"""Applicable tax id/code override if tax is not supplied on a line item basis."""
+
+    tax_method: OptionalNullable[str] = UNSET
+    r"""Method of tax calculation"""
+
+    issued_method: OptionalNullable[str] = UNSET
+    r"""Method of issuance of the purchase order"""
+
+    issued_email: OptionalNullable[str] = UNSET
+    r"""Email address of the person who issued the purchase order"""
 
     channel: OptionalNullable[str] = UNSET
     r"""The channel through which the transaction is processed."""
@@ -538,6 +593,7 @@ class PurchaseOrderInput(BaseModel):
             "total",
             "tax_inclusive",
             "line_items",
+            "billing_address",
             "shipping_address",
             "ledger_account",
             "template_id",
@@ -546,8 +602,12 @@ class PurchaseOrderInput(BaseModel):
             "accounting_by_row",
             "due_date",
             "payment_method",
+            "terms",
             "amortization_type",
             "tax_code",
+            "tax_method",
+            "issued_method",
+            "issued_email",
             "channel",
             "memo",
             "notes",
@@ -578,8 +638,12 @@ class PurchaseOrderInput(BaseModel):
             "accounting_by_row",
             "due_date",
             "payment_method",
+            "terms",
             "amortization_type",
             "tax_code",
+            "tax_method",
+            "issued_method",
+            "issued_email",
             "channel",
             "memo",
             "notes",
