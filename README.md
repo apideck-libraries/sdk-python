@@ -381,6 +381,14 @@ with Apideck(
 * [update](docs/sdks/purchaseorders/README.md#update) - Update Purchase Order
 * [delete](docs/sdks/purchaseorders/README.md#delete) - Delete Purchase Order
 
+#### [accounting.quotes](docs/sdks/quotes/README.md)
+
+* [list](docs/sdks/quotes/README.md#list) - List Quotes
+* [create](docs/sdks/quotes/README.md#create) - Create Quote
+* [get](docs/sdks/quotes/README.md#get) - Get Quote
+* [update](docs/sdks/quotes/README.md#update) - Update Quote
+* [delete](docs/sdks/quotes/README.md#delete) - Delete Quote
+
 #### [accounting.subsidiaries](docs/sdks/subsidiaries/README.md)
 
 * [list](docs/sdks/subsidiaries/README.md#list) - List Subsidiaries

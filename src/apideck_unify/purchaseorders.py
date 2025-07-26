@@ -412,6 +412,9 @@ class PurchaseOrders(BaseSDK):
                 List[models.InvoiceLineItemInputTypedDict],
             ]
         ] = None,
+        billing_address: Optional[
+            Union[models.Address, models.AddressTypedDict]
+        ] = None,
         shipping_address: Optional[
             Union[models.Address, models.AddressTypedDict]
         ] = None,
@@ -429,8 +432,12 @@ class PurchaseOrders(BaseSDK):
         accounting_by_row: OptionalNullable[bool] = UNSET,
         due_date: OptionalNullable[date] = UNSET,
         payment_method: OptionalNullable[str] = UNSET,
+        terms: OptionalNullable[str] = UNSET,
         amortization_type: OptionalNullable[models.AmortizationType] = UNSET,
         tax_code: OptionalNullable[str] = UNSET,
+        tax_method: OptionalNullable[str] = UNSET,
+        issued_method: OptionalNullable[str] = UNSET,
+        issued_email: OptionalNullable[str] = UNSET,
         channel: OptionalNullable[str] = UNSET,
         memo: OptionalNullable[str] = UNSET,
         notes: OptionalNullable[str] = UNSET,
@@ -476,6 +483,7 @@ class PurchaseOrders(BaseSDK):
         :param total: Total amount of invoice, including tax.
         :param tax_inclusive: Amounts are including tax
         :param line_items:
+        :param billing_address:
         :param shipping_address:
         :param ledger_account:
         :param template_id: Optional purchase order template
@@ -484,8 +492,12 @@ class PurchaseOrders(BaseSDK):
         :param accounting_by_row: Indicates if accounting by row is used (true) or not (false). Accounting by row means that a separate ledger transaction is created for each row.
         :param due_date: The due date is the date on which a payment is scheduled to be received - YYYY-MM-DD.
         :param payment_method: Payment method used for the transaction, such as cash, credit card, bank transfer, or check
+        :param terms: Terms of payment.
         :param amortization_type: Type of amortization
         :param tax_code: Applicable tax id/code override if tax is not supplied on a line item basis.
+        :param tax_method: Method of tax calculation
+        :param issued_method: Method of issuance of the purchase order
+        :param issued_email: Email address of the person who issued the purchase order
         :param channel: The channel through which the transaction is processed.
         :param memo: Message for the supplier. This text appears on the Purchase Order.
         :param notes: Internal notes for the purchase order.
@@ -534,6 +546,9 @@ class PurchaseOrders(BaseSDK):
                 line_items=utils.get_pydantic_model(
                     line_items, Optional[List[models.InvoiceLineItemInput]]
                 ),
+                billing_address=utils.get_pydantic_model(
+                    billing_address, Optional[models.Address]
+                ),
                 shipping_address=utils.get_pydantic_model(
                     shipping_address, Optional[models.Address]
                 ),
@@ -548,8 +563,12 @@ class PurchaseOrders(BaseSDK):
                 accounting_by_row=accounting_by_row,
                 due_date=due_date,
                 payment_method=payment_method,
+                terms=terms,
                 amortization_type=amortization_type,
                 tax_code=tax_code,
+                tax_method=tax_method,
+                issued_method=issued_method,
+                issued_email=issued_email,
                 channel=channel,
                 memo=memo,
                 notes=notes,
@@ -696,6 +715,9 @@ class PurchaseOrders(BaseSDK):
                 List[models.InvoiceLineItemInputTypedDict],
             ]
         ] = None,
+        billing_address: Optional[
+            Union[models.Address, models.AddressTypedDict]
+        ] = None,
         shipping_address: Optional[
             Union[models.Address, models.AddressTypedDict]
         ] = None,
@@ -713,8 +735,12 @@ class PurchaseOrders(BaseSDK):
         accounting_by_row: OptionalNullable[bool] = UNSET,
         due_date: OptionalNullable[date] = UNSET,
         payment_method: OptionalNullable[str] = UNSET,
+        terms: OptionalNullable[str] = UNSET,
         amortization_type: OptionalNullable[models.AmortizationType] = UNSET,
         tax_code: OptionalNullable[str] = UNSET,
+        tax_method: OptionalNullable[str] = UNSET,
+        issued_method: OptionalNullable[str] = UNSET,
+        issued_email: OptionalNullable[str] = UNSET,
         channel: OptionalNullable[str] = UNSET,
         memo: OptionalNullable[str] = UNSET,
         notes: OptionalNullable[str] = UNSET,
@@ -760,6 +786,7 @@ class PurchaseOrders(BaseSDK):
         :param total: Total amount of invoice, including tax.
         :param tax_inclusive: Amounts are including tax
         :param line_items:
+        :param billing_address:
         :param shipping_address:
         :param ledger_account:
         :param template_id: Optional purchase order template
@@ -768,8 +795,12 @@ class PurchaseOrders(BaseSDK):
         :param accounting_by_row: Indicates if accounting by row is used (true) or not (false). Accounting by row means that a separate ledger transaction is created for each row.
         :param due_date: The due date is the date on which a payment is scheduled to be received - YYYY-MM-DD.
         :param payment_method: Payment method used for the transaction, such as cash, credit card, bank transfer, or check
+        :param terms: Terms of payment.
         :param amortization_type: Type of amortization
         :param tax_code: Applicable tax id/code override if tax is not supplied on a line item basis.
+        :param tax_method: Method of tax calculation
+        :param issued_method: Method of issuance of the purchase order
+        :param issued_email: Email address of the person who issued the purchase order
         :param channel: The channel through which the transaction is processed.
         :param memo: Message for the supplier. This text appears on the Purchase Order.
         :param notes: Internal notes for the purchase order.
@@ -818,6 +849,9 @@ class PurchaseOrders(BaseSDK):
                 line_items=utils.get_pydantic_model(
                     line_items, Optional[List[models.InvoiceLineItemInput]]
                 ),
+                billing_address=utils.get_pydantic_model(
+                    billing_address, Optional[models.Address]
+                ),
                 shipping_address=utils.get_pydantic_model(
                     shipping_address, Optional[models.Address]
                 ),
@@ -832,8 +866,12 @@ class PurchaseOrders(BaseSDK):
                 accounting_by_row=accounting_by_row,
                 due_date=due_date,
                 payment_method=payment_method,
+                terms=terms,
                 amortization_type=amortization_type,
                 tax_code=tax_code,
+                tax_method=tax_method,
+                issued_method=issued_method,
+                issued_email=issued_email,
                 channel=channel,
                 memo=memo,
                 notes=notes,
@@ -1263,6 +1301,9 @@ class PurchaseOrders(BaseSDK):
                 List[models.InvoiceLineItemInputTypedDict],
             ]
         ] = None,
+        billing_address: Optional[
+            Union[models.Address, models.AddressTypedDict]
+        ] = None,
         shipping_address: Optional[
             Union[models.Address, models.AddressTypedDict]
         ] = None,
@@ -1280,8 +1321,12 @@ class PurchaseOrders(BaseSDK):
         accounting_by_row: OptionalNullable[bool] = UNSET,
         due_date: OptionalNullable[date] = UNSET,
         payment_method: OptionalNullable[str] = UNSET,
+        terms: OptionalNullable[str] = UNSET,
         amortization_type: OptionalNullable[models.AmortizationType] = UNSET,
         tax_code: OptionalNullable[str] = UNSET,
+        tax_method: OptionalNullable[str] = UNSET,
+        issued_method: OptionalNullable[str] = UNSET,
+        issued_email: OptionalNullable[str] = UNSET,
         channel: OptionalNullable[str] = UNSET,
         memo: OptionalNullable[str] = UNSET,
         notes: OptionalNullable[str] = UNSET,
@@ -1328,6 +1373,7 @@ class PurchaseOrders(BaseSDK):
         :param total: Total amount of invoice, including tax.
         :param tax_inclusive: Amounts are including tax
         :param line_items:
+        :param billing_address:
         :param shipping_address:
         :param ledger_account:
         :param template_id: Optional purchase order template
@@ -1336,8 +1382,12 @@ class PurchaseOrders(BaseSDK):
         :param accounting_by_row: Indicates if accounting by row is used (true) or not (false). Accounting by row means that a separate ledger transaction is created for each row.
         :param due_date: The due date is the date on which a payment is scheduled to be received - YYYY-MM-DD.
         :param payment_method: Payment method used for the transaction, such as cash, credit card, bank transfer, or check
+        :param terms: Terms of payment.
         :param amortization_type: Type of amortization
         :param tax_code: Applicable tax id/code override if tax is not supplied on a line item basis.
+        :param tax_method: Method of tax calculation
+        :param issued_method: Method of issuance of the purchase order
+        :param issued_email: Email address of the person who issued the purchase order
         :param channel: The channel through which the transaction is processed.
         :param memo: Message for the supplier. This text appears on the Purchase Order.
         :param notes: Internal notes for the purchase order.
@@ -1387,6 +1437,9 @@ class PurchaseOrders(BaseSDK):
                 line_items=utils.get_pydantic_model(
                     line_items, Optional[List[models.InvoiceLineItemInput]]
                 ),
+                billing_address=utils.get_pydantic_model(
+                    billing_address, Optional[models.Address]
+                ),
                 shipping_address=utils.get_pydantic_model(
                     shipping_address, Optional[models.Address]
                 ),
@@ -1401,8 +1454,12 @@ class PurchaseOrders(BaseSDK):
                 accounting_by_row=accounting_by_row,
                 due_date=due_date,
                 payment_method=payment_method,
+                terms=terms,
                 amortization_type=amortization_type,
                 tax_code=tax_code,
+                tax_method=tax_method,
+                issued_method=issued_method,
+                issued_email=issued_email,
                 channel=channel,
                 memo=memo,
                 notes=notes,
@@ -1550,6 +1607,9 @@ class PurchaseOrders(BaseSDK):
                 List[models.InvoiceLineItemInputTypedDict],
             ]
         ] = None,
+        billing_address: Optional[
+            Union[models.Address, models.AddressTypedDict]
+        ] = None,
         shipping_address: Optional[
             Union[models.Address, models.AddressTypedDict]
         ] = None,
@@ -1567,8 +1627,12 @@ class PurchaseOrders(BaseSDK):
         accounting_by_row: OptionalNullable[bool] = UNSET,
         due_date: OptionalNullable[date] = UNSET,
         payment_method: OptionalNullable[str] = UNSET,
+        terms: OptionalNullable[str] = UNSET,
         amortization_type: OptionalNullable[models.AmortizationType] = UNSET,
         tax_code: OptionalNullable[str] = UNSET,
+        tax_method: OptionalNullable[str] = UNSET,
+        issued_method: OptionalNullable[str] = UNSET,
+        issued_email: OptionalNullable[str] = UNSET,
         channel: OptionalNullable[str] = UNSET,
         memo: OptionalNullable[str] = UNSET,
         notes: OptionalNullable[str] = UNSET,
@@ -1615,6 +1679,7 @@ class PurchaseOrders(BaseSDK):
         :param total: Total amount of invoice, including tax.
         :param tax_inclusive: Amounts are including tax
         :param line_items:
+        :param billing_address:
         :param shipping_address:
         :param ledger_account:
         :param template_id: Optional purchase order template
@@ -1623,8 +1688,12 @@ class PurchaseOrders(BaseSDK):
         :param accounting_by_row: Indicates if accounting by row is used (true) or not (false). Accounting by row means that a separate ledger transaction is created for each row.
         :param due_date: The due date is the date on which a payment is scheduled to be received - YYYY-MM-DD.
         :param payment_method: Payment method used for the transaction, such as cash, credit card, bank transfer, or check
+        :param terms: Terms of payment.
         :param amortization_type: Type of amortization
         :param tax_code: Applicable tax id/code override if tax is not supplied on a line item basis.
+        :param tax_method: Method of tax calculation
+        :param issued_method: Method of issuance of the purchase order
+        :param issued_email: Email address of the person who issued the purchase order
         :param channel: The channel through which the transaction is processed.
         :param memo: Message for the supplier. This text appears on the Purchase Order.
         :param notes: Internal notes for the purchase order.
@@ -1674,6 +1743,9 @@ class PurchaseOrders(BaseSDK):
                 line_items=utils.get_pydantic_model(
                     line_items, Optional[List[models.InvoiceLineItemInput]]
                 ),
+                billing_address=utils.get_pydantic_model(
+                    billing_address, Optional[models.Address]
+                ),
                 shipping_address=utils.get_pydantic_model(
                     shipping_address, Optional[models.Address]
                 ),
@@ -1688,8 +1760,12 @@ class PurchaseOrders(BaseSDK):
                 accounting_by_row=accounting_by_row,
                 due_date=due_date,
                 payment_method=payment_method,
+                terms=terms,
                 amortization_type=amortization_type,
                 tax_code=tax_code,
+                tax_method=tax_method,
+                issued_method=issued_method,
+                issued_email=issued_email,
                 channel=channel,
                 memo=memo,
                 notes=notes,
