@@ -17,6 +17,7 @@ List Tickets
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="issueTracking.collectionTicketsAll" method="get" path="/issue-tracking/collections/{collection_id}/tickets" -->
 ```python
 import apideck_unify
 from apideck_unify import Apideck
@@ -85,6 +86,7 @@ Create Ticket
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="issueTracking.collectionTicketsAdd" method="post" path="/issue-tracking/collections/{collection_id}/tickets" -->
 ```python
 import apideck_unify
 from apideck_unify import Apideck
@@ -233,6 +235,7 @@ Get Ticket
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="issueTracking.collectionTicketsOne" method="get" path="/issue-tracking/collections/{collection_id}/tickets/{ticket_id}" -->
 ```python
 from apideck_unify import Apideck
 import os
@@ -287,6 +290,7 @@ Update Ticket
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="issueTracking.collectionTicketsUpdate" method="patch" path="/issue-tracking/collections/{collection_id}/tickets/{ticket_id}" -->
 ```python
 import apideck_unify
 from apideck_unify import Apideck
@@ -427,6 +431,7 @@ Delete Ticket
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="issueTracking.collectionTicketsDelete" method="delete" path="/issue-tracking/collections/{collection_id}/tickets/{ticket_id}" -->
 ```python
 from apideck_unify import Apideck
 import os

@@ -13,6 +13,7 @@ Get Aged Debtors
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="accounting.agedDebtorsOne" method="get" path="/accounting/aged-debtors" -->
 ```python
 from apideck_unify import Apideck
 import os

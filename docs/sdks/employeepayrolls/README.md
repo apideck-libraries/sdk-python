@@ -14,6 +14,7 @@ List payrolls for employee
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="hris.employeePayrollsAll" method="get" path="/hris/payrolls/employees/{employee_id}" -->
 ```python
 from apideck_unify import Apideck
 import os
@@ -74,6 +75,7 @@ Get payroll for employee
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="hris.employeePayrollsOne" method="get" path="/hris/payrolls/employees/{employee_id}/payrolls/{payroll_id}" -->
 ```python
 from apideck_unify import Apideck
 import os

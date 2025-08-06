@@ -14,6 +14,7 @@ List Connectors
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="connector.connectorsAll" method="get" path="/connector/connectors" -->
 ```python
 import apideck_unify
 from apideck_unify import Apideck
@@ -65,6 +66,7 @@ Get Connector
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="connector.connectorsOne" method="get" path="/connector/connectors/{id}" -->
 ```python
 from apideck_unify import Apideck
 import os

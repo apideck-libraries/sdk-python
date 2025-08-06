@@ -17,6 +17,7 @@ List Applications
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="ats.applicationsAll" method="get" path="/ats/applications" -->
 ```python
 from apideck_unify import Apideck
 import os
@@ -73,6 +74,7 @@ Create Application
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="ats.applicationsAdd" method="post" path="/ats/applications" -->
 ```python
 import apideck_unify
 from apideck_unify import Apideck
@@ -155,6 +157,7 @@ Get Application
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="ats.applicationsOne" method="get" path="/ats/applications/{id}" -->
 ```python
 from apideck_unify import Apideck
 import os
@@ -207,6 +210,7 @@ Update Application
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="ats.applicationsUpdate" method="patch" path="/ats/applications/{id}" -->
 ```python
 import apideck_unify
 from apideck_unify import Apideck
@@ -356,6 +360,7 @@ Delete Application
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="ats.applicationsDelete" method="delete" path="/ats/applications/{id}" -->
 ```python
 from apideck_unify import Apideck
 import os

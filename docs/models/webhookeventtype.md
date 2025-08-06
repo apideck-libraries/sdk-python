@@ -122,3 +122,6 @@
 | `ECOMMERCE_CUSTOMER_CREATED`            | ecommerce.customer.created              |
 | `ECOMMERCE_CUSTOMER_UPDATED`            | ecommerce.customer.updated              |
 | `ECOMMERCE_CUSTOMER_DELETED`            | ecommerce.customer.deleted              |
+| `ACCOUNTING_QUOTE_CREATED`              | accounting.quote.created                |
+| `ACCOUNTING_QUOTE_UPDATED`              | accounting.quote.updated                |
+| `ACCOUNTING_QUOTE_DELETED`              | accounting.quote.deleted                |

@@ -48,7 +48,7 @@ class Consumers(BaseSDK):
 
         request = models.VaultConsumersAddRequest(
             app_id=app_id,
-            consumer=models.ConsumerInput(
+            create_consumer_request=models.CreateConsumerRequest(
                 consumer_id=consumer_id,
                 metadata=utils.get_pydantic_model(
                     metadata, Optional[models.ConsumerMetadata]
@@ -73,7 +73,11 @@ class Consumers(BaseSDK):
             ),
             security=self.sdk_configuration.security,
             get_serialized_body=lambda: utils.serialize_request_body(
-                request.consumer, False, False, "json", models.ConsumerInput
+                request.create_consumer_request,
+                False,
+                False,
+                "json",
+                models.CreateConsumerRequest,
             ),
             timeout_ms=timeout_ms,
         )
@@ -191,7 +195,7 @@ class Consumers(BaseSDK):
 
         request = models.VaultConsumersAddRequest(
             app_id=app_id,
-            consumer=models.ConsumerInput(
+            create_consumer_request=models.CreateConsumerRequest(
                 consumer_id=consumer_id,
                 metadata=utils.get_pydantic_model(
                     metadata, Optional[models.ConsumerMetadata]
@@ -216,7 +220,11 @@ class Consumers(BaseSDK):
             ),
             security=self.sdk_configuration.security,
             get_serialized_body=lambda: utils.serialize_request_body(
-                request.consumer, False, False, "json", models.ConsumerInput
+                request.create_consumer_request,
+                False,
+                False,
+                "json",
+                models.CreateConsumerRequest,
             ),
             timeout_ms=timeout_ms,
         )

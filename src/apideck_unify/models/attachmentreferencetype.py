@@ -8,3 +8,4 @@ class AttachmentReferenceType(str, Enum):
     INVOICE = "invoice"
     BILL = "bill"
     EXPENSE = "expense"
+    QUOTE = "quote"

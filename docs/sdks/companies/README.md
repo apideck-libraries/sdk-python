@@ -17,6 +17,7 @@ List companies
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="crm.companiesAll" method="get" path="/crm/companies" -->
 ```python
 import apideck_unify
 from apideck_unify import Apideck
@@ -82,6 +83,7 @@ Create company
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="crm.companiesAdd" method="post" path="/crm/companies" -->
 ```python
 import apideck_unify
 from apideck_unify import Apideck
@@ -325,6 +327,7 @@ Get company
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="crm.companiesOne" method="get" path="/crm/companies/{id}" -->
 ```python
 from apideck_unify import Apideck
 import os
@@ -378,6 +381,7 @@ Update company
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="crm.companiesUpdate" method="patch" path="/crm/companies/{id}" -->
 ```python
 import apideck_unify
 from apideck_unify import Apideck
@@ -670,6 +674,7 @@ Delete company
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="crm.companiesDelete" method="delete" path="/crm/companies/{id}" -->
 ```python
 from apideck_unify import Apideck
 import os

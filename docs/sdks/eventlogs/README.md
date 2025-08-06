@@ -13,6 +13,7 @@ List event logs
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="webhook.eventLogsAll" method="get" path="/webhook/logs" -->
 ```python
 from apideck_unify import Apideck
 import os

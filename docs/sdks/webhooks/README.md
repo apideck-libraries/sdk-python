@@ -17,6 +17,7 @@ List all webhook subscriptions
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="webhook.webhooksAll" method="get" path="/webhook/webhooks" -->
 ```python
 from apideck_unify import Apideck
 import os
@@ -66,6 +67,7 @@ Create a webhook subscription to receive events
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="webhook.webhooksAdd" method="post" path="/webhook/webhooks" -->
 ```python
 import apideck_unify
 from apideck_unify import Apideck
@@ -122,6 +124,7 @@ Get the webhook subscription details
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="webhook.webhooksOne" method="get" path="/webhook/webhooks/{id}" -->
 ```python
 from apideck_unify import Apideck
 import os
@@ -170,6 +173,7 @@ Update a webhook subscription
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="webhook.webhooksUpdate" method="patch" path="/webhook/webhooks/{id}" -->
 ```python
 import apideck_unify
 from apideck_unify import Apideck
@@ -226,6 +230,7 @@ Delete a webhook subscription
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="webhook.webhooksDelete" method="delete" path="/webhook/webhooks/{id}" -->
 ```python
 from apideck_unify import Apideck
 import os

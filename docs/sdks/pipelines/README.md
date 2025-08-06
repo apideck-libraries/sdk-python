@@ -17,6 +17,7 @@ List pipelines
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="crm.pipelinesAll" method="get" path="/crm/pipelines" -->
 ```python
 from apideck_unify import Apideck
 import os
@@ -74,6 +75,7 @@ Create pipeline
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="crm.pipelinesAdd" method="post" path="/crm/pipelines" -->
 ```python
 import apideck_unify
 from apideck_unify import Apideck
@@ -175,6 +177,7 @@ Get pipeline
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="crm.pipelinesOne" method="get" path="/crm/pipelines/{id}" -->
 ```python
 from apideck_unify import Apideck
 import os
@@ -228,6 +231,7 @@ Update pipeline
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="crm.pipelinesUpdate" method="patch" path="/crm/pipelines/{id}" -->
 ```python
 import apideck_unify
 from apideck_unify import Apideck
@@ -362,6 +366,7 @@ Delete pipeline
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="crm.pipelinesDelete" method="delete" path="/crm/pipelines/{id}" -->
 ```python
 from apideck_unify import Apideck
 import os

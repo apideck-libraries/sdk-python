@@ -17,6 +17,7 @@ List custom objects
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="crm.customObjectsAll" method="get" path="/crm/custom-objects/{object_id}" -->
 ```python
 from apideck_unify import Apideck
 import os
@@ -75,6 +76,7 @@ Create custom object
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="crm.customObjectsAdd" method="post" path="/crm/custom-objects/{object_id}" -->
 ```python
 from apideck_unify import Apideck
 import os
@@ -183,6 +185,7 @@ Get custom object
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="crm.customObjectsOne" method="get" path="/crm/custom-objects/{object_id}/{id}" -->
 ```python
 from apideck_unify import Apideck
 import os
@@ -236,6 +239,7 @@ Update custom object
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="crm.customObjectsUpdate" method="patch" path="/crm/custom-objects/{object_id}/{id}" -->
 ```python
 from apideck_unify import Apideck
 import os
@@ -323,6 +327,7 @@ Delete custom object
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="crm.customObjectsDelete" method="delete" path="/crm/custom-objects/{object_id}/{id}" -->
 ```python
 from apideck_unify import Apideck
 import os

@@ -17,6 +17,7 @@ Create a consumer
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="vault.consumersAdd" method="post" path="/vault/consumers" -->
 ```python
 from apideck_unify import Apideck
 import os
@@ -72,6 +73,7 @@ This endpoint includes all application consumers, along with an aggregated count
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="vault.consumersAll" method="get" path="/vault/consumers" -->
 ```python
 from apideck_unify import Apideck
 import os
@@ -122,6 +124,7 @@ Consumer detail including their aggregated counts with the connections they have
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="vault.consumersOne" method="get" path="/vault/consumers/{consumer_id}" -->
 ```python
 from apideck_unify import Apideck
 import os
@@ -170,6 +173,7 @@ Update consumer metadata such as name and email.
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="vault.consumersUpdate" method="patch" path="/vault/consumers/{consumer_id}" -->
 ```python
 from apideck_unify import Apideck
 import os
@@ -224,6 +228,7 @@ Delete consumer and all their connections, including credentials.
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="vault.consumersDelete" method="delete" path="/vault/consumers/{consumer_id}" -->
 ```python
 from apideck_unify import Apideck
 import os

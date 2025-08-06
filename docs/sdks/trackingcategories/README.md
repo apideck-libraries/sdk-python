@@ -17,6 +17,7 @@ List Tracking Categories
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="accounting.trackingCategoriesAll" method="get" path="/accounting/tracking-categories" -->
 ```python
 from apideck_unify import Apideck
 import os
@@ -74,6 +75,7 @@ Create Tracking Category
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="accounting.trackingCategoriesAdd" method="post" path="/accounting/tracking-categories" -->
 ```python
 import apideck_unify
 from apideck_unify import Apideck
@@ -192,6 +194,7 @@ Get Tracking Category
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="accounting.trackingCategoriesOne" method="get" path="/accounting/tracking-categories/{id}" -->
 ```python
 from apideck_unify import Apideck
 import os
@@ -245,6 +248,7 @@ Update Tracking Category
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="accounting.trackingCategoriesUpdate" method="patch" path="/accounting/tracking-categories/{id}" -->
 ```python
 import apideck_unify
 from apideck_unify import Apideck
@@ -327,6 +331,7 @@ Delete Tracking Category
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="accounting.trackingCategoriesDelete" method="delete" path="/accounting/tracking-categories/{id}" -->
 ```python
 from apideck_unify import Apideck
 import os

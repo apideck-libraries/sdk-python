@@ -17,6 +17,7 @@ List Messages
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="sms.messagesAll" method="get" path="/sms/messages" -->
 ```python
 from apideck_unify import Apideck
 import os
@@ -71,6 +72,7 @@ Create Message
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="sms.messagesAdd" method="post" path="/sms/messages" -->
 ```python
 import apideck_unify
 from apideck_unify import Apideck
@@ -177,6 +179,7 @@ Get Message
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="sms.messagesOne" method="get" path="/sms/messages/{id}" -->
 ```python
 from apideck_unify import Apideck
 import os
@@ -230,6 +233,7 @@ Update Message
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="sms.messagesUpdate" method="patch" path="/sms/messages/{id}" -->
 ```python
 import apideck_unify
 from apideck_unify import Apideck
@@ -321,6 +325,7 @@ Delete Message
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="sms.messagesDelete" method="delete" path="/sms/messages/{id}" -->
 ```python
 from apideck_unify import Apideck
 import os

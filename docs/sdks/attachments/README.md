@@ -17,6 +17,7 @@ List Attachments
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="accounting.attachmentsAll" method="get" path="/accounting/attachments/{reference_type}/{reference_id}" -->
 ```python
 import apideck_unify
 from apideck_unify import Apideck
@@ -74,6 +75,7 @@ Upload attachment
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="accounting.attachmentsUpload" method="post" path="/accounting/attachments/{reference_type}/{reference_id}" -->
 ```python
 import apideck_unify
 from apideck_unify import Apideck
@@ -131,6 +133,7 @@ Get Attachment
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="accounting.attachmentsOne" method="get" path="/accounting/attachments/{reference_type}/{reference_id}/{id}" -->
 ```python
 import apideck_unify
 from apideck_unify import Apideck
@@ -187,6 +190,7 @@ Delete Attachment
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="accounting.attachmentsDelete" method="delete" path="/accounting/attachments/{reference_type}/{reference_id}/{id}" -->
 ```python
 import apideck_unify
 from apideck_unify import Apideck
@@ -242,6 +246,7 @@ Download Attachment
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="accounting.attachmentsDownload" method="get" path="/accounting/attachments/{reference_type}/{reference_id}/{id}/download" -->
 ```python
 import apideck_unify
 from apideck_unify import Apideck

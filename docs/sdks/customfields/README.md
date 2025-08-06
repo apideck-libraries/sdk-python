@@ -14,6 +14,7 @@ This endpoint returns an custom fields on a connection resource.
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="vault.customFieldsAll" method="get" path="/vault/connections/{unified_api}/{service_id}/{resource}/custom-fields" -->
 ```python
 from apideck_unify import Apideck
 import os

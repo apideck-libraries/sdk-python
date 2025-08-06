@@ -15,6 +15,7 @@ This endpoint returns custom settings and their defaults required by connection 
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="vault.connectionSettingsAll" method="get" path="/vault/connections/{unified_api}/{service_id}/{resource}/config" -->
 ```python
 from apideck_unify import Apideck
 import os
@@ -67,6 +68,7 @@ Update default values for a connection's resource settings
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="vault.connectionSettingsUpdate" method="patch" path="/vault/connections/{unified_api}/{service_id}/{resource}/config" -->
 ```python
 import apideck_unify
 from apideck_unify import Apideck

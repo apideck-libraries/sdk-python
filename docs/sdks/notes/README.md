@@ -17,6 +17,7 @@ List notes
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="crm.notesAll" method="get" path="/crm/notes" -->
 ```python
 from apideck_unify import Apideck
 import os
@@ -74,6 +75,7 @@ Create note
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="crm.notesAdd" method="post" path="/crm/notes" -->
 ```python
 from apideck_unify import Apideck
 import os
@@ -199,6 +201,7 @@ Get note
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="crm.notesOne" method="get" path="/crm/notes/{id}" -->
 ```python
 from apideck_unify import Apideck
 import os
@@ -252,6 +255,7 @@ Update note
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="crm.notesUpdate" method="patch" path="/crm/notes/{id}" -->
 ```python
 from apideck_unify import Apideck
 import os
@@ -378,6 +382,7 @@ Delete note
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="crm.notesDelete" method="delete" path="/crm/notes/{id}" -->
 ```python
 from apideck_unify import Apideck
 import os

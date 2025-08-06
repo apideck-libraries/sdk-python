@@ -13,6 +13,7 @@ Get Profit and Loss
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="accounting.profitAndLossOne" method="get" path="/accounting/profit-and-loss" -->
 ```python
 from apideck_unify import Apideck
 import os

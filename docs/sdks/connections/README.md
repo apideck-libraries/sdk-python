@@ -21,6 +21,7 @@ OAuth2 supported integrations will contain authorize and revoke links to handle 
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="vault.connectionsAll" method="get" path="/vault/connections" -->
 ```python
 from apideck_unify import Apideck
 import os
@@ -72,6 +73,7 @@ Get a connection
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="vault.connectionsOne" method="get" path="/vault/connections/{unified_api}/{service_id}" -->
 ```python
 from apideck_unify import Apideck
 import os
@@ -123,6 +125,7 @@ Update a connection
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="vault.connectionsUpdate" method="patch" path="/vault/connections/{unified_api}/{service_id}" -->
 ```python
 import apideck_unify
 from apideck_unify import Apideck
@@ -284,6 +287,7 @@ Deletes a connection
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="vault.connectionsDelete" method="delete" path="/vault/connections/{unified_api}/{service_id}" -->
 ```python
 from apideck_unify import Apideck
 import os
@@ -336,6 +340,7 @@ Import an authorized connection.
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="vault.connectionsImport" method="post" path="/vault/connections/{unified_api}/{service_id}/import" -->
 ```python
 from apideck_unify import Apideck
 import os
@@ -407,6 +412,7 @@ Note:
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="vault.connectionsToken" method="post" path="/vault/connections/{unified_api}/{service_id}/token" -->
 ```python
 from apideck_unify import Apideck
 import os

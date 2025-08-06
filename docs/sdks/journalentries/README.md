@@ -17,6 +17,7 @@ List Journal Entries
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="accounting.journalEntriesAll" method="get" path="/accounting/journal-entries" -->
 ```python
 import apideck_unify
 from apideck_unify import Apideck
@@ -83,6 +84,7 @@ Create Journal Entry
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="accounting.journalEntriesAdd" method="post" path="/accounting/journal-entries" -->
 ```python
 import apideck_unify
 from apideck_unify import Apideck
@@ -294,6 +296,7 @@ Get Journal Entry
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="accounting.journalEntriesOne" method="get" path="/accounting/journal-entries/{id}" -->
 ```python
 from apideck_unify import Apideck
 import os
@@ -347,6 +350,7 @@ Update Journal Entry
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="accounting.journalEntriesUpdate" method="patch" path="/accounting/journal-entries/{id}" -->
 ```python
 import apideck_unify
 from apideck_unify import Apideck
@@ -581,6 +585,7 @@ Delete Journal Entry
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="accounting.journalEntriesDelete" method="delete" path="/accounting/journal-entries/{id}" -->
 ```python
 from apideck_unify import Apideck
 import os

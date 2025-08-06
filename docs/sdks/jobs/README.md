@@ -14,6 +14,7 @@ List Jobs
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="ats.jobsAll" method="get" path="/ats/jobs" -->
 ```python
 from apideck_unify import Apideck
 import os
@@ -71,6 +72,7 @@ Get Job
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="ats.jobsOne" method="get" path="/ats/jobs/{id}" -->
 ```python
 from apideck_unify import Apideck
 import os

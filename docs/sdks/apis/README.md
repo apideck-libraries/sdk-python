@@ -14,6 +14,7 @@ List APIs
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="connector.apisAll" method="get" path="/connector/apis" -->
 ```python
 import apideck_unify
 from apideck_unify import Apideck
@@ -65,6 +66,7 @@ Get API
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="connector.apisOne" method="get" path="/connector/apis/{id}" -->
 ```python
 from apideck_unify import Apideck
 import os

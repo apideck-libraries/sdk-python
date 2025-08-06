@@ -13,6 +13,7 @@ Get company info
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="accounting.companyInfoOne" method="get" path="/accounting/company-info" -->
 ```python
 from apideck_unify import Apideck
 import os

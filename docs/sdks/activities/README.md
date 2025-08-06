@@ -17,6 +17,7 @@ List activities
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="crm.activitiesAll" method="get" path="/crm/activities" -->
 ```python
 import apideck_unify
 from apideck_unify import Apideck
@@ -83,6 +84,7 @@ Create activity
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="crm.activitiesAdd" method="post" path="/crm/activities" -->
 ```python
 import apideck_unify
 from apideck_unify import Apideck
@@ -237,6 +239,7 @@ Get activity
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="crm.activitiesOne" method="get" path="/crm/activities/{id}" -->
 ```python
 from apideck_unify import Apideck
 import os
@@ -290,6 +293,7 @@ Update activity
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="crm.activitiesUpdate" method="patch" path="/crm/activities/{id}" -->
 ```python
 import apideck_unify
 from apideck_unify import Apideck
@@ -527,6 +531,7 @@ Delete activity
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="crm.activitiesDelete" method="delete" path="/crm/activities/{id}" -->
 ```python
 from apideck_unify import Apideck
 import os

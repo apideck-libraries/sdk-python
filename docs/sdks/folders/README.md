@@ -17,6 +17,7 @@ Create Folder
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="fileStorage.foldersAdd" method="post" path="/file-storage/folders" -->
 ```python
 from apideck_unify import Apideck
 import os
@@ -88,6 +89,7 @@ Get Folder
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="fileStorage.foldersOne" method="get" path="/file-storage/folders/{id}" -->
 ```python
 from apideck_unify import Apideck
 import os
@@ -141,6 +143,7 @@ Rename or move Folder
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="fileStorage.foldersUpdate" method="patch" path="/file-storage/folders/{id}" -->
 ```python
 from apideck_unify import Apideck
 import os
@@ -219,6 +222,7 @@ Delete Folder
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="fileStorage.foldersDelete" method="delete" path="/file-storage/folders/{id}" -->
 ```python
 from apideck_unify import Apideck
 import os
@@ -271,6 +275,7 @@ Copy Folder
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="fileStorage.foldersCopy" method="post" path="/file-storage/folders/{id}/copy" -->
 ```python
 from apideck_unify import Apideck
 import os

@@ -18,6 +18,7 @@ List Tax Rates. Note: Not all connectors return the actual rate/percentage value
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="accounting.taxRatesAll" method="get" path="/accounting/tax-rates" -->
 ```python
 from apideck_unify import Apideck
 import os
@@ -82,6 +83,7 @@ Create Tax Rate
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="accounting.taxRatesAdd" method="post" path="/accounting/tax-rates" -->
 ```python
 import apideck_unify
 from apideck_unify import Apideck
@@ -208,6 +210,7 @@ Get Tax Rate. Note: Not all connectors return the actual rate/percentage value. 
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="accounting.taxRatesOne" method="get" path="/accounting/tax-rates/{id}" -->
 ```python
 from apideck_unify import Apideck
 import os
@@ -261,6 +264,7 @@ Update Tax Rate
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="accounting.taxRatesUpdate" method="patch" path="/accounting/tax-rates/{id}" -->
 ```python
 import apideck_unify
 from apideck_unify import Apideck
@@ -427,6 +431,7 @@ Delete Tax Rate
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="accounting.taxRatesDelete" method="delete" path="/accounting/tax-rates/{id}" -->
 ```python
 from apideck_unify import Apideck
 import os

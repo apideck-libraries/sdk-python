@@ -17,6 +17,7 @@ List Expenses
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="accounting.expensesAll" method="get" path="/accounting/expenses" -->
 ```python
 from apideck_unify import Apideck
 import os
@@ -70,6 +71,7 @@ Create Expense
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="accounting.expensesAdd" method="post" path="/accounting/expenses" -->
 ```python
 import apideck_unify
 from apideck_unify import Apideck
@@ -262,6 +264,7 @@ Get Expense
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="accounting.expensesOne" method="get" path="/accounting/expenses/{id}" -->
 ```python
 from apideck_unify import Apideck
 import os
@@ -314,6 +317,7 @@ Update Expense
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="accounting.expensesUpdate" method="patch" path="/accounting/expenses/{id}" -->
 ```python
 import apideck_unify
 from apideck_unify import Apideck
@@ -524,6 +528,7 @@ Delete Expense
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="accounting.expensesDelete" method="delete" path="/accounting/expenses/{id}" -->
 ```python
 from apideck_unify import Apideck
 import os

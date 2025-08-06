@@ -17,6 +17,7 @@ List Bank Feed Accounts
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="accounting.bankFeedAccountsAll" method="get" path="/accounting/bank-feed-accounts" -->
 ```python
 from apideck_unify import Apideck
 import os
@@ -74,6 +75,7 @@ Create Bank Feed Account
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="accounting.bankFeedAccountsAdd" method="post" path="/accounting/bank-feed-accounts" -->
 ```python
 import apideck_unify
 from apideck_unify import Apideck
@@ -154,6 +156,7 @@ Get Bank Feed Account
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="accounting.bankFeedAccountsOne" method="get" path="/accounting/bank-feed-accounts/{id}" -->
 ```python
 from apideck_unify import Apideck
 import os
@@ -207,6 +210,7 @@ Update Bank Feed Account
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="accounting.bankFeedAccountsUpdate" method="patch" path="/accounting/bank-feed-accounts/{id}" -->
 ```python
 import apideck_unify
 from apideck_unify import Apideck
@@ -282,6 +286,7 @@ Delete Bank Feed Account
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="accounting.bankFeedAccountsDelete" method="delete" path="/accounting/bank-feed-accounts/{id}" -->
 ```python
 from apideck_unify import Apideck
 import os

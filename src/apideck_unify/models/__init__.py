@@ -2,6 +2,7 @@
 
 from typing import TYPE_CHECKING
 from importlib import import_module
+import builtins
 
 if TYPE_CHECKING:
     from .accounting_agedcreditorsoneop import (
@@ -701,6 +702,46 @@ if TYPE_CHECKING:
         AccountingPurchaseOrdersUpdateResponse,
         AccountingPurchaseOrdersUpdateResponseTypedDict,
     )
+    from .accounting_quotesaddop import (
+        AccountingQuotesAddGlobals,
+        AccountingQuotesAddGlobalsTypedDict,
+        AccountingQuotesAddRequest,
+        AccountingQuotesAddRequestTypedDict,
+        AccountingQuotesAddResponse,
+        AccountingQuotesAddResponseTypedDict,
+    )
+    from .accounting_quotesallop import (
+        AccountingQuotesAllGlobals,
+        AccountingQuotesAllGlobalsTypedDict,
+        AccountingQuotesAllRequest,
+        AccountingQuotesAllRequestTypedDict,
+        AccountingQuotesAllResponse,
+        AccountingQuotesAllResponseTypedDict,
+    )
+    from .accounting_quotesdeleteop import (
+        AccountingQuotesDeleteGlobals,
+        AccountingQuotesDeleteGlobalsTypedDict,
+        AccountingQuotesDeleteRequest,
+        AccountingQuotesDeleteRequestTypedDict,
+        AccountingQuotesDeleteResponse,
+        AccountingQuotesDeleteResponseTypedDict,
+    )
+    from .accounting_quotesoneop import (
+        AccountingQuotesOneGlobals,
+        AccountingQuotesOneGlobalsTypedDict,
+        AccountingQuotesOneRequest,
+        AccountingQuotesOneRequestTypedDict,
+        AccountingQuotesOneResponse,
+        AccountingQuotesOneResponseTypedDict,
+    )
+    from .accounting_quotesupdateop import (
+        AccountingQuotesUpdateGlobals,
+        AccountingQuotesUpdateGlobalsTypedDict,
+        AccountingQuotesUpdateRequest,
+        AccountingQuotesUpdateRequestTypedDict,
+        AccountingQuotesUpdateResponse,
+        AccountingQuotesUpdateResponseTypedDict,
+    )
     from .accounting_subsidiariesaddop import (
         AccountingSubsidiariesAddGlobals,
         AccountingSubsidiariesAddGlobalsTypedDict,
@@ -1292,7 +1333,6 @@ if TYPE_CHECKING:
     from .connectorsfilter import ConnectorsFilter, ConnectorsFilterTypedDict
     from .connectorstatus import ConnectorStatus
     from .consumer import Consumer, ConsumerTypedDict
-    from .consumer_input import ConsumerInput, ConsumerInputTypedDict
     from .consumerconnection import ConsumerConnection, ConsumerConnectionTypedDict
     from .consumermetadata import ConsumerMetadata, ConsumerMetadataTypedDict
     from .consumerrequestcountsindaterangeresponse import (
@@ -1367,6 +1407,10 @@ if TYPE_CHECKING:
     from .createconnectionresponse import (
         CreateConnectionResponse,
         CreateConnectionResponseTypedDict,
+    )
+    from .createconsumerrequest import (
+        CreateConsumerRequest,
+        CreateConsumerRequestTypedDict,
     )
     from .createconsumerresponse import (
         CreateConsumerResponse,
@@ -1456,6 +1500,7 @@ if TYPE_CHECKING:
         CreatePurchaseOrderResponse,
         CreatePurchaseOrderResponseTypedDict,
     )
+    from .createquoteresponse import CreateQuoteResponse, CreateQuoteResponseTypedDict
     from .createsessionresponse import (
         CreateSessionResponse,
         CreateSessionResponseData,
@@ -2098,6 +2143,7 @@ if TYPE_CHECKING:
         DeletePurchaseOrderResponse,
         DeletePurchaseOrderResponseTypedDict,
     )
+    from .deletequoteresponse import DeleteQuoteResponse, DeleteQuoteResponseTypedDict
     from .deletesharedlinkresponse import (
         DeleteSharedLinkResponse,
         DeleteSharedLinkResponseTypedDict,
@@ -2262,6 +2308,10 @@ if TYPE_CHECKING:
         ProductStatus,
         Variants,
         VariantsTypedDict,
+    )
+    from .ecommerceproductsfilter import (
+        EcommerceProductsFilter,
+        EcommerceProductsFilterTypedDict,
     )
     from .ecommercestore import EcommerceStore, EcommerceStoreTypedDict
     from .email import Email, EmailType, EmailTypedDict
@@ -2917,6 +2967,8 @@ if TYPE_CHECKING:
         GetPurchaseOrdersResponse,
         GetPurchaseOrdersResponseTypedDict,
     )
+    from .getquoteresponse import GetQuoteResponse, GetQuoteResponseTypedDict
+    from .getquotesresponse import GetQuotesResponse, GetQuotesResponseTypedDict
     from .getsharedlinkresponse import (
         GetSharedLinkResponse,
         GetSharedLinkResponseTypedDict,
@@ -3221,6 +3273,7 @@ if TYPE_CHECKING:
         InvoiceItemsSortTypedDict,
     )
     from .invoicelineitem import (
+        Budget,
         InvoiceLineItem,
         InvoiceLineItemInput,
         InvoiceLineItemInputTypedDict,
@@ -3586,6 +3639,20 @@ if TYPE_CHECKING:
         PurchaseOrdersSortBy,
         PurchaseOrdersSortTypedDict,
     )
+    from .quote import (
+        Quote,
+        QuoteInput,
+        QuoteInputTypedDict,
+        QuoteStatus,
+        QuoteTypedDict,
+    )
+    from .quotelineitem import (
+        QuoteLineItem,
+        QuoteLineItemInput,
+        QuoteLineItemInputTypedDict,
+        QuoteLineItemType,
+        QuoteLineItemTypedDict,
+    )
     from .rebilling import RebillStatus, Rebilling, RebillingTypedDict
     from .requestcountallocation import (
         RequestCountAllocation,
@@ -3907,6 +3974,7 @@ if TYPE_CHECKING:
         UpdatePurchaseOrderResponse,
         UpdatePurchaseOrderResponseTypedDict,
     )
+    from .updatequoteresponse import UpdateQuoteResponse, UpdateQuoteResponseTypedDict
     from .updatesharedlinkresponse import (
         UpdateSharedLinkResponse,
         UpdateSharedLinkResponseTypedDict,
@@ -4757,6 +4825,36 @@ __all__ = [
     "AccountingPurchaseOrdersUpdateRequestTypedDict",
     "AccountingPurchaseOrdersUpdateResponse",
     "AccountingPurchaseOrdersUpdateResponseTypedDict",
+    "AccountingQuotesAddGlobals",
+    "AccountingQuotesAddGlobalsTypedDict",
+    "AccountingQuotesAddRequest",
+    "AccountingQuotesAddRequestTypedDict",
+    "AccountingQuotesAddResponse",
+    "AccountingQuotesAddResponseTypedDict",
+    "AccountingQuotesAllGlobals",
+    "AccountingQuotesAllGlobalsTypedDict",
+    "AccountingQuotesAllRequest",
+    "AccountingQuotesAllRequestTypedDict",
+    "AccountingQuotesAllResponse",
+    "AccountingQuotesAllResponseTypedDict",
+    "AccountingQuotesDeleteGlobals",
+    "AccountingQuotesDeleteGlobalsTypedDict",
+    "AccountingQuotesDeleteRequest",
+    "AccountingQuotesDeleteRequestTypedDict",
+    "AccountingQuotesDeleteResponse",
+    "AccountingQuotesDeleteResponseTypedDict",
+    "AccountingQuotesOneGlobals",
+    "AccountingQuotesOneGlobalsTypedDict",
+    "AccountingQuotesOneRequest",
+    "AccountingQuotesOneRequestTypedDict",
+    "AccountingQuotesOneResponse",
+    "AccountingQuotesOneResponseTypedDict",
+    "AccountingQuotesUpdateGlobals",
+    "AccountingQuotesUpdateGlobalsTypedDict",
+    "AccountingQuotesUpdateRequest",
+    "AccountingQuotesUpdateRequestTypedDict",
+    "AccountingQuotesUpdateResponse",
+    "AccountingQuotesUpdateResponseTypedDict",
     "AccountingSubsidiariesAddGlobals",
     "AccountingSubsidiariesAddGlobalsTypedDict",
     "AccountingSubsidiariesAddRequest",
@@ -5073,6 +5171,7 @@ __all__ = [
     "BlocksTypedDict",
     "Branch",
     "BranchTypedDict",
+    "Budget",
     "By",
     "CategoriesFilter",
     "CategoriesFilterType",
@@ -5207,8 +5306,6 @@ __all__ = [
     "Consumer",
     "ConsumerConnection",
     "ConsumerConnectionTypedDict",
-    "ConsumerInput",
-    "ConsumerInputTypedDict",
     "ConsumerMetadata",
     "ConsumerMetadataTypedDict",
     "ConsumerRequestCountsInDateRangeResponse",
@@ -5265,6 +5362,8 @@ __all__ = [
     "CreateCompanyResponseTypedDict",
     "CreateConnectionResponse",
     "CreateConnectionResponseTypedDict",
+    "CreateConsumerRequest",
+    "CreateConsumerRequestTypedDict",
     "CreateConsumerResponse",
     "CreateConsumerResponseTypedDict",
     "CreateContactResponse",
@@ -5315,6 +5414,8 @@ __all__ = [
     "CreatePipelineResponseTypedDict",
     "CreatePurchaseOrderResponse",
     "CreatePurchaseOrderResponseTypedDict",
+    "CreateQuoteResponse",
+    "CreateQuoteResponseTypedDict",
     "CreateSessionResponse",
     "CreateSessionResponseData",
     "CreateSessionResponseDataTypedDict",
@@ -5773,6 +5874,8 @@ __all__ = [
     "DeletePipelineResponseTypedDict",
     "DeletePurchaseOrderResponse",
     "DeletePurchaseOrderResponseTypedDict",
+    "DeleteQuoteResponse",
+    "DeleteQuoteResponseTypedDict",
     "DeleteSharedLinkResponse",
     "DeleteSharedLinkResponseTypedDict",
     "DeleteSubsidiaryResponse",
@@ -5879,6 +5982,8 @@ __all__ = [
     "EcommerceProductsAllRequestTypedDict",
     "EcommerceProductsAllResponse",
     "EcommerceProductsAllResponseTypedDict",
+    "EcommerceProductsFilter",
+    "EcommerceProductsFilterTypedDict",
     "EcommerceProductsOneGlobals",
     "EcommerceProductsOneGlobalsTypedDict",
     "EcommerceProductsOneRequest",
@@ -6391,6 +6496,10 @@ __all__ = [
     "GetPurchaseOrderResponseTypedDict",
     "GetPurchaseOrdersResponse",
     "GetPurchaseOrdersResponseTypedDict",
+    "GetQuoteResponse",
+    "GetQuoteResponseTypedDict",
+    "GetQuotesResponse",
+    "GetQuotesResponseTypedDict",
     "GetSharedLinkResponse",
     "GetSharedLinkResponseTypedDict",
     "GetSharedLinksResponse",
@@ -6936,6 +7045,16 @@ __all__ = [
     "PurchaseOrdersSort",
     "PurchaseOrdersSortBy",
     "PurchaseOrdersSortTypedDict",
+    "Quote",
+    "QuoteInput",
+    "QuoteInputTypedDict",
+    "QuoteLineItem",
+    "QuoteLineItemInput",
+    "QuoteLineItemInputTypedDict",
+    "QuoteLineItemType",
+    "QuoteLineItemTypedDict",
+    "QuoteStatus",
+    "QuoteTypedDict",
     "RebillStatus",
     "Rebilling",
     "RebillingTypedDict",
@@ -7192,6 +7311,8 @@ __all__ = [
     "UpdatePipelineResponseTypedDict",
     "UpdatePurchaseOrderResponse",
     "UpdatePurchaseOrderResponseTypedDict",
+    "UpdateQuoteResponse",
+    "UpdateQuoteResponseTypedDict",
     "UpdateSharedLinkResponse",
     "UpdateSharedLinkResponseTypedDict",
     "UpdateSubsidiaryResponse",
@@ -7949,6 +8070,36 @@ _dynamic_imports: dict[str, str] = {
     "AccountingPurchaseOrdersUpdateRequestTypedDict": ".accounting_purchaseordersupdateop",
     "AccountingPurchaseOrdersUpdateResponse": ".accounting_purchaseordersupdateop",
     "AccountingPurchaseOrdersUpdateResponseTypedDict": ".accounting_purchaseordersupdateop",
+    "AccountingQuotesAddGlobals": ".accounting_quotesaddop",
+    "AccountingQuotesAddGlobalsTypedDict": ".accounting_quotesaddop",
+    "AccountingQuotesAddRequest": ".accounting_quotesaddop",
+    "AccountingQuotesAddRequestTypedDict": ".accounting_quotesaddop",
+    "AccountingQuotesAddResponse": ".accounting_quotesaddop",
+    "AccountingQuotesAddResponseTypedDict": ".accounting_quotesaddop",
+    "AccountingQuotesAllGlobals": ".accounting_quotesallop",
+    "AccountingQuotesAllGlobalsTypedDict": ".accounting_quotesallop",
+    "AccountingQuotesAllRequest": ".accounting_quotesallop",
+    "AccountingQuotesAllRequestTypedDict": ".accounting_quotesallop",
+    "AccountingQuotesAllResponse": ".accounting_quotesallop",
+    "AccountingQuotesAllResponseTypedDict": ".accounting_quotesallop",
+    "AccountingQuotesDeleteGlobals": ".accounting_quotesdeleteop",
+    "AccountingQuotesDeleteGlobalsTypedDict": ".accounting_quotesdeleteop",
+    "AccountingQuotesDeleteRequest": ".accounting_quotesdeleteop",
+    "AccountingQuotesDeleteRequestTypedDict": ".accounting_quotesdeleteop",
+    "AccountingQuotesDeleteResponse": ".accounting_quotesdeleteop",
+    "AccountingQuotesDeleteResponseTypedDict": ".accounting_quotesdeleteop",
+    "AccountingQuotesOneGlobals": ".accounting_quotesoneop",
+    "AccountingQuotesOneGlobalsTypedDict": ".accounting_quotesoneop",
+    "AccountingQuotesOneRequest": ".accounting_quotesoneop",
+    "AccountingQuotesOneRequestTypedDict": ".accounting_quotesoneop",
+    "AccountingQuotesOneResponse": ".accounting_quotesoneop",
+    "AccountingQuotesOneResponseTypedDict": ".accounting_quotesoneop",
+    "AccountingQuotesUpdateGlobals": ".accounting_quotesupdateop",
+    "AccountingQuotesUpdateGlobalsTypedDict": ".accounting_quotesupdateop",
+    "AccountingQuotesUpdateRequest": ".accounting_quotesupdateop",
+    "AccountingQuotesUpdateRequestTypedDict": ".accounting_quotesupdateop",
+    "AccountingQuotesUpdateResponse": ".accounting_quotesupdateop",
+    "AccountingQuotesUpdateResponseTypedDict": ".accounting_quotesupdateop",
     "AccountingSubsidiariesAddGlobals": ".accounting_subsidiariesaddop",
     "AccountingSubsidiariesAddGlobalsTypedDict": ".accounting_subsidiariesaddop",
     "AccountingSubsidiariesAddRequest": ".accounting_subsidiariesaddop",
@@ -8446,8 +8597,6 @@ _dynamic_imports: dict[str, str] = {
     "ConnectorStatus": ".connectorstatus",
     "Consumer": ".consumer",
     "ConsumerTypedDict": ".consumer",
-    "ConsumerInput": ".consumer_input",
-    "ConsumerInputTypedDict": ".consumer_input",
     "ConsumerConnection": ".consumerconnection",
     "ConsumerConnectionTypedDict": ".consumerconnection",
     "ConsumerMetadata": ".consumermetadata",
@@ -8501,6 +8650,8 @@ _dynamic_imports: dict[str, str] = {
     "CreateCompanyResponseTypedDict": ".createcompanyresponse",
     "CreateConnectionResponse": ".createconnectionresponse",
     "CreateConnectionResponseTypedDict": ".createconnectionresponse",
+    "CreateConsumerRequest": ".createconsumerrequest",
+    "CreateConsumerRequestTypedDict": ".createconsumerrequest",
     "CreateConsumerResponse": ".createconsumerresponse",
     "CreateConsumerResponseTypedDict": ".createconsumerresponse",
     "CreateContactResponse": ".createcontactresponse",
@@ -8551,6 +8702,8 @@ _dynamic_imports: dict[str, str] = {
     "CreatePipelineResponseTypedDict": ".createpipelineresponse",
     "CreatePurchaseOrderResponse": ".createpurchaseorderresponse",
     "CreatePurchaseOrderResponseTypedDict": ".createpurchaseorderresponse",
+    "CreateQuoteResponse": ".createquoteresponse",
+    "CreateQuoteResponseTypedDict": ".createquoteresponse",
     "CreateSessionResponse": ".createsessionresponse",
     "CreateSessionResponseData": ".createsessionresponse",
     "CreateSessionResponseDataTypedDict": ".createsessionresponse",
@@ -9006,6 +9159,8 @@ _dynamic_imports: dict[str, str] = {
     "DeletePipelineResponseTypedDict": ".deletepipelineresponse",
     "DeletePurchaseOrderResponse": ".deletepurchaseorderresponse",
     "DeletePurchaseOrderResponseTypedDict": ".deletepurchaseorderresponse",
+    "DeleteQuoteResponse": ".deletequoteresponse",
+    "DeleteQuoteResponseTypedDict": ".deletequoteresponse",
     "DeleteSharedLinkResponse": ".deletesharedlinkresponse",
     "DeleteSharedLinkResponseTypedDict": ".deletesharedlinkresponse",
     "DeleteSubsidiaryResponse": ".deletesubsidiaryresponse",
@@ -9130,6 +9285,8 @@ _dynamic_imports: dict[str, str] = {
     "ProductStatus": ".ecommerceproduct",
     "Variants": ".ecommerceproduct",
     "VariantsTypedDict": ".ecommerceproduct",
+    "EcommerceProductsFilter": ".ecommerceproductsfilter",
+    "EcommerceProductsFilterTypedDict": ".ecommerceproductsfilter",
     "EcommerceStore": ".ecommercestore",
     "EcommerceStoreTypedDict": ".ecommercestore",
     "Email": ".email",
@@ -9620,6 +9777,10 @@ _dynamic_imports: dict[str, str] = {
     "GetPurchaseOrderResponseTypedDict": ".getpurchaseorderresponse",
     "GetPurchaseOrdersResponse": ".getpurchaseordersresponse",
     "GetPurchaseOrdersResponseTypedDict": ".getpurchaseordersresponse",
+    "GetQuoteResponse": ".getquoteresponse",
+    "GetQuoteResponseTypedDict": ".getquoteresponse",
+    "GetQuotesResponse": ".getquotesresponse",
+    "GetQuotesResponseTypedDict": ".getquotesresponse",
     "GetSharedLinkResponse": ".getsharedlinkresponse",
     "GetSharedLinkResponseTypedDict": ".getsharedlinkresponse",
     "GetSharedLinksResponse": ".getsharedlinksresponse",
@@ -9850,6 +10011,7 @@ _dynamic_imports: dict[str, str] = {
     "InvoiceItemsSort": ".invoiceitemssort",
     "InvoiceItemsSortBy": ".invoiceitemssort",
     "InvoiceItemsSortTypedDict": ".invoiceitemssort",
+    "Budget": ".invoicelineitem",
     "InvoiceLineItem": ".invoicelineitem",
     "InvoiceLineItemInput": ".invoicelineitem",
     "InvoiceLineItemInputTypedDict": ".invoicelineitem",
@@ -10173,6 +10335,16 @@ _dynamic_imports: dict[str, str] = {
     "PurchaseOrdersSort": ".purchaseorderssort",
     "PurchaseOrdersSortBy": ".purchaseorderssort",
     "PurchaseOrdersSortTypedDict": ".purchaseorderssort",
+    "Quote": ".quote",
+    "QuoteInput": ".quote",
+    "QuoteInputTypedDict": ".quote",
+    "QuoteStatus": ".quote",
+    "QuoteTypedDict": ".quote",
+    "QuoteLineItem": ".quotelineitem",
+    "QuoteLineItemInput": ".quotelineitem",
+    "QuoteLineItemInputTypedDict": ".quotelineitem",
+    "QuoteLineItemType": ".quotelineitem",
+    "QuoteLineItemTypedDict": ".quotelineitem",
     "RebillStatus": ".rebilling",
     "Rebilling": ".rebilling",
     "RebillingTypedDict": ".rebilling",
@@ -10409,6 +10581,8 @@ _dynamic_imports: dict[str, str] = {
     "UpdatePipelineResponseTypedDict": ".updatepipelineresponse",
     "UpdatePurchaseOrderResponse": ".updatepurchaseorderresponse",
     "UpdatePurchaseOrderResponseTypedDict": ".updatepurchaseorderresponse",
+    "UpdateQuoteResponse": ".updatequoteresponse",
+    "UpdateQuoteResponseTypedDict": ".updatequoteresponse",
     "UpdateSharedLinkResponse": ".updatesharedlinkresponse",
     "UpdateSharedLinkResponseTypedDict": ".updatesharedlinkresponse",
     "UpdateSubsidiaryResponse": ".updatesubsidiaryresponse",
@@ -10663,5 +10837,5 @@ def __getattr__(attr_name: str) -> object:
 
 
 def __dir__():
-    lazy_attrs = list(_dynamic_imports.keys())
-    return sorted(lazy_attrs)
+    lazy_attrs = builtins.list(_dynamic_imports.keys())
+    return builtins.sorted(lazy_attrs)

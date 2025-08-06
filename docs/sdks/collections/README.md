@@ -14,6 +14,7 @@ List Collections
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="issueTracking.collectionsAll" method="get" path="/issue-tracking/collections" -->
 ```python
 import apideck_unify
 from apideck_unify import Apideck
@@ -76,6 +77,7 @@ Get Collection
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="issueTracking.collectionsOne" method="get" path="/issue-tracking/collections/{collection_id}" -->
 ```python
 from apideck_unify import Apideck
 import os

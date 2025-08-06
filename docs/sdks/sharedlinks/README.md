@@ -17,6 +17,7 @@ List SharedLinks
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="fileStorage.sharedLinksAll" method="get" path="/file-storage/shared-links" -->
 ```python
 from apideck_unify import Apideck
 import os
@@ -74,6 +75,7 @@ Create Shared Link
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="fileStorage.sharedLinksAdd" method="post" path="/file-storage/shared-links" -->
 ```python
 import apideck_unify
 from apideck_unify import Apideck
@@ -190,6 +192,7 @@ Get Shared Link
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="fileStorage.sharedLinksOne" method="get" path="/file-storage/shared-links/{id}" -->
 ```python
 from apideck_unify import Apideck
 import os
@@ -243,6 +246,7 @@ Update Shared Link
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="fileStorage.sharedLinksUpdate" method="patch" path="/file-storage/shared-links/{id}" -->
 ```python
 import apideck_unify
 from apideck_unify import Apideck
@@ -365,6 +369,7 @@ Delete Shared Link
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="fileStorage.sharedLinksDelete" method="delete" path="/file-storage/shared-links/{id}" -->
 ```python
 from apideck_unify import Apideck
 import os

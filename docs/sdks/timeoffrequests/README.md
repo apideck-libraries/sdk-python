@@ -17,6 +17,7 @@ List Time Off Requests
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="hris.timeOffRequestsAll" method="get" path="/hris/time-off-requests" -->
 ```python
 import apideck_unify
 from apideck_unify import Apideck
@@ -83,6 +84,7 @@ Create Time Off Request
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="hris.timeOffRequestsAdd" method="post" path="/hris/time-off-requests" -->
 ```python
 import apideck_unify
 from apideck_unify import Apideck
@@ -167,6 +169,7 @@ Get Time Off Request
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="hris.timeOffRequestsOne" method="get" path="/hris/time-off-requests/employees/{employee_id}/time-off-requests/{id}" -->
 ```python
 from apideck_unify import Apideck
 import os
@@ -221,6 +224,7 @@ Update Time Off Request
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="hris.timeOffRequestsUpdate" method="patch" path="/hris/time-off-requests/employees/{employee_id}/time-off-requests/{id}" -->
 ```python
 import apideck_unify
 from apideck_unify import Apideck
@@ -323,6 +327,7 @@ Delete Time Off Request
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="hris.timeOffRequestsDelete" method="delete" path="/hris/time-off-requests/employees/{employee_id}/time-off-requests/{id}" -->
 ```python
 from apideck_unify import Apideck
 import os

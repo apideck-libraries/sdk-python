@@ -17,6 +17,7 @@ List Comments
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="issueTracking.collectionTicketCommentsAll" method="get" path="/issue-tracking/collections/{collection_id}/tickets/{ticket_id}/comments" -->
 ```python
 import apideck_unify
 from apideck_unify import Apideck
@@ -81,6 +82,7 @@ Create Comment
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="issueTracking.collectionTicketCommentsAdd" method="post" path="/issue-tracking/collections/{collection_id}/tickets/{ticket_id}/comments" -->
 ```python
 from apideck_unify import Apideck
 import os
@@ -195,6 +197,7 @@ Get Comment
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="issueTracking.collectionTicketCommentsOne" method="get" path="/issue-tracking/collections/{collection_id}/tickets/{ticket_id}/comments/{id}" -->
 ```python
 from apideck_unify import Apideck
 import os
@@ -252,6 +255,7 @@ Update Comment
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="issueTracking.collectionTicketCommentsUpdate" method="patch" path="/issue-tracking/collections/{collection_id}/tickets/{ticket_id}/comments/{id}" -->
 ```python
 from apideck_unify import Apideck
 import os
@@ -330,6 +334,7 @@ Delete Comment
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="issueTracking.collectionTicketCommentsDelete" method="delete" path="/issue-tracking/collections/{collection_id}/tickets/{ticket_id}/comments/{id}" -->
 ```python
 from apideck_unify import Apideck
 import os

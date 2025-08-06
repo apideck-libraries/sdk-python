@@ -17,6 +17,7 @@ List Invoices
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="accounting.invoicesAll" method="get" path="/accounting/invoices" -->
 ```python
 import apideck_unify
 from apideck_unify import Apideck
@@ -85,6 +86,7 @@ Create Invoice
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="accounting.invoicesAdd" method="post" path="/accounting/invoices" -->
 ```python
 import apideck_unify
 from apideck_unify import Apideck
@@ -417,6 +419,7 @@ Get Invoice
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="accounting.invoicesOne" method="get" path="/accounting/invoices/{id}" -->
 ```python
 from apideck_unify import Apideck
 import os
@@ -470,6 +473,7 @@ Update Invoice
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="accounting.invoicesUpdate" method="patch" path="/accounting/invoices/{id}" -->
 ```python
 import apideck_unify
 from apideck_unify import Apideck
@@ -852,6 +856,7 @@ Delete Invoice
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="accounting.invoicesDelete" method="delete" path="/accounting/invoices/{id}" -->
 ```python
 from apideck_unify import Apideck
 import os

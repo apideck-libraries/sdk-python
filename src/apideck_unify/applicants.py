@@ -461,7 +461,7 @@ class Applicants(BaseSDK):
         :param recruiter_id:
         :param coordinator_id:
         :param application_ids:
-        :param applications:
+        :param applications: Deprecated: Use application_ids instead. Array of application IDs associated with the applicant.
         :param followers:
         :param sources:
         :param confidential:
@@ -721,7 +721,7 @@ class Applicants(BaseSDK):
         :param recruiter_id:
         :param coordinator_id:
         :param application_ids:
-        :param applications:
+        :param applications: Deprecated: Use application_ids instead. Array of application IDs associated with the applicant.
         :param followers:
         :param sources:
         :param confidential:
@@ -1271,7 +1271,7 @@ class Applicants(BaseSDK):
         :param recruiter_id:
         :param coordinator_id:
         :param application_ids:
-        :param applications:
+        :param applications: Deprecated: Use application_ids instead. Array of application IDs associated with the applicant.
         :param followers:
         :param sources:
         :param confidential:
@@ -1534,7 +1534,7 @@ class Applicants(BaseSDK):
         :param recruiter_id:
         :param coordinator_id:
         :param application_ids:
-        :param applications:
+        :param applications: Deprecated: Use application_ids instead. Array of application IDs associated with the applicant.
         :param followers:
         :param sources:
         :param confidential:

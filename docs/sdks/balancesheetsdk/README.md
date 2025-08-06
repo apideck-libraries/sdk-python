@@ -13,6 +13,7 @@ Get BalanceSheet
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="accounting.balanceSheetOne" method="get" path="/accounting/balance-sheet" -->
 ```python
 import apideck_unify
 from apideck_unify import Apideck

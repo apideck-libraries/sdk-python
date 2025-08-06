@@ -17,6 +17,7 @@ List leads
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="crm.leadsAll" method="get" path="/crm/leads" -->
 ```python
 import apideck_unify
 from apideck_unify import Apideck
@@ -85,6 +86,7 @@ Create lead
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="crm.leadsAdd" method="post" path="/crm/leads" -->
 ```python
 import apideck_unify
 from apideck_unify import Apideck
@@ -403,6 +405,7 @@ Get lead
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="crm.leadsOne" method="get" path="/crm/leads/{id}" -->
 ```python
 from apideck_unify import Apideck
 import os
@@ -456,6 +459,7 @@ Update lead
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="crm.leadsUpdate" method="patch" path="/crm/leads/{id}" -->
 ```python
 import apideck_unify
 from apideck_unify import Apideck
@@ -709,6 +713,7 @@ Delete lead
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="crm.leadsDelete" method="delete" path="/crm/leads/{id}" -->
 ```python
 from apideck_unify import Apideck
 import os

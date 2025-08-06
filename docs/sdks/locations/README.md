@@ -17,6 +17,7 @@ List Locations
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="accounting.locationsAll" method="get" path="/accounting/locations" -->
 ```python
 from apideck_unify import Apideck
 import os
@@ -74,6 +75,7 @@ Create Location
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="accounting.locationsAdd" method="post" path="/accounting/locations" -->
 ```python
 import apideck_unify
 from apideck_unify import Apideck
@@ -182,6 +184,7 @@ Get Location
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="accounting.locationsOne" method="get" path="/accounting/locations/{id}" -->
 ```python
 from apideck_unify import Apideck
 import os
@@ -235,6 +238,7 @@ Update Location
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="accounting.locationsUpdate" method="patch" path="/accounting/locations/{id}" -->
 ```python
 import apideck_unify
 from apideck_unify import Apideck
@@ -415,6 +419,7 @@ Delete Location
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="accounting.locationsDelete" method="delete" path="/accounting/locations/{id}" -->
 ```python
 from apideck_unify import Apideck
 import os

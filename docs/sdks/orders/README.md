@@ -14,6 +14,7 @@ List Orders
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="ecommerce.ordersAll" method="get" path="/ecommerce/orders" -->
 ```python
 import apideck_unify
 from apideck_unify import Apideck
@@ -82,6 +83,7 @@ Get Order
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="ecommerce.ordersOne" method="get" path="/ecommerce/orders/{id}" -->
 ```python
 from apideck_unify import Apideck
 import os

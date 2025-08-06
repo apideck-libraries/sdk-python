@@ -13,6 +13,7 @@ Get Store
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="ecommerce.storesOne" method="get" path="/ecommerce/store" -->
 ```python
 from apideck_unify import Apideck
 import os

@@ -13,6 +13,7 @@ List schedules for employee, a schedule is a work pattern, not the actual worked
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="hris.employeeSchedulesAll" method="get" path="/hris/schedules/employees/{employee_id}" -->
 ```python
 from apideck_unify import Apideck
 import os

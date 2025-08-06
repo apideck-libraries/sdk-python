@@ -17,6 +17,7 @@ List Departments
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="hris.departmentsAll" method="get" path="/hris/departments" -->
 ```python
 from apideck_unify import Apideck
 import os
@@ -74,6 +75,7 @@ Create Department
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="hris.departmentsAdd" method="post" path="/hris/departments" -->
 ```python
 from apideck_unify import Apideck
 import os
@@ -169,6 +171,7 @@ Get Department
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="hris.departmentsOne" method="get" path="/hris/departments/{id}" -->
 ```python
 from apideck_unify import Apideck
 import os
@@ -222,6 +225,7 @@ Update Department
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="hris.departmentsUpdate" method="patch" path="/hris/departments/{id}" -->
 ```python
 from apideck_unify import Apideck
 import os
@@ -292,6 +296,7 @@ Delete Department
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="hris.departmentsDelete" method="delete" path="/hris/departments/{id}" -->
 ```python
 from apideck_unify import Apideck
 import os

@@ -14,6 +14,7 @@ List Customers
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="ecommerce.customersAll" method="get" path="/ecommerce/customers" -->
 ```python
 from apideck_unify import Apideck
 import os
@@ -75,6 +76,7 @@ Get Customer
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="ecommerce.customersOne" method="get" path="/ecommerce/customers/{id}" -->
 ```python
 from apideck_unify import Apideck
 import os

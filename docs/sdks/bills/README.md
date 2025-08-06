@@ -17,6 +17,7 @@ List Bills
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="accounting.billsAll" method="get" path="/accounting/bills" -->
 ```python
 import apideck_unify
 from apideck_unify import Apideck
@@ -83,6 +84,7 @@ Create Bill
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="accounting.billsAdd" method="post" path="/accounting/bills" -->
 ```python
 import apideck_unify
 from apideck_unify import Apideck
@@ -336,6 +338,7 @@ Get Bill
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="accounting.billsOne" method="get" path="/accounting/bills/{id}" -->
 ```python
 from apideck_unify import Apideck
 import os
@@ -389,6 +392,7 @@ Update Bill
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="accounting.billsUpdate" method="patch" path="/accounting/bills/{id}" -->
 ```python
 import apideck_unify
 from apideck_unify import Apideck
@@ -664,6 +668,7 @@ Delete Bill
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="accounting.billsDelete" method="delete" path="/accounting/bills/{id}" -->
 ```python
 from apideck_unify import Apideck
 import os

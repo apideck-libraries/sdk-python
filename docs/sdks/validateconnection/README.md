@@ -19,6 +19,7 @@ Note:
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="vault.validateConnectionState" method="post" path="/vault/connections/{unified_api}/{service_id}/validate" -->
 ```python
 from apideck_unify import Apideck
 import os

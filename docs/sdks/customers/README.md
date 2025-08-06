@@ -17,6 +17,7 @@ List Customers
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="accounting.customersAll" method="get" path="/accounting/customers" -->
 ```python
 import apideck_unify
 from apideck_unify import Apideck
@@ -90,6 +91,7 @@ Create Customer
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="accounting.customersAdd" method="post" path="/accounting/customers" -->
 ```python
 import apideck_unify
 from apideck_unify import Apideck
@@ -312,6 +314,7 @@ Get Customer
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="accounting.customersOne" method="get" path="/accounting/customers/{id}" -->
 ```python
 from apideck_unify import Apideck
 import os
@@ -365,6 +368,7 @@ Update Customer
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="accounting.customersUpdate" method="patch" path="/accounting/customers/{id}" -->
 ```python
 import apideck_unify
 from apideck_unify import Apideck
@@ -598,6 +602,7 @@ Delete Customer
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="accounting.customersDelete" method="delete" path="/accounting/customers/{id}" -->
 ```python
 from apideck_unify import Apideck
 import os

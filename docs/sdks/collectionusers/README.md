@@ -14,6 +14,7 @@ List Users
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="issueTracking.collectionUsersAll" method="get" path="/issue-tracking/collections/{collection_id}/users" -->
 ```python
 from apideck_unify import Apideck
 import os
@@ -72,6 +73,7 @@ Get user
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="issueTracking.collectionUsersOne" method="get" path="/issue-tracking/collections/{collection_id}/users/{id}" -->
 ```python
 from apideck_unify import Apideck
 import os
