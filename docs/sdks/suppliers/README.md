@@ -17,6 +17,7 @@ List Suppliers
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="accounting.suppliersAll" method="get" path="/accounting/suppliers" -->
 ```python
 import apideck_unify
 from apideck_unify import Apideck
@@ -88,6 +89,7 @@ Create Supplier
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="accounting.suppliersAdd" method="post" path="/accounting/suppliers" -->
 ```python
 import apideck_unify
 from apideck_unify import Apideck
@@ -285,6 +287,7 @@ Get Supplier
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="accounting.suppliersOne" method="get" path="/accounting/suppliers/{id}" -->
 ```python
 from apideck_unify import Apideck
 import os
@@ -338,6 +341,7 @@ Update Supplier
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="accounting.suppliersUpdate" method="patch" path="/accounting/suppliers/{id}" -->
 ```python
 import apideck_unify
 from apideck_unify import Apideck
@@ -559,6 +563,7 @@ Delete Supplier
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="accounting.suppliersDelete" method="delete" path="/accounting/suppliers/{id}" -->
 ```python
 from apideck_unify import Apideck
 import os

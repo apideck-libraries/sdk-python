@@ -17,6 +17,7 @@ List Subsidiaries
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="accounting.subsidiariesAll" method="get" path="/accounting/subsidiaries" -->
 ```python
 from apideck_unify import Apideck
 import os
@@ -71,6 +72,7 @@ Create Subsidiary
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="accounting.subsidiariesAdd" method="post" path="/accounting/subsidiaries" -->
 ```python
 import apideck_unify
 from apideck_unify import Apideck
@@ -168,6 +170,7 @@ Get Subsidiary
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="accounting.subsidiariesOne" method="get" path="/accounting/subsidiaries/{id}" -->
 ```python
 from apideck_unify import Apideck
 import os
@@ -221,6 +224,7 @@ Update Subsidiary
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="accounting.subsidiariesUpdate" method="patch" path="/accounting/subsidiaries/{id}" -->
 ```python
 import apideck_unify
 from apideck_unify import Apideck
@@ -301,6 +305,7 @@ Delete Subsidiary
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="accounting.subsidiariesDelete" method="delete" path="/accounting/subsidiaries/{id}" -->
 ```python
 from apideck_unify import Apideck
 import os

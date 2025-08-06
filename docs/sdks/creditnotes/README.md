@@ -17,6 +17,7 @@ List Credit Notes
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="accounting.creditNotesAll" method="get" path="/accounting/credit-notes" -->
 ```python
 import apideck_unify
 from apideck_unify import Apideck
@@ -83,6 +84,7 @@ Create Credit Note
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="accounting.creditNotesAdd" method="post" path="/accounting/credit-notes" -->
 ```python
 import apideck_unify
 from apideck_unify import Apideck
@@ -408,6 +410,7 @@ Get Credit Note
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="accounting.creditNotesOne" method="get" path="/accounting/credit-notes/{id}" -->
 ```python
 from apideck_unify import Apideck
 import os
@@ -461,6 +464,7 @@ Update Credit Note
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="accounting.creditNotesUpdate" method="patch" path="/accounting/credit-notes/{id}" -->
 ```python
 import apideck_unify
 from apideck_unify import Apideck
@@ -811,6 +815,7 @@ Delete Credit Note
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="accounting.creditNotesDelete" method="delete" path="/accounting/credit-notes/{id}" -->
 ```python
 from apideck_unify import Apideck
 import os

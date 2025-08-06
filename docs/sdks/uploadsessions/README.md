@@ -17,6 +17,7 @@ Start an Upload Session. Upload sessions are used to upload large files, use the
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="fileStorage.uploadSessionsAdd" method="post" path="/file-storage/upload-sessions" -->
 ```python
 from apideck_unify import Apideck
 import os
@@ -162,6 +163,7 @@ Get Upload Session. Use the `part_size` to split your file into parts. Upload th
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="fileStorage.uploadSessionsOne" method="get" path="/file-storage/upload-sessions/{id}" -->
 ```python
 from apideck_unify import Apideck
 import os
@@ -216,6 +218,7 @@ Upload part of File to Upload Session (max 100MB). Get `part_size` from [Get Upl
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="fileStorage.uploadSessionsUpload" method="put" path="/file-storage/upload-sessions/{id}" -->
 ```python
 from apideck_unify import Apideck
 import io
@@ -273,6 +276,7 @@ Abort Upload Session. Note that the base URL is upload.apideck.com instead of un
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="fileStorage.uploadSessionsDelete" method="delete" path="/file-storage/upload-sessions/{id}" -->
 ```python
 from apideck_unify import Apideck
 import os
@@ -325,6 +329,7 @@ Finish Upload Session. Only call this endpoint after all File parts have been up
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="fileStorage.uploadSessionsFinish" method="post" path="/file-storage/upload-sessions/{id}/finish" -->
 ```python
 from apideck_unify import Apideck
 import os

@@ -17,6 +17,7 @@ List Ledger Accounts
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="accounting.ledgerAccountsAll" method="get" path="/accounting/ledger-accounts" -->
 ```python
 import apideck_unify
 from apideck_unify import Apideck
@@ -83,6 +84,7 @@ Create Ledger Account
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="accounting.ledgerAccountsAdd" method="post" path="/accounting/ledger-accounts" -->
 ```python
 import apideck_unify
 from apideck_unify import Apideck
@@ -228,6 +230,7 @@ Get Ledger Account
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="accounting.ledgerAccountsOne" method="get" path="/accounting/ledger-accounts/{id}" -->
 ```python
 from apideck_unify import Apideck
 import os
@@ -281,6 +284,7 @@ Update Ledger Account
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="accounting.ledgerAccountsUpdate" method="patch" path="/accounting/ledger-accounts/{id}" -->
 ```python
 import apideck_unify
 from apideck_unify import Apideck
@@ -415,6 +419,7 @@ Delete Ledger Account
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="accounting.ledgerAccountsDelete" method="delete" path="/accounting/ledger-accounts/{id}" -->
 ```python
 from apideck_unify import Apideck
 import os

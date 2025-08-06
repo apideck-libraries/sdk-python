@@ -17,6 +17,7 @@ List users
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="crm.usersAll" method="get" path="/crm/users" -->
 ```python
 from apideck_unify import Apideck
 import os
@@ -74,6 +75,7 @@ Create user
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="crm.usersAdd" method="post" path="/crm/users" -->
 ```python
 import apideck_unify
 from apideck_unify import Apideck
@@ -291,6 +293,7 @@ Get user
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="crm.usersOne" method="get" path="/crm/users/{id}" -->
 ```python
 from apideck_unify import Apideck
 import os
@@ -344,6 +347,7 @@ Update user
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="crm.usersUpdate" method="patch" path="/crm/users/{id}" -->
 ```python
 import apideck_unify
 from apideck_unify import Apideck
@@ -526,6 +530,7 @@ Delete user
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="crm.usersDelete" method="delete" path="/crm/users/{id}" -->
 ```python
 from apideck_unify import Apideck
 import os

@@ -17,6 +17,7 @@ List Departments
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="accounting.departmentsAll" method="get" path="/accounting/departments" -->
 ```python
 from apideck_unify import Apideck
 import os
@@ -74,6 +75,7 @@ Create Department
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="accounting.departmentsAdd" method="post" path="/accounting/departments" -->
 ```python
 import apideck_unify
 from apideck_unify import Apideck
@@ -157,6 +159,7 @@ Get Department
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="accounting.departmentsOne" method="get" path="/accounting/departments/{id}" -->
 ```python
 from apideck_unify import Apideck
 import os
@@ -210,6 +213,7 @@ Update Department
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="accounting.departmentsUpdate" method="patch" path="/accounting/departments/{id}" -->
 ```python
 import apideck_unify
 from apideck_unify import Apideck
@@ -310,6 +314,7 @@ Delete Department
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="accounting.departmentsDelete" method="delete" path="/accounting/departments/{id}" -->
 ```python
 from apideck_unify import Apideck
 import os

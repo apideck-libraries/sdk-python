@@ -17,6 +17,7 @@ List Companies
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="hris.companiesAll" method="get" path="/hris/companies" -->
 ```python
 from apideck_unify import Apideck
 import os
@@ -74,6 +75,7 @@ Create Company
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="hris.companiesAdd" method="post" path="/hris/companies" -->
 ```python
 import apideck_unify
 from apideck_unify import Apideck
@@ -286,6 +288,7 @@ Get Company
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="hris.companiesOne" method="get" path="/hris/companies/{id}" -->
 ```python
 from apideck_unify import Apideck
 import os
@@ -339,6 +342,7 @@ Update Company
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="hris.companiesUpdate" method="patch" path="/hris/companies/{id}" -->
 ```python
 import apideck_unify
 from apideck_unify import Apideck
@@ -552,6 +556,7 @@ Delete Company
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="hris.companiesDelete" method="delete" path="/hris/companies/{id}" -->
 ```python
 from apideck_unify import Apideck
 import os

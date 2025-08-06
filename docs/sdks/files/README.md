@@ -19,6 +19,7 @@ List Files
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="fileStorage.filesAll" method="get" path="/file-storage/files" -->
 ```python
 import apideck_unify
 from apideck_unify import Apideck
@@ -86,6 +87,7 @@ Search Files
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="fileStorage.filesSearch" method="post" path="/file-storage/files/search" -->
 ```python
 from apideck_unify import Apideck
 import os
@@ -165,6 +167,7 @@ Get File
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="fileStorage.filesOne" method="get" path="/file-storage/files/{id}" -->
 ```python
 from apideck_unify import Apideck
 import os
@@ -218,6 +221,7 @@ Rename or move File
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="fileStorage.filesUpdate" method="patch" path="/file-storage/files/{id}" -->
 ```python
 from apideck_unify import Apideck
 import os
@@ -288,6 +292,7 @@ Delete File
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="fileStorage.filesDelete" method="delete" path="/file-storage/files/{id}" -->
 ```python
 from apideck_unify import Apideck
 import os
@@ -340,6 +345,7 @@ Download File
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="fileStorage.filesDownload" method="get" path="/file-storage/files/{id}/download" -->
 ```python
 from apideck_unify import Apideck
 import os
@@ -392,6 +398,7 @@ Export File
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="fileStorage.filesExport" method="get" path="/file-storage/files/{id}/export" -->
 ```python
 from apideck_unify import Apideck
 import os

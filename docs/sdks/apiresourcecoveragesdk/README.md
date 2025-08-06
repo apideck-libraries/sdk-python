@@ -13,6 +13,7 @@ Get API Resource Coverage
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="connector.apiResourceCoverageOne" method="get" path="/connector/apis/{id}/resources/{resource_id}/coverage" -->
 ```python
 from apideck_unify import Apideck
 import os

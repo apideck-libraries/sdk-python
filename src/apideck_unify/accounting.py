@@ -24,6 +24,7 @@ from apideck_unify.locations import Locations
 from apideck_unify.payments import Payments
 from apideck_unify.profitandloss_sdk import ProfitAndLossSDK
 from apideck_unify.purchaseorders import PurchaseOrders
+from apideck_unify.quotes import Quotes
 from apideck_unify.subsidiaries import Subsidiaries
 from apideck_unify.suppliers import Suppliers
 from apideck_unify.taxrates import TaxRates
@@ -57,6 +58,7 @@ class Accounting(BaseSDK):
     bank_feed_accounts: BankFeedAccounts
     bank_feed_statements: BankFeedStatements
     categories: Categories
+    quotes: Quotes
 
     def __init__(self, sdk_config: SDKConfiguration) -> None:
         BaseSDK.__init__(self, sdk_config)
@@ -90,3 +92,4 @@ class Accounting(BaseSDK):
         self.bank_feed_accounts = BankFeedAccounts(self.sdk_configuration)
         self.bank_feed_statements = BankFeedStatements(self.sdk_configuration)
         self.categories = Categories(self.sdk_configuration)
+        self.quotes = Quotes(self.sdk_configuration)

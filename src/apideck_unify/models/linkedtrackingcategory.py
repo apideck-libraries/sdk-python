@@ -18,6 +18,10 @@ class LinkedTrackingCategoryTypedDict(TypedDict):
     r"""The unique identifier for the tracking category."""
     name: NotRequired[Nullable[str]]
     r"""The name of the tracking category."""
+    parent_id: NotRequired[str]
+    r"""The unique identifier for the parent tracking category."""
+    parent_name: NotRequired[Nullable[str]]
+    r"""The name of the parent tracking category."""
 
 
 class LinkedTrackingCategory(BaseModel):
@@ -27,10 +31,16 @@ class LinkedTrackingCategory(BaseModel):
     name: OptionalNullable[str] = UNSET
     r"""The name of the tracking category."""
 
+    parent_id: Optional[str] = None
+    r"""The unique identifier for the parent tracking category."""
+
+    parent_name: OptionalNullable[str] = UNSET
+    r"""The name of the parent tracking category."""
+
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
-        optional_fields = ["id", "name"]
-        nullable_fields = ["name"]
+        optional_fields = ["id", "name", "parent_id", "parent_name"]
+        nullable_fields = ["name", "parent_name"]
         null_default_fields = []
 
         serialized = handler(self)

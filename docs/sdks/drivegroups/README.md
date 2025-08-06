@@ -17,6 +17,7 @@ List DriveGroups
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="fileStorage.driveGroupsAll" method="get" path="/file-storage/drive-groups" -->
 ```python
 from apideck_unify import Apideck
 import os
@@ -77,6 +78,7 @@ Create DriveGroup
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="fileStorage.driveGroupsAdd" method="post" path="/file-storage/drive-groups" -->
 ```python
 from apideck_unify import Apideck
 import os
@@ -175,6 +177,7 @@ Get DriveGroup
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="fileStorage.driveGroupsOne" method="get" path="/file-storage/drive-groups/{id}" -->
 ```python
 from apideck_unify import Apideck
 import os
@@ -228,6 +231,7 @@ Update DriveGroup
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="fileStorage.driveGroupsUpdate" method="patch" path="/file-storage/drive-groups/{id}" -->
 ```python
 from apideck_unify import Apideck
 import os
@@ -348,6 +352,7 @@ Delete DriveGroup
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="fileStorage.driveGroupsDelete" method="delete" path="/file-storage/drive-groups/{id}" -->
 ```python
 from apideck_unify import Apideck
 import os

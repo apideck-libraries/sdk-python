@@ -17,6 +17,7 @@ List Drives
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="fileStorage.drivesAll" method="get" path="/file-storage/drives" -->
 ```python
 from apideck_unify import Apideck
 import os
@@ -74,6 +75,7 @@ Create Drive
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="fileStorage.drivesAdd" method="post" path="/file-storage/drives" -->
 ```python
 from apideck_unify import Apideck
 import os
@@ -168,6 +170,7 @@ Get Drive
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="fileStorage.drivesOne" method="get" path="/file-storage/drives/{id}" -->
 ```python
 from apideck_unify import Apideck
 import os
@@ -221,6 +224,7 @@ Update Drive
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="fileStorage.drivesUpdate" method="patch" path="/file-storage/drives/{id}" -->
 ```python
 from apideck_unify import Apideck
 import os
@@ -290,6 +294,7 @@ Delete Drive
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="fileStorage.drivesDelete" method="delete" path="/file-storage/drives/{id}" -->
 ```python
 from apideck_unify import Apideck
 import os

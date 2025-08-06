@@ -17,6 +17,7 @@ List custom object schemas
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="crm.customObjectSchemasAll" method="get" path="/crm/custom-object-schemas" -->
 ```python
 from apideck_unify import Apideck
 import os
@@ -73,6 +74,7 @@ Create custom object schema
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="crm.customObjectSchemasAdd" method="post" path="/crm/custom-object-schemas" -->
 ```python
 import apideck_unify
 from apideck_unify import Apideck
@@ -173,6 +175,7 @@ Get custom object schema
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="crm.customObjectSchemasOne" method="get" path="/crm/custom-object-schemas/{id}" -->
 ```python
 from apideck_unify import Apideck
 import os
@@ -225,6 +228,7 @@ Update custom object schema
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="crm.customObjectSchemasUpdate" method="patch" path="/crm/custom-object-schemas/{id}" -->
 ```python
 import apideck_unify
 from apideck_unify import Apideck
@@ -427,6 +431,7 @@ Delete custom object schema
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="crm.customObjectSchemasDelete" method="delete" path="/crm/custom-object-schemas/{id}" -->
 ```python
 from apideck_unify import Apideck
 import os

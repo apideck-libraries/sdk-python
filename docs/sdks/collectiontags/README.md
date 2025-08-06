@@ -13,6 +13,7 @@ List Tags
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="issueTracking.collectionTagsAll" method="get" path="/issue-tracking/collections/{collection_id}/tags" -->
 ```python
 from apideck_unify import Apideck
 import os

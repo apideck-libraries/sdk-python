@@ -17,6 +17,7 @@ List Bank Feed Statements
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="accounting.bankFeedStatementsAll" method="get" path="/accounting/bank-feed-statements" -->
 ```python
 from apideck_unify import Apideck
 import os
@@ -74,6 +75,7 @@ Create Bank Feed Statement
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="accounting.bankFeedStatementsAdd" method="post" path="/accounting/bank-feed-statements" -->
 ```python
 import apideck_unify
 from apideck_unify import Apideck
@@ -167,6 +169,7 @@ Get Bank Feed Statement
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="accounting.bankFeedStatementsOne" method="get" path="/accounting/bank-feed-statements/{id}" -->
 ```python
 from apideck_unify import Apideck
 import os
@@ -220,6 +223,7 @@ Update Bank Feed Statement
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="accounting.bankFeedStatementsUpdate" method="patch" path="/accounting/bank-feed-statements/{id}" -->
 ```python
 import apideck_unify
 from apideck_unify import Apideck
@@ -304,6 +308,7 @@ Delete Bank Feed Statement
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="accounting.bankFeedStatementsDelete" method="delete" path="/accounting/bank-feed-statements/{id}" -->
 ```python
 from apideck_unify import Apideck
 import os

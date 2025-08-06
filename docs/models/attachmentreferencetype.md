@@ -8,3 +8,4 @@
 | `INVOICE` | invoice   |
 | `BILL`    | bill      |
 | `EXPENSE` | expense   |
+| `QUOTE`   | quote     |

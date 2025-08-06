@@ -14,6 +14,7 @@ This endpoint creates a callback state that can be used to issue requests to the
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="vault.createCallbackState" method="post" path="/vault/connections/{unified_api}/{service_id}/callback-state" -->
 ```python
 from apideck_unify import Apideck
 import os

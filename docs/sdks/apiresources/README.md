@@ -13,6 +13,7 @@ Get API Resource
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="connector.apiResourcesOne" method="get" path="/connector/apis/{id}/resources/{resource_id}" -->
 ```python
 from apideck_unify import Apideck
 import os

@@ -14,6 +14,7 @@ Get consumer request counts within a given datetime range.
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="vault.consumerRequestCountsAll" method="get" path="/vault/consumers/{consumer_id}/stats" -->
 ```python
 from apideck_unify import Apideck
 import os

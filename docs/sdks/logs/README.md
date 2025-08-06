@@ -14,6 +14,7 @@ This endpoint includes all consumer request logs.
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="vault.logsAll" method="get" path="/vault/logs" -->
 ```python
 from apideck_unify import Apideck
 import os

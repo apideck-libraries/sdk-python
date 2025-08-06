@@ -13,6 +13,7 @@ This endpoint returns a list of custom mappings for a connection.
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="vault.connectionCustomMappingsAll" method="get" path="/vault/connections/{unified_api}/{service_id}/{resource}/custom-mappings" -->
 ```python
 from apideck_unify import Apideck
 import os

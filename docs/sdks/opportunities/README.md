@@ -17,6 +17,7 @@ List opportunities
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="crm.opportunitiesAll" method="get" path="/crm/opportunities" -->
 ```python
 import apideck_unify
 from apideck_unify import Apideck
@@ -83,6 +84,7 @@ Create opportunity
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="crm.opportunitiesAdd" method="post" path="/crm/opportunities" -->
 ```python
 import apideck_unify
 from apideck_unify import Apideck
@@ -254,6 +256,7 @@ Get opportunity
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="crm.opportunitiesOne" method="get" path="/crm/opportunities/{id}" -->
 ```python
 from apideck_unify import Apideck
 import os
@@ -307,6 +310,7 @@ Update opportunity
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="crm.opportunitiesUpdate" method="patch" path="/crm/opportunities/{id}" -->
 ```python
 import apideck_unify
 from apideck_unify import Apideck
@@ -444,6 +448,7 @@ Delete opportunity
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="crm.opportunitiesDelete" method="delete" path="/crm/opportunities/{id}" -->
 ```python
 from apideck_unify import Apideck
 import os

@@ -17,6 +17,7 @@ List contacts
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="crm.contactsAll" method="get" path="/crm/contacts" -->
 ```python
 import apideck_unify
 from apideck_unify import Apideck
@@ -86,6 +87,7 @@ Create contact
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="crm.contactsAdd" method="post" path="/crm/contacts" -->
 ```python
 import apideck_unify
 from apideck_unify import Apideck
@@ -340,6 +342,7 @@ Get contact
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="crm.contactsOne" method="get" path="/crm/contacts/{id}" -->
 ```python
 from apideck_unify import Apideck
 import os
@@ -400,6 +403,7 @@ Update contact
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="crm.contactsUpdate" method="patch" path="/crm/contacts/{id}" -->
 ```python
 import apideck_unify
 from apideck_unify import Apideck
@@ -699,6 +703,7 @@ Delete contact
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="crm.contactsDelete" method="delete" path="/crm/contacts/{id}" -->
 ```python
 from apideck_unify import Apideck
 import os

@@ -7,14 +7,14 @@ from typing import Optional
 from typing_extensions import NotRequired, TypedDict
 
 
-class ConsumerInputTypedDict(TypedDict):
+class CreateConsumerRequestTypedDict(TypedDict):
     consumer_id: str
     r"""Unique consumer identifier. You can freely choose a consumer ID yourself. Most of the time, this is an ID of your internal data model that represents a user or account in your system (for example account:12345). If the consumer doesn't exist yet, Vault will upsert a consumer based on your ID."""
     metadata: NotRequired[ConsumerMetadataTypedDict]
     r"""The metadata of the consumer. This is used to display the consumer in the sidebar. This is optional, but recommended."""
 
 
-class ConsumerInput(BaseModel):
+class CreateConsumerRequest(BaseModel):
     consumer_id: str
     r"""Unique consumer identifier. You can freely choose a consumer ID yourself. Most of the time, this is an ID of your internal data model that represents a user or account in your system (for example account:12345). If the consumer doesn't exist yet, Vault will upsert a consumer based on your ID."""
 

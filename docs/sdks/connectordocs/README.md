@@ -13,6 +13,7 @@ Get Connector Doc content
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="connector.connectorDocsOne" method="get" path="/connector/connectors/{id}/docs/{doc_id}" -->
 ```python
 from apideck_unify import Apideck
 import os

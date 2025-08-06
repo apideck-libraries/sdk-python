@@ -15,9 +15,10 @@ from apideck_unify.types import (
 )
 from datetime import date, datetime
 from enum import Enum
+import pydantic
 from pydantic import model_serializer
 from typing import Any, Dict, List, Optional
-from typing_extensions import NotRequired, TypedDict
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class ApplicantType(str, Enum):
@@ -164,6 +165,7 @@ class ApplicantTypedDict(TypedDict):
     coordinator_id: NotRequired[str]
     application_ids: NotRequired[Nullable[List[str]]]
     applications: NotRequired[Nullable[List[str]]]
+    r"""Deprecated: Use application_ids instead. Array of application IDs associated with the applicant."""
     followers: NotRequired[Nullable[List[str]]]
     sources: NotRequired[Nullable[List[str]]]
     source_id: NotRequired[str]
@@ -252,7 +254,13 @@ class Applicant(BaseModel):
 
     application_ids: OptionalNullable[List[str]] = UNSET
 
-    applications: OptionalNullable[List[str]] = UNSET
+    applications: Annotated[
+        OptionalNullable[List[str]],
+        pydantic.Field(
+            deprecated="warning: ** DEPRECATED ** - This will be removed in a future release, please migrate away from it as soon as possible."
+        ),
+    ] = UNSET
+    r"""Deprecated: Use application_ids instead. Array of application IDs associated with the applicant."""
 
     followers: OptionalNullable[List[str]] = UNSET
 
@@ -443,6 +451,7 @@ class ApplicantInputTypedDict(TypedDict):
     coordinator_id: NotRequired[str]
     application_ids: NotRequired[Nullable[List[str]]]
     applications: NotRequired[Nullable[List[str]]]
+    r"""Deprecated: Use application_ids instead. Array of application IDs associated with the applicant."""
     followers: NotRequired[Nullable[List[str]]]
     sources: NotRequired[Nullable[List[str]]]
     confidential: NotRequired[bool]
@@ -507,7 +516,13 @@ class ApplicantInput(BaseModel):
 
     application_ids: OptionalNullable[List[str]] = UNSET
 
-    applications: OptionalNullable[List[str]] = UNSET
+    applications: Annotated[
+        OptionalNullable[List[str]],
+        pydantic.Field(
+            deprecated="warning: ** DEPRECATED ** - This will be removed in a future release, please migrate away from it as soon as possible."
+        ),
+    ] = UNSET
+    r"""Deprecated: Use application_ids instead. Array of application IDs associated with the applicant."""
 
     followers: OptionalNullable[List[str]] = UNSET
 

@@ -14,6 +14,7 @@ List Categories
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="accounting.categoriesAll" method="get" path="/accounting/categories" -->
 ```python
 import apideck_unify
 from apideck_unify import Apideck
@@ -72,6 +73,7 @@ Get Category
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="accounting.categoriesOne" method="get" path="/accounting/categories/{id}" -->
 ```python
 import apideck_unify
 from apideck_unify import Apideck

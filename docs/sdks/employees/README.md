@@ -17,6 +17,7 @@ Apideck operates as a stateless Unified API, which means that the list endpoint 
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="hris.employeesAll" method="get" path="/hris/employees" -->
 ```python
 import apideck_unify
 from apideck_unify import Apideck
@@ -92,6 +93,7 @@ Create Employee
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="hris.employeesAdd" method="post" path="/hris/employees" -->
 ```python
 import apideck_unify
 from apideck_unify import Apideck
@@ -502,6 +504,7 @@ Get Employee
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="hris.employeesOne" method="get" path="/hris/employees/{id}" -->
 ```python
 from apideck_unify import Apideck
 import os
@@ -561,6 +564,7 @@ Update Employee
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="hris.employeesUpdate" method="patch" path="/hris/employees/{id}" -->
 ```python
 import apideck_unify
 from apideck_unify import Apideck
@@ -978,6 +982,7 @@ Delete Employee
 
 ### Example Usage
 
+<!-- UsageSnippet language="python" operationID="hris.employeesDelete" method="delete" path="/hris/employees/{id}" -->
 ```python
 from apideck_unify import Apideck
 import os
