@@ -22,6 +22,7 @@ class Type(str, Enum):
     OFFICE = "office"
     SHIPPING = "shipping"
     BILLING = "billing"
+    WORK = "work"
     OTHER = "other"
 
 
