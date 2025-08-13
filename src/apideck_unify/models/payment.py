@@ -62,7 +62,7 @@ class PaymentTypedDict(TypedDict):
     supplier: NotRequired[Nullable[DeprecatedLinkedSupplierTypedDict]]
     r"""The supplier this entity is linked to."""
     company_id: NotRequired[Nullable[str]]
-    r"""The company or subsidiary id the transaction belongs to"""
+    r"""The company ID the transaction belongs to"""
     reconciled: NotRequired[Nullable[bool]]
     r"""Indicates if the transaction has been reconciled."""
     status: NotRequired[PaymentStatus]
@@ -158,7 +158,7 @@ class Payment(BaseModel):
     r"""The supplier this entity is linked to."""
 
     company_id: OptionalNullable[str] = UNSET
-    r"""The company or subsidiary id the transaction belongs to"""
+    r"""The company ID the transaction belongs to"""
 
     reconciled: OptionalNullable[bool] = UNSET
     r"""Indicates if the transaction has been reconciled."""

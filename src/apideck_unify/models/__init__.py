@@ -977,6 +977,7 @@ if TYPE_CHECKING:
     from .apistatus import APIStatus
     from .applicant import (
         Applicant,
+        ApplicantGender,
         ApplicantInput,
         ApplicantInputTypedDict,
         ApplicantType,
@@ -1153,7 +1154,14 @@ if TYPE_CHECKING:
         TransactionsTypedDict,
     )
     from .benefit import Benefit, BenefitTypedDict
-    from .bill import Bill, BillInput, BillInputTypedDict, BillStatus, BillTypedDict
+    from .bill import (
+        AmortizationType,
+        Bill,
+        BillInput,
+        BillInputTypedDict,
+        BillStatus,
+        BillTypedDict,
+    )
     from .billlineitem import (
         BillLineItem,
         BillLineItemInput,
@@ -3273,7 +3281,6 @@ if TYPE_CHECKING:
         InvoiceItemsSortTypedDict,
     )
     from .invoicelineitem import (
-        Budget,
         InvoiceLineItem,
         InvoiceLineItemInput,
         InvoiceLineItemInputTypedDict,
@@ -3474,6 +3481,7 @@ if TYPE_CHECKING:
         LedgerAccountsSortBy,
         LedgerAccountsSortTypedDict,
     )
+    from .linkedattachment import LinkedAttachment, LinkedAttachmentTypedDict
     from .linkedconnectorresource import (
         LinkedConnectorResource,
         LinkedConnectorResourceTypedDict,
@@ -3508,6 +3516,7 @@ if TYPE_CHECKING:
         LinkedTrackingCategory,
         LinkedTrackingCategoryTypedDict,
     )
+    from .linkedworktag import LinkedWorktag, LinkedWorktagTypedDict
     from .links import Links, LinksTypedDict
     from .log import (
         Log,
@@ -3623,8 +3632,8 @@ if TYPE_CHECKING:
     )
     from .profitandlosstype import ProfitAndLossType
     from .purchaseorder import (
-        AmortizationType,
         PurchaseOrder,
+        PurchaseOrderAmortizationType,
         PurchaseOrderInput,
         PurchaseOrderInputTypedDict,
         PurchaseOrderStatus,
@@ -5013,6 +5022,7 @@ __all__ = [
     "ApisFilter",
     "ApisFilterTypedDict",
     "Applicant",
+    "ApplicantGender",
     "ApplicantInput",
     "ApplicantInputTypedDict",
     "ApplicantType",
@@ -5171,7 +5181,6 @@ __all__ = [
     "BlocksTypedDict",
     "Branch",
     "BranchTypedDict",
-    "Budget",
     "By",
     "CategoriesFilter",
     "CategoriesFilterType",
@@ -6876,6 +6885,8 @@ __all__ = [
     "LedgerAccountsSort",
     "LedgerAccountsSortBy",
     "LedgerAccountsSortTypedDict",
+    "LinkedAttachment",
+    "LinkedAttachmentTypedDict",
     "LinkedConnectorResource",
     "LinkedConnectorResourceTypedDict",
     "LinkedCustomer",
@@ -6910,6 +6921,8 @@ __all__ = [
     "LinkedTaxRateTypedDict",
     "LinkedTrackingCategory",
     "LinkedTrackingCategoryTypedDict",
+    "LinkedWorktag",
+    "LinkedWorktagTypedDict",
     "Links",
     "LinksTypedDict",
     "LocationStatus",
@@ -7036,6 +7049,7 @@ __all__ = [
     "PurchaseDetails",
     "PurchaseDetailsTypedDict",
     "PurchaseOrder",
+    "PurchaseOrderAmortizationType",
     "PurchaseOrderInput",
     "PurchaseOrderInputTypedDict",
     "PurchaseOrderStatus",
@@ -8285,6 +8299,7 @@ _dynamic_imports: dict[str, str] = {
     "ApisFilterTypedDict": ".apisfilter",
     "APIStatus": ".apistatus",
     "Applicant": ".applicant",
+    "ApplicantGender": ".applicant",
     "ApplicantInput": ".applicant",
     "ApplicantInputTypedDict": ".applicant",
     "ApplicantType": ".applicant",
@@ -8429,6 +8444,7 @@ _dynamic_imports: dict[str, str] = {
     "TransactionsTypedDict": ".bankfeedstatement",
     "Benefit": ".benefit",
     "BenefitTypedDict": ".benefit",
+    "AmortizationType": ".bill",
     "Bill": ".bill",
     "BillInput": ".bill",
     "BillInputTypedDict": ".bill",
@@ -10011,7 +10027,6 @@ _dynamic_imports: dict[str, str] = {
     "InvoiceItemsSort": ".invoiceitemssort",
     "InvoiceItemsSortBy": ".invoiceitemssort",
     "InvoiceItemsSortTypedDict": ".invoiceitemssort",
-    "Budget": ".invoicelineitem",
     "InvoiceLineItem": ".invoicelineitem",
     "InvoiceLineItemInput": ".invoicelineitem",
     "InvoiceLineItemInputTypedDict": ".invoicelineitem",
@@ -10175,6 +10190,8 @@ _dynamic_imports: dict[str, str] = {
     "LedgerAccountsSort": ".ledgeraccountssort",
     "LedgerAccountsSortBy": ".ledgeraccountssort",
     "LedgerAccountsSortTypedDict": ".ledgeraccountssort",
+    "LinkedAttachment": ".linkedattachment",
+    "LinkedAttachmentTypedDict": ".linkedattachment",
     "LinkedConnectorResource": ".linkedconnectorresource",
     "LinkedConnectorResourceTypedDict": ".linkedconnectorresource",
     "LinkedCustomer": ".linkedcustomer",
@@ -10207,6 +10224,8 @@ _dynamic_imports: dict[str, str] = {
     "LinkedTaxRateInputTypedDict": ".linkedtaxrate_input",
     "LinkedTrackingCategory": ".linkedtrackingcategory",
     "LinkedTrackingCategoryTypedDict": ".linkedtrackingcategory",
+    "LinkedWorktag": ".linkedworktag",
+    "LinkedWorktagTypedDict": ".linkedworktag",
     "Links": ".links",
     "LinksTypedDict": ".links",
     "Log": ".log",
@@ -10324,8 +10343,8 @@ _dynamic_imports: dict[str, str] = {
     "ProfitAndLossIndicator": ".profitandlossindicator",
     "ProfitAndLossIndicatorTypedDict": ".profitandlossindicator",
     "ProfitAndLossType": ".profitandlosstype",
-    "AmortizationType": ".purchaseorder",
     "PurchaseOrder": ".purchaseorder",
+    "PurchaseOrderAmortizationType": ".purchaseorder",
     "PurchaseOrderInput": ".purchaseorder",
     "PurchaseOrderInputTypedDict": ".purchaseorder",
     "PurchaseOrderStatus": ".purchaseorder",

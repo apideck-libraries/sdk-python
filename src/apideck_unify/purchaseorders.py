@@ -396,6 +396,7 @@ class PurchaseOrders(BaseSDK):
         ] = UNSET,
         subsidiary_id: OptionalNullable[str] = UNSET,
         company_id: OptionalNullable[str] = UNSET,
+        department_id: OptionalNullable[str] = UNSET,
         status: OptionalNullable[models.PurchaseOrderStatus] = UNSET,
         issued_date: OptionalNullable[date] = UNSET,
         delivery_date: OptionalNullable[date] = UNSET,
@@ -433,7 +434,9 @@ class PurchaseOrders(BaseSDK):
         due_date: OptionalNullable[date] = UNSET,
         payment_method: OptionalNullable[str] = UNSET,
         terms: OptionalNullable[str] = UNSET,
-        amortization_type: OptionalNullable[models.AmortizationType] = UNSET,
+        amortization_type: OptionalNullable[
+            models.PurchaseOrderAmortizationType
+        ] = UNSET,
         tax_code: OptionalNullable[str] = UNSET,
         tax_method: OptionalNullable[str] = UNSET,
         issued_method: OptionalNullable[str] = UNSET,
@@ -471,7 +474,8 @@ class PurchaseOrders(BaseSDK):
         :param reference: Optional purchase order reference.
         :param supplier: The supplier this entity is linked to.
         :param subsidiary_id: The ID of the subsidiary
-        :param company_id: The company or subsidiary id the transaction belongs to
+        :param company_id: The company ID the transaction belongs to
+        :param department_id: The ID of the department
         :param status:
         :param issued_date: Date purchase order was issued - YYYY-MM-DD.
         :param delivery_date: The date on which the purchase order is to be delivered - YYYY-MM-DD.
@@ -533,6 +537,7 @@ class PurchaseOrders(BaseSDK):
                 ),
                 subsidiary_id=subsidiary_id,
                 company_id=company_id,
+                department_id=department_id,
                 status=status,
                 issued_date=issued_date,
                 delivery_date=delivery_date,
@@ -699,6 +704,7 @@ class PurchaseOrders(BaseSDK):
         ] = UNSET,
         subsidiary_id: OptionalNullable[str] = UNSET,
         company_id: OptionalNullable[str] = UNSET,
+        department_id: OptionalNullable[str] = UNSET,
         status: OptionalNullable[models.PurchaseOrderStatus] = UNSET,
         issued_date: OptionalNullable[date] = UNSET,
         delivery_date: OptionalNullable[date] = UNSET,
@@ -736,7 +742,9 @@ class PurchaseOrders(BaseSDK):
         due_date: OptionalNullable[date] = UNSET,
         payment_method: OptionalNullable[str] = UNSET,
         terms: OptionalNullable[str] = UNSET,
-        amortization_type: OptionalNullable[models.AmortizationType] = UNSET,
+        amortization_type: OptionalNullable[
+            models.PurchaseOrderAmortizationType
+        ] = UNSET,
         tax_code: OptionalNullable[str] = UNSET,
         tax_method: OptionalNullable[str] = UNSET,
         issued_method: OptionalNullable[str] = UNSET,
@@ -774,7 +782,8 @@ class PurchaseOrders(BaseSDK):
         :param reference: Optional purchase order reference.
         :param supplier: The supplier this entity is linked to.
         :param subsidiary_id: The ID of the subsidiary
-        :param company_id: The company or subsidiary id the transaction belongs to
+        :param company_id: The company ID the transaction belongs to
+        :param department_id: The ID of the department
         :param status:
         :param issued_date: Date purchase order was issued - YYYY-MM-DD.
         :param delivery_date: The date on which the purchase order is to be delivered - YYYY-MM-DD.
@@ -836,6 +845,7 @@ class PurchaseOrders(BaseSDK):
                 ),
                 subsidiary_id=subsidiary_id,
                 company_id=company_id,
+                department_id=department_id,
                 status=status,
                 issued_date=issued_date,
                 delivery_date=delivery_date,
@@ -1285,6 +1295,7 @@ class PurchaseOrders(BaseSDK):
         ] = UNSET,
         subsidiary_id: OptionalNullable[str] = UNSET,
         company_id: OptionalNullable[str] = UNSET,
+        department_id: OptionalNullable[str] = UNSET,
         status: OptionalNullable[models.PurchaseOrderStatus] = UNSET,
         issued_date: OptionalNullable[date] = UNSET,
         delivery_date: OptionalNullable[date] = UNSET,
@@ -1322,7 +1333,9 @@ class PurchaseOrders(BaseSDK):
         due_date: OptionalNullable[date] = UNSET,
         payment_method: OptionalNullable[str] = UNSET,
         terms: OptionalNullable[str] = UNSET,
-        amortization_type: OptionalNullable[models.AmortizationType] = UNSET,
+        amortization_type: OptionalNullable[
+            models.PurchaseOrderAmortizationType
+        ] = UNSET,
         tax_code: OptionalNullable[str] = UNSET,
         tax_method: OptionalNullable[str] = UNSET,
         issued_method: OptionalNullable[str] = UNSET,
@@ -1361,7 +1374,8 @@ class PurchaseOrders(BaseSDK):
         :param reference: Optional purchase order reference.
         :param supplier: The supplier this entity is linked to.
         :param subsidiary_id: The ID of the subsidiary
-        :param company_id: The company or subsidiary id the transaction belongs to
+        :param company_id: The company ID the transaction belongs to
+        :param department_id: The ID of the department
         :param status:
         :param issued_date: Date purchase order was issued - YYYY-MM-DD.
         :param delivery_date: The date on which the purchase order is to be delivered - YYYY-MM-DD.
@@ -1424,6 +1438,7 @@ class PurchaseOrders(BaseSDK):
                 ),
                 subsidiary_id=subsidiary_id,
                 company_id=company_id,
+                department_id=department_id,
                 status=status,
                 issued_date=issued_date,
                 delivery_date=delivery_date,
@@ -1591,6 +1606,7 @@ class PurchaseOrders(BaseSDK):
         ] = UNSET,
         subsidiary_id: OptionalNullable[str] = UNSET,
         company_id: OptionalNullable[str] = UNSET,
+        department_id: OptionalNullable[str] = UNSET,
         status: OptionalNullable[models.PurchaseOrderStatus] = UNSET,
         issued_date: OptionalNullable[date] = UNSET,
         delivery_date: OptionalNullable[date] = UNSET,
@@ -1628,7 +1644,9 @@ class PurchaseOrders(BaseSDK):
         due_date: OptionalNullable[date] = UNSET,
         payment_method: OptionalNullable[str] = UNSET,
         terms: OptionalNullable[str] = UNSET,
-        amortization_type: OptionalNullable[models.AmortizationType] = UNSET,
+        amortization_type: OptionalNullable[
+            models.PurchaseOrderAmortizationType
+        ] = UNSET,
         tax_code: OptionalNullable[str] = UNSET,
         tax_method: OptionalNullable[str] = UNSET,
         issued_method: OptionalNullable[str] = UNSET,
@@ -1667,7 +1685,8 @@ class PurchaseOrders(BaseSDK):
         :param reference: Optional purchase order reference.
         :param supplier: The supplier this entity is linked to.
         :param subsidiary_id: The ID of the subsidiary
-        :param company_id: The company or subsidiary id the transaction belongs to
+        :param company_id: The company ID the transaction belongs to
+        :param department_id: The ID of the department
         :param status:
         :param issued_date: Date purchase order was issued - YYYY-MM-DD.
         :param delivery_date: The date on which the purchase order is to be delivered - YYYY-MM-DD.
@@ -1730,6 +1749,7 @@ class PurchaseOrders(BaseSDK):
                 ),
                 subsidiary_id=subsidiary_id,
                 company_id=company_id,
+                department_id=department_id,
                 status=status,
                 issued_date=issued_date,
                 delivery_date=delivery_date,

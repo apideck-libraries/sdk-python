@@ -10,6 +10,7 @@ from .billlineitem import (
 )
 from .currency import Currency
 from .customfield import CustomField, CustomFieldTypedDict
+from .linkedattachment import LinkedAttachment, LinkedAttachmentTypedDict
 from .linkedledgeraccount import LinkedLedgerAccount, LinkedLedgerAccountTypedDict
 from .linkedledgeraccount_input import (
     LinkedLedgerAccountInput,
@@ -49,17 +50,30 @@ class BillStatus(str, Enum):
     DELETED = "deleted"
 
 
+class AmortizationType(str, Enum):
+    r"""Type of amortization"""
+
+    MANUAL = "manual"
+    RECEIPT = "receipt"
+    SCHEDULE = "schedule"
+    OTHER = "other"
+
+
 class BillTypedDict(TypedDict):
     id: NotRequired[str]
     r"""A unique identifier for an object."""
     downstream_id: NotRequired[Nullable[str]]
     r"""The third-party API ID of original entity"""
+    display_id: NotRequired[Nullable[str]]
+    r"""Id to be displayed."""
     bill_number: NotRequired[Nullable[str]]
     r"""Reference to supplier bill number"""
     supplier: NotRequired[Nullable[LinkedSupplierTypedDict]]
     r"""The supplier this entity is linked to."""
     company_id: NotRequired[Nullable[str]]
-    r"""The company or subsidiary id the transaction belongs to"""
+    r"""The company ID the transaction belongs to"""
+    department_id: NotRequired[Nullable[str]]
+    r"""The ID of the department"""
     currency: NotRequired[Nullable[Currency]]
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
     currency_rate: NotRequired[Nullable[float]]
@@ -106,6 +120,16 @@ class BillTypedDict(TypedDict):
     bank_account: NotRequired[BankAccountTypedDict]
     discount_percentage: NotRequired[Nullable[float]]
     r"""Discount percentage applied to this transaction."""
+    template_id: NotRequired[Nullable[str]]
+    r"""Optional bill template"""
+    approved_by: NotRequired[Nullable[str]]
+    r"""The user who approved the bill"""
+    amortization_type: NotRequired[Nullable[AmortizationType]]
+    r"""Type of amortization"""
+    tax_method: NotRequired[Nullable[str]]
+    r"""Method of tax calculation"""
+    document_received: NotRequired[Nullable[bool]]
+    r"""Whether the document has been received"""
     source_document_url: NotRequired[Nullable[str]]
     r"""URL link to a source document - shown as 'Go to [appName]' in the downstream app. Currently only supported for Xero."""
     tracking_categories: NotRequired[
@@ -129,6 +153,7 @@ class BillTypedDict(TypedDict):
     r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
     accounting_period: NotRequired[Nullable[str]]
     r"""Accounting period"""
+    attachments: NotRequired[List[Nullable[LinkedAttachmentTypedDict]]]
 
 
 class Bill(BaseModel):
@@ -138,6 +163,9 @@ class Bill(BaseModel):
     downstream_id: OptionalNullable[str] = UNSET
     r"""The third-party API ID of original entity"""
 
+    display_id: OptionalNullable[str] = UNSET
+    r"""Id to be displayed."""
+
     bill_number: OptionalNullable[str] = UNSET
     r"""Reference to supplier bill number"""
 
@@ -145,7 +173,10 @@ class Bill(BaseModel):
     r"""The supplier this entity is linked to."""
 
     company_id: OptionalNullable[str] = UNSET
-    r"""The company or subsidiary id the transaction belongs to"""
+    r"""The company ID the transaction belongs to"""
+
+    department_id: OptionalNullable[str] = UNSET
+    r"""The ID of the department"""
 
     currency: OptionalNullable[Currency] = UNSET
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
@@ -218,6 +249,21 @@ class Bill(BaseModel):
     discount_percentage: OptionalNullable[float] = UNSET
     r"""Discount percentage applied to this transaction."""
 
+    template_id: OptionalNullable[str] = UNSET
+    r"""Optional bill template"""
+
+    approved_by: OptionalNullable[str] = UNSET
+    r"""The user who approved the bill"""
+
+    amortization_type: OptionalNullable[AmortizationType] = UNSET
+    r"""Type of amortization"""
+
+    tax_method: OptionalNullable[str] = UNSET
+    r"""Method of tax calculation"""
+
+    document_received: OptionalNullable[bool] = UNSET
+    r"""Whether the document has been received"""
+
     source_document_url: OptionalNullable[str] = UNSET
     r"""URL link to a source document - shown as 'Go to [appName]' in the downstream app. Currently only supported for Xero."""
 
@@ -252,14 +298,18 @@ class Bill(BaseModel):
     accounting_period: OptionalNullable[str] = UNSET
     r"""Accounting period"""
 
+    attachments: Optional[List[Nullable[LinkedAttachment]]] = None
+
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
         optional_fields = [
             "id",
             "downstream_id",
+            "display_id",
             "bill_number",
             "supplier",
             "company_id",
+            "department_id",
             "currency",
             "currency_rate",
             "tax_inclusive",
@@ -285,6 +335,11 @@ class Bill(BaseModel):
             "accounting_by_row",
             "bank_account",
             "discount_percentage",
+            "template_id",
+            "approved_by",
+            "amortization_type",
+            "tax_method",
+            "document_received",
             "source_document_url",
             "tracking_categories",
             "updated_by",
@@ -296,12 +351,15 @@ class Bill(BaseModel):
             "custom_mappings",
             "pass_through",
             "accounting_period",
+            "attachments",
         ]
         nullable_fields = [
             "downstream_id",
+            "display_id",
             "bill_number",
             "supplier",
             "company_id",
+            "department_id",
             "currency",
             "currency_rate",
             "tax_inclusive",
@@ -325,6 +383,11 @@ class Bill(BaseModel):
             "language",
             "accounting_by_row",
             "discount_percentage",
+            "template_id",
+            "approved_by",
+            "amortization_type",
+            "tax_method",
+            "document_received",
             "source_document_url",
             "tracking_categories",
             "updated_by",
@@ -363,12 +426,16 @@ class Bill(BaseModel):
 
 
 class BillInputTypedDict(TypedDict):
+    display_id: NotRequired[Nullable[str]]
+    r"""Id to be displayed."""
     bill_number: NotRequired[Nullable[str]]
     r"""Reference to supplier bill number"""
     supplier: NotRequired[Nullable[LinkedSupplierInputTypedDict]]
     r"""The supplier this entity is linked to."""
     company_id: NotRequired[Nullable[str]]
-    r"""The company or subsidiary id the transaction belongs to"""
+    r"""The company ID the transaction belongs to"""
+    department_id: NotRequired[Nullable[str]]
+    r"""The ID of the department"""
     currency: NotRequired[Nullable[Currency]]
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
     currency_rate: NotRequired[Nullable[float]]
@@ -415,6 +482,16 @@ class BillInputTypedDict(TypedDict):
     bank_account: NotRequired[BankAccountTypedDict]
     discount_percentage: NotRequired[Nullable[float]]
     r"""Discount percentage applied to this transaction."""
+    template_id: NotRequired[Nullable[str]]
+    r"""Optional bill template"""
+    approved_by: NotRequired[Nullable[str]]
+    r"""The user who approved the bill"""
+    amortization_type: NotRequired[Nullable[AmortizationType]]
+    r"""Type of amortization"""
+    tax_method: NotRequired[Nullable[str]]
+    r"""Method of tax calculation"""
+    document_received: NotRequired[Nullable[bool]]
+    r"""Whether the document has been received"""
     source_document_url: NotRequired[Nullable[str]]
     r"""URL link to a source document - shown as 'Go to [appName]' in the downstream app. Currently only supported for Xero."""
     tracking_categories: NotRequired[
@@ -428,9 +505,13 @@ class BillInputTypedDict(TypedDict):
     r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
     accounting_period: NotRequired[Nullable[str]]
     r"""Accounting period"""
+    attachments: NotRequired[List[Nullable[LinkedAttachmentTypedDict]]]
 
 
 class BillInput(BaseModel):
+    display_id: OptionalNullable[str] = UNSET
+    r"""Id to be displayed."""
+
     bill_number: OptionalNullable[str] = UNSET
     r"""Reference to supplier bill number"""
 
@@ -438,7 +519,10 @@ class BillInput(BaseModel):
     r"""The supplier this entity is linked to."""
 
     company_id: OptionalNullable[str] = UNSET
-    r"""The company or subsidiary id the transaction belongs to"""
+    r"""The company ID the transaction belongs to"""
+
+    department_id: OptionalNullable[str] = UNSET
+    r"""The ID of the department"""
 
     currency: OptionalNullable[Currency] = UNSET
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
@@ -511,6 +595,21 @@ class BillInput(BaseModel):
     discount_percentage: OptionalNullable[float] = UNSET
     r"""Discount percentage applied to this transaction."""
 
+    template_id: OptionalNullable[str] = UNSET
+    r"""Optional bill template"""
+
+    approved_by: OptionalNullable[str] = UNSET
+    r"""The user who approved the bill"""
+
+    amortization_type: OptionalNullable[AmortizationType] = UNSET
+    r"""Type of amortization"""
+
+    tax_method: OptionalNullable[str] = UNSET
+    r"""Method of tax calculation"""
+
+    document_received: OptionalNullable[bool] = UNSET
+    r"""Whether the document has been received"""
+
     source_document_url: OptionalNullable[str] = UNSET
     r"""URL link to a source document - shown as 'Go to [appName]' in the downstream app. Currently only supported for Xero."""
 
@@ -530,12 +629,16 @@ class BillInput(BaseModel):
     accounting_period: OptionalNullable[str] = UNSET
     r"""Accounting period"""
 
+    attachments: Optional[List[Nullable[LinkedAttachment]]] = None
+
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
         optional_fields = [
+            "display_id",
             "bill_number",
             "supplier",
             "company_id",
+            "department_id",
             "currency",
             "currency_rate",
             "tax_inclusive",
@@ -561,17 +664,25 @@ class BillInput(BaseModel):
             "accounting_by_row",
             "bank_account",
             "discount_percentage",
+            "template_id",
+            "approved_by",
+            "amortization_type",
+            "tax_method",
+            "document_received",
             "source_document_url",
             "tracking_categories",
             "row_version",
             "custom_fields",
             "pass_through",
             "accounting_period",
+            "attachments",
         ]
         nullable_fields = [
+            "display_id",
             "bill_number",
             "supplier",
             "company_id",
+            "department_id",
             "currency",
             "currency_rate",
             "tax_inclusive",
@@ -595,6 +706,11 @@ class BillInput(BaseModel):
             "language",
             "accounting_by_row",
             "discount_percentage",
+            "template_id",
+            "approved_by",
+            "amortization_type",
+            "tax_method",
+            "document_received",
             "source_document_url",
             "tracking_categories",
             "row_version",

@@ -53,7 +53,7 @@ class ExpenseTypedDict(TypedDict):
     supplier_id: NotRequired[str]
     r"""The ID of the supplier this entity is linked to."""
     company_id: NotRequired[Nullable[str]]
-    r"""The company or subsidiary id the transaction belongs to"""
+    r"""The company ID the transaction belongs to"""
     department_id: NotRequired[Nullable[str]]
     r"""The ID of the department"""
     payment_type: NotRequired[Nullable[ExpensePaymentType]]
@@ -113,7 +113,7 @@ class Expense(BaseModel):
     r"""The ID of the supplier this entity is linked to."""
 
     company_id: OptionalNullable[str] = UNSET
-    r"""The company or subsidiary id the transaction belongs to"""
+    r"""The company ID the transaction belongs to"""
 
     department_id: OptionalNullable[str] = UNSET
     r"""The ID of the department"""
@@ -255,7 +255,7 @@ class ExpenseInputTypedDict(TypedDict):
     supplier_id: NotRequired[str]
     r"""The ID of the supplier this entity is linked to."""
     company_id: NotRequired[Nullable[str]]
-    r"""The company or subsidiary id the transaction belongs to"""
+    r"""The company ID the transaction belongs to"""
     department_id: NotRequired[Nullable[str]]
     r"""The ID of the department"""
     payment_type: NotRequired[Nullable[ExpensePaymentType]]
@@ -302,7 +302,7 @@ class ExpenseInput(BaseModel):
     r"""The ID of the supplier this entity is linked to."""
 
     company_id: OptionalNullable[str] = UNSET
-    r"""The company or subsidiary id the transaction belongs to"""
+    r"""The company ID the transaction belongs to"""
 
     department_id: OptionalNullable[str] = UNSET
     r"""The ID of the department"""

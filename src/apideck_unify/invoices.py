@@ -389,12 +389,14 @@ class Invoices(BaseSDK):
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
+        display_id: OptionalNullable[str] = UNSET,
         type_: OptionalNullable[models.InvoiceType] = UNSET,
         number: OptionalNullable[str] = UNSET,
         customer: OptionalNullable[
             Union[models.LinkedCustomerInput, models.LinkedCustomerInputTypedDict]
         ] = UNSET,
         company_id: OptionalNullable[str] = UNSET,
+        department_id: OptionalNullable[str] = UNSET,
         invoice_date: OptionalNullable[date] = UNSET,
         due_date: OptionalNullable[date] = UNSET,
         terms: OptionalNullable[str] = UNSET,
@@ -479,10 +481,12 @@ class Invoices(BaseSDK):
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param display_id: Id to be displayed.
         :param type: Invoice type
         :param number: Invoice number.
         :param customer: The customer this entity is linked to.
-        :param company_id: The company or subsidiary id the transaction belongs to
+        :param company_id: The company ID the transaction belongs to
+        :param department_id: The ID of the department
         :param invoice_date: Date invoice was issued - YYYY-MM-DD.
         :param due_date: The invoice due date is the date on which a payment or invoice is scheduled to be received by the seller - YYYY-MM-DD.
         :param terms: Terms of payment.
@@ -540,12 +544,14 @@ class Invoices(BaseSDK):
             app_id=app_id,
             service_id=service_id,
             invoice=models.InvoiceInput(
+                display_id=display_id,
                 type=type_,
                 number=number,
                 customer=utils.get_pydantic_model(
                     customer, OptionalNullable[models.LinkedCustomerInput]
                 ),
                 company_id=company_id,
+                department_id=department_id,
                 invoice_date=invoice_date,
                 due_date=due_date,
                 terms=terms,
@@ -714,12 +720,14 @@ class Invoices(BaseSDK):
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
+        display_id: OptionalNullable[str] = UNSET,
         type_: OptionalNullable[models.InvoiceType] = UNSET,
         number: OptionalNullable[str] = UNSET,
         customer: OptionalNullable[
             Union[models.LinkedCustomerInput, models.LinkedCustomerInputTypedDict]
         ] = UNSET,
         company_id: OptionalNullable[str] = UNSET,
+        department_id: OptionalNullable[str] = UNSET,
         invoice_date: OptionalNullable[date] = UNSET,
         due_date: OptionalNullable[date] = UNSET,
         terms: OptionalNullable[str] = UNSET,
@@ -804,10 +812,12 @@ class Invoices(BaseSDK):
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param display_id: Id to be displayed.
         :param type: Invoice type
         :param number: Invoice number.
         :param customer: The customer this entity is linked to.
-        :param company_id: The company or subsidiary id the transaction belongs to
+        :param company_id: The company ID the transaction belongs to
+        :param department_id: The ID of the department
         :param invoice_date: Date invoice was issued - YYYY-MM-DD.
         :param due_date: The invoice due date is the date on which a payment or invoice is scheduled to be received by the seller - YYYY-MM-DD.
         :param terms: Terms of payment.
@@ -865,12 +875,14 @@ class Invoices(BaseSDK):
             app_id=app_id,
             service_id=service_id,
             invoice=models.InvoiceInput(
+                display_id=display_id,
                 type=type_,
                 number=number,
                 customer=utils.get_pydantic_model(
                     customer, OptionalNullable[models.LinkedCustomerInput]
                 ),
                 company_id=company_id,
+                department_id=department_id,
                 invoice_date=invoice_date,
                 due_date=due_date,
                 terms=terms,
@@ -1328,12 +1340,14 @@ class Invoices(BaseSDK):
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
+        display_id: OptionalNullable[str] = UNSET,
         type_: OptionalNullable[models.InvoiceType] = UNSET,
         number: OptionalNullable[str] = UNSET,
         customer: OptionalNullable[
             Union[models.LinkedCustomerInput, models.LinkedCustomerInputTypedDict]
         ] = UNSET,
         company_id: OptionalNullable[str] = UNSET,
+        department_id: OptionalNullable[str] = UNSET,
         invoice_date: OptionalNullable[date] = UNSET,
         due_date: OptionalNullable[date] = UNSET,
         terms: OptionalNullable[str] = UNSET,
@@ -1419,10 +1433,12 @@ class Invoices(BaseSDK):
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param display_id: Id to be displayed.
         :param type: Invoice type
         :param number: Invoice number.
         :param customer: The customer this entity is linked to.
-        :param company_id: The company or subsidiary id the transaction belongs to
+        :param company_id: The company ID the transaction belongs to
+        :param department_id: The ID of the department
         :param invoice_date: Date invoice was issued - YYYY-MM-DD.
         :param due_date: The invoice due date is the date on which a payment or invoice is scheduled to be received by the seller - YYYY-MM-DD.
         :param terms: Terms of payment.
@@ -1481,12 +1497,14 @@ class Invoices(BaseSDK):
             service_id=service_id,
             raw=raw,
             invoice=models.InvoiceInput(
+                display_id=display_id,
                 type=type_,
                 number=number,
                 customer=utils.get_pydantic_model(
                     customer, OptionalNullable[models.LinkedCustomerInput]
                 ),
                 company_id=company_id,
+                department_id=department_id,
                 invoice_date=invoice_date,
                 due_date=due_date,
                 terms=terms,
@@ -1656,12 +1674,14 @@ class Invoices(BaseSDK):
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
+        display_id: OptionalNullable[str] = UNSET,
         type_: OptionalNullable[models.InvoiceType] = UNSET,
         number: OptionalNullable[str] = UNSET,
         customer: OptionalNullable[
             Union[models.LinkedCustomerInput, models.LinkedCustomerInputTypedDict]
         ] = UNSET,
         company_id: OptionalNullable[str] = UNSET,
+        department_id: OptionalNullable[str] = UNSET,
         invoice_date: OptionalNullable[date] = UNSET,
         due_date: OptionalNullable[date] = UNSET,
         terms: OptionalNullable[str] = UNSET,
@@ -1747,10 +1767,12 @@ class Invoices(BaseSDK):
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param display_id: Id to be displayed.
         :param type: Invoice type
         :param number: Invoice number.
         :param customer: The customer this entity is linked to.
-        :param company_id: The company or subsidiary id the transaction belongs to
+        :param company_id: The company ID the transaction belongs to
+        :param department_id: The ID of the department
         :param invoice_date: Date invoice was issued - YYYY-MM-DD.
         :param due_date: The invoice due date is the date on which a payment or invoice is scheduled to be received by the seller - YYYY-MM-DD.
         :param terms: Terms of payment.
@@ -1809,12 +1831,14 @@ class Invoices(BaseSDK):
             service_id=service_id,
             raw=raw,
             invoice=models.InvoiceInput(
+                display_id=display_id,
                 type=type_,
                 number=number,
                 customer=utils.get_pydantic_model(
                     customer, OptionalNullable[models.LinkedCustomerInput]
                 ),
                 company_id=company_id,
+                department_id=department_id,
                 invoice_date=invoice_date,
                 due_date=due_date,
                 terms=terms,

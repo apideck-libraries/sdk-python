@@ -53,7 +53,7 @@ class CustomerTypedDict(TypedDict):
     company_name: NotRequired[Nullable[str]]
     r"""The name of the company."""
     company_id: NotRequired[Nullable[str]]
-    r"""The company or subsidiary id the transaction belongs to"""
+    r"""The company ID the transaction belongs to"""
     title: NotRequired[Nullable[str]]
     r"""The job title of the person."""
     first_name: NotRequired[Nullable[str]]
@@ -121,7 +121,7 @@ class Customer(BaseModel):
     r"""The name of the company."""
 
     company_id: OptionalNullable[str] = UNSET
-    r"""The company or subsidiary id the transaction belongs to"""
+    r"""The company ID the transaction belongs to"""
 
     title: OptionalNullable[str] = UNSET
     r"""The job title of the person."""
@@ -301,7 +301,7 @@ class CustomerInputTypedDict(TypedDict):
     company_name: NotRequired[Nullable[str]]
     r"""The name of the company."""
     company_id: NotRequired[Nullable[str]]
-    r"""The company or subsidiary id the transaction belongs to"""
+    r"""The company ID the transaction belongs to"""
     title: NotRequired[Nullable[str]]
     r"""The job title of the person."""
     first_name: NotRequired[Nullable[str]]
@@ -353,7 +353,7 @@ class CustomerInput(BaseModel):
     r"""The name of the company."""
 
     company_id: OptionalNullable[str] = UNSET
-    r"""The company or subsidiary id the transaction belongs to"""
+    r"""The company ID the transaction belongs to"""
 
     title: OptionalNullable[str] = UNSET
     r"""The job title of the person."""

@@ -359,6 +359,7 @@ class Quotes(BaseSDK):
         ] = UNSET,
         sales_order_id: OptionalNullable[str] = UNSET,
         company_id: OptionalNullable[str] = UNSET,
+        department_id: OptionalNullable[str] = UNSET,
         project_id: Optional[str] = None,
         quote_date: OptionalNullable[date] = UNSET,
         expiry_date: OptionalNullable[date] = UNSET,
@@ -418,7 +419,8 @@ class Quotes(BaseSDK):
         :param number: Quote number.
         :param customer: The customer this entity is linked to.
         :param sales_order_id: The unique identifier for the sales order.
-        :param company_id: The company or subsidiary id the transaction belongs to
+        :param company_id: The company ID the transaction belongs to
+        :param department_id: The ID of the department
         :param project_id: The unique identifier for the linked project.
         :param quote_date: Date quote was issued - YYYY-MM-DD.
         :param expiry_date: The date until which the quote is valid - YYYY-MM-DD.
@@ -471,6 +473,7 @@ class Quotes(BaseSDK):
                 ),
                 sales_order_id=sales_order_id,
                 company_id=company_id,
+                department_id=department_id,
                 project_id=project_id,
                 quote_date=quote_date,
                 expiry_date=expiry_date,
@@ -624,6 +627,7 @@ class Quotes(BaseSDK):
         ] = UNSET,
         sales_order_id: OptionalNullable[str] = UNSET,
         company_id: OptionalNullable[str] = UNSET,
+        department_id: OptionalNullable[str] = UNSET,
         project_id: Optional[str] = None,
         quote_date: OptionalNullable[date] = UNSET,
         expiry_date: OptionalNullable[date] = UNSET,
@@ -683,7 +687,8 @@ class Quotes(BaseSDK):
         :param number: Quote number.
         :param customer: The customer this entity is linked to.
         :param sales_order_id: The unique identifier for the sales order.
-        :param company_id: The company or subsidiary id the transaction belongs to
+        :param company_id: The company ID the transaction belongs to
+        :param department_id: The ID of the department
         :param project_id: The unique identifier for the linked project.
         :param quote_date: Date quote was issued - YYYY-MM-DD.
         :param expiry_date: The date until which the quote is valid - YYYY-MM-DD.
@@ -736,6 +741,7 @@ class Quotes(BaseSDK):
                 ),
                 sales_order_id=sales_order_id,
                 company_id=company_id,
+                department_id=department_id,
                 project_id=project_id,
                 quote_date=quote_date,
                 expiry_date=expiry_date,
@@ -1172,6 +1178,7 @@ class Quotes(BaseSDK):
         ] = UNSET,
         sales_order_id: OptionalNullable[str] = UNSET,
         company_id: OptionalNullable[str] = UNSET,
+        department_id: OptionalNullable[str] = UNSET,
         project_id: Optional[str] = None,
         quote_date: OptionalNullable[date] = UNSET,
         expiry_date: OptionalNullable[date] = UNSET,
@@ -1232,7 +1239,8 @@ class Quotes(BaseSDK):
         :param number: Quote number.
         :param customer: The customer this entity is linked to.
         :param sales_order_id: The unique identifier for the sales order.
-        :param company_id: The company or subsidiary id the transaction belongs to
+        :param company_id: The company ID the transaction belongs to
+        :param department_id: The ID of the department
         :param project_id: The unique identifier for the linked project.
         :param quote_date: Date quote was issued - YYYY-MM-DD.
         :param expiry_date: The date until which the quote is valid - YYYY-MM-DD.
@@ -1286,6 +1294,7 @@ class Quotes(BaseSDK):
                 ),
                 sales_order_id=sales_order_id,
                 company_id=company_id,
+                department_id=department_id,
                 project_id=project_id,
                 quote_date=quote_date,
                 expiry_date=expiry_date,
@@ -1440,6 +1449,7 @@ class Quotes(BaseSDK):
         ] = UNSET,
         sales_order_id: OptionalNullable[str] = UNSET,
         company_id: OptionalNullable[str] = UNSET,
+        department_id: OptionalNullable[str] = UNSET,
         project_id: Optional[str] = None,
         quote_date: OptionalNullable[date] = UNSET,
         expiry_date: OptionalNullable[date] = UNSET,
@@ -1500,7 +1510,8 @@ class Quotes(BaseSDK):
         :param number: Quote number.
         :param customer: The customer this entity is linked to.
         :param sales_order_id: The unique identifier for the sales order.
-        :param company_id: The company or subsidiary id the transaction belongs to
+        :param company_id: The company ID the transaction belongs to
+        :param department_id: The ID of the department
         :param project_id: The unique identifier for the linked project.
         :param quote_date: Date quote was issued - YYYY-MM-DD.
         :param expiry_date: The date until which the quote is valid - YYYY-MM-DD.
@@ -1554,6 +1565,7 @@ class Quotes(BaseSDK):
                 ),
                 sales_order_id=sales_order_id,
                 company_id=company_id,
+                department_id=department_id,
                 project_id=project_id,
                 quote_date=quote_date,
                 expiry_date=expiry_date,

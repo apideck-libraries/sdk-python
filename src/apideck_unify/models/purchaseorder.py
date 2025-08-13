@@ -46,7 +46,7 @@ class PurchaseOrderStatus(str, Enum):
     OTHER = "other"
 
 
-class AmortizationType(str, Enum):
+class PurchaseOrderAmortizationType(str, Enum):
     r"""Type of amortization"""
 
     MANUAL = "manual"
@@ -69,7 +69,9 @@ class PurchaseOrderTypedDict(TypedDict):
     subsidiary_id: NotRequired[Nullable[str]]
     r"""The ID of the subsidiary"""
     company_id: NotRequired[Nullable[str]]
-    r"""The company or subsidiary id the transaction belongs to"""
+    r"""The company ID the transaction belongs to"""
+    department_id: NotRequired[Nullable[str]]
+    r"""The ID of the department"""
     status: NotRequired[Nullable[PurchaseOrderStatus]]
     issued_date: NotRequired[Nullable[date]]
     r"""Date purchase order was issued - YYYY-MM-DD."""
@@ -106,7 +108,7 @@ class PurchaseOrderTypedDict(TypedDict):
     r"""Payment method used for the transaction, such as cash, credit card, bank transfer, or check"""
     terms: NotRequired[Nullable[str]]
     r"""Terms of payment."""
-    amortization_type: NotRequired[Nullable[AmortizationType]]
+    amortization_type: NotRequired[Nullable[PurchaseOrderAmortizationType]]
     r"""Type of amortization"""
     tax_code: NotRequired[Nullable[str]]
     r"""Applicable tax id/code override if tax is not supplied on a line item basis."""
@@ -163,7 +165,10 @@ class PurchaseOrder(BaseModel):
     r"""The ID of the subsidiary"""
 
     company_id: OptionalNullable[str] = UNSET
-    r"""The company or subsidiary id the transaction belongs to"""
+    r"""The company ID the transaction belongs to"""
+
+    department_id: OptionalNullable[str] = UNSET
+    r"""The ID of the department"""
 
     status: OptionalNullable[PurchaseOrderStatus] = UNSET
 
@@ -222,7 +227,7 @@ class PurchaseOrder(BaseModel):
     terms: OptionalNullable[str] = UNSET
     r"""Terms of payment."""
 
-    amortization_type: OptionalNullable[AmortizationType] = UNSET
+    amortization_type: OptionalNullable[PurchaseOrderAmortizationType] = UNSET
     r"""Type of amortization"""
 
     tax_code: OptionalNullable[str] = UNSET
@@ -284,6 +289,7 @@ class PurchaseOrder(BaseModel):
             "supplier",
             "subsidiary_id",
             "company_id",
+            "department_id",
             "status",
             "issued_date",
             "delivery_date",
@@ -330,6 +336,7 @@ class PurchaseOrder(BaseModel):
             "supplier",
             "subsidiary_id",
             "company_id",
+            "department_id",
             "status",
             "issued_date",
             "delivery_date",
@@ -400,7 +407,9 @@ class PurchaseOrderInputTypedDict(TypedDict):
     subsidiary_id: NotRequired[Nullable[str]]
     r"""The ID of the subsidiary"""
     company_id: NotRequired[Nullable[str]]
-    r"""The company or subsidiary id the transaction belongs to"""
+    r"""The company ID the transaction belongs to"""
+    department_id: NotRequired[Nullable[str]]
+    r"""The ID of the department"""
     status: NotRequired[Nullable[PurchaseOrderStatus]]
     issued_date: NotRequired[Nullable[date]]
     r"""Date purchase order was issued - YYYY-MM-DD."""
@@ -437,7 +446,7 @@ class PurchaseOrderInputTypedDict(TypedDict):
     r"""Payment method used for the transaction, such as cash, credit card, bank transfer, or check"""
     terms: NotRequired[Nullable[str]]
     r"""Terms of payment."""
-    amortization_type: NotRequired[Nullable[AmortizationType]]
+    amortization_type: NotRequired[Nullable[PurchaseOrderAmortizationType]]
     r"""Type of amortization"""
     tax_code: NotRequired[Nullable[str]]
     r"""Applicable tax id/code override if tax is not supplied on a line item basis."""
@@ -478,7 +487,10 @@ class PurchaseOrderInput(BaseModel):
     r"""The ID of the subsidiary"""
 
     company_id: OptionalNullable[str] = UNSET
-    r"""The company or subsidiary id the transaction belongs to"""
+    r"""The company ID the transaction belongs to"""
+
+    department_id: OptionalNullable[str] = UNSET
+    r"""The ID of the department"""
 
     status: OptionalNullable[PurchaseOrderStatus] = UNSET
 
@@ -537,7 +549,7 @@ class PurchaseOrderInput(BaseModel):
     terms: OptionalNullable[str] = UNSET
     r"""Terms of payment."""
 
-    amortization_type: OptionalNullable[AmortizationType] = UNSET
+    amortization_type: OptionalNullable[PurchaseOrderAmortizationType] = UNSET
     r"""Type of amortization"""
 
     tax_code: OptionalNullable[str] = UNSET
@@ -582,6 +594,7 @@ class PurchaseOrderInput(BaseModel):
             "supplier",
             "subsidiary_id",
             "company_id",
+            "department_id",
             "status",
             "issued_date",
             "delivery_date",
@@ -622,6 +635,7 @@ class PurchaseOrderInput(BaseModel):
             "supplier",
             "subsidiary_id",
             "company_id",
+            "department_id",
             "status",
             "issued_date",
             "delivery_date",

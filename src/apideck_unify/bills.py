@@ -389,11 +389,13 @@ class Bills(BaseSDK):
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
+        display_id: OptionalNullable[str] = UNSET,
         bill_number: OptionalNullable[str] = UNSET,
         supplier: OptionalNullable[
             Union[models.LinkedSupplierInput, models.LinkedSupplierInputTypedDict]
         ] = UNSET,
         company_id: OptionalNullable[str] = UNSET,
+        department_id: OptionalNullable[str] = UNSET,
         currency: OptionalNullable[models.Currency] = UNSET,
         currency_rate: OptionalNullable[float] = UNSET,
         tax_inclusive: OptionalNullable[bool] = UNSET,
@@ -430,6 +432,11 @@ class Bills(BaseSDK):
             Union[models.BankAccount, models.BankAccountTypedDict]
         ] = None,
         discount_percentage: OptionalNullable[float] = UNSET,
+        template_id: OptionalNullable[str] = UNSET,
+        approved_by: OptionalNullable[str] = UNSET,
+        amortization_type: OptionalNullable[models.AmortizationType] = UNSET,
+        tax_method: OptionalNullable[str] = UNSET,
+        document_received: OptionalNullable[bool] = UNSET,
         source_document_url: OptionalNullable[str] = UNSET,
         tracking_categories: OptionalNullable[
             Union[
@@ -445,6 +452,12 @@ class Bills(BaseSDK):
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
         ] = None,
         accounting_period: OptionalNullable[str] = UNSET,
+        attachments: Optional[
+            Union[
+                List[Nullable[models.LinkedAttachment]],
+                List[Nullable[models.LinkedAttachmentTypedDict]],
+            ]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -458,9 +471,11 @@ class Bills(BaseSDK):
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param display_id: Id to be displayed.
         :param bill_number: Reference to supplier bill number
         :param supplier: The supplier this entity is linked to.
-        :param company_id: The company or subsidiary id the transaction belongs to
+        :param company_id: The company ID the transaction belongs to
+        :param department_id: The ID of the department
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
         :param currency_rate: Currency Exchange Rate at the time entity was recorded/generated.
         :param tax_inclusive: Amounts are including tax
@@ -486,12 +501,18 @@ class Bills(BaseSDK):
         :param accounting_by_row: Indicates if accounting by row is used (true) or not (false). Accounting by row means that a separate ledger transaction is created for each row.
         :param bank_account:
         :param discount_percentage: Discount percentage applied to this transaction.
+        :param template_id: Optional bill template
+        :param approved_by: The user who approved the bill
+        :param amortization_type: Type of amortization
+        :param tax_method: Method of tax calculation
+        :param document_received: Whether the document has been received
         :param source_document_url: URL link to a source document - shown as 'Go to [appName]' in the downstream app. Currently only supported for Xero.
         :param tracking_categories: A list of linked tracking categories.
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
         :param custom_fields:
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param accounting_period: Accounting period
+        :param attachments:
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -513,11 +534,13 @@ class Bills(BaseSDK):
             app_id=app_id,
             service_id=service_id,
             bill=models.BillInput(
+                display_id=display_id,
                 bill_number=bill_number,
                 supplier=utils.get_pydantic_model(
                     supplier, OptionalNullable[models.LinkedSupplierInput]
                 ),
                 company_id=company_id,
+                department_id=department_id,
                 currency=currency,
                 currency_rate=currency_rate,
                 tax_inclusive=tax_inclusive,
@@ -549,6 +572,11 @@ class Bills(BaseSDK):
                     bank_account, Optional[models.BankAccount]
                 ),
                 discount_percentage=discount_percentage,
+                template_id=template_id,
+                approved_by=approved_by,
+                amortization_type=amortization_type,
+                tax_method=tax_method,
+                document_received=document_received,
                 source_document_url=source_document_url,
                 tracking_categories=utils.get_pydantic_model(
                     tracking_categories,
@@ -562,6 +590,9 @@ class Bills(BaseSDK):
                     pass_through, Optional[List[models.PassThroughBody]]
                 ),
                 accounting_period=accounting_period,
+                attachments=utils.get_pydantic_model(
+                    attachments, Optional[List[Nullable[models.LinkedAttachment]]]
+                ),
             ),
         )
 
@@ -671,11 +702,13 @@ class Bills(BaseSDK):
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
+        display_id: OptionalNullable[str] = UNSET,
         bill_number: OptionalNullable[str] = UNSET,
         supplier: OptionalNullable[
             Union[models.LinkedSupplierInput, models.LinkedSupplierInputTypedDict]
         ] = UNSET,
         company_id: OptionalNullable[str] = UNSET,
+        department_id: OptionalNullable[str] = UNSET,
         currency: OptionalNullable[models.Currency] = UNSET,
         currency_rate: OptionalNullable[float] = UNSET,
         tax_inclusive: OptionalNullable[bool] = UNSET,
@@ -712,6 +745,11 @@ class Bills(BaseSDK):
             Union[models.BankAccount, models.BankAccountTypedDict]
         ] = None,
         discount_percentage: OptionalNullable[float] = UNSET,
+        template_id: OptionalNullable[str] = UNSET,
+        approved_by: OptionalNullable[str] = UNSET,
+        amortization_type: OptionalNullable[models.AmortizationType] = UNSET,
+        tax_method: OptionalNullable[str] = UNSET,
+        document_received: OptionalNullable[bool] = UNSET,
         source_document_url: OptionalNullable[str] = UNSET,
         tracking_categories: OptionalNullable[
             Union[
@@ -727,6 +765,12 @@ class Bills(BaseSDK):
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
         ] = None,
         accounting_period: OptionalNullable[str] = UNSET,
+        attachments: Optional[
+            Union[
+                List[Nullable[models.LinkedAttachment]],
+                List[Nullable[models.LinkedAttachmentTypedDict]],
+            ]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -740,9 +784,11 @@ class Bills(BaseSDK):
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param display_id: Id to be displayed.
         :param bill_number: Reference to supplier bill number
         :param supplier: The supplier this entity is linked to.
-        :param company_id: The company or subsidiary id the transaction belongs to
+        :param company_id: The company ID the transaction belongs to
+        :param department_id: The ID of the department
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
         :param currency_rate: Currency Exchange Rate at the time entity was recorded/generated.
         :param tax_inclusive: Amounts are including tax
@@ -768,12 +814,18 @@ class Bills(BaseSDK):
         :param accounting_by_row: Indicates if accounting by row is used (true) or not (false). Accounting by row means that a separate ledger transaction is created for each row.
         :param bank_account:
         :param discount_percentage: Discount percentage applied to this transaction.
+        :param template_id: Optional bill template
+        :param approved_by: The user who approved the bill
+        :param amortization_type: Type of amortization
+        :param tax_method: Method of tax calculation
+        :param document_received: Whether the document has been received
         :param source_document_url: URL link to a source document - shown as 'Go to [appName]' in the downstream app. Currently only supported for Xero.
         :param tracking_categories: A list of linked tracking categories.
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
         :param custom_fields:
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param accounting_period: Accounting period
+        :param attachments:
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -795,11 +847,13 @@ class Bills(BaseSDK):
             app_id=app_id,
             service_id=service_id,
             bill=models.BillInput(
+                display_id=display_id,
                 bill_number=bill_number,
                 supplier=utils.get_pydantic_model(
                     supplier, OptionalNullable[models.LinkedSupplierInput]
                 ),
                 company_id=company_id,
+                department_id=department_id,
                 currency=currency,
                 currency_rate=currency_rate,
                 tax_inclusive=tax_inclusive,
@@ -831,6 +885,11 @@ class Bills(BaseSDK):
                     bank_account, Optional[models.BankAccount]
                 ),
                 discount_percentage=discount_percentage,
+                template_id=template_id,
+                approved_by=approved_by,
+                amortization_type=amortization_type,
+                tax_method=tax_method,
+                document_received=document_received,
                 source_document_url=source_document_url,
                 tracking_categories=utils.get_pydantic_model(
                     tracking_categories,
@@ -844,6 +903,9 @@ class Bills(BaseSDK):
                     pass_through, Optional[List[models.PassThroughBody]]
                 ),
                 accounting_period=accounting_period,
+                attachments=utils.get_pydantic_model(
+                    attachments, Optional[List[Nullable[models.LinkedAttachment]]]
+                ),
             ),
         )
 
@@ -1242,11 +1304,13 @@ class Bills(BaseSDK):
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
+        display_id: OptionalNullable[str] = UNSET,
         bill_number: OptionalNullable[str] = UNSET,
         supplier: OptionalNullable[
             Union[models.LinkedSupplierInput, models.LinkedSupplierInputTypedDict]
         ] = UNSET,
         company_id: OptionalNullable[str] = UNSET,
+        department_id: OptionalNullable[str] = UNSET,
         currency: OptionalNullable[models.Currency] = UNSET,
         currency_rate: OptionalNullable[float] = UNSET,
         tax_inclusive: OptionalNullable[bool] = UNSET,
@@ -1283,6 +1347,11 @@ class Bills(BaseSDK):
             Union[models.BankAccount, models.BankAccountTypedDict]
         ] = None,
         discount_percentage: OptionalNullable[float] = UNSET,
+        template_id: OptionalNullable[str] = UNSET,
+        approved_by: OptionalNullable[str] = UNSET,
+        amortization_type: OptionalNullable[models.AmortizationType] = UNSET,
+        tax_method: OptionalNullable[str] = UNSET,
+        document_received: OptionalNullable[bool] = UNSET,
         source_document_url: OptionalNullable[str] = UNSET,
         tracking_categories: OptionalNullable[
             Union[
@@ -1298,6 +1367,12 @@ class Bills(BaseSDK):
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
         ] = None,
         accounting_period: OptionalNullable[str] = UNSET,
+        attachments: Optional[
+            Union[
+                List[Nullable[models.LinkedAttachment]],
+                List[Nullable[models.LinkedAttachmentTypedDict]],
+            ]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -1312,9 +1387,11 @@ class Bills(BaseSDK):
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param display_id: Id to be displayed.
         :param bill_number: Reference to supplier bill number
         :param supplier: The supplier this entity is linked to.
-        :param company_id: The company or subsidiary id the transaction belongs to
+        :param company_id: The company ID the transaction belongs to
+        :param department_id: The ID of the department
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
         :param currency_rate: Currency Exchange Rate at the time entity was recorded/generated.
         :param tax_inclusive: Amounts are including tax
@@ -1340,12 +1417,18 @@ class Bills(BaseSDK):
         :param accounting_by_row: Indicates if accounting by row is used (true) or not (false). Accounting by row means that a separate ledger transaction is created for each row.
         :param bank_account:
         :param discount_percentage: Discount percentage applied to this transaction.
+        :param template_id: Optional bill template
+        :param approved_by: The user who approved the bill
+        :param amortization_type: Type of amortization
+        :param tax_method: Method of tax calculation
+        :param document_received: Whether the document has been received
         :param source_document_url: URL link to a source document - shown as 'Go to [appName]' in the downstream app. Currently only supported for Xero.
         :param tracking_categories: A list of linked tracking categories.
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
         :param custom_fields:
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param accounting_period: Accounting period
+        :param attachments:
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -1368,11 +1451,13 @@ class Bills(BaseSDK):
             service_id=service_id,
             raw=raw,
             bill=models.BillInput(
+                display_id=display_id,
                 bill_number=bill_number,
                 supplier=utils.get_pydantic_model(
                     supplier, OptionalNullable[models.LinkedSupplierInput]
                 ),
                 company_id=company_id,
+                department_id=department_id,
                 currency=currency,
                 currency_rate=currency_rate,
                 tax_inclusive=tax_inclusive,
@@ -1404,6 +1489,11 @@ class Bills(BaseSDK):
                     bank_account, Optional[models.BankAccount]
                 ),
                 discount_percentage=discount_percentage,
+                template_id=template_id,
+                approved_by=approved_by,
+                amortization_type=amortization_type,
+                tax_method=tax_method,
+                document_received=document_received,
                 source_document_url=source_document_url,
                 tracking_categories=utils.get_pydantic_model(
                     tracking_categories,
@@ -1417,6 +1507,9 @@ class Bills(BaseSDK):
                     pass_through, Optional[List[models.PassThroughBody]]
                 ),
                 accounting_period=accounting_period,
+                attachments=utils.get_pydantic_model(
+                    attachments, Optional[List[Nullable[models.LinkedAttachment]]]
+                ),
             ),
         )
 
@@ -1527,11 +1620,13 @@ class Bills(BaseSDK):
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
+        display_id: OptionalNullable[str] = UNSET,
         bill_number: OptionalNullable[str] = UNSET,
         supplier: OptionalNullable[
             Union[models.LinkedSupplierInput, models.LinkedSupplierInputTypedDict]
         ] = UNSET,
         company_id: OptionalNullable[str] = UNSET,
+        department_id: OptionalNullable[str] = UNSET,
         currency: OptionalNullable[models.Currency] = UNSET,
         currency_rate: OptionalNullable[float] = UNSET,
         tax_inclusive: OptionalNullable[bool] = UNSET,
@@ -1568,6 +1663,11 @@ class Bills(BaseSDK):
             Union[models.BankAccount, models.BankAccountTypedDict]
         ] = None,
         discount_percentage: OptionalNullable[float] = UNSET,
+        template_id: OptionalNullable[str] = UNSET,
+        approved_by: OptionalNullable[str] = UNSET,
+        amortization_type: OptionalNullable[models.AmortizationType] = UNSET,
+        tax_method: OptionalNullable[str] = UNSET,
+        document_received: OptionalNullable[bool] = UNSET,
         source_document_url: OptionalNullable[str] = UNSET,
         tracking_categories: OptionalNullable[
             Union[
@@ -1583,6 +1683,12 @@ class Bills(BaseSDK):
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
         ] = None,
         accounting_period: OptionalNullable[str] = UNSET,
+        attachments: Optional[
+            Union[
+                List[Nullable[models.LinkedAttachment]],
+                List[Nullable[models.LinkedAttachmentTypedDict]],
+            ]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -1597,9 +1703,11 @@ class Bills(BaseSDK):
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param display_id: Id to be displayed.
         :param bill_number: Reference to supplier bill number
         :param supplier: The supplier this entity is linked to.
-        :param company_id: The company or subsidiary id the transaction belongs to
+        :param company_id: The company ID the transaction belongs to
+        :param department_id: The ID of the department
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
         :param currency_rate: Currency Exchange Rate at the time entity was recorded/generated.
         :param tax_inclusive: Amounts are including tax
@@ -1625,12 +1733,18 @@ class Bills(BaseSDK):
         :param accounting_by_row: Indicates if accounting by row is used (true) or not (false). Accounting by row means that a separate ledger transaction is created for each row.
         :param bank_account:
         :param discount_percentage: Discount percentage applied to this transaction.
+        :param template_id: Optional bill template
+        :param approved_by: The user who approved the bill
+        :param amortization_type: Type of amortization
+        :param tax_method: Method of tax calculation
+        :param document_received: Whether the document has been received
         :param source_document_url: URL link to a source document - shown as 'Go to [appName]' in the downstream app. Currently only supported for Xero.
         :param tracking_categories: A list of linked tracking categories.
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
         :param custom_fields:
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param accounting_period: Accounting period
+        :param attachments:
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -1653,11 +1767,13 @@ class Bills(BaseSDK):
             service_id=service_id,
             raw=raw,
             bill=models.BillInput(
+                display_id=display_id,
                 bill_number=bill_number,
                 supplier=utils.get_pydantic_model(
                     supplier, OptionalNullable[models.LinkedSupplierInput]
                 ),
                 company_id=company_id,
+                department_id=department_id,
                 currency=currency,
                 currency_rate=currency_rate,
                 tax_inclusive=tax_inclusive,
@@ -1689,6 +1805,11 @@ class Bills(BaseSDK):
                     bank_account, Optional[models.BankAccount]
                 ),
                 discount_percentage=discount_percentage,
+                template_id=template_id,
+                approved_by=approved_by,
+                amortization_type=amortization_type,
+                tax_method=tax_method,
+                document_received=document_received,
                 source_document_url=source_document_url,
                 tracking_categories=utils.get_pydantic_model(
                     tracking_categories,
@@ -1702,6 +1823,9 @@ class Bills(BaseSDK):
                     pass_through, Optional[List[models.PassThroughBody]]
                 ),
                 accounting_period=accounting_period,
+                attachments=utils.get_pydantic_model(
+                    attachments, Optional[List[Nullable[models.LinkedAttachment]]]
+                ),
             ),
         )
 

@@ -16,6 +16,7 @@ from .linkedtrackingcategory import (
     LinkedTrackingCategory,
     LinkedTrackingCategoryTypedDict,
 )
+from .linkedworktag import LinkedWorktag, LinkedWorktagTypedDict
 from .rebilling import Rebilling, RebillingTypedDict
 from apideck_unify.types import (
     BaseModel,
@@ -72,6 +73,22 @@ class BillLineItemTypedDict(TypedDict):
     r"""The ID of the subsidiary"""
     category_id: NotRequired[Nullable[str]]
     r"""ID of the category of the line item"""
+    shipping_id: NotRequired[Nullable[str]]
+    r"""ID of the shipping of the line item"""
+    memo: NotRequired[Nullable[str]]
+    r"""Memo"""
+    prepaid: NotRequired[Nullable[bool]]
+    r"""Whether the line item is prepaid"""
+    tax_applicable_on: NotRequired[Nullable[str]]
+    r"""Tax applicable on"""
+    tax_recoverability: NotRequired[Nullable[str]]
+    r"""Tax recoverability"""
+    tax_method: NotRequired[Nullable[str]]
+    r"""Method of tax calculation"""
+    retention_amount: NotRequired[Nullable[float]]
+    r"""Retention amount"""
+    payment_amount: NotRequired[Nullable[float]]
+    r"""Payment amount"""
     item: NotRequired[LinkedInvoiceItemTypedDict]
     tax_rate: NotRequired[LinkedTaxRateTypedDict]
     ledger_account: NotRequired[Nullable[LinkedLedgerAccountTypedDict]]
@@ -94,6 +111,8 @@ class BillLineItemTypedDict(TypedDict):
     r"""The date and time when the object was created."""
     updated_at: NotRequired[Nullable[datetime]]
     r"""The date and time when the object was last updated."""
+    worktags: NotRequired[List[Nullable[LinkedWorktagTypedDict]]]
+    r"""A list of linked worktags. This is only supported for Workday."""
 
 
 class BillLineItem(BaseModel):
@@ -146,6 +165,30 @@ class BillLineItem(BaseModel):
     category_id: OptionalNullable[str] = UNSET
     r"""ID of the category of the line item"""
 
+    shipping_id: OptionalNullable[str] = UNSET
+    r"""ID of the shipping of the line item"""
+
+    memo: OptionalNullable[str] = UNSET
+    r"""Memo"""
+
+    prepaid: OptionalNullable[bool] = UNSET
+    r"""Whether the line item is prepaid"""
+
+    tax_applicable_on: OptionalNullable[str] = UNSET
+    r"""Tax applicable on"""
+
+    tax_recoverability: OptionalNullable[str] = UNSET
+    r"""Tax recoverability"""
+
+    tax_method: OptionalNullable[str] = UNSET
+    r"""Method of tax calculation"""
+
+    retention_amount: OptionalNullable[float] = UNSET
+    r"""Retention amount"""
+
+    payment_amount: OptionalNullable[float] = UNSET
+    r"""Payment amount"""
+
     item: Optional[LinkedInvoiceItem] = None
 
     tax_rate: Optional[LinkedTaxRate] = None
@@ -180,6 +223,9 @@ class BillLineItem(BaseModel):
     updated_at: OptionalNullable[datetime] = UNSET
     r"""The date and time when the object was last updated."""
 
+    worktags: Optional[List[Nullable[LinkedWorktag]]] = None
+    r"""A list of linked worktags. This is only supported for Workday."""
+
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
         optional_fields = [
@@ -200,6 +246,14 @@ class BillLineItem(BaseModel):
             "department_id",
             "subsidiary_id",
             "category_id",
+            "shipping_id",
+            "memo",
+            "prepaid",
+            "tax_applicable_on",
+            "tax_recoverability",
+            "tax_method",
+            "retention_amount",
+            "payment_amount",
             "item",
             "tax_rate",
             "ledger_account",
@@ -212,6 +266,7 @@ class BillLineItem(BaseModel):
             "created_by",
             "created_at",
             "updated_at",
+            "worktags",
         ]
         nullable_fields = [
             "code",
@@ -229,6 +284,14 @@ class BillLineItem(BaseModel):
             "department_id",
             "subsidiary_id",
             "category_id",
+            "shipping_id",
+            "memo",
+            "prepaid",
+            "tax_applicable_on",
+            "tax_recoverability",
+            "tax_method",
+            "retention_amount",
+            "payment_amount",
             "ledger_account",
             "purchase_order",
             "tracking_categories",
@@ -298,6 +361,22 @@ class BillLineItemInputTypedDict(TypedDict):
     r"""The ID of the subsidiary"""
     category_id: NotRequired[Nullable[str]]
     r"""ID of the category of the line item"""
+    shipping_id: NotRequired[Nullable[str]]
+    r"""ID of the shipping of the line item"""
+    memo: NotRequired[Nullable[str]]
+    r"""Memo"""
+    prepaid: NotRequired[Nullable[bool]]
+    r"""Whether the line item is prepaid"""
+    tax_applicable_on: NotRequired[Nullable[str]]
+    r"""Tax applicable on"""
+    tax_recoverability: NotRequired[Nullable[str]]
+    r"""Tax recoverability"""
+    tax_method: NotRequired[Nullable[str]]
+    r"""Method of tax calculation"""
+    retention_amount: NotRequired[Nullable[float]]
+    r"""Retention amount"""
+    payment_amount: NotRequired[Nullable[float]]
+    r"""Payment amount"""
     item: NotRequired[LinkedInvoiceItemTypedDict]
     tax_rate: NotRequired[LinkedTaxRateInputTypedDict]
     ledger_account: NotRequired[Nullable[LinkedLedgerAccountInputTypedDict]]
@@ -312,6 +391,8 @@ class BillLineItemInputTypedDict(TypedDict):
     r"""Rebilling metadata for this line item."""
     row_version: NotRequired[Nullable[str]]
     r"""A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object."""
+    worktags: NotRequired[List[Nullable[LinkedWorktagTypedDict]]]
+    r"""A list of linked worktags. This is only supported for Workday."""
 
 
 class BillLineItemInput(BaseModel):
@@ -361,6 +442,30 @@ class BillLineItemInput(BaseModel):
     category_id: OptionalNullable[str] = UNSET
     r"""ID of the category of the line item"""
 
+    shipping_id: OptionalNullable[str] = UNSET
+    r"""ID of the shipping of the line item"""
+
+    memo: OptionalNullable[str] = UNSET
+    r"""Memo"""
+
+    prepaid: OptionalNullable[bool] = UNSET
+    r"""Whether the line item is prepaid"""
+
+    tax_applicable_on: OptionalNullable[str] = UNSET
+    r"""Tax applicable on"""
+
+    tax_recoverability: OptionalNullable[str] = UNSET
+    r"""Tax recoverability"""
+
+    tax_method: OptionalNullable[str] = UNSET
+    r"""Method of tax calculation"""
+
+    retention_amount: OptionalNullable[float] = UNSET
+    r"""Retention amount"""
+
+    payment_amount: OptionalNullable[float] = UNSET
+    r"""Payment amount"""
+
     item: Optional[LinkedInvoiceItem] = None
 
     tax_rate: Optional[LinkedTaxRateInput] = None
@@ -383,6 +488,9 @@ class BillLineItemInput(BaseModel):
     row_version: OptionalNullable[str] = UNSET
     r"""A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object."""
 
+    worktags: Optional[List[Nullable[LinkedWorktag]]] = None
+    r"""A list of linked worktags. This is only supported for Workday."""
+
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
         optional_fields = [
@@ -402,6 +510,14 @@ class BillLineItemInput(BaseModel):
             "department_id",
             "subsidiary_id",
             "category_id",
+            "shipping_id",
+            "memo",
+            "prepaid",
+            "tax_applicable_on",
+            "tax_recoverability",
+            "tax_method",
+            "retention_amount",
+            "payment_amount",
             "item",
             "tax_rate",
             "ledger_account",
@@ -410,6 +526,7 @@ class BillLineItemInput(BaseModel):
             "customer",
             "rebilling",
             "row_version",
+            "worktags",
         ]
         nullable_fields = [
             "code",
@@ -427,6 +544,14 @@ class BillLineItemInput(BaseModel):
             "department_id",
             "subsidiary_id",
             "category_id",
+            "shipping_id",
+            "memo",
+            "prepaid",
+            "tax_applicable_on",
+            "tax_recoverability",
+            "tax_method",
+            "retention_amount",
+            "payment_amount",
             "ledger_account",
             "purchase_order",
             "tracking_categories",
