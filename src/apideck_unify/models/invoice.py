@@ -121,6 +121,8 @@ class InvoiceTypedDict(TypedDict):
     r"""A unique identifier for an object."""
     downstream_id: NotRequired[Nullable[str]]
     r"""The third-party API ID of original entity"""
+    display_id: NotRequired[Nullable[str]]
+    r"""Id to be displayed."""
     type: NotRequired[Nullable[InvoiceType]]
     r"""Invoice type"""
     number: NotRequired[Nullable[str]]
@@ -128,7 +130,9 @@ class InvoiceTypedDict(TypedDict):
     customer: NotRequired[Nullable[LinkedCustomerTypedDict]]
     r"""The customer this entity is linked to."""
     company_id: NotRequired[Nullable[str]]
-    r"""The company or subsidiary id the transaction belongs to"""
+    r"""The company ID the transaction belongs to"""
+    department_id: NotRequired[Nullable[str]]
+    r"""The ID of the department"""
     invoice_date: NotRequired[Nullable[date]]
     r"""Date invoice was issued - YYYY-MM-DD."""
     due_date: NotRequired[Nullable[date]]
@@ -215,6 +219,9 @@ class Invoice(BaseModel):
     downstream_id: OptionalNullable[str] = UNSET
     r"""The third-party API ID of original entity"""
 
+    display_id: OptionalNullable[str] = UNSET
+    r"""Id to be displayed."""
+
     type: OptionalNullable[InvoiceType] = UNSET
     r"""Invoice type"""
 
@@ -225,7 +232,10 @@ class Invoice(BaseModel):
     r"""The customer this entity is linked to."""
 
     company_id: OptionalNullable[str] = UNSET
-    r"""The company or subsidiary id the transaction belongs to"""
+    r"""The company ID the transaction belongs to"""
+
+    department_id: OptionalNullable[str] = UNSET
+    r"""The ID of the department"""
 
     invoice_date: OptionalNullable[date] = UNSET
     r"""Date invoice was issued - YYYY-MM-DD."""
@@ -355,10 +365,12 @@ class Invoice(BaseModel):
         optional_fields = [
             "id",
             "downstream_id",
+            "display_id",
             "type",
             "number",
             "customer",
             "company_id",
+            "department_id",
             "invoice_date",
             "due_date",
             "terms",
@@ -403,10 +415,12 @@ class Invoice(BaseModel):
         ]
         nullable_fields = [
             "downstream_id",
+            "display_id",
             "type",
             "number",
             "customer",
             "company_id",
+            "department_id",
             "invoice_date",
             "due_date",
             "terms",
@@ -470,6 +484,8 @@ class Invoice(BaseModel):
 
 
 class InvoiceInputTypedDict(TypedDict):
+    display_id: NotRequired[Nullable[str]]
+    r"""Id to be displayed."""
     type: NotRequired[Nullable[InvoiceType]]
     r"""Invoice type"""
     number: NotRequired[Nullable[str]]
@@ -477,7 +493,9 @@ class InvoiceInputTypedDict(TypedDict):
     customer: NotRequired[Nullable[LinkedCustomerInputTypedDict]]
     r"""The customer this entity is linked to."""
     company_id: NotRequired[Nullable[str]]
-    r"""The company or subsidiary id the transaction belongs to"""
+    r"""The company ID the transaction belongs to"""
+    department_id: NotRequired[Nullable[str]]
+    r"""The ID of the department"""
     invoice_date: NotRequired[Nullable[date]]
     r"""Date invoice was issued - YYYY-MM-DD."""
     due_date: NotRequired[Nullable[date]]
@@ -548,6 +566,9 @@ class InvoiceInputTypedDict(TypedDict):
 
 
 class InvoiceInput(BaseModel):
+    display_id: OptionalNullable[str] = UNSET
+    r"""Id to be displayed."""
+
     type: OptionalNullable[InvoiceType] = UNSET
     r"""Invoice type"""
 
@@ -558,7 +579,10 @@ class InvoiceInput(BaseModel):
     r"""The customer this entity is linked to."""
 
     company_id: OptionalNullable[str] = UNSET
-    r"""The company or subsidiary id the transaction belongs to"""
+    r"""The company ID the transaction belongs to"""
+
+    department_id: OptionalNullable[str] = UNSET
+    r"""The ID of the department"""
 
     invoice_date: OptionalNullable[date] = UNSET
     r"""Date invoice was issued - YYYY-MM-DD."""
@@ -671,10 +695,12 @@ class InvoiceInput(BaseModel):
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
         optional_fields = [
+            "display_id",
             "type",
             "number",
             "customer",
             "company_id",
+            "department_id",
             "invoice_date",
             "due_date",
             "terms",
@@ -713,10 +739,12 @@ class InvoiceInput(BaseModel):
             "pass_through",
         ]
         nullable_fields = [
+            "display_id",
             "type",
             "number",
             "customer",
             "company_id",
+            "department_id",
             "invoice_date",
             "due_date",
             "terms",

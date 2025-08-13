@@ -444,7 +444,7 @@ class JournalEntries(BaseSDK):
         :param title: Journal entry title
         :param currency_rate: Currency Exchange Rate at the time entity was recorded/generated.
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
-        :param company_id: The company or subsidiary id the transaction belongs to
+        :param company_id: The company ID the transaction belongs to
         :param line_items: Requires a minimum of 2 line items that sum to 0
         :param status: Journal entry status
         :param memo: Reference for the journal entry.
@@ -661,7 +661,7 @@ class JournalEntries(BaseSDK):
         :param title: Journal entry title
         :param currency_rate: Currency Exchange Rate at the time entity was recorded/generated.
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
-        :param company_id: The company or subsidiary id the transaction belongs to
+        :param company_id: The company ID the transaction belongs to
         :param line_items: Requires a minimum of 2 line items that sum to 0
         :param status: Journal entry status
         :param memo: Reference for the journal entry.
@@ -1168,7 +1168,7 @@ class JournalEntries(BaseSDK):
         :param title: Journal entry title
         :param currency_rate: Currency Exchange Rate at the time entity was recorded/generated.
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
-        :param company_id: The company or subsidiary id the transaction belongs to
+        :param company_id: The company ID the transaction belongs to
         :param line_items: Requires a minimum of 2 line items that sum to 0
         :param status: Journal entry status
         :param memo: Reference for the journal entry.
@@ -1388,7 +1388,7 @@ class JournalEntries(BaseSDK):
         :param title: Journal entry title
         :param currency_rate: Currency Exchange Rate at the time entity was recorded/generated.
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
-        :param company_id: The company or subsidiary id the transaction belongs to
+        :param company_id: The company ID the transaction belongs to
         :param line_items: Requires a minimum of 2 line items that sum to 0
         :param status: Journal entry status
         :param memo: Reference for the journal entry.

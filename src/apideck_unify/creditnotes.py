@@ -403,6 +403,7 @@ class CreditNotes(BaseSDK):
             Union[models.LinkedCustomerInput, models.LinkedCustomerInputTypedDict]
         ] = UNSET,
         company_id: OptionalNullable[str] = UNSET,
+        department_id: OptionalNullable[str] = UNSET,
         currency: OptionalNullable[models.Currency] = UNSET,
         currency_rate: OptionalNullable[float] = UNSET,
         tax_inclusive: OptionalNullable[bool] = UNSET,
@@ -468,7 +469,8 @@ class CreditNotes(BaseSDK):
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param number: Credit note number.
         :param customer: The customer this entity is linked to.
-        :param company_id: The company or subsidiary id the transaction belongs to
+        :param company_id: The company ID the transaction belongs to
+        :param department_id: The ID of the department
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
         :param currency_rate: Currency Exchange Rate at the time entity was recorded/generated.
         :param tax_inclusive: Amounts are including tax
@@ -519,6 +521,7 @@ class CreditNotes(BaseSDK):
                     customer, OptionalNullable[models.LinkedCustomerInput]
                 ),
                 company_id=company_id,
+                department_id=department_id,
                 currency=currency,
                 currency_rate=currency_rate,
                 tax_inclusive=tax_inclusive,
@@ -676,6 +679,7 @@ class CreditNotes(BaseSDK):
             Union[models.LinkedCustomerInput, models.LinkedCustomerInputTypedDict]
         ] = UNSET,
         company_id: OptionalNullable[str] = UNSET,
+        department_id: OptionalNullable[str] = UNSET,
         currency: OptionalNullable[models.Currency] = UNSET,
         currency_rate: OptionalNullable[float] = UNSET,
         tax_inclusive: OptionalNullable[bool] = UNSET,
@@ -741,7 +745,8 @@ class CreditNotes(BaseSDK):
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param number: Credit note number.
         :param customer: The customer this entity is linked to.
-        :param company_id: The company or subsidiary id the transaction belongs to
+        :param company_id: The company ID the transaction belongs to
+        :param department_id: The ID of the department
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
         :param currency_rate: Currency Exchange Rate at the time entity was recorded/generated.
         :param tax_inclusive: Amounts are including tax
@@ -792,6 +797,7 @@ class CreditNotes(BaseSDK):
                     customer, OptionalNullable[models.LinkedCustomerInput]
                 ),
                 company_id=company_id,
+                department_id=department_id,
                 currency=currency,
                 currency_rate=currency_rate,
                 tax_inclusive=tax_inclusive,
@@ -1238,6 +1244,7 @@ class CreditNotes(BaseSDK):
             Union[models.LinkedCustomerInput, models.LinkedCustomerInputTypedDict]
         ] = UNSET,
         company_id: OptionalNullable[str] = UNSET,
+        department_id: OptionalNullable[str] = UNSET,
         currency: OptionalNullable[models.Currency] = UNSET,
         currency_rate: OptionalNullable[float] = UNSET,
         tax_inclusive: OptionalNullable[bool] = UNSET,
@@ -1304,7 +1311,8 @@ class CreditNotes(BaseSDK):
         :param raw: Include raw response. Mostly used for debugging purposes
         :param number: Credit note number.
         :param customer: The customer this entity is linked to.
-        :param company_id: The company or subsidiary id the transaction belongs to
+        :param company_id: The company ID the transaction belongs to
+        :param department_id: The ID of the department
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
         :param currency_rate: Currency Exchange Rate at the time entity was recorded/generated.
         :param tax_inclusive: Amounts are including tax
@@ -1356,6 +1364,7 @@ class CreditNotes(BaseSDK):
                     customer, OptionalNullable[models.LinkedCustomerInput]
                 ),
                 company_id=company_id,
+                department_id=department_id,
                 currency=currency,
                 currency_rate=currency_rate,
                 tax_inclusive=tax_inclusive,
@@ -1514,6 +1523,7 @@ class CreditNotes(BaseSDK):
             Union[models.LinkedCustomerInput, models.LinkedCustomerInputTypedDict]
         ] = UNSET,
         company_id: OptionalNullable[str] = UNSET,
+        department_id: OptionalNullable[str] = UNSET,
         currency: OptionalNullable[models.Currency] = UNSET,
         currency_rate: OptionalNullable[float] = UNSET,
         tax_inclusive: OptionalNullable[bool] = UNSET,
@@ -1580,7 +1590,8 @@ class CreditNotes(BaseSDK):
         :param raw: Include raw response. Mostly used for debugging purposes
         :param number: Credit note number.
         :param customer: The customer this entity is linked to.
-        :param company_id: The company or subsidiary id the transaction belongs to
+        :param company_id: The company ID the transaction belongs to
+        :param department_id: The ID of the department
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
         :param currency_rate: Currency Exchange Rate at the time entity was recorded/generated.
         :param tax_inclusive: Amounts are including tax
@@ -1632,6 +1643,7 @@ class CreditNotes(BaseSDK):
                     customer, OptionalNullable[models.LinkedCustomerInput]
                 ),
                 company_id=company_id,
+                department_id=department_id,
                 currency=currency,
                 currency_rate=currency_rate,
                 tax_inclusive=tax_inclusive,

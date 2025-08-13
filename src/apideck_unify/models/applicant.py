@@ -21,6 +21,16 @@ from typing import Any, Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
+class ApplicantGender(str, Enum):
+    r"""The gender represents the gender identity of a person."""
+
+    MALE = "male"
+    FEMALE = "female"
+    UNISEX = "unisex"
+    OTHER = "other"
+    NOT_SPECIFIED = "not_specified"
+
+
 class ApplicantType(str, Enum):
     r"""The type of website"""
 
@@ -136,6 +146,8 @@ class ApplicantTypedDict(TypedDict):
     r"""A unique identifier for an object."""
     name: NotRequired[str]
     r"""The name of an applicant."""
+    salutation: NotRequired[Nullable[str]]
+    r"""A formal salutation for the person. For example, 'Mr', 'Mrs'"""
     first_name: NotRequired[Nullable[str]]
     r"""The first name of the person."""
     last_name: NotRequired[Nullable[str]]
@@ -146,6 +158,11 @@ class ApplicantTypedDict(TypedDict):
     r"""The initials of the person, usually derived from their first, middle, and last names."""
     birthday: NotRequired[Nullable[date]]
     r"""The date of birth of the person."""
+    gender: NotRequired[Nullable[ApplicantGender]]
+    r"""The gender represents the gender identity of a person."""
+    social_security_number: NotRequired[Nullable[str]]
+    r"""A unique identifier assigned by the government. This field is considered sensitive information and may be subject to special security and privacy restrictions."""
+    type: NotRequired[str]
     cover_letter: NotRequired[str]
     job_url: NotRequired[Nullable[str]]
     photo_url: NotRequired[Nullable[str]]
@@ -206,6 +223,9 @@ class Applicant(BaseModel):
     name: Optional[str] = None
     r"""The name of an applicant."""
 
+    salutation: OptionalNullable[str] = UNSET
+    r"""A formal salutation for the person. For example, 'Mr', 'Mrs'"""
+
     first_name: OptionalNullable[str] = UNSET
     r"""The first name of the person."""
 
@@ -220,6 +240,14 @@ class Applicant(BaseModel):
 
     birthday: OptionalNullable[date] = UNSET
     r"""The date of birth of the person."""
+
+    gender: OptionalNullable[ApplicantGender] = UNSET
+    r"""The gender represents the gender identity of a person."""
+
+    social_security_number: OptionalNullable[str] = UNSET
+    r"""A unique identifier assigned by the government. This field is considered sensitive information and may be subject to special security and privacy restrictions."""
+
+    type: Optional[str] = None
 
     cover_letter: Optional[str] = None
 
@@ -320,11 +348,15 @@ class Applicant(BaseModel):
         optional_fields = [
             "id",
             "name",
+            "salutation",
             "first_name",
             "last_name",
             "middle_name",
             "initials",
             "birthday",
+            "gender",
+            "social_security_number",
+            "type",
             "cover_letter",
             "job_url",
             "photo_url",
@@ -365,11 +397,14 @@ class Applicant(BaseModel):
             "pass_through",
         ]
         nullable_fields = [
+            "salutation",
             "first_name",
             "last_name",
             "middle_name",
             "initials",
             "birthday",
+            "gender",
+            "social_security_number",
             "job_url",
             "photo_url",
             "title",
@@ -423,6 +458,8 @@ class Applicant(BaseModel):
 class ApplicantInputTypedDict(TypedDict):
     name: NotRequired[str]
     r"""The name of an applicant."""
+    salutation: NotRequired[Nullable[str]]
+    r"""A formal salutation for the person. For example, 'Mr', 'Mrs'"""
     first_name: NotRequired[Nullable[str]]
     r"""The first name of the person."""
     last_name: NotRequired[Nullable[str]]
@@ -433,6 +470,11 @@ class ApplicantInputTypedDict(TypedDict):
     r"""The initials of the person, usually derived from their first, middle, and last names."""
     birthday: NotRequired[Nullable[date]]
     r"""The date of birth of the person."""
+    gender: NotRequired[Nullable[ApplicantGender]]
+    r"""The gender represents the gender identity of a person."""
+    social_security_number: NotRequired[Nullable[str]]
+    r"""A unique identifier assigned by the government. This field is considered sensitive information and may be subject to special security and privacy restrictions."""
+    type: NotRequired[str]
     cover_letter: NotRequired[str]
     photo_url: NotRequired[Nullable[str]]
     r"""The URL of the photo of a person."""
@@ -470,6 +512,9 @@ class ApplicantInput(BaseModel):
     name: Optional[str] = None
     r"""The name of an applicant."""
 
+    salutation: OptionalNullable[str] = UNSET
+    r"""A formal salutation for the person. For example, 'Mr', 'Mrs'"""
+
     first_name: OptionalNullable[str] = UNSET
     r"""The first name of the person."""
 
@@ -484,6 +529,14 @@ class ApplicantInput(BaseModel):
 
     birthday: OptionalNullable[date] = UNSET
     r"""The date of birth of the person."""
+
+    gender: OptionalNullable[ApplicantGender] = UNSET
+    r"""The gender represents the gender identity of a person."""
+
+    social_security_number: OptionalNullable[str] = UNSET
+    r"""A unique identifier assigned by the government. This field is considered sensitive information and may be subject to special security and privacy restrictions."""
+
+    type: Optional[str] = None
 
     cover_letter: Optional[str] = None
 
@@ -550,11 +603,15 @@ class ApplicantInput(BaseModel):
     def serialize_model(self, handler):
         optional_fields = [
             "name",
+            "salutation",
             "first_name",
             "last_name",
             "middle_name",
             "initials",
             "birthday",
+            "gender",
+            "social_security_number",
+            "type",
             "cover_letter",
             "photo_url",
             "headline",
@@ -582,11 +639,14 @@ class ApplicantInput(BaseModel):
             "pass_through",
         ]
         nullable_fields = [
+            "salutation",
             "first_name",
             "last_name",
             "middle_name",
             "initials",
             "birthday",
+            "gender",
+            "social_security_number",
             "photo_url",
             "title",
             "application_ids",

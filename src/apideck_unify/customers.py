@@ -457,7 +457,7 @@ class Customers(BaseSDK):
         :param display_id: Display ID
         :param display_name: Display name
         :param company_name: The name of the company.
-        :param company_id: The company or subsidiary id the transaction belongs to
+        :param company_id: The company ID the transaction belongs to
         :param title: The job title of the person.
         :param first_name: The first name of the person.
         :param middle_name: Middle name of the person.
@@ -723,7 +723,7 @@ class Customers(BaseSDK):
         :param display_id: Display ID
         :param display_name: Display name
         :param company_name: The name of the company.
-        :param company_id: The company or subsidiary id the transaction belongs to
+        :param company_id: The company ID the transaction belongs to
         :param title: The job title of the person.
         :param first_name: The first name of the person.
         :param middle_name: Middle name of the person.
@@ -1279,7 +1279,7 @@ class Customers(BaseSDK):
         :param display_id: Display ID
         :param display_name: Display name
         :param company_name: The name of the company.
-        :param company_id: The company or subsidiary id the transaction belongs to
+        :param company_id: The company ID the transaction belongs to
         :param title: The job title of the person.
         :param first_name: The first name of the person.
         :param middle_name: Middle name of the person.
@@ -1548,7 +1548,7 @@ class Customers(BaseSDK):
         :param display_id: Display ID
         :param display_name: Display name
         :param company_name: The name of the company.
-        :param company_id: The company or subsidiary id the transaction belongs to
+        :param company_id: The company ID the transaction belongs to
         :param title: The job title of the person.
         :param first_name: The first name of the person.
         :param middle_name: Middle name of the person.

@@ -401,7 +401,7 @@ class Expenses(BaseSDK):
         :param number: Number.
         :param customer_id: The ID of the customer this entity is linked to. Used for expenses that should be marked as billable to customers.
         :param supplier_id: The ID of the supplier this entity is linked to.
-        :param company_id: The company or subsidiary id the transaction belongs to
+        :param company_id: The company ID the transaction belongs to
         :param department_id: The ID of the department
         :param payment_type: The type of payment for the expense.
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
@@ -621,7 +621,7 @@ class Expenses(BaseSDK):
         :param number: Number.
         :param customer_id: The ID of the customer this entity is linked to. Used for expenses that should be marked as billable to customers.
         :param supplier_id: The ID of the supplier this entity is linked to.
-        :param company_id: The company or subsidiary id the transaction belongs to
+        :param company_id: The company ID the transaction belongs to
         :param department_id: The ID of the department
         :param payment_type: The type of payment for the expense.
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
@@ -1125,7 +1125,7 @@ class Expenses(BaseSDK):
         :param number: Number.
         :param customer_id: The ID of the customer this entity is linked to. Used for expenses that should be marked as billable to customers.
         :param supplier_id: The ID of the supplier this entity is linked to.
-        :param company_id: The company or subsidiary id the transaction belongs to
+        :param company_id: The company ID the transaction belongs to
         :param department_id: The ID of the department
         :param payment_type: The type of payment for the expense.
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
@@ -1348,7 +1348,7 @@ class Expenses(BaseSDK):
         :param number: Number.
         :param customer_id: The ID of the customer this entity is linked to. Used for expenses that should be marked as billable to customers.
         :param supplier_id: The ID of the supplier this entity is linked to.
-        :param company_id: The company or subsidiary id the transaction belongs to
+        :param company_id: The company ID the transaction belongs to
         :param department_id: The ID of the department
         :param payment_type: The type of payment for the expense.
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).

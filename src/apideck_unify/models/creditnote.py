@@ -69,7 +69,9 @@ class CreditNoteTypedDict(TypedDict):
     customer: NotRequired[Nullable[LinkedCustomerTypedDict]]
     r"""The customer this entity is linked to."""
     company_id: NotRequired[Nullable[str]]
-    r"""The company or subsidiary id the transaction belongs to"""
+    r"""The company ID the transaction belongs to"""
+    department_id: NotRequired[Nullable[str]]
+    r"""The ID of the department"""
     currency: NotRequired[Nullable[Currency]]
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
     currency_rate: NotRequired[Nullable[float]]
@@ -140,7 +142,10 @@ class CreditNote(BaseModel):
     r"""The customer this entity is linked to."""
 
     company_id: OptionalNullable[str] = UNSET
-    r"""The company or subsidiary id the transaction belongs to"""
+    r"""The company ID the transaction belongs to"""
+
+    department_id: OptionalNullable[str] = UNSET
+    r"""The ID of the department"""
 
     currency: OptionalNullable[Currency] = UNSET
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
@@ -231,6 +236,7 @@ class CreditNote(BaseModel):
             "number",
             "customer",
             "company_id",
+            "department_id",
             "currency",
             "currency_rate",
             "tax_inclusive",
@@ -265,6 +271,7 @@ class CreditNote(BaseModel):
             "number",
             "customer",
             "company_id",
+            "department_id",
             "currency",
             "currency_rate",
             "tax_inclusive",
@@ -321,7 +328,9 @@ class CreditNoteInputTypedDict(TypedDict):
     customer: NotRequired[Nullable[LinkedCustomerInputTypedDict]]
     r"""The customer this entity is linked to."""
     company_id: NotRequired[Nullable[str]]
-    r"""The company or subsidiary id the transaction belongs to"""
+    r"""The company ID the transaction belongs to"""
+    department_id: NotRequired[Nullable[str]]
+    r"""The ID of the department"""
     currency: NotRequired[Nullable[Currency]]
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
     currency_rate: NotRequired[Nullable[float]]
@@ -379,7 +388,10 @@ class CreditNoteInput(BaseModel):
     r"""The customer this entity is linked to."""
 
     company_id: OptionalNullable[str] = UNSET
-    r"""The company or subsidiary id the transaction belongs to"""
+    r"""The company ID the transaction belongs to"""
+
+    department_id: OptionalNullable[str] = UNSET
+    r"""The ID of the department"""
 
     currency: OptionalNullable[Currency] = UNSET
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
@@ -455,6 +467,7 @@ class CreditNoteInput(BaseModel):
             "number",
             "customer",
             "company_id",
+            "department_id",
             "currency",
             "currency_rate",
             "tax_inclusive",
@@ -484,6 +497,7 @@ class CreditNoteInput(BaseModel):
             "number",
             "customer",
             "company_id",
+            "department_id",
             "currency",
             "currency_rate",
             "tax_inclusive",

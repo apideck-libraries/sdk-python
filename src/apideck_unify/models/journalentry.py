@@ -51,7 +51,7 @@ class JournalEntryTypedDict(TypedDict):
     currency: NotRequired[Nullable[Currency]]
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
     company_id: NotRequired[Nullable[str]]
-    r"""The company or subsidiary id the transaction belongs to"""
+    r"""The company ID the transaction belongs to"""
     line_items: NotRequired[List[JournalEntryLineItemTypedDict]]
     r"""Requires a minimum of 2 line items that sum to 0"""
     status: NotRequired[Nullable[JournalEntryStatus]]
@@ -105,7 +105,7 @@ class JournalEntry(BaseModel):
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
 
     company_id: OptionalNullable[str] = UNSET
-    r"""The company or subsidiary id the transaction belongs to"""
+    r"""The company ID the transaction belongs to"""
 
     line_items: Optional[List[JournalEntryLineItem]] = None
     r"""Requires a minimum of 2 line items that sum to 0"""
@@ -244,7 +244,7 @@ class JournalEntryInputTypedDict(TypedDict):
     currency: NotRequired[Nullable[Currency]]
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
     company_id: NotRequired[Nullable[str]]
-    r"""The company or subsidiary id the transaction belongs to"""
+    r"""The company ID the transaction belongs to"""
     line_items: NotRequired[List[JournalEntryLineItemInputTypedDict]]
     r"""Requires a minimum of 2 line items that sum to 0"""
     status: NotRequired[Nullable[JournalEntryStatus]]
@@ -285,7 +285,7 @@ class JournalEntryInput(BaseModel):
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
 
     company_id: OptionalNullable[str] = UNSET
-    r"""The company or subsidiary id the transaction belongs to"""
+    r"""The company ID the transaction belongs to"""
 
     line_items: Optional[List[JournalEntryLineItemInput]] = None
     r"""Requires a minimum of 2 line items that sum to 0"""

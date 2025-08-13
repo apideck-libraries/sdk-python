@@ -14,6 +14,7 @@ from .linkedtrackingcategory import (
     LinkedTrackingCategory,
     LinkedTrackingCategoryTypedDict,
 )
+from .linkedworktag import LinkedWorktag, LinkedWorktagTypedDict
 from apideck_unify.types import (
     BaseModel,
     Nullable,
@@ -36,14 +37,6 @@ class InvoiceLineItemType(str, Enum):
     INFO = "info"
     SUB_TOTAL = "sub_total"
     SERVICE = "service"
-    OTHER = "other"
-
-
-class Budget(str, Enum):
-    r"""Budget of the line item"""
-
-    OUT_OF_BUDGET = "out_of_budget"
-    IN_BUDGET = "in_budget"
     OTHER = "other"
 
 
@@ -93,10 +86,8 @@ class InvoiceLineItemTypedDict(TypedDict):
     r"""Tax recoverability"""
     tax_method: NotRequired[Nullable[str]]
     r"""Method of tax calculation"""
-    budget: NotRequired[Nullable[Budget]]
-    r"""Budget of the line item"""
-    project_id: NotRequired[Nullable[str]]
-    r"""ID of the project of the line item"""
+    worktags: NotRequired[List[Nullable[LinkedWorktagTypedDict]]]
+    r"""Worktags of the line item. This is currently only supported in Workday."""
     tax_rate: NotRequired[LinkedTaxRateTypedDict]
     tracking_categories: NotRequired[
         Nullable[List[Nullable[LinkedTrackingCategoryTypedDict]]]
@@ -186,11 +177,8 @@ class InvoiceLineItem(BaseModel):
     tax_method: OptionalNullable[str] = UNSET
     r"""Method of tax calculation"""
 
-    budget: OptionalNullable[Budget] = UNSET
-    r"""Budget of the line item"""
-
-    project_id: OptionalNullable[str] = UNSET
-    r"""ID of the project of the line item"""
+    worktags: Optional[List[Nullable[LinkedWorktag]]] = None
+    r"""Worktags of the line item. This is currently only supported in Workday."""
 
     tax_rate: Optional[LinkedTaxRate] = None
 
@@ -245,8 +233,7 @@ class InvoiceLineItem(BaseModel):
             "tax_applicable_on",
             "tax_recoverability",
             "tax_method",
-            "budget",
-            "project_id",
+            "worktags",
             "tax_rate",
             "tracking_categories",
             "ledger_account",
@@ -280,8 +267,6 @@ class InvoiceLineItem(BaseModel):
             "tax_applicable_on",
             "tax_recoverability",
             "tax_method",
-            "budget",
-            "project_id",
             "tracking_categories",
             "ledger_account",
             "row_version",
@@ -363,10 +348,8 @@ class InvoiceLineItemInputTypedDict(TypedDict):
     r"""Tax recoverability"""
     tax_method: NotRequired[Nullable[str]]
     r"""Method of tax calculation"""
-    budget: NotRequired[Nullable[Budget]]
-    r"""Budget of the line item"""
-    project_id: NotRequired[Nullable[str]]
-    r"""ID of the project of the line item"""
+    worktags: NotRequired[List[Nullable[LinkedWorktagTypedDict]]]
+    r"""Worktags of the line item. This is currently only supported in Workday."""
     tax_rate: NotRequired[LinkedTaxRateInputTypedDict]
     tracking_categories: NotRequired[
         Nullable[List[Nullable[LinkedTrackingCategoryTypedDict]]]
@@ -448,11 +431,8 @@ class InvoiceLineItemInput(BaseModel):
     tax_method: OptionalNullable[str] = UNSET
     r"""Method of tax calculation"""
 
-    budget: OptionalNullable[Budget] = UNSET
-    r"""Budget of the line item"""
-
-    project_id: OptionalNullable[str] = UNSET
-    r"""ID of the project of the line item"""
+    worktags: Optional[List[Nullable[LinkedWorktag]]] = None
+    r"""Worktags of the line item. This is currently only supported in Workday."""
 
     tax_rate: Optional[LinkedTaxRateInput] = None
 
@@ -495,8 +475,7 @@ class InvoiceLineItemInput(BaseModel):
             "tax_applicable_on",
             "tax_recoverability",
             "tax_method",
-            "budget",
-            "project_id",
+            "worktags",
             "tax_rate",
             "tracking_categories",
             "ledger_account",
@@ -526,8 +505,6 @@ class InvoiceLineItemInput(BaseModel):
             "tax_applicable_on",
             "tax_recoverability",
             "tax_method",
-            "budget",
-            "project_id",
             "tracking_categories",
             "ledger_account",
             "row_version",

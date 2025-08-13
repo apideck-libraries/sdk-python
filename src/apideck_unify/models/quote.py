@@ -58,7 +58,9 @@ class QuoteTypedDict(TypedDict):
     sales_order_id: NotRequired[Nullable[str]]
     r"""The unique identifier for the sales order."""
     company_id: NotRequired[Nullable[str]]
-    r"""The company or subsidiary id the transaction belongs to"""
+    r"""The company ID the transaction belongs to"""
+    department_id: NotRequired[Nullable[str]]
+    r"""The ID of the department"""
     project_id: NotRequired[str]
     r"""The unique identifier for the linked project."""
     quote_date: NotRequired[Nullable[date]]
@@ -137,7 +139,10 @@ class Quote(BaseModel):
     r"""The unique identifier for the sales order."""
 
     company_id: OptionalNullable[str] = UNSET
-    r"""The company or subsidiary id the transaction belongs to"""
+    r"""The company ID the transaction belongs to"""
+
+    department_id: OptionalNullable[str] = UNSET
+    r"""The ID of the department"""
 
     project_id: Optional[str] = None
     r"""The unique identifier for the linked project."""
@@ -234,6 +239,7 @@ class Quote(BaseModel):
             "invoice_id",
             "sales_order_id",
             "company_id",
+            "department_id",
             "project_id",
             "quote_date",
             "expiry_date",
@@ -270,6 +276,7 @@ class Quote(BaseModel):
             "customer",
             "sales_order_id",
             "company_id",
+            "department_id",
             "quote_date",
             "expiry_date",
             "terms",
@@ -329,7 +336,9 @@ class QuoteInputTypedDict(TypedDict):
     sales_order_id: NotRequired[Nullable[str]]
     r"""The unique identifier for the sales order."""
     company_id: NotRequired[Nullable[str]]
-    r"""The company or subsidiary id the transaction belongs to"""
+    r"""The company ID the transaction belongs to"""
+    department_id: NotRequired[Nullable[str]]
+    r"""The ID of the department"""
     project_id: NotRequired[str]
     r"""The unique identifier for the linked project."""
     quote_date: NotRequired[Nullable[date]]
@@ -391,7 +400,10 @@ class QuoteInput(BaseModel):
     r"""The unique identifier for the sales order."""
 
     company_id: OptionalNullable[str] = UNSET
-    r"""The company or subsidiary id the transaction belongs to"""
+    r"""The company ID the transaction belongs to"""
+
+    department_id: OptionalNullable[str] = UNSET
+    r"""The ID of the department"""
 
     project_id: Optional[str] = None
     r"""The unique identifier for the linked project."""
@@ -473,6 +485,7 @@ class QuoteInput(BaseModel):
             "customer",
             "sales_order_id",
             "company_id",
+            "department_id",
             "project_id",
             "quote_date",
             "expiry_date",
@@ -504,6 +517,7 @@ class QuoteInput(BaseModel):
             "customer",
             "sales_order_id",
             "company_id",
+            "department_id",
             "quote_date",
             "expiry_date",
             "terms",

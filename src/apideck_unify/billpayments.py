@@ -455,7 +455,7 @@ class BillPayments(BaseSDK):
         :param payment_method_id: A unique identifier for an object.
         :param account:
         :param supplier: The supplier this entity is linked to.
-        :param company_id: The company or subsidiary id the transaction belongs to
+        :param company_id: The company ID the transaction belongs to
         :param reconciled: Indicates if the transaction has been reconciled.
         :param status: Status of payment
         :param type: Type of payment
@@ -698,7 +698,7 @@ class BillPayments(BaseSDK):
         :param payment_method_id: A unique identifier for an object.
         :param account:
         :param supplier: The supplier this entity is linked to.
-        :param company_id: The company or subsidiary id the transaction belongs to
+        :param company_id: The company ID the transaction belongs to
         :param reconciled: Indicates if the transaction has been reconciled.
         :param status: Status of payment
         :param type: Type of payment
@@ -1231,7 +1231,7 @@ class BillPayments(BaseSDK):
         :param payment_method_id: A unique identifier for an object.
         :param account:
         :param supplier: The supplier this entity is linked to.
-        :param company_id: The company or subsidiary id the transaction belongs to
+        :param company_id: The company ID the transaction belongs to
         :param reconciled: Indicates if the transaction has been reconciled.
         :param status: Status of payment
         :param type: Type of payment
@@ -1477,7 +1477,7 @@ class BillPayments(BaseSDK):
         :param payment_method_id: A unique identifier for an object.
         :param account:
         :param supplier: The supplier this entity is linked to.
-        :param company_id: The company or subsidiary id the transaction belongs to
+        :param company_id: The company ID the transaction belongs to
         :param reconciled: Indicates if the transaction has been reconciled.
         :param status: Status of payment
         :param type: Type of payment

@@ -52,7 +52,7 @@ class SupplierTypedDict(TypedDict):
     company_name: NotRequired[Nullable[str]]
     r"""The name of the company."""
     company_id: NotRequired[Nullable[str]]
-    r"""The company or subsidiary id the transaction belongs to"""
+    r"""The company ID the transaction belongs to"""
     supplier_category: NotRequired[Nullable[str]]
     r"""The category/type of the supplier"""
     title: NotRequired[Nullable[str]]
@@ -122,7 +122,7 @@ class Supplier(BaseModel):
     r"""The name of the company."""
 
     company_id: OptionalNullable[str] = UNSET
-    r"""The company or subsidiary id the transaction belongs to"""
+    r"""The company ID the transaction belongs to"""
 
     supplier_category: OptionalNullable[str] = UNSET
     r"""The category/type of the supplier"""
@@ -306,7 +306,7 @@ class SupplierInputTypedDict(TypedDict):
     company_name: NotRequired[Nullable[str]]
     r"""The name of the company."""
     company_id: NotRequired[Nullable[str]]
-    r"""The company or subsidiary id the transaction belongs to"""
+    r"""The company ID the transaction belongs to"""
     supplier_category: NotRequired[Nullable[str]]
     r"""The category/type of the supplier"""
     title: NotRequired[Nullable[str]]
@@ -360,7 +360,7 @@ class SupplierInput(BaseModel):
     r"""The name of the company."""
 
     company_id: OptionalNullable[str] = UNSET
-    r"""The company or subsidiary id the transaction belongs to"""
+    r"""The company ID the transaction belongs to"""
 
     supplier_category: OptionalNullable[str] = UNSET
     r"""The category/type of the supplier"""

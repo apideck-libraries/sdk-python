@@ -386,11 +386,15 @@ class Applicants(BaseSDK):
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         name: Optional[str] = None,
+        salutation: OptionalNullable[str] = UNSET,
         first_name: OptionalNullable[str] = UNSET,
         last_name: OptionalNullable[str] = UNSET,
         middle_name: OptionalNullable[str] = UNSET,
         initials: OptionalNullable[str] = UNSET,
         birthday: OptionalNullable[date] = UNSET,
+        gender: OptionalNullable[models.ApplicantGender] = UNSET,
+        social_security_number: OptionalNullable[str] = UNSET,
+        type_: Optional[str] = None,
         cover_letter: Optional[str] = None,
         photo_url: OptionalNullable[str] = UNSET,
         headline: Optional[str] = None,
@@ -442,11 +446,15 @@ class Applicants(BaseSDK):
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param name: The name of an applicant.
+        :param salutation: A formal salutation for the person. For example, 'Mr', 'Mrs'
         :param first_name: The first name of the person.
         :param last_name: The last name of the person.
         :param middle_name: Middle name of the person.
         :param initials: The initials of the person, usually derived from their first, middle, and last names.
         :param birthday: The date of birth of the person.
+        :param gender: The gender represents the gender identity of a person.
+        :param social_security_number: A unique identifier assigned by the government. This field is considered sensitive information and may be subject to special security and privacy restrictions.
+        :param type:
         :param cover_letter:
         :param photo_url: The URL of the photo of a person.
         :param headline: Typically a list of previous companies where the contact has worked or schools that the contact has attended
@@ -494,11 +502,15 @@ class Applicants(BaseSDK):
             service_id=service_id,
             applicant=models.ApplicantInput(
                 name=name,
+                salutation=salutation,
                 first_name=first_name,
                 last_name=last_name,
                 middle_name=middle_name,
                 initials=initials,
                 birthday=birthday,
+                gender=gender,
+                social_security_number=social_security_number,
+                type=type_,
                 cover_letter=cover_letter,
                 photo_url=photo_url,
                 headline=headline,
@@ -646,11 +658,15 @@ class Applicants(BaseSDK):
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         name: Optional[str] = None,
+        salutation: OptionalNullable[str] = UNSET,
         first_name: OptionalNullable[str] = UNSET,
         last_name: OptionalNullable[str] = UNSET,
         middle_name: OptionalNullable[str] = UNSET,
         initials: OptionalNullable[str] = UNSET,
         birthday: OptionalNullable[date] = UNSET,
+        gender: OptionalNullable[models.ApplicantGender] = UNSET,
+        social_security_number: OptionalNullable[str] = UNSET,
+        type_: Optional[str] = None,
         cover_letter: Optional[str] = None,
         photo_url: OptionalNullable[str] = UNSET,
         headline: Optional[str] = None,
@@ -702,11 +718,15 @@ class Applicants(BaseSDK):
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param name: The name of an applicant.
+        :param salutation: A formal salutation for the person. For example, 'Mr', 'Mrs'
         :param first_name: The first name of the person.
         :param last_name: The last name of the person.
         :param middle_name: Middle name of the person.
         :param initials: The initials of the person, usually derived from their first, middle, and last names.
         :param birthday: The date of birth of the person.
+        :param gender: The gender represents the gender identity of a person.
+        :param social_security_number: A unique identifier assigned by the government. This field is considered sensitive information and may be subject to special security and privacy restrictions.
+        :param type:
         :param cover_letter:
         :param photo_url: The URL of the photo of a person.
         :param headline: Typically a list of previous companies where the contact has worked or schools that the contact has attended
@@ -754,11 +774,15 @@ class Applicants(BaseSDK):
             service_id=service_id,
             applicant=models.ApplicantInput(
                 name=name,
+                salutation=salutation,
                 first_name=first_name,
                 last_name=last_name,
                 middle_name=middle_name,
                 initials=initials,
                 birthday=birthday,
+                gender=gender,
+                social_security_number=social_security_number,
+                type=type_,
                 cover_letter=cover_letter,
                 photo_url=photo_url,
                 headline=headline,
@@ -1195,11 +1219,15 @@ class Applicants(BaseSDK):
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
         name: Optional[str] = None,
+        salutation: OptionalNullable[str] = UNSET,
         first_name: OptionalNullable[str] = UNSET,
         last_name: OptionalNullable[str] = UNSET,
         middle_name: OptionalNullable[str] = UNSET,
         initials: OptionalNullable[str] = UNSET,
         birthday: OptionalNullable[date] = UNSET,
+        gender: OptionalNullable[models.ApplicantGender] = UNSET,
+        social_security_number: OptionalNullable[str] = UNSET,
+        type_: Optional[str] = None,
         cover_letter: Optional[str] = None,
         photo_url: OptionalNullable[str] = UNSET,
         headline: Optional[str] = None,
@@ -1252,11 +1280,15 @@ class Applicants(BaseSDK):
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param name: The name of an applicant.
+        :param salutation: A formal salutation for the person. For example, 'Mr', 'Mrs'
         :param first_name: The first name of the person.
         :param last_name: The last name of the person.
         :param middle_name: Middle name of the person.
         :param initials: The initials of the person, usually derived from their first, middle, and last names.
         :param birthday: The date of birth of the person.
+        :param gender: The gender represents the gender identity of a person.
+        :param social_security_number: A unique identifier assigned by the government. This field is considered sensitive information and may be subject to special security and privacy restrictions.
+        :param type:
         :param cover_letter:
         :param photo_url: The URL of the photo of a person.
         :param headline: Typically a list of previous companies where the contact has worked or schools that the contact has attended
@@ -1305,11 +1337,15 @@ class Applicants(BaseSDK):
             raw=raw,
             applicant=models.ApplicantInput(
                 name=name,
+                salutation=salutation,
                 first_name=first_name,
                 last_name=last_name,
                 middle_name=middle_name,
                 initials=initials,
                 birthday=birthday,
+                gender=gender,
+                social_security_number=social_security_number,
+                type=type_,
                 cover_letter=cover_letter,
                 photo_url=photo_url,
                 headline=headline,
@@ -1458,11 +1494,15 @@ class Applicants(BaseSDK):
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
         name: Optional[str] = None,
+        salutation: OptionalNullable[str] = UNSET,
         first_name: OptionalNullable[str] = UNSET,
         last_name: OptionalNullable[str] = UNSET,
         middle_name: OptionalNullable[str] = UNSET,
         initials: OptionalNullable[str] = UNSET,
         birthday: OptionalNullable[date] = UNSET,
+        gender: OptionalNullable[models.ApplicantGender] = UNSET,
+        social_security_number: OptionalNullable[str] = UNSET,
+        type_: Optional[str] = None,
         cover_letter: Optional[str] = None,
         photo_url: OptionalNullable[str] = UNSET,
         headline: Optional[str] = None,
@@ -1515,11 +1555,15 @@ class Applicants(BaseSDK):
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param name: The name of an applicant.
+        :param salutation: A formal salutation for the person. For example, 'Mr', 'Mrs'
         :param first_name: The first name of the person.
         :param last_name: The last name of the person.
         :param middle_name: Middle name of the person.
         :param initials: The initials of the person, usually derived from their first, middle, and last names.
         :param birthday: The date of birth of the person.
+        :param gender: The gender represents the gender identity of a person.
+        :param social_security_number: A unique identifier assigned by the government. This field is considered sensitive information and may be subject to special security and privacy restrictions.
+        :param type:
         :param cover_letter:
         :param photo_url: The URL of the photo of a person.
         :param headline: Typically a list of previous companies where the contact has worked or schools that the contact has attended
@@ -1568,11 +1612,15 @@ class Applicants(BaseSDK):
             raw=raw,
             applicant=models.ApplicantInput(
                 name=name,
+                salutation=salutation,
                 first_name=first_name,
                 last_name=last_name,
                 middle_name=middle_name,
                 initials=initials,
                 birthday=birthday,
+                gender=gender,
+                social_security_number=social_security_number,
+                type=type_,
                 cover_letter=cover_letter,
                 photo_url=photo_url,
                 headline=headline,
