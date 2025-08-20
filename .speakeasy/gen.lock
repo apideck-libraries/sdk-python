@@ -1,12 +1,12 @@
 lockVersion: 2.0.0
 id: fca0ac3a-5f4e-452c-bbc7-2311afa8da40
 management:
-  docChecksum: 755a7bf690701dcaff2d69af5977a8a4
-  docVersion: 10.20.6
-  speakeasyVersion: 1.603.0
-  generationVersion: 2.681.1
-  releaseVersion: 0.21.2
-  configChecksum: 080e00c6416f6c9e45d426ee8baca832
+  docChecksum: dc561bf49945984d6fdb17e865308b2e
+  docVersion: 10.20.8
+  speakeasyVersion: 1.606.0
+  generationVersion: 2.686.7
+  releaseVersion: 0.21.3
+  configChecksum: 3004a247977e7a44e2bfd3e959ccf0f5
   repoURL: https://github.com/apideck-libraries/sdk-python.git
   installationURL: https://github.com/apideck-libraries/sdk-python.git
   published: true
@@ -15,7 +15,7 @@ features:
     acceptHeaders: 3.0.0
     additionalDependencies: 1.0.0
     constsAndDefaults: 1.0.5
-    core: 5.19.8
+    core: 5.19.9
     deepObjectParams: 0.1.0
     defaultEnabledRetries: 0.2.0
     deprecations: 3.0.2
@@ -6015,7 +6015,7 @@ examples:
           x-apideck-app-id: "dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX"
           x-apideck-service-id: "salesforce"
       requestBody:
-        application/json: {"parent_id": "12345", "name": "SpaceX", "status": "active", "row_version": "1-12345", "pass_through": [{"service_id": "<id>", "extend_paths": [{"path": "$.nested.property", "value": {"TaxClassificationRef": {"value": "EUC-99990201-V1-00020000"}}}]}]}
+        application/json: {"parent_id": "12345", "name": "SpaceX", "status": "active", "currencies": ["USD"], "row_version": "1-12345", "pass_through": [{"service_id": "<id>", "extend_paths": [{"path": "$.nested.property", "value": {"TaxClassificationRef": {"value": "EUC-99990201-V1-00020000"}}}]}]}
       responses:
         "201":
           application/json: {"status_code": 200, "status": "OK", "service": "quickbooks", "resource": "subsidiaries", "operation": "add", "data": {"id": "12345"}}
@@ -6071,7 +6071,7 @@ examples:
           x-apideck-service-id: "salesforce"
       responses:
         "200":
-          application/json: {"status_code": 200, "status": "OK", "service": "xero", "resource": "subsidiaries", "operation": "one", "data": {"id": "12345", "parent_id": "12345", "name": "SpaceX", "status": "active", "row_version": "1-12345", "updated_by": "12345", "created_by": "12345", "updated_at": "2020-09-30T07:43:32.000Z", "created_at": "2020-09-30T07:43:32.000Z", "pass_through": [{"service_id": "<id>", "extend_paths": [{"path": "$.nested.property", "value": {"TaxClassificationRef": {"value": "EUC-99990201-V1-00020000"}}}]}]}}
+          application/json: {"status_code": 200, "status": "OK", "service": "xero", "resource": "subsidiaries", "operation": "one", "data": {"id": "12345", "parent_id": "12345", "name": "SpaceX", "status": "active", "currencies": ["USD"], "row_version": "1-12345", "updated_by": "12345", "created_by": "12345", "updated_at": "2020-09-30T07:43:32.000Z", "created_at": "2020-09-30T07:43:32.000Z", "pass_through": [{"service_id": "<id>", "extend_paths": [{"path": "$.nested.property", "value": {"TaxClassificationRef": {"value": "EUC-99990201-V1-00020000"}}}]}]}}
         "400":
           application/json: {"status_code": 400, "error": "Bad Request", "type_name": "RequestValidationError", "message": "Invalid Params", "detail": "Missing property foobar", "ref": "https://developers.apideck.com/errors#requestvalidationerror"}
         "401":
@@ -6123,7 +6123,7 @@ examples:
           x-apideck-app-id: "dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX"
           x-apideck-service-id: "salesforce"
       requestBody:
-        application/json: {"parent_id": "12345", "name": "SpaceX", "status": "active", "row_version": "1-12345", "pass_through": [{"service_id": "<id>", "extend_paths": [{"path": "$.nested.property", "value": {"TaxClassificationRef": {"value": "EUC-99990201-V1-00020000"}}}]}]}
+        application/json: {"parent_id": "12345", "name": "SpaceX", "status": "active", "currencies": ["USD"], "row_version": "1-12345", "pass_through": [{"service_id": "<id>", "extend_paths": [{"path": "$.nested.property", "value": {"TaxClassificationRef": {"value": "EUC-99990201-V1-00020000"}}}]}]}
       responses:
         "200":
           application/json: {"status_code": 200, "status": "OK", "service": "quickbooks", "resource": "subsidiaries", "operation": "update", "data": {"id": "12345"}}
@@ -18013,3 +18013,9 @@ examples:
           application/json: {"status_code": 400, "error": "Bad Request", "type_name": "RequestHeadersValidationError", "message": "Invalid Params", "detail": "Missing Header: x-apideck-consumer-id", "ref": "https://developers.apideck.com/errors#unauthorizederror"}
 examplesVersion: 1.0.2
 generatedTests: {}
+releaseNotes: |
+  ## SDK Changes Detected:
+  * `apideck.accounting.subsidiaries.list()`:  `response.data.[].currencies` **Added**
+  * `apideck.accounting.subsidiaries.create()`:  `request.currencies` **Added**
+  * `apideck.accounting.subsidiaries.get()`:  `response.data.currencies` **Added**
+  * `apideck.accounting.subsidiaries.update()`:  `request.currencies` **Added**

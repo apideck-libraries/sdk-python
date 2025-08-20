@@ -3,7 +3,7 @@
 from .basesdk import BaseSDK
 from apideck_unify import models, utils
 from apideck_unify._hooks import HookContext
-from apideck_unify.types import OptionalNullable, UNSET
+from apideck_unify.types import Nullable, OptionalNullable, UNSET
 from apideck_unify.utils import get_security_from_env
 from apideck_unify.utils.unmarshal_json_response import unmarshal_json_response
 from jsonpath import JSONPath
@@ -363,6 +363,7 @@ class Subsidiaries(BaseSDK):
         parent_id: OptionalNullable[str] = UNSET,
         name: OptionalNullable[str] = UNSET,
         status: Optional[models.SubsidiaryStatus] = None,
+        currencies: OptionalNullable[List[Nullable[models.Currency]]] = UNSET,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
@@ -383,6 +384,7 @@ class Subsidiaries(BaseSDK):
         :param parent_id: A unique identifier for an object.
         :param name: The name of the company.
         :param status: Based on the status some functionality is enabled or disabled.
+        :param currencies: List of currencies supported by this subsidiary
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
@@ -409,6 +411,7 @@ class Subsidiaries(BaseSDK):
                 parent_id=parent_id,
                 name=name,
                 status=status,
+                currencies=currencies,
                 row_version=row_version,
                 pass_through=utils.get_pydantic_model(
                     pass_through, Optional[List[models.PassThroughBody]]
@@ -525,6 +528,7 @@ class Subsidiaries(BaseSDK):
         parent_id: OptionalNullable[str] = UNSET,
         name: OptionalNullable[str] = UNSET,
         status: Optional[models.SubsidiaryStatus] = None,
+        currencies: OptionalNullable[List[Nullable[models.Currency]]] = UNSET,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
@@ -545,6 +549,7 @@ class Subsidiaries(BaseSDK):
         :param parent_id: A unique identifier for an object.
         :param name: The name of the company.
         :param status: Based on the status some functionality is enabled or disabled.
+        :param currencies: List of currencies supported by this subsidiary
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
@@ -571,6 +576,7 @@ class Subsidiaries(BaseSDK):
                 parent_id=parent_id,
                 name=name,
                 status=status,
+                currencies=currencies,
                 row_version=row_version,
                 pass_through=utils.get_pydantic_model(
                     pass_through, Optional[List[models.PassThroughBody]]
@@ -976,6 +982,7 @@ class Subsidiaries(BaseSDK):
         parent_id: OptionalNullable[str] = UNSET,
         name: OptionalNullable[str] = UNSET,
         status: Optional[models.SubsidiaryStatus] = None,
+        currencies: OptionalNullable[List[Nullable[models.Currency]]] = UNSET,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
@@ -997,6 +1004,7 @@ class Subsidiaries(BaseSDK):
         :param parent_id: A unique identifier for an object.
         :param name: The name of the company.
         :param status: Based on the status some functionality is enabled or disabled.
+        :param currencies: List of currencies supported by this subsidiary
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
@@ -1024,6 +1032,7 @@ class Subsidiaries(BaseSDK):
                 parent_id=parent_id,
                 name=name,
                 status=status,
+                currencies=currencies,
                 row_version=row_version,
                 pass_through=utils.get_pydantic_model(
                     pass_through, Optional[List[models.PassThroughBody]]
@@ -1141,6 +1150,7 @@ class Subsidiaries(BaseSDK):
         parent_id: OptionalNullable[str] = UNSET,
         name: OptionalNullable[str] = UNSET,
         status: Optional[models.SubsidiaryStatus] = None,
+        currencies: OptionalNullable[List[Nullable[models.Currency]]] = UNSET,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
@@ -1162,6 +1172,7 @@ class Subsidiaries(BaseSDK):
         :param parent_id: A unique identifier for an object.
         :param name: The name of the company.
         :param status: Based on the status some functionality is enabled or disabled.
+        :param currencies: List of currencies supported by this subsidiary
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
@@ -1189,6 +1200,7 @@ class Subsidiaries(BaseSDK):
                 parent_id=parent_id,
                 name=name,
                 status=status,
+                currencies=currencies,
                 row_version=row_version,
                 pass_through=utils.get_pydantic_model(
                     pass_through, Optional[List[models.PassThroughBody]]
