@@ -26,6 +26,7 @@ class PhoneNumberType(str, Enum):
     FAX = "fax"
     DIRECT_DIAL_IN = "direct-dial-in"
     PERSONAL = "personal"
+    BILLING = "billing"
     OTHER = "other"
 
 
