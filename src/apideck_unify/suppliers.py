@@ -3,7 +3,7 @@
 from .basesdk import BaseSDK
 from apideck_unify import models, utils
 from apideck_unify._hooks import HookContext
-from apideck_unify.types import OptionalNullable, UNSET
+from apideck_unify.types import Nullable, OptionalNullable, UNSET
 from apideck_unify.utils import get_security_from_env
 from apideck_unify.utils.unmarshal_json_response import unmarshal_json_response
 from jsonpath import JSONPath
@@ -432,14 +432,29 @@ class Suppliers(BaseSDK):
         payment_method: OptionalNullable[str] = UNSET,
         terms: OptionalNullable[str] = UNSET,
         channel: OptionalNullable[str] = UNSET,
+        issued_method: OptionalNullable[str] = UNSET,
+        issued_email: OptionalNullable[str] = UNSET,
         custom_fields: Optional[
             Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+        ] = None,
+        tax_details: Optional[
+            Union[
+                List[Nullable[models.LinkedTaxDetail]],
+                List[Nullable[models.LinkedTaxDetailTypedDict]],
+            ]
+        ] = None,
+        tax_status_details: Optional[
+            Union[
+                List[Nullable[models.LinkedTaxStatusDetail]],
+                List[Nullable[models.LinkedTaxStatusDetailTypedDict]],
+            ]
         ] = None,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
         ] = None,
         subsidiary_id: Optional[str] = None,
+        integration_system_id: Optional[str] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -478,10 +493,15 @@ class Suppliers(BaseSDK):
         :param payment_method: Payment method used for the transaction, such as cash, credit card, bank transfer, or check
         :param terms: Terms of payment.
         :param channel: The channel through which the transaction is processed.
+        :param issued_method: Method of issuance of the purchase order for the supplier
+        :param issued_email: Email address of the person who issued the purchase order for the supplier
         :param custom_fields:
+        :param tax_details:
+        :param tax_status_details:
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param subsidiary_id: The subsidiary the supplier belongs to.
+        :param integration_system_id: The integration system the supplier belongs to.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -540,14 +560,24 @@ class Suppliers(BaseSDK):
                 payment_method=payment_method,
                 terms=terms,
                 channel=channel,
+                issued_method=issued_method,
+                issued_email=issued_email,
                 custom_fields=utils.get_pydantic_model(
                     custom_fields, Optional[List[models.CustomField]]
+                ),
+                tax_details=utils.get_pydantic_model(
+                    tax_details, Optional[List[Nullable[models.LinkedTaxDetail]]]
+                ),
+                tax_status_details=utils.get_pydantic_model(
+                    tax_status_details,
+                    Optional[List[Nullable[models.LinkedTaxStatusDetail]]],
                 ),
                 row_version=row_version,
                 pass_through=utils.get_pydantic_model(
                     pass_through, Optional[List[models.PassThroughBody]]
                 ),
                 subsidiary_id=subsidiary_id,
+                integration_system_id=integration_system_id,
             ),
         )
 
@@ -697,14 +727,29 @@ class Suppliers(BaseSDK):
         payment_method: OptionalNullable[str] = UNSET,
         terms: OptionalNullable[str] = UNSET,
         channel: OptionalNullable[str] = UNSET,
+        issued_method: OptionalNullable[str] = UNSET,
+        issued_email: OptionalNullable[str] = UNSET,
         custom_fields: Optional[
             Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+        ] = None,
+        tax_details: Optional[
+            Union[
+                List[Nullable[models.LinkedTaxDetail]],
+                List[Nullable[models.LinkedTaxDetailTypedDict]],
+            ]
+        ] = None,
+        tax_status_details: Optional[
+            Union[
+                List[Nullable[models.LinkedTaxStatusDetail]],
+                List[Nullable[models.LinkedTaxStatusDetailTypedDict]],
+            ]
         ] = None,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
         ] = None,
         subsidiary_id: Optional[str] = None,
+        integration_system_id: Optional[str] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -743,10 +788,15 @@ class Suppliers(BaseSDK):
         :param payment_method: Payment method used for the transaction, such as cash, credit card, bank transfer, or check
         :param terms: Terms of payment.
         :param channel: The channel through which the transaction is processed.
+        :param issued_method: Method of issuance of the purchase order for the supplier
+        :param issued_email: Email address of the person who issued the purchase order for the supplier
         :param custom_fields:
+        :param tax_details:
+        :param tax_status_details:
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param subsidiary_id: The subsidiary the supplier belongs to.
+        :param integration_system_id: The integration system the supplier belongs to.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -805,14 +855,24 @@ class Suppliers(BaseSDK):
                 payment_method=payment_method,
                 terms=terms,
                 channel=channel,
+                issued_method=issued_method,
+                issued_email=issued_email,
                 custom_fields=utils.get_pydantic_model(
                     custom_fields, Optional[List[models.CustomField]]
+                ),
+                tax_details=utils.get_pydantic_model(
+                    tax_details, Optional[List[Nullable[models.LinkedTaxDetail]]]
+                ),
+                tax_status_details=utils.get_pydantic_model(
+                    tax_status_details,
+                    Optional[List[Nullable[models.LinkedTaxStatusDetail]]],
                 ),
                 row_version=row_version,
                 pass_through=utils.get_pydantic_model(
                     pass_through, Optional[List[models.PassThroughBody]]
                 ),
                 subsidiary_id=subsidiary_id,
+                integration_system_id=integration_system_id,
             ),
         )
 
@@ -1251,14 +1311,29 @@ class Suppliers(BaseSDK):
         payment_method: OptionalNullable[str] = UNSET,
         terms: OptionalNullable[str] = UNSET,
         channel: OptionalNullable[str] = UNSET,
+        issued_method: OptionalNullable[str] = UNSET,
+        issued_email: OptionalNullable[str] = UNSET,
         custom_fields: Optional[
             Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+        ] = None,
+        tax_details: Optional[
+            Union[
+                List[Nullable[models.LinkedTaxDetail]],
+                List[Nullable[models.LinkedTaxDetailTypedDict]],
+            ]
+        ] = None,
+        tax_status_details: Optional[
+            Union[
+                List[Nullable[models.LinkedTaxStatusDetail]],
+                List[Nullable[models.LinkedTaxStatusDetailTypedDict]],
+            ]
         ] = None,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
         ] = None,
         subsidiary_id: Optional[str] = None,
+        integration_system_id: Optional[str] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -1298,10 +1373,15 @@ class Suppliers(BaseSDK):
         :param payment_method: Payment method used for the transaction, such as cash, credit card, bank transfer, or check
         :param terms: Terms of payment.
         :param channel: The channel through which the transaction is processed.
+        :param issued_method: Method of issuance of the purchase order for the supplier
+        :param issued_email: Email address of the person who issued the purchase order for the supplier
         :param custom_fields:
+        :param tax_details:
+        :param tax_status_details:
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param subsidiary_id: The subsidiary the supplier belongs to.
+        :param integration_system_id: The integration system the supplier belongs to.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -1361,14 +1441,24 @@ class Suppliers(BaseSDK):
                 payment_method=payment_method,
                 terms=terms,
                 channel=channel,
+                issued_method=issued_method,
+                issued_email=issued_email,
                 custom_fields=utils.get_pydantic_model(
                     custom_fields, Optional[List[models.CustomField]]
+                ),
+                tax_details=utils.get_pydantic_model(
+                    tax_details, Optional[List[Nullable[models.LinkedTaxDetail]]]
+                ),
+                tax_status_details=utils.get_pydantic_model(
+                    tax_status_details,
+                    Optional[List[Nullable[models.LinkedTaxStatusDetail]]],
                 ),
                 row_version=row_version,
                 pass_through=utils.get_pydantic_model(
                     pass_through, Optional[List[models.PassThroughBody]]
                 ),
                 subsidiary_id=subsidiary_id,
+                integration_system_id=integration_system_id,
             ),
         )
 
@@ -1519,14 +1609,29 @@ class Suppliers(BaseSDK):
         payment_method: OptionalNullable[str] = UNSET,
         terms: OptionalNullable[str] = UNSET,
         channel: OptionalNullable[str] = UNSET,
+        issued_method: OptionalNullable[str] = UNSET,
+        issued_email: OptionalNullable[str] = UNSET,
         custom_fields: Optional[
             Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+        ] = None,
+        tax_details: Optional[
+            Union[
+                List[Nullable[models.LinkedTaxDetail]],
+                List[Nullable[models.LinkedTaxDetailTypedDict]],
+            ]
+        ] = None,
+        tax_status_details: Optional[
+            Union[
+                List[Nullable[models.LinkedTaxStatusDetail]],
+                List[Nullable[models.LinkedTaxStatusDetailTypedDict]],
+            ]
         ] = None,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
         ] = None,
         subsidiary_id: Optional[str] = None,
+        integration_system_id: Optional[str] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -1566,10 +1671,15 @@ class Suppliers(BaseSDK):
         :param payment_method: Payment method used for the transaction, such as cash, credit card, bank transfer, or check
         :param terms: Terms of payment.
         :param channel: The channel through which the transaction is processed.
+        :param issued_method: Method of issuance of the purchase order for the supplier
+        :param issued_email: Email address of the person who issued the purchase order for the supplier
         :param custom_fields:
+        :param tax_details:
+        :param tax_status_details:
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param subsidiary_id: The subsidiary the supplier belongs to.
+        :param integration_system_id: The integration system the supplier belongs to.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -1629,14 +1739,24 @@ class Suppliers(BaseSDK):
                 payment_method=payment_method,
                 terms=terms,
                 channel=channel,
+                issued_method=issued_method,
+                issued_email=issued_email,
                 custom_fields=utils.get_pydantic_model(
                     custom_fields, Optional[List[models.CustomField]]
+                ),
+                tax_details=utils.get_pydantic_model(
+                    tax_details, Optional[List[Nullable[models.LinkedTaxDetail]]]
+                ),
+                tax_status_details=utils.get_pydantic_model(
+                    tax_status_details,
+                    Optional[List[Nullable[models.LinkedTaxStatusDetail]]],
                 ),
                 row_version=row_version,
                 pass_through=utils.get_pydantic_model(
                     pass_through, Optional[List[models.PassThroughBody]]
                 ),
                 subsidiary_id=subsidiary_id,
+                integration_system_id=integration_system_id,
             ),
         )
 
