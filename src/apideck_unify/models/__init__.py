@@ -3510,8 +3510,13 @@ if TYPE_CHECKING:
     from .linkedpurchaseorder import LinkedPurchaseOrder, LinkedPurchaseOrderTypedDict
     from .linkedsupplier import LinkedSupplier, LinkedSupplierTypedDict
     from .linkedsupplier_input import LinkedSupplierInput, LinkedSupplierInputTypedDict
+    from .linkedtaxdetail import LinkedTaxDetail, LinkedTaxDetailTypedDict
     from .linkedtaxrate import LinkedTaxRate, LinkedTaxRateTypedDict
     from .linkedtaxrate_input import LinkedTaxRateInput, LinkedTaxRateInputTypedDict
+    from .linkedtaxstatusdetail import (
+        LinkedTaxStatusDetail,
+        LinkedTaxStatusDetailTypedDict,
+    )
     from .linkedtrackingcategory import (
         LinkedTrackingCategory,
         LinkedTrackingCategoryTypedDict,
@@ -6915,10 +6920,14 @@ __all__ = [
     "LinkedSupplierInput",
     "LinkedSupplierInputTypedDict",
     "LinkedSupplierTypedDict",
+    "LinkedTaxDetail",
+    "LinkedTaxDetailTypedDict",
     "LinkedTaxRate",
     "LinkedTaxRateInput",
     "LinkedTaxRateInputTypedDict",
     "LinkedTaxRateTypedDict",
+    "LinkedTaxStatusDetail",
+    "LinkedTaxStatusDetailTypedDict",
     "LinkedTrackingCategory",
     "LinkedTrackingCategoryTypedDict",
     "LinkedWorktag",
@@ -10218,10 +10227,14 @@ _dynamic_imports: dict[str, str] = {
     "LinkedSupplierTypedDict": ".linkedsupplier",
     "LinkedSupplierInput": ".linkedsupplier_input",
     "LinkedSupplierInputTypedDict": ".linkedsupplier_input",
+    "LinkedTaxDetail": ".linkedtaxdetail",
+    "LinkedTaxDetailTypedDict": ".linkedtaxdetail",
     "LinkedTaxRate": ".linkedtaxrate",
     "LinkedTaxRateTypedDict": ".linkedtaxrate",
     "LinkedTaxRateInput": ".linkedtaxrate_input",
     "LinkedTaxRateInputTypedDict": ".linkedtaxrate_input",
+    "LinkedTaxStatusDetail": ".linkedtaxstatusdetail",
+    "LinkedTaxStatusDetailTypedDict": ".linkedtaxstatusdetail",
     "LinkedTrackingCategory": ".linkedtrackingcategory",
     "LinkedTrackingCategoryTypedDict": ".linkedtrackingcategory",
     "LinkedWorktag": ".linkedworktag",

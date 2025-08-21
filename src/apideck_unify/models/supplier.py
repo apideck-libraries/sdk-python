@@ -11,8 +11,10 @@ from .linkedledgeraccount_input import (
     LinkedLedgerAccountInput,
     LinkedLedgerAccountInputTypedDict,
 )
+from .linkedtaxdetail import LinkedTaxDetail, LinkedTaxDetailTypedDict
 from .linkedtaxrate import LinkedTaxRate, LinkedTaxRateTypedDict
 from .linkedtaxrate_input import LinkedTaxRateInput, LinkedTaxRateInputTypedDict
+from .linkedtaxstatusdetail import LinkedTaxStatusDetail, LinkedTaxStatusDetailTypedDict
 from .passthroughbody import PassThroughBody, PassThroughBodyTypedDict
 from .phonenumber import PhoneNumber, PhoneNumberTypedDict
 from .website import Website, WebsiteTypedDict
@@ -86,9 +88,15 @@ class SupplierTypedDict(TypedDict):
     r"""Terms of payment."""
     channel: NotRequired[Nullable[str]]
     r"""The channel through which the transaction is processed."""
+    issued_method: NotRequired[Nullable[str]]
+    r"""Method of issuance of the purchase order for the supplier"""
+    issued_email: NotRequired[Nullable[str]]
+    r"""Email address of the person who issued the purchase order for the supplier"""
     custom_mappings: NotRequired[Nullable[Dict[str, Any]]]
     r"""When custom mappings are configured on the resource, the result is included here."""
     custom_fields: NotRequired[List[CustomFieldTypedDict]]
+    tax_details: NotRequired[List[Nullable[LinkedTaxDetailTypedDict]]]
+    tax_status_details: NotRequired[List[Nullable[LinkedTaxStatusDetailTypedDict]]]
     updated_by: NotRequired[Nullable[str]]
     r"""The user who last updated the object."""
     created_by: NotRequired[Nullable[str]]
@@ -103,6 +111,8 @@ class SupplierTypedDict(TypedDict):
     r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
     subsidiary_id: NotRequired[str]
     r"""The subsidiary the supplier belongs to."""
+    integration_system_id: NotRequired[str]
+    r"""The integration system the supplier belongs to."""
 
 
 class Supplier(BaseModel):
@@ -178,10 +188,20 @@ class Supplier(BaseModel):
     channel: OptionalNullable[str] = UNSET
     r"""The channel through which the transaction is processed."""
 
+    issued_method: OptionalNullable[str] = UNSET
+    r"""Method of issuance of the purchase order for the supplier"""
+
+    issued_email: OptionalNullable[str] = UNSET
+    r"""Email address of the person who issued the purchase order for the supplier"""
+
     custom_mappings: OptionalNullable[Dict[str, Any]] = UNSET
     r"""When custom mappings are configured on the resource, the result is included here."""
 
     custom_fields: Optional[List[CustomField]] = None
+
+    tax_details: Optional[List[Nullable[LinkedTaxDetail]]] = None
+
+    tax_status_details: Optional[List[Nullable[LinkedTaxStatusDetail]]] = None
 
     updated_by: OptionalNullable[str] = UNSET
     r"""The user who last updated the object."""
@@ -203,6 +223,9 @@ class Supplier(BaseModel):
 
     subsidiary_id: Optional[str] = None
     r"""The subsidiary the supplier belongs to."""
+
+    integration_system_id: Optional[str] = None
+    r"""The integration system the supplier belongs to."""
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
@@ -233,8 +256,12 @@ class Supplier(BaseModel):
             "payment_method",
             "terms",
             "channel",
+            "issued_method",
+            "issued_email",
             "custom_mappings",
             "custom_fields",
+            "tax_details",
+            "tax_status_details",
             "updated_by",
             "created_by",
             "updated_at",
@@ -242,6 +269,7 @@ class Supplier(BaseModel):
             "row_version",
             "pass_through",
             "subsidiary_id",
+            "integration_system_id",
         ]
         nullable_fields = [
             "downstream_id",
@@ -264,6 +292,8 @@ class Supplier(BaseModel):
             "payment_method",
             "terms",
             "channel",
+            "issued_method",
+            "issued_email",
             "custom_mappings",
             "updated_by",
             "created_by",
@@ -340,13 +370,21 @@ class SupplierInputTypedDict(TypedDict):
     r"""Terms of payment."""
     channel: NotRequired[Nullable[str]]
     r"""The channel through which the transaction is processed."""
+    issued_method: NotRequired[Nullable[str]]
+    r"""Method of issuance of the purchase order for the supplier"""
+    issued_email: NotRequired[Nullable[str]]
+    r"""Email address of the person who issued the purchase order for the supplier"""
     custom_fields: NotRequired[List[CustomFieldTypedDict]]
+    tax_details: NotRequired[List[Nullable[LinkedTaxDetailTypedDict]]]
+    tax_status_details: NotRequired[List[Nullable[LinkedTaxStatusDetailTypedDict]]]
     row_version: NotRequired[Nullable[str]]
     r"""A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object."""
     pass_through: NotRequired[List[PassThroughBodyTypedDict]]
     r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
     subsidiary_id: NotRequired[str]
     r"""The subsidiary the supplier belongs to."""
+    integration_system_id: NotRequired[str]
+    r"""The integration system the supplier belongs to."""
 
 
 class SupplierInput(BaseModel):
@@ -416,7 +454,17 @@ class SupplierInput(BaseModel):
     channel: OptionalNullable[str] = UNSET
     r"""The channel through which the transaction is processed."""
 
+    issued_method: OptionalNullable[str] = UNSET
+    r"""Method of issuance of the purchase order for the supplier"""
+
+    issued_email: OptionalNullable[str] = UNSET
+    r"""Email address of the person who issued the purchase order for the supplier"""
+
     custom_fields: Optional[List[CustomField]] = None
+
+    tax_details: Optional[List[Nullable[LinkedTaxDetail]]] = None
+
+    tax_status_details: Optional[List[Nullable[LinkedTaxStatusDetail]]] = None
 
     row_version: OptionalNullable[str] = UNSET
     r"""A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object."""
@@ -426,6 +474,9 @@ class SupplierInput(BaseModel):
 
     subsidiary_id: Optional[str] = None
     r"""The subsidiary the supplier belongs to."""
+
+    integration_system_id: Optional[str] = None
+    r"""The integration system the supplier belongs to."""
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
@@ -455,10 +506,15 @@ class SupplierInput(BaseModel):
             "payment_method",
             "terms",
             "channel",
+            "issued_method",
+            "issued_email",
             "custom_fields",
+            "tax_details",
+            "tax_status_details",
             "row_version",
             "pass_through",
             "subsidiary_id",
+            "integration_system_id",
         ]
         nullable_fields = [
             "display_id",
@@ -480,6 +536,8 @@ class SupplierInput(BaseModel):
             "payment_method",
             "terms",
             "channel",
+            "issued_method",
+            "issued_email",
             "row_version",
         ]
         null_default_fields = []
