@@ -14,3 +14,7 @@ class JobStatus(str, Enum):
     PLACED = "placed"
     ON_HOLD = "on-hold"
     PRIVATE = "private"
+    ACCEPTING_CANDIDATES = "accepting_candidates"
+    OPEN = "open"
+    CLOSED = "closed"
+    ARCHIVED = "archived"
