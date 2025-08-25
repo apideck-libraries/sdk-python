@@ -419,6 +419,7 @@ class InvoiceItems(BaseSDK):
         ] = None,
         quantity: OptionalNullable[float] = UNSET,
         unit_price: OptionalNullable[float] = UNSET,
+        currency: OptionalNullable[models.Currency] = UNSET,
         asset_account: OptionalNullable[
             Union[
                 models.LinkedLedgerAccountInput,
@@ -484,6 +485,7 @@ class InvoiceItems(BaseSDK):
         :param purchase_details:
         :param quantity:
         :param unit_price:
+        :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
         :param asset_account:
         :param income_account:
         :param expense_account:
@@ -534,6 +536,7 @@ class InvoiceItems(BaseSDK):
                 ),
                 quantity=quantity,
                 unit_price=unit_price,
+                currency=currency,
                 asset_account=utils.get_pydantic_model(
                     asset_account, OptionalNullable[models.LinkedLedgerAccountInput]
                 ),
@@ -691,6 +694,7 @@ class InvoiceItems(BaseSDK):
         ] = None,
         quantity: OptionalNullable[float] = UNSET,
         unit_price: OptionalNullable[float] = UNSET,
+        currency: OptionalNullable[models.Currency] = UNSET,
         asset_account: OptionalNullable[
             Union[
                 models.LinkedLedgerAccountInput,
@@ -756,6 +760,7 @@ class InvoiceItems(BaseSDK):
         :param purchase_details:
         :param quantity:
         :param unit_price:
+        :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
         :param asset_account:
         :param income_account:
         :param expense_account:
@@ -806,6 +811,7 @@ class InvoiceItems(BaseSDK):
                 ),
                 quantity=quantity,
                 unit_price=unit_price,
+                currency=currency,
                 asset_account=utils.get_pydantic_model(
                     asset_account, OptionalNullable[models.LinkedLedgerAccountInput]
                 ),
@@ -1266,6 +1272,7 @@ class InvoiceItems(BaseSDK):
         ] = None,
         quantity: OptionalNullable[float] = UNSET,
         unit_price: OptionalNullable[float] = UNSET,
+        currency: OptionalNullable[models.Currency] = UNSET,
         asset_account: OptionalNullable[
             Union[
                 models.LinkedLedgerAccountInput,
@@ -1332,6 +1339,7 @@ class InvoiceItems(BaseSDK):
         :param purchase_details:
         :param quantity:
         :param unit_price:
+        :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
         :param asset_account:
         :param income_account:
         :param expense_account:
@@ -1383,6 +1391,7 @@ class InvoiceItems(BaseSDK):
                 ),
                 quantity=quantity,
                 unit_price=unit_price,
+                currency=currency,
                 asset_account=utils.get_pydantic_model(
                     asset_account, OptionalNullable[models.LinkedLedgerAccountInput]
                 ),
@@ -1541,6 +1550,7 @@ class InvoiceItems(BaseSDK):
         ] = None,
         quantity: OptionalNullable[float] = UNSET,
         unit_price: OptionalNullable[float] = UNSET,
+        currency: OptionalNullable[models.Currency] = UNSET,
         asset_account: OptionalNullable[
             Union[
                 models.LinkedLedgerAccountInput,
@@ -1607,6 +1617,7 @@ class InvoiceItems(BaseSDK):
         :param purchase_details:
         :param quantity:
         :param unit_price:
+        :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
         :param asset_account:
         :param income_account:
         :param expense_account:
@@ -1658,6 +1669,7 @@ class InvoiceItems(BaseSDK):
                 ),
                 quantity=quantity,
                 unit_price=unit_price,
+                currency=currency,
                 asset_account=utils.get_pydantic_model(
                     asset_account, OptionalNullable[models.LinkedLedgerAccountInput]
                 ),

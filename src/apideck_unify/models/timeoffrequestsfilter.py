@@ -21,9 +21,9 @@ class TimeOffRequestStatus(str, Enum):
 
 class TimeOffRequestsFilterTypedDict(TypedDict):
     start_date: NotRequired[str]
-    r"""Start date"""
+    r"""Start date of the date range to filter time off requests. When used with end_date, filters for requests within the specified date range."""
     end_date: NotRequired[str]
-    r"""End date"""
+    r"""End date of the date range to filter time off requests. When used with start_date, filters for requests within the specified date range."""
     updated_since: NotRequired[str]
     r"""Minimum date the time off request was last created or modified"""
     employee_id: NotRequired[str]
@@ -36,10 +36,10 @@ class TimeOffRequestsFilterTypedDict(TypedDict):
 
 class TimeOffRequestsFilter(BaseModel):
     start_date: Annotated[Optional[str], FieldMetadata(query=True)] = None
-    r"""Start date"""
+    r"""Start date of the date range to filter time off requests. When used with end_date, filters for requests within the specified date range."""
 
     end_date: Annotated[Optional[str], FieldMetadata(query=True)] = None
-    r"""End date"""
+    r"""End date of the date range to filter time off requests. When used with start_date, filters for requests within the specified date range."""
 
     updated_since: Annotated[Optional[str], FieldMetadata(query=True)] = None
     r"""Minimum date the time off request was last created or modified"""
