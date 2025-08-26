@@ -38,6 +38,8 @@ class TrackingCategoryTypedDict(TypedDict):
     r"""A unique identifier for an object."""
     parent_id: NotRequired[Nullable[str]]
     r"""A unique identifier for an object."""
+    parent_name: NotRequired[Nullable[str]]
+    r"""The name of the parent tracking category."""
     name: NotRequired[str]
     r"""The name of the tracking category."""
     code: NotRequired[Nullable[str]]
@@ -68,6 +70,9 @@ class TrackingCategory(BaseModel):
 
     parent_id: OptionalNullable[str] = UNSET
     r"""A unique identifier for an object."""
+
+    parent_name: OptionalNullable[str] = UNSET
+    r"""The name of the parent tracking category."""
 
     name: Optional[str] = None
     r"""The name of the tracking category."""
@@ -107,6 +112,7 @@ class TrackingCategory(BaseModel):
         optional_fields = [
             "id",
             "parent_id",
+            "parent_name",
             "name",
             "code",
             "status",
@@ -121,6 +127,7 @@ class TrackingCategory(BaseModel):
         ]
         nullable_fields = [
             "parent_id",
+            "parent_name",
             "code",
             "custom_mappings",
             "row_version",
@@ -159,6 +166,8 @@ class TrackingCategory(BaseModel):
 class TrackingCategoryInputTypedDict(TypedDict):
     parent_id: NotRequired[Nullable[str]]
     r"""A unique identifier for an object."""
+    parent_name: NotRequired[Nullable[str]]
+    r"""The name of the parent tracking category."""
     name: NotRequired[str]
     r"""The name of the tracking category."""
     code: NotRequired[Nullable[str]]
@@ -176,6 +185,9 @@ class TrackingCategoryInputTypedDict(TypedDict):
 class TrackingCategoryInput(BaseModel):
     parent_id: OptionalNullable[str] = UNSET
     r"""A unique identifier for an object."""
+
+    parent_name: OptionalNullable[str] = UNSET
+    r"""The name of the parent tracking category."""
 
     name: Optional[str] = None
     r"""The name of the tracking category."""
@@ -199,6 +211,7 @@ class TrackingCategoryInput(BaseModel):
     def serialize_model(self, handler):
         optional_fields = [
             "parent_id",
+            "parent_name",
             "name",
             "code",
             "status",
@@ -206,7 +219,7 @@ class TrackingCategoryInput(BaseModel):
             "pass_through",
             "subsidiaries",
         ]
-        nullable_fields = ["parent_id", "code", "row_version"]
+        nullable_fields = ["parent_id", "parent_name", "code", "row_version"]
         null_default_fields = []
 
         serialized = handler(self)

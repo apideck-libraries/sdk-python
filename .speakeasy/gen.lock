@@ -1,12 +1,12 @@
 lockVersion: 2.0.0
 id: fca0ac3a-5f4e-452c-bbc7-2311afa8da40
 management:
-  docChecksum: 24281e33739845fb843e27e699b1394d
+  docChecksum: caebbf8aada1c0a1b68466eb37b74faf
   docVersion: 10.20.11
-  speakeasyVersion: 1.606.4
+  speakeasyVersion: 1.606.5
   generationVersion: 2.687.1
-  releaseVersion: 0.21.6
-  configChecksum: ac994f0e9bd92c2c97613757ce3135d2
+  releaseVersion: 0.21.7
+  configChecksum: 7414fcd87c293776d8645df099185e70
   repoURL: https://github.com/apideck-libraries/sdk-python.git
   installationURL: https://github.com/apideck-libraries/sdk-python.git
   published: true
@@ -7118,7 +7118,7 @@ examples:
           x-apideck-app-id: "dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX"
           x-apideck-service-id: "salesforce"
       requestBody:
-        application/json: {"parent_id": "12345", "name": "Department", "code": "100", "status": "active", "row_version": "1-12345", "pass_through": [{"service_id": "<id>", "extend_paths": [{"path": "$.nested.property", "value": {"TaxClassificationRef": {"value": "EUC-99990201-V1-00020000"}}}]}]}
+        application/json: {"parent_id": "12345", "parent_name": "Area", "name": "Department", "code": "100", "status": "active", "row_version": "1-12345", "pass_through": [{"service_id": "<id>", "extend_paths": [{"path": "$.nested.property", "value": {"TaxClassificationRef": {"value": "EUC-99990201-V1-00020000"}}}]}]}
       responses:
         "201":
           application/json: {"status_code": 200, "status": "OK", "service": "quickbooks", "resource": "tracking-categories", "operation": "add", "data": {"id": "12345"}}
@@ -7174,7 +7174,7 @@ examples:
           x-apideck-service-id: "salesforce"
       responses:
         "200":
-          application/json: {"status_code": 200, "status": "OK", "service": "xero", "resource": "tracking-categories", "operation": "one", "data": {"id": "12345", "parent_id": "12345", "name": "Department", "code": "100", "status": "active", "row_version": "1-12345", "updated_by": "12345", "created_by": "12345", "updated_at": "2020-09-30T07:43:32.000Z", "created_at": "2020-09-30T07:43:32.000Z", "pass_through": [{"service_id": "<id>", "extend_paths": [{"path": "$.nested.property", "value": {"TaxClassificationRef": {"value": "EUC-99990201-V1-00020000"}}}]}]}}
+          application/json: {"status_code": 200, "status": "OK", "service": "xero", "resource": "tracking-categories", "operation": "one", "data": {"id": "12345", "parent_id": "12345", "parent_name": "Area", "name": "Department", "code": "100", "status": "active", "row_version": "1-12345", "updated_by": "12345", "created_by": "12345", "updated_at": "2020-09-30T07:43:32.000Z", "created_at": "2020-09-30T07:43:32.000Z", "pass_through": [{"service_id": "<id>", "extend_paths": [{"path": "$.nested.property", "value": {"TaxClassificationRef": {"value": "EUC-99990201-V1-00020000"}}}]}]}}
         "400":
           application/json: {"status_code": 400, "error": "Bad Request", "type_name": "RequestValidationError", "message": "Invalid Params", "detail": "Missing property foobar", "ref": "https://developers.apideck.com/errors#requestvalidationerror"}
         "401":
@@ -7226,7 +7226,7 @@ examples:
           x-apideck-app-id: "dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX"
           x-apideck-service-id: "salesforce"
       requestBody:
-        application/json: {"parent_id": "12345", "name": "Department", "code": "100", "status": "active", "row_version": "1-12345", "pass_through": [{"service_id": "<id>", "extend_paths": [{"path": "$.nested.property", "value": {"TaxClassificationRef": {"value": "EUC-99990201-V1-00020000"}}}]}]}
+        application/json: {"parent_id": "12345", "parent_name": "Area", "name": "Department", "code": "100", "status": "active", "row_version": "1-12345", "pass_through": [{"service_id": "<id>", "extend_paths": [{"path": "$.nested.property", "value": {"TaxClassificationRef": {"value": "EUC-99990201-V1-00020000"}}}]}]}
       responses:
         "200":
           application/json: {"status_code": 200, "status": "OK", "service": "quickbooks", "resource": "tracking-categories", "operation": "update", "data": {"id": "12345"}}
@@ -18019,7 +18019,7 @@ examplesVersion: 1.0.2
 generatedTests: {}
 releaseNotes: |
   ## SDK Changes Detected:
-  * `apideck.accounting.invoice_items.list()`:  `response.data.[].currency` **Added**
-  * `apideck.accounting.invoice_items.create()`:  `request.currency` **Added**
-  * `apideck.accounting.invoice_items.get()`:  `response.data.currency` **Added**
-  * `apideck.accounting.invoice_items.update()`:  `request.currency` **Added**
+  * `apideck.accounting.tracking_categories.list()`:  `response.data.[].parent_name` **Added**
+  * `apideck.accounting.tracking_categories.create()`:  `request.parent_name` **Added**
+  * `apideck.accounting.tracking_categories.get()`:  `response.data.parent_name` **Added**
+  * `apideck.accounting.tracking_categories.update()`:  `request.parent_name` **Added**

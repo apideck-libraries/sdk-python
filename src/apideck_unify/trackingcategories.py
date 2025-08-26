@@ -369,6 +369,7 @@ class TrackingCategories(BaseSDK):
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         parent_id: OptionalNullable[str] = UNSET,
+        parent_name: OptionalNullable[str] = UNSET,
         name: Optional[str] = None,
         code: OptionalNullable[str] = UNSET,
         status: Optional[models.TrackingCategoryStatus] = None,
@@ -396,6 +397,7 @@ class TrackingCategories(BaseSDK):
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param parent_id: A unique identifier for an object.
+        :param parent_name: The name of the parent tracking category.
         :param name: The name of the tracking category.
         :param code: The code of the tracking category.
         :param status: Based on the status some functionality is enabled or disabled.
@@ -424,6 +426,7 @@ class TrackingCategories(BaseSDK):
             service_id=service_id,
             tracking_category=models.TrackingCategoryInput(
                 parent_id=parent_id,
+                parent_name=parent_name,
                 name=name,
                 code=code,
                 status=status,
@@ -548,6 +551,7 @@ class TrackingCategories(BaseSDK):
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         parent_id: OptionalNullable[str] = UNSET,
+        parent_name: OptionalNullable[str] = UNSET,
         name: Optional[str] = None,
         code: OptionalNullable[str] = UNSET,
         status: Optional[models.TrackingCategoryStatus] = None,
@@ -575,6 +579,7 @@ class TrackingCategories(BaseSDK):
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param parent_id: A unique identifier for an object.
+        :param parent_name: The name of the parent tracking category.
         :param name: The name of the tracking category.
         :param code: The code of the tracking category.
         :param status: Based on the status some functionality is enabled or disabled.
@@ -603,6 +608,7 @@ class TrackingCategories(BaseSDK):
             service_id=service_id,
             tracking_category=models.TrackingCategoryInput(
                 parent_id=parent_id,
+                parent_name=parent_name,
                 name=name,
                 code=code,
                 status=status,
@@ -1016,6 +1022,7 @@ class TrackingCategories(BaseSDK):
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
         parent_id: OptionalNullable[str] = UNSET,
+        parent_name: OptionalNullable[str] = UNSET,
         name: Optional[str] = None,
         code: OptionalNullable[str] = UNSET,
         status: Optional[models.TrackingCategoryStatus] = None,
@@ -1044,6 +1051,7 @@ class TrackingCategories(BaseSDK):
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param parent_id: A unique identifier for an object.
+        :param parent_name: The name of the parent tracking category.
         :param name: The name of the tracking category.
         :param code: The code of the tracking category.
         :param status: Based on the status some functionality is enabled or disabled.
@@ -1073,6 +1081,7 @@ class TrackingCategories(BaseSDK):
             raw=raw,
             tracking_category=models.TrackingCategoryInput(
                 parent_id=parent_id,
+                parent_name=parent_name,
                 name=name,
                 code=code,
                 status=status,
@@ -1198,6 +1207,7 @@ class TrackingCategories(BaseSDK):
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
         parent_id: OptionalNullable[str] = UNSET,
+        parent_name: OptionalNullable[str] = UNSET,
         name: Optional[str] = None,
         code: OptionalNullable[str] = UNSET,
         status: Optional[models.TrackingCategoryStatus] = None,
@@ -1226,6 +1236,7 @@ class TrackingCategories(BaseSDK):
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param parent_id: A unique identifier for an object.
+        :param parent_name: The name of the parent tracking category.
         :param name: The name of the tracking category.
         :param code: The code of the tracking category.
         :param status: Based on the status some functionality is enabled or disabled.
@@ -1255,6 +1266,7 @@ class TrackingCategories(BaseSDK):
             raw=raw,
             tracking_category=models.TrackingCategoryInput(
                 parent_id=parent_id,
+                parent_name=parent_name,
                 name=name,
                 code=code,
                 status=status,
