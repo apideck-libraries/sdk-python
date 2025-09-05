@@ -7,6 +7,7 @@ from apideck_unify.collectiontags import CollectionTags
 from apideck_unify.collectionticketcomments import CollectionTicketComments
 from apideck_unify.collectiontickets import CollectionTickets
 from apideck_unify.collectionusers import CollectionUsers
+from typing import Optional
 
 
 class IssueTracking(BaseSDK):
@@ -16,16 +17,26 @@ class IssueTracking(BaseSDK):
     collection_users: CollectionUsers
     collection_tags: CollectionTags
 
-    def __init__(self, sdk_config: SDKConfiguration) -> None:
-        BaseSDK.__init__(self, sdk_config)
+    def __init__(
+        self, sdk_config: SDKConfiguration, parent_ref: Optional[object] = None
+    ) -> None:
+        BaseSDK.__init__(self, sdk_config, parent_ref=parent_ref)
         self.sdk_configuration = sdk_config
         self._init_sdks()
 
     def _init_sdks(self):
-        self.collections = Collections(self.sdk_configuration)
-        self.collection_tickets = CollectionTickets(self.sdk_configuration)
-        self.collection_ticket_comments = CollectionTicketComments(
-            self.sdk_configuration
+        self.collections = Collections(
+            self.sdk_configuration, parent_ref=self.parent_ref
         )
-        self.collection_users = CollectionUsers(self.sdk_configuration)
-        self.collection_tags = CollectionTags(self.sdk_configuration)
+        self.collection_tickets = CollectionTickets(
+            self.sdk_configuration, parent_ref=self.parent_ref
+        )
+        self.collection_ticket_comments = CollectionTicketComments(
+            self.sdk_configuration, parent_ref=self.parent_ref
+        )
+        self.collection_users = CollectionUsers(
+            self.sdk_configuration, parent_ref=self.parent_ref
+        )
+        self.collection_tags = CollectionTags(
+            self.sdk_configuration, parent_ref=self.parent_ref
+        )

@@ -29,6 +29,7 @@ class FormFieldType(str, Enum):
     DATE = "date"
     TIME = "time"
     NUMBER = "number"
+    PASSWORD = "password"
 
 
 class FormFieldTypedDict(TypedDict):

@@ -590,6 +590,13 @@ class Connections(BaseSDK):
                 List[models.CustomMappingInputTypedDict],
             ]
         ] = None,
+        consent_state: Optional[models.ConsentState] = None,
+        latest_consent: Optional[
+            Union[models.ConsentRecordInput, models.ConsentRecordInputTypedDict]
+        ] = None,
+        application_data_scopes: Optional[
+            Union[models.DataScopesInput, models.DataScopesInputTypedDict]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -608,6 +615,9 @@ class Connections(BaseSDK):
         :param metadata: Attach your own consumer specific metadata
         :param configuration:
         :param custom_mappings: List of custom mappings configured for this connection
+        :param consent_state: The current consent state of the connection
+        :param latest_consent:
+        :param application_data_scopes:
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -637,6 +647,13 @@ class Connections(BaseSDK):
                 ),
                 custom_mappings=utils.get_pydantic_model(
                     custom_mappings, Optional[List[models.CustomMappingInput]]
+                ),
+                consent_state=consent_state,
+                latest_consent=utils.get_pydantic_model(
+                    latest_consent, Optional[models.ConsentRecordInput]
+                ),
+                application_data_scopes=utils.get_pydantic_model(
+                    application_data_scopes, Optional[models.DataScopesInput]
                 ),
             ),
         )
@@ -762,6 +779,13 @@ class Connections(BaseSDK):
                 List[models.CustomMappingInputTypedDict],
             ]
         ] = None,
+        consent_state: Optional[models.ConsentState] = None,
+        latest_consent: Optional[
+            Union[models.ConsentRecordInput, models.ConsentRecordInputTypedDict]
+        ] = None,
+        application_data_scopes: Optional[
+            Union[models.DataScopesInput, models.DataScopesInputTypedDict]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -780,6 +804,9 @@ class Connections(BaseSDK):
         :param metadata: Attach your own consumer specific metadata
         :param configuration:
         :param custom_mappings: List of custom mappings configured for this connection
+        :param consent_state: The current consent state of the connection
+        :param latest_consent:
+        :param application_data_scopes:
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -809,6 +836,13 @@ class Connections(BaseSDK):
                 ),
                 custom_mappings=utils.get_pydantic_model(
                     custom_mappings, Optional[List[models.CustomMappingInput]]
+                ),
+                consent_state=consent_state,
+                latest_consent=utils.get_pydantic_model(
+                    latest_consent, Optional[models.ConsentRecordInput]
+                ),
+                application_data_scopes=utils.get_pydantic_model(
+                    application_data_scopes, Optional[models.DataScopesInput]
                 ),
             ),
         )

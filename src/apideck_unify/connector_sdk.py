@@ -8,6 +8,7 @@ from apideck_unify.apis import Apis
 from apideck_unify.connectordocs import ConnectorDocs
 from apideck_unify.connectorresources import ConnectorResources
 from apideck_unify.connectors import Connectors
+from typing import Optional
 
 
 class ConnectorSDK(BaseSDK):
@@ -18,15 +19,25 @@ class ConnectorSDK(BaseSDK):
     api_resources: APIResources
     api_resource_coverage: APIResourceCoverageSDK
 
-    def __init__(self, sdk_config: SDKConfiguration) -> None:
-        BaseSDK.__init__(self, sdk_config)
+    def __init__(
+        self, sdk_config: SDKConfiguration, parent_ref: Optional[object] = None
+    ) -> None:
+        BaseSDK.__init__(self, sdk_config, parent_ref=parent_ref)
         self.sdk_configuration = sdk_config
         self._init_sdks()
 
     def _init_sdks(self):
-        self.connectors = Connectors(self.sdk_configuration)
-        self.connector_docs = ConnectorDocs(self.sdk_configuration)
-        self.connector_resources = ConnectorResources(self.sdk_configuration)
-        self.apis = Apis(self.sdk_configuration)
-        self.api_resources = APIResources(self.sdk_configuration)
-        self.api_resource_coverage = APIResourceCoverageSDK(self.sdk_configuration)
+        self.connectors = Connectors(self.sdk_configuration, parent_ref=self.parent_ref)
+        self.connector_docs = ConnectorDocs(
+            self.sdk_configuration, parent_ref=self.parent_ref
+        )
+        self.connector_resources = ConnectorResources(
+            self.sdk_configuration, parent_ref=self.parent_ref
+        )
+        self.apis = Apis(self.sdk_configuration, parent_ref=self.parent_ref)
+        self.api_resources = APIResources(
+            self.sdk_configuration, parent_ref=self.parent_ref
+        )
+        self.api_resource_coverage = APIResourceCoverageSDK(
+            self.sdk_configuration, parent_ref=self.parent_ref
+        )

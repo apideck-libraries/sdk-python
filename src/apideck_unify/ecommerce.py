@@ -6,6 +6,7 @@ from apideck_unify.apideck_customers import ApideckCustomers
 from apideck_unify.orders import Orders
 from apideck_unify.products import Products
 from apideck_unify.stores import Stores
+from typing import Optional
 
 
 class Ecommerce(BaseSDK):
@@ -14,13 +15,17 @@ class Ecommerce(BaseSDK):
     customers: ApideckCustomers
     stores: Stores
 
-    def __init__(self, sdk_config: SDKConfiguration) -> None:
-        BaseSDK.__init__(self, sdk_config)
+    def __init__(
+        self, sdk_config: SDKConfiguration, parent_ref: Optional[object] = None
+    ) -> None:
+        BaseSDK.__init__(self, sdk_config, parent_ref=parent_ref)
         self.sdk_configuration = sdk_config
         self._init_sdks()
 
     def _init_sdks(self):
-        self.orders = Orders(self.sdk_configuration)
-        self.products = Products(self.sdk_configuration)
-        self.customers = ApideckCustomers(self.sdk_configuration)
-        self.stores = Stores(self.sdk_configuration)
+        self.orders = Orders(self.sdk_configuration, parent_ref=self.parent_ref)
+        self.products = Products(self.sdk_configuration, parent_ref=self.parent_ref)
+        self.customers = ApideckCustomers(
+            self.sdk_configuration, parent_ref=self.parent_ref
+        )
+        self.stores = Stores(self.sdk_configuration, parent_ref=self.parent_ref)

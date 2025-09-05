@@ -24,10 +24,13 @@ generation:
     generateNewTests: false
     skipResponseBodyAssertions: false
 python:
-  version: 0.21.7
+  version: 0.22.0
   additionalDependencies:
     dev: {}
     main: {}
+  allowedRedefinedBuiltins:
+    - id
+    - object
   authors:
     - Speakeasy
   baseErrorName: ApideckError

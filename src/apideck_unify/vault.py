@@ -2,6 +2,8 @@
 
 from .basesdk import BaseSDK
 from .sdkconfiguration import SDKConfiguration
+from apideck_unify.connectionconsent import ConnectionConsent
+from apideck_unify.connectionconsents import ConnectionConsents
 from apideck_unify.connectioncustommappings import ConnectionCustomMappings
 from apideck_unify.connections import Connections
 from apideck_unify.connectionsettings import ConnectionSettings
@@ -13,6 +15,7 @@ from apideck_unify.custommappings import CustomMappings
 from apideck_unify.logs import Logs
 from apideck_unify.sessions import Sessions
 from apideck_unify.validateconnection import ValidateConnection
+from typing import Optional
 
 
 class Vault(BaseSDK):
@@ -20,6 +23,8 @@ class Vault(BaseSDK):
     consumer_request_counts: ConsumerRequestCounts
     connections: Connections
     validate_connection: ValidateConnection
+    connection_consents: ConnectionConsents
+    connection_consent: ConnectionConsent
     create_callback: CreateCallback
     connection_settings: ConnectionSettings
     custom_fields: CustomFields
@@ -28,22 +33,44 @@ class Vault(BaseSDK):
     sessions: Sessions
     logs: Logs
 
-    def __init__(self, sdk_config: SDKConfiguration) -> None:
-        BaseSDK.__init__(self, sdk_config)
+    def __init__(
+        self, sdk_config: SDKConfiguration, parent_ref: Optional[object] = None
+    ) -> None:
+        BaseSDK.__init__(self, sdk_config, parent_ref=parent_ref)
         self.sdk_configuration = sdk_config
         self._init_sdks()
 
     def _init_sdks(self):
-        self.consumers = Consumers(self.sdk_configuration)
-        self.consumer_request_counts = ConsumerRequestCounts(self.sdk_configuration)
-        self.connections = Connections(self.sdk_configuration)
-        self.validate_connection = ValidateConnection(self.sdk_configuration)
-        self.create_callback = CreateCallback(self.sdk_configuration)
-        self.connection_settings = ConnectionSettings(self.sdk_configuration)
-        self.custom_fields = CustomFields(self.sdk_configuration)
-        self.connection_custom_mappings = ConnectionCustomMappings(
-            self.sdk_configuration
+        self.consumers = Consumers(self.sdk_configuration, parent_ref=self.parent_ref)
+        self.consumer_request_counts = ConsumerRequestCounts(
+            self.sdk_configuration, parent_ref=self.parent_ref
         )
-        self.custom_mappings = CustomMappings(self.sdk_configuration)
-        self.sessions = Sessions(self.sdk_configuration)
-        self.logs = Logs(self.sdk_configuration)
+        self.connections = Connections(
+            self.sdk_configuration, parent_ref=self.parent_ref
+        )
+        self.validate_connection = ValidateConnection(
+            self.sdk_configuration, parent_ref=self.parent_ref
+        )
+        self.connection_consents = ConnectionConsents(
+            self.sdk_configuration, parent_ref=self.parent_ref
+        )
+        self.connection_consent = ConnectionConsent(
+            self.sdk_configuration, parent_ref=self.parent_ref
+        )
+        self.create_callback = CreateCallback(
+            self.sdk_configuration, parent_ref=self.parent_ref
+        )
+        self.connection_settings = ConnectionSettings(
+            self.sdk_configuration, parent_ref=self.parent_ref
+        )
+        self.custom_fields = CustomFields(
+            self.sdk_configuration, parent_ref=self.parent_ref
+        )
+        self.connection_custom_mappings = ConnectionCustomMappings(
+            self.sdk_configuration, parent_ref=self.parent_ref
+        )
+        self.custom_mappings = CustomMappings(
+            self.sdk_configuration, parent_ref=self.parent_ref
+        )
+        self.sessions = Sessions(self.sdk_configuration, parent_ref=self.parent_ref)
+        self.logs = Logs(self.sdk_configuration, parent_ref=self.parent_ref)
