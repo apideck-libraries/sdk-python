@@ -5,6 +5,7 @@ from .sdkconfiguration import SDKConfiguration
 from apideck_unify.applicants import Applicants
 from apideck_unify.applications import Applications
 from apideck_unify.jobs import Jobs
+from typing import Optional
 
 
 class Ats(BaseSDK):
@@ -12,12 +13,16 @@ class Ats(BaseSDK):
     applicants: Applicants
     applications: Applications
 
-    def __init__(self, sdk_config: SDKConfiguration) -> None:
-        BaseSDK.__init__(self, sdk_config)
+    def __init__(
+        self, sdk_config: SDKConfiguration, parent_ref: Optional[object] = None
+    ) -> None:
+        BaseSDK.__init__(self, sdk_config, parent_ref=parent_ref)
         self.sdk_configuration = sdk_config
         self._init_sdks()
 
     def _init_sdks(self):
-        self.jobs = Jobs(self.sdk_configuration)
-        self.applicants = Applicants(self.sdk_configuration)
-        self.applications = Applications(self.sdk_configuration)
+        self.jobs = Jobs(self.sdk_configuration, parent_ref=self.parent_ref)
+        self.applicants = Applicants(self.sdk_configuration, parent_ref=self.parent_ref)
+        self.applications = Applications(
+            self.sdk_configuration, parent_ref=self.parent_ref
+        )

@@ -9,6 +9,7 @@ from apideck_unify.employees import Employees
 from apideck_unify.employeeschedules_sdk import EmployeeSchedulesSDK
 from apideck_unify.payrolls import Payrolls
 from apideck_unify.timeoffrequests import TimeOffRequests
+from typing import Optional
 
 
 class Hris(BaseSDK):
@@ -20,16 +21,28 @@ class Hris(BaseSDK):
     employee_schedules: EmployeeSchedulesSDK
     time_off_requests: TimeOffRequests
 
-    def __init__(self, sdk_config: SDKConfiguration) -> None:
-        BaseSDK.__init__(self, sdk_config)
+    def __init__(
+        self, sdk_config: SDKConfiguration, parent_ref: Optional[object] = None
+    ) -> None:
+        BaseSDK.__init__(self, sdk_config, parent_ref=parent_ref)
         self.sdk_configuration = sdk_config
         self._init_sdks()
 
     def _init_sdks(self):
-        self.employees = Employees(self.sdk_configuration)
-        self.companies = ApideckCompanies(self.sdk_configuration)
-        self.departments = ApideckDepartments(self.sdk_configuration)
-        self.payrolls = Payrolls(self.sdk_configuration)
-        self.employee_payrolls = EmployeePayrolls(self.sdk_configuration)
-        self.employee_schedules = EmployeeSchedulesSDK(self.sdk_configuration)
-        self.time_off_requests = TimeOffRequests(self.sdk_configuration)
+        self.employees = Employees(self.sdk_configuration, parent_ref=self.parent_ref)
+        self.companies = ApideckCompanies(
+            self.sdk_configuration, parent_ref=self.parent_ref
+        )
+        self.departments = ApideckDepartments(
+            self.sdk_configuration, parent_ref=self.parent_ref
+        )
+        self.payrolls = Payrolls(self.sdk_configuration, parent_ref=self.parent_ref)
+        self.employee_payrolls = EmployeePayrolls(
+            self.sdk_configuration, parent_ref=self.parent_ref
+        )
+        self.employee_schedules = EmployeeSchedulesSDK(
+            self.sdk_configuration, parent_ref=self.parent_ref
+        )
+        self.time_off_requests = TimeOffRequests(
+            self.sdk_configuration, parent_ref=self.parent_ref
+        )

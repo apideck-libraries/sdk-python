@@ -19,8 +19,8 @@
 | `CRM_LEAD_UPDATED`                      | crm.lead.updated                        |
 | `CRM_LEAD_DELETED`                      | crm.lead.deleted                        |
 | `CRM_NOTE_CREATED`                      | crm.note.created                        |
-| `CRM_NOTES_UPDATED`                     | crm.notes.updated                       |
-| `CRM_NOTES_DELETED`                     | crm.notes.deleted                       |
+| `CRM_NOTE_UPDATED`                      | crm.note.updated                        |
+| `CRM_NOTE_DELETED`                      | crm.note.deleted                        |
 | `CRM_OPPORTUNITY_CREATED`               | crm.opportunity.created                 |
 | `CRM_OPPORTUNITY_UPDATED`               | crm.opportunity.updated                 |
 | `CRM_OPPORTUNITY_DELETED`               | crm.opportunity.deleted                 |

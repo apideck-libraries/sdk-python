@@ -37,6 +37,13 @@ class ExpenseType(str, Enum):
     REFUND = "refund"
 
 
+class ExpenseStatus(str, Enum):
+    r"""Expense status"""
+
+    DRAFT = "draft"
+    POSTED = "posted"
+
+
 class ExpenseTypedDict(TypedDict):
     transaction_date: Nullable[datetime]
     r"""The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD"""
@@ -76,6 +83,8 @@ class ExpenseTypedDict(TypedDict):
     custom_fields: NotRequired[List[CustomFieldTypedDict]]
     custom_mappings: NotRequired[Nullable[Dict[str, Any]]]
     r"""When custom mappings are configured on the resource, the result is included here."""
+    status: NotRequired[Nullable[ExpenseStatus]]
+    r"""Expense status"""
     updated_at: NotRequired[Nullable[datetime]]
     r"""The date and time when the object was last updated."""
     created_at: NotRequired[Nullable[datetime]]
@@ -149,6 +158,9 @@ class Expense(BaseModel):
     custom_mappings: OptionalNullable[Dict[str, Any]] = UNSET
     r"""When custom mappings are configured on the resource, the result is included here."""
 
+    status: OptionalNullable[ExpenseStatus] = UNSET
+    r"""Expense status"""
+
     updated_at: OptionalNullable[datetime] = UNSET
     r"""The date and time when the object was last updated."""
 
@@ -187,6 +199,7 @@ class Expense(BaseModel):
             "source_document_url",
             "custom_fields",
             "custom_mappings",
+            "status",
             "updated_at",
             "created_at",
             "row_version",
@@ -208,6 +221,7 @@ class Expense(BaseModel):
             "reference",
             "source_document_url",
             "custom_mappings",
+            "status",
             "updated_at",
             "created_at",
             "row_version",
@@ -276,6 +290,8 @@ class ExpenseInputTypedDict(TypedDict):
     source_document_url: NotRequired[Nullable[str]]
     r"""URL link to a source document - shown as 'Go to [appName]' in the downstream app. Currently only supported for Xero."""
     custom_fields: NotRequired[List[CustomFieldTypedDict]]
+    status: NotRequired[Nullable[ExpenseStatus]]
+    r"""Expense status"""
     row_version: NotRequired[Nullable[str]]
     r"""A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object."""
     pass_through: NotRequired[List[PassThroughBodyTypedDict]]
@@ -335,6 +351,9 @@ class ExpenseInput(BaseModel):
 
     custom_fields: Optional[List[CustomField]] = None
 
+    status: OptionalNullable[ExpenseStatus] = UNSET
+    r"""Expense status"""
+
     row_version: OptionalNullable[str] = UNSET
     r"""A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object."""
 
@@ -359,6 +378,7 @@ class ExpenseInput(BaseModel):
             "reference",
             "source_document_url",
             "custom_fields",
+            "status",
             "row_version",
             "pass_through",
         ]
@@ -375,6 +395,7 @@ class ExpenseInput(BaseModel):
             "total_amount",
             "reference",
             "source_document_url",
+            "status",
             "row_version",
         ]
         null_default_fields = []

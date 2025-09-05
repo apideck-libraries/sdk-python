@@ -174,7 +174,111 @@ with Apideck(
         {
             "value": "$.root.training.first_aid",
         },
-    ])
+    ], consent_state=apideck_unify.ConsentState.GRANTED, latest_consent={
+        "granted": True,
+        "resources": {
+            "hris.employees": {
+                "id": {
+                    "read": True,
+                    "write": False,
+                },
+                "first_name": {
+                    "read": True,
+                    "write": True,
+                },
+                "last_name": {
+                    "read": True,
+                    "write": True,
+                },
+                "email": {
+                    "read": True,
+                    "write": True,
+                },
+                "addresses[].street": {
+                    "read": True,
+                    "write": False,
+                },
+                "addresses[].city": {
+                    "read": True,
+                    "write": False,
+                },
+                "employment.job_title": {
+                    "read": True,
+                    "write": True,
+                },
+                "custom_fields[].employee_number": {
+                    "read": True,
+                    "write": False,
+                },
+            },
+            "hris.departments": {
+                "id": {
+                    "read": True,
+                    "write": False,
+                },
+                "name": {
+                    "read": True,
+                    "write": True,
+                },
+                "code": {
+                    "read": True,
+                    "write": False,
+                },
+            },
+        },
+    }, application_data_scopes={
+        "enabled": True,
+        "resources": {
+            "hris.employees": {
+                "id": {
+                    "read": True,
+                    "write": False,
+                },
+                "first_name": {
+                    "read": True,
+                    "write": True,
+                },
+                "last_name": {
+                    "read": True,
+                    "write": True,
+                },
+                "email": {
+                    "read": True,
+                    "write": True,
+                },
+                "addresses[].street": {
+                    "read": True,
+                    "write": False,
+                },
+                "addresses[].city": {
+                    "read": True,
+                    "write": False,
+                },
+                "employment.job_title": {
+                    "read": True,
+                    "write": True,
+                },
+                "custom_fields[].employee_number": {
+                    "read": True,
+                    "write": False,
+                },
+            },
+            "hris.departments": {
+                "id": {
+                    "read": True,
+                    "write": False,
+                },
+                "name": {
+                    "read": True,
+                    "write": True,
+                },
+                "code": {
+                    "read": True,
+                    "write": False,
+                },
+            },
+        },
+    })
 
     assert res.update_connection_response is not None
 
@@ -197,6 +301,9 @@ with Apideck(
 | `metadata`                                                                                                        | Dict[str, *Any*]                                                                                                  | :heavy_minus_sign:                                                                                                | Attach your own consumer specific metadata                                                                        | {<br/>"account": {<br/>"name": "My Company",<br/>"id": "c01458a5-7276-41ce-bc19-639906b0450a"<br/>},<br/>"plan": "enterprise"<br/>} |
 | `configuration`                                                                                                   | List[[models.ConnectionConfiguration](../../models/connectionconfiguration.md)]                                   | :heavy_minus_sign:                                                                                                | N/A                                                                                                               |                                                                                                                   |
 | `custom_mappings`                                                                                                 | List[[models.CustomMappingInput](../../models/custommappinginput.md)]                                             | :heavy_minus_sign:                                                                                                | List of custom mappings configured for this connection                                                            |                                                                                                                   |
+| `consent_state`                                                                                                   | [Optional[models.ConsentState]](../../models/consentstate.md)                                                     | :heavy_minus_sign:                                                                                                | The current consent state of the connection                                                                       | granted                                                                                                           |
+| `latest_consent`                                                                                                  | [Optional[models.ConsentRecordInput]](../../models/consentrecordinput.md)                                         | :heavy_minus_sign:                                                                                                | N/A                                                                                                               |                                                                                                                   |
+| `application_data_scopes`                                                                                         | [Optional[models.DataScopesInput]](../../models/datascopesinput.md)                                               | :heavy_minus_sign:                                                                                                | N/A                                                                                                               |                                                                                                                   |
 | `retries`                                                                                                         | [Optional[utils.RetryConfig]](../../models/utils/retryconfig.md)                                                  | :heavy_minus_sign:                                                                                                | Configuration to override the default retry behavior of the client.                                               |                                                                                                                   |
 
 ### Response

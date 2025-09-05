@@ -11,6 +11,7 @@ from apideck_unify.models import internal
 from apideck_unify.types import OptionalNullable, UNSET
 import httpx
 import importlib
+import sys
 from typing import Any, Callable, Dict, Optional, TYPE_CHECKING, Union, cast
 import weakref
 
@@ -139,6 +140,7 @@ class Apideck(BaseSDK):
                 timeout_ms=timeout_ms,
                 debug_logger=debug_logger,
             ),
+            parent_ref=self,
         )
 
         hooks = SDKHooks()
@@ -163,13 +165,24 @@ class Apideck(BaseSDK):
             self.sdk_configuration.async_client_supplied,
         )
 
+    def dynamic_import(self, modname, retries=3):
+        for attempt in range(retries):
+            try:
+                return importlib.import_module(modname)
+            except KeyError:
+                # Clear any half-initialized module and retry
+                sys.modules.pop(modname, None)
+                if attempt == retries - 1:
+                    break
+        raise KeyError(f"Failed to import module '{modname}' after {retries} attempts")
+
     def __getattr__(self, name: str):
         if name in self._sub_sdk_map:
             module_path, class_name = self._sub_sdk_map[name]
             try:
-                module = importlib.import_module(module_path)
+                module = self.dynamic_import(module_path)
                 klass = getattr(module, class_name)
-                instance = klass(self.sdk_configuration)
+                instance = klass(self.sdk_configuration, parent_ref=self)
                 setattr(self, name, instance)
                 return instance
             except ImportError as e:

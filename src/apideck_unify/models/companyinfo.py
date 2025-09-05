@@ -44,6 +44,15 @@ class TheStartMonthOfFiscalYear(str, Enum):
     DECEMBER = "December"
 
 
+class TrackingCategoriesMode(str, Enum):
+    r"""The mode of tracking categories for the company on transactions"""
+
+    TRANSACTION = "transaction"
+    LINE = "line"
+    BOTH = "both"
+    DISABLED = "disabled"
+
+
 class CompanyInfoTypedDict(TypedDict):
     id: NotRequired[str]
     r"""A unique identifier for an object."""
@@ -76,6 +85,8 @@ class CompanyInfoTypedDict(TypedDict):
     r"""When custom mappings are configured on the resource, the result is included here."""
     tracking_categories_enabled: NotRequired[bool]
     r"""Whether tracking categories are enabled for the company on transactions"""
+    tracking_categories_mode: NotRequired[TrackingCategoriesMode]
+    r"""The mode of tracking categories for the company on transactions"""
     row_version: NotRequired[Nullable[str]]
     r"""A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object."""
     updated_by: NotRequired[Nullable[str]]
@@ -138,6 +149,9 @@ class CompanyInfo(BaseModel):
     tracking_categories_enabled: Optional[bool] = None
     r"""Whether tracking categories are enabled for the company on transactions"""
 
+    tracking_categories_mode: Optional[TrackingCategoriesMode] = None
+    r"""The mode of tracking categories for the company on transactions"""
+
     row_version: OptionalNullable[str] = UNSET
     r"""A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object."""
 
@@ -174,6 +188,7 @@ class CompanyInfo(BaseModel):
             "emails",
             "custom_mappings",
             "tracking_categories_enabled",
+            "tracking_categories_mode",
             "row_version",
             "updated_by",
             "created_by",

@@ -29,6 +29,7 @@ from apideck_unify.subsidiaries import Subsidiaries
 from apideck_unify.suppliers import Suppliers
 from apideck_unify.taxrates import TaxRates
 from apideck_unify.trackingcategories import TrackingCategories
+from typing import Optional
 
 
 class Accounting(BaseSDK):
@@ -60,36 +61,72 @@ class Accounting(BaseSDK):
     categories: Categories
     quotes: Quotes
 
-    def __init__(self, sdk_config: SDKConfiguration) -> None:
-        BaseSDK.__init__(self, sdk_config)
+    def __init__(
+        self, sdk_config: SDKConfiguration, parent_ref: Optional[object] = None
+    ) -> None:
+        BaseSDK.__init__(self, sdk_config, parent_ref=parent_ref)
         self.sdk_configuration = sdk_config
         self._init_sdks()
 
     def _init_sdks(self):
-        self.tax_rates = TaxRates(self.sdk_configuration)
-        self.bills = Bills(self.sdk_configuration)
-        self.invoices = Invoices(self.sdk_configuration)
-        self.ledger_accounts = LedgerAccounts(self.sdk_configuration)
-        self.invoice_items = InvoiceItems(self.sdk_configuration)
-        self.credit_notes = CreditNotes(self.sdk_configuration)
-        self.customers = Customers(self.sdk_configuration)
-        self.suppliers = Suppliers(self.sdk_configuration)
-        self.payments = Payments(self.sdk_configuration)
-        self.company_info = CompanyInfoSDK(self.sdk_configuration)
-        self.balance_sheet = BalanceSheetSDK(self.sdk_configuration)
-        self.profit_and_loss = ProfitAndLossSDK(self.sdk_configuration)
-        self.journal_entries = JournalEntries(self.sdk_configuration)
-        self.purchase_orders = PurchaseOrders(self.sdk_configuration)
-        self.subsidiaries = Subsidiaries(self.sdk_configuration)
-        self.locations = Locations(self.sdk_configuration)
-        self.departments = Departments(self.sdk_configuration)
-        self.attachments = Attachments(self.sdk_configuration)
-        self.tracking_categories = TrackingCategories(self.sdk_configuration)
-        self.bill_payments = BillPayments(self.sdk_configuration)
-        self.expenses = Expenses(self.sdk_configuration)
-        self.aged_creditors = AgedCreditorsSDK(self.sdk_configuration)
-        self.aged_debtors = AgedDebtorsSDK(self.sdk_configuration)
-        self.bank_feed_accounts = BankFeedAccounts(self.sdk_configuration)
-        self.bank_feed_statements = BankFeedStatements(self.sdk_configuration)
-        self.categories = Categories(self.sdk_configuration)
-        self.quotes = Quotes(self.sdk_configuration)
+        self.tax_rates = TaxRates(self.sdk_configuration, parent_ref=self.parent_ref)
+        self.bills = Bills(self.sdk_configuration, parent_ref=self.parent_ref)
+        self.invoices = Invoices(self.sdk_configuration, parent_ref=self.parent_ref)
+        self.ledger_accounts = LedgerAccounts(
+            self.sdk_configuration, parent_ref=self.parent_ref
+        )
+        self.invoice_items = InvoiceItems(
+            self.sdk_configuration, parent_ref=self.parent_ref
+        )
+        self.credit_notes = CreditNotes(
+            self.sdk_configuration, parent_ref=self.parent_ref
+        )
+        self.customers = Customers(self.sdk_configuration, parent_ref=self.parent_ref)
+        self.suppliers = Suppliers(self.sdk_configuration, parent_ref=self.parent_ref)
+        self.payments = Payments(self.sdk_configuration, parent_ref=self.parent_ref)
+        self.company_info = CompanyInfoSDK(
+            self.sdk_configuration, parent_ref=self.parent_ref
+        )
+        self.balance_sheet = BalanceSheetSDK(
+            self.sdk_configuration, parent_ref=self.parent_ref
+        )
+        self.profit_and_loss = ProfitAndLossSDK(
+            self.sdk_configuration, parent_ref=self.parent_ref
+        )
+        self.journal_entries = JournalEntries(
+            self.sdk_configuration, parent_ref=self.parent_ref
+        )
+        self.purchase_orders = PurchaseOrders(
+            self.sdk_configuration, parent_ref=self.parent_ref
+        )
+        self.subsidiaries = Subsidiaries(
+            self.sdk_configuration, parent_ref=self.parent_ref
+        )
+        self.locations = Locations(self.sdk_configuration, parent_ref=self.parent_ref)
+        self.departments = Departments(
+            self.sdk_configuration, parent_ref=self.parent_ref
+        )
+        self.attachments = Attachments(
+            self.sdk_configuration, parent_ref=self.parent_ref
+        )
+        self.tracking_categories = TrackingCategories(
+            self.sdk_configuration, parent_ref=self.parent_ref
+        )
+        self.bill_payments = BillPayments(
+            self.sdk_configuration, parent_ref=self.parent_ref
+        )
+        self.expenses = Expenses(self.sdk_configuration, parent_ref=self.parent_ref)
+        self.aged_creditors = AgedCreditorsSDK(
+            self.sdk_configuration, parent_ref=self.parent_ref
+        )
+        self.aged_debtors = AgedDebtorsSDK(
+            self.sdk_configuration, parent_ref=self.parent_ref
+        )
+        self.bank_feed_accounts = BankFeedAccounts(
+            self.sdk_configuration, parent_ref=self.parent_ref
+        )
+        self.bank_feed_statements = BankFeedStatements(
+            self.sdk_configuration, parent_ref=self.parent_ref
+        )
+        self.categories = Categories(self.sdk_configuration, parent_ref=self.parent_ref)
+        self.quotes = Quotes(self.sdk_configuration, parent_ref=self.parent_ref)

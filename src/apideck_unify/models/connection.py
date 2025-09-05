@@ -3,8 +3,13 @@
 from __future__ import annotations
 from .authtype import AuthType
 from .connectionstate import ConnectionState
+from .consentrecord import ConsentRecord, ConsentRecordTypedDict
+from .consentrecord_input import ConsentRecordInput, ConsentRecordInputTypedDict
+from .consentstate import ConsentState
 from .custommapping import CustomMapping, CustomMappingTypedDict
 from .custommapping_input import CustomMappingInput, CustomMappingInputTypedDict
+from .datascopes import DataScopes, DataScopesTypedDict
+from .datascopes_input import DataScopesInput, DataScopesInputTypedDict
 from .formfield import FormField, FormFieldTypedDict
 from .formfieldoption import FormFieldOption, FormFieldOptionTypedDict
 from .integrationstate import IntegrationState
@@ -135,6 +140,12 @@ class ConnectionTypedDict(TypedDict):
     created_at: NotRequired[float]
     custom_mappings: NotRequired[List[CustomMappingTypedDict]]
     r"""List of custom mappings configured for this connection"""
+    consent_state: NotRequired[ConsentState]
+    r"""The current consent state of the connection"""
+    consents: NotRequired[List[ConsentRecordTypedDict]]
+    r"""Immutable array of consent records for compliance and audit purposes"""
+    latest_consent: NotRequired[ConsentRecordTypedDict]
+    application_data_scopes: NotRequired[DataScopesTypedDict]
     updated_at: NotRequired[Nullable[float]]
 
 
@@ -220,6 +231,16 @@ class Connection(BaseModel):
     custom_mappings: Optional[List[CustomMapping]] = None
     r"""List of custom mappings configured for this connection"""
 
+    consent_state: Optional[ConsentState] = None
+    r"""The current consent state of the connection"""
+
+    consents: Optional[List[ConsentRecord]] = None
+    r"""Immutable array of consent records for compliance and audit purposes"""
+
+    latest_consent: Optional[ConsentRecord] = None
+
+    application_data_scopes: Optional[DataScopes] = None
+
     updated_at: OptionalNullable[float] = UNSET
 
     @model_serializer(mode="wrap")
@@ -255,6 +276,10 @@ class Connection(BaseModel):
             "has_guide",
             "created_at",
             "custom_mappings",
+            "consent_state",
+            "consents",
+            "latest_consent",
+            "application_data_scopes",
             "updated_at",
         ]
         nullable_fields = [
@@ -326,6 +351,10 @@ class ConnectionInputTypedDict(TypedDict):
     configuration: NotRequired[List[ConnectionConfigurationTypedDict]]
     custom_mappings: NotRequired[List[CustomMappingInputTypedDict]]
     r"""List of custom mappings configured for this connection"""
+    consent_state: NotRequired[ConsentState]
+    r"""The current consent state of the connection"""
+    latest_consent: NotRequired[ConsentRecordInputTypedDict]
+    application_data_scopes: NotRequired[DataScopesInputTypedDict]
 
 
 class ConnectionInput(BaseModel):
@@ -343,6 +372,13 @@ class ConnectionInput(BaseModel):
     custom_mappings: Optional[List[CustomMappingInput]] = None
     r"""List of custom mappings configured for this connection"""
 
+    consent_state: Optional[ConsentState] = None
+    r"""The current consent state of the connection"""
+
+    latest_consent: Optional[ConsentRecordInput] = None
+
+    application_data_scopes: Optional[DataScopesInput] = None
+
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
         optional_fields = [
@@ -351,6 +387,9 @@ class ConnectionInput(BaseModel):
             "metadata",
             "configuration",
             "custom_mappings",
+            "consent_state",
+            "latest_consent",
+            "application_data_scopes",
         ]
         nullable_fields = ["settings", "metadata"]
         null_default_fields = []

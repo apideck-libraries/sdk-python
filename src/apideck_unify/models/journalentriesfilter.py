@@ -4,13 +4,30 @@ from __future__ import annotations
 from apideck_unify.types import BaseModel
 from apideck_unify.utils import FieldMetadata
 from datetime import datetime
+from enum import Enum
 from typing import Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
+class JournalEntriesFilterStatus(str, Enum):
+    DRAFT = "draft"
+    PENDING_APPROVAL = "pending_approval"
+    APPROVED = "approved"
+    POSTED = "posted"
+    VOIDED = "voided"
+    REJECTED = "rejected"
+    DELETED = "deleted"
+    OTHER = "other"
+
+
 class JournalEntriesFilterTypedDict(TypedDict):
     updated_since: NotRequired[datetime]
+    status: NotRequired[JournalEntriesFilterStatus]
 
 
 class JournalEntriesFilter(BaseModel):
     updated_since: Annotated[Optional[datetime], FieldMetadata(query=True)] = None
+
+    status: Annotated[
+        Optional[JournalEntriesFilterStatus], FieldMetadata(query=True)
+    ] = None

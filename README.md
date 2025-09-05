@@ -737,6 +737,14 @@ with Apideck(
 ### [vault](docs/sdks/vault/README.md)
 
 
+#### [vault.connection_consent](docs/sdks/connectionconsent/README.md)
+
+* [update](docs/sdks/connectionconsent/README.md#update) - Update consent state
+
+#### [vault.connection_consents](docs/sdks/connectionconsents/README.md)
+
+* [list](docs/sdks/connectionconsents/README.md#list) - Get consent records
+
 #### [vault.connection_custom_mappings](docs/sdks/connectioncustommappings/README.md)
 
 * [list](docs/sdks/connectioncustommappings/README.md#list) - List connection custom mappings

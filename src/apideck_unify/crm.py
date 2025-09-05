@@ -12,6 +12,7 @@ from apideck_unify.notes import Notes
 from apideck_unify.opportunities import Opportunities
 from apideck_unify.pipelines import Pipelines
 from apideck_unify.users import Users
+from typing import Optional
 
 
 class Crm(BaseSDK):
@@ -26,19 +27,27 @@ class Crm(BaseSDK):
     custom_object_schemas: CustomObjectSchemas
     custom_objects: CustomObjects
 
-    def __init__(self, sdk_config: SDKConfiguration) -> None:
-        BaseSDK.__init__(self, sdk_config)
+    def __init__(
+        self, sdk_config: SDKConfiguration, parent_ref: Optional[object] = None
+    ) -> None:
+        BaseSDK.__init__(self, sdk_config, parent_ref=parent_ref)
         self.sdk_configuration = sdk_config
         self._init_sdks()
 
     def _init_sdks(self):
-        self.companies = Companies(self.sdk_configuration)
-        self.contacts = Contacts(self.sdk_configuration)
-        self.opportunities = Opportunities(self.sdk_configuration)
-        self.leads = Leads(self.sdk_configuration)
-        self.pipelines = Pipelines(self.sdk_configuration)
-        self.notes = Notes(self.sdk_configuration)
-        self.users = Users(self.sdk_configuration)
-        self.activities = Activities(self.sdk_configuration)
-        self.custom_object_schemas = CustomObjectSchemas(self.sdk_configuration)
-        self.custom_objects = CustomObjects(self.sdk_configuration)
+        self.companies = Companies(self.sdk_configuration, parent_ref=self.parent_ref)
+        self.contacts = Contacts(self.sdk_configuration, parent_ref=self.parent_ref)
+        self.opportunities = Opportunities(
+            self.sdk_configuration, parent_ref=self.parent_ref
+        )
+        self.leads = Leads(self.sdk_configuration, parent_ref=self.parent_ref)
+        self.pipelines = Pipelines(self.sdk_configuration, parent_ref=self.parent_ref)
+        self.notes = Notes(self.sdk_configuration, parent_ref=self.parent_ref)
+        self.users = Users(self.sdk_configuration, parent_ref=self.parent_ref)
+        self.activities = Activities(self.sdk_configuration, parent_ref=self.parent_ref)
+        self.custom_object_schemas = CustomObjectSchemas(
+            self.sdk_configuration, parent_ref=self.parent_ref
+        )
+        self.custom_objects = CustomObjects(
+            self.sdk_configuration, parent_ref=self.parent_ref
+        )
