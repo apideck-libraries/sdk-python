@@ -2,10 +2,12 @@
 
 import httpx
 from typing import Optional
+from dataclasses import dataclass
 
 from apideck_unify.models import ApideckError
 
 
+@dataclass(frozen=True)
 class ResponseValidationError(ApideckError):
     """Error raised when there is a type mismatch between the response data and the expected Pydantic model."""
 

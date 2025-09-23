@@ -2,12 +2,14 @@
 
 import httpx
 from typing import Optional
+from dataclasses import dataclass
 
 from apideck_unify.models import ApideckError
 
 MAX_MESSAGE_LEN = 10_000
 
 
+@dataclass(frozen=True)
 class APIError(ApideckError):
     """The fallback error class if no more specific error class is matched."""
 

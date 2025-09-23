@@ -1,0 +1,15 @@
+# GetBankAccountResponse
+
+Bank Account
+
+
+## Fields
+
+| Field                                                              | Type                                                               | Required                                                           | Description                                                        | Example                                                            |
+| ------------------------------------------------------------------ | ------------------------------------------------------------------ | ------------------------------------------------------------------ | ------------------------------------------------------------------ | ------------------------------------------------------------------ |
+| `status_code`                                                      | *int*                                                              | :heavy_check_mark:                                                 | HTTP Response Status Code                                          | 200                                                                |
+| `status`                                                           | *str*                                                              | :heavy_check_mark:                                                 | HTTP Response Status                                               | OK                                                                 |
+| `service`                                                          | *Optional[str]*                                                    | :heavy_minus_sign:                                                 | Apideck ID of service provider                                     | quickbooks                                                         |
+| `resource`                                                         | *Optional[str]*                                                    | :heavy_minus_sign:                                                 | Unified API resource name                                          | bank-accounts                                                      |
+| `operation`                                                        | *Optional[str]*                                                    | :heavy_minus_sign:                                                 | Operation performed                                                | one                                                                |
+| `data`                                                             | [models.AccountingBankAccount](../models/accountingbankaccount.md) | :heavy_check_mark:                                                 | N/A                                                                |                                                                    |

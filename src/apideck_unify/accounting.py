@@ -6,6 +6,7 @@ from apideck_unify.agedcreditors_sdk import AgedCreditorsSDK
 from apideck_unify.ageddebtors_sdk import AgedDebtorsSDK
 from apideck_unify.attachments import Attachments
 from apideck_unify.balancesheet_sdk import BalanceSheetSDK
+from apideck_unify.bankaccounts import BankAccounts
 from apideck_unify.bankfeedaccounts import BankFeedAccounts
 from apideck_unify.bankfeedstatements import BankFeedStatements
 from apideck_unify.billpayments import BillPayments
@@ -51,6 +52,7 @@ class Accounting(BaseSDK):
     locations: Locations
     departments: Departments
     attachments: Attachments
+    bank_accounts: BankAccounts
     tracking_categories: TrackingCategories
     bill_payments: BillPayments
     expenses: Expenses
@@ -107,6 +109,9 @@ class Accounting(BaseSDK):
             self.sdk_configuration, parent_ref=self.parent_ref
         )
         self.attachments = Attachments(
+            self.sdk_configuration, parent_ref=self.parent_ref
+        )
+        self.bank_accounts = BankAccounts(
             self.sdk_configuration, parent_ref=self.parent_ref
         )
         self.tracking_categories = TrackingCategories(

@@ -3,6 +3,7 @@
 from __future__ import annotations
 from apideck_unify.models import ApideckError
 from apideck_unify.types import BaseModel
+from dataclasses import dataclass, field
 import httpx
 from typing import Optional
 
@@ -27,10 +28,11 @@ class PaymentRequiredResponseData(BaseModel):
     r"""Link to documentation of error type"""
 
 
+@dataclass(frozen=True)
 class PaymentRequiredResponse(ApideckError):
     r"""Payment Required"""
 
-    data: PaymentRequiredResponseData
+    data: PaymentRequiredResponseData = field(hash=False)
 
     def __init__(
         self,
@@ -41,4 +43,4 @@ class PaymentRequiredResponse(ApideckError):
         fallback = body or raw_response.text
         message = str(data.message) or fallback
         super().__init__(message, raw_response, body)
-        self.data = data
+        object.__setattr__(self, "data", data)
