@@ -3,6 +3,7 @@
 from __future__ import annotations
 from apideck_unify.models import ApideckError
 from apideck_unify.types import BaseModel
+from dataclasses import dataclass, field
 import httpx
 from typing import Any, Dict, Optional, Union
 from typing_extensions import TypeAliasType
@@ -40,10 +41,11 @@ class UnauthorizedResponseData(BaseModel):
     r"""Link to documentation of error type"""
 
 
+@dataclass(frozen=True)
 class UnauthorizedResponse(ApideckError):
     r"""Unauthorized"""
 
-    data: UnauthorizedResponseData
+    data: UnauthorizedResponseData = field(hash=False)
 
     def __init__(
         self,
@@ -54,4 +56,4 @@ class UnauthorizedResponse(ApideckError):
         fallback = body or raw_response.text
         message = str(data.message) or fallback
         super().__init__(message, raw_response, body)
-        self.data = data
+        object.__setattr__(self, "data", data)

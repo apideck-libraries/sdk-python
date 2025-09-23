@@ -10,12 +10,16 @@ from apideck_unify.types import (
 )
 from apideck_unify.utils import FieldMetadata
 from pydantic import model_serializer
+from typing import List
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class LogsFilterTypedDict(TypedDict):
     connector_id: NotRequired[Nullable[str]]
     status_code: NotRequired[Nullable[float]]
+    r"""Filter by a single HTTP status code. For backward compatibility - use status_codes for multiple values."""
+    status_codes: NotRequired[Nullable[List[float]]]
+    r"""Filter by multiple HTTP status codes. Values must be between 100-599. Maximum 50 status codes allowed."""
     exclude_unified_apis: NotRequired[Nullable[str]]
 
 
@@ -23,6 +27,12 @@ class LogsFilter(BaseModel):
     connector_id: Annotated[OptionalNullable[str], FieldMetadata(query=True)] = UNSET
 
     status_code: Annotated[OptionalNullable[float], FieldMetadata(query=True)] = UNSET
+    r"""Filter by a single HTTP status code. For backward compatibility - use status_codes for multiple values."""
+
+    status_codes: Annotated[
+        OptionalNullable[List[float]], FieldMetadata(query=True)
+    ] = UNSET
+    r"""Filter by multiple HTTP status codes. Values must be between 100-599. Maximum 50 status codes allowed."""
 
     exclude_unified_apis: Annotated[
         OptionalNullable[str], FieldMetadata(query=True)
@@ -30,8 +40,18 @@ class LogsFilter(BaseModel):
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
-        optional_fields = ["connector_id", "status_code", "exclude_unified_apis"]
-        nullable_fields = ["connector_id", "status_code", "exclude_unified_apis"]
+        optional_fields = [
+            "connector_id",
+            "status_code",
+            "status_codes",
+            "exclude_unified_apis",
+        ]
+        nullable_fields = [
+            "connector_id",
+            "status_code",
+            "status_codes",
+            "exclude_unified_apis",
+        ]
         null_default_fields = []
 
         serialized = handler(self)

@@ -256,6 +256,14 @@ with Apideck(
 
 * [get](docs/sdks/balancesheetsdk/README.md#get) - Get BalanceSheet
 
+#### [accounting.bank_accounts](docs/sdks/bankaccounts/README.md)
+
+* [list](docs/sdks/bankaccounts/README.md#list) - List Bank Accounts
+* [create](docs/sdks/bankaccounts/README.md#create) - Create Bank Account
+* [get](docs/sdks/bankaccounts/README.md#get) - Get Bank Account
+* [update](docs/sdks/bankaccounts/README.md#update) - Update Bank Account
+* [delete](docs/sdks/bankaccounts/README.md#delete) - Delete Bank Account
+
 #### [accounting.bank_feed_accounts](docs/sdks/bankfeedaccounts/README.md)
 
 * [list](docs/sdks/bankfeedaccounts/README.md#list) - List Bank Feed Accounts
