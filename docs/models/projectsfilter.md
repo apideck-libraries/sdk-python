@@ -1,0 +1,11 @@
+# ProjectsFilter
+
+
+## Fields
+
+| Field                                                                | Type                                                                 | Required                                                             | Description                                                          | Example                                                              |
+| -------------------------------------------------------------------- | -------------------------------------------------------------------- | -------------------------------------------------------------------- | -------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| `name`                                                               | *Optional[str]*                                                      | :heavy_minus_sign:                                                   | Name of project to search for                                        | Website Redesign                                                     |
+| `status`                                                             | [Optional[models.ProjectStatus]](../models/projectstatus.md)         | :heavy_minus_sign:                                                   | Status of projects to filter by                                      | active                                                               |
+| `customer_id`                                                        | *Optional[str]*                                                      | :heavy_minus_sign:                                                   | Filter projects by customer ID                                       | 12345                                                                |
+| `updated_since`                                                      | [date](https://docs.python.org/3/library/datetime.html#date-objects) | :heavy_minus_sign:                                                   | Return projects modified after this date                             | 2020-09-30T07:43:32.000Z                                             |

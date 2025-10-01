@@ -43,6 +43,8 @@ class AddressTypedDict(TypedDict):
     r"""Line 3 of the address"""
     line4: NotRequired[Nullable[str]]
     r"""Line 4 of the address"""
+    line5: NotRequired[Nullable[str]]
+    r"""Line 5 of the address"""
     street_number: NotRequired[Nullable[str]]
     r"""Street number"""
     city: NotRequired[Nullable[str]]
@@ -101,6 +103,9 @@ class Address(BaseModel):
 
     line4: OptionalNullable[str] = UNSET
     r"""Line 4 of the address"""
+
+    line5: OptionalNullable[str] = UNSET
+    r"""Line 5 of the address"""
 
     street_number: OptionalNullable[str] = UNSET
     r"""Street number"""
@@ -161,6 +166,7 @@ class Address(BaseModel):
             "line2",
             "line3",
             "line4",
+            "line5",
             "street_number",
             "city",
             "state",
@@ -187,6 +193,7 @@ class Address(BaseModel):
             "line2",
             "line3",
             "line4",
+            "line5",
             "street_number",
             "city",
             "state",

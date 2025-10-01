@@ -8,7 +8,7 @@ from typing import Optional
 from typing_extensions import NotRequired, TypedDict
 
 
-class TransactionType(str, Enum):
+class BalanceByTransactionTransactionType(str, Enum):
     r"""Type of the transaction."""
 
     INVOICE = "invoice"
@@ -23,7 +23,7 @@ class BalanceByTransactionTypedDict(TypedDict):
     r"""Unique identifier for the transaction."""
     transaction_date: NotRequired[date]
     r"""Date of the transaction."""
-    transaction_type: NotRequired[TransactionType]
+    transaction_type: NotRequired[BalanceByTransactionTransactionType]
     r"""Type of the transaction."""
     due_date: NotRequired[date]
     r"""Due date of the transaction."""
@@ -42,7 +42,7 @@ class BalanceByTransaction(BaseModel):
     transaction_date: Optional[date] = None
     r"""Date of the transaction."""
 
-    transaction_type: Optional[TransactionType] = None
+    transaction_type: Optional[BalanceByTransactionTransactionType] = None
     r"""Type of the transaction."""
 
     due_date: Optional[date] = None

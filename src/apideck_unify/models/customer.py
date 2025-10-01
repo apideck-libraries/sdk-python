@@ -54,6 +54,8 @@ class CustomerTypedDict(TypedDict):
     r"""The name of the company."""
     company_id: NotRequired[Nullable[str]]
     r"""The company ID the transaction belongs to"""
+    customer_category: NotRequired[Nullable[str]]
+    r"""The category/type of the customer"""
     title: NotRequired[Nullable[str]]
     r"""The job title of the person."""
     first_name: NotRequired[Nullable[str]]
@@ -85,6 +87,8 @@ class CustomerTypedDict(TypedDict):
     r"""Customer status"""
     payment_method: NotRequired[Nullable[str]]
     r"""Payment method used for the transaction, such as cash, credit card, bank transfer, or check"""
+    terms: NotRequired[Nullable[str]]
+    r"""Terms of payment."""
     channel: NotRequired[Nullable[str]]
     r"""The channel through which the transaction is processed."""
     custom_fields: NotRequired[List[CustomFieldTypedDict]]
@@ -122,6 +126,9 @@ class Customer(BaseModel):
 
     company_id: OptionalNullable[str] = UNSET
     r"""The company ID the transaction belongs to"""
+
+    customer_category: OptionalNullable[str] = UNSET
+    r"""The category/type of the customer"""
 
     title: OptionalNullable[str] = UNSET
     r"""The job title of the person."""
@@ -174,6 +181,9 @@ class Customer(BaseModel):
     payment_method: OptionalNullable[str] = UNSET
     r"""Payment method used for the transaction, such as cash, credit card, bank transfer, or check"""
 
+    terms: OptionalNullable[str] = UNSET
+    r"""Terms of payment."""
+
     channel: OptionalNullable[str] = UNSET
     r"""The channel through which the transaction is processed."""
 
@@ -208,6 +218,7 @@ class Customer(BaseModel):
             "display_name",
             "company_name",
             "company_id",
+            "customer_category",
             "title",
             "first_name",
             "middle_name",
@@ -228,6 +239,7 @@ class Customer(BaseModel):
             "parent",
             "status",
             "payment_method",
+            "terms",
             "channel",
             "custom_fields",
             "custom_mappings",
@@ -244,6 +256,7 @@ class Customer(BaseModel):
             "display_name",
             "company_name",
             "company_id",
+            "customer_category",
             "title",
             "first_name",
             "middle_name",
@@ -258,6 +271,7 @@ class Customer(BaseModel):
             "parent",
             "status",
             "payment_method",
+            "terms",
             "channel",
             "custom_mappings",
             "updated_by",
@@ -302,6 +316,8 @@ class CustomerInputTypedDict(TypedDict):
     r"""The name of the company."""
     company_id: NotRequired[Nullable[str]]
     r"""The company ID the transaction belongs to"""
+    customer_category: NotRequired[Nullable[str]]
+    r"""The category/type of the customer"""
     title: NotRequired[Nullable[str]]
     r"""The job title of the person."""
     first_name: NotRequired[Nullable[str]]
@@ -333,6 +349,8 @@ class CustomerInputTypedDict(TypedDict):
     r"""Customer status"""
     payment_method: NotRequired[Nullable[str]]
     r"""Payment method used for the transaction, such as cash, credit card, bank transfer, or check"""
+    terms: NotRequired[Nullable[str]]
+    r"""Terms of payment."""
     channel: NotRequired[Nullable[str]]
     r"""The channel through which the transaction is processed."""
     custom_fields: NotRequired[List[CustomFieldTypedDict]]
@@ -354,6 +372,9 @@ class CustomerInput(BaseModel):
 
     company_id: OptionalNullable[str] = UNSET
     r"""The company ID the transaction belongs to"""
+
+    customer_category: OptionalNullable[str] = UNSET
+    r"""The category/type of the customer"""
 
     title: OptionalNullable[str] = UNSET
     r"""The job title of the person."""
@@ -406,6 +427,9 @@ class CustomerInput(BaseModel):
     payment_method: OptionalNullable[str] = UNSET
     r"""Payment method used for the transaction, such as cash, credit card, bank transfer, or check"""
 
+    terms: OptionalNullable[str] = UNSET
+    r"""Terms of payment."""
+
     channel: OptionalNullable[str] = UNSET
     r"""The channel through which the transaction is processed."""
 
@@ -424,6 +448,7 @@ class CustomerInput(BaseModel):
             "display_name",
             "company_name",
             "company_id",
+            "customer_category",
             "title",
             "first_name",
             "middle_name",
@@ -444,6 +469,7 @@ class CustomerInput(BaseModel):
             "parent",
             "status",
             "payment_method",
+            "terms",
             "channel",
             "custom_fields",
             "row_version",
@@ -454,6 +480,7 @@ class CustomerInput(BaseModel):
             "display_name",
             "company_name",
             "company_id",
+            "customer_category",
             "title",
             "first_name",
             "middle_name",
@@ -468,6 +495,7 @@ class CustomerInput(BaseModel):
             "parent",
             "status",
             "payment_method",
+            "terms",
             "channel",
             "row_version",
         ]

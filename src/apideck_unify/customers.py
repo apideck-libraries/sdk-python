@@ -396,6 +396,7 @@ class Customers(BaseSDK):
         display_name: OptionalNullable[str] = UNSET,
         company_name: OptionalNullable[str] = UNSET,
         company_id: OptionalNullable[str] = UNSET,
+        customer_category: OptionalNullable[str] = UNSET,
         title: OptionalNullable[str] = UNSET,
         first_name: OptionalNullable[str] = UNSET,
         middle_name: OptionalNullable[str] = UNSET,
@@ -433,6 +434,7 @@ class Customers(BaseSDK):
         ] = UNSET,
         status: OptionalNullable[models.CustomerStatusStatus] = UNSET,
         payment_method: OptionalNullable[str] = UNSET,
+        terms: OptionalNullable[str] = UNSET,
         channel: OptionalNullable[str] = UNSET,
         custom_fields: Optional[
             Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
@@ -458,6 +460,7 @@ class Customers(BaseSDK):
         :param display_name: Display name
         :param company_name: The name of the company.
         :param company_id: The company ID the transaction belongs to
+        :param customer_category: The category/type of the customer
         :param title: The job title of the person.
         :param first_name: The first name of the person.
         :param middle_name: Middle name of the person.
@@ -478,6 +481,7 @@ class Customers(BaseSDK):
         :param parent: The parent customer this entity is linked to.
         :param status: Customer status
         :param payment_method: Payment method used for the transaction, such as cash, credit card, bank transfer, or check
+        :param terms: Terms of payment.
         :param channel: The channel through which the transaction is processed.
         :param custom_fields:
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
@@ -507,6 +511,7 @@ class Customers(BaseSDK):
                 display_name=display_name,
                 company_name=company_name,
                 company_id=company_id,
+                customer_category=customer_category,
                 title=title,
                 first_name=first_name,
                 middle_name=middle_name,
@@ -541,6 +546,7 @@ class Customers(BaseSDK):
                 ),
                 status=status,
                 payment_method=payment_method,
+                terms=terms,
                 channel=channel,
                 custom_fields=utils.get_pydantic_model(
                     custom_fields, Optional[List[models.CustomField]]
@@ -662,6 +668,7 @@ class Customers(BaseSDK):
         display_name: OptionalNullable[str] = UNSET,
         company_name: OptionalNullable[str] = UNSET,
         company_id: OptionalNullable[str] = UNSET,
+        customer_category: OptionalNullable[str] = UNSET,
         title: OptionalNullable[str] = UNSET,
         first_name: OptionalNullable[str] = UNSET,
         middle_name: OptionalNullable[str] = UNSET,
@@ -699,6 +706,7 @@ class Customers(BaseSDK):
         ] = UNSET,
         status: OptionalNullable[models.CustomerStatusStatus] = UNSET,
         payment_method: OptionalNullable[str] = UNSET,
+        terms: OptionalNullable[str] = UNSET,
         channel: OptionalNullable[str] = UNSET,
         custom_fields: Optional[
             Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
@@ -724,6 +732,7 @@ class Customers(BaseSDK):
         :param display_name: Display name
         :param company_name: The name of the company.
         :param company_id: The company ID the transaction belongs to
+        :param customer_category: The category/type of the customer
         :param title: The job title of the person.
         :param first_name: The first name of the person.
         :param middle_name: Middle name of the person.
@@ -744,6 +753,7 @@ class Customers(BaseSDK):
         :param parent: The parent customer this entity is linked to.
         :param status: Customer status
         :param payment_method: Payment method used for the transaction, such as cash, credit card, bank transfer, or check
+        :param terms: Terms of payment.
         :param channel: The channel through which the transaction is processed.
         :param custom_fields:
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
@@ -773,6 +783,7 @@ class Customers(BaseSDK):
                 display_name=display_name,
                 company_name=company_name,
                 company_id=company_id,
+                customer_category=customer_category,
                 title=title,
                 first_name=first_name,
                 middle_name=middle_name,
@@ -807,6 +818,7 @@ class Customers(BaseSDK):
                 ),
                 status=status,
                 payment_method=payment_method,
+                terms=terms,
                 channel=channel,
                 custom_fields=utils.get_pydantic_model(
                     custom_fields, Optional[List[models.CustomField]]
@@ -1217,6 +1229,7 @@ class Customers(BaseSDK):
         display_name: OptionalNullable[str] = UNSET,
         company_name: OptionalNullable[str] = UNSET,
         company_id: OptionalNullable[str] = UNSET,
+        customer_category: OptionalNullable[str] = UNSET,
         title: OptionalNullable[str] = UNSET,
         first_name: OptionalNullable[str] = UNSET,
         middle_name: OptionalNullable[str] = UNSET,
@@ -1254,6 +1267,7 @@ class Customers(BaseSDK):
         ] = UNSET,
         status: OptionalNullable[models.CustomerStatusStatus] = UNSET,
         payment_method: OptionalNullable[str] = UNSET,
+        terms: OptionalNullable[str] = UNSET,
         channel: OptionalNullable[str] = UNSET,
         custom_fields: Optional[
             Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
@@ -1280,6 +1294,7 @@ class Customers(BaseSDK):
         :param display_name: Display name
         :param company_name: The name of the company.
         :param company_id: The company ID the transaction belongs to
+        :param customer_category: The category/type of the customer
         :param title: The job title of the person.
         :param first_name: The first name of the person.
         :param middle_name: Middle name of the person.
@@ -1300,6 +1315,7 @@ class Customers(BaseSDK):
         :param parent: The parent customer this entity is linked to.
         :param status: Customer status
         :param payment_method: Payment method used for the transaction, such as cash, credit card, bank transfer, or check
+        :param terms: Terms of payment.
         :param channel: The channel through which the transaction is processed.
         :param custom_fields:
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
@@ -1330,6 +1346,7 @@ class Customers(BaseSDK):
                 display_name=display_name,
                 company_name=company_name,
                 company_id=company_id,
+                customer_category=customer_category,
                 title=title,
                 first_name=first_name,
                 middle_name=middle_name,
@@ -1364,6 +1381,7 @@ class Customers(BaseSDK):
                 ),
                 status=status,
                 payment_method=payment_method,
+                terms=terms,
                 channel=channel,
                 custom_fields=utils.get_pydantic_model(
                     custom_fields, Optional[List[models.CustomField]]
@@ -1486,6 +1504,7 @@ class Customers(BaseSDK):
         display_name: OptionalNullable[str] = UNSET,
         company_name: OptionalNullable[str] = UNSET,
         company_id: OptionalNullable[str] = UNSET,
+        customer_category: OptionalNullable[str] = UNSET,
         title: OptionalNullable[str] = UNSET,
         first_name: OptionalNullable[str] = UNSET,
         middle_name: OptionalNullable[str] = UNSET,
@@ -1523,6 +1542,7 @@ class Customers(BaseSDK):
         ] = UNSET,
         status: OptionalNullable[models.CustomerStatusStatus] = UNSET,
         payment_method: OptionalNullable[str] = UNSET,
+        terms: OptionalNullable[str] = UNSET,
         channel: OptionalNullable[str] = UNSET,
         custom_fields: Optional[
             Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
@@ -1549,6 +1569,7 @@ class Customers(BaseSDK):
         :param display_name: Display name
         :param company_name: The name of the company.
         :param company_id: The company ID the transaction belongs to
+        :param customer_category: The category/type of the customer
         :param title: The job title of the person.
         :param first_name: The first name of the person.
         :param middle_name: Middle name of the person.
@@ -1569,6 +1590,7 @@ class Customers(BaseSDK):
         :param parent: The parent customer this entity is linked to.
         :param status: Customer status
         :param payment_method: Payment method used for the transaction, such as cash, credit card, bank transfer, or check
+        :param terms: Terms of payment.
         :param channel: The channel through which the transaction is processed.
         :param custom_fields:
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
@@ -1599,6 +1621,7 @@ class Customers(BaseSDK):
                 display_name=display_name,
                 company_name=company_name,
                 company_id=company_id,
+                customer_category=customer_category,
                 title=title,
                 first_name=first_name,
                 middle_name=middle_name,
@@ -1633,6 +1656,7 @@ class Customers(BaseSDK):
                 ),
                 status=status,
                 payment_method=payment_method,
+                terms=terms,
                 channel=channel,
                 custom_fields=utils.get_pydantic_model(
                     custom_fields, Optional[List[models.CustomField]]

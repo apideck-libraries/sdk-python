@@ -421,6 +421,9 @@ class JournalEntries(BaseSDK):
             ]
         ] = UNSET,
         accounting_period: OptionalNullable[str] = UNSET,
+        tax_inclusive: OptionalNullable[bool] = UNSET,
+        source_type: OptionalNullable[str] = UNSET,
+        source_id: OptionalNullable[str] = UNSET,
         row_version: OptionalNullable[str] = UNSET,
         custom_fields: Optional[
             Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
@@ -455,6 +458,9 @@ class JournalEntries(BaseSDK):
         :param number: Journal entry number.
         :param tracking_categories: A list of linked tracking categories.
         :param accounting_period: Accounting period
+        :param tax_inclusive: Amounts are including tax
+        :param source_type: The source type of the journal entry
+        :param source_id: A unique identifier for the source of the journal entry
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
         :param custom_fields:
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
@@ -498,6 +504,9 @@ class JournalEntries(BaseSDK):
                     OptionalNullable[List[Nullable[models.LinkedTrackingCategory]]],
                 ),
                 accounting_period=accounting_period,
+                tax_inclusive=tax_inclusive,
+                source_type=source_type,
+                source_id=source_id,
                 row_version=row_version,
                 custom_fields=utils.get_pydantic_model(
                     custom_fields, Optional[List[models.CustomField]]
@@ -638,6 +647,9 @@ class JournalEntries(BaseSDK):
             ]
         ] = UNSET,
         accounting_period: OptionalNullable[str] = UNSET,
+        tax_inclusive: OptionalNullable[bool] = UNSET,
+        source_type: OptionalNullable[str] = UNSET,
+        source_id: OptionalNullable[str] = UNSET,
         row_version: OptionalNullable[str] = UNSET,
         custom_fields: Optional[
             Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
@@ -672,6 +684,9 @@ class JournalEntries(BaseSDK):
         :param number: Journal entry number.
         :param tracking_categories: A list of linked tracking categories.
         :param accounting_period: Accounting period
+        :param tax_inclusive: Amounts are including tax
+        :param source_type: The source type of the journal entry
+        :param source_id: A unique identifier for the source of the journal entry
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
         :param custom_fields:
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
@@ -715,6 +730,9 @@ class JournalEntries(BaseSDK):
                     OptionalNullable[List[Nullable[models.LinkedTrackingCategory]]],
                 ),
                 accounting_period=accounting_period,
+                tax_inclusive=tax_inclusive,
+                source_type=source_type,
+                source_id=source_id,
                 row_version=row_version,
                 custom_fields=utils.get_pydantic_model(
                     custom_fields, Optional[List[models.CustomField]]
@@ -1144,6 +1162,9 @@ class JournalEntries(BaseSDK):
             ]
         ] = UNSET,
         accounting_period: OptionalNullable[str] = UNSET,
+        tax_inclusive: OptionalNullable[bool] = UNSET,
+        source_type: OptionalNullable[str] = UNSET,
+        source_id: OptionalNullable[str] = UNSET,
         row_version: OptionalNullable[str] = UNSET,
         custom_fields: Optional[
             Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
@@ -1179,6 +1200,9 @@ class JournalEntries(BaseSDK):
         :param number: Journal entry number.
         :param tracking_categories: A list of linked tracking categories.
         :param accounting_period: Accounting period
+        :param tax_inclusive: Amounts are including tax
+        :param source_type: The source type of the journal entry
+        :param source_id: A unique identifier for the source of the journal entry
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
         :param custom_fields:
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
@@ -1223,6 +1247,9 @@ class JournalEntries(BaseSDK):
                     OptionalNullable[List[Nullable[models.LinkedTrackingCategory]]],
                 ),
                 accounting_period=accounting_period,
+                tax_inclusive=tax_inclusive,
+                source_type=source_type,
+                source_id=source_id,
                 row_version=row_version,
                 custom_fields=utils.get_pydantic_model(
                     custom_fields, Optional[List[models.CustomField]]
@@ -1364,6 +1391,9 @@ class JournalEntries(BaseSDK):
             ]
         ] = UNSET,
         accounting_period: OptionalNullable[str] = UNSET,
+        tax_inclusive: OptionalNullable[bool] = UNSET,
+        source_type: OptionalNullable[str] = UNSET,
+        source_id: OptionalNullable[str] = UNSET,
         row_version: OptionalNullable[str] = UNSET,
         custom_fields: Optional[
             Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
@@ -1399,6 +1429,9 @@ class JournalEntries(BaseSDK):
         :param number: Journal entry number.
         :param tracking_categories: A list of linked tracking categories.
         :param accounting_period: Accounting period
+        :param tax_inclusive: Amounts are including tax
+        :param source_type: The source type of the journal entry
+        :param source_id: A unique identifier for the source of the journal entry
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
         :param custom_fields:
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
@@ -1443,6 +1476,9 @@ class JournalEntries(BaseSDK):
                     OptionalNullable[List[Nullable[models.LinkedTrackingCategory]]],
                 ),
                 accounting_period=accounting_period,
+                tax_inclusive=tax_inclusive,
+                source_type=source_type,
+                source_id=source_id,
                 row_version=row_version,
                 custom_fields=utils.get_pydantic_model(
                     custom_fields, Optional[List[models.CustomField]]

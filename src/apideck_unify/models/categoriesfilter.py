@@ -14,6 +14,7 @@ class CategoriesFilterType(str, Enum):
     SUPPLIER = "supplier"
     EXPENSE = "expense"
     REVENUE = "revenue"
+    CUSTOMER = "customer"
 
 
 class CategoriesFilterTypedDict(TypedDict):

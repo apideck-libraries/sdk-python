@@ -44,6 +44,8 @@ class JournalEntryStatus(str, Enum):
 class JournalEntryTypedDict(TypedDict):
     id: NotRequired[str]
     r"""A unique identifier for an object."""
+    downstream_id: NotRequired[Nullable[str]]
+    r"""The third-party API ID of original entity"""
     title: NotRequired[Nullable[str]]
     r"""Journal entry title"""
     currency_rate: NotRequired[Nullable[float]]
@@ -74,6 +76,12 @@ class JournalEntryTypedDict(TypedDict):
     r"""A list of linked tracking categories."""
     accounting_period: NotRequired[Nullable[str]]
     r"""Accounting period"""
+    tax_inclusive: NotRequired[Nullable[bool]]
+    r"""Amounts are including tax"""
+    source_type: NotRequired[Nullable[str]]
+    r"""The source type of the journal entry"""
+    source_id: NotRequired[Nullable[str]]
+    r"""A unique identifier for the source of the journal entry"""
     custom_mappings: NotRequired[Nullable[Dict[str, Any]]]
     r"""When custom mappings are configured on the resource, the result is included here."""
     updated_by: NotRequired[Nullable[str]]
@@ -94,6 +102,9 @@ class JournalEntryTypedDict(TypedDict):
 class JournalEntry(BaseModel):
     id: Optional[str] = None
     r"""A unique identifier for an object."""
+
+    downstream_id: OptionalNullable[str] = UNSET
+    r"""The third-party API ID of original entity"""
 
     title: OptionalNullable[str] = UNSET
     r"""Journal entry title"""
@@ -139,6 +150,15 @@ class JournalEntry(BaseModel):
     accounting_period: OptionalNullable[str] = UNSET
     r"""Accounting period"""
 
+    tax_inclusive: OptionalNullable[bool] = UNSET
+    r"""Amounts are including tax"""
+
+    source_type: OptionalNullable[str] = UNSET
+    r"""The source type of the journal entry"""
+
+    source_id: OptionalNullable[str] = UNSET
+    r"""A unique identifier for the source of the journal entry"""
+
     custom_mappings: OptionalNullable[Dict[str, Any]] = UNSET
     r"""When custom mappings are configured on the resource, the result is included here."""
 
@@ -166,6 +186,7 @@ class JournalEntry(BaseModel):
     def serialize_model(self, handler):
         optional_fields = [
             "id",
+            "downstream_id",
             "title",
             "currency_rate",
             "currency",
@@ -180,6 +201,9 @@ class JournalEntry(BaseModel):
             "number",
             "tracking_categories",
             "accounting_period",
+            "tax_inclusive",
+            "source_type",
+            "source_id",
             "custom_mappings",
             "updated_by",
             "created_by",
@@ -190,6 +214,7 @@ class JournalEntry(BaseModel):
             "pass_through",
         ]
         nullable_fields = [
+            "downstream_id",
             "title",
             "currency_rate",
             "currency",
@@ -202,6 +227,9 @@ class JournalEntry(BaseModel):
             "number",
             "tracking_categories",
             "accounting_period",
+            "tax_inclusive",
+            "source_type",
+            "source_id",
             "custom_mappings",
             "updated_by",
             "created_by",
@@ -267,6 +295,12 @@ class JournalEntryInputTypedDict(TypedDict):
     r"""A list of linked tracking categories."""
     accounting_period: NotRequired[Nullable[str]]
     r"""Accounting period"""
+    tax_inclusive: NotRequired[Nullable[bool]]
+    r"""Amounts are including tax"""
+    source_type: NotRequired[Nullable[str]]
+    r"""The source type of the journal entry"""
+    source_id: NotRequired[Nullable[str]]
+    r"""A unique identifier for the source of the journal entry"""
     row_version: NotRequired[Nullable[str]]
     r"""A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object."""
     custom_fields: NotRequired[List[CustomFieldTypedDict]]
@@ -319,6 +353,15 @@ class JournalEntryInput(BaseModel):
     accounting_period: OptionalNullable[str] = UNSET
     r"""Accounting period"""
 
+    tax_inclusive: OptionalNullable[bool] = UNSET
+    r"""Amounts are including tax"""
+
+    source_type: OptionalNullable[str] = UNSET
+    r"""The source type of the journal entry"""
+
+    source_id: OptionalNullable[str] = UNSET
+    r"""A unique identifier for the source of the journal entry"""
+
     row_version: OptionalNullable[str] = UNSET
     r"""A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object."""
 
@@ -344,6 +387,9 @@ class JournalEntryInput(BaseModel):
             "number",
             "tracking_categories",
             "accounting_period",
+            "tax_inclusive",
+            "source_type",
+            "source_id",
             "row_version",
             "custom_fields",
             "pass_through",
@@ -361,6 +407,9 @@ class JournalEntryInput(BaseModel):
             "number",
             "tracking_categories",
             "accounting_period",
+            "tax_inclusive",
+            "source_type",
+            "source_id",
             "row_version",
         ]
         null_default_fields = []

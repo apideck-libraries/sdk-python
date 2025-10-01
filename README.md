@@ -153,6 +153,7 @@ with Apideck(
 </br>
 
 The same SDK client can also be used to make asynchronous requests by importing asyncio.
+
 ```python
 # Asynchronous Example
 from apideck_unify import Apideck
@@ -388,6 +389,14 @@ with Apideck(
 #### [accounting.profit_and_loss](docs/sdks/profitandlosssdk/README.md)
 
 * [get](docs/sdks/profitandlosssdk/README.md#get) - Get Profit and Loss
+
+#### [accounting.projects](docs/sdks/projects/README.md)
+
+* [list](docs/sdks/projects/README.md#list) - List projects
+* [create](docs/sdks/projects/README.md#create) - Create project
+* [get](docs/sdks/projects/README.md#get) - Get project
+* [update](docs/sdks/projects/README.md#update) - Update project
+* [delete](docs/sdks/projects/README.md#delete) - Delete project
 
 #### [accounting.purchase_orders](docs/sdks/purchaseorders/README.md)
 

@@ -403,7 +403,7 @@ class CollectionTickets(BaseSDK):
         subject: OptionalNullable[str] = UNSET,
         description: OptionalNullable[str] = UNSET,
         status: OptionalNullable[str] = UNSET,
-        priority: OptionalNullable[models.Priority] = UNSET,
+        priority: OptionalNullable[models.TicketPriority] = UNSET,
         assignees: Optional[
             Union[List[models.AssigneeInput], List[models.AssigneeInputTypedDict]]
         ] = None,
@@ -594,7 +594,7 @@ class CollectionTickets(BaseSDK):
         subject: OptionalNullable[str] = UNSET,
         description: OptionalNullable[str] = UNSET,
         status: OptionalNullable[str] = UNSET,
-        priority: OptionalNullable[models.Priority] = UNSET,
+        priority: OptionalNullable[models.TicketPriority] = UNSET,
         assignees: Optional[
             Union[List[models.AssigneeInput], List[models.AssigneeInputTypedDict]]
         ] = None,
@@ -1080,7 +1080,7 @@ class CollectionTickets(BaseSDK):
         subject: OptionalNullable[str] = UNSET,
         description: OptionalNullable[str] = UNSET,
         status: OptionalNullable[str] = UNSET,
-        priority: OptionalNullable[models.Priority] = UNSET,
+        priority: OptionalNullable[models.TicketPriority] = UNSET,
         assignees: Optional[
             Union[List[models.AssigneeInput], List[models.AssigneeInputTypedDict]]
         ] = None,
@@ -1274,7 +1274,7 @@ class CollectionTickets(BaseSDK):
         subject: OptionalNullable[str] = UNSET,
         description: OptionalNullable[str] = UNSET,
         status: OptionalNullable[str] = UNSET,
-        priority: OptionalNullable[models.Priority] = UNSET,
+        priority: OptionalNullable[models.TicketPriority] = UNSET,
         assignees: Optional[
             Union[List[models.AssigneeInput], List[models.AssigneeInputTypedDict]]
         ] = None,
