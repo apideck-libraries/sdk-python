@@ -22,9 +22,18 @@ class InvoiceItemFilterInvoiceItemType(str, Enum):
     OTHER = "other"
 
 
+class InvoiceItemFilterTransactionType(str, Enum):
+    r"""The kind of transaction, indicating whether it is a sales transaction or a purchase transaction."""
+
+    SALE = "sale"
+    PURCHASE = "purchase"
+
+
 class InvoiceItemFilterTypedDict(TypedDict):
     type: NotRequired[Nullable[InvoiceItemFilterInvoiceItemType]]
     r"""The type of invoice item, indicating whether it is an inventory item, a service, or another type."""
+    transaction_type: NotRequired[Nullable[InvoiceItemFilterTransactionType]]
+    r"""The kind of transaction, indicating whether it is a sales transaction or a purchase transaction."""
 
 
 class InvoiceItemFilter(BaseModel):
@@ -33,10 +42,15 @@ class InvoiceItemFilter(BaseModel):
     ] = UNSET
     r"""The type of invoice item, indicating whether it is an inventory item, a service, or another type."""
 
+    transaction_type: Annotated[
+        OptionalNullable[InvoiceItemFilterTransactionType], FieldMetadata(query=True)
+    ] = UNSET
+    r"""The kind of transaction, indicating whether it is a sales transaction or a purchase transaction."""
+
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
-        optional_fields = ["type"]
-        nullable_fields = ["type"]
+        optional_fields = ["type", "transaction_type"]
+        nullable_fields = ["type", "transaction_type"]
         null_default_fields = []
 
         serialized = handler(self)

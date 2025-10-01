@@ -13,6 +13,8 @@ class InvoicesFilterTypedDict(TypedDict):
     created_since: NotRequired[datetime]
     number: NotRequired[str]
     r"""Invoice number to search for"""
+    supplier_id: NotRequired[str]
+    r"""Supplier ID to filter invoices by"""
 
 
 class InvoicesFilter(BaseModel):
@@ -22,3 +24,6 @@ class InvoicesFilter(BaseModel):
 
     number: Annotated[Optional[str], FieldMetadata(query=True)] = None
     r"""Invoice number to search for"""
+
+    supplier_id: Annotated[Optional[str], FieldMetadata(query=True)] = None
+    r"""Supplier ID to filter invoices by"""

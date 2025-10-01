@@ -25,13 +25,14 @@ generation:
     generateNewTests: false
     skipResponseBodyAssertions: false
 python:
-  version: 0.22.1
+  version: 0.23.0
   additionalDependencies:
     dev: {}
     main: {}
   allowedRedefinedBuiltins:
     - id
     - object
+  asyncMode: both
   authors:
     - Speakeasy
   baseErrorName: ApideckError
@@ -55,6 +56,7 @@ python:
       shared: ""
       webhooks: ""
   inputModelSuffix: input
+  legacyPyright: true
   maxMethodParams: 999
   methodArguments: infer-optional-args
   moduleName: ""

@@ -22,6 +22,7 @@ class CategoryType(str, Enum):
     SUPPLIER = "supplier"
     EXPENSE = "expense"
     REVENUE = "revenue"
+    CUSTOMER = "customer"
 
 
 class CategoryStatus(str, Enum):

@@ -24,6 +24,7 @@ from apideck_unify.ledgeraccounts import LedgerAccounts
 from apideck_unify.locations import Locations
 from apideck_unify.payments import Payments
 from apideck_unify.profitandloss_sdk import ProfitAndLossSDK
+from apideck_unify.projects import Projects
 from apideck_unify.purchaseorders import PurchaseOrders
 from apideck_unify.quotes import Quotes
 from apideck_unify.subsidiaries import Subsidiaries
@@ -62,6 +63,7 @@ class Accounting(BaseSDK):
     bank_feed_statements: BankFeedStatements
     categories: Categories
     quotes: Quotes
+    projects: Projects
 
     def __init__(
         self, sdk_config: SDKConfiguration, parent_ref: Optional[object] = None
@@ -135,3 +137,4 @@ class Accounting(BaseSDK):
         )
         self.categories = Categories(self.sdk_configuration, parent_ref=self.parent_ref)
         self.quotes = Quotes(self.sdk_configuration, parent_ref=self.parent_ref)
+        self.projects = Projects(self.sdk_configuration, parent_ref=self.parent_ref)

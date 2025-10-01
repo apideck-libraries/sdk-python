@@ -20,7 +20,7 @@ from typing import Any, Dict, List, Optional
 from typing_extensions import NotRequired, TypedDict
 
 
-class Priority(str, Enum):
+class TicketPriority(str, Enum):
     r"""Priority of the ticket"""
 
     LOW = "low"
@@ -44,7 +44,7 @@ class TicketTypedDict(TypedDict):
     r"""The ticket's description. HTML version of description is mapped if supported by the third-party platform"""
     status: NotRequired[Nullable[str]]
     r"""The current status of the ticket. Possible values include: open, in_progress, closed, or - in cases where there is no clear mapping - the original value passed through."""
-    priority: NotRequired[Nullable[Priority]]
+    priority: NotRequired[Nullable[TicketPriority]]
     r"""Priority of the ticket"""
     assignees: NotRequired[List[AssigneeTypedDict]]
     updated_at: NotRequired[Nullable[datetime]]
@@ -86,7 +86,7 @@ class Ticket(BaseModel):
     status: OptionalNullable[str] = UNSET
     r"""The current status of the ticket. Possible values include: open, in_progress, closed, or - in cases where there is no clear mapping - the original value passed through."""
 
-    priority: OptionalNullable[Priority] = UNSET
+    priority: OptionalNullable[TicketPriority] = UNSET
     r"""Priority of the ticket"""
 
     assignees: Optional[List[Assignee]] = None
@@ -187,7 +187,7 @@ class TicketInputTypedDict(TypedDict):
     r"""The ticket's description. HTML version of description is mapped if supported by the third-party platform"""
     status: NotRequired[Nullable[str]]
     r"""The current status of the ticket. Possible values include: open, in_progress, closed, or - in cases where there is no clear mapping - the original value passed through."""
-    priority: NotRequired[Nullable[Priority]]
+    priority: NotRequired[Nullable[TicketPriority]]
     r"""Priority of the ticket"""
     assignees: NotRequired[List[AssigneeInputTypedDict]]
     due_date: NotRequired[Nullable[datetime]]
@@ -213,7 +213,7 @@ class TicketInput(BaseModel):
     status: OptionalNullable[str] = UNSET
     r"""The current status of the ticket. Possible values include: open, in_progress, closed, or - in cases where there is no clear mapping - the original value passed through."""
 
-    priority: OptionalNullable[Priority] = UNSET
+    priority: OptionalNullable[TicketPriority] = UNSET
     r"""Priority of the ticket"""
 
     assignees: Optional[List[AssigneeInput]] = None
