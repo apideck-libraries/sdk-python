@@ -99,7 +99,7 @@ class CollectionTicketComments(BaseSDK):
                 retries = self.sdk_configuration.retry_config
             else:
                 retries = utils.RetryConfig(
-                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 3600000), True
+                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 900000), True
                 )
 
         retry_config = None
@@ -288,7 +288,7 @@ class CollectionTicketComments(BaseSDK):
                 retries = self.sdk_configuration.retry_config
             else:
                 retries = utils.RetryConfig(
-                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 3600000), True
+                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 900000), True
                 )
 
         retry_config = None
@@ -481,7 +481,7 @@ class CollectionTicketComments(BaseSDK):
                 retries = self.sdk_configuration.retry_config
             else:
                 retries = utils.RetryConfig(
-                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 3600000), True
+                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 900000), True
                 )
 
         retry_config = None
@@ -644,7 +644,7 @@ class CollectionTicketComments(BaseSDK):
                 retries = self.sdk_configuration.retry_config
             else:
                 retries = utils.RetryConfig(
-                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 3600000), True
+                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 900000), True
                 )
 
         retry_config = None
@@ -800,7 +800,7 @@ class CollectionTicketComments(BaseSDK):
                 retries = self.sdk_configuration.retry_config
             else:
                 retries = utils.RetryConfig(
-                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 3600000), True
+                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 900000), True
                 )
 
         retry_config = None
@@ -985,7 +985,7 @@ class CollectionTicketComments(BaseSDK):
                 retries = self.sdk_configuration.retry_config
             else:
                 retries = utils.RetryConfig(
-                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 3600000), True
+                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 900000), True
                 )
 
         retry_config = None
@@ -1180,7 +1180,7 @@ class CollectionTicketComments(BaseSDK):
                 retries = self.sdk_configuration.retry_config
             else:
                 retries = utils.RetryConfig(
-                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 3600000), True
+                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 900000), True
                 )
 
         retry_config = None
@@ -1346,7 +1346,7 @@ class CollectionTicketComments(BaseSDK):
                 retries = self.sdk_configuration.retry_config
             else:
                 retries = utils.RetryConfig(
-                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 3600000), True
+                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 900000), True
                 )
 
         retry_config = None
@@ -1493,7 +1493,7 @@ class CollectionTicketComments(BaseSDK):
                 retries = self.sdk_configuration.retry_config
             else:
                 retries = utils.RetryConfig(
-                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 3600000), True
+                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 900000), True
                 )
 
         retry_config = None
@@ -1640,7 +1640,7 @@ class CollectionTicketComments(BaseSDK):
                 retries = self.sdk_configuration.retry_config
             else:
                 retries = utils.RetryConfig(
-                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 3600000), True
+                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 900000), True
                 )
 
         retry_config = None
