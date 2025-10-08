@@ -21,7 +21,7 @@ from apideck_unify.types import (
     UNSET,
     UNSET_SENTINEL,
 )
-from datetime import datetime
+from datetime import date, datetime
 from enum import Enum
 from pydantic import model_serializer
 from typing import List, Optional
@@ -64,6 +64,8 @@ class QuoteLineItemTypedDict(TypedDict):
     r"""Discount percentage applied to the line item when supported downstream."""
     discount_amount: NotRequired[Nullable[float]]
     r"""Discount amount applied to the line item when supported downstream."""
+    service_date: NotRequired[Nullable[date]]
+    r"""Date on which the service was provided or performed - YYYY-MM-DD."""
     category_id: NotRequired[Nullable[str]]
     r"""ID of the category of the line item"""
     location_id: NotRequired[Nullable[str]]
@@ -128,6 +130,9 @@ class QuoteLineItem(BaseModel):
     discount_amount: OptionalNullable[float] = UNSET
     r"""Discount amount applied to the line item when supported downstream."""
 
+    service_date: OptionalNullable[date] = UNSET
+    r"""Date on which the service was provided or performed - YYYY-MM-DD."""
+
     category_id: OptionalNullable[str] = UNSET
     r"""ID of the category of the line item"""
 
@@ -181,6 +186,7 @@ class QuoteLineItem(BaseModel):
             "unit_of_measure",
             "discount_percentage",
             "discount_amount",
+            "service_date",
             "category_id",
             "location_id",
             "department_id",
@@ -208,6 +214,7 @@ class QuoteLineItem(BaseModel):
             "unit_of_measure",
             "discount_percentage",
             "discount_amount",
+            "service_date",
             "category_id",
             "location_id",
             "department_id",
@@ -271,6 +278,8 @@ class QuoteLineItemInputTypedDict(TypedDict):
     r"""Discount percentage applied to the line item when supported downstream."""
     discount_amount: NotRequired[Nullable[float]]
     r"""Discount amount applied to the line item when supported downstream."""
+    service_date: NotRequired[Nullable[date]]
+    r"""Date on which the service was provided or performed - YYYY-MM-DD."""
     category_id: NotRequired[Nullable[str]]
     r"""ID of the category of the line item"""
     location_id: NotRequired[Nullable[str]]
@@ -327,6 +336,9 @@ class QuoteLineItemInput(BaseModel):
     discount_amount: OptionalNullable[float] = UNSET
     r"""Discount amount applied to the line item when supported downstream."""
 
+    service_date: OptionalNullable[date] = UNSET
+    r"""Date on which the service was provided or performed - YYYY-MM-DD."""
+
     category_id: OptionalNullable[str] = UNSET
     r"""ID of the category of the line item"""
 
@@ -368,6 +380,7 @@ class QuoteLineItemInput(BaseModel):
             "unit_of_measure",
             "discount_percentage",
             "discount_amount",
+            "service_date",
             "category_id",
             "location_id",
             "department_id",
@@ -391,6 +404,7 @@ class QuoteLineItemInput(BaseModel):
             "unit_of_measure",
             "discount_percentage",
             "discount_amount",
+            "service_date",
             "category_id",
             "location_id",
             "department_id",

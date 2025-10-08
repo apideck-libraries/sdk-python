@@ -234,9 +234,6 @@ with Apideck(
 <details open>
 <summary>Available methods</summary>
 
-### [accounting](docs/sdks/accounting/README.md)
-
-
 #### [accounting.aged_creditors](docs/sdks/agedcreditorssdk/README.md)
 
 * [get](docs/sdks/agedcreditorssdk/README.md#get) - Get Aged Creditors
@@ -446,10 +443,6 @@ with Apideck(
 * [update](docs/sdks/trackingcategories/README.md#update) - Update Tracking Category
 * [delete](docs/sdks/trackingcategories/README.md#delete) - Delete Tracking Category
 
-
-### [ats](docs/sdks/ats/README.md)
-
-
 #### [ats.applicants](docs/sdks/applicants/README.md)
 
 * [list](docs/sdks/applicants/README.md#list) - List Applicants
@@ -470,9 +463,6 @@ with Apideck(
 
 * [list](docs/sdks/jobs/README.md#list) - List Jobs
 * [get](docs/sdks/jobs/README.md#get) - Get Job
-
-### [connector](docs/sdks/connectorsdk/README.md)
-
 
 #### [connector.api_resource_coverage](docs/sdks/apiresourcecoveragesdk/README.md)
 
@@ -499,9 +489,6 @@ with Apideck(
 
 * [list](docs/sdks/connectors/README.md#list) - List Connectors
 * [get](docs/sdks/connectors/README.md#get) - Get Connector
-
-### [crm](docs/sdks/crm/README.md)
-
 
 #### [crm.activities](docs/sdks/activities/README.md)
 
@@ -583,9 +570,6 @@ with Apideck(
 * [update](docs/sdks/users/README.md#update) - Update user
 * [delete](docs/sdks/users/README.md#delete) - Delete user
 
-### [ecommerce](docs/sdks/ecommerce/README.md)
-
-
 #### [ecommerce.customers](docs/sdks/apideckcustomers/README.md)
 
 * [list](docs/sdks/apideckcustomers/README.md#list) - List Customers
@@ -604,9 +588,6 @@ with Apideck(
 #### [ecommerce.stores](docs/sdks/stores/README.md)
 
 * [get](docs/sdks/stores/README.md#get) - Get Store
-
-### [file_storage](docs/sdks/filestorage/README.md)
-
 
 #### [file_storage.drive_groups](docs/sdks/drivegroups/README.md)
 
@@ -658,9 +639,6 @@ with Apideck(
 * [delete](docs/sdks/uploadsessions/README.md#delete) - Abort Upload Session
 * [finish](docs/sdks/uploadsessions/README.md#finish) - Finish Upload Session
 
-### [hris](docs/sdks/hris/README.md)
-
-
 #### [hris.companies](docs/sdks/apideckcompanies/README.md)
 
 * [list](docs/sdks/apideckcompanies/README.md#list) - List Companies
@@ -707,9 +685,6 @@ with Apideck(
 * [update](docs/sdks/timeoffrequests/README.md#update) - Update Time Off Request
 * [delete](docs/sdks/timeoffrequests/README.md#delete) - Delete Time Off Request
 
-### [issue_tracking](docs/sdks/issuetracking/README.md)
-
-
 #### [issue_tracking.collection_tags](docs/sdks/collectiontags/README.md)
 
 * [list](docs/sdks/collectiontags/README.md#list) - List Tags
@@ -740,9 +715,6 @@ with Apideck(
 * [list](docs/sdks/collections/README.md#list) - List Collections
 * [get](docs/sdks/collections/README.md#get) - Get Collection
 
-### [sms](docs/sdks/sms/README.md)
-
-
 #### [sms.messages](docs/sdks/messages/README.md)
 
 * [list](docs/sdks/messages/README.md#list) - List Messages
@@ -750,9 +722,6 @@ with Apideck(
 * [get](docs/sdks/messages/README.md#get) - Get Message
 * [update](docs/sdks/messages/README.md#update) - Update Message
 * [delete](docs/sdks/messages/README.md#delete) - Delete Message
-
-### [vault](docs/sdks/vault/README.md)
-
 
 #### [vault.connection_consent](docs/sdks/connectionconsent/README.md)
 
@@ -815,9 +784,6 @@ with Apideck(
 #### [vault.validate_connection](docs/sdks/validateconnection/README.md)
 
 * [state](docs/sdks/validateconnection/README.md#state) - Validate Connection State
-
-### [webhook](docs/sdks/webhooksdk/README.md)
-
 
 #### [webhook.event_logs](docs/sdks/eventlogs/README.md)
 
