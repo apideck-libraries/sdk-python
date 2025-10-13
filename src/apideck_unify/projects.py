@@ -99,7 +99,7 @@ class Projects(BaseSDK):
                 retries = self.sdk_configuration.retry_config
             else:
                 retries = utils.RetryConfig(
-                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 3600000), True
+                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 900000), True
                 )
 
         retry_config = None
@@ -284,7 +284,7 @@ class Projects(BaseSDK):
                 retries = self.sdk_configuration.retry_config
             else:
                 retries = utils.RetryConfig(
-                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 3600000), True
+                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 900000), True
                 )
 
         retry_config = None
@@ -394,6 +394,7 @@ class Projects(BaseSDK):
         reference_id: OptionalNullable[str] = UNSET,
         description: OptionalNullable[str] = UNSET,
         status: OptionalNullable[models.ProjectProjectStatus] = UNSET,
+        active: OptionalNullable[bool] = UNSET,
         project_type: OptionalNullable[models.ProjectType] = UNSET,
         priority: OptionalNullable[models.Priority] = UNSET,
         completion_percentage: OptionalNullable[float] = UNSET,
@@ -458,6 +459,7 @@ class Projects(BaseSDK):
         :param reference_id: External reference identifier for the project
         :param description: Detailed description of the project
         :param status: Current status of the project
+        :param active: Indicates whether the project is currently active or inactive
         :param project_type: Type or category of the project
         :param priority: Priority level of the project
         :param completion_percentage: Percentage of project completion (0-100)
@@ -513,6 +515,7 @@ class Projects(BaseSDK):
                 reference_id=reference_id,
                 description=description,
                 status=status,
+                active=active,
                 project_type=project_type,
                 priority=priority,
                 completion_percentage=completion_percentage,
@@ -588,7 +591,7 @@ class Projects(BaseSDK):
                 retries = self.sdk_configuration.retry_config
             else:
                 retries = utils.RetryConfig(
-                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 3600000), True
+                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 900000), True
                 )
 
         retry_config = None
@@ -671,6 +674,7 @@ class Projects(BaseSDK):
         reference_id: OptionalNullable[str] = UNSET,
         description: OptionalNullable[str] = UNSET,
         status: OptionalNullable[models.ProjectProjectStatus] = UNSET,
+        active: OptionalNullable[bool] = UNSET,
         project_type: OptionalNullable[models.ProjectType] = UNSET,
         priority: OptionalNullable[models.Priority] = UNSET,
         completion_percentage: OptionalNullable[float] = UNSET,
@@ -735,6 +739,7 @@ class Projects(BaseSDK):
         :param reference_id: External reference identifier for the project
         :param description: Detailed description of the project
         :param status: Current status of the project
+        :param active: Indicates whether the project is currently active or inactive
         :param project_type: Type or category of the project
         :param priority: Priority level of the project
         :param completion_percentage: Percentage of project completion (0-100)
@@ -790,6 +795,7 @@ class Projects(BaseSDK):
                 reference_id=reference_id,
                 description=description,
                 status=status,
+                active=active,
                 project_type=project_type,
                 priority=priority,
                 completion_percentage=completion_percentage,
@@ -865,7 +871,7 @@ class Projects(BaseSDK):
                 retries = self.sdk_configuration.retry_config
             else:
                 retries = utils.RetryConfig(
-                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 3600000), True
+                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 900000), True
                 )
 
         retry_config = None
@@ -1006,7 +1012,7 @@ class Projects(BaseSDK):
                 retries = self.sdk_configuration.retry_config
             else:
                 retries = utils.RetryConfig(
-                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 3600000), True
+                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 900000), True
                 )
 
         retry_config = None
@@ -1147,7 +1153,7 @@ class Projects(BaseSDK):
                 retries = self.sdk_configuration.retry_config
             else:
                 retries = utils.RetryConfig(
-                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 3600000), True
+                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 900000), True
                 )
 
         retry_config = None
@@ -1231,6 +1237,7 @@ class Projects(BaseSDK):
         reference_id: OptionalNullable[str] = UNSET,
         description: OptionalNullable[str] = UNSET,
         status: OptionalNullable[models.ProjectProjectStatus] = UNSET,
+        active: OptionalNullable[bool] = UNSET,
         project_type: OptionalNullable[models.ProjectType] = UNSET,
         priority: OptionalNullable[models.Priority] = UNSET,
         completion_percentage: OptionalNullable[float] = UNSET,
@@ -1296,6 +1303,7 @@ class Projects(BaseSDK):
         :param reference_id: External reference identifier for the project
         :param description: Detailed description of the project
         :param status: Current status of the project
+        :param active: Indicates whether the project is currently active or inactive
         :param project_type: Type or category of the project
         :param priority: Priority level of the project
         :param completion_percentage: Percentage of project completion (0-100)
@@ -1352,6 +1360,7 @@ class Projects(BaseSDK):
                 reference_id=reference_id,
                 description=description,
                 status=status,
+                active=active,
                 project_type=project_type,
                 priority=priority,
                 completion_percentage=completion_percentage,
@@ -1427,7 +1436,7 @@ class Projects(BaseSDK):
                 retries = self.sdk_configuration.retry_config
             else:
                 retries = utils.RetryConfig(
-                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 3600000), True
+                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 900000), True
                 )
 
         retry_config = None
@@ -1511,6 +1520,7 @@ class Projects(BaseSDK):
         reference_id: OptionalNullable[str] = UNSET,
         description: OptionalNullable[str] = UNSET,
         status: OptionalNullable[models.ProjectProjectStatus] = UNSET,
+        active: OptionalNullable[bool] = UNSET,
         project_type: OptionalNullable[models.ProjectType] = UNSET,
         priority: OptionalNullable[models.Priority] = UNSET,
         completion_percentage: OptionalNullable[float] = UNSET,
@@ -1576,6 +1586,7 @@ class Projects(BaseSDK):
         :param reference_id: External reference identifier for the project
         :param description: Detailed description of the project
         :param status: Current status of the project
+        :param active: Indicates whether the project is currently active or inactive
         :param project_type: Type or category of the project
         :param priority: Priority level of the project
         :param completion_percentage: Percentage of project completion (0-100)
@@ -1632,6 +1643,7 @@ class Projects(BaseSDK):
                 reference_id=reference_id,
                 description=description,
                 status=status,
+                active=active,
                 project_type=project_type,
                 priority=priority,
                 completion_percentage=completion_percentage,
@@ -1707,7 +1719,7 @@ class Projects(BaseSDK):
                 retries = self.sdk_configuration.retry_config
             else:
                 retries = utils.RetryConfig(
-                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 3600000), True
+                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 900000), True
                 )
 
         retry_config = None
@@ -1848,7 +1860,7 @@ class Projects(BaseSDK):
                 retries = self.sdk_configuration.retry_config
             else:
                 retries = utils.RetryConfig(
-                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 3600000), True
+                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 900000), True
                 )
 
         retry_config = None
@@ -1989,7 +2001,7 @@ class Projects(BaseSDK):
                 retries = self.sdk_configuration.retry_config
             else:
                 retries = utils.RetryConfig(
-                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 3600000), True
+                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 900000), True
                 )
 
         retry_config = None

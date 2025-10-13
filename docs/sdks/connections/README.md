@@ -408,10 +408,10 @@ with Apideck(
 
     res = apideck.vault.connections.delete(service_id="pipedrive", unified_api="crm")
 
-    assert res.unexpected_error_response is not None
+    assert res is not None
 
     # Handle response
-    print(res.unexpected_error_response)
+    print(res)
 
 ```
 
