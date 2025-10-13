@@ -91,7 +91,7 @@ class BankFeedStatements(BaseSDK):
                 retries = self.sdk_configuration.retry_config
             else:
                 retries = utils.RetryConfig(
-                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 3600000), True
+                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 900000), True
                 )
 
         retry_config = None
@@ -103,7 +103,7 @@ class BankFeedStatements(BaseSDK):
                 config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="accounting.bankFeedStatementsAll",
-                oauth2_scopes=[],
+                oauth2_scopes=None,
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
@@ -266,7 +266,7 @@ class BankFeedStatements(BaseSDK):
                 retries = self.sdk_configuration.retry_config
             else:
                 retries = utils.RetryConfig(
-                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 3600000), True
+                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 900000), True
                 )
 
         retry_config = None
@@ -278,7 +278,7 @@ class BankFeedStatements(BaseSDK):
                 config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="accounting.bankFeedStatementsAll",
-                oauth2_scopes=[],
+                oauth2_scopes=None,
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
@@ -469,7 +469,7 @@ class BankFeedStatements(BaseSDK):
                 retries = self.sdk_configuration.retry_config
             else:
                 retries = utils.RetryConfig(
-                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 3600000), True
+                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 900000), True
                 )
 
         retry_config = None
@@ -481,7 +481,7 @@ class BankFeedStatements(BaseSDK):
                 config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="accounting.bankFeedStatementsAdd",
-                oauth2_scopes=[],
+                oauth2_scopes=None,
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
@@ -647,7 +647,7 @@ class BankFeedStatements(BaseSDK):
                 retries = self.sdk_configuration.retry_config
             else:
                 retries = utils.RetryConfig(
-                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 3600000), True
+                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 900000), True
                 )
 
         retry_config = None
@@ -659,7 +659,7 @@ class BankFeedStatements(BaseSDK):
                 config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="accounting.bankFeedStatementsAdd",
-                oauth2_scopes=[],
+                oauth2_scopes=None,
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
@@ -791,7 +791,7 @@ class BankFeedStatements(BaseSDK):
                 retries = self.sdk_configuration.retry_config
             else:
                 retries = utils.RetryConfig(
-                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 3600000), True
+                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 900000), True
                 )
 
         retry_config = None
@@ -803,7 +803,7 @@ class BankFeedStatements(BaseSDK):
                 config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="accounting.bankFeedStatementsOne",
-                oauth2_scopes=[],
+                oauth2_scopes=None,
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
@@ -935,7 +935,7 @@ class BankFeedStatements(BaseSDK):
                 retries = self.sdk_configuration.retry_config
             else:
                 retries = utils.RetryConfig(
-                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 3600000), True
+                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 900000), True
                 )
 
         retry_config = None
@@ -947,7 +947,7 @@ class BankFeedStatements(BaseSDK):
                 config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="accounting.bankFeedStatementsOne",
-                oauth2_scopes=[],
+                oauth2_scopes=None,
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
@@ -1116,7 +1116,7 @@ class BankFeedStatements(BaseSDK):
                 retries = self.sdk_configuration.retry_config
             else:
                 retries = utils.RetryConfig(
-                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 3600000), True
+                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 900000), True
                 )
 
         retry_config = None
@@ -1128,7 +1128,7 @@ class BankFeedStatements(BaseSDK):
                 config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="accounting.bankFeedStatementsUpdate",
-                oauth2_scopes=[],
+                oauth2_scopes=None,
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
@@ -1297,7 +1297,7 @@ class BankFeedStatements(BaseSDK):
                 retries = self.sdk_configuration.retry_config
             else:
                 retries = utils.RetryConfig(
-                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 3600000), True
+                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 900000), True
                 )
 
         retry_config = None
@@ -1309,7 +1309,7 @@ class BankFeedStatements(BaseSDK):
                 config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="accounting.bankFeedStatementsUpdate",
-                oauth2_scopes=[],
+                oauth2_scopes=None,
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
@@ -1438,7 +1438,7 @@ class BankFeedStatements(BaseSDK):
                 retries = self.sdk_configuration.retry_config
             else:
                 retries = utils.RetryConfig(
-                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 3600000), True
+                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 900000), True
                 )
 
         retry_config = None
@@ -1450,7 +1450,7 @@ class BankFeedStatements(BaseSDK):
                 config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="accounting.bankFeedStatementsDelete",
-                oauth2_scopes=[],
+                oauth2_scopes=None,
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
@@ -1579,7 +1579,7 @@ class BankFeedStatements(BaseSDK):
                 retries = self.sdk_configuration.retry_config
             else:
                 retries = utils.RetryConfig(
-                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 3600000), True
+                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 900000), True
                 )
 
         retry_config = None
@@ -1591,7 +1591,7 @@ class BankFeedStatements(BaseSDK):
                 config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="accounting.bankFeedStatementsDelete",
-                oauth2_scopes=[],
+                oauth2_scopes=None,
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),

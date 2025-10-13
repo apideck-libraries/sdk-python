@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from apideck_unify.models import ApideckError
 
 
-@dataclass(frozen=True)
+@dataclass(unsafe_hash=True)
 class ResponseValidationError(ApideckError):
     """Error raised when there is a type mismatch between the response data and the expected Pydantic model."""
 

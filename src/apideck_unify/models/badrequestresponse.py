@@ -41,7 +41,7 @@ class BadRequestResponseData(BaseModel):
     r"""Link to documentation of error type"""
 
 
-@dataclass(frozen=True)
+@dataclass(unsafe_hash=True)
 class BadRequestResponse(ApideckError):
     r"""Bad Request"""
 
