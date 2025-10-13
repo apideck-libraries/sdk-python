@@ -93,7 +93,7 @@ class CollectionUsers(BaseSDK):
                 retries = self.sdk_configuration.retry_config
             else:
                 retries = utils.RetryConfig(
-                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 3600000), True
+                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 900000), True
                 )
 
         retry_config = None
@@ -105,7 +105,7 @@ class CollectionUsers(BaseSDK):
                 config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="issueTracking.collectionUsersAll",
-                oauth2_scopes=[],
+                oauth2_scopes=None,
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
@@ -272,7 +272,7 @@ class CollectionUsers(BaseSDK):
                 retries = self.sdk_configuration.retry_config
             else:
                 retries = utils.RetryConfig(
-                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 3600000), True
+                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 900000), True
                 )
 
         retry_config = None
@@ -284,7 +284,7 @@ class CollectionUsers(BaseSDK):
                 config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="issueTracking.collectionUsersAll",
-                oauth2_scopes=[],
+                oauth2_scopes=None,
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
@@ -445,7 +445,7 @@ class CollectionUsers(BaseSDK):
                 retries = self.sdk_configuration.retry_config
             else:
                 retries = utils.RetryConfig(
-                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 3600000), True
+                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 900000), True
                 )
 
         retry_config = None
@@ -457,7 +457,7 @@ class CollectionUsers(BaseSDK):
                 config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="issueTracking.collectionUsersOne",
-                oauth2_scopes=[],
+                oauth2_scopes=None,
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
@@ -592,7 +592,7 @@ class CollectionUsers(BaseSDK):
                 retries = self.sdk_configuration.retry_config
             else:
                 retries = utils.RetryConfig(
-                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 3600000), True
+                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 900000), True
                 )
 
         retry_config = None
@@ -604,7 +604,7 @@ class CollectionUsers(BaseSDK):
                 config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="issueTracking.collectionUsersOne",
-                oauth2_scopes=[],
+                oauth2_scopes=None,
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),

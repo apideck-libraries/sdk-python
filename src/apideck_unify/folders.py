@@ -108,7 +108,7 @@ class Folders(BaseSDK):
                 retries = self.sdk_configuration.retry_config
             else:
                 retries = utils.RetryConfig(
-                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 3600000), True
+                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 900000), True
                 )
 
         retry_config = None
@@ -120,7 +120,7 @@ class Folders(BaseSDK):
                 config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="fileStorage.foldersAdd",
-                oauth2_scopes=[],
+                oauth2_scopes=None,
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
@@ -277,7 +277,7 @@ class Folders(BaseSDK):
                 retries = self.sdk_configuration.retry_config
             else:
                 retries = utils.RetryConfig(
-                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 3600000), True
+                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 900000), True
                 )
 
         retry_config = None
@@ -289,7 +289,7 @@ class Folders(BaseSDK):
                 config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="fileStorage.foldersAdd",
-                oauth2_scopes=[],
+                oauth2_scopes=None,
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
@@ -421,7 +421,7 @@ class Folders(BaseSDK):
                 retries = self.sdk_configuration.retry_config
             else:
                 retries = utils.RetryConfig(
-                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 3600000), True
+                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 900000), True
                 )
 
         retry_config = None
@@ -433,7 +433,7 @@ class Folders(BaseSDK):
                 config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="fileStorage.foldersOne",
-                oauth2_scopes=[],
+                oauth2_scopes=None,
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
@@ -565,7 +565,7 @@ class Folders(BaseSDK):
                 retries = self.sdk_configuration.retry_config
             else:
                 retries = utils.RetryConfig(
-                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 3600000), True
+                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 900000), True
                 )
 
         retry_config = None
@@ -577,7 +577,7 @@ class Folders(BaseSDK):
                 config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="fileStorage.foldersOne",
-                oauth2_scopes=[],
+                oauth2_scopes=None,
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
@@ -731,7 +731,7 @@ class Folders(BaseSDK):
                 retries = self.sdk_configuration.retry_config
             else:
                 retries = utils.RetryConfig(
-                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 3600000), True
+                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 900000), True
                 )
 
         retry_config = None
@@ -743,7 +743,7 @@ class Folders(BaseSDK):
                 config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="fileStorage.foldersUpdate",
-                oauth2_scopes=[],
+                oauth2_scopes=None,
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
@@ -897,7 +897,7 @@ class Folders(BaseSDK):
                 retries = self.sdk_configuration.retry_config
             else:
                 retries = utils.RetryConfig(
-                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 3600000), True
+                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 900000), True
                 )
 
         retry_config = None
@@ -909,7 +909,7 @@ class Folders(BaseSDK):
                 config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="fileStorage.foldersUpdate",
-                oauth2_scopes=[],
+                oauth2_scopes=None,
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
@@ -1038,7 +1038,7 @@ class Folders(BaseSDK):
                 retries = self.sdk_configuration.retry_config
             else:
                 retries = utils.RetryConfig(
-                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 3600000), True
+                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 900000), True
                 )
 
         retry_config = None
@@ -1050,7 +1050,7 @@ class Folders(BaseSDK):
                 config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="fileStorage.foldersDelete",
-                oauth2_scopes=[],
+                oauth2_scopes=None,
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
@@ -1179,7 +1179,7 @@ class Folders(BaseSDK):
                 retries = self.sdk_configuration.retry_config
             else:
                 retries = utils.RetryConfig(
-                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 3600000), True
+                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 900000), True
                 )
 
         retry_config = None
@@ -1191,7 +1191,7 @@ class Folders(BaseSDK):
                 config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="fileStorage.foldersDelete",
-                oauth2_scopes=[],
+                oauth2_scopes=None,
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
@@ -1345,7 +1345,7 @@ class Folders(BaseSDK):
                 retries = self.sdk_configuration.retry_config
             else:
                 retries = utils.RetryConfig(
-                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 3600000), True
+                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 900000), True
                 )
 
         retry_config = None
@@ -1357,7 +1357,7 @@ class Folders(BaseSDK):
                 config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="fileStorage.foldersCopy",
-                oauth2_scopes=[],
+                oauth2_scopes=None,
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
@@ -1511,7 +1511,7 @@ class Folders(BaseSDK):
                 retries = self.sdk_configuration.retry_config
             else:
                 retries = utils.RetryConfig(
-                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 3600000), True
+                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 900000), True
                 )
 
         retry_config = None
@@ -1523,7 +1523,7 @@ class Folders(BaseSDK):
                 config=self.sdk_configuration,
                 base_url=base_url or "",
                 operation_id="fileStorage.foldersCopy",
-                oauth2_scopes=[],
+                oauth2_scopes=None,
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),

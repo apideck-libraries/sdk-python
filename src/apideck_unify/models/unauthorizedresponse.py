@@ -41,7 +41,7 @@ class UnauthorizedResponseData(BaseModel):
     r"""Link to documentation of error type"""
 
 
-@dataclass(frozen=True)
+@dataclass(unsafe_hash=True)
 class UnauthorizedResponse(ApideckError):
     r"""Unauthorized"""
 

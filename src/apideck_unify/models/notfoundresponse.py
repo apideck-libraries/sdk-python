@@ -41,7 +41,7 @@ class NotFoundResponseData(BaseModel):
     r"""Link to documentation of error type"""
 
 
-@dataclass(frozen=True)
+@dataclass(unsafe_hash=True)
 class NotFoundResponse(ApideckError):
     r"""The specified resource was not found"""
 

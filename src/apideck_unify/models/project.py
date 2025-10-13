@@ -34,6 +34,8 @@ class ProjectProjectStatus(str, Enum):
     ON_HOLD = "on_hold"
     CANCELLED = "cancelled"
     DRAFT = "draft"
+    IN_PROGRESS = "in_progress"
+    APPROVED = "approved"
     OTHER = "other"
 
 
@@ -140,6 +142,8 @@ class ProjectTypedDict(TypedDict):
     r"""Detailed description of the project"""
     status: NotRequired[Nullable[ProjectProjectStatus]]
     r"""Current status of the project"""
+    active: NotRequired[Nullable[bool]]
+    r"""Indicates whether the project is currently active or inactive"""
     project_type: NotRequired[Nullable[ProjectType]]
     r"""Type or category of the project"""
     priority: NotRequired[Nullable[Priority]]
@@ -233,6 +237,9 @@ class Project(BaseModel):
 
     status: OptionalNullable[ProjectProjectStatus] = UNSET
     r"""Current status of the project"""
+
+    active: OptionalNullable[bool] = UNSET
+    r"""Indicates whether the project is currently active or inactive"""
 
     project_type: OptionalNullable[ProjectType] = UNSET
     r"""Type or category of the project"""
@@ -348,6 +355,7 @@ class Project(BaseModel):
             "reference_id",
             "description",
             "status",
+            "active",
             "project_type",
             "priority",
             "completion_percentage",
@@ -390,6 +398,7 @@ class Project(BaseModel):
             "reference_id",
             "description",
             "status",
+            "active",
             "project_type",
             "priority",
             "completion_percentage",
@@ -460,6 +469,8 @@ class ProjectInputTypedDict(TypedDict):
     r"""Detailed description of the project"""
     status: NotRequired[Nullable[ProjectProjectStatus]]
     r"""Current status of the project"""
+    active: NotRequired[Nullable[bool]]
+    r"""Indicates whether the project is currently active or inactive"""
     project_type: NotRequired[Nullable[ProjectType]]
     r"""Type or category of the project"""
     priority: NotRequired[Nullable[Priority]]
@@ -535,6 +546,9 @@ class ProjectInput(BaseModel):
 
     status: OptionalNullable[ProjectProjectStatus] = UNSET
     r"""Current status of the project"""
+
+    active: OptionalNullable[bool] = UNSET
+    r"""Indicates whether the project is currently active or inactive"""
 
     project_type: OptionalNullable[ProjectType] = UNSET
     r"""Type or category of the project"""
@@ -630,6 +644,7 @@ class ProjectInput(BaseModel):
             "reference_id",
             "description",
             "status",
+            "active",
             "project_type",
             "priority",
             "completion_percentage",
@@ -665,6 +680,7 @@ class ProjectInput(BaseModel):
             "reference_id",
             "description",
             "status",
+            "active",
             "project_type",
             "priority",
             "completion_percentage",
