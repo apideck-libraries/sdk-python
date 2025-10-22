@@ -1,4 +1,4 @@
-# ExpensePaymentType
+# Expense3PaymentType
 
 The type of payment for the expense.
 

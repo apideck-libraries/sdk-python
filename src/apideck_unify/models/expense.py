@@ -5,6 +5,12 @@ from .currency import Currency
 from .customfield import CustomField, CustomFieldTypedDict
 from .expenselineitem import ExpenseLineItem, ExpenseLineItemTypedDict
 from .expenselineitem_input import ExpenseLineItemInput, ExpenseLineItemInputTypedDict
+from .linkedbankaccount import LinkedBankAccount, LinkedBankAccountTypedDict
+from .linkedledgeraccount import LinkedLedgerAccount, LinkedLedgerAccountTypedDict
+from .linkedledgeraccount_input import (
+    LinkedLedgerAccountInput,
+    LinkedLedgerAccountInputTypedDict,
+)
 from .linkedtaxrate import LinkedTaxRate, LinkedTaxRateTypedDict
 from .linkedtaxrate_input import LinkedTaxRateInput, LinkedTaxRateInputTypedDict
 from .passthroughbody import PassThroughBody, PassThroughBodyTypedDict
@@ -17,9 +23,508 @@ from apideck_unify.types import (
 )
 from datetime import datetime
 from enum import Enum
+import pydantic
 from pydantic import model_serializer
-from typing import Any, Dict, List, Optional
-from typing_extensions import NotRequired, TypedDict
+from typing import Any, Dict, List, Optional, Union
+from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
+
+
+class Expense3PaymentType(str, Enum):
+    r"""The type of payment for the expense."""
+
+    CASH = "cash"
+    CHECK = "check"
+    CREDIT_CARD = "credit_card"
+    OTHER = "other"
+
+
+class Expense3ExpenseType(str, Enum):
+    r"""The type of expense."""
+
+    EXPENSE = "expense"
+    REFUND = "refund"
+
+
+class Expense3Status(str, Enum):
+    r"""Expense status"""
+
+    DRAFT = "draft"
+    POSTED = "posted"
+
+
+class ThreeTypedDict(TypedDict):
+    transaction_date: Nullable[datetime]
+    r"""The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD"""
+    bank_account: Nullable[LinkedBankAccountTypedDict]
+    line_items: List[ExpenseLineItemTypedDict]
+    r"""Expense line items linked to this expense."""
+    id: NotRequired[str]
+    r"""A unique identifier for an object."""
+    number: NotRequired[Nullable[str]]
+    r"""Number."""
+    account_id: NotRequired[str]
+    r"""The unique identifier for the ledger account that this expense should be credited to. Deprecated, use account instead."""
+    account: NotRequired[Nullable[LinkedLedgerAccountTypedDict]]
+    customer_id: NotRequired[str]
+    r"""The ID of the customer this entity is linked to. Used for expenses that should be marked as billable to customers."""
+    supplier_id: NotRequired[str]
+    r"""The ID of the supplier this entity is linked to."""
+    company_id: NotRequired[Nullable[str]]
+    r"""The company ID the transaction belongs to"""
+    department_id: NotRequired[Nullable[str]]
+    r"""The ID of the department"""
+    payment_type: NotRequired[Nullable[Expense3PaymentType]]
+    r"""The type of payment for the expense."""
+    currency: NotRequired[Nullable[Currency]]
+    r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
+    currency_rate: NotRequired[Nullable[float]]
+    r"""Currency Exchange Rate at the time entity was recorded/generated."""
+    type: NotRequired[Nullable[Expense3ExpenseType]]
+    r"""The type of expense."""
+    memo: NotRequired[Nullable[str]]
+    r"""The memo of the expense."""
+    tax_rate: NotRequired[LinkedTaxRateTypedDict]
+    total_amount: NotRequired[Nullable[float]]
+    r"""The total amount of the expense line item."""
+    reference: NotRequired[Nullable[str]]
+    r"""Optional reference identifier for the transaction."""
+    source_document_url: NotRequired[Nullable[str]]
+    r"""URL link to a source document - shown as 'Go to [appName]' in the downstream app. Currently only supported for Xero."""
+    custom_fields: NotRequired[List[CustomFieldTypedDict]]
+    custom_mappings: NotRequired[Nullable[Dict[str, Any]]]
+    r"""When custom mappings are configured on the resource, the result is included here."""
+    status: NotRequired[Nullable[Expense3Status]]
+    r"""Expense status"""
+    updated_at: NotRequired[Nullable[datetime]]
+    r"""The date and time when the object was last updated."""
+    created_at: NotRequired[Nullable[datetime]]
+    r"""The date and time when the object was created."""
+    row_version: NotRequired[Nullable[str]]
+    r"""A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object."""
+    updated_by: NotRequired[Nullable[str]]
+    r"""The user who last updated the object."""
+    created_by: NotRequired[Nullable[str]]
+    r"""The user who created the object."""
+    pass_through: NotRequired[List[PassThroughBodyTypedDict]]
+    r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
+
+
+class Three(BaseModel):
+    transaction_date: Nullable[datetime]
+    r"""The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD"""
+
+    bank_account: Nullable[LinkedBankAccount]
+
+    line_items: List[ExpenseLineItem]
+    r"""Expense line items linked to this expense."""
+
+    id: Optional[str] = None
+    r"""A unique identifier for an object."""
+
+    number: OptionalNullable[str] = UNSET
+    r"""Number."""
+
+    account_id: Annotated[
+        Optional[str],
+        pydantic.Field(
+            deprecated="warning: ** DEPRECATED ** - This will be removed in a future release, please migrate away from it as soon as possible."
+        ),
+    ] = None
+    r"""The unique identifier for the ledger account that this expense should be credited to. Deprecated, use account instead."""
+
+    account: OptionalNullable[LinkedLedgerAccount] = UNSET
+
+    customer_id: Optional[str] = None
+    r"""The ID of the customer this entity is linked to. Used for expenses that should be marked as billable to customers."""
+
+    supplier_id: Optional[str] = None
+    r"""The ID of the supplier this entity is linked to."""
+
+    company_id: OptionalNullable[str] = UNSET
+    r"""The company ID the transaction belongs to"""
+
+    department_id: OptionalNullable[str] = UNSET
+    r"""The ID of the department"""
+
+    payment_type: OptionalNullable[Expense3PaymentType] = UNSET
+    r"""The type of payment for the expense."""
+
+    currency: OptionalNullable[Currency] = UNSET
+    r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
+
+    currency_rate: OptionalNullable[float] = UNSET
+    r"""Currency Exchange Rate at the time entity was recorded/generated."""
+
+    type: OptionalNullable[Expense3ExpenseType] = UNSET
+    r"""The type of expense."""
+
+    memo: OptionalNullable[str] = UNSET
+    r"""The memo of the expense."""
+
+    tax_rate: Optional[LinkedTaxRate] = None
+
+    total_amount: OptionalNullable[float] = UNSET
+    r"""The total amount of the expense line item."""
+
+    reference: OptionalNullable[str] = UNSET
+    r"""Optional reference identifier for the transaction."""
+
+    source_document_url: OptionalNullable[str] = UNSET
+    r"""URL link to a source document - shown as 'Go to [appName]' in the downstream app. Currently only supported for Xero."""
+
+    custom_fields: Optional[List[CustomField]] = None
+
+    custom_mappings: OptionalNullable[Dict[str, Any]] = UNSET
+    r"""When custom mappings are configured on the resource, the result is included here."""
+
+    status: OptionalNullable[Expense3Status] = UNSET
+    r"""Expense status"""
+
+    updated_at: OptionalNullable[datetime] = UNSET
+    r"""The date and time when the object was last updated."""
+
+    created_at: OptionalNullable[datetime] = UNSET
+    r"""The date and time when the object was created."""
+
+    row_version: OptionalNullable[str] = UNSET
+    r"""A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object."""
+
+    updated_by: OptionalNullable[str] = UNSET
+    r"""The user who last updated the object."""
+
+    created_by: OptionalNullable[str] = UNSET
+    r"""The user who created the object."""
+
+    pass_through: Optional[List[PassThroughBody]] = None
+    r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
+
+    @model_serializer(mode="wrap")
+    def serialize_model(self, handler):
+        optional_fields = [
+            "id",
+            "number",
+            "account_id",
+            "account",
+            "customer_id",
+            "supplier_id",
+            "company_id",
+            "department_id",
+            "payment_type",
+            "currency",
+            "currency_rate",
+            "type",
+            "memo",
+            "tax_rate",
+            "total_amount",
+            "reference",
+            "source_document_url",
+            "custom_fields",
+            "custom_mappings",
+            "status",
+            "updated_at",
+            "created_at",
+            "row_version",
+            "updated_by",
+            "created_by",
+            "pass_through",
+        ]
+        nullable_fields = [
+            "number",
+            "transaction_date",
+            "account",
+            "bank_account",
+            "company_id",
+            "department_id",
+            "payment_type",
+            "currency",
+            "currency_rate",
+            "type",
+            "memo",
+            "total_amount",
+            "reference",
+            "source_document_url",
+            "custom_mappings",
+            "status",
+            "updated_at",
+            "created_at",
+            "row_version",
+            "updated_by",
+            "created_by",
+        ]
+        null_default_fields = []
+
+        serialized = handler(self)
+
+        m = {}
+
+        for n, f in type(self).model_fields.items():
+            k = f.alias or n
+            val = serialized.get(k)
+            serialized.pop(k, None)
+
+            optional_nullable = k in optional_fields and k in nullable_fields
+            is_set = (
+                self.__pydantic_fields_set__.intersection({n})
+                or k in null_default_fields
+            )  # pylint: disable=no-member
+
+            if val is not None and val != UNSET_SENTINEL:
+                m[k] = val
+            elif val != UNSET_SENTINEL and (
+                not k in optional_fields or (optional_nullable and is_set)
+            ):
+                m[k] = val
+
+        return m
+
+
+class Expense2PaymentType(str, Enum):
+    r"""The type of payment for the expense."""
+
+    CASH = "cash"
+    CHECK = "check"
+    CREDIT_CARD = "credit_card"
+    OTHER = "other"
+
+
+class ExpenseExpenseType(str, Enum):
+    r"""The type of expense."""
+
+    EXPENSE = "expense"
+    REFUND = "refund"
+
+
+class Expense2Status(str, Enum):
+    r"""Expense status"""
+
+    DRAFT = "draft"
+    POSTED = "posted"
+
+
+class Expense2TypedDict(TypedDict):
+    transaction_date: Nullable[datetime]
+    r"""The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD"""
+    account: Nullable[LinkedLedgerAccountTypedDict]
+    line_items: List[ExpenseLineItemTypedDict]
+    r"""Expense line items linked to this expense."""
+    id: NotRequired[str]
+    r"""A unique identifier for an object."""
+    number: NotRequired[Nullable[str]]
+    r"""Number."""
+    account_id: NotRequired[str]
+    r"""The unique identifier for the ledger account that this expense should be credited to. Deprecated, use account instead."""
+    bank_account: NotRequired[Nullable[LinkedBankAccountTypedDict]]
+    customer_id: NotRequired[str]
+    r"""The ID of the customer this entity is linked to. Used for expenses that should be marked as billable to customers."""
+    supplier_id: NotRequired[str]
+    r"""The ID of the supplier this entity is linked to."""
+    company_id: NotRequired[Nullable[str]]
+    r"""The company ID the transaction belongs to"""
+    department_id: NotRequired[Nullable[str]]
+    r"""The ID of the department"""
+    payment_type: NotRequired[Nullable[Expense2PaymentType]]
+    r"""The type of payment for the expense."""
+    currency: NotRequired[Nullable[Currency]]
+    r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
+    currency_rate: NotRequired[Nullable[float]]
+    r"""Currency Exchange Rate at the time entity was recorded/generated."""
+    type: NotRequired[Nullable[ExpenseExpenseType]]
+    r"""The type of expense."""
+    memo: NotRequired[Nullable[str]]
+    r"""The memo of the expense."""
+    tax_rate: NotRequired[LinkedTaxRateTypedDict]
+    total_amount: NotRequired[Nullable[float]]
+    r"""The total amount of the expense line item."""
+    reference: NotRequired[Nullable[str]]
+    r"""Optional reference identifier for the transaction."""
+    source_document_url: NotRequired[Nullable[str]]
+    r"""URL link to a source document - shown as 'Go to [appName]' in the downstream app. Currently only supported for Xero."""
+    custom_fields: NotRequired[List[CustomFieldTypedDict]]
+    custom_mappings: NotRequired[Nullable[Dict[str, Any]]]
+    r"""When custom mappings are configured on the resource, the result is included here."""
+    status: NotRequired[Nullable[Expense2Status]]
+    r"""Expense status"""
+    updated_at: NotRequired[Nullable[datetime]]
+    r"""The date and time when the object was last updated."""
+    created_at: NotRequired[Nullable[datetime]]
+    r"""The date and time when the object was created."""
+    row_version: NotRequired[Nullable[str]]
+    r"""A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object."""
+    updated_by: NotRequired[Nullable[str]]
+    r"""The user who last updated the object."""
+    created_by: NotRequired[Nullable[str]]
+    r"""The user who created the object."""
+    pass_through: NotRequired[List[PassThroughBodyTypedDict]]
+    r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
+
+
+class Expense2(BaseModel):
+    transaction_date: Nullable[datetime]
+    r"""The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD"""
+
+    account: Nullable[LinkedLedgerAccount]
+
+    line_items: List[ExpenseLineItem]
+    r"""Expense line items linked to this expense."""
+
+    id: Optional[str] = None
+    r"""A unique identifier for an object."""
+
+    number: OptionalNullable[str] = UNSET
+    r"""Number."""
+
+    account_id: Annotated[
+        Optional[str],
+        pydantic.Field(
+            deprecated="warning: ** DEPRECATED ** - This will be removed in a future release, please migrate away from it as soon as possible."
+        ),
+    ] = None
+    r"""The unique identifier for the ledger account that this expense should be credited to. Deprecated, use account instead."""
+
+    bank_account: OptionalNullable[LinkedBankAccount] = UNSET
+
+    customer_id: Optional[str] = None
+    r"""The ID of the customer this entity is linked to. Used for expenses that should be marked as billable to customers."""
+
+    supplier_id: Optional[str] = None
+    r"""The ID of the supplier this entity is linked to."""
+
+    company_id: OptionalNullable[str] = UNSET
+    r"""The company ID the transaction belongs to"""
+
+    department_id: OptionalNullable[str] = UNSET
+    r"""The ID of the department"""
+
+    payment_type: OptionalNullable[Expense2PaymentType] = UNSET
+    r"""The type of payment for the expense."""
+
+    currency: OptionalNullable[Currency] = UNSET
+    r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
+
+    currency_rate: OptionalNullable[float] = UNSET
+    r"""Currency Exchange Rate at the time entity was recorded/generated."""
+
+    type: OptionalNullable[ExpenseExpenseType] = UNSET
+    r"""The type of expense."""
+
+    memo: OptionalNullable[str] = UNSET
+    r"""The memo of the expense."""
+
+    tax_rate: Optional[LinkedTaxRate] = None
+
+    total_amount: OptionalNullable[float] = UNSET
+    r"""The total amount of the expense line item."""
+
+    reference: OptionalNullable[str] = UNSET
+    r"""Optional reference identifier for the transaction."""
+
+    source_document_url: OptionalNullable[str] = UNSET
+    r"""URL link to a source document - shown as 'Go to [appName]' in the downstream app. Currently only supported for Xero."""
+
+    custom_fields: Optional[List[CustomField]] = None
+
+    custom_mappings: OptionalNullable[Dict[str, Any]] = UNSET
+    r"""When custom mappings are configured on the resource, the result is included here."""
+
+    status: OptionalNullable[Expense2Status] = UNSET
+    r"""Expense status"""
+
+    updated_at: OptionalNullable[datetime] = UNSET
+    r"""The date and time when the object was last updated."""
+
+    created_at: OptionalNullable[datetime] = UNSET
+    r"""The date and time when the object was created."""
+
+    row_version: OptionalNullable[str] = UNSET
+    r"""A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object."""
+
+    updated_by: OptionalNullable[str] = UNSET
+    r"""The user who last updated the object."""
+
+    created_by: OptionalNullable[str] = UNSET
+    r"""The user who created the object."""
+
+    pass_through: Optional[List[PassThroughBody]] = None
+    r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
+
+    @model_serializer(mode="wrap")
+    def serialize_model(self, handler):
+        optional_fields = [
+            "id",
+            "number",
+            "account_id",
+            "bank_account",
+            "customer_id",
+            "supplier_id",
+            "company_id",
+            "department_id",
+            "payment_type",
+            "currency",
+            "currency_rate",
+            "type",
+            "memo",
+            "tax_rate",
+            "total_amount",
+            "reference",
+            "source_document_url",
+            "custom_fields",
+            "custom_mappings",
+            "status",
+            "updated_at",
+            "created_at",
+            "row_version",
+            "updated_by",
+            "created_by",
+            "pass_through",
+        ]
+        nullable_fields = [
+            "number",
+            "transaction_date",
+            "account",
+            "bank_account",
+            "company_id",
+            "department_id",
+            "payment_type",
+            "currency",
+            "currency_rate",
+            "type",
+            "memo",
+            "total_amount",
+            "reference",
+            "source_document_url",
+            "custom_mappings",
+            "status",
+            "updated_at",
+            "created_at",
+            "row_version",
+            "updated_by",
+            "created_by",
+        ]
+        null_default_fields = []
+
+        serialized = handler(self)
+
+        m = {}
+
+        for n, f in type(self).model_fields.items():
+            k = f.alias or n
+            val = serialized.get(k)
+            serialized.pop(k, None)
+
+            optional_nullable = k in optional_fields and k in nullable_fields
+            is_set = (
+                self.__pydantic_fields_set__.intersection({n})
+                or k in null_default_fields
+            )  # pylint: disable=no-member
+
+            if val is not None and val != UNSET_SENTINEL:
+                m[k] = val
+            elif val != UNSET_SENTINEL and (
+                not k in optional_fields or (optional_nullable and is_set)
+            ):
+                m[k] = val
+
+        return m
 
 
 class ExpensePaymentType(str, Enum):
@@ -28,6 +533,7 @@ class ExpensePaymentType(str, Enum):
     CASH = "cash"
     CHECK = "check"
     CREDIT_CARD = "credit_card"
+    OTHER = "other"
 
 
 class ExpenseType(str, Enum):
@@ -44,17 +550,19 @@ class ExpenseStatus(str, Enum):
     POSTED = "posted"
 
 
-class ExpenseTypedDict(TypedDict):
+class Expense1TypedDict(TypedDict):
     transaction_date: Nullable[datetime]
     r"""The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD"""
     account_id: str
-    r"""The unique identifier for the ledger account that this expense should be credited to."""
+    r"""The unique identifier for the ledger account that this expense should be credited to. Deprecated, use account instead."""
     line_items: List[ExpenseLineItemTypedDict]
     r"""Expense line items linked to this expense."""
     id: NotRequired[str]
     r"""A unique identifier for an object."""
     number: NotRequired[Nullable[str]]
     r"""Number."""
+    account: NotRequired[Nullable[LinkedLedgerAccountTypedDict]]
+    bank_account: NotRequired[Nullable[LinkedBankAccountTypedDict]]
     customer_id: NotRequired[str]
     r"""The ID of the customer this entity is linked to. Used for expenses that should be marked as billable to customers."""
     supplier_id: NotRequired[str]
@@ -99,12 +607,17 @@ class ExpenseTypedDict(TypedDict):
     r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
 
 
-class Expense(BaseModel):
+class Expense1(BaseModel):
     transaction_date: Nullable[datetime]
     r"""The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD"""
 
-    account_id: str
-    r"""The unique identifier for the ledger account that this expense should be credited to."""
+    account_id: Annotated[
+        str,
+        pydantic.Field(
+            deprecated="warning: ** DEPRECATED ** - This will be removed in a future release, please migrate away from it as soon as possible."
+        ),
+    ]
+    r"""The unique identifier for the ledger account that this expense should be credited to. Deprecated, use account instead."""
 
     line_items: List[ExpenseLineItem]
     r"""Expense line items linked to this expense."""
@@ -114,6 +627,10 @@ class Expense(BaseModel):
 
     number: OptionalNullable[str] = UNSET
     r"""Number."""
+
+    account: OptionalNullable[LinkedLedgerAccount] = UNSET
+
+    bank_account: OptionalNullable[LinkedBankAccount] = UNSET
 
     customer_id: Optional[str] = None
     r"""The ID of the customer this entity is linked to. Used for expenses that should be marked as billable to customers."""
@@ -184,6 +701,8 @@ class Expense(BaseModel):
         optional_fields = [
             "id",
             "number",
+            "account",
+            "bank_account",
             "customer_id",
             "supplier_id",
             "company_id",
@@ -210,6 +729,8 @@ class Expense(BaseModel):
         nullable_fields = [
             "number",
             "transaction_date",
+            "account",
+            "bank_account",
             "company_id",
             "department_id",
             "payment_type",
@@ -255,15 +776,395 @@ class Expense(BaseModel):
         return m
 
 
-class ExpenseInputTypedDict(TypedDict):
+ExpenseTypedDict = TypeAliasType(
+    "ExpenseTypedDict", Union[Expense1TypedDict, Expense2TypedDict, ThreeTypedDict]
+)
+
+
+Expense = TypeAliasType("Expense", Union[Expense1, Expense2, Three])
+
+
+class Expense3TypedDict(TypedDict):
     transaction_date: Nullable[datetime]
     r"""The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD"""
-    account_id: str
-    r"""The unique identifier for the ledger account that this expense should be credited to."""
+    bank_account: Nullable[LinkedBankAccountTypedDict]
     line_items: List[ExpenseLineItemInputTypedDict]
     r"""Expense line items linked to this expense."""
     number: NotRequired[Nullable[str]]
     r"""Number."""
+    account_id: NotRequired[str]
+    r"""The unique identifier for the ledger account that this expense should be credited to. Deprecated, use account instead."""
+    account: NotRequired[Nullable[LinkedLedgerAccountInputTypedDict]]
+    customer_id: NotRequired[str]
+    r"""The ID of the customer this entity is linked to. Used for expenses that should be marked as billable to customers."""
+    supplier_id: NotRequired[str]
+    r"""The ID of the supplier this entity is linked to."""
+    company_id: NotRequired[Nullable[str]]
+    r"""The company ID the transaction belongs to"""
+    department_id: NotRequired[Nullable[str]]
+    r"""The ID of the department"""
+    payment_type: NotRequired[Nullable[Expense3PaymentType]]
+    r"""The type of payment for the expense."""
+    currency: NotRequired[Nullable[Currency]]
+    r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
+    currency_rate: NotRequired[Nullable[float]]
+    r"""Currency Exchange Rate at the time entity was recorded/generated."""
+    type: NotRequired[Nullable[Expense3ExpenseType]]
+    r"""The type of expense."""
+    memo: NotRequired[Nullable[str]]
+    r"""The memo of the expense."""
+    tax_rate: NotRequired[LinkedTaxRateInputTypedDict]
+    total_amount: NotRequired[Nullable[float]]
+    r"""The total amount of the expense line item."""
+    reference: NotRequired[Nullable[str]]
+    r"""Optional reference identifier for the transaction."""
+    source_document_url: NotRequired[Nullable[str]]
+    r"""URL link to a source document - shown as 'Go to [appName]' in the downstream app. Currently only supported for Xero."""
+    custom_fields: NotRequired[List[CustomFieldTypedDict]]
+    status: NotRequired[Nullable[Expense3Status]]
+    r"""Expense status"""
+    row_version: NotRequired[Nullable[str]]
+    r"""A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object."""
+    pass_through: NotRequired[List[PassThroughBodyTypedDict]]
+    r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
+
+
+class Expense3(BaseModel):
+    transaction_date: Nullable[datetime]
+    r"""The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD"""
+
+    bank_account: Nullable[LinkedBankAccount]
+
+    line_items: List[ExpenseLineItemInput]
+    r"""Expense line items linked to this expense."""
+
+    number: OptionalNullable[str] = UNSET
+    r"""Number."""
+
+    account_id: Annotated[
+        Optional[str],
+        pydantic.Field(
+            deprecated="warning: ** DEPRECATED ** - This will be removed in a future release, please migrate away from it as soon as possible."
+        ),
+    ] = None
+    r"""The unique identifier for the ledger account that this expense should be credited to. Deprecated, use account instead."""
+
+    account: OptionalNullable[LinkedLedgerAccountInput] = UNSET
+
+    customer_id: Optional[str] = None
+    r"""The ID of the customer this entity is linked to. Used for expenses that should be marked as billable to customers."""
+
+    supplier_id: Optional[str] = None
+    r"""The ID of the supplier this entity is linked to."""
+
+    company_id: OptionalNullable[str] = UNSET
+    r"""The company ID the transaction belongs to"""
+
+    department_id: OptionalNullable[str] = UNSET
+    r"""The ID of the department"""
+
+    payment_type: OptionalNullable[Expense3PaymentType] = UNSET
+    r"""The type of payment for the expense."""
+
+    currency: OptionalNullable[Currency] = UNSET
+    r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
+
+    currency_rate: OptionalNullable[float] = UNSET
+    r"""Currency Exchange Rate at the time entity was recorded/generated."""
+
+    type: OptionalNullable[Expense3ExpenseType] = UNSET
+    r"""The type of expense."""
+
+    memo: OptionalNullable[str] = UNSET
+    r"""The memo of the expense."""
+
+    tax_rate: Optional[LinkedTaxRateInput] = None
+
+    total_amount: OptionalNullable[float] = UNSET
+    r"""The total amount of the expense line item."""
+
+    reference: OptionalNullable[str] = UNSET
+    r"""Optional reference identifier for the transaction."""
+
+    source_document_url: OptionalNullable[str] = UNSET
+    r"""URL link to a source document - shown as 'Go to [appName]' in the downstream app. Currently only supported for Xero."""
+
+    custom_fields: Optional[List[CustomField]] = None
+
+    status: OptionalNullable[Expense3Status] = UNSET
+    r"""Expense status"""
+
+    row_version: OptionalNullable[str] = UNSET
+    r"""A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object."""
+
+    pass_through: Optional[List[PassThroughBody]] = None
+    r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
+
+    @model_serializer(mode="wrap")
+    def serialize_model(self, handler):
+        optional_fields = [
+            "number",
+            "account_id",
+            "account",
+            "customer_id",
+            "supplier_id",
+            "company_id",
+            "department_id",
+            "payment_type",
+            "currency",
+            "currency_rate",
+            "type",
+            "memo",
+            "tax_rate",
+            "total_amount",
+            "reference",
+            "source_document_url",
+            "custom_fields",
+            "status",
+            "row_version",
+            "pass_through",
+        ]
+        nullable_fields = [
+            "number",
+            "transaction_date",
+            "account",
+            "bank_account",
+            "company_id",
+            "department_id",
+            "payment_type",
+            "currency",
+            "currency_rate",
+            "type",
+            "memo",
+            "total_amount",
+            "reference",
+            "source_document_url",
+            "status",
+            "row_version",
+        ]
+        null_default_fields = []
+
+        serialized = handler(self)
+
+        m = {}
+
+        for n, f in type(self).model_fields.items():
+            k = f.alias or n
+            val = serialized.get(k)
+            serialized.pop(k, None)
+
+            optional_nullable = k in optional_fields and k in nullable_fields
+            is_set = (
+                self.__pydantic_fields_set__.intersection({n})
+                or k in null_default_fields
+            )  # pylint: disable=no-member
+
+            if val is not None and val != UNSET_SENTINEL:
+                m[k] = val
+            elif val != UNSET_SENTINEL and (
+                not k in optional_fields or (optional_nullable and is_set)
+            ):
+                m[k] = val
+
+        return m
+
+
+class Expense2InputTypedDict(TypedDict):
+    transaction_date: Nullable[datetime]
+    r"""The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD"""
+    account: Nullable[LinkedLedgerAccountInputTypedDict]
+    line_items: List[ExpenseLineItemInputTypedDict]
+    r"""Expense line items linked to this expense."""
+    number: NotRequired[Nullable[str]]
+    r"""Number."""
+    account_id: NotRequired[str]
+    r"""The unique identifier for the ledger account that this expense should be credited to. Deprecated, use account instead."""
+    bank_account: NotRequired[Nullable[LinkedBankAccountTypedDict]]
+    customer_id: NotRequired[str]
+    r"""The ID of the customer this entity is linked to. Used for expenses that should be marked as billable to customers."""
+    supplier_id: NotRequired[str]
+    r"""The ID of the supplier this entity is linked to."""
+    company_id: NotRequired[Nullable[str]]
+    r"""The company ID the transaction belongs to"""
+    department_id: NotRequired[Nullable[str]]
+    r"""The ID of the department"""
+    payment_type: NotRequired[Nullable[Expense2PaymentType]]
+    r"""The type of payment for the expense."""
+    currency: NotRequired[Nullable[Currency]]
+    r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
+    currency_rate: NotRequired[Nullable[float]]
+    r"""Currency Exchange Rate at the time entity was recorded/generated."""
+    type: NotRequired[Nullable[ExpenseExpenseType]]
+    r"""The type of expense."""
+    memo: NotRequired[Nullable[str]]
+    r"""The memo of the expense."""
+    tax_rate: NotRequired[LinkedTaxRateInputTypedDict]
+    total_amount: NotRequired[Nullable[float]]
+    r"""The total amount of the expense line item."""
+    reference: NotRequired[Nullable[str]]
+    r"""Optional reference identifier for the transaction."""
+    source_document_url: NotRequired[Nullable[str]]
+    r"""URL link to a source document - shown as 'Go to [appName]' in the downstream app. Currently only supported for Xero."""
+    custom_fields: NotRequired[List[CustomFieldTypedDict]]
+    status: NotRequired[Nullable[Expense2Status]]
+    r"""Expense status"""
+    row_version: NotRequired[Nullable[str]]
+    r"""A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object."""
+    pass_through: NotRequired[List[PassThroughBodyTypedDict]]
+    r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
+
+
+class Expense2Input(BaseModel):
+    transaction_date: Nullable[datetime]
+    r"""The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD"""
+
+    account: Nullable[LinkedLedgerAccountInput]
+
+    line_items: List[ExpenseLineItemInput]
+    r"""Expense line items linked to this expense."""
+
+    number: OptionalNullable[str] = UNSET
+    r"""Number."""
+
+    account_id: Annotated[
+        Optional[str],
+        pydantic.Field(
+            deprecated="warning: ** DEPRECATED ** - This will be removed in a future release, please migrate away from it as soon as possible."
+        ),
+    ] = None
+    r"""The unique identifier for the ledger account that this expense should be credited to. Deprecated, use account instead."""
+
+    bank_account: OptionalNullable[LinkedBankAccount] = UNSET
+
+    customer_id: Optional[str] = None
+    r"""The ID of the customer this entity is linked to. Used for expenses that should be marked as billable to customers."""
+
+    supplier_id: Optional[str] = None
+    r"""The ID of the supplier this entity is linked to."""
+
+    company_id: OptionalNullable[str] = UNSET
+    r"""The company ID the transaction belongs to"""
+
+    department_id: OptionalNullable[str] = UNSET
+    r"""The ID of the department"""
+
+    payment_type: OptionalNullable[Expense2PaymentType] = UNSET
+    r"""The type of payment for the expense."""
+
+    currency: OptionalNullable[Currency] = UNSET
+    r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
+
+    currency_rate: OptionalNullable[float] = UNSET
+    r"""Currency Exchange Rate at the time entity was recorded/generated."""
+
+    type: OptionalNullable[ExpenseExpenseType] = UNSET
+    r"""The type of expense."""
+
+    memo: OptionalNullable[str] = UNSET
+    r"""The memo of the expense."""
+
+    tax_rate: Optional[LinkedTaxRateInput] = None
+
+    total_amount: OptionalNullable[float] = UNSET
+    r"""The total amount of the expense line item."""
+
+    reference: OptionalNullable[str] = UNSET
+    r"""Optional reference identifier for the transaction."""
+
+    source_document_url: OptionalNullable[str] = UNSET
+    r"""URL link to a source document - shown as 'Go to [appName]' in the downstream app. Currently only supported for Xero."""
+
+    custom_fields: Optional[List[CustomField]] = None
+
+    status: OptionalNullable[Expense2Status] = UNSET
+    r"""Expense status"""
+
+    row_version: OptionalNullable[str] = UNSET
+    r"""A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object."""
+
+    pass_through: Optional[List[PassThroughBody]] = None
+    r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
+
+    @model_serializer(mode="wrap")
+    def serialize_model(self, handler):
+        optional_fields = [
+            "number",
+            "account_id",
+            "bank_account",
+            "customer_id",
+            "supplier_id",
+            "company_id",
+            "department_id",
+            "payment_type",
+            "currency",
+            "currency_rate",
+            "type",
+            "memo",
+            "tax_rate",
+            "total_amount",
+            "reference",
+            "source_document_url",
+            "custom_fields",
+            "status",
+            "row_version",
+            "pass_through",
+        ]
+        nullable_fields = [
+            "number",
+            "transaction_date",
+            "account",
+            "bank_account",
+            "company_id",
+            "department_id",
+            "payment_type",
+            "currency",
+            "currency_rate",
+            "type",
+            "memo",
+            "total_amount",
+            "reference",
+            "source_document_url",
+            "status",
+            "row_version",
+        ]
+        null_default_fields = []
+
+        serialized = handler(self)
+
+        m = {}
+
+        for n, f in type(self).model_fields.items():
+            k = f.alias or n
+            val = serialized.get(k)
+            serialized.pop(k, None)
+
+            optional_nullable = k in optional_fields and k in nullable_fields
+            is_set = (
+                self.__pydantic_fields_set__.intersection({n})
+                or k in null_default_fields
+            )  # pylint: disable=no-member
+
+            if val is not None and val != UNSET_SENTINEL:
+                m[k] = val
+            elif val != UNSET_SENTINEL and (
+                not k in optional_fields or (optional_nullable and is_set)
+            ):
+                m[k] = val
+
+        return m
+
+
+class Expense1InputTypedDict(TypedDict):
+    transaction_date: Nullable[datetime]
+    r"""The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD"""
+    account_id: str
+    r"""The unique identifier for the ledger account that this expense should be credited to. Deprecated, use account instead."""
+    line_items: List[ExpenseLineItemInputTypedDict]
+    r"""Expense line items linked to this expense."""
+    number: NotRequired[Nullable[str]]
+    r"""Number."""
+    account: NotRequired[Nullable[LinkedLedgerAccountInputTypedDict]]
+    bank_account: NotRequired[Nullable[LinkedBankAccountTypedDict]]
     customer_id: NotRequired[str]
     r"""The ID of the customer this entity is linked to. Used for expenses that should be marked as billable to customers."""
     supplier_id: NotRequired[str]
@@ -298,18 +1199,27 @@ class ExpenseInputTypedDict(TypedDict):
     r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
 
 
-class ExpenseInput(BaseModel):
+class Expense1Input(BaseModel):
     transaction_date: Nullable[datetime]
     r"""The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD"""
 
-    account_id: str
-    r"""The unique identifier for the ledger account that this expense should be credited to."""
+    account_id: Annotated[
+        str,
+        pydantic.Field(
+            deprecated="warning: ** DEPRECATED ** - This will be removed in a future release, please migrate away from it as soon as possible."
+        ),
+    ]
+    r"""The unique identifier for the ledger account that this expense should be credited to. Deprecated, use account instead."""
 
     line_items: List[ExpenseLineItemInput]
     r"""Expense line items linked to this expense."""
 
     number: OptionalNullable[str] = UNSET
     r"""Number."""
+
+    account: OptionalNullable[LinkedLedgerAccountInput] = UNSET
+
+    bank_account: OptionalNullable[LinkedBankAccount] = UNSET
 
     customer_id: Optional[str] = None
     r"""The ID of the customer this entity is linked to. Used for expenses that should be marked as billable to customers."""
@@ -364,6 +1274,8 @@ class ExpenseInput(BaseModel):
     def serialize_model(self, handler):
         optional_fields = [
             "number",
+            "account",
+            "bank_account",
             "customer_id",
             "supplier_id",
             "company_id",
@@ -385,6 +1297,8 @@ class ExpenseInput(BaseModel):
         nullable_fields = [
             "number",
             "transaction_date",
+            "account",
+            "bank_account",
             "company_id",
             "department_id",
             "payment_type",
@@ -423,3 +1337,14 @@ class ExpenseInput(BaseModel):
                 m[k] = val
 
         return m
+
+
+ExpenseInputTypedDict = TypeAliasType(
+    "ExpenseInputTypedDict",
+    Union[Expense1InputTypedDict, Expense2InputTypedDict, Expense3TypedDict],
+)
+
+
+ExpenseInput = TypeAliasType(
+    "ExpenseInput", Union[Expense1Input, Expense2Input, Expense3]
+)

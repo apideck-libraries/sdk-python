@@ -20,12 +20,20 @@ class ExpensesFilterStatus(str, Enum):
     OTHER = "other"
 
 
+class ExpensesFilterType(str, Enum):
+    EXPENSE = "expense"
+    REFUND = "refund"
+
+
 class ExpensesFilterTypedDict(TypedDict):
     updated_since: NotRequired[datetime]
     status: NotRequired[ExpensesFilterStatus]
+    type: NotRequired[ExpensesFilterType]
 
 
 class ExpensesFilter(BaseModel):
     updated_since: Annotated[Optional[datetime], FieldMetadata(query=True)] = None
 
     status: Annotated[Optional[ExpensesFilterStatus], FieldMetadata(query=True)] = None
+
+    type: Annotated[Optional[ExpensesFilterType], FieldMetadata(query=True)] = None

@@ -397,9 +397,15 @@ class BankAccounts(BaseSDK):
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         display_id: OptionalNullable[str] = UNSET,
-        name: Optional[str] = None,
+        name: OptionalNullable[str] = UNSET,
         account_number: OptionalNullable[str] = UNSET,
         account_type: Optional[models.AccountingBankAccountAccountType] = None,
+        ledger_account: OptionalNullable[
+            Union[
+                models.LinkedLedgerAccountInput,
+                models.LinkedLedgerAccountInputTypedDict,
+            ]
+        ] = UNSET,
         bank_name: OptionalNullable[str] = UNSET,
         currency: OptionalNullable[models.Currency] = UNSET,
         balance: OptionalNullable[float] = UNSET,
@@ -431,9 +437,10 @@ class BankAccounts(BaseSDK):
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param display_id: Display ID for the bank account
-        :param name: The name of the bank account as it appears in the accounting system
+        :param name: The name of the bank account
         :param account_number: The bank account number
         :param account_type: The type of bank account
+        :param ledger_account:
         :param bank_name: The name of the bank or financial institution
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
         :param balance: The current balance of the bank account
@@ -474,6 +481,9 @@ class BankAccounts(BaseSDK):
                 name=name,
                 account_number=account_number,
                 account_type=account_type,
+                ledger_account=utils.get_pydantic_model(
+                    ledger_account, OptionalNullable[models.LinkedLedgerAccountInput]
+                ),
                 bank_name=bank_name,
                 currency=currency,
                 balance=balance,
@@ -605,9 +615,15 @@ class BankAccounts(BaseSDK):
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         display_id: OptionalNullable[str] = UNSET,
-        name: Optional[str] = None,
+        name: OptionalNullable[str] = UNSET,
         account_number: OptionalNullable[str] = UNSET,
         account_type: Optional[models.AccountingBankAccountAccountType] = None,
+        ledger_account: OptionalNullable[
+            Union[
+                models.LinkedLedgerAccountInput,
+                models.LinkedLedgerAccountInputTypedDict,
+            ]
+        ] = UNSET,
         bank_name: OptionalNullable[str] = UNSET,
         currency: OptionalNullable[models.Currency] = UNSET,
         balance: OptionalNullable[float] = UNSET,
@@ -639,9 +655,10 @@ class BankAccounts(BaseSDK):
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param display_id: Display ID for the bank account
-        :param name: The name of the bank account as it appears in the accounting system
+        :param name: The name of the bank account
         :param account_number: The bank account number
         :param account_type: The type of bank account
+        :param ledger_account:
         :param bank_name: The name of the bank or financial institution
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
         :param balance: The current balance of the bank account
@@ -682,6 +699,9 @@ class BankAccounts(BaseSDK):
                 name=name,
                 account_number=account_number,
                 account_type=account_type,
+                ledger_account=utils.get_pydantic_model(
+                    ledger_account, OptionalNullable[models.LinkedLedgerAccountInput]
+                ),
                 bank_name=bank_name,
                 currency=currency,
                 balance=balance,
@@ -1102,9 +1122,15 @@ class BankAccounts(BaseSDK):
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
         display_id: OptionalNullable[str] = UNSET,
-        name: Optional[str] = None,
+        name: OptionalNullable[str] = UNSET,
         account_number: OptionalNullable[str] = UNSET,
         account_type: Optional[models.AccountingBankAccountAccountType] = None,
+        ledger_account: OptionalNullable[
+            Union[
+                models.LinkedLedgerAccountInput,
+                models.LinkedLedgerAccountInputTypedDict,
+            ]
+        ] = UNSET,
         bank_name: OptionalNullable[str] = UNSET,
         currency: OptionalNullable[models.Currency] = UNSET,
         balance: OptionalNullable[float] = UNSET,
@@ -1137,9 +1163,10 @@ class BankAccounts(BaseSDK):
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param display_id: Display ID for the bank account
-        :param name: The name of the bank account as it appears in the accounting system
+        :param name: The name of the bank account
         :param account_number: The bank account number
         :param account_type: The type of bank account
+        :param ledger_account:
         :param bank_name: The name of the bank or financial institution
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
         :param balance: The current balance of the bank account
@@ -1181,6 +1208,9 @@ class BankAccounts(BaseSDK):
                 name=name,
                 account_number=account_number,
                 account_type=account_type,
+                ledger_account=utils.get_pydantic_model(
+                    ledger_account, OptionalNullable[models.LinkedLedgerAccountInput]
+                ),
                 bank_name=bank_name,
                 currency=currency,
                 balance=balance,
@@ -1313,9 +1343,15 @@ class BankAccounts(BaseSDK):
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
         display_id: OptionalNullable[str] = UNSET,
-        name: Optional[str] = None,
+        name: OptionalNullable[str] = UNSET,
         account_number: OptionalNullable[str] = UNSET,
         account_type: Optional[models.AccountingBankAccountAccountType] = None,
+        ledger_account: OptionalNullable[
+            Union[
+                models.LinkedLedgerAccountInput,
+                models.LinkedLedgerAccountInputTypedDict,
+            ]
+        ] = UNSET,
         bank_name: OptionalNullable[str] = UNSET,
         currency: OptionalNullable[models.Currency] = UNSET,
         balance: OptionalNullable[float] = UNSET,
@@ -1348,9 +1384,10 @@ class BankAccounts(BaseSDK):
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param display_id: Display ID for the bank account
-        :param name: The name of the bank account as it appears in the accounting system
+        :param name: The name of the bank account
         :param account_number: The bank account number
         :param account_type: The type of bank account
+        :param ledger_account:
         :param bank_name: The name of the bank or financial institution
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
         :param balance: The current balance of the bank account
@@ -1392,6 +1429,9 @@ class BankAccounts(BaseSDK):
                 name=name,
                 account_number=account_number,
                 account_type=account_type,
+                ledger_account=utils.get_pydantic_model(
+                    ledger_account, OptionalNullable[models.LinkedLedgerAccountInput]
+                ),
                 bank_name=bank_name,
                 currency=currency,
                 balance=balance,

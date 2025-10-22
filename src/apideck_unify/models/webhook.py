@@ -19,11 +19,12 @@ from typing_extensions import NotRequired, TypedDict
 
 
 class DisabledReason(str, Enum):
-    r"""Indicates if the webhook has has been disabled as it reached its retry limit or if account is over the usage allocated by it's plan."""
+    r"""Indicates why the webhook has been disabled. `retry_limit`: webhook reached its retry limit. `usage_limit`: account is over its usage limit. `delivery_url_validation_failed`: delivery URL failed validation during webhook creation or update."""
 
     NONE = "none"
     RETRY_LIMIT = "retry_limit"
     USAGE_LIMIT = "usage_limit"
+    DELIVERY_URL_VALIDATION_FAILED = "delivery_url_validation_failed"
 
 
 class WebhookTypedDict(TypedDict):
@@ -41,7 +42,7 @@ class WebhookTypedDict(TypedDict):
     description: NotRequired[Nullable[str]]
     r"""A description of the object."""
     disabled_reason: NotRequired[DisabledReason]
-    r"""Indicates if the webhook has has been disabled as it reached its retry limit or if account is over the usage allocated by it's plan."""
+    r"""Indicates why the webhook has been disabled. `retry_limit`: webhook reached its retry limit. `usage_limit`: account is over its usage limit. `delivery_url_validation_failed`: delivery URL failed validation during webhook creation or update."""
     updated_at: NotRequired[Nullable[datetime]]
     r"""The date and time when the object was last updated."""
     created_at: NotRequired[Nullable[datetime]]
@@ -70,7 +71,7 @@ class Webhook(BaseModel):
     r"""A description of the object."""
 
     disabled_reason: Optional[DisabledReason] = None
-    r"""Indicates if the webhook has has been disabled as it reached its retry limit or if account is over the usage allocated by it's plan."""
+    r"""Indicates why the webhook has been disabled. `retry_limit`: webhook reached its retry limit. `usage_limit`: account is over its usage limit. `delivery_url_validation_failed`: delivery URL failed validation during webhook creation or update."""
 
     updated_at: OptionalNullable[datetime] = UNSET
     r"""The date and time when the object was last updated."""

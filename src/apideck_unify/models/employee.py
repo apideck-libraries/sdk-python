@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 from .address import Address, AddressTypedDict
-from .bankaccount import BankAccount, BankAccountTypedDict
+from .bankaccount2 import BankAccount2, BankAccount2TypedDict
 from .customfield import CustomField, CustomFieldTypedDict
 from .email import Email, EmailTypedDict
 from .employeecompensation import (
@@ -331,7 +331,7 @@ class EmployeeTypedDict(TypedDict):
     emails: NotRequired[List[EmailTypedDict]]
     custom_fields: NotRequired[List[CustomFieldTypedDict]]
     social_links: NotRequired[List[SocialLinkTypedDict]]
-    bank_accounts: NotRequired[List[BankAccountTypedDict]]
+    bank_accounts: NotRequired[List[BankAccount2TypedDict]]
     tax_code: NotRequired[Nullable[str]]
     tax_id: NotRequired[Nullable[str]]
     dietary_preference: NotRequired[Nullable[str]]
@@ -507,7 +507,7 @@ class Employee(BaseModel):
 
     social_links: Optional[List[SocialLink]] = None
 
-    bank_accounts: Optional[List[BankAccount]] = None
+    bank_accounts: Optional[List[BankAccount2]] = None
 
     tax_code: OptionalNullable[str] = UNSET
 
@@ -791,7 +791,7 @@ class EmployeeInputTypedDict(TypedDict):
     emails: NotRequired[List[EmailTypedDict]]
     custom_fields: NotRequired[List[CustomFieldTypedDict]]
     social_links: NotRequired[List[SocialLinkTypedDict]]
-    bank_accounts: NotRequired[List[BankAccountTypedDict]]
+    bank_accounts: NotRequired[List[BankAccount2TypedDict]]
     tax_code: NotRequired[Nullable[str]]
     tax_id: NotRequired[Nullable[str]]
     dietary_preference: NotRequired[Nullable[str]]
@@ -954,7 +954,7 @@ class EmployeeInput(BaseModel):
 
     social_links: Optional[List[SocialLink]] = None
 
-    bank_accounts: Optional[List[BankAccount]] = None
+    bank_accounts: Optional[List[BankAccount2]] = None
 
     tax_code: OptionalNullable[str] = UNSET
 

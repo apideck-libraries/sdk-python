@@ -464,7 +464,7 @@ class Employees(BaseSDK):
             Union[List[models.SocialLink], List[models.SocialLinkTypedDict]]
         ] = None,
         bank_accounts: Optional[
-            Union[List[models.BankAccount], List[models.BankAccountTypedDict]]
+            Union[List[models.BankAccount2], List[models.BankAccount2TypedDict]]
         ] = None,
         tax_code: OptionalNullable[str] = UNSET,
         tax_id: OptionalNullable[str] = UNSET,
@@ -641,7 +641,7 @@ class Employees(BaseSDK):
                     social_links, Optional[List[models.SocialLink]]
                 ),
                 bank_accounts=utils.get_pydantic_model(
-                    bank_accounts, Optional[List[models.BankAccount]]
+                    bank_accounts, Optional[List[models.BankAccount2]]
                 ),
                 tax_code=tax_code,
                 tax_id=tax_id,
@@ -836,7 +836,7 @@ class Employees(BaseSDK):
             Union[List[models.SocialLink], List[models.SocialLinkTypedDict]]
         ] = None,
         bank_accounts: Optional[
-            Union[List[models.BankAccount], List[models.BankAccountTypedDict]]
+            Union[List[models.BankAccount2], List[models.BankAccount2TypedDict]]
         ] = None,
         tax_code: OptionalNullable[str] = UNSET,
         tax_id: OptionalNullable[str] = UNSET,
@@ -1013,7 +1013,7 @@ class Employees(BaseSDK):
                     social_links, Optional[List[models.SocialLink]]
                 ),
                 bank_accounts=utils.get_pydantic_model(
-                    bank_accounts, Optional[List[models.BankAccount]]
+                    bank_accounts, Optional[List[models.BankAccount2]]
                 ),
                 tax_code=tax_code,
                 tax_id=tax_id,
@@ -1517,7 +1517,7 @@ class Employees(BaseSDK):
             Union[List[models.SocialLink], List[models.SocialLinkTypedDict]]
         ] = None,
         bank_accounts: Optional[
-            Union[List[models.BankAccount], List[models.BankAccountTypedDict]]
+            Union[List[models.BankAccount2], List[models.BankAccount2TypedDict]]
         ] = None,
         tax_code: OptionalNullable[str] = UNSET,
         tax_id: OptionalNullable[str] = UNSET,
@@ -1696,7 +1696,7 @@ class Employees(BaseSDK):
                     social_links, Optional[List[models.SocialLink]]
                 ),
                 bank_accounts=utils.get_pydantic_model(
-                    bank_accounts, Optional[List[models.BankAccount]]
+                    bank_accounts, Optional[List[models.BankAccount2]]
                 ),
                 tax_code=tax_code,
                 tax_id=tax_id,
@@ -1892,7 +1892,7 @@ class Employees(BaseSDK):
             Union[List[models.SocialLink], List[models.SocialLinkTypedDict]]
         ] = None,
         bank_accounts: Optional[
-            Union[List[models.BankAccount], List[models.BankAccountTypedDict]]
+            Union[List[models.BankAccount2], List[models.BankAccount2TypedDict]]
         ] = None,
         tax_code: OptionalNullable[str] = UNSET,
         tax_id: OptionalNullable[str] = UNSET,
@@ -2071,7 +2071,7 @@ class Employees(BaseSDK):
                     social_links, Optional[List[models.SocialLink]]
                 ),
                 bank_accounts=utils.get_pydantic_model(
-                    bank_accounts, Optional[List[models.BankAccount]]
+                    bank_accounts, Optional[List[models.BankAccount2]]
                 ),
                 tax_code=tax_code,
                 tax_id=tax_id,

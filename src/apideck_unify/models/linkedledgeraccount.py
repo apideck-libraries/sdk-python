@@ -22,6 +22,10 @@ class LinkedLedgerAccountTypedDict(TypedDict):
     r"""The nominal code of the account."""
     code: NotRequired[Nullable[str]]
     r"""The code assigned to the account."""
+    parent_id: NotRequired[Nullable[str]]
+    r"""The parent ID of the account."""
+    display_id: NotRequired[Nullable[str]]
+    r"""The display ID of the account."""
 
 
 class LinkedLedgerAccount(BaseModel):
@@ -37,10 +41,23 @@ class LinkedLedgerAccount(BaseModel):
     code: OptionalNullable[str] = UNSET
     r"""The code assigned to the account."""
 
+    parent_id: OptionalNullable[str] = UNSET
+    r"""The parent ID of the account."""
+
+    display_id: OptionalNullable[str] = UNSET
+    r"""The display ID of the account."""
+
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
-        optional_fields = ["id", "name", "nominal_code", "code"]
-        nullable_fields = ["name", "nominal_code", "code"]
+        optional_fields = [
+            "id",
+            "name",
+            "nominal_code",
+            "code",
+            "parent_id",
+            "display_id",
+        ]
+        nullable_fields = ["name", "nominal_code", "code", "parent_id", "display_id"]
         null_default_fields = []
 
         serialized = handler(self)
