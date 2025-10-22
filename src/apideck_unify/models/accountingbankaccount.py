@@ -3,6 +3,11 @@
 from __future__ import annotations
 from .currency import Currency
 from .customfield import CustomField, CustomFieldTypedDict
+from .linkedledgeraccount import LinkedLedgerAccount, LinkedLedgerAccountTypedDict
+from .linkedledgeraccount_input import (
+    LinkedLedgerAccountInput,
+    LinkedLedgerAccountInputTypedDict,
+)
 from apideck_unify.types import (
     BaseModel,
     Nullable,
@@ -26,6 +31,7 @@ class AccountingBankAccountAccountType(str, Enum):
     MONEY_MARKET = "money_market"
     LINE_OF_CREDIT = "line_of_credit"
     OTHER = "other"
+    CASH = "cash"
 
 
 class AccountingBankAccountStatus(str, Enum):
@@ -41,12 +47,13 @@ class AccountingBankAccountTypedDict(TypedDict):
     r"""A unique identifier for an object."""
     display_id: NotRequired[Nullable[str]]
     r"""Display ID for the bank account"""
-    name: NotRequired[str]
-    r"""The name of the bank account as it appears in the accounting system"""
+    name: NotRequired[Nullable[str]]
+    r"""The name of the bank account"""
     account_number: NotRequired[Nullable[str]]
     r"""The bank account number"""
     account_type: NotRequired[AccountingBankAccountAccountType]
     r"""The type of bank account"""
+    ledger_account: NotRequired[Nullable[LinkedLedgerAccountTypedDict]]
     bank_name: NotRequired[Nullable[str]]
     r"""The name of the bank or financial institution"""
     currency: NotRequired[Nullable[Currency]]
@@ -95,14 +102,16 @@ class AccountingBankAccount(BaseModel):
     display_id: OptionalNullable[str] = UNSET
     r"""Display ID for the bank account"""
 
-    name: Optional[str] = None
-    r"""The name of the bank account as it appears in the accounting system"""
+    name: OptionalNullable[str] = UNSET
+    r"""The name of the bank account"""
 
     account_number: OptionalNullable[str] = UNSET
     r"""The bank account number"""
 
     account_type: Optional[AccountingBankAccountAccountType] = None
     r"""The type of bank account"""
+
+    ledger_account: OptionalNullable[LinkedLedgerAccount] = UNSET
 
     bank_name: OptionalNullable[str] = UNSET
     r"""The name of the bank or financial institution"""
@@ -170,6 +179,7 @@ class AccountingBankAccount(BaseModel):
             "name",
             "account_number",
             "account_type",
+            "ledger_account",
             "bank_name",
             "currency",
             "balance",
@@ -193,7 +203,9 @@ class AccountingBankAccount(BaseModel):
         ]
         nullable_fields = [
             "display_id",
+            "name",
             "account_number",
+            "ledger_account",
             "bank_name",
             "currency",
             "balance",
@@ -244,12 +256,13 @@ class AccountingBankAccount(BaseModel):
 class AccountingBankAccountInputTypedDict(TypedDict):
     display_id: NotRequired[Nullable[str]]
     r"""Display ID for the bank account"""
-    name: NotRequired[str]
-    r"""The name of the bank account as it appears in the accounting system"""
+    name: NotRequired[Nullable[str]]
+    r"""The name of the bank account"""
     account_number: NotRequired[Nullable[str]]
     r"""The bank account number"""
     account_type: NotRequired[AccountingBankAccountAccountType]
     r"""The type of bank account"""
+    ledger_account: NotRequired[Nullable[LinkedLedgerAccountInputTypedDict]]
     bank_name: NotRequired[Nullable[str]]
     r"""The name of the bank or financial institution"""
     currency: NotRequired[Nullable[Currency]]
@@ -285,14 +298,16 @@ class AccountingBankAccountInput(BaseModel):
     display_id: OptionalNullable[str] = UNSET
     r"""Display ID for the bank account"""
 
-    name: Optional[str] = None
-    r"""The name of the bank account as it appears in the accounting system"""
+    name: OptionalNullable[str] = UNSET
+    r"""The name of the bank account"""
 
     account_number: OptionalNullable[str] = UNSET
     r"""The bank account number"""
 
     account_type: Optional[AccountingBankAccountAccountType] = None
     r"""The type of bank account"""
+
+    ledger_account: OptionalNullable[LinkedLedgerAccountInput] = UNSET
 
     bank_name: OptionalNullable[str] = UNSET
     r"""The name of the bank or financial institution"""
@@ -345,6 +360,7 @@ class AccountingBankAccountInput(BaseModel):
             "name",
             "account_number",
             "account_type",
+            "ledger_account",
             "bank_name",
             "currency",
             "balance",
@@ -363,7 +379,9 @@ class AccountingBankAccountInput(BaseModel):
         ]
         nullable_fields = [
             "display_id",
+            "name",
             "account_number",
+            "ledger_account",
             "bank_name",
             "currency",
             "balance",

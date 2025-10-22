@@ -20,6 +20,7 @@ from .linkedtrackingcategory import (
     LinkedTrackingCategory,
     LinkedTrackingCategoryTypedDict,
 )
+from .linkedworktag import LinkedWorktag, LinkedWorktagTypedDict
 from apideck_unify.types import (
     BaseModel,
     Nullable,
@@ -71,6 +72,8 @@ class JournalEntryLineItemTypedDict(TypedDict):
     r"""The ID of the location"""
     line_number: NotRequired[Nullable[int]]
     r"""Line number of the resource"""
+    worktags: NotRequired[List[Nullable[LinkedWorktagTypedDict]]]
+    r"""Worktags of the line item. This is currently only supported in Workday."""
 
 
 class JournalEntryLineItem(BaseModel):
@@ -123,6 +126,9 @@ class JournalEntryLineItem(BaseModel):
     line_number: OptionalNullable[int] = UNSET
     r"""Line number of the resource"""
 
+    worktags: Optional[List[Nullable[LinkedWorktag]]] = None
+    r"""Worktags of the line item. This is currently only supported in Workday."""
+
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
         optional_fields = [
@@ -139,6 +145,7 @@ class JournalEntryLineItem(BaseModel):
             "department_id",
             "location_id",
             "line_number",
+            "worktags",
         ]
         nullable_fields = [
             "description",
@@ -209,6 +216,8 @@ class JournalEntryLineItemInputTypedDict(TypedDict):
     r"""The ID of the location"""
     line_number: NotRequired[Nullable[int]]
     r"""Line number of the resource"""
+    worktags: NotRequired[List[Nullable[LinkedWorktagTypedDict]]]
+    r"""Worktags of the line item. This is currently only supported in Workday."""
 
 
 class JournalEntryLineItemInput(BaseModel):
@@ -258,6 +267,9 @@ class JournalEntryLineItemInput(BaseModel):
     line_number: OptionalNullable[int] = UNSET
     r"""Line number of the resource"""
 
+    worktags: Optional[List[Nullable[LinkedWorktag]]] = None
+    r"""Worktags of the line item. This is currently only supported in Workday."""
+
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
         optional_fields = [
@@ -273,6 +285,7 @@ class JournalEntryLineItemInput(BaseModel):
             "department_id",
             "location_id",
             "line_number",
+            "worktags",
         ]
         nullable_fields = [
             "description",

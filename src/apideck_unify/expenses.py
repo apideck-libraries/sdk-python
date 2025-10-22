@@ -3,10 +3,9 @@
 from .basesdk import BaseSDK
 from apideck_unify import models, utils
 from apideck_unify._hooks import HookContext
-from apideck_unify.types import Nullable, OptionalNullable, UNSET
+from apideck_unify.types import OptionalNullable, UNSET
 from apideck_unify.utils import get_security_from_env
 from apideck_unify.utils.unmarshal_json_response import unmarshal_json_response
-from datetime import datetime
 from jsonpath import JSONPath
 from typing import Any, Dict, List, Mapping, Optional, Union
 
@@ -361,40 +360,11 @@ class Expenses(BaseSDK):
     def create(
         self,
         *,
-        transaction_date: Nullable[datetime],
-        account_id: str,
-        line_items: Union[
-            List[models.ExpenseLineItemInput],
-            List[models.ExpenseLineItemInputTypedDict],
-        ],
+        expense: Union[models.ExpenseInput, models.ExpenseInputTypedDict],
         raw: Optional[bool] = False,
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
-        number: OptionalNullable[str] = UNSET,
-        customer_id: Optional[str] = None,
-        supplier_id: Optional[str] = None,
-        company_id: OptionalNullable[str] = UNSET,
-        department_id: OptionalNullable[str] = UNSET,
-        payment_type: OptionalNullable[models.ExpensePaymentType] = UNSET,
-        currency: OptionalNullable[models.Currency] = UNSET,
-        currency_rate: OptionalNullable[float] = UNSET,
-        type_: OptionalNullable[models.ExpenseType] = UNSET,
-        memo: OptionalNullable[str] = UNSET,
-        tax_rate: Optional[
-            Union[models.LinkedTaxRateInput, models.LinkedTaxRateInputTypedDict]
-        ] = None,
-        total_amount: OptionalNullable[float] = UNSET,
-        reference: OptionalNullable[str] = UNSET,
-        source_document_url: OptionalNullable[str] = UNSET,
-        custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
-        ] = None,
-        status: OptionalNullable[models.ExpenseStatus] = UNSET,
-        row_version: OptionalNullable[str] = UNSET,
-        pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
-        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -404,31 +374,11 @@ class Expenses(BaseSDK):
 
         Create Expense
 
-        :param transaction_date: The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD
-        :param account_id: The unique identifier for the ledger account that this expense should be credited to.
-        :param line_items: Expense line items linked to this expense.
+        :param expense:
         :param raw: Include raw response. Mostly used for debugging purposes
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
-        :param number: Number.
-        :param customer_id: The ID of the customer this entity is linked to. Used for expenses that should be marked as billable to customers.
-        :param supplier_id: The ID of the supplier this entity is linked to.
-        :param company_id: The company ID the transaction belongs to
-        :param department_id: The ID of the department
-        :param payment_type: The type of payment for the expense.
-        :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
-        :param currency_rate: Currency Exchange Rate at the time entity was recorded/generated.
-        :param type: The type of expense.
-        :param memo: The memo of the expense.
-        :param tax_rate:
-        :param total_amount: The total amount of the expense line item.
-        :param reference: Optional reference identifier for the transaction.
-        :param source_document_url: URL link to a source document - shown as 'Go to [appName]' in the downstream app. Currently only supported for Xero.
-        :param custom_fields:
-        :param status: Expense status
-        :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
-        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -449,37 +399,7 @@ class Expenses(BaseSDK):
             consumer_id=consumer_id,
             app_id=app_id,
             service_id=service_id,
-            expense=models.ExpenseInput(
-                number=number,
-                transaction_date=transaction_date,
-                account_id=account_id,
-                customer_id=customer_id,
-                supplier_id=supplier_id,
-                company_id=company_id,
-                department_id=department_id,
-                payment_type=payment_type,
-                currency=currency,
-                currency_rate=currency_rate,
-                type=type_,
-                memo=memo,
-                tax_rate=utils.get_pydantic_model(
-                    tax_rate, Optional[models.LinkedTaxRateInput]
-                ),
-                total_amount=total_amount,
-                line_items=utils.get_pydantic_model(
-                    line_items, List[models.ExpenseLineItemInput]
-                ),
-                reference=reference,
-                source_document_url=source_document_url,
-                custom_fields=utils.get_pydantic_model(
-                    custom_fields, Optional[List[models.CustomField]]
-                ),
-                status=status,
-                row_version=row_version,
-                pass_through=utils.get_pydantic_model(
-                    pass_through, Optional[List[models.PassThroughBody]]
-                ),
-            ),
+            expense=utils.get_pydantic_model(expense, models.ExpenseInput),
         )
 
         req = self._build_request(
@@ -584,40 +504,11 @@ class Expenses(BaseSDK):
     async def create_async(
         self,
         *,
-        transaction_date: Nullable[datetime],
-        account_id: str,
-        line_items: Union[
-            List[models.ExpenseLineItemInput],
-            List[models.ExpenseLineItemInputTypedDict],
-        ],
+        expense: Union[models.ExpenseInput, models.ExpenseInputTypedDict],
         raw: Optional[bool] = False,
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
-        number: OptionalNullable[str] = UNSET,
-        customer_id: Optional[str] = None,
-        supplier_id: Optional[str] = None,
-        company_id: OptionalNullable[str] = UNSET,
-        department_id: OptionalNullable[str] = UNSET,
-        payment_type: OptionalNullable[models.ExpensePaymentType] = UNSET,
-        currency: OptionalNullable[models.Currency] = UNSET,
-        currency_rate: OptionalNullable[float] = UNSET,
-        type_: OptionalNullable[models.ExpenseType] = UNSET,
-        memo: OptionalNullable[str] = UNSET,
-        tax_rate: Optional[
-            Union[models.LinkedTaxRateInput, models.LinkedTaxRateInputTypedDict]
-        ] = None,
-        total_amount: OptionalNullable[float] = UNSET,
-        reference: OptionalNullable[str] = UNSET,
-        source_document_url: OptionalNullable[str] = UNSET,
-        custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
-        ] = None,
-        status: OptionalNullable[models.ExpenseStatus] = UNSET,
-        row_version: OptionalNullable[str] = UNSET,
-        pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
-        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -627,31 +518,11 @@ class Expenses(BaseSDK):
 
         Create Expense
 
-        :param transaction_date: The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD
-        :param account_id: The unique identifier for the ledger account that this expense should be credited to.
-        :param line_items: Expense line items linked to this expense.
+        :param expense:
         :param raw: Include raw response. Mostly used for debugging purposes
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
-        :param number: Number.
-        :param customer_id: The ID of the customer this entity is linked to. Used for expenses that should be marked as billable to customers.
-        :param supplier_id: The ID of the supplier this entity is linked to.
-        :param company_id: The company ID the transaction belongs to
-        :param department_id: The ID of the department
-        :param payment_type: The type of payment for the expense.
-        :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
-        :param currency_rate: Currency Exchange Rate at the time entity was recorded/generated.
-        :param type: The type of expense.
-        :param memo: The memo of the expense.
-        :param tax_rate:
-        :param total_amount: The total amount of the expense line item.
-        :param reference: Optional reference identifier for the transaction.
-        :param source_document_url: URL link to a source document - shown as 'Go to [appName]' in the downstream app. Currently only supported for Xero.
-        :param custom_fields:
-        :param status: Expense status
-        :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
-        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -672,37 +543,7 @@ class Expenses(BaseSDK):
             consumer_id=consumer_id,
             app_id=app_id,
             service_id=service_id,
-            expense=models.ExpenseInput(
-                number=number,
-                transaction_date=transaction_date,
-                account_id=account_id,
-                customer_id=customer_id,
-                supplier_id=supplier_id,
-                company_id=company_id,
-                department_id=department_id,
-                payment_type=payment_type,
-                currency=currency,
-                currency_rate=currency_rate,
-                type=type_,
-                memo=memo,
-                tax_rate=utils.get_pydantic_model(
-                    tax_rate, Optional[models.LinkedTaxRateInput]
-                ),
-                total_amount=total_amount,
-                line_items=utils.get_pydantic_model(
-                    line_items, List[models.ExpenseLineItemInput]
-                ),
-                reference=reference,
-                source_document_url=source_document_url,
-                custom_fields=utils.get_pydantic_model(
-                    custom_fields, Optional[List[models.CustomField]]
-                ),
-                status=status,
-                row_version=row_version,
-                pass_through=utils.get_pydantic_model(
-                    pass_through, Optional[List[models.PassThroughBody]]
-                ),
-            ),
+            expense=utils.get_pydantic_model(expense, models.ExpenseInput),
         )
 
         req = self._build_request_async(
@@ -1090,40 +931,11 @@ class Expenses(BaseSDK):
         self,
         *,
         id: str,
-        transaction_date: Nullable[datetime],
-        account_id: str,
-        line_items: Union[
-            List[models.ExpenseLineItemInput],
-            List[models.ExpenseLineItemInputTypedDict],
-        ],
+        expense: Union[models.ExpenseInput, models.ExpenseInputTypedDict],
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
-        number: OptionalNullable[str] = UNSET,
-        customer_id: Optional[str] = None,
-        supplier_id: Optional[str] = None,
-        company_id: OptionalNullable[str] = UNSET,
-        department_id: OptionalNullable[str] = UNSET,
-        payment_type: OptionalNullable[models.ExpensePaymentType] = UNSET,
-        currency: OptionalNullable[models.Currency] = UNSET,
-        currency_rate: OptionalNullable[float] = UNSET,
-        type_: OptionalNullable[models.ExpenseType] = UNSET,
-        memo: OptionalNullable[str] = UNSET,
-        tax_rate: Optional[
-            Union[models.LinkedTaxRateInput, models.LinkedTaxRateInputTypedDict]
-        ] = None,
-        total_amount: OptionalNullable[float] = UNSET,
-        reference: OptionalNullable[str] = UNSET,
-        source_document_url: OptionalNullable[str] = UNSET,
-        custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
-        ] = None,
-        status: OptionalNullable[models.ExpenseStatus] = UNSET,
-        row_version: OptionalNullable[str] = UNSET,
-        pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
-        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -1134,31 +946,11 @@ class Expenses(BaseSDK):
         Update Expense
 
         :param id: ID of the record you are acting upon.
-        :param transaction_date: The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD
-        :param account_id: The unique identifier for the ledger account that this expense should be credited to.
-        :param line_items: Expense line items linked to this expense.
+        :param expense:
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
-        :param number: Number.
-        :param customer_id: The ID of the customer this entity is linked to. Used for expenses that should be marked as billable to customers.
-        :param supplier_id: The ID of the supplier this entity is linked to.
-        :param company_id: The company ID the transaction belongs to
-        :param department_id: The ID of the department
-        :param payment_type: The type of payment for the expense.
-        :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
-        :param currency_rate: Currency Exchange Rate at the time entity was recorded/generated.
-        :param type: The type of expense.
-        :param memo: The memo of the expense.
-        :param tax_rate:
-        :param total_amount: The total amount of the expense line item.
-        :param reference: Optional reference identifier for the transaction.
-        :param source_document_url: URL link to a source document - shown as 'Go to [appName]' in the downstream app. Currently only supported for Xero.
-        :param custom_fields:
-        :param status: Expense status
-        :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
-        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -1180,37 +972,7 @@ class Expenses(BaseSDK):
             app_id=app_id,
             service_id=service_id,
             raw=raw,
-            expense=models.ExpenseInput(
-                number=number,
-                transaction_date=transaction_date,
-                account_id=account_id,
-                customer_id=customer_id,
-                supplier_id=supplier_id,
-                company_id=company_id,
-                department_id=department_id,
-                payment_type=payment_type,
-                currency=currency,
-                currency_rate=currency_rate,
-                type=type_,
-                memo=memo,
-                tax_rate=utils.get_pydantic_model(
-                    tax_rate, Optional[models.LinkedTaxRateInput]
-                ),
-                total_amount=total_amount,
-                line_items=utils.get_pydantic_model(
-                    line_items, List[models.ExpenseLineItemInput]
-                ),
-                reference=reference,
-                source_document_url=source_document_url,
-                custom_fields=utils.get_pydantic_model(
-                    custom_fields, Optional[List[models.CustomField]]
-                ),
-                status=status,
-                row_version=row_version,
-                pass_through=utils.get_pydantic_model(
-                    pass_through, Optional[List[models.PassThroughBody]]
-                ),
-            ),
+            expense=utils.get_pydantic_model(expense, models.ExpenseInput),
         )
 
         req = self._build_request(
@@ -1316,40 +1078,11 @@ class Expenses(BaseSDK):
         self,
         *,
         id: str,
-        transaction_date: Nullable[datetime],
-        account_id: str,
-        line_items: Union[
-            List[models.ExpenseLineItemInput],
-            List[models.ExpenseLineItemInputTypedDict],
-        ],
+        expense: Union[models.ExpenseInput, models.ExpenseInputTypedDict],
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
-        number: OptionalNullable[str] = UNSET,
-        customer_id: Optional[str] = None,
-        supplier_id: Optional[str] = None,
-        company_id: OptionalNullable[str] = UNSET,
-        department_id: OptionalNullable[str] = UNSET,
-        payment_type: OptionalNullable[models.ExpensePaymentType] = UNSET,
-        currency: OptionalNullable[models.Currency] = UNSET,
-        currency_rate: OptionalNullable[float] = UNSET,
-        type_: OptionalNullable[models.ExpenseType] = UNSET,
-        memo: OptionalNullable[str] = UNSET,
-        tax_rate: Optional[
-            Union[models.LinkedTaxRateInput, models.LinkedTaxRateInputTypedDict]
-        ] = None,
-        total_amount: OptionalNullable[float] = UNSET,
-        reference: OptionalNullable[str] = UNSET,
-        source_document_url: OptionalNullable[str] = UNSET,
-        custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
-        ] = None,
-        status: OptionalNullable[models.ExpenseStatus] = UNSET,
-        row_version: OptionalNullable[str] = UNSET,
-        pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
-        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -1360,31 +1093,11 @@ class Expenses(BaseSDK):
         Update Expense
 
         :param id: ID of the record you are acting upon.
-        :param transaction_date: The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD
-        :param account_id: The unique identifier for the ledger account that this expense should be credited to.
-        :param line_items: Expense line items linked to this expense.
+        :param expense:
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
-        :param number: Number.
-        :param customer_id: The ID of the customer this entity is linked to. Used for expenses that should be marked as billable to customers.
-        :param supplier_id: The ID of the supplier this entity is linked to.
-        :param company_id: The company ID the transaction belongs to
-        :param department_id: The ID of the department
-        :param payment_type: The type of payment for the expense.
-        :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
-        :param currency_rate: Currency Exchange Rate at the time entity was recorded/generated.
-        :param type: The type of expense.
-        :param memo: The memo of the expense.
-        :param tax_rate:
-        :param total_amount: The total amount of the expense line item.
-        :param reference: Optional reference identifier for the transaction.
-        :param source_document_url: URL link to a source document - shown as 'Go to [appName]' in the downstream app. Currently only supported for Xero.
-        :param custom_fields:
-        :param status: Expense status
-        :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
-        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -1406,37 +1119,7 @@ class Expenses(BaseSDK):
             app_id=app_id,
             service_id=service_id,
             raw=raw,
-            expense=models.ExpenseInput(
-                number=number,
-                transaction_date=transaction_date,
-                account_id=account_id,
-                customer_id=customer_id,
-                supplier_id=supplier_id,
-                company_id=company_id,
-                department_id=department_id,
-                payment_type=payment_type,
-                currency=currency,
-                currency_rate=currency_rate,
-                type=type_,
-                memo=memo,
-                tax_rate=utils.get_pydantic_model(
-                    tax_rate, Optional[models.LinkedTaxRateInput]
-                ),
-                total_amount=total_amount,
-                line_items=utils.get_pydantic_model(
-                    line_items, List[models.ExpenseLineItemInput]
-                ),
-                reference=reference,
-                source_document_url=source_document_url,
-                custom_fields=utils.get_pydantic_model(
-                    custom_fields, Optional[List[models.CustomField]]
-                ),
-                status=status,
-                row_version=row_version,
-                pass_through=utils.get_pydantic_model(
-                    pass_through, Optional[List[models.PassThroughBody]]
-                ),
-            ),
+            expense=utils.get_pydantic_model(expense, models.ExpenseInput),
         )
 
         req = self._build_request_async(

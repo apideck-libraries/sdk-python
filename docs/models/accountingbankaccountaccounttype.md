@@ -13,3 +13,4 @@ The type of bank account
 | `MONEY_MARKET`   | money_market     |
 | `LINE_OF_CREDIT` | line_of_credit   |
 | `OTHER`          | other            |
+| `CASH`           | cash             |

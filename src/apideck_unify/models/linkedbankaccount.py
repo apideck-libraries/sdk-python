@@ -13,39 +13,34 @@ from typing import Optional
 from typing_extensions import NotRequired, TypedDict
 
 
-class LinkedLedgerAccountInputTypedDict(TypedDict):
+class LinkedBankAccountTypedDict(TypedDict):
     id: NotRequired[str]
-    r"""The unique identifier for the account."""
-    nominal_code: NotRequired[Nullable[str]]
-    r"""The nominal code of the account."""
-    code: NotRequired[Nullable[str]]
-    r"""The code assigned to the account."""
-    parent_id: NotRequired[Nullable[str]]
-    r"""The parent ID of the account."""
-    display_id: NotRequired[Nullable[str]]
-    r"""The display ID of the account."""
+    r"""The unique identifier for the bank account."""
+    name: NotRequired[Nullable[str]]
+    r"""The name of the bank account"""
+    account_number: NotRequired[Nullable[str]]
+    r"""The bank account number"""
+    bank_name: NotRequired[Nullable[str]]
+    r"""The name of the bank or financial institution"""
 
 
-class LinkedLedgerAccountInput(BaseModel):
+class LinkedBankAccount(BaseModel):
     id: Optional[str] = None
-    r"""The unique identifier for the account."""
+    r"""The unique identifier for the bank account."""
 
-    nominal_code: OptionalNullable[str] = UNSET
-    r"""The nominal code of the account."""
+    name: OptionalNullable[str] = UNSET
+    r"""The name of the bank account"""
 
-    code: OptionalNullable[str] = UNSET
-    r"""The code assigned to the account."""
+    account_number: OptionalNullable[str] = UNSET
+    r"""The bank account number"""
 
-    parent_id: OptionalNullable[str] = UNSET
-    r"""The parent ID of the account."""
-
-    display_id: OptionalNullable[str] = UNSET
-    r"""The display ID of the account."""
+    bank_name: OptionalNullable[str] = UNSET
+    r"""The name of the bank or financial institution"""
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
-        optional_fields = ["id", "nominal_code", "code", "parent_id", "display_id"]
-        nullable_fields = ["nominal_code", "code", "parent_id", "display_id"]
+        optional_fields = ["id", "name", "account_number", "bank_name"]
+        nullable_fields = ["name", "account_number", "bank_name"]
         null_default_fields = []
 
         serialized = handler(self)

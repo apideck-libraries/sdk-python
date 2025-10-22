@@ -24,25 +24,25 @@ class BankAccount1AccountType(str, Enum):
 
 class BankAccount1TypedDict(TypedDict):
     bank_name: NotRequired[Nullable[str]]
-    r"""The name of the bank"""
+    r"""The name of the bank or financial institution"""
     account_number: NotRequired[Nullable[str]]
-    r"""A bank account number is a number that is tied to your bank account. If you have several bank accounts, such as personal, joint, business (and so on), each account will have a different account number."""
+    r"""The bank account number"""
     account_name: NotRequired[Nullable[str]]
-    r"""The name which you used in opening your bank account."""
+    r"""The name of the bank account"""
     account_type: NotRequired[Nullable[BankAccount1AccountType]]
     r"""The type of bank account."""
     iban: NotRequired[Nullable[str]]
-    r"""The International Bank Account Number (IBAN)."""
+    r"""International Bank Account Number"""
     bic: NotRequired[Nullable[str]]
-    r"""The Bank Identifier Code (BIC)."""
+    r"""Bank Identifier Code / SWIFT Code"""
     routing_number: NotRequired[Nullable[str]]
-    r"""A routing number is a nine-digit code used to identify a financial institution in the United States."""
+    r"""Bank routing number (US)"""
     bsb_number: NotRequired[Nullable[str]]
-    r"""A BSB is a 6 digit numeric code used for identifying the branch of an Australian or New Zealand bank or financial institution."""
+    r"""Bank State Branch number (Australia/New Zealand)"""
     branch_identifier: NotRequired[Nullable[str]]
-    r"""A branch identifier is a unique identifier for a branch of a bank or financial institution."""
+    r"""Bank branch identifier"""
     bank_code: NotRequired[Nullable[str]]
-    r"""A bank code is a code assigned by a central bank, a bank supervisory body or a Bankers Association in a country to all its licensed member banks or financial institutions."""
+    r"""Bank code assigned by central bank"""
     currency: NotRequired[Nullable[Currency]]
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
     country: NotRequired[Nullable[str]]
@@ -51,34 +51,34 @@ class BankAccount1TypedDict(TypedDict):
 
 class BankAccount1(BaseModel):
     bank_name: OptionalNullable[str] = UNSET
-    r"""The name of the bank"""
+    r"""The name of the bank or financial institution"""
 
     account_number: OptionalNullable[str] = UNSET
-    r"""A bank account number is a number that is tied to your bank account. If you have several bank accounts, such as personal, joint, business (and so on), each account will have a different account number."""
+    r"""The bank account number"""
 
     account_name: OptionalNullable[str] = UNSET
-    r"""The name which you used in opening your bank account."""
+    r"""The name of the bank account"""
 
     account_type: OptionalNullable[BankAccount1AccountType] = UNSET
     r"""The type of bank account."""
 
     iban: OptionalNullable[str] = UNSET
-    r"""The International Bank Account Number (IBAN)."""
+    r"""International Bank Account Number"""
 
     bic: OptionalNullable[str] = UNSET
-    r"""The Bank Identifier Code (BIC)."""
+    r"""Bank Identifier Code / SWIFT Code"""
 
     routing_number: OptionalNullable[str] = UNSET
-    r"""A routing number is a nine-digit code used to identify a financial institution in the United States."""
+    r"""Bank routing number (US)"""
 
     bsb_number: OptionalNullable[str] = UNSET
-    r"""A BSB is a 6 digit numeric code used for identifying the branch of an Australian or New Zealand bank or financial institution."""
+    r"""Bank State Branch number (Australia/New Zealand)"""
 
     branch_identifier: OptionalNullable[str] = UNSET
-    r"""A branch identifier is a unique identifier for a branch of a bank or financial institution."""
+    r"""Bank branch identifier"""
 
     bank_code: OptionalNullable[str] = UNSET
-    r"""A bank code is a code assigned by a central bank, a bank supervisory body or a Bankers Association in a country to all its licensed member banks or financial institutions."""
+    r"""Bank code assigned by central bank"""
 
     currency: OptionalNullable[Currency] = UNSET
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""

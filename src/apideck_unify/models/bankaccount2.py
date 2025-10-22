@@ -14,7 +14,7 @@ from pydantic import model_serializer
 from typing_extensions import NotRequired, TypedDict
 
 
-class AccountType(str, Enum):
+class BankAccount2AccountType(str, Enum):
     r"""The type of bank account."""
 
     BANK_ACCOUNT = "bank_account"
@@ -22,14 +22,14 @@ class AccountType(str, Enum):
     OTHER = "other"
 
 
-class BankAccountTypedDict(TypedDict):
+class BankAccount2TypedDict(TypedDict):
     bank_name: NotRequired[Nullable[str]]
     r"""The name of the bank or financial institution"""
     account_number: NotRequired[Nullable[str]]
     r"""The bank account number"""
     account_name: NotRequired[Nullable[str]]
     r"""The name of the bank account"""
-    account_type: NotRequired[Nullable[AccountType]]
+    account_type: NotRequired[Nullable[BankAccount2AccountType]]
     r"""The type of bank account."""
     iban: NotRequired[Nullable[str]]
     r"""International Bank Account Number"""
@@ -49,7 +49,7 @@ class BankAccountTypedDict(TypedDict):
     r"""Country code according to ISO 3166-1 alpha-2."""
 
 
-class BankAccount(BaseModel):
+class BankAccount2(BaseModel):
     bank_name: OptionalNullable[str] = UNSET
     r"""The name of the bank or financial institution"""
 
@@ -59,7 +59,7 @@ class BankAccount(BaseModel):
     account_name: OptionalNullable[str] = UNSET
     r"""The name of the bank account"""
 
-    account_type: OptionalNullable[AccountType] = UNSET
+    account_type: OptionalNullable[BankAccount2AccountType] = UNSET
     r"""The type of bank account."""
 
     iban: OptionalNullable[str] = UNSET
