@@ -64,6 +64,7 @@ class InvoiceStatus(str, Enum):
     VOID = "void"
     CREDIT = "credit"
     DELETED = "deleted"
+    POSTED = "posted"
 
 
 class PaymentAllocationsTypedDict(TypedDict):
