@@ -48,6 +48,7 @@ class BillStatus(str, Enum):
     VOID = "void"
     CREDIT = "credit"
     DELETED = "deleted"
+    POSTED = "posted"
 
 
 class AmortizationType(str, Enum):
