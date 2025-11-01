@@ -389,6 +389,7 @@ class PurchaseOrders(BaseSDK):
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
+        display_id: OptionalNullable[str] = UNSET,
         po_number: OptionalNullable[str] = UNSET,
         reference: OptionalNullable[str] = UNSET,
         supplier: OptionalNullable[
@@ -470,6 +471,7 @@ class PurchaseOrders(BaseSDK):
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param display_id: Display ID of the purchase order
         :param po_number: A PO Number uniquely identifies a purchase order and is generally defined by the buyer.
         :param reference: Optional purchase order reference.
         :param supplier: The supplier this entity is linked to.
@@ -530,6 +532,7 @@ class PurchaseOrders(BaseSDK):
             app_id=app_id,
             service_id=service_id,
             purchase_order=models.PurchaseOrderInput(
+                display_id=display_id,
                 po_number=po_number,
                 reference=reference,
                 supplier=utils.get_pydantic_model(
@@ -697,6 +700,7 @@ class PurchaseOrders(BaseSDK):
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
+        display_id: OptionalNullable[str] = UNSET,
         po_number: OptionalNullable[str] = UNSET,
         reference: OptionalNullable[str] = UNSET,
         supplier: OptionalNullable[
@@ -778,6 +782,7 @@ class PurchaseOrders(BaseSDK):
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param display_id: Display ID of the purchase order
         :param po_number: A PO Number uniquely identifies a purchase order and is generally defined by the buyer.
         :param reference: Optional purchase order reference.
         :param supplier: The supplier this entity is linked to.
@@ -838,6 +843,7 @@ class PurchaseOrders(BaseSDK):
             app_id=app_id,
             service_id=service_id,
             purchase_order=models.PurchaseOrderInput(
+                display_id=display_id,
                 po_number=po_number,
                 reference=reference,
                 supplier=utils.get_pydantic_model(
@@ -1288,6 +1294,7 @@ class PurchaseOrders(BaseSDK):
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
+        display_id: OptionalNullable[str] = UNSET,
         po_number: OptionalNullable[str] = UNSET,
         reference: OptionalNullable[str] = UNSET,
         supplier: OptionalNullable[
@@ -1370,6 +1377,7 @@ class PurchaseOrders(BaseSDK):
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param display_id: Display ID of the purchase order
         :param po_number: A PO Number uniquely identifies a purchase order and is generally defined by the buyer.
         :param reference: Optional purchase order reference.
         :param supplier: The supplier this entity is linked to.
@@ -1431,6 +1439,7 @@ class PurchaseOrders(BaseSDK):
             service_id=service_id,
             raw=raw,
             purchase_order=models.PurchaseOrderInput(
+                display_id=display_id,
                 po_number=po_number,
                 reference=reference,
                 supplier=utils.get_pydantic_model(
@@ -1599,6 +1608,7 @@ class PurchaseOrders(BaseSDK):
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
+        display_id: OptionalNullable[str] = UNSET,
         po_number: OptionalNullable[str] = UNSET,
         reference: OptionalNullable[str] = UNSET,
         supplier: OptionalNullable[
@@ -1681,6 +1691,7 @@ class PurchaseOrders(BaseSDK):
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param display_id: Display ID of the purchase order
         :param po_number: A PO Number uniquely identifies a purchase order and is generally defined by the buyer.
         :param reference: Optional purchase order reference.
         :param supplier: The supplier this entity is linked to.
@@ -1742,6 +1753,7 @@ class PurchaseOrders(BaseSDK):
             service_id=service_id,
             raw=raw,
             purchase_order=models.PurchaseOrderInput(
+                display_id=display_id,
                 po_number=po_number,
                 reference=reference,
                 supplier=utils.get_pydantic_model(

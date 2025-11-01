@@ -1281,7 +1281,7 @@ if TYPE_CHECKING:
         BillPaymentType,
         BillPaymentTypedDict,
     )
-    from .billsfilter import BillsFilter, BillsFilterTypedDict
+    from .billsfilter import BillsFilter, BillsFilterStatus, BillsFilterTypedDict
     from .billssort import BillsSort, BillsSortTypedDict, By
     from .categoriesfilter import (
         CategoriesFilter,
@@ -5482,6 +5482,7 @@ __all__ = [
     "BillTypedDict",
     "BillingMethod",
     "BillsFilter",
+    "BillsFilterStatus",
     "BillsFilterTypedDict",
     "BillsSort",
     "BillsSortTypedDict",
@@ -8957,6 +8958,7 @@ _dynamic_imports: dict[str, str] = {
     "BillPaymentType": ".billpayment",
     "BillPaymentTypedDict": ".billpayment",
     "BillsFilter": ".billsfilter",
+    "BillsFilterStatus": ".billsfilter",
     "BillsFilterTypedDict": ".billsfilter",
     "BillsSort": ".billssort",
     "BillsSortTypedDict": ".billssort",

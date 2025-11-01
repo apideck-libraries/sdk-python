@@ -31,6 +31,8 @@ class SubsidiaryTypedDict(TypedDict):
     r"""A unique identifier for an object."""
     name: NotRequired[Nullable[str]]
     r"""The name of the company."""
+    display_id: NotRequired[Nullable[str]]
+    r"""Display ID of the subsidiary"""
     status: NotRequired[SubsidiaryStatus]
     r"""Based on the status some functionality is enabled or disabled."""
     currencies: NotRequired[Nullable[List[Nullable[Currency]]]]
@@ -60,6 +62,9 @@ class Subsidiary(BaseModel):
 
     name: OptionalNullable[str] = UNSET
     r"""The name of the company."""
+
+    display_id: OptionalNullable[str] = UNSET
+    r"""Display ID of the subsidiary"""
 
     status: Optional[SubsidiaryStatus] = None
     r"""Based on the status some functionality is enabled or disabled."""
@@ -94,6 +99,7 @@ class Subsidiary(BaseModel):
             "id",
             "parent_id",
             "name",
+            "display_id",
             "status",
             "currencies",
             "custom_mappings",
@@ -107,6 +113,7 @@ class Subsidiary(BaseModel):
         nullable_fields = [
             "parent_id",
             "name",
+            "display_id",
             "currencies",
             "custom_mappings",
             "row_version",
@@ -147,6 +154,8 @@ class SubsidiaryInputTypedDict(TypedDict):
     r"""A unique identifier for an object."""
     name: NotRequired[Nullable[str]]
     r"""The name of the company."""
+    display_id: NotRequired[Nullable[str]]
+    r"""Display ID of the subsidiary"""
     status: NotRequired[SubsidiaryStatus]
     r"""Based on the status some functionality is enabled or disabled."""
     currencies: NotRequired[Nullable[List[Nullable[Currency]]]]
@@ -163,6 +172,9 @@ class SubsidiaryInput(BaseModel):
 
     name: OptionalNullable[str] = UNSET
     r"""The name of the company."""
+
+    display_id: OptionalNullable[str] = UNSET
+    r"""Display ID of the subsidiary"""
 
     status: Optional[SubsidiaryStatus] = None
     r"""Based on the status some functionality is enabled or disabled."""
@@ -181,12 +193,19 @@ class SubsidiaryInput(BaseModel):
         optional_fields = [
             "parent_id",
             "name",
+            "display_id",
             "status",
             "currencies",
             "row_version",
             "pass_through",
         ]
-        nullable_fields = ["parent_id", "name", "currencies", "row_version"]
+        nullable_fields = [
+            "parent_id",
+            "name",
+            "display_id",
+            "currencies",
+            "row_version",
+        ]
         null_default_fields = []
 
         serialized = handler(self)

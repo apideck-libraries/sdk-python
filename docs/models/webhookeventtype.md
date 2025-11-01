@@ -58,6 +58,9 @@
 | `ACCOUNTING_BILL_CREATED`               | accounting.bill.created                 |
 | `ACCOUNTING_BILL_UPDATED`               | accounting.bill.updated                 |
 | `ACCOUNTING_BILL_DELETED`               | accounting.bill.deleted                 |
+| `ACCOUNTING_BILL_PAYMENT_CREATED`       | accounting.bill_payment.created         |
+| `ACCOUNTING_BILL_PAYMENT_UPDATED`       | accounting.bill_payment.updated         |
+| `ACCOUNTING_BILL_PAYMENT_DELETED`       | accounting.bill_payment.deleted         |
 | `ACCOUNTING_PAYMENT_CREATED`            | accounting.payment.created              |
 | `ACCOUNTING_PAYMENT_UPDATED`            | accounting.payment.updated              |
 | `ACCOUNTING_PAYMENT_DELETED`            | accounting.payment.deleted              |

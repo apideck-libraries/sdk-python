@@ -152,6 +152,8 @@ class InvoiceItemTypedDict(TypedDict):
     r"""Item name"""
     description: NotRequired[Nullable[str]]
     r"""A short description of the item"""
+    display_id: NotRequired[Nullable[str]]
+    r"""Display ID of the item"""
     code: NotRequired[Nullable[str]]
     r"""User defined item code"""
     sold: NotRequired[Nullable[bool]]
@@ -214,6 +216,9 @@ class InvoiceItem(BaseModel):
 
     description: OptionalNullable[str] = UNSET
     r"""A short description of the item"""
+
+    display_id: OptionalNullable[str] = UNSET
+    r"""Display ID of the item"""
 
     code: OptionalNullable[str] = UNSET
     r"""User defined item code"""
@@ -306,6 +311,7 @@ class InvoiceItem(BaseModel):
             "id",
             "name",
             "description",
+            "display_id",
             "code",
             "sold",
             "purchased",
@@ -339,6 +345,7 @@ class InvoiceItem(BaseModel):
         nullable_fields = [
             "name",
             "description",
+            "display_id",
             "code",
             "sold",
             "purchased",
@@ -500,6 +507,8 @@ class InvoiceItemInputTypedDict(TypedDict):
     r"""Item name"""
     description: NotRequired[Nullable[str]]
     r"""A short description of the item"""
+    display_id: NotRequired[Nullable[str]]
+    r"""Display ID of the item"""
     code: NotRequired[Nullable[str]]
     r"""User defined item code"""
     sold: NotRequired[Nullable[bool]]
@@ -549,6 +558,9 @@ class InvoiceItemInput(BaseModel):
 
     description: OptionalNullable[str] = UNSET
     r"""A short description of the item"""
+
+    display_id: OptionalNullable[str] = UNSET
+    r"""Display ID of the item"""
 
     code: OptionalNullable[str] = UNSET
     r"""User defined item code"""
@@ -625,6 +637,7 @@ class InvoiceItemInput(BaseModel):
         optional_fields = [
             "name",
             "description",
+            "display_id",
             "code",
             "sold",
             "purchased",
@@ -653,6 +666,7 @@ class InvoiceItemInput(BaseModel):
         nullable_fields = [
             "name",
             "description",
+            "display_id",
             "code",
             "sold",
             "purchased",

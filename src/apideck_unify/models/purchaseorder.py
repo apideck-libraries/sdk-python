@@ -60,6 +60,8 @@ class PurchaseOrderTypedDict(TypedDict):
     r"""A unique identifier for an object."""
     downstream_id: NotRequired[Nullable[str]]
     r"""The third-party API ID of original entity"""
+    display_id: NotRequired[Nullable[str]]
+    r"""Display ID of the purchase order"""
     po_number: NotRequired[Nullable[str]]
     r"""A PO Number uniquely identifies a purchase order and is generally defined by the buyer."""
     reference: NotRequired[Nullable[str]]
@@ -151,6 +153,9 @@ class PurchaseOrder(BaseModel):
 
     downstream_id: OptionalNullable[str] = UNSET
     r"""The third-party API ID of original entity"""
+
+    display_id: OptionalNullable[str] = UNSET
+    r"""Display ID of the purchase order"""
 
     po_number: OptionalNullable[str] = UNSET
     r"""A PO Number uniquely identifies a purchase order and is generally defined by the buyer."""
@@ -284,6 +289,7 @@ class PurchaseOrder(BaseModel):
         optional_fields = [
             "id",
             "downstream_id",
+            "display_id",
             "po_number",
             "reference",
             "supplier",
@@ -331,6 +337,7 @@ class PurchaseOrder(BaseModel):
         ]
         nullable_fields = [
             "downstream_id",
+            "display_id",
             "po_number",
             "reference",
             "supplier",
@@ -398,6 +405,8 @@ class PurchaseOrder(BaseModel):
 
 
 class PurchaseOrderInputTypedDict(TypedDict):
+    display_id: NotRequired[Nullable[str]]
+    r"""Display ID of the purchase order"""
     po_number: NotRequired[Nullable[str]]
     r"""A PO Number uniquely identifies a purchase order and is generally defined by the buyer."""
     reference: NotRequired[Nullable[str]]
@@ -474,6 +483,9 @@ class PurchaseOrderInputTypedDict(TypedDict):
 
 
 class PurchaseOrderInput(BaseModel):
+    display_id: OptionalNullable[str] = UNSET
+    r"""Display ID of the purchase order"""
+
     po_number: OptionalNullable[str] = UNSET
     r"""A PO Number uniquely identifies a purchase order and is generally defined by the buyer."""
 
@@ -589,6 +601,7 @@ class PurchaseOrderInput(BaseModel):
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
         optional_fields = [
+            "display_id",
             "po_number",
             "reference",
             "supplier",
@@ -630,6 +643,7 @@ class PurchaseOrderInput(BaseModel):
             "pass_through",
         ]
         nullable_fields = [
+            "display_id",
             "po_number",
             "reference",
             "supplier",

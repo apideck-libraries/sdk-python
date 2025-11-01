@@ -46,6 +46,8 @@ class JournalEntryTypedDict(TypedDict):
     r"""A unique identifier for an object."""
     downstream_id: NotRequired[Nullable[str]]
     r"""The third-party API ID of original entity"""
+    display_id: NotRequired[Nullable[str]]
+    r"""Display ID of the journal entry"""
     title: NotRequired[Nullable[str]]
     r"""Journal entry title"""
     currency_rate: NotRequired[Nullable[float]]
@@ -105,6 +107,9 @@ class JournalEntry(BaseModel):
 
     downstream_id: OptionalNullable[str] = UNSET
     r"""The third-party API ID of original entity"""
+
+    display_id: OptionalNullable[str] = UNSET
+    r"""Display ID of the journal entry"""
 
     title: OptionalNullable[str] = UNSET
     r"""Journal entry title"""
@@ -187,6 +192,7 @@ class JournalEntry(BaseModel):
         optional_fields = [
             "id",
             "downstream_id",
+            "display_id",
             "title",
             "currency_rate",
             "currency",
@@ -215,6 +221,7 @@ class JournalEntry(BaseModel):
         ]
         nullable_fields = [
             "downstream_id",
+            "display_id",
             "title",
             "currency_rate",
             "currency",
@@ -265,6 +272,8 @@ class JournalEntry(BaseModel):
 
 
 class JournalEntryInputTypedDict(TypedDict):
+    display_id: NotRequired[Nullable[str]]
+    r"""Display ID of the journal entry"""
     title: NotRequired[Nullable[str]]
     r"""Journal entry title"""
     currency_rate: NotRequired[Nullable[float]]
@@ -309,6 +318,9 @@ class JournalEntryInputTypedDict(TypedDict):
 
 
 class JournalEntryInput(BaseModel):
+    display_id: OptionalNullable[str] = UNSET
+    r"""Display ID of the journal entry"""
+
     title: OptionalNullable[str] = UNSET
     r"""Journal entry title"""
 
@@ -373,6 +385,7 @@ class JournalEntryInput(BaseModel):
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
         optional_fields = [
+            "display_id",
             "title",
             "currency_rate",
             "currency",
@@ -395,6 +408,7 @@ class JournalEntryInput(BaseModel):
             "pass_through",
         ]
         nullable_fields = [
+            "display_id",
             "title",
             "currency_rate",
             "currency",
