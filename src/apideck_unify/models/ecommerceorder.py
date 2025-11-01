@@ -39,6 +39,7 @@ class EcommerceOrderPaymentStatus(str, Enum):
     REFUNDED = "refunded"
     VOIDED = "voided"
     UNKNOWN = "unknown"
+    PARTIALLY_REFUNDED = "partially_refunded"
 
 
 class FulfillmentStatus(str, Enum):

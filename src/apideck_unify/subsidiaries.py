@@ -362,6 +362,7 @@ class Subsidiaries(BaseSDK):
         service_id: Optional[str] = None,
         parent_id: OptionalNullable[str] = UNSET,
         name: OptionalNullable[str] = UNSET,
+        display_id: OptionalNullable[str] = UNSET,
         status: Optional[models.SubsidiaryStatus] = None,
         currencies: OptionalNullable[List[Nullable[models.Currency]]] = UNSET,
         row_version: OptionalNullable[str] = UNSET,
@@ -383,6 +384,7 @@ class Subsidiaries(BaseSDK):
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param parent_id: A unique identifier for an object.
         :param name: The name of the company.
+        :param display_id: Display ID of the subsidiary
         :param status: Based on the status some functionality is enabled or disabled.
         :param currencies: List of currencies supported by this subsidiary
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
@@ -410,6 +412,7 @@ class Subsidiaries(BaseSDK):
             subsidiary=models.SubsidiaryInput(
                 parent_id=parent_id,
                 name=name,
+                display_id=display_id,
                 status=status,
                 currencies=currencies,
                 row_version=row_version,
@@ -527,6 +530,7 @@ class Subsidiaries(BaseSDK):
         service_id: Optional[str] = None,
         parent_id: OptionalNullable[str] = UNSET,
         name: OptionalNullable[str] = UNSET,
+        display_id: OptionalNullable[str] = UNSET,
         status: Optional[models.SubsidiaryStatus] = None,
         currencies: OptionalNullable[List[Nullable[models.Currency]]] = UNSET,
         row_version: OptionalNullable[str] = UNSET,
@@ -548,6 +552,7 @@ class Subsidiaries(BaseSDK):
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param parent_id: A unique identifier for an object.
         :param name: The name of the company.
+        :param display_id: Display ID of the subsidiary
         :param status: Based on the status some functionality is enabled or disabled.
         :param currencies: List of currencies supported by this subsidiary
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
@@ -575,6 +580,7 @@ class Subsidiaries(BaseSDK):
             subsidiary=models.SubsidiaryInput(
                 parent_id=parent_id,
                 name=name,
+                display_id=display_id,
                 status=status,
                 currencies=currencies,
                 row_version=row_version,
@@ -981,6 +987,7 @@ class Subsidiaries(BaseSDK):
         raw: Optional[bool] = False,
         parent_id: OptionalNullable[str] = UNSET,
         name: OptionalNullable[str] = UNSET,
+        display_id: OptionalNullable[str] = UNSET,
         status: Optional[models.SubsidiaryStatus] = None,
         currencies: OptionalNullable[List[Nullable[models.Currency]]] = UNSET,
         row_version: OptionalNullable[str] = UNSET,
@@ -1003,6 +1010,7 @@ class Subsidiaries(BaseSDK):
         :param raw: Include raw response. Mostly used for debugging purposes
         :param parent_id: A unique identifier for an object.
         :param name: The name of the company.
+        :param display_id: Display ID of the subsidiary
         :param status: Based on the status some functionality is enabled or disabled.
         :param currencies: List of currencies supported by this subsidiary
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
@@ -1031,6 +1039,7 @@ class Subsidiaries(BaseSDK):
             subsidiary=models.SubsidiaryInput(
                 parent_id=parent_id,
                 name=name,
+                display_id=display_id,
                 status=status,
                 currencies=currencies,
                 row_version=row_version,
@@ -1149,6 +1158,7 @@ class Subsidiaries(BaseSDK):
         raw: Optional[bool] = False,
         parent_id: OptionalNullable[str] = UNSET,
         name: OptionalNullable[str] = UNSET,
+        display_id: OptionalNullable[str] = UNSET,
         status: Optional[models.SubsidiaryStatus] = None,
         currencies: OptionalNullable[List[Nullable[models.Currency]]] = UNSET,
         row_version: OptionalNullable[str] = UNSET,
@@ -1171,6 +1181,7 @@ class Subsidiaries(BaseSDK):
         :param raw: Include raw response. Mostly used for debugging purposes
         :param parent_id: A unique identifier for an object.
         :param name: The name of the company.
+        :param display_id: Display ID of the subsidiary
         :param status: Based on the status some functionality is enabled or disabled.
         :param currencies: List of currencies supported by this subsidiary
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
@@ -1199,6 +1210,7 @@ class Subsidiaries(BaseSDK):
             subsidiary=models.SubsidiaryInput(
                 parent_id=parent_id,
                 name=name,
+                display_id=display_id,
                 status=status,
                 currencies=currencies,
                 row_version=row_version,
