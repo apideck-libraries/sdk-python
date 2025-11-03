@@ -88,6 +88,15 @@ class Configuration(BaseModel):
     defaults: Optional[List[Defaults]] = None
 
 
+class Health(str, Enum):
+    r"""Operational health status of the connection"""
+
+    MISSING_SETTINGS = "missing_settings"
+    NEEDS_AUTH = "needs_auth"
+    PENDING_REFRESH = "pending_refresh"
+    OK = "ok"
+
+
 class ConnectionTypedDict(TypedDict):
     id: NotRequired[str]
     r"""The unique identifier of the connection."""
@@ -137,7 +146,6 @@ class ConnectionTypedDict(TypedDict):
     subscriptions: NotRequired[List[WebhookSubscriptionTypedDict]]
     has_guide: NotRequired[bool]
     r"""Whether the connector has a guide available in the developer docs or not (https://docs.apideck.com/connectors/{service_id}/docs/consumer+connection)."""
-    created_at: NotRequired[float]
     custom_mappings: NotRequired[List[CustomMappingTypedDict]]
     r"""List of custom mappings configured for this connection"""
     consent_state: NotRequired[ConsentState]
@@ -146,6 +154,13 @@ class ConnectionTypedDict(TypedDict):
     r"""Immutable array of consent records for compliance and audit purposes"""
     latest_consent: NotRequired[ConsentRecordTypedDict]
     application_data_scopes: NotRequired[DataScopesTypedDict]
+    health: NotRequired[Health]
+    r"""Operational health status of the connection"""
+    credentials_expire_at: NotRequired[float]
+    r"""Unix timestamp in milliseconds when credentials will be deleted if token refresh continues to fail. A value of 0 indicates no active retention window (connection is healthy or not using OAuth token refresh)."""
+    last_refresh_failed_at: NotRequired[float]
+    r"""Unix timestamp in milliseconds of the last failed token refresh attempt. A value of 0 indicates no recent failures. This field is used internally to enforce cooldown periods between retry attempts."""
+    created_at: NotRequired[float]
     updated_at: NotRequired[Nullable[float]]
 
 
@@ -226,8 +241,6 @@ class Connection(BaseModel):
     has_guide: Optional[bool] = None
     r"""Whether the connector has a guide available in the developer docs or not (https://docs.apideck.com/connectors/{service_id}/docs/consumer+connection)."""
 
-    created_at: Optional[float] = None
-
     custom_mappings: Optional[List[CustomMapping]] = None
     r"""List of custom mappings configured for this connection"""
 
@@ -240,6 +253,17 @@ class Connection(BaseModel):
     latest_consent: Optional[ConsentRecord] = None
 
     application_data_scopes: Optional[DataScopes] = None
+
+    health: Optional[Health] = None
+    r"""Operational health status of the connection"""
+
+    credentials_expire_at: Optional[float] = None
+    r"""Unix timestamp in milliseconds when credentials will be deleted if token refresh continues to fail. A value of 0 indicates no active retention window (connection is healthy or not using OAuth token refresh)."""
+
+    last_refresh_failed_at: Optional[float] = None
+    r"""Unix timestamp in milliseconds of the last failed token refresh attempt. A value of 0 indicates no recent failures. This field is used internally to enforce cooldown periods between retry attempts."""
+
+    created_at: Optional[float] = None
 
     updated_at: OptionalNullable[float] = UNSET
 
@@ -274,12 +298,15 @@ class Connection(BaseModel):
             "settings_required_for_authorization",
             "subscriptions",
             "has_guide",
-            "created_at",
             "custom_mappings",
             "consent_state",
             "consents",
             "latest_consent",
             "application_data_scopes",
+            "health",
+            "credentials_expire_at",
+            "last_refresh_failed_at",
+            "created_at",
             "updated_at",
         ]
         nullable_fields = [
