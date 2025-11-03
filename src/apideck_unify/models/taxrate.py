@@ -85,6 +85,8 @@ class SubsidiariesModel(BaseModel):
 class TaxRateTypedDict(TypedDict):
     id: NotRequired[Nullable[str]]
     r"""ID assigned to identify this tax rate."""
+    display_id: NotRequired[Nullable[str]]
+    r"""Display ID of the tax rate"""
     name: NotRequired[str]
     r"""Name assigned to identify this tax rate."""
     code: NotRequired[Nullable[str]]
@@ -130,6 +132,9 @@ class TaxRateTypedDict(TypedDict):
 class TaxRate(BaseModel):
     id: OptionalNullable[str] = UNSET
     r"""ID assigned to identify this tax rate."""
+
+    display_id: OptionalNullable[str] = UNSET
+    r"""Display ID of the tax rate"""
 
     name: Optional[str] = None
     r"""Name assigned to identify this tax rate."""
@@ -196,6 +201,7 @@ class TaxRate(BaseModel):
     def serialize_model(self, handler):
         optional_fields = [
             "id",
+            "display_id",
             "name",
             "code",
             "description",
@@ -220,6 +226,7 @@ class TaxRate(BaseModel):
         ]
         nullable_fields = [
             "id",
+            "display_id",
             "code",
             "description",
             "effective_tax_rate",
@@ -268,6 +275,8 @@ class TaxRate(BaseModel):
 class TaxRateInputTypedDict(TypedDict):
     id: NotRequired[Nullable[str]]
     r"""ID assigned to identify this tax rate."""
+    display_id: NotRequired[Nullable[str]]
+    r"""Display ID of the tax rate"""
     name: NotRequired[str]
     r"""Name assigned to identify this tax rate."""
     code: NotRequired[Nullable[str]]
@@ -303,6 +312,9 @@ class TaxRateInputTypedDict(TypedDict):
 class TaxRateInput(BaseModel):
     id: OptionalNullable[str] = UNSET
     r"""ID assigned to identify this tax rate."""
+
+    display_id: OptionalNullable[str] = UNSET
+    r"""Display ID of the tax rate"""
 
     name: Optional[str] = None
     r"""Name assigned to identify this tax rate."""
@@ -354,6 +366,7 @@ class TaxRateInput(BaseModel):
     def serialize_model(self, handler):
         optional_fields = [
             "id",
+            "display_id",
             "name",
             "code",
             "description",
@@ -373,6 +386,7 @@ class TaxRateInput(BaseModel):
         ]
         nullable_fields = [
             "id",
+            "display_id",
             "code",
             "description",
             "effective_tax_rate",

@@ -399,6 +399,7 @@ class InvoiceItems(BaseSDK):
         service_id: Optional[str] = None,
         name: OptionalNullable[str] = UNSET,
         description: OptionalNullable[str] = UNSET,
+        display_id: OptionalNullable[str] = UNSET,
         code: OptionalNullable[str] = UNSET,
         sold: OptionalNullable[bool] = UNSET,
         purchased: OptionalNullable[bool] = UNSET,
@@ -474,6 +475,7 @@ class InvoiceItems(BaseSDK):
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param name: Item name
         :param description: A short description of the item
+        :param display_id: Display ID of the item
         :param code: User defined item code
         :param sold: Item will be available on sales transactions
         :param purchased: Item is available for purchase transactions
@@ -521,6 +523,7 @@ class InvoiceItems(BaseSDK):
             invoice_item=models.InvoiceItemInput(
                 name=name,
                 description=description,
+                display_id=display_id,
                 code=code,
                 sold=sold,
                 purchased=purchased,
@@ -674,6 +677,7 @@ class InvoiceItems(BaseSDK):
         service_id: Optional[str] = None,
         name: OptionalNullable[str] = UNSET,
         description: OptionalNullable[str] = UNSET,
+        display_id: OptionalNullable[str] = UNSET,
         code: OptionalNullable[str] = UNSET,
         sold: OptionalNullable[bool] = UNSET,
         purchased: OptionalNullable[bool] = UNSET,
@@ -749,6 +753,7 @@ class InvoiceItems(BaseSDK):
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param name: Item name
         :param description: A short description of the item
+        :param display_id: Display ID of the item
         :param code: User defined item code
         :param sold: Item will be available on sales transactions
         :param purchased: Item is available for purchase transactions
@@ -796,6 +801,7 @@ class InvoiceItems(BaseSDK):
             invoice_item=models.InvoiceItemInput(
                 name=name,
                 description=description,
+                display_id=display_id,
                 code=code,
                 sold=sold,
                 purchased=purchased,
@@ -1252,6 +1258,7 @@ class InvoiceItems(BaseSDK):
         raw: Optional[bool] = False,
         name: OptionalNullable[str] = UNSET,
         description: OptionalNullable[str] = UNSET,
+        display_id: OptionalNullable[str] = UNSET,
         code: OptionalNullable[str] = UNSET,
         sold: OptionalNullable[bool] = UNSET,
         purchased: OptionalNullable[bool] = UNSET,
@@ -1328,6 +1335,7 @@ class InvoiceItems(BaseSDK):
         :param raw: Include raw response. Mostly used for debugging purposes
         :param name: Item name
         :param description: A short description of the item
+        :param display_id: Display ID of the item
         :param code: User defined item code
         :param sold: Item will be available on sales transactions
         :param purchased: Item is available for purchase transactions
@@ -1376,6 +1384,7 @@ class InvoiceItems(BaseSDK):
             invoice_item=models.InvoiceItemInput(
                 name=name,
                 description=description,
+                display_id=display_id,
                 code=code,
                 sold=sold,
                 purchased=purchased,
@@ -1530,6 +1539,7 @@ class InvoiceItems(BaseSDK):
         raw: Optional[bool] = False,
         name: OptionalNullable[str] = UNSET,
         description: OptionalNullable[str] = UNSET,
+        display_id: OptionalNullable[str] = UNSET,
         code: OptionalNullable[str] = UNSET,
         sold: OptionalNullable[bool] = UNSET,
         purchased: OptionalNullable[bool] = UNSET,
@@ -1606,6 +1616,7 @@ class InvoiceItems(BaseSDK):
         :param raw: Include raw response. Mostly used for debugging purposes
         :param name: Item name
         :param description: A short description of the item
+        :param display_id: Display ID of the item
         :param code: User defined item code
         :param sold: Item will be available on sales transactions
         :param purchased: Item is available for purchase transactions
@@ -1654,6 +1665,7 @@ class InvoiceItems(BaseSDK):
             invoice_item=models.InvoiceItemInput(
                 name=name,
                 description=description,
+                display_id=display_id,
                 code=code,
                 sold=sold,
                 purchased=purchased,

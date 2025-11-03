@@ -4,13 +4,27 @@ from __future__ import annotations
 from apideck_unify.types import BaseModel
 from apideck_unify.utils import FieldMetadata
 from datetime import datetime
+from enum import Enum
 from typing import Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
+class BillsFilterStatus(str, Enum):
+    r"""Filter by bill status"""
+
+    PAID = "paid"
+    UNPAID = "unpaid"
+    PARTIALLY_PAID = "partially_paid"
+
+
 class BillsFilterTypedDict(TypedDict):
     updated_since: NotRequired[datetime]
+    status: NotRequired[BillsFilterStatus]
+    r"""Filter by bill status"""
 
 
 class BillsFilter(BaseModel):
     updated_since: Annotated[Optional[datetime], FieldMetadata(query=True)] = None
+
+    status: Annotated[Optional[BillsFilterStatus], FieldMetadata(query=True)] = None
+    r"""Filter by bill status"""
