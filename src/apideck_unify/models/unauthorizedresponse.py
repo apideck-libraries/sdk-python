@@ -5,18 +5,113 @@ from apideck_unify.models import ApideckError
 from apideck_unify.types import BaseModel
 from dataclasses import dataclass, field
 import httpx
+import pydantic
+from pydantic import ConfigDict
 from typing import Any, Dict, Optional, Union
-from typing_extensions import TypeAliasType
+from typing_extensions import NotRequired, TypeAliasType, TypedDict
+
+
+class RequestTypedDict(TypedDict):
+    r"""HTTP request details"""
+
+
+class Request(BaseModel):
+    r"""HTTP request details"""
+
+
+class ResponseTypedDict(TypedDict):
+    r"""HTTP response details"""
+
+
+class Response(BaseModel):
+    r"""HTTP response details"""
+
+
+class DebugTypedDict(TypedDict):
+    r"""Debug information including request/response details and OAuth timing metadata"""
+
+    request: NotRequired[RequestTypedDict]
+    r"""HTTP request details"""
+    response: NotRequired[ResponseTypedDict]
+    r"""HTTP response details"""
+    message: NotRequired[str]
+    r"""Error message from downstream provider or network layer"""
+    code: NotRequired[str]
+    r"""Error code (e.g., ETIMEDOUT, ECONNREFUSED)"""
+    credentials_expire_at_ms: NotRequired[float]
+    r"""Unix timestamp (milliseconds) when credentials will be deleted if not refreshed. Only present for non-recoverable errors (401, 400). Credentials are preserved indefinitely for recoverable/network errors."""
+    retry_after_ms: NotRequired[float]
+    r"""Unix timestamp (milliseconds) when token refresh retry is allowed after cooldown period expires."""
+    cooldown_remaining_ms: NotRequired[float]
+    r"""Milliseconds remaining in cooldown period before retry is allowed."""
+
+
+class Debug(BaseModel):
+    r"""Debug information including request/response details and OAuth timing metadata"""
+
+    request: Optional[Request] = None
+    r"""HTTP request details"""
+
+    response: Optional[Response] = None
+    r"""HTTP response details"""
+
+    message: Optional[str] = None
+    r"""Error message from downstream provider or network layer"""
+
+    code: Optional[str] = None
+    r"""Error code (e.g., ETIMEDOUT, ECONNREFUSED)"""
+
+    credentials_expire_at_ms: Optional[float] = None
+    r"""Unix timestamp (milliseconds) when credentials will be deleted if not refreshed. Only present for non-recoverable errors (401, 400). Credentials are preserved indefinitely for recoverable/network errors."""
+
+    retry_after_ms: Optional[float] = None
+    r"""Unix timestamp (milliseconds) when token refresh retry is allowed after cooldown period expires."""
+
+    cooldown_remaining_ms: Optional[float] = None
+    r"""Milliseconds remaining in cooldown period before retry is allowed."""
+
+
+class Detail2TypedDict(TypedDict):
+    type: NotRequired[str]
+    r"""Error type identifier"""
+    message: NotRequired[str]
+    r"""Detailed error message"""
+    debug: NotRequired[DebugTypedDict]
+    r"""Debug information including request/response details and OAuth timing metadata"""
+
+
+class Detail2(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True, arbitrary_types_allowed=True, extra="allow"
+    )
+    __pydantic_extra__: Dict[str, Any] = pydantic.Field(init=False)
+
+    type: Optional[str] = None
+    r"""Error type identifier"""
+
+    message: Optional[str] = None
+    r"""Detailed error message"""
+
+    debug: Optional[Debug] = None
+    r"""Debug information including request/response details and OAuth timing metadata"""
+
+    @property
+    def additional_properties(self):
+        return self.__pydantic_extra__
+
+    @additional_properties.setter
+    def additional_properties(self, value):
+        self.__pydantic_extra__ = value  # pyright: ignore[reportIncompatibleVariableOverride]
 
 
 UnauthorizedResponseDetailTypedDict = TypeAliasType(
-    "UnauthorizedResponseDetailTypedDict", Union[str, Dict[str, Any]]
+    "UnauthorizedResponseDetailTypedDict", Union[Detail2TypedDict, str]
 )
 r"""Contains parameter or domain specific information related to the error and why it occurred."""
 
 
 UnauthorizedResponseDetail = TypeAliasType(
-    "UnauthorizedResponseDetail", Union[str, Dict[str, Any]]
+    "UnauthorizedResponseDetail", Union[Detail2, str]
 )
 r"""Contains parameter or domain specific information related to the error and why it occurred."""
 
