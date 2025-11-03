@@ -397,6 +397,7 @@ class JournalEntries(BaseSDK):
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
+        display_id: OptionalNullable[str] = UNSET,
         title: OptionalNullable[str] = UNSET,
         currency_rate: OptionalNullable[float] = UNSET,
         currency: OptionalNullable[models.Currency] = UNSET,
@@ -444,6 +445,7 @@ class JournalEntries(BaseSDK):
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param display_id: Display ID of the journal entry
         :param title: Journal entry title
         :param currency_rate: Currency Exchange Rate at the time entity was recorded/generated.
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
@@ -485,6 +487,7 @@ class JournalEntries(BaseSDK):
             app_id=app_id,
             service_id=service_id,
             journal_entry=models.JournalEntryInput(
+                display_id=display_id,
                 title=title,
                 currency_rate=currency_rate,
                 currency=currency,
@@ -623,6 +626,7 @@ class JournalEntries(BaseSDK):
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
+        display_id: OptionalNullable[str] = UNSET,
         title: OptionalNullable[str] = UNSET,
         currency_rate: OptionalNullable[float] = UNSET,
         currency: OptionalNullable[models.Currency] = UNSET,
@@ -670,6 +674,7 @@ class JournalEntries(BaseSDK):
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param display_id: Display ID of the journal entry
         :param title: Journal entry title
         :param currency_rate: Currency Exchange Rate at the time entity was recorded/generated.
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
@@ -711,6 +716,7 @@ class JournalEntries(BaseSDK):
             app_id=app_id,
             service_id=service_id,
             journal_entry=models.JournalEntryInput(
+                display_id=display_id,
                 title=title,
                 currency_rate=currency_rate,
                 currency=currency,
@@ -1138,6 +1144,7 @@ class JournalEntries(BaseSDK):
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
+        display_id: OptionalNullable[str] = UNSET,
         title: OptionalNullable[str] = UNSET,
         currency_rate: OptionalNullable[float] = UNSET,
         currency: OptionalNullable[models.Currency] = UNSET,
@@ -1186,6 +1193,7 @@ class JournalEntries(BaseSDK):
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param display_id: Display ID of the journal entry
         :param title: Journal entry title
         :param currency_rate: Currency Exchange Rate at the time entity was recorded/generated.
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
@@ -1228,6 +1236,7 @@ class JournalEntries(BaseSDK):
             service_id=service_id,
             raw=raw,
             journal_entry=models.JournalEntryInput(
+                display_id=display_id,
                 title=title,
                 currency_rate=currency_rate,
                 currency=currency,
@@ -1367,6 +1376,7 @@ class JournalEntries(BaseSDK):
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
+        display_id: OptionalNullable[str] = UNSET,
         title: OptionalNullable[str] = UNSET,
         currency_rate: OptionalNullable[float] = UNSET,
         currency: OptionalNullable[models.Currency] = UNSET,
@@ -1415,6 +1425,7 @@ class JournalEntries(BaseSDK):
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param display_id: Display ID of the journal entry
         :param title: Journal entry title
         :param currency_rate: Currency Exchange Rate at the time entity was recorded/generated.
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
@@ -1457,6 +1468,7 @@ class JournalEntries(BaseSDK):
             service_id=service_id,
             raw=raw,
             journal_entry=models.JournalEntryInput(
+                display_id=display_id,
                 title=title,
                 currency_rate=currency_rate,
                 currency=currency,

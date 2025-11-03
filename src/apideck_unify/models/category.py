@@ -37,6 +37,8 @@ class CategoryTypedDict(TypedDict):
     r"""A unique identifier for an object."""
     name: NotRequired[str]
     r"""The name of the category."""
+    display_id: NotRequired[Nullable[str]]
+    r"""Display ID of the category"""
     type: NotRequired[CategoryType]
     r"""The type of the category."""
     status: NotRequired[CategoryStatus]
@@ -63,6 +65,9 @@ class Category(BaseModel):
 
     name: Optional[str] = None
     r"""The name of the category."""
+
+    display_id: OptionalNullable[str] = UNSET
+    r"""Display ID of the category"""
 
     type: Optional[CategoryType] = None
     r"""The type of the category."""
@@ -96,6 +101,7 @@ class Category(BaseModel):
         optional_fields = [
             "id",
             "name",
+            "display_id",
             "type",
             "status",
             "custom_mappings",
@@ -107,6 +113,7 @@ class Category(BaseModel):
             "pass_through",
         ]
         nullable_fields = [
+            "display_id",
             "custom_mappings",
             "row_version",
             "updated_by",

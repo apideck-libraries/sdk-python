@@ -383,6 +383,7 @@ class TaxRates(BaseSDK):
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         id: OptionalNullable[str] = UNSET,
+        display_id: OptionalNullable[str] = UNSET,
         name: Optional[str] = None,
         code: OptionalNullable[str] = UNSET,
         description: OptionalNullable[str] = UNSET,
@@ -423,6 +424,7 @@ class TaxRates(BaseSDK):
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param id: ID assigned to identify this tax rate.
+        :param display_id: Display ID of the tax rate
         :param name: Name assigned to identify this tax rate.
         :param code: Tax code assigned to identify this tax rate.
         :param description: Description of tax rate
@@ -461,6 +463,7 @@ class TaxRates(BaseSDK):
             service_id=service_id,
             tax_rate=models.TaxRateInput(
                 id=id,
+                display_id=display_id,
                 name=name,
                 code=code,
                 description=description,
@@ -595,6 +598,7 @@ class TaxRates(BaseSDK):
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         id: OptionalNullable[str] = UNSET,
+        display_id: OptionalNullable[str] = UNSET,
         name: Optional[str] = None,
         code: OptionalNullable[str] = UNSET,
         description: OptionalNullable[str] = UNSET,
@@ -635,6 +639,7 @@ class TaxRates(BaseSDK):
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param id: ID assigned to identify this tax rate.
+        :param display_id: Display ID of the tax rate
         :param name: Name assigned to identify this tax rate.
         :param code: Tax code assigned to identify this tax rate.
         :param description: Description of tax rate
@@ -673,6 +678,7 @@ class TaxRates(BaseSDK):
             service_id=service_id,
             tax_rate=models.TaxRateInput(
                 id=id,
+                display_id=display_id,
                 name=name,
                 code=code,
                 description=description,
@@ -1098,6 +1104,7 @@ class TaxRates(BaseSDK):
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
         id: OptionalNullable[str] = UNSET,
+        display_id: OptionalNullable[str] = UNSET,
         name: Optional[str] = None,
         code: OptionalNullable[str] = UNSET,
         description: OptionalNullable[str] = UNSET,
@@ -1139,6 +1146,7 @@ class TaxRates(BaseSDK):
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param id: ID assigned to identify this tax rate.
+        :param display_id: Display ID of the tax rate
         :param name: Name assigned to identify this tax rate.
         :param code: Tax code assigned to identify this tax rate.
         :param description: Description of tax rate
@@ -1178,6 +1186,7 @@ class TaxRates(BaseSDK):
             raw=raw,
             tax_rate=models.TaxRateInput(
                 id=id,
+                display_id=display_id,
                 name=name,
                 code=code,
                 description=description,
@@ -1313,6 +1322,7 @@ class TaxRates(BaseSDK):
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
         id: OptionalNullable[str] = UNSET,
+        display_id: OptionalNullable[str] = UNSET,
         name: Optional[str] = None,
         code: OptionalNullable[str] = UNSET,
         description: OptionalNullable[str] = UNSET,
@@ -1354,6 +1364,7 @@ class TaxRates(BaseSDK):
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param id: ID assigned to identify this tax rate.
+        :param display_id: Display ID of the tax rate
         :param name: Name assigned to identify this tax rate.
         :param code: Tax code assigned to identify this tax rate.
         :param description: Description of tax rate
@@ -1393,6 +1404,7 @@ class TaxRates(BaseSDK):
             raw=raw,
             tax_rate=models.TaxRateInput(
                 id=id,
+                display_id=display_id,
                 name=name,
                 code=code,
                 description=description,
