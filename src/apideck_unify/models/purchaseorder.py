@@ -12,10 +12,6 @@ from .invoicelineitem import (
     InvoiceLineItemTypedDict,
 )
 from .linkedledgeraccount import LinkedLedgerAccount, LinkedLedgerAccountTypedDict
-from .linkedledgeraccount_input import (
-    LinkedLedgerAccountInput,
-    LinkedLedgerAccountInputTypedDict,
-)
 from .linkedsupplier import LinkedSupplier, LinkedSupplierTypedDict
 from .linkedsupplier_input import LinkedSupplierInput, LinkedSupplierInputTypedDict
 from .linkedtrackingcategory import (
@@ -441,7 +437,7 @@ class PurchaseOrderInputTypedDict(TypedDict):
     line_items: NotRequired[List[InvoiceLineItemInputTypedDict]]
     billing_address: NotRequired[AddressTypedDict]
     shipping_address: NotRequired[AddressTypedDict]
-    ledger_account: NotRequired[Nullable[LinkedLedgerAccountInputTypedDict]]
+    ledger_account: NotRequired[Nullable[LinkedLedgerAccountTypedDict]]
     template_id: NotRequired[Nullable[str]]
     r"""Optional purchase order template"""
     discount_percentage: NotRequired[Nullable[float]]
@@ -539,7 +535,7 @@ class PurchaseOrderInput(BaseModel):
 
     shipping_address: Optional[Address] = None
 
-    ledger_account: OptionalNullable[LinkedLedgerAccountInput] = UNSET
+    ledger_account: OptionalNullable[LinkedLedgerAccount] = UNSET
 
     template_id: OptionalNullable[str] = UNSET
     r"""Optional purchase order template"""

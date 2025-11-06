@@ -112,6 +112,7 @@ with Apideck(
         "name": "Company Website Overhaul",
     }, currency=apideck_unify.Currency.USD, budget_amount=50000, approved_amount=48000, budget_hours=400, hourly_rate=125, billing_method=apideck_unify.BillingMethod.TIME_AND_MATERIALS, is_billable=True, phase=apideck_unify.ProjectPhase.EXECUTION, tax_rate={
         "id": "123456",
+        "code": "N-T",
         "rate": 10,
     }, tracking_categories=[
         {
@@ -309,6 +310,7 @@ with Apideck(
         "name": "Company Website Overhaul",
     }, currency=apideck_unify.Currency.USD, budget_amount=50000, approved_amount=48000, budget_hours=400, hourly_rate=125, billing_method=apideck_unify.BillingMethod.TIME_AND_MATERIALS, is_billable=True, phase=apideck_unify.ProjectPhase.EXECUTION, tax_rate={
         "id": "123456",
+        "code": "N-T",
         "rate": 10,
     }, tracking_categories=[
         {

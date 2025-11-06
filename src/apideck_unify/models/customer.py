@@ -7,10 +7,6 @@ from .currency import Currency
 from .customfield import CustomField, CustomFieldTypedDict
 from .email import Email, EmailTypedDict
 from .linkedledgeraccount import LinkedLedgerAccount, LinkedLedgerAccountTypedDict
-from .linkedledgeraccount_input import (
-    LinkedLedgerAccountInput,
-    LinkedLedgerAccountInputTypedDict,
-)
 from .linkedparentcustomer import LinkedParentCustomer, LinkedParentCustomerTypedDict
 from .linkedtaxrate import LinkedTaxRate, LinkedTaxRateTypedDict
 from .linkedtaxrate_input import LinkedTaxRateInput, LinkedTaxRateInputTypedDict
@@ -342,7 +338,7 @@ class CustomerInputTypedDict(TypedDict):
     tax_number: NotRequired[Nullable[str]]
     currency: NotRequired[Nullable[Currency]]
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
-    account: NotRequired[Nullable[LinkedLedgerAccountInputTypedDict]]
+    account: NotRequired[Nullable[LinkedLedgerAccountTypedDict]]
     parent: NotRequired[Nullable[LinkedParentCustomerTypedDict]]
     r"""The parent customer this entity is linked to."""
     status: NotRequired[Nullable[CustomerStatusStatus]]
@@ -416,7 +412,7 @@ class CustomerInput(BaseModel):
     currency: OptionalNullable[Currency] = UNSET
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
 
-    account: OptionalNullable[LinkedLedgerAccountInput] = UNSET
+    account: OptionalNullable[LinkedLedgerAccount] = UNSET
 
     parent: OptionalNullable[LinkedParentCustomer] = UNSET
     r"""The parent customer this entity is linked to."""

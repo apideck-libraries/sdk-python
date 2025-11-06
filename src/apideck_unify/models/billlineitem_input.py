@@ -2,11 +2,11 @@
 
 from __future__ import annotations
 from .lineitemtype import LineItemType
-from .linkedcustomer import LinkedCustomer, LinkedCustomerTypedDict
+from .linkedcustomer_input import LinkedCustomerInput, LinkedCustomerInputTypedDict
 from .linkedinvoiceitem import LinkedInvoiceItem, LinkedInvoiceItemTypedDict
 from .linkedledgeraccount import LinkedLedgerAccount, LinkedLedgerAccountTypedDict
 from .linkedpurchaseorder import LinkedPurchaseOrder, LinkedPurchaseOrderTypedDict
-from .linkedtaxrate import LinkedTaxRate, LinkedTaxRateTypedDict
+from .linkedtaxrate_input import LinkedTaxRateInput, LinkedTaxRateInputTypedDict
 from .linkedtrackingcategory import (
     LinkedTrackingCategory,
     LinkedTrackingCategoryTypedDict,
@@ -20,15 +20,12 @@ from apideck_unify.types import (
     UNSET,
     UNSET_SENTINEL,
 )
-from datetime import datetime
 from pydantic import model_serializer
 from typing import List, Optional
 from typing_extensions import NotRequired, TypedDict
 
 
-class BillLineItemTypedDict(TypedDict):
-    id: NotRequired[str]
-    r"""A unique identifier for an object."""
+class BillLineItemInputTypedDict(TypedDict):
     row_id: NotRequired[str]
     r"""Row ID"""
     code: NotRequired[Nullable[str]]
@@ -76,35 +73,24 @@ class BillLineItemTypedDict(TypedDict):
     payment_amount: NotRequired[Nullable[float]]
     r"""Payment amount"""
     item: NotRequired[LinkedInvoiceItemTypedDict]
-    tax_rate: NotRequired[LinkedTaxRateTypedDict]
+    tax_rate: NotRequired[LinkedTaxRateInputTypedDict]
     ledger_account: NotRequired[Nullable[LinkedLedgerAccountTypedDict]]
     purchase_order: NotRequired[Nullable[LinkedPurchaseOrderTypedDict]]
     tracking_categories: NotRequired[
         Nullable[List[Nullable[LinkedTrackingCategoryTypedDict]]]
     ]
     r"""A list of linked tracking categories."""
-    customer: NotRequired[Nullable[LinkedCustomerTypedDict]]
+    customer: NotRequired[Nullable[LinkedCustomerInputTypedDict]]
     r"""The customer this entity is linked to."""
     rebilling: NotRequired[Nullable[RebillingTypedDict]]
     r"""Rebilling metadata for this line item."""
     row_version: NotRequired[Nullable[str]]
     r"""A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object."""
-    updated_by: NotRequired[Nullable[str]]
-    r"""The user who last updated the object."""
-    created_by: NotRequired[Nullable[str]]
-    r"""The user who created the object."""
-    created_at: NotRequired[Nullable[datetime]]
-    r"""The date and time when the object was created."""
-    updated_at: NotRequired[Nullable[datetime]]
-    r"""The date and time when the object was last updated."""
     worktags: NotRequired[List[Nullable[LinkedWorktagTypedDict]]]
     r"""A list of linked worktags. This is only supported for Workday."""
 
 
-class BillLineItem(BaseModel):
-    id: Optional[str] = None
-    r"""A unique identifier for an object."""
-
+class BillLineItemInput(BaseModel):
     row_id: Optional[str] = None
     r"""Row ID"""
 
@@ -177,7 +163,7 @@ class BillLineItem(BaseModel):
 
     item: Optional[LinkedInvoiceItem] = None
 
-    tax_rate: Optional[LinkedTaxRate] = None
+    tax_rate: Optional[LinkedTaxRateInput] = None
 
     ledger_account: OptionalNullable[LinkedLedgerAccount] = UNSET
 
@@ -188,7 +174,7 @@ class BillLineItem(BaseModel):
     )
     r"""A list of linked tracking categories."""
 
-    customer: OptionalNullable[LinkedCustomer] = UNSET
+    customer: OptionalNullable[LinkedCustomerInput] = UNSET
     r"""The customer this entity is linked to."""
 
     rebilling: OptionalNullable[Rebilling] = UNSET
@@ -197,25 +183,12 @@ class BillLineItem(BaseModel):
     row_version: OptionalNullable[str] = UNSET
     r"""A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object."""
 
-    updated_by: OptionalNullable[str] = UNSET
-    r"""The user who last updated the object."""
-
-    created_by: OptionalNullable[str] = UNSET
-    r"""The user who created the object."""
-
-    created_at: OptionalNullable[datetime] = UNSET
-    r"""The date and time when the object was created."""
-
-    updated_at: OptionalNullable[datetime] = UNSET
-    r"""The date and time when the object was last updated."""
-
     worktags: Optional[List[Nullable[LinkedWorktag]]] = None
     r"""A list of linked worktags. This is only supported for Workday."""
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
         optional_fields = [
-            "id",
             "row_id",
             "code",
             "line_number",
@@ -248,10 +221,6 @@ class BillLineItem(BaseModel):
             "customer",
             "rebilling",
             "row_version",
-            "updated_by",
-            "created_by",
-            "created_at",
-            "updated_at",
             "worktags",
         ]
         nullable_fields = [
@@ -284,10 +253,6 @@ class BillLineItem(BaseModel):
             "customer",
             "rebilling",
             "row_version",
-            "updated_by",
-            "created_by",
-            "created_at",
-            "updated_at",
         ]
         null_default_fields = []
 

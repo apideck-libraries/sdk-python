@@ -4,10 +4,6 @@ from __future__ import annotations
 from .currency import Currency
 from .customfield import CustomField, CustomFieldTypedDict
 from .linkedledgeraccount import LinkedLedgerAccount, LinkedLedgerAccountTypedDict
-from .linkedledgeraccount_input import (
-    LinkedLedgerAccountInput,
-    LinkedLedgerAccountInputTypedDict,
-)
 from .linkedsupplier import LinkedSupplier, LinkedSupplierTypedDict
 from .linkedsupplier_input import LinkedSupplierInput, LinkedSupplierInputTypedDict
 from .linkedtrackingcategory import (
@@ -410,7 +406,7 @@ class BillPaymentInputTypedDict(TypedDict):
     r"""Optional reference message returned by payment method on processing"""
     payment_method_id: NotRequired[Nullable[str]]
     r"""A unique identifier for an object."""
-    account: NotRequired[Nullable[LinkedLedgerAccountInputTypedDict]]
+    account: NotRequired[Nullable[LinkedLedgerAccountTypedDict]]
     supplier: NotRequired[Nullable[LinkedSupplierInputTypedDict]]
     r"""The supplier this entity is linked to."""
     company_id: NotRequired[Nullable[str]]
@@ -464,7 +460,7 @@ class BillPaymentInput(BaseModel):
     payment_method_id: OptionalNullable[str] = UNSET
     r"""A unique identifier for an object."""
 
-    account: OptionalNullable[LinkedLedgerAccountInput] = UNSET
+    account: OptionalNullable[LinkedLedgerAccount] = UNSET
 
     supplier: OptionalNullable[LinkedSupplierInput] = UNSET
     r"""The supplier this entity is linked to."""

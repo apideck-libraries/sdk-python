@@ -423,10 +423,7 @@ class Suppliers(BaseSDK):
         tax_number: OptionalNullable[str] = UNSET,
         currency: OptionalNullable[models.Currency] = UNSET,
         account: OptionalNullable[
-            Union[
-                models.LinkedLedgerAccountInput,
-                models.LinkedLedgerAccountInputTypedDict,
-            ]
+            Union[models.LinkedLedgerAccount, models.LinkedLedgerAccountTypedDict]
         ] = UNSET,
         status: OptionalNullable[models.SupplierStatus] = UNSET,
         payment_method: OptionalNullable[str] = UNSET,
@@ -554,7 +551,7 @@ class Suppliers(BaseSDK):
                 tax_number=tax_number,
                 currency=currency,
                 account=utils.get_pydantic_model(
-                    account, OptionalNullable[models.LinkedLedgerAccountInput]
+                    account, OptionalNullable[models.LinkedLedgerAccount]
                 ),
                 status=status,
                 payment_method=payment_method,
@@ -718,10 +715,7 @@ class Suppliers(BaseSDK):
         tax_number: OptionalNullable[str] = UNSET,
         currency: OptionalNullable[models.Currency] = UNSET,
         account: OptionalNullable[
-            Union[
-                models.LinkedLedgerAccountInput,
-                models.LinkedLedgerAccountInputTypedDict,
-            ]
+            Union[models.LinkedLedgerAccount, models.LinkedLedgerAccountTypedDict]
         ] = UNSET,
         status: OptionalNullable[models.SupplierStatus] = UNSET,
         payment_method: OptionalNullable[str] = UNSET,
@@ -849,7 +843,7 @@ class Suppliers(BaseSDK):
                 tax_number=tax_number,
                 currency=currency,
                 account=utils.get_pydantic_model(
-                    account, OptionalNullable[models.LinkedLedgerAccountInput]
+                    account, OptionalNullable[models.LinkedLedgerAccount]
                 ),
                 status=status,
                 payment_method=payment_method,
@@ -1302,10 +1296,7 @@ class Suppliers(BaseSDK):
         tax_number: OptionalNullable[str] = UNSET,
         currency: OptionalNullable[models.Currency] = UNSET,
         account: OptionalNullable[
-            Union[
-                models.LinkedLedgerAccountInput,
-                models.LinkedLedgerAccountInputTypedDict,
-            ]
+            Union[models.LinkedLedgerAccount, models.LinkedLedgerAccountTypedDict]
         ] = UNSET,
         status: OptionalNullable[models.SupplierStatus] = UNSET,
         payment_method: OptionalNullable[str] = UNSET,
@@ -1435,7 +1426,7 @@ class Suppliers(BaseSDK):
                 tax_number=tax_number,
                 currency=currency,
                 account=utils.get_pydantic_model(
-                    account, OptionalNullable[models.LinkedLedgerAccountInput]
+                    account, OptionalNullable[models.LinkedLedgerAccount]
                 ),
                 status=status,
                 payment_method=payment_method,
@@ -1600,10 +1591,7 @@ class Suppliers(BaseSDK):
         tax_number: OptionalNullable[str] = UNSET,
         currency: OptionalNullable[models.Currency] = UNSET,
         account: OptionalNullable[
-            Union[
-                models.LinkedLedgerAccountInput,
-                models.LinkedLedgerAccountInputTypedDict,
-            ]
+            Union[models.LinkedLedgerAccount, models.LinkedLedgerAccountTypedDict]
         ] = UNSET,
         status: OptionalNullable[models.SupplierStatus] = UNSET,
         payment_method: OptionalNullable[str] = UNSET,
@@ -1733,7 +1721,7 @@ class Suppliers(BaseSDK):
                 tax_number=tax_number,
                 currency=currency,
                 account=utils.get_pydantic_model(
-                    account, OptionalNullable[models.LinkedLedgerAccountInput]
+                    account, OptionalNullable[models.LinkedLedgerAccount]
                 ),
                 status=status,
                 payment_method=payment_method,

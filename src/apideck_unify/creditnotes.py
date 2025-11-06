@@ -418,10 +418,7 @@ class CreditNotes(BaseSDK):
         date_paid: OptionalNullable[datetime] = UNSET,
         type_: Optional[models.CreditNoteType] = None,
         account: OptionalNullable[
-            Union[
-                models.LinkedLedgerAccountInput,
-                models.LinkedLedgerAccountInputTypedDict,
-            ]
+            Union[models.LinkedLedgerAccount, models.LinkedLedgerAccountTypedDict]
         ] = UNSET,
         line_items: Optional[
             Union[
@@ -537,7 +534,7 @@ class CreditNotes(BaseSDK):
                 date_paid=date_paid,
                 type=type_,
                 account=utils.get_pydantic_model(
-                    account, OptionalNullable[models.LinkedLedgerAccountInput]
+                    account, OptionalNullable[models.LinkedLedgerAccount]
                 ),
                 line_items=utils.get_pydantic_model(
                     line_items, Optional[List[models.InvoiceLineItemInput]]
@@ -694,10 +691,7 @@ class CreditNotes(BaseSDK):
         date_paid: OptionalNullable[datetime] = UNSET,
         type_: Optional[models.CreditNoteType] = None,
         account: OptionalNullable[
-            Union[
-                models.LinkedLedgerAccountInput,
-                models.LinkedLedgerAccountInputTypedDict,
-            ]
+            Union[models.LinkedLedgerAccount, models.LinkedLedgerAccountTypedDict]
         ] = UNSET,
         line_items: Optional[
             Union[
@@ -813,7 +807,7 @@ class CreditNotes(BaseSDK):
                 date_paid=date_paid,
                 type=type_,
                 account=utils.get_pydantic_model(
-                    account, OptionalNullable[models.LinkedLedgerAccountInput]
+                    account, OptionalNullable[models.LinkedLedgerAccount]
                 ),
                 line_items=utils.get_pydantic_model(
                     line_items, Optional[List[models.InvoiceLineItemInput]]
@@ -1259,10 +1253,7 @@ class CreditNotes(BaseSDK):
         date_paid: OptionalNullable[datetime] = UNSET,
         type_: Optional[models.CreditNoteType] = None,
         account: OptionalNullable[
-            Union[
-                models.LinkedLedgerAccountInput,
-                models.LinkedLedgerAccountInputTypedDict,
-            ]
+            Union[models.LinkedLedgerAccount, models.LinkedLedgerAccountTypedDict]
         ] = UNSET,
         line_items: Optional[
             Union[
@@ -1380,7 +1371,7 @@ class CreditNotes(BaseSDK):
                 date_paid=date_paid,
                 type=type_,
                 account=utils.get_pydantic_model(
-                    account, OptionalNullable[models.LinkedLedgerAccountInput]
+                    account, OptionalNullable[models.LinkedLedgerAccount]
                 ),
                 line_items=utils.get_pydantic_model(
                     line_items, Optional[List[models.InvoiceLineItemInput]]
@@ -1538,10 +1529,7 @@ class CreditNotes(BaseSDK):
         date_paid: OptionalNullable[datetime] = UNSET,
         type_: Optional[models.CreditNoteType] = None,
         account: OptionalNullable[
-            Union[
-                models.LinkedLedgerAccountInput,
-                models.LinkedLedgerAccountInputTypedDict,
-            ]
+            Union[models.LinkedLedgerAccount, models.LinkedLedgerAccountTypedDict]
         ] = UNSET,
         line_items: Optional[
             Union[
@@ -1659,7 +1647,7 @@ class CreditNotes(BaseSDK):
                 date_paid=date_paid,
                 type=type_,
                 account=utils.get_pydantic_model(
-                    account, OptionalNullable[models.LinkedLedgerAccountInput]
+                    account, OptionalNullable[models.LinkedLedgerAccount]
                 ),
                 line_items=utils.get_pydantic_model(
                     line_items, Optional[List[models.InvoiceLineItemInput]]

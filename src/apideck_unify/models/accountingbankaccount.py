@@ -4,10 +4,6 @@ from __future__ import annotations
 from .currency import Currency
 from .customfield import CustomField, CustomFieldTypedDict
 from .linkedledgeraccount import LinkedLedgerAccount, LinkedLedgerAccountTypedDict
-from .linkedledgeraccount_input import (
-    LinkedLedgerAccountInput,
-    LinkedLedgerAccountInputTypedDict,
-)
 from apideck_unify.types import (
     BaseModel,
     Nullable,
@@ -262,7 +258,7 @@ class AccountingBankAccountInputTypedDict(TypedDict):
     r"""The bank account number"""
     account_type: NotRequired[AccountingBankAccountAccountType]
     r"""The type of bank account"""
-    ledger_account: NotRequired[Nullable[LinkedLedgerAccountInputTypedDict]]
+    ledger_account: NotRequired[Nullable[LinkedLedgerAccountTypedDict]]
     bank_name: NotRequired[Nullable[str]]
     r"""The name of the bank or financial institution"""
     currency: NotRequired[Nullable[Currency]]
@@ -307,7 +303,7 @@ class AccountingBankAccountInput(BaseModel):
     account_type: Optional[AccountingBankAccountAccountType] = None
     r"""The type of bank account"""
 
-    ledger_account: OptionalNullable[LinkedLedgerAccountInput] = UNSET
+    ledger_account: OptionalNullable[LinkedLedgerAccount] = UNSET
 
     bank_name: OptionalNullable[str] = UNSET
     r"""The name of the bank or financial institution"""

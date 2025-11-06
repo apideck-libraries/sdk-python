@@ -419,10 +419,7 @@ class Bills(BaseSDK):
         notes: OptionalNullable[str] = UNSET,
         status: OptionalNullable[models.BillStatus] = UNSET,
         ledger_account: OptionalNullable[
-            Union[
-                models.LinkedLedgerAccountInput,
-                models.LinkedLedgerAccountInputTypedDict,
-            ]
+            Union[models.LinkedLedgerAccount, models.LinkedLedgerAccountTypedDict]
         ] = UNSET,
         payment_method: OptionalNullable[str] = UNSET,
         channel: OptionalNullable[str] = UNSET,
@@ -488,8 +485,8 @@ class Bills(BaseSDK):
         :param terms: Terms of payment.
         :param balance: Balance of bill due.
         :param deposit: Amount of deposit made to this bill.
-        :param sub_total: Sub-total amount, normally before tax.
-        :param total_tax: Total tax amount applied to this bill.
+        :param sub_total: Subtotal amount, normally before tax.
+        :param total_tax: Total tax amount applied to this transaction.
         :param total: Total amount of bill, including tax.
         :param tax_code: Applicable tax id/code override if tax is not supplied on a line item basis.
         :param notes:
@@ -562,7 +559,7 @@ class Bills(BaseSDK):
                 notes=notes,
                 status=status,
                 ledger_account=utils.get_pydantic_model(
-                    ledger_account, OptionalNullable[models.LinkedLedgerAccountInput]
+                    ledger_account, OptionalNullable[models.LinkedLedgerAccount]
                 ),
                 payment_method=payment_method,
                 channel=channel,
@@ -732,10 +729,7 @@ class Bills(BaseSDK):
         notes: OptionalNullable[str] = UNSET,
         status: OptionalNullable[models.BillStatus] = UNSET,
         ledger_account: OptionalNullable[
-            Union[
-                models.LinkedLedgerAccountInput,
-                models.LinkedLedgerAccountInputTypedDict,
-            ]
+            Union[models.LinkedLedgerAccount, models.LinkedLedgerAccountTypedDict]
         ] = UNSET,
         payment_method: OptionalNullable[str] = UNSET,
         channel: OptionalNullable[str] = UNSET,
@@ -801,8 +795,8 @@ class Bills(BaseSDK):
         :param terms: Terms of payment.
         :param balance: Balance of bill due.
         :param deposit: Amount of deposit made to this bill.
-        :param sub_total: Sub-total amount, normally before tax.
-        :param total_tax: Total tax amount applied to this bill.
+        :param sub_total: Subtotal amount, normally before tax.
+        :param total_tax: Total tax amount applied to this transaction.
         :param total: Total amount of bill, including tax.
         :param tax_code: Applicable tax id/code override if tax is not supplied on a line item basis.
         :param notes:
@@ -875,7 +869,7 @@ class Bills(BaseSDK):
                 notes=notes,
                 status=status,
                 ledger_account=utils.get_pydantic_model(
-                    ledger_account, OptionalNullable[models.LinkedLedgerAccountInput]
+                    ledger_account, OptionalNullable[models.LinkedLedgerAccount]
                 ),
                 payment_method=payment_method,
                 channel=channel,
@@ -1334,10 +1328,7 @@ class Bills(BaseSDK):
         notes: OptionalNullable[str] = UNSET,
         status: OptionalNullable[models.BillStatus] = UNSET,
         ledger_account: OptionalNullable[
-            Union[
-                models.LinkedLedgerAccountInput,
-                models.LinkedLedgerAccountInputTypedDict,
-            ]
+            Union[models.LinkedLedgerAccount, models.LinkedLedgerAccountTypedDict]
         ] = UNSET,
         payment_method: OptionalNullable[str] = UNSET,
         channel: OptionalNullable[str] = UNSET,
@@ -1404,8 +1395,8 @@ class Bills(BaseSDK):
         :param terms: Terms of payment.
         :param balance: Balance of bill due.
         :param deposit: Amount of deposit made to this bill.
-        :param sub_total: Sub-total amount, normally before tax.
-        :param total_tax: Total tax amount applied to this bill.
+        :param sub_total: Subtotal amount, normally before tax.
+        :param total_tax: Total tax amount applied to this transaction.
         :param total: Total amount of bill, including tax.
         :param tax_code: Applicable tax id/code override if tax is not supplied on a line item basis.
         :param notes:
@@ -1479,7 +1470,7 @@ class Bills(BaseSDK):
                 notes=notes,
                 status=status,
                 ledger_account=utils.get_pydantic_model(
-                    ledger_account, OptionalNullable[models.LinkedLedgerAccountInput]
+                    ledger_account, OptionalNullable[models.LinkedLedgerAccount]
                 ),
                 payment_method=payment_method,
                 channel=channel,
@@ -1650,10 +1641,7 @@ class Bills(BaseSDK):
         notes: OptionalNullable[str] = UNSET,
         status: OptionalNullable[models.BillStatus] = UNSET,
         ledger_account: OptionalNullable[
-            Union[
-                models.LinkedLedgerAccountInput,
-                models.LinkedLedgerAccountInputTypedDict,
-            ]
+            Union[models.LinkedLedgerAccount, models.LinkedLedgerAccountTypedDict]
         ] = UNSET,
         payment_method: OptionalNullable[str] = UNSET,
         channel: OptionalNullable[str] = UNSET,
@@ -1720,8 +1708,8 @@ class Bills(BaseSDK):
         :param terms: Terms of payment.
         :param balance: Balance of bill due.
         :param deposit: Amount of deposit made to this bill.
-        :param sub_total: Sub-total amount, normally before tax.
-        :param total_tax: Total tax amount applied to this bill.
+        :param sub_total: Subtotal amount, normally before tax.
+        :param total_tax: Total tax amount applied to this transaction.
         :param total: Total amount of bill, including tax.
         :param tax_code: Applicable tax id/code override if tax is not supplied on a line item basis.
         :param notes:
@@ -1795,7 +1783,7 @@ class Bills(BaseSDK):
                 notes=notes,
                 status=status,
                 ledger_account=utils.get_pydantic_model(
-                    ledger_account, OptionalNullable[models.LinkedLedgerAccountInput]
+                    ledger_account, OptionalNullable[models.LinkedLedgerAccount]
                 ),
                 payment_method=payment_method,
                 channel=channel,

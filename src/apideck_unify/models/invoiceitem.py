@@ -7,10 +7,6 @@ from .deprecatedlinkedtrackingcategory import (
     DeprecatedLinkedTrackingCategoryTypedDict,
 )
 from .linkedledgeraccount import LinkedLedgerAccount, LinkedLedgerAccountTypedDict
-from .linkedledgeraccount_input import (
-    LinkedLedgerAccountInput,
-    LinkedLedgerAccountInputTypedDict,
-)
 from .linkedtaxrate import LinkedTaxRate, LinkedTaxRateTypedDict
 from .linkedtaxrate_input import LinkedTaxRateInput, LinkedTaxRateInputTypedDict
 from .linkedtrackingcategory import (
@@ -529,9 +525,9 @@ class InvoiceItemInputTypedDict(TypedDict):
     unit_price: NotRequired[Nullable[float]]
     currency: NotRequired[Nullable[Currency]]
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
-    asset_account: NotRequired[Nullable[LinkedLedgerAccountInputTypedDict]]
-    income_account: NotRequired[Nullable[LinkedLedgerAccountInputTypedDict]]
-    expense_account: NotRequired[Nullable[LinkedLedgerAccountInputTypedDict]]
+    asset_account: NotRequired[Nullable[LinkedLedgerAccountTypedDict]]
+    income_account: NotRequired[Nullable[LinkedLedgerAccountTypedDict]]
+    expense_account: NotRequired[Nullable[LinkedLedgerAccountTypedDict]]
     tracking_category: NotRequired[Nullable[DeprecatedLinkedTrackingCategoryTypedDict]]
     tracking_categories: NotRequired[
         Nullable[List[Nullable[LinkedTrackingCategoryTypedDict]]]
@@ -594,11 +590,11 @@ class InvoiceItemInput(BaseModel):
     currency: OptionalNullable[Currency] = UNSET
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
 
-    asset_account: OptionalNullable[LinkedLedgerAccountInput] = UNSET
+    asset_account: OptionalNullable[LinkedLedgerAccount] = UNSET
 
-    income_account: OptionalNullable[LinkedLedgerAccountInput] = UNSET
+    income_account: OptionalNullable[LinkedLedgerAccount] = UNSET
 
-    expense_account: OptionalNullable[LinkedLedgerAccountInput] = UNSET
+    expense_account: OptionalNullable[LinkedLedgerAccount] = UNSET
 
     tracking_category: Annotated[
         OptionalNullable[DeprecatedLinkedTrackingCategory],

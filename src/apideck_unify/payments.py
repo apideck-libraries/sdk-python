@@ -400,10 +400,7 @@ class Payments(BaseSDK):
         accounts_receivable_account_type: OptionalNullable[str] = UNSET,
         accounts_receivable_account_id: OptionalNullable[str] = UNSET,
         account: OptionalNullable[
-            Union[
-                models.LinkedLedgerAccountInput,
-                models.LinkedLedgerAccountInputTypedDict,
-            ]
+            Union[models.LinkedLedgerAccount, models.LinkedLedgerAccountTypedDict]
         ] = UNSET,
         customer: OptionalNullable[
             Union[models.LinkedCustomerInput, models.LinkedCustomerInputTypedDict]
@@ -506,7 +503,7 @@ class Payments(BaseSDK):
                 accounts_receivable_account_type=accounts_receivable_account_type,
                 accounts_receivable_account_id=accounts_receivable_account_id,
                 account=utils.get_pydantic_model(
-                    account, OptionalNullable[models.LinkedLedgerAccountInput]
+                    account, OptionalNullable[models.LinkedLedgerAccount]
                 ),
                 transaction_date=transaction_date,
                 customer=utils.get_pydantic_model(
@@ -656,10 +653,7 @@ class Payments(BaseSDK):
         accounts_receivable_account_type: OptionalNullable[str] = UNSET,
         accounts_receivable_account_id: OptionalNullable[str] = UNSET,
         account: OptionalNullable[
-            Union[
-                models.LinkedLedgerAccountInput,
-                models.LinkedLedgerAccountInputTypedDict,
-            ]
+            Union[models.LinkedLedgerAccount, models.LinkedLedgerAccountTypedDict]
         ] = UNSET,
         customer: OptionalNullable[
             Union[models.LinkedCustomerInput, models.LinkedCustomerInputTypedDict]
@@ -762,7 +756,7 @@ class Payments(BaseSDK):
                 accounts_receivable_account_type=accounts_receivable_account_type,
                 accounts_receivable_account_id=accounts_receivable_account_id,
                 account=utils.get_pydantic_model(
-                    account, OptionalNullable[models.LinkedLedgerAccountInput]
+                    account, OptionalNullable[models.LinkedLedgerAccount]
                 ),
                 transaction_date=transaction_date,
                 customer=utils.get_pydantic_model(
@@ -1201,10 +1195,7 @@ class Payments(BaseSDK):
         accounts_receivable_account_type: OptionalNullable[str] = UNSET,
         accounts_receivable_account_id: OptionalNullable[str] = UNSET,
         account: OptionalNullable[
-            Union[
-                models.LinkedLedgerAccountInput,
-                models.LinkedLedgerAccountInputTypedDict,
-            ]
+            Union[models.LinkedLedgerAccount, models.LinkedLedgerAccountTypedDict]
         ] = UNSET,
         customer: OptionalNullable[
             Union[models.LinkedCustomerInput, models.LinkedCustomerInputTypedDict]
@@ -1309,7 +1300,7 @@ class Payments(BaseSDK):
                 accounts_receivable_account_type=accounts_receivable_account_type,
                 accounts_receivable_account_id=accounts_receivable_account_id,
                 account=utils.get_pydantic_model(
-                    account, OptionalNullable[models.LinkedLedgerAccountInput]
+                    account, OptionalNullable[models.LinkedLedgerAccount]
                 ),
                 transaction_date=transaction_date,
                 customer=utils.get_pydantic_model(
@@ -1460,10 +1451,7 @@ class Payments(BaseSDK):
         accounts_receivable_account_type: OptionalNullable[str] = UNSET,
         accounts_receivable_account_id: OptionalNullable[str] = UNSET,
         account: OptionalNullable[
-            Union[
-                models.LinkedLedgerAccountInput,
-                models.LinkedLedgerAccountInputTypedDict,
-            ]
+            Union[models.LinkedLedgerAccount, models.LinkedLedgerAccountTypedDict]
         ] = UNSET,
         customer: OptionalNullable[
             Union[models.LinkedCustomerInput, models.LinkedCustomerInputTypedDict]
@@ -1568,7 +1556,7 @@ class Payments(BaseSDK):
                 accounts_receivable_account_type=accounts_receivable_account_type,
                 accounts_receivable_account_id=accounts_receivable_account_id,
                 account=utils.get_pydantic_model(
-                    account, OptionalNullable[models.LinkedLedgerAccountInput]
+                    account, OptionalNullable[models.LinkedLedgerAccount]
                 ),
                 transaction_date=transaction_date,
                 customer=utils.get_pydantic_model(

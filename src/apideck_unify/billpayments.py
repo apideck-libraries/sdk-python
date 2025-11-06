@@ -398,10 +398,7 @@ class BillPayments(BaseSDK):
         payment_method_reference: OptionalNullable[str] = UNSET,
         payment_method_id: OptionalNullable[str] = UNSET,
         account: OptionalNullable[
-            Union[
-                models.LinkedLedgerAccountInput,
-                models.LinkedLedgerAccountInputTypedDict,
-            ]
+            Union[models.LinkedLedgerAccount, models.LinkedLedgerAccountTypedDict]
         ] = UNSET,
         supplier: OptionalNullable[
             Union[models.LinkedSupplierInput, models.LinkedSupplierInputTypedDict]
@@ -496,7 +493,7 @@ class BillPayments(BaseSDK):
                 payment_method_reference=payment_method_reference,
                 payment_method_id=payment_method_id,
                 account=utils.get_pydantic_model(
-                    account, OptionalNullable[models.LinkedLedgerAccountInput]
+                    account, OptionalNullable[models.LinkedLedgerAccount]
                 ),
                 transaction_date=transaction_date,
                 supplier=utils.get_pydantic_model(
@@ -641,10 +638,7 @@ class BillPayments(BaseSDK):
         payment_method_reference: OptionalNullable[str] = UNSET,
         payment_method_id: OptionalNullable[str] = UNSET,
         account: OptionalNullable[
-            Union[
-                models.LinkedLedgerAccountInput,
-                models.LinkedLedgerAccountInputTypedDict,
-            ]
+            Union[models.LinkedLedgerAccount, models.LinkedLedgerAccountTypedDict]
         ] = UNSET,
         supplier: OptionalNullable[
             Union[models.LinkedSupplierInput, models.LinkedSupplierInputTypedDict]
@@ -739,7 +733,7 @@ class BillPayments(BaseSDK):
                 payment_method_reference=payment_method_reference,
                 payment_method_id=payment_method_id,
                 account=utils.get_pydantic_model(
-                    account, OptionalNullable[models.LinkedLedgerAccountInput]
+                    account, OptionalNullable[models.LinkedLedgerAccount]
                 ),
                 transaction_date=transaction_date,
                 supplier=utils.get_pydantic_model(
@@ -1173,10 +1167,7 @@ class BillPayments(BaseSDK):
         payment_method_reference: OptionalNullable[str] = UNSET,
         payment_method_id: OptionalNullable[str] = UNSET,
         account: OptionalNullable[
-            Union[
-                models.LinkedLedgerAccountInput,
-                models.LinkedLedgerAccountInputTypedDict,
-            ]
+            Union[models.LinkedLedgerAccount, models.LinkedLedgerAccountTypedDict]
         ] = UNSET,
         supplier: OptionalNullable[
             Union[models.LinkedSupplierInput, models.LinkedSupplierInputTypedDict]
@@ -1273,7 +1264,7 @@ class BillPayments(BaseSDK):
                 payment_method_reference=payment_method_reference,
                 payment_method_id=payment_method_id,
                 account=utils.get_pydantic_model(
-                    account, OptionalNullable[models.LinkedLedgerAccountInput]
+                    account, OptionalNullable[models.LinkedLedgerAccount]
                 ),
                 transaction_date=transaction_date,
                 supplier=utils.get_pydantic_model(
@@ -1419,10 +1410,7 @@ class BillPayments(BaseSDK):
         payment_method_reference: OptionalNullable[str] = UNSET,
         payment_method_id: OptionalNullable[str] = UNSET,
         account: OptionalNullable[
-            Union[
-                models.LinkedLedgerAccountInput,
-                models.LinkedLedgerAccountInputTypedDict,
-            ]
+            Union[models.LinkedLedgerAccount, models.LinkedLedgerAccountTypedDict]
         ] = UNSET,
         supplier: OptionalNullable[
             Union[models.LinkedSupplierInput, models.LinkedSupplierInputTypedDict]
@@ -1519,7 +1507,7 @@ class BillPayments(BaseSDK):
                 payment_method_reference=payment_method_reference,
                 payment_method_id=payment_method_id,
                 account=utils.get_pydantic_model(
-                    account, OptionalNullable[models.LinkedLedgerAccountInput]
+                    account, OptionalNullable[models.LinkedLedgerAccount]
                 ),
                 transaction_date=transaction_date,
                 supplier=utils.get_pydantic_model(

@@ -8,10 +8,6 @@ from .deprecatedlinkedtrackingcategory import (
 from .linkedcustomer import LinkedCustomer, LinkedCustomerTypedDict
 from .linkedcustomer_input import LinkedCustomerInput, LinkedCustomerInputTypedDict
 from .linkedledgeraccount import LinkedLedgerAccount, LinkedLedgerAccountTypedDict
-from .linkedledgeraccount_input import (
-    LinkedLedgerAccountInput,
-    LinkedLedgerAccountInputTypedDict,
-)
 from .linkedsupplier import LinkedSupplier, LinkedSupplierTypedDict
 from .linkedsupplier_input import LinkedSupplierInput, LinkedSupplierInputTypedDict
 from .linkedtaxrate import LinkedTaxRate, LinkedTaxRateTypedDict
@@ -191,7 +187,7 @@ class JournalEntryLineItem(BaseModel):
 class JournalEntryLineItemInputTypedDict(TypedDict):
     type: JournalEntryLineItemType
     r"""Debit entries are considered positive, and credit entries are considered negative."""
-    ledger_account: Nullable[LinkedLedgerAccountInputTypedDict]
+    ledger_account: Nullable[LinkedLedgerAccountTypedDict]
     description: NotRequired[Nullable[str]]
     r"""User defined description"""
     tax_amount: NotRequired[Nullable[float]]
@@ -224,7 +220,7 @@ class JournalEntryLineItemInput(BaseModel):
     type: JournalEntryLineItemType
     r"""Debit entries are considered positive, and credit entries are considered negative."""
 
-    ledger_account: Nullable[LinkedLedgerAccountInput]
+    ledger_account: Nullable[LinkedLedgerAccount]
 
     description: OptionalNullable[str] = UNSET
     r"""User defined description"""
