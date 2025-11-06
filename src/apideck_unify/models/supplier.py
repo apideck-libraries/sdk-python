@@ -7,10 +7,6 @@ from .currency import Currency
 from .customfield import CustomField, CustomFieldTypedDict
 from .email import Email, EmailTypedDict
 from .linkedledgeraccount import LinkedLedgerAccount, LinkedLedgerAccountTypedDict
-from .linkedledgeraccount_input import (
-    LinkedLedgerAccountInput,
-    LinkedLedgerAccountInputTypedDict,
-)
 from .linkedtaxdetail import LinkedTaxDetail, LinkedTaxDetailTypedDict
 from .linkedtaxrate import LinkedTaxRate, LinkedTaxRateTypedDict
 from .linkedtaxrate_input import LinkedTaxRateInput, LinkedTaxRateInputTypedDict
@@ -361,7 +357,7 @@ class SupplierInputTypedDict(TypedDict):
     tax_number: NotRequired[Nullable[str]]
     currency: NotRequired[Nullable[Currency]]
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
-    account: NotRequired[Nullable[LinkedLedgerAccountInputTypedDict]]
+    account: NotRequired[Nullable[LinkedLedgerAccountTypedDict]]
     status: NotRequired[Nullable[SupplierStatus]]
     r"""Supplier status"""
     payment_method: NotRequired[Nullable[str]]
@@ -440,7 +436,7 @@ class SupplierInput(BaseModel):
     currency: OptionalNullable[Currency] = UNSET
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
 
-    account: OptionalNullable[LinkedLedgerAccountInput] = UNSET
+    account: OptionalNullable[LinkedLedgerAccount] = UNSET
 
     status: OptionalNullable[SupplierStatus] = UNSET
     r"""Supplier status"""

@@ -9,10 +9,7 @@ from .deprecatedlinkedsupplier_input import (
     DeprecatedLinkedSupplierInputTypedDict,
 )
 from .linkedcustomer_input import LinkedCustomerInput, LinkedCustomerInputTypedDict
-from .linkedledgeraccount_input import (
-    LinkedLedgerAccountInput,
-    LinkedLedgerAccountInputTypedDict,
-)
+from .linkedledgeraccount import LinkedLedgerAccount, LinkedLedgerAccountTypedDict
 from .linkedtrackingcategory import (
     LinkedTrackingCategory,
     LinkedTrackingCategoryTypedDict,
@@ -55,7 +52,7 @@ class PaymentInputTypedDict(TypedDict):
     r"""Type of accounts receivable account."""
     accounts_receivable_account_id: NotRequired[Nullable[str]]
     r"""Unique identifier for the account to allocate payment to."""
-    account: NotRequired[Nullable[LinkedLedgerAccountInputTypedDict]]
+    account: NotRequired[Nullable[LinkedLedgerAccountTypedDict]]
     customer: NotRequired[Nullable[LinkedCustomerInputTypedDict]]
     r"""The customer this entity is linked to."""
     supplier: NotRequired[Nullable[DeprecatedLinkedSupplierInputTypedDict]]
@@ -127,7 +124,7 @@ class PaymentInput(BaseModel):
     ] = UNSET
     r"""Unique identifier for the account to allocate payment to."""
 
-    account: OptionalNullable[LinkedLedgerAccountInput] = UNSET
+    account: OptionalNullable[LinkedLedgerAccount] = UNSET
 
     customer: OptionalNullable[LinkedCustomerInput] = UNSET
     r"""The customer this entity is linked to."""

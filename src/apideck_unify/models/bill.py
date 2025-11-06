@@ -2,20 +2,12 @@
 
 from __future__ import annotations
 from .bankaccount import BankAccount, BankAccountTypedDict
-from .billlineitem import (
-    BillLineItem,
-    BillLineItemInput,
-    BillLineItemInputTypedDict,
-    BillLineItemTypedDict,
-)
+from .billlineitem import BillLineItem, BillLineItemTypedDict
+from .billlineitem_input import BillLineItemInput, BillLineItemInputTypedDict
 from .currency import Currency
 from .customfield import CustomField, CustomFieldTypedDict
 from .linkedattachment import LinkedAttachment, LinkedAttachmentTypedDict
 from .linkedledgeraccount import LinkedLedgerAccount, LinkedLedgerAccountTypedDict
-from .linkedledgeraccount_input import (
-    LinkedLedgerAccountInput,
-    LinkedLedgerAccountInputTypedDict,
-)
 from .linkedsupplier import LinkedSupplier, LinkedSupplierTypedDict
 from .linkedsupplier_input import LinkedSupplierInput, LinkedSupplierInputTypedDict
 from .linkedtrackingcategory import (
@@ -99,9 +91,9 @@ class BillTypedDict(TypedDict):
     deposit: NotRequired[Nullable[float]]
     r"""Amount of deposit made to this bill."""
     sub_total: NotRequired[Nullable[float]]
-    r"""Sub-total amount, normally before tax."""
+    r"""Subtotal amount, normally before tax."""
     total_tax: NotRequired[Nullable[float]]
-    r"""Total tax amount applied to this bill."""
+    r"""Total tax amount applied to this transaction."""
     total: NotRequired[Nullable[float]]
     r"""Total amount of bill, including tax."""
     tax_code: NotRequired[Nullable[str]]
@@ -215,10 +207,10 @@ class Bill(BaseModel):
     r"""Amount of deposit made to this bill."""
 
     sub_total: OptionalNullable[float] = UNSET
-    r"""Sub-total amount, normally before tax."""
+    r"""Subtotal amount, normally before tax."""
 
     total_tax: OptionalNullable[float] = UNSET
-    r"""Total tax amount applied to this bill."""
+    r"""Total tax amount applied to this transaction."""
 
     total: OptionalNullable[float] = UNSET
     r"""Total amount of bill, including tax."""
@@ -461,9 +453,9 @@ class BillInputTypedDict(TypedDict):
     deposit: NotRequired[Nullable[float]]
     r"""Amount of deposit made to this bill."""
     sub_total: NotRequired[Nullable[float]]
-    r"""Sub-total amount, normally before tax."""
+    r"""Subtotal amount, normally before tax."""
     total_tax: NotRequired[Nullable[float]]
-    r"""Total tax amount applied to this bill."""
+    r"""Total tax amount applied to this transaction."""
     total: NotRequired[Nullable[float]]
     r"""Total amount of bill, including tax."""
     tax_code: NotRequired[Nullable[str]]
@@ -471,7 +463,7 @@ class BillInputTypedDict(TypedDict):
     notes: NotRequired[Nullable[str]]
     status: NotRequired[Nullable[BillStatus]]
     r"""Invoice status"""
-    ledger_account: NotRequired[Nullable[LinkedLedgerAccountInputTypedDict]]
+    ledger_account: NotRequired[Nullable[LinkedLedgerAccountTypedDict]]
     payment_method: NotRequired[Nullable[str]]
     r"""Payment method used for the transaction, such as cash, credit card, bank transfer, or check"""
     channel: NotRequired[Nullable[str]]
@@ -561,10 +553,10 @@ class BillInput(BaseModel):
     r"""Amount of deposit made to this bill."""
 
     sub_total: OptionalNullable[float] = UNSET
-    r"""Sub-total amount, normally before tax."""
+    r"""Subtotal amount, normally before tax."""
 
     total_tax: OptionalNullable[float] = UNSET
-    r"""Total tax amount applied to this bill."""
+    r"""Total tax amount applied to this transaction."""
 
     total: OptionalNullable[float] = UNSET
     r"""Total amount of bill, including tax."""
@@ -577,7 +569,7 @@ class BillInput(BaseModel):
     status: OptionalNullable[BillStatus] = UNSET
     r"""Invoice status"""
 
-    ledger_account: OptionalNullable[LinkedLedgerAccountInput] = UNSET
+    ledger_account: OptionalNullable[LinkedLedgerAccount] = UNSET
 
     payment_method: OptionalNullable[str] = UNSET
     r"""Payment method used for the transaction, such as cash, credit card, bank transfer, or check"""

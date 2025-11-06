@@ -424,10 +424,7 @@ class Customers(BaseSDK):
         tax_number: OptionalNullable[str] = UNSET,
         currency: OptionalNullable[models.Currency] = UNSET,
         account: OptionalNullable[
-            Union[
-                models.LinkedLedgerAccountInput,
-                models.LinkedLedgerAccountInputTypedDict,
-            ]
+            Union[models.LinkedLedgerAccount, models.LinkedLedgerAccountTypedDict]
         ] = UNSET,
         parent: OptionalNullable[
             Union[models.LinkedParentCustomer, models.LinkedParentCustomerTypedDict]
@@ -539,7 +536,7 @@ class Customers(BaseSDK):
                 tax_number=tax_number,
                 currency=currency,
                 account=utils.get_pydantic_model(
-                    account, OptionalNullable[models.LinkedLedgerAccountInput]
+                    account, OptionalNullable[models.LinkedLedgerAccount]
                 ),
                 parent=utils.get_pydantic_model(
                     parent, OptionalNullable[models.LinkedParentCustomer]
@@ -696,10 +693,7 @@ class Customers(BaseSDK):
         tax_number: OptionalNullable[str] = UNSET,
         currency: OptionalNullable[models.Currency] = UNSET,
         account: OptionalNullable[
-            Union[
-                models.LinkedLedgerAccountInput,
-                models.LinkedLedgerAccountInputTypedDict,
-            ]
+            Union[models.LinkedLedgerAccount, models.LinkedLedgerAccountTypedDict]
         ] = UNSET,
         parent: OptionalNullable[
             Union[models.LinkedParentCustomer, models.LinkedParentCustomerTypedDict]
@@ -811,7 +805,7 @@ class Customers(BaseSDK):
                 tax_number=tax_number,
                 currency=currency,
                 account=utils.get_pydantic_model(
-                    account, OptionalNullable[models.LinkedLedgerAccountInput]
+                    account, OptionalNullable[models.LinkedLedgerAccount]
                 ),
                 parent=utils.get_pydantic_model(
                     parent, OptionalNullable[models.LinkedParentCustomer]
@@ -1257,10 +1251,7 @@ class Customers(BaseSDK):
         tax_number: OptionalNullable[str] = UNSET,
         currency: OptionalNullable[models.Currency] = UNSET,
         account: OptionalNullable[
-            Union[
-                models.LinkedLedgerAccountInput,
-                models.LinkedLedgerAccountInputTypedDict,
-            ]
+            Union[models.LinkedLedgerAccount, models.LinkedLedgerAccountTypedDict]
         ] = UNSET,
         parent: OptionalNullable[
             Union[models.LinkedParentCustomer, models.LinkedParentCustomerTypedDict]
@@ -1374,7 +1365,7 @@ class Customers(BaseSDK):
                 tax_number=tax_number,
                 currency=currency,
                 account=utils.get_pydantic_model(
-                    account, OptionalNullable[models.LinkedLedgerAccountInput]
+                    account, OptionalNullable[models.LinkedLedgerAccount]
                 ),
                 parent=utils.get_pydantic_model(
                     parent, OptionalNullable[models.LinkedParentCustomer]
@@ -1532,10 +1523,7 @@ class Customers(BaseSDK):
         tax_number: OptionalNullable[str] = UNSET,
         currency: OptionalNullable[models.Currency] = UNSET,
         account: OptionalNullable[
-            Union[
-                models.LinkedLedgerAccountInput,
-                models.LinkedLedgerAccountInputTypedDict,
-            ]
+            Union[models.LinkedLedgerAccount, models.LinkedLedgerAccountTypedDict]
         ] = UNSET,
         parent: OptionalNullable[
             Union[models.LinkedParentCustomer, models.LinkedParentCustomerTypedDict]
@@ -1649,7 +1637,7 @@ class Customers(BaseSDK):
                 tax_number=tax_number,
                 currency=currency,
                 account=utils.get_pydantic_model(
-                    account, OptionalNullable[models.LinkedLedgerAccountInput]
+                    account, OptionalNullable[models.LinkedLedgerAccount]
                 ),
                 parent=utils.get_pydantic_model(
                     parent, OptionalNullable[models.LinkedParentCustomer]

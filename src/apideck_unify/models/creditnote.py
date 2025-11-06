@@ -19,10 +19,6 @@ from .invoicelineitem import (
 from .linkedcustomer import LinkedCustomer, LinkedCustomerTypedDict
 from .linkedcustomer_input import LinkedCustomerInput, LinkedCustomerInputTypedDict
 from .linkedledgeraccount import LinkedLedgerAccount, LinkedLedgerAccountTypedDict
-from .linkedledgeraccount_input import (
-    LinkedLedgerAccountInput,
-    LinkedLedgerAccountInputTypedDict,
-)
 from .linkedtrackingcategory import (
     LinkedTrackingCategory,
     LinkedTrackingCategoryTypedDict,
@@ -357,7 +353,7 @@ class CreditNoteInputTypedDict(TypedDict):
     r"""Date credit note paid - YYYY:MM::DDThh:mm:ss.sTZD"""
     type: NotRequired[CreditNoteType]
     r"""Type of payment"""
-    account: NotRequired[Nullable[LinkedLedgerAccountInputTypedDict]]
+    account: NotRequired[Nullable[LinkedLedgerAccountTypedDict]]
     line_items: NotRequired[List[InvoiceLineItemInputTypedDict]]
     allocations: NotRequired[List[AllocationInputTypedDict]]
     note: NotRequired[Nullable[str]]
@@ -432,7 +428,7 @@ class CreditNoteInput(BaseModel):
     type: Optional[CreditNoteType] = None
     r"""Type of payment"""
 
-    account: OptionalNullable[LinkedLedgerAccountInput] = UNSET
+    account: OptionalNullable[LinkedLedgerAccount] = UNSET
 
     line_items: Optional[List[InvoiceLineItemInput]] = None
 

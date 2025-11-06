@@ -15,6 +15,8 @@ from typing_extensions import NotRequired, TypedDict
 class LinkedTaxRateInputTypedDict(TypedDict):
     id: NotRequired[Nullable[str]]
     r"""The ID of the object."""
+    code: NotRequired[Nullable[str]]
+    r"""Tax rate code"""
     rate: NotRequired[Nullable[float]]
     r"""Rate of the tax rate"""
 
@@ -23,13 +25,16 @@ class LinkedTaxRateInput(BaseModel):
     id: OptionalNullable[str] = UNSET
     r"""The ID of the object."""
 
+    code: OptionalNullable[str] = UNSET
+    r"""Tax rate code"""
+
     rate: OptionalNullable[float] = UNSET
     r"""Rate of the tax rate"""
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
-        optional_fields = ["id", "rate"]
-        nullable_fields = ["id", "rate"]
+        optional_fields = ["id", "code", "rate"]
+        nullable_fields = ["id", "code", "rate"]
         null_default_fields = []
 
         serialized = handler(self)

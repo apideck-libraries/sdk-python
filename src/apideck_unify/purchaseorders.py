@@ -421,10 +421,7 @@ class PurchaseOrders(BaseSDK):
             Union[models.Address, models.AddressTypedDict]
         ] = None,
         ledger_account: OptionalNullable[
-            Union[
-                models.LinkedLedgerAccountInput,
-                models.LinkedLedgerAccountInputTypedDict,
-            ]
+            Union[models.LinkedLedgerAccount, models.LinkedLedgerAccountTypedDict]
         ] = UNSET,
         template_id: OptionalNullable[str] = UNSET,
         discount_percentage: OptionalNullable[float] = UNSET,
@@ -561,7 +558,7 @@ class PurchaseOrders(BaseSDK):
                     shipping_address, Optional[models.Address]
                 ),
                 ledger_account=utils.get_pydantic_model(
-                    ledger_account, OptionalNullable[models.LinkedLedgerAccountInput]
+                    ledger_account, OptionalNullable[models.LinkedLedgerAccount]
                 ),
                 template_id=template_id,
                 discount_percentage=discount_percentage,
@@ -732,10 +729,7 @@ class PurchaseOrders(BaseSDK):
             Union[models.Address, models.AddressTypedDict]
         ] = None,
         ledger_account: OptionalNullable[
-            Union[
-                models.LinkedLedgerAccountInput,
-                models.LinkedLedgerAccountInputTypedDict,
-            ]
+            Union[models.LinkedLedgerAccount, models.LinkedLedgerAccountTypedDict]
         ] = UNSET,
         template_id: OptionalNullable[str] = UNSET,
         discount_percentage: OptionalNullable[float] = UNSET,
@@ -872,7 +866,7 @@ class PurchaseOrders(BaseSDK):
                     shipping_address, Optional[models.Address]
                 ),
                 ledger_account=utils.get_pydantic_model(
-                    ledger_account, OptionalNullable[models.LinkedLedgerAccountInput]
+                    ledger_account, OptionalNullable[models.LinkedLedgerAccount]
                 ),
                 template_id=template_id,
                 discount_percentage=discount_percentage,
@@ -1326,10 +1320,7 @@ class PurchaseOrders(BaseSDK):
             Union[models.Address, models.AddressTypedDict]
         ] = None,
         ledger_account: OptionalNullable[
-            Union[
-                models.LinkedLedgerAccountInput,
-                models.LinkedLedgerAccountInputTypedDict,
-            ]
+            Union[models.LinkedLedgerAccount, models.LinkedLedgerAccountTypedDict]
         ] = UNSET,
         template_id: OptionalNullable[str] = UNSET,
         discount_percentage: OptionalNullable[float] = UNSET,
@@ -1468,7 +1459,7 @@ class PurchaseOrders(BaseSDK):
                     shipping_address, Optional[models.Address]
                 ),
                 ledger_account=utils.get_pydantic_model(
-                    ledger_account, OptionalNullable[models.LinkedLedgerAccountInput]
+                    ledger_account, OptionalNullable[models.LinkedLedgerAccount]
                 ),
                 template_id=template_id,
                 discount_percentage=discount_percentage,
@@ -1640,10 +1631,7 @@ class PurchaseOrders(BaseSDK):
             Union[models.Address, models.AddressTypedDict]
         ] = None,
         ledger_account: OptionalNullable[
-            Union[
-                models.LinkedLedgerAccountInput,
-                models.LinkedLedgerAccountInputTypedDict,
-            ]
+            Union[models.LinkedLedgerAccount, models.LinkedLedgerAccountTypedDict]
         ] = UNSET,
         template_id: OptionalNullable[str] = UNSET,
         discount_percentage: OptionalNullable[float] = UNSET,
@@ -1782,7 +1770,7 @@ class PurchaseOrders(BaseSDK):
                     shipping_address, Optional[models.Address]
                 ),
                 ledger_account=utils.get_pydantic_model(
-                    ledger_account, OptionalNullable[models.LinkedLedgerAccountInput]
+                    ledger_account, OptionalNullable[models.LinkedLedgerAccount]
                 ),
                 template_id=template_id,
                 discount_percentage=discount_percentage,

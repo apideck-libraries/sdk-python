@@ -4,10 +4,6 @@ from __future__ import annotations
 from .customfield import CustomField, CustomFieldTypedDict
 from .linkedinvoiceitem import LinkedInvoiceItem, LinkedInvoiceItemTypedDict
 from .linkedledgeraccount import LinkedLedgerAccount, LinkedLedgerAccountTypedDict
-from .linkedledgeraccount_input import (
-    LinkedLedgerAccountInput,
-    LinkedLedgerAccountInputTypedDict,
-)
 from .linkedtaxrate import LinkedTaxRate, LinkedTaxRateTypedDict
 from .linkedtaxrate_input import LinkedTaxRateInput, LinkedTaxRateInputTypedDict
 from .linkedtrackingcategory import (
@@ -364,7 +360,7 @@ class InvoiceLineItemInputTypedDict(TypedDict):
         Nullable[List[Nullable[LinkedTrackingCategoryTypedDict]]]
     ]
     r"""A list of linked tracking categories."""
-    ledger_account: NotRequired[Nullable[LinkedLedgerAccountInputTypedDict]]
+    ledger_account: NotRequired[Nullable[LinkedLedgerAccountTypedDict]]
     custom_fields: NotRequired[List[CustomFieldTypedDict]]
     row_version: NotRequired[Nullable[str]]
     r"""A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object."""
@@ -453,7 +449,7 @@ class InvoiceLineItemInput(BaseModel):
     )
     r"""A list of linked tracking categories."""
 
-    ledger_account: OptionalNullable[LinkedLedgerAccountInput] = UNSET
+    ledger_account: OptionalNullable[LinkedLedgerAccount] = UNSET
 
     custom_fields: Optional[List[CustomField]] = None
 

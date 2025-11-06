@@ -18,10 +18,6 @@ from .invoicelineitem import (
 from .linkedcustomer import LinkedCustomer, LinkedCustomerTypedDict
 from .linkedcustomer_input import LinkedCustomerInput, LinkedCustomerInputTypedDict
 from .linkedledgeraccount import LinkedLedgerAccount, LinkedLedgerAccountTypedDict
-from .linkedledgeraccount_input import (
-    LinkedLedgerAccountInput,
-    LinkedLedgerAccountInputTypedDict,
-)
 from .linkedtrackingcategory import (
     LinkedTrackingCategory,
     LinkedTrackingCategoryTypedDict,
@@ -558,7 +554,7 @@ class InvoiceInputTypedDict(TypedDict):
     accounting_by_row: NotRequired[Nullable[bool]]
     r"""Indicates if accounting by row is used (true) or not (false). Accounting by row means that a separate ledger transaction is created for each row."""
     bank_account: NotRequired[BankAccountTypedDict]
-    ledger_account: NotRequired[Nullable[LinkedLedgerAccountInputTypedDict]]
+    ledger_account: NotRequired[Nullable[LinkedLedgerAccountTypedDict]]
     custom_fields: NotRequired[List[CustomFieldTypedDict]]
     row_version: NotRequired[Nullable[str]]
     r"""A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object."""
@@ -683,7 +679,7 @@ class InvoiceInput(BaseModel):
 
     bank_account: Optional[BankAccount] = None
 
-    ledger_account: OptionalNullable[LinkedLedgerAccountInput] = UNSET
+    ledger_account: OptionalNullable[LinkedLedgerAccount] = UNSET
 
     custom_fields: Optional[List[CustomField]] = None
 

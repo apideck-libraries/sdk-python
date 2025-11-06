@@ -401,10 +401,7 @@ class BankAccounts(BaseSDK):
         account_number: OptionalNullable[str] = UNSET,
         account_type: Optional[models.AccountingBankAccountAccountType] = None,
         ledger_account: OptionalNullable[
-            Union[
-                models.LinkedLedgerAccountInput,
-                models.LinkedLedgerAccountInputTypedDict,
-            ]
+            Union[models.LinkedLedgerAccount, models.LinkedLedgerAccountTypedDict]
         ] = UNSET,
         bank_name: OptionalNullable[str] = UNSET,
         currency: OptionalNullable[models.Currency] = UNSET,
@@ -482,7 +479,7 @@ class BankAccounts(BaseSDK):
                 account_number=account_number,
                 account_type=account_type,
                 ledger_account=utils.get_pydantic_model(
-                    ledger_account, OptionalNullable[models.LinkedLedgerAccountInput]
+                    ledger_account, OptionalNullable[models.LinkedLedgerAccount]
                 ),
                 bank_name=bank_name,
                 currency=currency,
@@ -619,10 +616,7 @@ class BankAccounts(BaseSDK):
         account_number: OptionalNullable[str] = UNSET,
         account_type: Optional[models.AccountingBankAccountAccountType] = None,
         ledger_account: OptionalNullable[
-            Union[
-                models.LinkedLedgerAccountInput,
-                models.LinkedLedgerAccountInputTypedDict,
-            ]
+            Union[models.LinkedLedgerAccount, models.LinkedLedgerAccountTypedDict]
         ] = UNSET,
         bank_name: OptionalNullable[str] = UNSET,
         currency: OptionalNullable[models.Currency] = UNSET,
@@ -700,7 +694,7 @@ class BankAccounts(BaseSDK):
                 account_number=account_number,
                 account_type=account_type,
                 ledger_account=utils.get_pydantic_model(
-                    ledger_account, OptionalNullable[models.LinkedLedgerAccountInput]
+                    ledger_account, OptionalNullable[models.LinkedLedgerAccount]
                 ),
                 bank_name=bank_name,
                 currency=currency,
@@ -1126,10 +1120,7 @@ class BankAccounts(BaseSDK):
         account_number: OptionalNullable[str] = UNSET,
         account_type: Optional[models.AccountingBankAccountAccountType] = None,
         ledger_account: OptionalNullable[
-            Union[
-                models.LinkedLedgerAccountInput,
-                models.LinkedLedgerAccountInputTypedDict,
-            ]
+            Union[models.LinkedLedgerAccount, models.LinkedLedgerAccountTypedDict]
         ] = UNSET,
         bank_name: OptionalNullable[str] = UNSET,
         currency: OptionalNullable[models.Currency] = UNSET,
@@ -1209,7 +1200,7 @@ class BankAccounts(BaseSDK):
                 account_number=account_number,
                 account_type=account_type,
                 ledger_account=utils.get_pydantic_model(
-                    ledger_account, OptionalNullable[models.LinkedLedgerAccountInput]
+                    ledger_account, OptionalNullable[models.LinkedLedgerAccount]
                 ),
                 bank_name=bank_name,
                 currency=currency,
@@ -1347,10 +1338,7 @@ class BankAccounts(BaseSDK):
         account_number: OptionalNullable[str] = UNSET,
         account_type: Optional[models.AccountingBankAccountAccountType] = None,
         ledger_account: OptionalNullable[
-            Union[
-                models.LinkedLedgerAccountInput,
-                models.LinkedLedgerAccountInputTypedDict,
-            ]
+            Union[models.LinkedLedgerAccount, models.LinkedLedgerAccountTypedDict]
         ] = UNSET,
         bank_name: OptionalNullable[str] = UNSET,
         currency: OptionalNullable[models.Currency] = UNSET,
@@ -1430,7 +1418,7 @@ class BankAccounts(BaseSDK):
                 account_number=account_number,
                 account_type=account_type,
                 ledger_account=utils.get_pydantic_model(
-                    ledger_account, OptionalNullable[models.LinkedLedgerAccountInput]
+                    ledger_account, OptionalNullable[models.LinkedLedgerAccount]
                 ),
                 bank_name=bank_name,
                 currency=currency,

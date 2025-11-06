@@ -422,22 +422,13 @@ class InvoiceItems(BaseSDK):
         unit_price: OptionalNullable[float] = UNSET,
         currency: OptionalNullable[models.Currency] = UNSET,
         asset_account: OptionalNullable[
-            Union[
-                models.LinkedLedgerAccountInput,
-                models.LinkedLedgerAccountInputTypedDict,
-            ]
+            Union[models.LinkedLedgerAccount, models.LinkedLedgerAccountTypedDict]
         ] = UNSET,
         income_account: OptionalNullable[
-            Union[
-                models.LinkedLedgerAccountInput,
-                models.LinkedLedgerAccountInputTypedDict,
-            ]
+            Union[models.LinkedLedgerAccount, models.LinkedLedgerAccountTypedDict]
         ] = UNSET,
         expense_account: OptionalNullable[
-            Union[
-                models.LinkedLedgerAccountInput,
-                models.LinkedLedgerAccountInputTypedDict,
-            ]
+            Union[models.LinkedLedgerAccount, models.LinkedLedgerAccountTypedDict]
         ] = UNSET,
         tracking_category: OptionalNullable[
             Union[
@@ -541,13 +532,13 @@ class InvoiceItems(BaseSDK):
                 unit_price=unit_price,
                 currency=currency,
                 asset_account=utils.get_pydantic_model(
-                    asset_account, OptionalNullable[models.LinkedLedgerAccountInput]
+                    asset_account, OptionalNullable[models.LinkedLedgerAccount]
                 ),
                 income_account=utils.get_pydantic_model(
-                    income_account, OptionalNullable[models.LinkedLedgerAccountInput]
+                    income_account, OptionalNullable[models.LinkedLedgerAccount]
                 ),
                 expense_account=utils.get_pydantic_model(
-                    expense_account, OptionalNullable[models.LinkedLedgerAccountInput]
+                    expense_account, OptionalNullable[models.LinkedLedgerAccount]
                 ),
                 tracking_category=utils.get_pydantic_model(
                     tracking_category,
@@ -700,22 +691,13 @@ class InvoiceItems(BaseSDK):
         unit_price: OptionalNullable[float] = UNSET,
         currency: OptionalNullable[models.Currency] = UNSET,
         asset_account: OptionalNullable[
-            Union[
-                models.LinkedLedgerAccountInput,
-                models.LinkedLedgerAccountInputTypedDict,
-            ]
+            Union[models.LinkedLedgerAccount, models.LinkedLedgerAccountTypedDict]
         ] = UNSET,
         income_account: OptionalNullable[
-            Union[
-                models.LinkedLedgerAccountInput,
-                models.LinkedLedgerAccountInputTypedDict,
-            ]
+            Union[models.LinkedLedgerAccount, models.LinkedLedgerAccountTypedDict]
         ] = UNSET,
         expense_account: OptionalNullable[
-            Union[
-                models.LinkedLedgerAccountInput,
-                models.LinkedLedgerAccountInputTypedDict,
-            ]
+            Union[models.LinkedLedgerAccount, models.LinkedLedgerAccountTypedDict]
         ] = UNSET,
         tracking_category: OptionalNullable[
             Union[
@@ -819,13 +801,13 @@ class InvoiceItems(BaseSDK):
                 unit_price=unit_price,
                 currency=currency,
                 asset_account=utils.get_pydantic_model(
-                    asset_account, OptionalNullable[models.LinkedLedgerAccountInput]
+                    asset_account, OptionalNullable[models.LinkedLedgerAccount]
                 ),
                 income_account=utils.get_pydantic_model(
-                    income_account, OptionalNullable[models.LinkedLedgerAccountInput]
+                    income_account, OptionalNullable[models.LinkedLedgerAccount]
                 ),
                 expense_account=utils.get_pydantic_model(
-                    expense_account, OptionalNullable[models.LinkedLedgerAccountInput]
+                    expense_account, OptionalNullable[models.LinkedLedgerAccount]
                 ),
                 tracking_category=utils.get_pydantic_model(
                     tracking_category,
@@ -1281,22 +1263,13 @@ class InvoiceItems(BaseSDK):
         unit_price: OptionalNullable[float] = UNSET,
         currency: OptionalNullable[models.Currency] = UNSET,
         asset_account: OptionalNullable[
-            Union[
-                models.LinkedLedgerAccountInput,
-                models.LinkedLedgerAccountInputTypedDict,
-            ]
+            Union[models.LinkedLedgerAccount, models.LinkedLedgerAccountTypedDict]
         ] = UNSET,
         income_account: OptionalNullable[
-            Union[
-                models.LinkedLedgerAccountInput,
-                models.LinkedLedgerAccountInputTypedDict,
-            ]
+            Union[models.LinkedLedgerAccount, models.LinkedLedgerAccountTypedDict]
         ] = UNSET,
         expense_account: OptionalNullable[
-            Union[
-                models.LinkedLedgerAccountInput,
-                models.LinkedLedgerAccountInputTypedDict,
-            ]
+            Union[models.LinkedLedgerAccount, models.LinkedLedgerAccountTypedDict]
         ] = UNSET,
         tracking_category: OptionalNullable[
             Union[
@@ -1402,13 +1375,13 @@ class InvoiceItems(BaseSDK):
                 unit_price=unit_price,
                 currency=currency,
                 asset_account=utils.get_pydantic_model(
-                    asset_account, OptionalNullable[models.LinkedLedgerAccountInput]
+                    asset_account, OptionalNullable[models.LinkedLedgerAccount]
                 ),
                 income_account=utils.get_pydantic_model(
-                    income_account, OptionalNullable[models.LinkedLedgerAccountInput]
+                    income_account, OptionalNullable[models.LinkedLedgerAccount]
                 ),
                 expense_account=utils.get_pydantic_model(
-                    expense_account, OptionalNullable[models.LinkedLedgerAccountInput]
+                    expense_account, OptionalNullable[models.LinkedLedgerAccount]
                 ),
                 tracking_category=utils.get_pydantic_model(
                     tracking_category,
@@ -1562,22 +1535,13 @@ class InvoiceItems(BaseSDK):
         unit_price: OptionalNullable[float] = UNSET,
         currency: OptionalNullable[models.Currency] = UNSET,
         asset_account: OptionalNullable[
-            Union[
-                models.LinkedLedgerAccountInput,
-                models.LinkedLedgerAccountInputTypedDict,
-            ]
+            Union[models.LinkedLedgerAccount, models.LinkedLedgerAccountTypedDict]
         ] = UNSET,
         income_account: OptionalNullable[
-            Union[
-                models.LinkedLedgerAccountInput,
-                models.LinkedLedgerAccountInputTypedDict,
-            ]
+            Union[models.LinkedLedgerAccount, models.LinkedLedgerAccountTypedDict]
         ] = UNSET,
         expense_account: OptionalNullable[
-            Union[
-                models.LinkedLedgerAccountInput,
-                models.LinkedLedgerAccountInputTypedDict,
-            ]
+            Union[models.LinkedLedgerAccount, models.LinkedLedgerAccountTypedDict]
         ] = UNSET,
         tracking_category: OptionalNullable[
             Union[
@@ -1683,13 +1647,13 @@ class InvoiceItems(BaseSDK):
                 unit_price=unit_price,
                 currency=currency,
                 asset_account=utils.get_pydantic_model(
-                    asset_account, OptionalNullable[models.LinkedLedgerAccountInput]
+                    asset_account, OptionalNullable[models.LinkedLedgerAccount]
                 ),
                 income_account=utils.get_pydantic_model(
-                    income_account, OptionalNullable[models.LinkedLedgerAccountInput]
+                    income_account, OptionalNullable[models.LinkedLedgerAccount]
                 ),
                 expense_account=utils.get_pydantic_model(
-                    expense_account, OptionalNullable[models.LinkedLedgerAccountInput]
+                    expense_account, OptionalNullable[models.LinkedLedgerAccount]
                 ),
                 tracking_category=utils.get_pydantic_model(
                     tracking_category,

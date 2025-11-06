@@ -456,10 +456,7 @@ class Invoices(BaseSDK):
             Union[models.BankAccount, models.BankAccountTypedDict]
         ] = None,
         ledger_account: OptionalNullable[
-            Union[
-                models.LinkedLedgerAccountInput,
-                models.LinkedLedgerAccountInputTypedDict,
-            ]
+            Union[models.LinkedLedgerAccount, models.LinkedLedgerAccountTypedDict]
         ] = UNSET,
         custom_fields: Optional[
             Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
@@ -602,7 +599,7 @@ class Invoices(BaseSDK):
                     bank_account, Optional[models.BankAccount]
                 ),
                 ledger_account=utils.get_pydantic_model(
-                    ledger_account, OptionalNullable[models.LinkedLedgerAccountInput]
+                    ledger_account, OptionalNullable[models.LinkedLedgerAccount]
                 ),
                 custom_fields=utils.get_pydantic_model(
                     custom_fields, Optional[List[models.CustomField]]
@@ -787,10 +784,7 @@ class Invoices(BaseSDK):
             Union[models.BankAccount, models.BankAccountTypedDict]
         ] = None,
         ledger_account: OptionalNullable[
-            Union[
-                models.LinkedLedgerAccountInput,
-                models.LinkedLedgerAccountInputTypedDict,
-            ]
+            Union[models.LinkedLedgerAccount, models.LinkedLedgerAccountTypedDict]
         ] = UNSET,
         custom_fields: Optional[
             Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
@@ -933,7 +927,7 @@ class Invoices(BaseSDK):
                     bank_account, Optional[models.BankAccount]
                 ),
                 ledger_account=utils.get_pydantic_model(
-                    ledger_account, OptionalNullable[models.LinkedLedgerAccountInput]
+                    ledger_account, OptionalNullable[models.LinkedLedgerAccount]
                 ),
                 custom_fields=utils.get_pydantic_model(
                     custom_fields, Optional[List[models.CustomField]]
@@ -1407,10 +1401,7 @@ class Invoices(BaseSDK):
             Union[models.BankAccount, models.BankAccountTypedDict]
         ] = None,
         ledger_account: OptionalNullable[
-            Union[
-                models.LinkedLedgerAccountInput,
-                models.LinkedLedgerAccountInputTypedDict,
-            ]
+            Union[models.LinkedLedgerAccount, models.LinkedLedgerAccountTypedDict]
         ] = UNSET,
         custom_fields: Optional[
             Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
@@ -1555,7 +1546,7 @@ class Invoices(BaseSDK):
                     bank_account, Optional[models.BankAccount]
                 ),
                 ledger_account=utils.get_pydantic_model(
-                    ledger_account, OptionalNullable[models.LinkedLedgerAccountInput]
+                    ledger_account, OptionalNullable[models.LinkedLedgerAccount]
                 ),
                 custom_fields=utils.get_pydantic_model(
                     custom_fields, Optional[List[models.CustomField]]
@@ -1741,10 +1732,7 @@ class Invoices(BaseSDK):
             Union[models.BankAccount, models.BankAccountTypedDict]
         ] = None,
         ledger_account: OptionalNullable[
-            Union[
-                models.LinkedLedgerAccountInput,
-                models.LinkedLedgerAccountInputTypedDict,
-            ]
+            Union[models.LinkedLedgerAccount, models.LinkedLedgerAccountTypedDict]
         ] = UNSET,
         custom_fields: Optional[
             Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
@@ -1889,7 +1877,7 @@ class Invoices(BaseSDK):
                     bank_account, Optional[models.BankAccount]
                 ),
                 ledger_account=utils.get_pydantic_model(
-                    ledger_account, OptionalNullable[models.LinkedLedgerAccountInput]
+                    ledger_account, OptionalNullable[models.LinkedLedgerAccount]
                 ),
                 custom_fields=utils.get_pydantic_model(
                     custom_fields, Optional[List[models.CustomField]]
