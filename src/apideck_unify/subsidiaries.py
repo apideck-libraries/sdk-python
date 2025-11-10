@@ -364,6 +364,7 @@ class Subsidiaries(BaseSDK):
         name: OptionalNullable[str] = UNSET,
         display_id: OptionalNullable[str] = UNSET,
         status: Optional[models.SubsidiaryStatus] = None,
+        address: Optional[Union[models.Address, models.AddressTypedDict]] = None,
         currencies: OptionalNullable[List[Nullable[models.Currency]]] = UNSET,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
@@ -386,6 +387,7 @@ class Subsidiaries(BaseSDK):
         :param name: The name of the company.
         :param display_id: Display ID of the subsidiary
         :param status: Based on the status some functionality is enabled or disabled.
+        :param address:
         :param currencies: List of currencies supported by this subsidiary
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
@@ -414,6 +416,7 @@ class Subsidiaries(BaseSDK):
                 name=name,
                 display_id=display_id,
                 status=status,
+                address=utils.get_pydantic_model(address, Optional[models.Address]),
                 currencies=currencies,
                 row_version=row_version,
                 pass_through=utils.get_pydantic_model(
@@ -532,6 +535,7 @@ class Subsidiaries(BaseSDK):
         name: OptionalNullable[str] = UNSET,
         display_id: OptionalNullable[str] = UNSET,
         status: Optional[models.SubsidiaryStatus] = None,
+        address: Optional[Union[models.Address, models.AddressTypedDict]] = None,
         currencies: OptionalNullable[List[Nullable[models.Currency]]] = UNSET,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
@@ -554,6 +558,7 @@ class Subsidiaries(BaseSDK):
         :param name: The name of the company.
         :param display_id: Display ID of the subsidiary
         :param status: Based on the status some functionality is enabled or disabled.
+        :param address:
         :param currencies: List of currencies supported by this subsidiary
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
@@ -582,6 +587,7 @@ class Subsidiaries(BaseSDK):
                 name=name,
                 display_id=display_id,
                 status=status,
+                address=utils.get_pydantic_model(address, Optional[models.Address]),
                 currencies=currencies,
                 row_version=row_version,
                 pass_through=utils.get_pydantic_model(
@@ -989,6 +995,7 @@ class Subsidiaries(BaseSDK):
         name: OptionalNullable[str] = UNSET,
         display_id: OptionalNullable[str] = UNSET,
         status: Optional[models.SubsidiaryStatus] = None,
+        address: Optional[Union[models.Address, models.AddressTypedDict]] = None,
         currencies: OptionalNullable[List[Nullable[models.Currency]]] = UNSET,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
@@ -1012,6 +1019,7 @@ class Subsidiaries(BaseSDK):
         :param name: The name of the company.
         :param display_id: Display ID of the subsidiary
         :param status: Based on the status some functionality is enabled or disabled.
+        :param address:
         :param currencies: List of currencies supported by this subsidiary
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
@@ -1041,6 +1049,7 @@ class Subsidiaries(BaseSDK):
                 name=name,
                 display_id=display_id,
                 status=status,
+                address=utils.get_pydantic_model(address, Optional[models.Address]),
                 currencies=currencies,
                 row_version=row_version,
                 pass_through=utils.get_pydantic_model(
@@ -1160,6 +1169,7 @@ class Subsidiaries(BaseSDK):
         name: OptionalNullable[str] = UNSET,
         display_id: OptionalNullable[str] = UNSET,
         status: Optional[models.SubsidiaryStatus] = None,
+        address: Optional[Union[models.Address, models.AddressTypedDict]] = None,
         currencies: OptionalNullable[List[Nullable[models.Currency]]] = UNSET,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
@@ -1183,6 +1193,7 @@ class Subsidiaries(BaseSDK):
         :param name: The name of the company.
         :param display_id: Display ID of the subsidiary
         :param status: Based on the status some functionality is enabled or disabled.
+        :param address:
         :param currencies: List of currencies supported by this subsidiary
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
@@ -1212,6 +1223,7 @@ class Subsidiaries(BaseSDK):
                 name=name,
                 display_id=display_id,
                 status=status,
+                address=utils.get_pydantic_model(address, Optional[models.Address]),
                 currencies=currencies,
                 row_version=row_version,
                 pass_through=utils.get_pydantic_model(

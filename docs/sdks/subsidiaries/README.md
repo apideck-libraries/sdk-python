@@ -85,7 +85,33 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.accounting.subsidiaries.create(raw=False, service_id="salesforce", parent_id="12345", name="SpaceX", display_id="12345", status=apideck_unify.SubsidiaryStatus.ACTIVE, currencies=[
+    res = apideck.accounting.subsidiaries.create(raw=False, service_id="salesforce", parent_id="12345", name="SpaceX", display_id="12345", status=apideck_unify.SubsidiaryStatus.ACTIVE, address={
+        "id": "123",
+        "type": apideck_unify.Type.PRIMARY,
+        "string": "25 Spring Street, Blackburn, VIC 3130",
+        "name": "HQ US",
+        "line1": "Main street",
+        "line2": "apt #",
+        "line3": "Suite #",
+        "line4": "delivery instructions",
+        "line5": "Attention: Finance Dept",
+        "street_number": "25",
+        "city": "San Francisco",
+        "state": "CA",
+        "postal_code": "94104",
+        "country": "US",
+        "latitude": "40.759211",
+        "longitude": "-73.984638",
+        "county": "Santa Clara",
+        "contact_name": "Elon Musk",
+        "salutation": "Mr",
+        "phone_number": "111-111-1111",
+        "fax": "122-111-1111",
+        "email": "elon@musk.com",
+        "website": "https://elonmusk.com",
+        "notes": "Address notes or delivery instructions.",
+        "row_version": "1-12345",
+    }, currencies=[
         apideck_unify.Currency.USD,
     ], row_version="1-12345", pass_through=[
         {
@@ -148,6 +174,7 @@ with Apideck(
 | `name`                                                                                                                                                  | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | The name of the company.                                                                                                                                | SpaceX                                                                                                                                                  |
 | `display_id`                                                                                                                                            | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | Display ID of the subsidiary                                                                                                                            | 12345                                                                                                                                                   |
 | `status`                                                                                                                                                | [Optional[models.SubsidiaryStatus]](../../models/subsidiarystatus.md)                                                                                   | :heavy_minus_sign:                                                                                                                                      | Based on the status some functionality is enabled or disabled.                                                                                          | active                                                                                                                                                  |
+| `address`                                                                                                                                               | [Optional[models.Address]](../../models/address.md)                                                                                                     | :heavy_minus_sign:                                                                                                                                      | N/A                                                                                                                                                     |                                                                                                                                                         |
 | `currencies`                                                                                                                                            | List[[Nullable[models.Currency]](../../models/currency.md)]                                                                                             | :heavy_minus_sign:                                                                                                                                      | List of currencies supported by this subsidiary                                                                                                         |                                                                                                                                                         |
 | `row_version`                                                                                                                                           | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.              | 1-12345                                                                                                                                                 |
 | `pass_through`                                                                                                                                          | List[[models.PassThroughBody](../../models/passthroughbody.md)]                                                                                         | :heavy_minus_sign:                                                                                                                                      | The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources. |                                                                                                                                                         |
@@ -241,7 +268,33 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.accounting.subsidiaries.update(id="<id>", service_id="salesforce", raw=False, parent_id="12345", name="SpaceX", display_id="12345", status=apideck_unify.SubsidiaryStatus.ACTIVE, currencies=[
+    res = apideck.accounting.subsidiaries.update(id="<id>", service_id="salesforce", raw=False, parent_id="12345", name="SpaceX", display_id="12345", status=apideck_unify.SubsidiaryStatus.ACTIVE, address={
+        "id": "123",
+        "type": apideck_unify.Type.PRIMARY,
+        "string": "25 Spring Street, Blackburn, VIC 3130",
+        "name": "HQ US",
+        "line1": "Main street",
+        "line2": "apt #",
+        "line3": "Suite #",
+        "line4": "delivery instructions",
+        "line5": "Attention: Finance Dept",
+        "street_number": "25",
+        "city": "San Francisco",
+        "state": "CA",
+        "postal_code": "94104",
+        "country": "US",
+        "latitude": "40.759211",
+        "longitude": "-73.984638",
+        "county": "Santa Clara",
+        "contact_name": "Elon Musk",
+        "salutation": "Mr",
+        "phone_number": "111-111-1111",
+        "fax": "122-111-1111",
+        "email": "elon@musk.com",
+        "website": "https://elonmusk.com",
+        "notes": "Address notes or delivery instructions.",
+        "row_version": "1-12345",
+    }, currencies=[
         apideck_unify.Currency.USD,
     ], row_version="1-12345", pass_through=[
         {
@@ -287,6 +340,7 @@ with Apideck(
 | `name`                                                                                                                                                  | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | The name of the company.                                                                                                                                | SpaceX                                                                                                                                                  |
 | `display_id`                                                                                                                                            | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | Display ID of the subsidiary                                                                                                                            | 12345                                                                                                                                                   |
 | `status`                                                                                                                                                | [Optional[models.SubsidiaryStatus]](../../models/subsidiarystatus.md)                                                                                   | :heavy_minus_sign:                                                                                                                                      | Based on the status some functionality is enabled or disabled.                                                                                          | active                                                                                                                                                  |
+| `address`                                                                                                                                               | [Optional[models.Address]](../../models/address.md)                                                                                                     | :heavy_minus_sign:                                                                                                                                      | N/A                                                                                                                                                     |                                                                                                                                                         |
 | `currencies`                                                                                                                                            | List[[Nullable[models.Currency]](../../models/currency.md)]                                                                                             | :heavy_minus_sign:                                                                                                                                      | List of currencies supported by this subsidiary                                                                                                         |                                                                                                                                                         |
 | `row_version`                                                                                                                                           | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.              | 1-12345                                                                                                                                                 |
 | `pass_through`                                                                                                                                          | List[[models.PassThroughBody](../../models/passthroughbody.md)]                                                                                         | :heavy_minus_sign:                                                                                                                                      | The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources. |                                                                                                                                                         |
