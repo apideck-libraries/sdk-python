@@ -1,12 +1,12 @@
 lockVersion: 2.0.0
 id: fca0ac3a-5f4e-452c-bbc7-2311afa8da40
 management:
-  docChecksum: 8fd0e86d2b2b1d5dd28984a23571fcce
-  docVersion: 10.21.11
-  speakeasyVersion: 1.650.0
-  generationVersion: 2.743.2
-  releaseVersion: 0.27.1
-  configChecksum: fdfbfa562123c1199cf74bbb9a735336
+  docChecksum: a37644001fdfe1895b30b8e518f92981
+  docVersion: 10.21.12
+  speakeasyVersion: 1.651.0
+  generationVersion: 2.745.2
+  releaseVersion: 0.27.2
+  configChecksum: fc1622630129625adff3524bfc6dbda2
   repoURL: https://github.com/apideck-libraries/sdk-python.git
   installationURL: https://github.com/apideck-libraries/sdk-python.git
   published: true
@@ -18475,4 +18475,3 @@ examples:
           application/json: {"status_code": 400, "error": "Bad Request", "type_name": "RequestHeadersValidationError", "message": "Invalid Params", "detail": "Missing Header: x-apideck-consumer-id", "ref": "https://developers.apideck.com/errors#unauthorizederror"}
 examplesVersion: 1.0.2
 generatedTests: {}
-releaseNotes: "## Python SDK Changes Detected:\n* `apideck.accounting.expenses.list()`:  `response.data.[]` **Changed** **Breaking** :warning:\n* `apideck.accounting.expenses.update()`:  `request` **Changed** **Breaking** :warning:\n* `apideck.accounting.expenses.get()`:  `response.data` **Changed** **Breaking** :warning:\n* `apideck.accounting.expenses.create()`:  `request` **Changed** **Breaking** :warning:\n* `apideck.accounting.credit_notes.create()`:  `request` **Changed**\n* `apideck.accounting.journal_entries.update()`: \n  *  `request.line_items.[]` **Changed**\n* `apideck.accounting.invoice_items.create()`:  `request` **Changed**\n* `apideck.accounting.invoice_items.update()`:  `request` **Changed**\n* `apideck.accounting.bills.create()`: \n  *  `request.line_items.[]` **Changed**\n* `apideck.accounting.credit_notes.update()`:  `request` **Changed**\n* `apideck.accounting.customers.create()`:  `request` **Changed**\n* `apideck.accounting.customers.update()`:  `request` **Changed**\n* `apideck.accounting.suppliers.create()`:  `request` **Changed**\n* `apideck.accounting.suppliers.update()`:  `request` **Changed**\n* `apideck.accounting.payments.create()`: \n  *  `request.account.name` **Added**\n* `apideck.accounting.payments.update()`: \n  *  `request.account.name` **Added**\n* `apideck.accounting.journal_entries.create()`: \n  *  `request.line_items.[]` **Changed**\n* `apideck.accounting.ledger_accounts.update()`: \n  *  `request.tax_rate.code` **Added**\n* `apideck.accounting.purchase_orders.create()`: \n  *  `request.line_items.[]` **Changed**\n* `apideck.accounting.purchase_orders.update()`: \n  *  `request.line_items.[]` **Changed**\n* `apideck.accounting.bank_accounts.create()`: \n  *  `request.ledger_account.name` **Added**\n* `apideck.accounting.bank_accounts.update()`: \n  *  `request.ledger_account.name` **Added**\n* `apideck.accounting.bill_payments.create()`: \n  *  `request.account.name` **Added**\n* `apideck.accounting.bill_payments.update()`: \n  *  `request.account.name` **Added**\n* `apideck.accounting.ledger_accounts.create()`: \n  *  `request.tax_rate.code` **Added**\n* `apideck.accounting.invoices.update()`: \n  *  `request.line_items.[]` **Changed**\n* `apideck.accounting.invoices.create()`: \n  *  `request.line_items.[]` **Changed**\n* `apideck.accounting.bills.update()`: \n  *  `request.line_items.[]` **Changed**\n* `apideck.accounting.quotes.create()`: \n  *  `request.line_items.[]` **Changed**\n* `apideck.accounting.quotes.update()`: \n  *  `request.line_items.[]` **Changed**\n* `apideck.accounting.projects.create()`: \n  *  `request.tax_rate.code` **Added**\n* `apideck.accounting.projects.update()`: \n  *  `request.tax_rate.code` **Added**\n"
