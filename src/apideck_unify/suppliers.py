@@ -421,6 +421,7 @@ class Suppliers(BaseSDK):
             Union[models.LinkedTaxRateInput, models.LinkedTaxRateInputTypedDict]
         ] = None,
         tax_number: OptionalNullable[str] = UNSET,
+        taxable: OptionalNullable[bool] = UNSET,
         currency: OptionalNullable[models.Currency] = UNSET,
         account: OptionalNullable[
             Union[models.LinkedLedgerAccount, models.LinkedLedgerAccountTypedDict]
@@ -484,6 +485,7 @@ class Suppliers(BaseSDK):
         :param notes: Some notes about this supplier
         :param tax_rate:
         :param tax_number:
+        :param taxable: Whether the entity is subject to taxation
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
         :param account:
         :param status: Supplier status
@@ -549,6 +551,7 @@ class Suppliers(BaseSDK):
                     tax_rate, Optional[models.LinkedTaxRateInput]
                 ),
                 tax_number=tax_number,
+                taxable=taxable,
                 currency=currency,
                 account=utils.get_pydantic_model(
                     account, OptionalNullable[models.LinkedLedgerAccount]
@@ -713,6 +716,7 @@ class Suppliers(BaseSDK):
             Union[models.LinkedTaxRateInput, models.LinkedTaxRateInputTypedDict]
         ] = None,
         tax_number: OptionalNullable[str] = UNSET,
+        taxable: OptionalNullable[bool] = UNSET,
         currency: OptionalNullable[models.Currency] = UNSET,
         account: OptionalNullable[
             Union[models.LinkedLedgerAccount, models.LinkedLedgerAccountTypedDict]
@@ -776,6 +780,7 @@ class Suppliers(BaseSDK):
         :param notes: Some notes about this supplier
         :param tax_rate:
         :param tax_number:
+        :param taxable: Whether the entity is subject to taxation
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
         :param account:
         :param status: Supplier status
@@ -841,6 +846,7 @@ class Suppliers(BaseSDK):
                     tax_rate, Optional[models.LinkedTaxRateInput]
                 ),
                 tax_number=tax_number,
+                taxable=taxable,
                 currency=currency,
                 account=utils.get_pydantic_model(
                     account, OptionalNullable[models.LinkedLedgerAccount]
@@ -1294,6 +1300,7 @@ class Suppliers(BaseSDK):
             Union[models.LinkedTaxRateInput, models.LinkedTaxRateInputTypedDict]
         ] = None,
         tax_number: OptionalNullable[str] = UNSET,
+        taxable: OptionalNullable[bool] = UNSET,
         currency: OptionalNullable[models.Currency] = UNSET,
         account: OptionalNullable[
             Union[models.LinkedLedgerAccount, models.LinkedLedgerAccountTypedDict]
@@ -1358,6 +1365,7 @@ class Suppliers(BaseSDK):
         :param notes: Some notes about this supplier
         :param tax_rate:
         :param tax_number:
+        :param taxable: Whether the entity is subject to taxation
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
         :param account:
         :param status: Supplier status
@@ -1424,6 +1432,7 @@ class Suppliers(BaseSDK):
                     tax_rate, Optional[models.LinkedTaxRateInput]
                 ),
                 tax_number=tax_number,
+                taxable=taxable,
                 currency=currency,
                 account=utils.get_pydantic_model(
                     account, OptionalNullable[models.LinkedLedgerAccount]
@@ -1589,6 +1598,7 @@ class Suppliers(BaseSDK):
             Union[models.LinkedTaxRateInput, models.LinkedTaxRateInputTypedDict]
         ] = None,
         tax_number: OptionalNullable[str] = UNSET,
+        taxable: OptionalNullable[bool] = UNSET,
         currency: OptionalNullable[models.Currency] = UNSET,
         account: OptionalNullable[
             Union[models.LinkedLedgerAccount, models.LinkedLedgerAccountTypedDict]
@@ -1653,6 +1663,7 @@ class Suppliers(BaseSDK):
         :param notes: Some notes about this supplier
         :param tax_rate:
         :param tax_number:
+        :param taxable: Whether the entity is subject to taxation
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
         :param account:
         :param status: Supplier status
@@ -1719,6 +1730,7 @@ class Suppliers(BaseSDK):
                     tax_rate, Optional[models.LinkedTaxRateInput]
                 ),
                 tax_number=tax_number,
+                taxable=taxable,
                 currency=currency,
                 account=utils.get_pydantic_model(
                     account, OptionalNullable[models.LinkedLedgerAccount]
