@@ -73,6 +73,8 @@ class SupplierTypedDict(TypedDict):
     r"""Some notes about this supplier"""
     tax_rate: NotRequired[LinkedTaxRateTypedDict]
     tax_number: NotRequired[Nullable[str]]
+    taxable: NotRequired[Nullable[bool]]
+    r"""Whether the entity is subject to taxation"""
     currency: NotRequired[Nullable[Currency]]
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
     account: NotRequired[Nullable[LinkedLedgerAccountTypedDict]]
@@ -167,6 +169,9 @@ class Supplier(BaseModel):
 
     tax_number: OptionalNullable[str] = UNSET
 
+    taxable: OptionalNullable[bool] = UNSET
+    r"""Whether the entity is subject to taxation"""
+
     currency: OptionalNullable[Currency] = UNSET
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
 
@@ -246,6 +251,7 @@ class Supplier(BaseModel):
             "notes",
             "tax_rate",
             "tax_number",
+            "taxable",
             "currency",
             "account",
             "status",
@@ -282,6 +288,7 @@ class Supplier(BaseModel):
             "individual",
             "notes",
             "tax_number",
+            "taxable",
             "currency",
             "account",
             "status",
@@ -355,6 +362,8 @@ class SupplierInputTypedDict(TypedDict):
     r"""Some notes about this supplier"""
     tax_rate: NotRequired[LinkedTaxRateInputTypedDict]
     tax_number: NotRequired[Nullable[str]]
+    taxable: NotRequired[Nullable[bool]]
+    r"""Whether the entity is subject to taxation"""
     currency: NotRequired[Nullable[Currency]]
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
     account: NotRequired[Nullable[LinkedLedgerAccountTypedDict]]
@@ -433,6 +442,9 @@ class SupplierInput(BaseModel):
 
     tax_number: OptionalNullable[str] = UNSET
 
+    taxable: OptionalNullable[bool] = UNSET
+    r"""Whether the entity is subject to taxation"""
+
     currency: OptionalNullable[Currency] = UNSET
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
 
@@ -496,6 +508,7 @@ class SupplierInput(BaseModel):
             "notes",
             "tax_rate",
             "tax_number",
+            "taxable",
             "currency",
             "account",
             "status",
@@ -526,6 +539,7 @@ class SupplierInput(BaseModel):
             "individual",
             "notes",
             "tax_number",
+            "taxable",
             "currency",
             "account",
             "status",
