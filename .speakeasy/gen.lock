@@ -1,12 +1,12 @@
 lockVersion: 2.0.0
 id: fca0ac3a-5f4e-452c-bbc7-2311afa8da40
 management:
-  docChecksum: 0e2a9bf92fc80b7340af82ed657b6ab2
-  docVersion: 10.21.14
+  docChecksum: 81d7bcbe5872229f8d6122a3bcdd0fdc
+  docVersion: 10.21.15
   speakeasyVersion: 1.653.0
   generationVersion: 2.748.0
-  releaseVersion: 0.27.4
-  configChecksum: f6b4289568ac41a5811b9d9a3a14fcfd
+  releaseVersion: 0.27.5
+  configChecksum: 2b652f7474f50a5165532b7e4cfc9be4
   repoURL: https://github.com/apideck-libraries/sdk-python.git
   installationURL: https://github.com/apideck-libraries/sdk-python.git
   published: true
@@ -18475,13 +18475,3 @@ examples:
           application/json: {"status_code": 400, "error": "Bad Request", "type_name": "RequestHeadersValidationError", "message": "Invalid Params", "detail": "Missing Header: x-apideck-consumer-id", "ref": "https://developers.apideck.com/errors#unauthorizederror"}
 examplesVersion: 1.0.2
 generatedTests: {}
-releaseNotes: |
-  ## Python SDK Changes Detected:
-  * `apideck.accounting.customers.list()`:  `response.data.[].taxable` **Added**
-  * `apideck.accounting.customers.create()`:  `request.taxable` **Added**
-  * `apideck.accounting.customers.get()`:  `response.data.taxable` **Added**
-  * `apideck.accounting.customers.update()`:  `request.taxable` **Added**
-  * `apideck.accounting.suppliers.list()`:  `response.data.[].taxable` **Added**
-  * `apideck.accounting.suppliers.create()`:  `request.taxable` **Added**
-  * `apideck.accounting.suppliers.get()`:  `response.data.taxable` **Added**
-  * `apideck.accounting.suppliers.update()`:  `request.taxable` **Added**
