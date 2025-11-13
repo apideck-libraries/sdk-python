@@ -91,7 +91,9 @@ class Configuration(BaseModel):
 class Health(str, Enum):
     r"""Operational health status of the connection"""
 
+    REVOKED = "revoked"
     MISSING_SETTINGS = "missing_settings"
+    NEEDS_CONSENT = "needs_consent"
     NEEDS_AUTH = "needs_auth"
     PENDING_REFRESH = "pending_refresh"
     OK = "ok"
