@@ -739,3 +739,13 @@ Based on:
 - [python v0.27.36] .
 ### Releases
 - [PyPI v0.27.36] https://pypi.org/project/apideck-unify/0.27.36 - .
+
+## 2025-11-19 11:21:08
+### Changes
+Based on:
+- OpenAPI Doc  
+- Speakeasy CLI 1.656.1 (2.753.1) https://github.com/speakeasy-api/speakeasy
+### Generated
+- [python v0.27.38] .
+### Releases
+- [PyPI v0.27.38] https://pypi.org/project/apideck-unify/0.27.38 - .
