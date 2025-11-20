@@ -5,8 +5,8 @@ management:
   docVersion: 10.21.15
   speakeasyVersion: 1.656.1
   generationVersion: 2.753.1
-  releaseVersion: 0.27.44
-  configChecksum: 5bc47b37b47dd2fb8349b77c2ca8c012
+  releaseVersion: 0.27.46
+  configChecksum: b38b04bb3da348dfa72290c4e96ea3f7
   repoURL: https://github.com/apideck-libraries/sdk-python.git
   installationURL: https://github.com/apideck-libraries/sdk-python.git
   published: true
