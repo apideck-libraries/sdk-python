@@ -5,8 +5,8 @@ management:
   docVersion: 10.21.18
   speakeasyVersion: 1.656.1
   generationVersion: 2.753.1
-  releaseVersion: 0.27.82
-  configChecksum: acc3949b3a0449501f56bb7f5c326016
+  releaseVersion: 0.27.84
+  configChecksum: 932674136fa92619d1f349ce9fc98cde
   repoURL: https://github.com/apideck-libraries/sdk-python.git
   installationURL: https://github.com/apideck-libraries/sdk-python.git
   published: true
@@ -18475,10 +18475,3 @@ examples:
           application/json: {"status_code": 400, "error": "Bad Request", "type_name": "RequestHeadersValidationError", "message": "Invalid Params", "detail": "Missing Header: x-apideck-consumer-id", "ref": "https://developers.apideck.com/errors#unauthorizederror"}
 examplesVersion: 1.0.2
 generatedTests: {}
-releaseNotes: |
-  ## Python SDK Changes Detected:
-  * `apideck.accounting.tax_rates.list()`:  `response.data.[].country` **Added**
-  * `apideck.accounting.tax_rates.create()`:  `request.country` **Added**
-  * `apideck.accounting.tax_rates.get()`:  `response.data.country` **Added**
-  * `apideck.accounting.tax_rates.update()`:  `request.country` **Added**
-  * `apideck.accounting.company_info.get()`:  `response.data.default_sales_tax.country` **Added**
