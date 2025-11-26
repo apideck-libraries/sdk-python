@@ -388,6 +388,7 @@ class TaxRates(BaseSDK):
         code: OptionalNullable[str] = UNSET,
         description: OptionalNullable[str] = UNSET,
         effective_tax_rate: OptionalNullable[float] = UNSET,
+        country: OptionalNullable[str] = UNSET,
         total_tax_rate: OptionalNullable[float] = UNSET,
         tax_payable_account_id: OptionalNullable[str] = UNSET,
         tax_remitted_account_id: OptionalNullable[str] = UNSET,
@@ -429,6 +430,7 @@ class TaxRates(BaseSDK):
         :param code: Tax code assigned to identify this tax rate.
         :param description: Description of tax rate
         :param effective_tax_rate: Effective tax rate
+        :param country: Country code according to ISO 3166-1 alpha-2.
         :param total_tax_rate: Not compounded sum of the components of a tax rate
         :param tax_payable_account_id: Unique identifier for the account for tax collected.
         :param tax_remitted_account_id: Unique identifier for the account for tax remitted.
@@ -468,6 +470,7 @@ class TaxRates(BaseSDK):
                 code=code,
                 description=description,
                 effective_tax_rate=effective_tax_rate,
+                country=country,
                 total_tax_rate=total_tax_rate,
                 tax_payable_account_id=tax_payable_account_id,
                 tax_remitted_account_id=tax_remitted_account_id,
@@ -603,6 +606,7 @@ class TaxRates(BaseSDK):
         code: OptionalNullable[str] = UNSET,
         description: OptionalNullable[str] = UNSET,
         effective_tax_rate: OptionalNullable[float] = UNSET,
+        country: OptionalNullable[str] = UNSET,
         total_tax_rate: OptionalNullable[float] = UNSET,
         tax_payable_account_id: OptionalNullable[str] = UNSET,
         tax_remitted_account_id: OptionalNullable[str] = UNSET,
@@ -644,6 +648,7 @@ class TaxRates(BaseSDK):
         :param code: Tax code assigned to identify this tax rate.
         :param description: Description of tax rate
         :param effective_tax_rate: Effective tax rate
+        :param country: Country code according to ISO 3166-1 alpha-2.
         :param total_tax_rate: Not compounded sum of the components of a tax rate
         :param tax_payable_account_id: Unique identifier for the account for tax collected.
         :param tax_remitted_account_id: Unique identifier for the account for tax remitted.
@@ -683,6 +688,7 @@ class TaxRates(BaseSDK):
                 code=code,
                 description=description,
                 effective_tax_rate=effective_tax_rate,
+                country=country,
                 total_tax_rate=total_tax_rate,
                 tax_payable_account_id=tax_payable_account_id,
                 tax_remitted_account_id=tax_remitted_account_id,
@@ -1109,6 +1115,7 @@ class TaxRates(BaseSDK):
         code: OptionalNullable[str] = UNSET,
         description: OptionalNullable[str] = UNSET,
         effective_tax_rate: OptionalNullable[float] = UNSET,
+        country: OptionalNullable[str] = UNSET,
         total_tax_rate: OptionalNullable[float] = UNSET,
         tax_payable_account_id: OptionalNullable[str] = UNSET,
         tax_remitted_account_id: OptionalNullable[str] = UNSET,
@@ -1151,6 +1158,7 @@ class TaxRates(BaseSDK):
         :param code: Tax code assigned to identify this tax rate.
         :param description: Description of tax rate
         :param effective_tax_rate: Effective tax rate
+        :param country: Country code according to ISO 3166-1 alpha-2.
         :param total_tax_rate: Not compounded sum of the components of a tax rate
         :param tax_payable_account_id: Unique identifier for the account for tax collected.
         :param tax_remitted_account_id: Unique identifier for the account for tax remitted.
@@ -1191,6 +1199,7 @@ class TaxRates(BaseSDK):
                 code=code,
                 description=description,
                 effective_tax_rate=effective_tax_rate,
+                country=country,
                 total_tax_rate=total_tax_rate,
                 tax_payable_account_id=tax_payable_account_id,
                 tax_remitted_account_id=tax_remitted_account_id,
@@ -1327,6 +1336,7 @@ class TaxRates(BaseSDK):
         code: OptionalNullable[str] = UNSET,
         description: OptionalNullable[str] = UNSET,
         effective_tax_rate: OptionalNullable[float] = UNSET,
+        country: OptionalNullable[str] = UNSET,
         total_tax_rate: OptionalNullable[float] = UNSET,
         tax_payable_account_id: OptionalNullable[str] = UNSET,
         tax_remitted_account_id: OptionalNullable[str] = UNSET,
@@ -1369,6 +1379,7 @@ class TaxRates(BaseSDK):
         :param code: Tax code assigned to identify this tax rate.
         :param description: Description of tax rate
         :param effective_tax_rate: Effective tax rate
+        :param country: Country code according to ISO 3166-1 alpha-2.
         :param total_tax_rate: Not compounded sum of the components of a tax rate
         :param tax_payable_account_id: Unique identifier for the account for tax collected.
         :param tax_remitted_account_id: Unique identifier for the account for tax remitted.
@@ -1409,6 +1420,7 @@ class TaxRates(BaseSDK):
                 code=code,
                 description=description,
                 effective_tax_rate=effective_tax_rate,
+                country=country,
                 total_tax_rate=total_tax_rate,
                 tax_payable_account_id=tax_payable_account_id,
                 tax_remitted_account_id=tax_remitted_account_id,

@@ -95,6 +95,8 @@ class TaxRateTypedDict(TypedDict):
     r"""Description of tax rate"""
     effective_tax_rate: NotRequired[Nullable[float]]
     r"""Effective tax rate"""
+    country: NotRequired[Nullable[str]]
+    r"""Country code according to ISO 3166-1 alpha-2."""
     total_tax_rate: NotRequired[Nullable[float]]
     r"""Not compounded sum of the components of a tax rate"""
     tax_payable_account_id: NotRequired[Nullable[str]]
@@ -147,6 +149,9 @@ class TaxRate(BaseModel):
 
     effective_tax_rate: OptionalNullable[float] = UNSET
     r"""Effective tax rate"""
+
+    country: OptionalNullable[str] = UNSET
+    r"""Country code according to ISO 3166-1 alpha-2."""
 
     total_tax_rate: OptionalNullable[float] = UNSET
     r"""Not compounded sum of the components of a tax rate"""
@@ -206,6 +211,7 @@ class TaxRate(BaseModel):
             "code",
             "description",
             "effective_tax_rate",
+            "country",
             "total_tax_rate",
             "tax_payable_account_id",
             "tax_remitted_account_id",
@@ -230,6 +236,7 @@ class TaxRate(BaseModel):
             "code",
             "description",
             "effective_tax_rate",
+            "country",
             "total_tax_rate",
             "tax_payable_account_id",
             "tax_remitted_account_id",
@@ -285,6 +292,8 @@ class TaxRateInputTypedDict(TypedDict):
     r"""Description of tax rate"""
     effective_tax_rate: NotRequired[Nullable[float]]
     r"""Effective tax rate"""
+    country: NotRequired[Nullable[str]]
+    r"""Country code according to ISO 3166-1 alpha-2."""
     total_tax_rate: NotRequired[Nullable[float]]
     r"""Not compounded sum of the components of a tax rate"""
     tax_payable_account_id: NotRequired[Nullable[str]]
@@ -327,6 +336,9 @@ class TaxRateInput(BaseModel):
 
     effective_tax_rate: OptionalNullable[float] = UNSET
     r"""Effective tax rate"""
+
+    country: OptionalNullable[str] = UNSET
+    r"""Country code according to ISO 3166-1 alpha-2."""
 
     total_tax_rate: OptionalNullable[float] = UNSET
     r"""Not compounded sum of the components of a tax rate"""
@@ -371,6 +383,7 @@ class TaxRateInput(BaseModel):
             "code",
             "description",
             "effective_tax_rate",
+            "country",
             "total_tax_rate",
             "tax_payable_account_id",
             "tax_remitted_account_id",
@@ -390,6 +403,7 @@ class TaxRateInput(BaseModel):
             "code",
             "description",
             "effective_tax_rate",
+            "country",
             "total_tax_rate",
             "tax_payable_account_id",
             "tax_remitted_account_id",
