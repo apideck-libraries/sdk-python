@@ -41,6 +41,8 @@ class AccountingBankAccountStatus(str, Enum):
 class AccountingBankAccountTypedDict(TypedDict):
     id: str
     r"""A unique identifier for an object."""
+    downstream_id: NotRequired[Nullable[str]]
+    r"""The third-party API ID of original entity"""
     display_id: NotRequired[Nullable[str]]
     r"""Display ID for the bank account"""
     name: NotRequired[Nullable[str]]
@@ -94,6 +96,9 @@ class AccountingBankAccountTypedDict(TypedDict):
 class AccountingBankAccount(BaseModel):
     id: str
     r"""A unique identifier for an object."""
+
+    downstream_id: OptionalNullable[str] = UNSET
+    r"""The third-party API ID of original entity"""
 
     display_id: OptionalNullable[str] = UNSET
     r"""Display ID for the bank account"""
@@ -171,6 +176,7 @@ class AccountingBankAccount(BaseModel):
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
         optional_fields = [
+            "downstream_id",
             "display_id",
             "name",
             "account_number",
@@ -198,6 +204,7 @@ class AccountingBankAccount(BaseModel):
             "updated_by",
         ]
         nullable_fields = [
+            "downstream_id",
             "display_id",
             "name",
             "account_number",

@@ -1214,6 +1214,7 @@ if TYPE_CHECKING:
         ReportsTypedDict,
     )
     from .balancesheetfilter import (
+        AccountingMethod,
         BalanceSheetFilter,
         BalanceSheetFilterTypedDict,
         PeriodType,
@@ -1231,6 +1232,7 @@ if TYPE_CHECKING:
     )
     from .bankaccountsfilter import (
         BankAccountsFilter,
+        BankAccountsFilterAccountType,
         BankAccountsFilterStatus,
         BankAccountsFilterTypedDict,
     )
@@ -3777,7 +3779,11 @@ if TYPE_CHECKING:
         UncategorizedAccounts,
         UncategorizedAccountsTypedDict,
     )
-    from .profitandlossfilter import ProfitAndLossFilter, ProfitAndLossFilterTypedDict
+    from .profitandlossfilter import (
+        ProfitAndLossFilter,
+        ProfitAndLossFilterAccountingMethod,
+        ProfitAndLossFilterTypedDict,
+    )
     from .profitandlossindicator import (
         ProfitAndLossIndicator,
         ProfitAndLossIndicatorTypedDict,
@@ -5019,6 +5025,7 @@ __all__ = [
     "AccountingLocationsUpdateRequestTypedDict",
     "AccountingLocationsUpdateResponse",
     "AccountingLocationsUpdateResponseTypedDict",
+    "AccountingMethod",
     "AccountingPaymentsAddGlobals",
     "AccountingPaymentsAddGlobalsTypedDict",
     "AccountingPaymentsAddRequest",
@@ -5430,6 +5437,7 @@ __all__ = [
     "BankAccountType",
     "BankAccountTypedDict",
     "BankAccountsFilter",
+    "BankAccountsFilterAccountType",
     "BankAccountsFilterStatus",
     "BankAccountsFilterTypedDict",
     "BankAccountsSort",
@@ -7385,6 +7393,7 @@ __all__ = [
     "ProductStatus",
     "ProfitAndLoss",
     "ProfitAndLossFilter",
+    "ProfitAndLossFilterAccountingMethod",
     "ProfitAndLossFilterTypedDict",
     "ProfitAndLossIndicator",
     "ProfitAndLossIndicatorTypedDict",
@@ -8874,6 +8883,7 @@ _dynamic_imports: dict[str, str] = {
     "BalanceSheetUncategorizedItemsAccountTypedDict": ".balancesheet",
     "Reports": ".balancesheet",
     "ReportsTypedDict": ".balancesheet",
+    "AccountingMethod": ".balancesheetfilter",
     "BalanceSheetFilter": ".balancesheetfilter",
     "BalanceSheetFilterTypedDict": ".balancesheetfilter",
     "PeriodType": ".balancesheetfilter",
@@ -8887,6 +8897,7 @@ _dynamic_imports: dict[str, str] = {
     "BankAccount2AccountType": ".bankaccount2",
     "BankAccount2TypedDict": ".bankaccount2",
     "BankAccountsFilter": ".bankaccountsfilter",
+    "BankAccountsFilterAccountType": ".bankaccountsfilter",
     "BankAccountsFilterStatus": ".bankaccountsfilter",
     "BankAccountsFilterTypedDict": ".bankaccountsfilter",
     "BankAccountsSort": ".bankaccountssort",
@@ -10850,6 +10861,7 @@ _dynamic_imports: dict[str, str] = {
     "UncategorizedAccounts": ".profitandloss",
     "UncategorizedAccountsTypedDict": ".profitandloss",
     "ProfitAndLossFilter": ".profitandlossfilter",
+    "ProfitAndLossFilterAccountingMethod": ".profitandlossfilter",
     "ProfitAndLossFilterTypedDict": ".profitandlossfilter",
     "ProfitAndLossIndicator": ".profitandlossindicator",
     "ProfitAndLossIndicatorTypedDict": ".profitandlossindicator",

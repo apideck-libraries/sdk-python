@@ -3,8 +3,16 @@
 from __future__ import annotations
 from apideck_unify.types import BaseModel
 from apideck_unify.utils import FieldMetadata
+from enum import Enum
 from typing import Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
+
+
+class ProfitAndLossFilterAccountingMethod(str, Enum):
+    r"""The accounting method used for the report: cash or accrual."""
+
+    CASH = "cash"
+    ACCRUAL = "accrual"
 
 
 class ProfitAndLossFilterTypedDict(TypedDict):
@@ -16,6 +24,8 @@ class ProfitAndLossFilterTypedDict(TypedDict):
     r"""Filter by end date. If end date is given, start date is required."""
     location_id: NotRequired[str]
     r"""Filter by location id"""
+    accounting_method: NotRequired[ProfitAndLossFilterAccountingMethod]
+    r"""The accounting method used for the report: cash or accrual."""
 
 
 class ProfitAndLossFilter(BaseModel):
@@ -30,3 +40,8 @@ class ProfitAndLossFilter(BaseModel):
 
     location_id: Annotated[Optional[str], FieldMetadata(query=True)] = None
     r"""Filter by location id"""
+
+    accounting_method: Annotated[
+        Optional[ProfitAndLossFilterAccountingMethod], FieldMetadata(query=True)
+    ] = None
+    r"""The accounting method used for the report: cash or accrual."""
