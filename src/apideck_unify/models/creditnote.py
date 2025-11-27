@@ -43,6 +43,7 @@ class CreditNoteStatus(str, Enum):
 
     DRAFT = "draft"
     AUTHORISED = "authorised"
+    PARTIALLY_PAID = "partially_paid"
     PAID = "paid"
     VOIDED = "voided"
     DELETED = "deleted"

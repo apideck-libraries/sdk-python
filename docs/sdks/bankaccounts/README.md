@@ -32,6 +32,7 @@ with Apideck(
 
     res = apideck.accounting.bank_accounts.list(raw=False, service_id="salesforce", limit=20, filter_={
         "name": "Main Operating",
+        "account_type": apideck_unify.BankAccountsFilterAccountType.CHECKING,
         "status": apideck_unify.BankAccountsFilterStatus.ACTIVE,
     }, sort={}, pass_through={
         "search": "San Francisco",

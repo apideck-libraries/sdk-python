@@ -17,6 +17,13 @@ class PeriodType(str, Enum):
     YEAR = "year"
 
 
+class AccountingMethod(str, Enum):
+    r"""The accounting method used for the report: cash or accrual."""
+
+    CASH = "cash"
+    ACCRUAL = "accrual"
+
+
 class BalanceSheetFilterTypedDict(TypedDict):
     start_date: NotRequired[str]
     r"""The start date of the period to include in the resource."""
@@ -28,6 +35,8 @@ class BalanceSheetFilterTypedDict(TypedDict):
     r"""The type of period to include in the resource: month, quarter, year."""
     location_id: NotRequired[str]
     r"""The ID of the location to include in the resource."""
+    accounting_method: NotRequired[AccountingMethod]
+    r"""The accounting method used for the report: cash or accrual."""
 
 
 class BalanceSheetFilter(BaseModel):
@@ -51,3 +60,8 @@ class BalanceSheetFilter(BaseModel):
 
     location_id: Annotated[Optional[str], FieldMetadata(query=True)] = None
     r"""The ID of the location to include in the resource."""
+
+    accounting_method: Annotated[
+        Optional[AccountingMethod], FieldMetadata(query=True)
+    ] = None
+    r"""The accounting method used for the report: cash or accrual."""

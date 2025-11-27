@@ -8,6 +8,18 @@ from typing import Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
+class BankAccountsFilterAccountType(str, Enum):
+    r"""Filter by account type"""
+
+    CHECKING = "checking"
+    SAVINGS = "savings"
+    CREDIT_CARD = "credit_card"
+    MONEY_MARKET = "money_market"
+    LINE_OF_CREDIT = "line_of_credit"
+    OTHER = "other"
+    CASH = "cash"
+
+
 class BankAccountsFilterStatus(str, Enum):
     r"""Filter by account status"""
 
@@ -19,6 +31,8 @@ class BankAccountsFilterStatus(str, Enum):
 class BankAccountsFilterTypedDict(TypedDict):
     name: NotRequired[str]
     r"""Filter by bank account name"""
+    account_type: NotRequired[BankAccountsFilterAccountType]
+    r"""Filter by account type"""
     status: NotRequired[BankAccountsFilterStatus]
     r"""Filter by account status"""
 
@@ -26,6 +40,11 @@ class BankAccountsFilterTypedDict(TypedDict):
 class BankAccountsFilter(BaseModel):
     name: Annotated[Optional[str], FieldMetadata(query=True)] = None
     r"""Filter by bank account name"""
+
+    account_type: Annotated[
+        Optional[BankAccountsFilterAccountType], FieldMetadata(query=True)
+    ] = None
+    r"""Filter by account type"""
 
     status: Annotated[Optional[BankAccountsFilterStatus], FieldMetadata(query=True)] = (
         None
