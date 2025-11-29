@@ -28,7 +28,7 @@ generation:
     generateNewTests: false
     skipResponseBodyAssertions: false
 python:
-  version: 0.27.88
+  version: 0.28.1
   additionalDependencies:
     dev: {}
     main: {}
@@ -65,6 +65,7 @@ python:
   maxMethodParams: 999
   methodArguments: infer-optional-args
   moduleName: ""
+  multipartArrayFormat: legacy
   outputModelSuffix: output
   packageManager: poetry
   packageName: apideck-unify
