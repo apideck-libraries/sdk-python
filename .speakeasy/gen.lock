@@ -1,12 +1,12 @@
 lockVersion: 2.0.0
 id: fca0ac3a-5f4e-452c-bbc7-2311afa8da40
 management:
-  docChecksum: 931d63edaff2267943df0de38e5fa2ad
-  docVersion: 10.21.19
+  docChecksum: 23d83258e8264348e4b8711a970fbf29
+  docVersion: 10.22.0
   speakeasyVersion: 1.656.1
   generationVersion: 2.753.1
-  releaseVersion: 0.27.88
-  configChecksum: e5678354c0361164e8aab420971d241a
+  releaseVersion: 0.28.1
+  configChecksum: 9d6ed140cc324b86696b7515a63f03e0
   repoURL: https://github.com/apideck-libraries/sdk-python.git
   installationURL: https://github.com/apideck-libraries/sdk-python.git
   published: true
@@ -18478,4 +18478,3 @@ examples:
           application/json: {"status_code": 400, "error": "Bad Request", "type_name": "RequestHeadersValidationError", "message": "Invalid Params", "detail": "Missing Header: x-apideck-consumer-id", "ref": "https://developers.apideck.com/errors#unauthorizederror"}
 examplesVersion: 1.0.2
 generatedTests: {}
-releaseNotes: "## Python SDK Changes Detected:\n* `apideck.accounting.balance_sheet.get()`:  `request.filter` **Changed**\n* `apideck.accounting.profit_and_loss.get()`:  `request.filter` **Changed**\n* `apideck.accounting.bank_accounts.list()`: \n  *  `request.filter` **Changed**\n  *  `response.data.[].downstream_id` **Added**\n* `apideck.accounting.bank_accounts.get()`:  `response.data.downstream_id` **Added**\n"
