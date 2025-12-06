@@ -185,6 +185,8 @@ class InvoiceItemTypedDict(TypedDict):
     r"""The ID of the location"""
     subsidiary_id: NotRequired[Nullable[str]]
     r"""The ID of the subsidiary"""
+    category_id: NotRequired[Nullable[str]]
+    r"""ID of the category of the item"""
     tax_schedule_id: NotRequired[Nullable[str]]
     r"""The ID of the tax schedule"""
     custom_mappings: NotRequired[Nullable[Dict[str, Any]]]
@@ -277,6 +279,9 @@ class InvoiceItem(BaseModel):
     subsidiary_id: OptionalNullable[str] = UNSET
     r"""The ID of the subsidiary"""
 
+    category_id: OptionalNullable[str] = UNSET
+    r"""ID of the category of the item"""
+
     tax_schedule_id: OptionalNullable[str] = UNSET
     r"""The ID of the tax schedule"""
 
@@ -329,6 +334,7 @@ class InvoiceItem(BaseModel):
             "department_id",
             "location_id",
             "subsidiary_id",
+            "category_id",
             "tax_schedule_id",
             "custom_mappings",
             "row_version",
@@ -361,6 +367,7 @@ class InvoiceItem(BaseModel):
             "department_id",
             "location_id",
             "subsidiary_id",
+            "category_id",
             "tax_schedule_id",
             "custom_mappings",
             "row_version",
@@ -540,6 +547,8 @@ class InvoiceItemInputTypedDict(TypedDict):
     r"""The ID of the location"""
     subsidiary_id: NotRequired[Nullable[str]]
     r"""The ID of the subsidiary"""
+    category_id: NotRequired[Nullable[str]]
+    r"""ID of the category of the item"""
     tax_schedule_id: NotRequired[Nullable[str]]
     r"""The ID of the tax schedule"""
     row_version: NotRequired[Nullable[str]]
@@ -619,6 +628,9 @@ class InvoiceItemInput(BaseModel):
     subsidiary_id: OptionalNullable[str] = UNSET
     r"""The ID of the subsidiary"""
 
+    category_id: OptionalNullable[str] = UNSET
+    r"""ID of the category of the item"""
+
     tax_schedule_id: OptionalNullable[str] = UNSET
     r"""The ID of the tax schedule"""
 
@@ -655,6 +667,7 @@ class InvoiceItemInput(BaseModel):
             "department_id",
             "location_id",
             "subsidiary_id",
+            "category_id",
             "tax_schedule_id",
             "row_version",
             "pass_through",
@@ -682,6 +695,7 @@ class InvoiceItemInput(BaseModel):
             "department_id",
             "location_id",
             "subsidiary_id",
+            "category_id",
             "tax_schedule_id",
             "row_version",
         ]
