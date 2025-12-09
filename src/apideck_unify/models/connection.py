@@ -41,22 +41,19 @@ class Target(str, Enum):
     RESOURCE = "resource"
 
 
-ConnectionValue5TypedDict = TypeAliasType(
-    "ConnectionValue5TypedDict", Union[str, int, float]
-)
+Value5TypedDict = TypeAliasType("Value5TypedDict", Union[str, int, float])
 
 
-ConnectionValue5 = TypeAliasType("ConnectionValue5", Union[str, int, float])
+Value5 = TypeAliasType("Value5", Union[str, int, float])
 
 
 ConnectionValueTypedDict = TypeAliasType(
-    "ConnectionValueTypedDict",
-    Union[str, int, float, bool, List[ConnectionValue5TypedDict]],
+    "ConnectionValueTypedDict", Union[str, int, float, bool, List[Value5TypedDict]]
 )
 
 
 ConnectionValue = TypeAliasType(
-    "ConnectionValue", Union[str, int, float, bool, List[ConnectionValue5]]
+    "ConnectionValue", Union[str, int, float, bool, List[Value5]]
 )
 
 
