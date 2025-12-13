@@ -1,4 +1,4 @@
-# Value
+# CustomField1Value
 
 
 ## Supported Types
@@ -7,12 +7,6 @@
 
 ```python
 value: str = /* values here */
-```
-
-### `int`
-
-```python
-value: int = /* values here */
 ```
 
 ### `float`
@@ -27,9 +21,15 @@ value: float = /* values here */
 value: bool = /* values here */
 ```
 
-### `List[models.Five]`
+### `Dict[str, Any]`
 
 ```python
-value: List[models.Five] = /* values here */
+value: Dict[str, Any] = /* values here */
+```
+
+### `List[Nullable[models.CustomFieldValue5]]`
+
+```python
+value: List[Nullable[models.CustomFieldValue5]] = /* values here */
 ```
 

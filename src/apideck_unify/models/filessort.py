@@ -12,6 +12,7 @@ from typing_extensions import Annotated, NotRequired, TypedDict
 class FilesSortBy(str, Enum):
     r"""The field on which to sort the Files"""
 
+    CREATED_AT = "created_at"
     UPDATED_AT = "updated_at"
     NAME = "name"
 

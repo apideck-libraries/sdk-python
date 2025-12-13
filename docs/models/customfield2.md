@@ -1,0 +1,11 @@
+# CustomField2
+
+
+## Fields
+
+| Field                                                                      | Type                                                                       | Required                                                                   | Description                                                                | Example                                                                    |
+| -------------------------------------------------------------------------- | -------------------------------------------------------------------------- | -------------------------------------------------------------------------- | -------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| `id`                                                                       | *OptionalNullable[str]*                                                    | :heavy_minus_sign:                                                         | Unique identifier for the custom field.                                    | 2389328923893298                                                           |
+| `name`                                                                     | *Nullable[str]*                                                            | :heavy_check_mark:                                                         | Name of the custom field.                                                  | employee_level                                                             |
+| `description`                                                              | *OptionalNullable[str]*                                                    | :heavy_minus_sign:                                                         | More information about the custom field                                    | Employee Level                                                             |
+| `value`                                                                    | [OptionalNullable[models.CustomFieldValue]](../models/customfieldvalue.md) | :heavy_minus_sign:                                                         | N/A                                                                        |                                                                            |
