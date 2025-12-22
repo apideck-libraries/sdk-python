@@ -13,34 +13,116 @@ from typing import Any, Dict, List, Union
 from typing_extensions import NotRequired, TypeAliasType, TypedDict
 
 
-FiveTypedDict = TypeAliasType("FiveTypedDict", Union[str, float, bool, Dict[str, Any]])
-
-
-Five = TypeAliasType("Five", Union[str, float, bool, Dict[str, Any]])
-
-
-ValueTypedDict = TypeAliasType(
-    "ValueTypedDict",
-    Union[str, float, bool, Dict[str, Any], List[Nullable[FiveTypedDict]]],
+CustomFieldValue25TypedDict = TypeAliasType(
+    "CustomFieldValue25TypedDict", Union[str, float, bool, Dict[str, Any]]
 )
 
 
-Value = TypeAliasType(
-    "Value", Union[str, float, bool, Dict[str, Any], List[Nullable[Five]]]
+CustomFieldValue25 = TypeAliasType(
+    "CustomFieldValue25", Union[str, float, bool, Dict[str, Any]]
 )
 
 
-class CustomFieldTypedDict(TypedDict):
+CustomFieldValueTypedDict = TypeAliasType(
+    "CustomFieldValueTypedDict",
+    Union[
+        str, float, bool, Dict[str, Any], List[Nullable[CustomFieldValue25TypedDict]]
+    ],
+)
+
+
+CustomFieldValue = TypeAliasType(
+    "CustomFieldValue",
+    Union[str, float, bool, Dict[str, Any], List[Nullable[CustomFieldValue25]]],
+)
+
+
+class CustomField2TypedDict(TypedDict):
+    name: Nullable[str]
+    r"""Name of the custom field."""
+    id: NotRequired[Nullable[str]]
+    r"""Unique identifier for the custom field."""
+    description: NotRequired[Nullable[str]]
+    r"""More information about the custom field"""
+    value: NotRequired[Nullable[CustomFieldValueTypedDict]]
+
+
+class CustomField2(BaseModel):
+    name: Nullable[str]
+    r"""Name of the custom field."""
+
+    id: OptionalNullable[str] = UNSET
+    r"""Unique identifier for the custom field."""
+
+    description: OptionalNullable[str] = UNSET
+    r"""More information about the custom field"""
+
+    value: OptionalNullable[CustomFieldValue] = UNSET
+
+    @model_serializer(mode="wrap")
+    def serialize_model(self, handler):
+        optional_fields = ["id", "description", "value"]
+        nullable_fields = ["id", "name", "description", "value"]
+        null_default_fields = []
+
+        serialized = handler(self)
+
+        m = {}
+
+        for n, f in type(self).model_fields.items():
+            k = f.alias or n
+            val = serialized.get(k)
+            serialized.pop(k, None)
+
+            optional_nullable = k in optional_fields and k in nullable_fields
+            is_set = (
+                self.__pydantic_fields_set__.intersection({n})
+                or k in null_default_fields
+            )  # pylint: disable=no-member
+
+            if val is not None and val != UNSET_SENTINEL:
+                m[k] = val
+            elif val != UNSET_SENTINEL and (
+                not k in optional_fields or (optional_nullable and is_set)
+            ):
+                m[k] = val
+
+        return m
+
+
+CustomFieldValue5TypedDict = TypeAliasType(
+    "CustomFieldValue5TypedDict", Union[str, float, bool, Dict[str, Any]]
+)
+
+
+CustomFieldValue5 = TypeAliasType(
+    "CustomFieldValue5", Union[str, float, bool, Dict[str, Any]]
+)
+
+
+CustomField1ValueTypedDict = TypeAliasType(
+    "CustomField1ValueTypedDict",
+    Union[str, float, bool, Dict[str, Any], List[Nullable[CustomFieldValue5TypedDict]]],
+)
+
+
+CustomField1Value = TypeAliasType(
+    "CustomField1Value",
+    Union[str, float, bool, Dict[str, Any], List[Nullable[CustomFieldValue5]]],
+)
+
+
+class CustomField1TypedDict(TypedDict):
     id: Nullable[str]
     r"""Unique identifier for the custom field."""
     name: NotRequired[Nullable[str]]
     r"""Name of the custom field."""
     description: NotRequired[Nullable[str]]
     r"""More information about the custom field"""
-    value: NotRequired[Nullable[ValueTypedDict]]
+    value: NotRequired[Nullable[CustomField1ValueTypedDict]]
 
 
-class CustomField(BaseModel):
+class CustomField1(BaseModel):
     id: Nullable[str]
     r"""Unique identifier for the custom field."""
 
@@ -50,7 +132,7 @@ class CustomField(BaseModel):
     description: OptionalNullable[str] = UNSET
     r"""More information about the custom field"""
 
-    value: OptionalNullable[Value] = UNSET
+    value: OptionalNullable[CustomField1Value] = UNSET
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
@@ -81,3 +163,11 @@ class CustomField(BaseModel):
                 m[k] = val
 
         return m
+
+
+CustomFieldTypedDict = TypeAliasType(
+    "CustomFieldTypedDict", Union[CustomField1TypedDict, CustomField2TypedDict]
+)
+
+
+CustomField = TypeAliasType("CustomField", Union[CustomField1, CustomField2])

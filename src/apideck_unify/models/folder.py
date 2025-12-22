@@ -23,12 +23,16 @@ class FolderTypedDict(TypedDict):
     r"""The parent folders of the file, starting from the root"""
     id: NotRequired[str]
     r"""A unique identifier for an object."""
+    downstream_id: NotRequired[Nullable[str]]
+    r"""The third-party API ID of original entity"""
     description: NotRequired[Nullable[str]]
     r"""Optional description of the folder"""
     path: NotRequired[Nullable[str]]
     r"""The full path of the folder (includes the folder name)"""
     size: NotRequired[Nullable[int]]
     r"""The size of the folder in bytes"""
+    downloadable: NotRequired[Nullable[bool]]
+    r"""Whether the current user can download the contents of this folder"""
     owner: NotRequired[OwnerTypedDict]
     parent_folders_complete: NotRequired[bool]
     r"""Whether the list of parent folder is complete. Some connectors only return the direct parent of a folder"""
@@ -54,6 +58,9 @@ class Folder(BaseModel):
     id: Optional[str] = None
     r"""A unique identifier for an object."""
 
+    downstream_id: OptionalNullable[str] = UNSET
+    r"""The third-party API ID of original entity"""
+
     description: OptionalNullable[str] = UNSET
     r"""Optional description of the folder"""
 
@@ -62,6 +69,9 @@ class Folder(BaseModel):
 
     size: OptionalNullable[int] = UNSET
     r"""The size of the folder in bytes"""
+
+    downloadable: OptionalNullable[bool] = UNSET
+    r"""Whether the current user can download the contents of this folder"""
 
     owner: Optional[Owner] = None
 
@@ -87,9 +97,11 @@ class Folder(BaseModel):
     def serialize_model(self, handler):
         optional_fields = [
             "id",
+            "downstream_id",
             "description",
             "path",
             "size",
+            "downloadable",
             "owner",
             "parent_folders_complete",
             "custom_mappings",
@@ -99,9 +111,11 @@ class Folder(BaseModel):
             "created_at",
         ]
         nullable_fields = [
+            "downstream_id",
             "description",
             "path",
             "size",
+            "downloadable",
             "custom_mappings",
             "updated_by",
             "created_by",
