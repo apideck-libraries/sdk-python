@@ -32,6 +32,8 @@ class LeadInputTypedDict(TypedDict):
     r"""The name of the owner of the lead."""
     company_id: NotRequired[Nullable[str]]
     r"""The company the lead is associated with."""
+    contact_id: NotRequired[Nullable[str]]
+    r"""The contact the lead is associated with."""
     lead_id: NotRequired[Nullable[str]]
     r"""The identifier of the lead."""
     lead_source: NotRequired[Nullable[str]]
@@ -81,6 +83,9 @@ class LeadInput(BaseModel):
 
     company_id: OptionalNullable[str] = UNSET
     r"""The company the lead is associated with."""
+
+    contact_id: OptionalNullable[str] = UNSET
+    r"""The contact the lead is associated with."""
 
     lead_id: OptionalNullable[str] = UNSET
     r"""The identifier of the lead."""
@@ -141,6 +146,7 @@ class LeadInput(BaseModel):
             "owner_id",
             "owner_name",
             "company_id",
+            "contact_id",
             "lead_id",
             "lead_source",
             "first_name",
@@ -167,6 +173,7 @@ class LeadInput(BaseModel):
             "owner_id",
             "owner_name",
             "company_id",
+            "contact_id",
             "lead_id",
             "lead_source",
             "first_name",
