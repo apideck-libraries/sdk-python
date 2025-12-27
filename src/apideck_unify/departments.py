@@ -383,6 +383,7 @@ class Departments(BaseSDK):
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         parent_id: OptionalNullable[str] = UNSET,
+        display_id: OptionalNullable[str] = UNSET,
         name: OptionalNullable[str] = UNSET,
         status: Optional[models.DepartmentStatus] = None,
         subsidiaries: Optional[
@@ -410,6 +411,7 @@ class Departments(BaseSDK):
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param parent_id: A unique identifier for an object.
+        :param display_id: Id to be displayed.
         :param name: The name of the department.
         :param status: Based on the status some functionality is enabled or disabled.
         :param subsidiaries:
@@ -438,6 +440,7 @@ class Departments(BaseSDK):
             service_id=service_id,
             accounting_department=models.AccountingDepartmentInput(
                 parent_id=parent_id,
+                display_id=display_id,
                 name=name,
                 status=status,
                 subsidiaries=utils.get_pydantic_model(
@@ -562,6 +565,7 @@ class Departments(BaseSDK):
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         parent_id: OptionalNullable[str] = UNSET,
+        display_id: OptionalNullable[str] = UNSET,
         name: OptionalNullable[str] = UNSET,
         status: Optional[models.DepartmentStatus] = None,
         subsidiaries: Optional[
@@ -589,6 +593,7 @@ class Departments(BaseSDK):
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param parent_id: A unique identifier for an object.
+        :param display_id: Id to be displayed.
         :param name: The name of the department.
         :param status: Based on the status some functionality is enabled or disabled.
         :param subsidiaries:
@@ -617,6 +622,7 @@ class Departments(BaseSDK):
             service_id=service_id,
             accounting_department=models.AccountingDepartmentInput(
                 parent_id=parent_id,
+                display_id=display_id,
                 name=name,
                 status=status,
                 subsidiaries=utils.get_pydantic_model(
@@ -1030,6 +1036,7 @@ class Departments(BaseSDK):
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
         parent_id: OptionalNullable[str] = UNSET,
+        display_id: OptionalNullable[str] = UNSET,
         name: OptionalNullable[str] = UNSET,
         status: Optional[models.DepartmentStatus] = None,
         subsidiaries: Optional[
@@ -1058,6 +1065,7 @@ class Departments(BaseSDK):
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param parent_id: A unique identifier for an object.
+        :param display_id: Id to be displayed.
         :param name: The name of the department.
         :param status: Based on the status some functionality is enabled or disabled.
         :param subsidiaries:
@@ -1087,6 +1095,7 @@ class Departments(BaseSDK):
             raw=raw,
             accounting_department=models.AccountingDepartmentInput(
                 parent_id=parent_id,
+                display_id=display_id,
                 name=name,
                 status=status,
                 subsidiaries=utils.get_pydantic_model(
@@ -1212,6 +1221,7 @@ class Departments(BaseSDK):
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
         parent_id: OptionalNullable[str] = UNSET,
+        display_id: OptionalNullable[str] = UNSET,
         name: OptionalNullable[str] = UNSET,
         status: Optional[models.DepartmentStatus] = None,
         subsidiaries: Optional[
@@ -1240,6 +1250,7 @@ class Departments(BaseSDK):
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param parent_id: A unique identifier for an object.
+        :param display_id: Id to be displayed.
         :param name: The name of the department.
         :param status: Based on the status some functionality is enabled or disabled.
         :param subsidiaries:
@@ -1269,6 +1280,7 @@ class Departments(BaseSDK):
             raw=raw,
             accounting_department=models.AccountingDepartmentInput(
                 parent_id=parent_id,
+                display_id=display_id,
                 name=name,
                 status=status,
                 subsidiaries=utils.get_pydantic_model(

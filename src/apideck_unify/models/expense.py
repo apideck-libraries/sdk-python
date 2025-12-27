@@ -6,7 +6,17 @@ from .customfield import CustomField, CustomFieldTypedDict
 from .expenselineitem import ExpenseLineItem, ExpenseLineItemTypedDict
 from .expenselineitem_input import ExpenseLineItemInput, ExpenseLineItemInputTypedDict
 from .linkedbankaccount import LinkedBankAccount, LinkedBankAccountTypedDict
-from .linkedledgeraccount import LinkedLedgerAccount, LinkedLedgerAccountTypedDict
+from .linkeddepartment import LinkedDepartment, LinkedDepartmentTypedDict
+from .linkeddepartment_input import (
+    LinkedDepartmentInput,
+    LinkedDepartmentInputTypedDict,
+)
+from .linkedfinancialaccount import (
+    LinkedFinancialAccount,
+    LinkedFinancialAccountInput,
+    LinkedFinancialAccountInputTypedDict,
+    LinkedFinancialAccountTypedDict,
+)
 from .linkedsupplier import LinkedSupplier, LinkedSupplierTypedDict
 from .linkedsupplier_input import LinkedSupplierInput, LinkedSupplierInputTypedDict
 from .linkedtaxrate import LinkedTaxRate, LinkedTaxRateTypedDict
@@ -57,14 +67,15 @@ class ExpenseTypedDict(TypedDict):
     r"""Expense line items linked to this expense."""
     id: NotRequired[str]
     r"""A unique identifier for an object."""
+    display_id: NotRequired[Nullable[str]]
+    r"""Id to be displayed."""
     number: NotRequired[Nullable[str]]
     r"""Number."""
     account_id: NotRequired[str]
     r"""The unique identifier for the ledger account that this expense should be credited to. Deprecated, use account instead."""
-    account: NotRequired[Nullable[LinkedLedgerAccountTypedDict]]
+    account: NotRequired[Nullable[LinkedFinancialAccountTypedDict]]
+    r"""A flexible account reference that can represent either a ledger account (GL account) or a bank account, depending on the connector's requirements."""
     bank_account: NotRequired[Nullable[LinkedBankAccountTypedDict]]
-    customer_id: NotRequired[str]
-    r"""The ID of the customer this entity is linked to. Used for expenses that should be marked as billable to customers."""
     supplier_id: NotRequired[str]
     r"""The ID of the supplier this entity is linked to. Deprecated, use supplier instead."""
     supplier: NotRequired[Nullable[LinkedSupplierTypedDict]]
@@ -73,6 +84,7 @@ class ExpenseTypedDict(TypedDict):
     r"""The company ID the transaction belongs to"""
     department_id: NotRequired[Nullable[str]]
     r"""The ID of the department"""
+    department: NotRequired[Nullable[LinkedDepartmentTypedDict]]
     payment_type: NotRequired[Nullable[ExpensePaymentType]]
     r"""The type of payment for the expense."""
     currency: NotRequired[Nullable[Currency]]
@@ -125,6 +137,9 @@ class Expense(BaseModel):
     id: Optional[str] = None
     r"""A unique identifier for an object."""
 
+    display_id: OptionalNullable[str] = UNSET
+    r"""Id to be displayed."""
+
     number: OptionalNullable[str] = UNSET
     r"""Number."""
 
@@ -136,12 +151,10 @@ class Expense(BaseModel):
     ] = None
     r"""The unique identifier for the ledger account that this expense should be credited to. Deprecated, use account instead."""
 
-    account: OptionalNullable[LinkedLedgerAccount] = UNSET
+    account: OptionalNullable[LinkedFinancialAccount] = UNSET
+    r"""A flexible account reference that can represent either a ledger account (GL account) or a bank account, depending on the connector's requirements."""
 
     bank_account: OptionalNullable[LinkedBankAccount] = UNSET
-
-    customer_id: Optional[str] = None
-    r"""The ID of the customer this entity is linked to. Used for expenses that should be marked as billable to customers."""
 
     supplier_id: Annotated[
         Optional[str],
@@ -159,6 +172,8 @@ class Expense(BaseModel):
 
     department_id: OptionalNullable[str] = UNSET
     r"""The ID of the department"""
+
+    department: OptionalNullable[LinkedDepartment] = UNSET
 
     payment_type: OptionalNullable[ExpensePaymentType] = UNSET
     r"""The type of payment for the expense."""
@@ -225,15 +240,16 @@ class Expense(BaseModel):
     def serialize_model(self, handler):
         optional_fields = [
             "id",
+            "display_id",
             "number",
             "account_id",
             "account",
             "bank_account",
-            "customer_id",
             "supplier_id",
             "supplier",
             "company_id",
             "department_id",
+            "department",
             "payment_type",
             "currency",
             "currency_rate",
@@ -257,6 +273,7 @@ class Expense(BaseModel):
             "pass_through",
         ]
         nullable_fields = [
+            "display_id",
             "number",
             "transaction_date",
             "account",
@@ -264,6 +281,7 @@ class Expense(BaseModel):
             "supplier",
             "company_id",
             "department_id",
+            "department",
             "payment_type",
             "currency",
             "currency_rate",
@@ -315,14 +333,15 @@ class ExpenseInputTypedDict(TypedDict):
     r"""The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD"""
     line_items: List[ExpenseLineItemInputTypedDict]
     r"""Expense line items linked to this expense."""
+    display_id: NotRequired[Nullable[str]]
+    r"""Id to be displayed."""
     number: NotRequired[Nullable[str]]
     r"""Number."""
     account_id: NotRequired[str]
     r"""The unique identifier for the ledger account that this expense should be credited to. Deprecated, use account instead."""
-    account: NotRequired[Nullable[LinkedLedgerAccountTypedDict]]
+    account: NotRequired[Nullable[LinkedFinancialAccountInputTypedDict]]
+    r"""A flexible account reference that can represent either a ledger account (GL account) or a bank account, depending on the connector's requirements."""
     bank_account: NotRequired[Nullable[LinkedBankAccountTypedDict]]
-    customer_id: NotRequired[str]
-    r"""The ID of the customer this entity is linked to. Used for expenses that should be marked as billable to customers."""
     supplier_id: NotRequired[str]
     r"""The ID of the supplier this entity is linked to. Deprecated, use supplier instead."""
     supplier: NotRequired[Nullable[LinkedSupplierInputTypedDict]]
@@ -331,6 +350,7 @@ class ExpenseInputTypedDict(TypedDict):
     r"""The company ID the transaction belongs to"""
     department_id: NotRequired[Nullable[str]]
     r"""The ID of the department"""
+    department: NotRequired[Nullable[LinkedDepartmentInputTypedDict]]
     payment_type: NotRequired[Nullable[ExpensePaymentType]]
     r"""The type of payment for the expense."""
     currency: NotRequired[Nullable[Currency]]
@@ -370,6 +390,9 @@ class ExpenseInput(BaseModel):
     line_items: List[ExpenseLineItemInput]
     r"""Expense line items linked to this expense."""
 
+    display_id: OptionalNullable[str] = UNSET
+    r"""Id to be displayed."""
+
     number: OptionalNullable[str] = UNSET
     r"""Number."""
 
@@ -381,12 +404,10 @@ class ExpenseInput(BaseModel):
     ] = None
     r"""The unique identifier for the ledger account that this expense should be credited to. Deprecated, use account instead."""
 
-    account: OptionalNullable[LinkedLedgerAccount] = UNSET
+    account: OptionalNullable[LinkedFinancialAccountInput] = UNSET
+    r"""A flexible account reference that can represent either a ledger account (GL account) or a bank account, depending on the connector's requirements."""
 
     bank_account: OptionalNullable[LinkedBankAccount] = UNSET
-
-    customer_id: Optional[str] = None
-    r"""The ID of the customer this entity is linked to. Used for expenses that should be marked as billable to customers."""
 
     supplier_id: Annotated[
         Optional[str],
@@ -404,6 +425,8 @@ class ExpenseInput(BaseModel):
 
     department_id: OptionalNullable[str] = UNSET
     r"""The ID of the department"""
+
+    department: OptionalNullable[LinkedDepartmentInput] = UNSET
 
     payment_type: OptionalNullable[ExpensePaymentType] = UNSET
     r"""The type of payment for the expense."""
@@ -454,15 +477,16 @@ class ExpenseInput(BaseModel):
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
         optional_fields = [
+            "display_id",
             "number",
             "account_id",
             "account",
             "bank_account",
-            "customer_id",
             "supplier_id",
             "supplier",
             "company_id",
             "department_id",
+            "department",
             "payment_type",
             "currency",
             "currency_rate",
@@ -481,6 +505,7 @@ class ExpenseInput(BaseModel):
             "pass_through",
         ]
         nullable_fields = [
+            "display_id",
             "number",
             "transaction_date",
             "account",
@@ -488,6 +513,7 @@ class ExpenseInput(BaseModel):
             "supplier",
             "company_id",
             "department_id",
+            "department",
             "payment_type",
             "currency",
             "currency_rate",
