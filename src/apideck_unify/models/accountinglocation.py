@@ -34,6 +34,10 @@ class AccountingLocationTypedDict(TypedDict):
     r"""A unique identifier for an object."""
     parent_id: NotRequired[Nullable[str]]
     r"""A unique identifier for an object."""
+    display_id: NotRequired[Nullable[str]]
+    r"""Id to be displayed."""
+    downstream_id: NotRequired[Nullable[str]]
+    r"""The third-party API ID of original entity"""
     company_name: NotRequired[Nullable[str]]
     r"""The name of the company."""
     display_name: NotRequired[Nullable[str]]
@@ -64,6 +68,12 @@ class AccountingLocation(BaseModel):
 
     parent_id: OptionalNullable[str] = UNSET
     r"""A unique identifier for an object."""
+
+    display_id: OptionalNullable[str] = UNSET
+    r"""Id to be displayed."""
+
+    downstream_id: OptionalNullable[str] = UNSET
+    r"""The third-party API ID of original entity"""
 
     company_name: OptionalNullable[str] = UNSET
     r"""The name of the company."""
@@ -104,6 +114,8 @@ class AccountingLocation(BaseModel):
         optional_fields = [
             "id",
             "parent_id",
+            "display_id",
+            "downstream_id",
             "company_name",
             "display_name",
             "status",
@@ -119,6 +131,8 @@ class AccountingLocation(BaseModel):
         ]
         nullable_fields = [
             "parent_id",
+            "display_id",
+            "downstream_id",
             "company_name",
             "display_name",
             "custom_mappings",
@@ -158,6 +172,8 @@ class AccountingLocation(BaseModel):
 class AccountingLocationInputTypedDict(TypedDict):
     parent_id: NotRequired[Nullable[str]]
     r"""A unique identifier for an object."""
+    display_id: NotRequired[Nullable[str]]
+    r"""Id to be displayed."""
     company_name: NotRequired[Nullable[str]]
     r"""The name of the company."""
     display_name: NotRequired[Nullable[str]]
@@ -175,6 +191,9 @@ class AccountingLocationInputTypedDict(TypedDict):
 class AccountingLocationInput(BaseModel):
     parent_id: OptionalNullable[str] = UNSET
     r"""A unique identifier for an object."""
+
+    display_id: OptionalNullable[str] = UNSET
+    r"""Id to be displayed."""
 
     company_name: OptionalNullable[str] = UNSET
     r"""The name of the company."""
@@ -199,6 +218,7 @@ class AccountingLocationInput(BaseModel):
     def serialize_model(self, handler):
         optional_fields = [
             "parent_id",
+            "display_id",
             "company_name",
             "display_name",
             "status",
@@ -207,7 +227,13 @@ class AccountingLocationInput(BaseModel):
             "row_version",
             "pass_through",
         ]
-        nullable_fields = ["parent_id", "company_name", "display_name", "row_version"]
+        nullable_fields = [
+            "parent_id",
+            "display_id",
+            "company_name",
+            "display_name",
+            "row_version",
+        ]
         null_default_fields = []
 
         serialized = handler(self)

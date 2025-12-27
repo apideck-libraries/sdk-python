@@ -7,21 +7,18 @@ from typing import List, Optional, Union
 from typing_extensions import NotRequired, TypeAliasType, TypedDict
 
 
-Value5TypedDict = TypeAliasType("Value5TypedDict", Union[str, int, float])
+FiveTypedDict = TypeAliasType("FiveTypedDict", Union[str, int, float])
 
 
-Value5 = TypeAliasType("Value5", Union[str, int, float])
+Five = TypeAliasType("Five", Union[str, int, float])
 
 
-SimpleFormFieldOptionValueTypedDict = TypeAliasType(
-    "SimpleFormFieldOptionValueTypedDict",
-    Union[str, int, float, bool, List[Value5TypedDict]],
+ValueTypedDict = TypeAliasType(
+    "ValueTypedDict", Union[str, int, float, bool, List[FiveTypedDict]]
 )
 
 
-SimpleFormFieldOptionValue = TypeAliasType(
-    "SimpleFormFieldOptionValue", Union[str, int, float, bool, List[Value5]]
-)
+Value = TypeAliasType("Value", Union[str, int, float, bool, List[Five]])
 
 
 class OptionType(str, Enum):
@@ -31,7 +28,7 @@ class OptionType(str, Enum):
 class SimpleFormFieldOptionTypedDict(TypedDict):
     label: str
     option_type: OptionType
-    value: NotRequired[SimpleFormFieldOptionValueTypedDict]
+    value: NotRequired[ValueTypedDict]
 
 
 class SimpleFormFieldOption(BaseModel):
@@ -39,4 +36,4 @@ class SimpleFormFieldOption(BaseModel):
 
     option_type: OptionType
 
-    value: Optional[SimpleFormFieldOptionValue] = None
+    value: Optional[Value] = None

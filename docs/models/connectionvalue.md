@@ -27,9 +27,9 @@ value: float = /* values here */
 value: bool = /* values here */
 ```
 
-### `List[models.ConnectionValue5]`
+### `List[models.Value5]`
 
 ```python
-value: List[models.ConnectionValue5] = /* values here */
+value: List[models.Value5] = /* values here */
 ```
 

@@ -33,6 +33,8 @@ class AccountingDepartmentTypedDict(TypedDict):
     r"""A unique identifier for an object."""
     parent_id: NotRequired[Nullable[str]]
     r"""A unique identifier for an object."""
+    display_id: NotRequired[Nullable[str]]
+    r"""Id to be displayed."""
     name: NotRequired[Nullable[str]]
     r"""The name of the department."""
     status: NotRequired[DepartmentStatus]
@@ -40,6 +42,8 @@ class AccountingDepartmentTypedDict(TypedDict):
     subsidiaries: NotRequired[List[SubsidiaryReferenceTypedDict]]
     code: NotRequired[str]
     r"""The code of the department."""
+    downstream_id: NotRequired[Nullable[str]]
+    r"""The third-party API ID of original entity"""
     custom_mappings: NotRequired[Nullable[Dict[str, Any]]]
     r"""When custom mappings are configured on the resource, the result is included here."""
     row_version: NotRequired[Nullable[str]]
@@ -63,6 +67,9 @@ class AccountingDepartment(BaseModel):
     parent_id: OptionalNullable[str] = UNSET
     r"""A unique identifier for an object."""
 
+    display_id: OptionalNullable[str] = UNSET
+    r"""Id to be displayed."""
+
     name: OptionalNullable[str] = UNSET
     r"""The name of the department."""
 
@@ -73,6 +80,9 @@ class AccountingDepartment(BaseModel):
 
     code: Optional[str] = None
     r"""The code of the department."""
+
+    downstream_id: OptionalNullable[str] = UNSET
+    r"""The third-party API ID of original entity"""
 
     custom_mappings: OptionalNullable[Dict[str, Any]] = UNSET
     r"""When custom mappings are configured on the resource, the result is included here."""
@@ -100,10 +110,12 @@ class AccountingDepartment(BaseModel):
         optional_fields = [
             "id",
             "parent_id",
+            "display_id",
             "name",
             "status",
             "subsidiaries",
             "code",
+            "downstream_id",
             "custom_mappings",
             "row_version",
             "updated_by",
@@ -114,7 +126,9 @@ class AccountingDepartment(BaseModel):
         ]
         nullable_fields = [
             "parent_id",
+            "display_id",
             "name",
+            "downstream_id",
             "custom_mappings",
             "row_version",
             "updated_by",
@@ -152,6 +166,8 @@ class AccountingDepartment(BaseModel):
 class AccountingDepartmentInputTypedDict(TypedDict):
     parent_id: NotRequired[Nullable[str]]
     r"""A unique identifier for an object."""
+    display_id: NotRequired[Nullable[str]]
+    r"""Id to be displayed."""
     name: NotRequired[Nullable[str]]
     r"""The name of the department."""
     status: NotRequired[DepartmentStatus]
@@ -168,6 +184,9 @@ class AccountingDepartmentInputTypedDict(TypedDict):
 class AccountingDepartmentInput(BaseModel):
     parent_id: OptionalNullable[str] = UNSET
     r"""A unique identifier for an object."""
+
+    display_id: OptionalNullable[str] = UNSET
+    r"""Id to be displayed."""
 
     name: OptionalNullable[str] = UNSET
     r"""The name of the department."""
@@ -190,6 +209,7 @@ class AccountingDepartmentInput(BaseModel):
     def serialize_model(self, handler):
         optional_fields = [
             "parent_id",
+            "display_id",
             "name",
             "status",
             "subsidiaries",
@@ -197,7 +217,7 @@ class AccountingDepartmentInput(BaseModel):
             "row_version",
             "pass_through",
         ]
-        nullable_fields = ["parent_id", "name", "row_version"]
+        nullable_fields = ["parent_id", "display_id", "name", "row_version"]
         null_default_fields = []
 
         serialized = handler(self)
