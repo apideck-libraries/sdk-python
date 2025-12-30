@@ -16,6 +16,8 @@ from typing_extensions import NotRequired, TypedDict
 class LinkedTrackingCategoryTypedDict(TypedDict):
     id: NotRequired[str]
     r"""The unique identifier for the tracking category."""
+    code: NotRequired[Nullable[str]]
+    r"""The code of the tracking category."""
     name: NotRequired[Nullable[str]]
     r"""The name of the tracking category."""
     parent_id: NotRequired[str]
@@ -28,6 +30,9 @@ class LinkedTrackingCategory(BaseModel):
     id: Optional[str] = None
     r"""The unique identifier for the tracking category."""
 
+    code: OptionalNullable[str] = UNSET
+    r"""The code of the tracking category."""
+
     name: OptionalNullable[str] = UNSET
     r"""The name of the tracking category."""
 
@@ -39,8 +44,8 @@ class LinkedTrackingCategory(BaseModel):
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
-        optional_fields = ["id", "name", "parent_id", "parent_name"]
-        nullable_fields = ["name", "parent_name"]
+        optional_fields = ["id", "code", "name", "parent_id", "parent_name"]
+        nullable_fields = ["code", "name", "parent_name"]
         null_default_fields = []
 
         serialized = handler(self)
