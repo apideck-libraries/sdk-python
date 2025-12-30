@@ -446,6 +446,7 @@ class InvoiceItems(BaseSDK):
         department_id: OptionalNullable[str] = UNSET,
         location_id: OptionalNullable[str] = UNSET,
         subsidiary_id: OptionalNullable[str] = UNSET,
+        category_id: OptionalNullable[str] = UNSET,
         tax_schedule_id: OptionalNullable[str] = UNSET,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
@@ -488,6 +489,7 @@ class InvoiceItems(BaseSDK):
         :param department_id: The ID of the department
         :param location_id: The ID of the location
         :param subsidiary_id: The ID of the subsidiary
+        :param category_id: ID of the category of the item
         :param tax_schedule_id: The ID of the tax schedule
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
@@ -552,6 +554,7 @@ class InvoiceItems(BaseSDK):
                 department_id=department_id,
                 location_id=location_id,
                 subsidiary_id=subsidiary_id,
+                category_id=category_id,
                 tax_schedule_id=tax_schedule_id,
                 row_version=row_version,
                 pass_through=utils.get_pydantic_model(
@@ -715,6 +718,7 @@ class InvoiceItems(BaseSDK):
         department_id: OptionalNullable[str] = UNSET,
         location_id: OptionalNullable[str] = UNSET,
         subsidiary_id: OptionalNullable[str] = UNSET,
+        category_id: OptionalNullable[str] = UNSET,
         tax_schedule_id: OptionalNullable[str] = UNSET,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
@@ -757,6 +761,7 @@ class InvoiceItems(BaseSDK):
         :param department_id: The ID of the department
         :param location_id: The ID of the location
         :param subsidiary_id: The ID of the subsidiary
+        :param category_id: ID of the category of the item
         :param tax_schedule_id: The ID of the tax schedule
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
@@ -821,6 +826,7 @@ class InvoiceItems(BaseSDK):
                 department_id=department_id,
                 location_id=location_id,
                 subsidiary_id=subsidiary_id,
+                category_id=category_id,
                 tax_schedule_id=tax_schedule_id,
                 row_version=row_version,
                 pass_through=utils.get_pydantic_model(
@@ -1287,6 +1293,7 @@ class InvoiceItems(BaseSDK):
         department_id: OptionalNullable[str] = UNSET,
         location_id: OptionalNullable[str] = UNSET,
         subsidiary_id: OptionalNullable[str] = UNSET,
+        category_id: OptionalNullable[str] = UNSET,
         tax_schedule_id: OptionalNullable[str] = UNSET,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
@@ -1330,6 +1337,7 @@ class InvoiceItems(BaseSDK):
         :param department_id: The ID of the department
         :param location_id: The ID of the location
         :param subsidiary_id: The ID of the subsidiary
+        :param category_id: ID of the category of the item
         :param tax_schedule_id: The ID of the tax schedule
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
@@ -1395,6 +1403,7 @@ class InvoiceItems(BaseSDK):
                 department_id=department_id,
                 location_id=location_id,
                 subsidiary_id=subsidiary_id,
+                category_id=category_id,
                 tax_schedule_id=tax_schedule_id,
                 row_version=row_version,
                 pass_through=utils.get_pydantic_model(
@@ -1559,6 +1568,7 @@ class InvoiceItems(BaseSDK):
         department_id: OptionalNullable[str] = UNSET,
         location_id: OptionalNullable[str] = UNSET,
         subsidiary_id: OptionalNullable[str] = UNSET,
+        category_id: OptionalNullable[str] = UNSET,
         tax_schedule_id: OptionalNullable[str] = UNSET,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
@@ -1602,6 +1612,7 @@ class InvoiceItems(BaseSDK):
         :param department_id: The ID of the department
         :param location_id: The ID of the location
         :param subsidiary_id: The ID of the subsidiary
+        :param category_id: ID of the category of the item
         :param tax_schedule_id: The ID of the tax schedule
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
@@ -1667,6 +1678,7 @@ class InvoiceItems(BaseSDK):
                 department_id=department_id,
                 location_id=location_id,
                 subsidiary_id=subsidiary_id,
+                category_id=category_id,
                 tax_schedule_id=tax_schedule_id,
                 row_version=row_version,
                 pass_through=utils.get_pydantic_model(
