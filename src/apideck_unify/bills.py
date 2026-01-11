@@ -395,6 +395,7 @@ class Bills(BaseSDK):
             Union[models.LinkedSupplierInput, models.LinkedSupplierInputTypedDict]
         ] = UNSET,
         company_id: OptionalNullable[str] = UNSET,
+        location_id: OptionalNullable[str] = UNSET,
         department_id: OptionalNullable[str] = UNSET,
         currency: OptionalNullable[models.Currency] = UNSET,
         currency_rate: OptionalNullable[float] = UNSET,
@@ -472,6 +473,7 @@ class Bills(BaseSDK):
         :param bill_number: Reference to supplier bill number
         :param supplier: The supplier this entity is linked to.
         :param company_id: The company ID the transaction belongs to
+        :param location_id: The ID of the location
         :param department_id: The ID of the department
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
         :param currency_rate: Currency Exchange Rate at the time entity was recorded/generated.
@@ -537,6 +539,7 @@ class Bills(BaseSDK):
                     supplier, OptionalNullable[models.LinkedSupplierInput]
                 ),
                 company_id=company_id,
+                location_id=location_id,
                 department_id=department_id,
                 currency=currency,
                 currency_rate=currency_rate,
@@ -705,6 +708,7 @@ class Bills(BaseSDK):
             Union[models.LinkedSupplierInput, models.LinkedSupplierInputTypedDict]
         ] = UNSET,
         company_id: OptionalNullable[str] = UNSET,
+        location_id: OptionalNullable[str] = UNSET,
         department_id: OptionalNullable[str] = UNSET,
         currency: OptionalNullable[models.Currency] = UNSET,
         currency_rate: OptionalNullable[float] = UNSET,
@@ -782,6 +786,7 @@ class Bills(BaseSDK):
         :param bill_number: Reference to supplier bill number
         :param supplier: The supplier this entity is linked to.
         :param company_id: The company ID the transaction belongs to
+        :param location_id: The ID of the location
         :param department_id: The ID of the department
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
         :param currency_rate: Currency Exchange Rate at the time entity was recorded/generated.
@@ -847,6 +852,7 @@ class Bills(BaseSDK):
                     supplier, OptionalNullable[models.LinkedSupplierInput]
                 ),
                 company_id=company_id,
+                location_id=location_id,
                 department_id=department_id,
                 currency=currency,
                 currency_rate=currency_rate,
@@ -1304,6 +1310,7 @@ class Bills(BaseSDK):
             Union[models.LinkedSupplierInput, models.LinkedSupplierInputTypedDict]
         ] = UNSET,
         company_id: OptionalNullable[str] = UNSET,
+        location_id: OptionalNullable[str] = UNSET,
         department_id: OptionalNullable[str] = UNSET,
         currency: OptionalNullable[models.Currency] = UNSET,
         currency_rate: OptionalNullable[float] = UNSET,
@@ -1382,6 +1389,7 @@ class Bills(BaseSDK):
         :param bill_number: Reference to supplier bill number
         :param supplier: The supplier this entity is linked to.
         :param company_id: The company ID the transaction belongs to
+        :param location_id: The ID of the location
         :param department_id: The ID of the department
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
         :param currency_rate: Currency Exchange Rate at the time entity was recorded/generated.
@@ -1448,6 +1456,7 @@ class Bills(BaseSDK):
                     supplier, OptionalNullable[models.LinkedSupplierInput]
                 ),
                 company_id=company_id,
+                location_id=location_id,
                 department_id=department_id,
                 currency=currency,
                 currency_rate=currency_rate,
@@ -1617,6 +1626,7 @@ class Bills(BaseSDK):
             Union[models.LinkedSupplierInput, models.LinkedSupplierInputTypedDict]
         ] = UNSET,
         company_id: OptionalNullable[str] = UNSET,
+        location_id: OptionalNullable[str] = UNSET,
         department_id: OptionalNullable[str] = UNSET,
         currency: OptionalNullable[models.Currency] = UNSET,
         currency_rate: OptionalNullable[float] = UNSET,
@@ -1695,6 +1705,7 @@ class Bills(BaseSDK):
         :param bill_number: Reference to supplier bill number
         :param supplier: The supplier this entity is linked to.
         :param company_id: The company ID the transaction belongs to
+        :param location_id: The ID of the location
         :param department_id: The ID of the department
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
         :param currency_rate: Currency Exchange Rate at the time entity was recorded/generated.
@@ -1761,6 +1772,7 @@ class Bills(BaseSDK):
                     supplier, OptionalNullable[models.LinkedSupplierInput]
                 ),
                 company_id=company_id,
+                location_id=location_id,
                 department_id=department_id,
                 currency=currency,
                 currency_rate=currency_rate,

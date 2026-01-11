@@ -25,12 +25,17 @@ class Classification(str, Enum):
 
 
 class LedgerAccountsFilterTypedDict(TypedDict):
+    name: NotRequired[str]
+    r"""Filter by ledger account name"""
     updated_since: NotRequired[datetime]
     classification: NotRequired[Classification]
     r"""Filter by account classification."""
 
 
 class LedgerAccountsFilter(BaseModel):
+    name: Annotated[Optional[str], FieldMetadata(query=True)] = None
+    r"""Filter by ledger account name"""
+
     updated_since: Annotated[Optional[datetime], FieldMetadata(query=True)] = None
 
     classification: Annotated[Optional[Classification], FieldMetadata(query=True)] = (

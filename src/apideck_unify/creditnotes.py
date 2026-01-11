@@ -403,6 +403,7 @@ class CreditNotes(BaseSDK):
             Union[models.LinkedCustomerInput, models.LinkedCustomerInputTypedDict]
         ] = UNSET,
         company_id: OptionalNullable[str] = UNSET,
+        location_id: OptionalNullable[str] = UNSET,
         department_id: OptionalNullable[str] = UNSET,
         currency: OptionalNullable[models.Currency] = UNSET,
         currency_rate: OptionalNullable[float] = UNSET,
@@ -467,6 +468,7 @@ class CreditNotes(BaseSDK):
         :param number: Credit note number.
         :param customer: The customer this entity is linked to.
         :param company_id: The company ID the transaction belongs to
+        :param location_id: The ID of the location
         :param department_id: The ID of the department
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
         :param currency_rate: Currency Exchange Rate at the time entity was recorded/generated.
@@ -518,6 +520,7 @@ class CreditNotes(BaseSDK):
                     customer, OptionalNullable[models.LinkedCustomerInput]
                 ),
                 company_id=company_id,
+                location_id=location_id,
                 department_id=department_id,
                 currency=currency,
                 currency_rate=currency_rate,
@@ -676,6 +679,7 @@ class CreditNotes(BaseSDK):
             Union[models.LinkedCustomerInput, models.LinkedCustomerInputTypedDict]
         ] = UNSET,
         company_id: OptionalNullable[str] = UNSET,
+        location_id: OptionalNullable[str] = UNSET,
         department_id: OptionalNullable[str] = UNSET,
         currency: OptionalNullable[models.Currency] = UNSET,
         currency_rate: OptionalNullable[float] = UNSET,
@@ -740,6 +744,7 @@ class CreditNotes(BaseSDK):
         :param number: Credit note number.
         :param customer: The customer this entity is linked to.
         :param company_id: The company ID the transaction belongs to
+        :param location_id: The ID of the location
         :param department_id: The ID of the department
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
         :param currency_rate: Currency Exchange Rate at the time entity was recorded/generated.
@@ -791,6 +796,7 @@ class CreditNotes(BaseSDK):
                     customer, OptionalNullable[models.LinkedCustomerInput]
                 ),
                 company_id=company_id,
+                location_id=location_id,
                 department_id=department_id,
                 currency=currency,
                 currency_rate=currency_rate,
@@ -1238,6 +1244,7 @@ class CreditNotes(BaseSDK):
             Union[models.LinkedCustomerInput, models.LinkedCustomerInputTypedDict]
         ] = UNSET,
         company_id: OptionalNullable[str] = UNSET,
+        location_id: OptionalNullable[str] = UNSET,
         department_id: OptionalNullable[str] = UNSET,
         currency: OptionalNullable[models.Currency] = UNSET,
         currency_rate: OptionalNullable[float] = UNSET,
@@ -1303,6 +1310,7 @@ class CreditNotes(BaseSDK):
         :param number: Credit note number.
         :param customer: The customer this entity is linked to.
         :param company_id: The company ID the transaction belongs to
+        :param location_id: The ID of the location
         :param department_id: The ID of the department
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
         :param currency_rate: Currency Exchange Rate at the time entity was recorded/generated.
@@ -1355,6 +1363,7 @@ class CreditNotes(BaseSDK):
                     customer, OptionalNullable[models.LinkedCustomerInput]
                 ),
                 company_id=company_id,
+                location_id=location_id,
                 department_id=department_id,
                 currency=currency,
                 currency_rate=currency_rate,
@@ -1514,6 +1523,7 @@ class CreditNotes(BaseSDK):
             Union[models.LinkedCustomerInput, models.LinkedCustomerInputTypedDict]
         ] = UNSET,
         company_id: OptionalNullable[str] = UNSET,
+        location_id: OptionalNullable[str] = UNSET,
         department_id: OptionalNullable[str] = UNSET,
         currency: OptionalNullable[models.Currency] = UNSET,
         currency_rate: OptionalNullable[float] = UNSET,
@@ -1579,6 +1589,7 @@ class CreditNotes(BaseSDK):
         :param number: Credit note number.
         :param customer: The customer this entity is linked to.
         :param company_id: The company ID the transaction belongs to
+        :param location_id: The ID of the location
         :param department_id: The ID of the department
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
         :param currency_rate: Currency Exchange Rate at the time entity was recorded/generated.
@@ -1631,6 +1642,7 @@ class CreditNotes(BaseSDK):
                     customer, OptionalNullable[models.LinkedCustomerInput]
                 ),
                 company_id=company_id,
+                location_id=location_id,
                 department_id=department_id,
                 currency=currency,
                 currency_rate=currency_rate,
