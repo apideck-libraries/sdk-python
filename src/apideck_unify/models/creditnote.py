@@ -43,6 +43,7 @@ class CreditNoteStatus(str, Enum):
 
     DRAFT = "draft"
     AUTHORISED = "authorised"
+    POSTED = "posted"
     PARTIALLY_PAID = "partially_paid"
     PAID = "paid"
     VOIDED = "voided"
@@ -67,6 +68,8 @@ class CreditNoteTypedDict(TypedDict):
     r"""The customer this entity is linked to."""
     company_id: NotRequired[Nullable[str]]
     r"""The company ID the transaction belongs to"""
+    location_id: NotRequired[Nullable[str]]
+    r"""The ID of the location"""
     department_id: NotRequired[Nullable[str]]
     r"""The ID of the department"""
     currency: NotRequired[Nullable[Currency]]
@@ -140,6 +143,9 @@ class CreditNote(BaseModel):
 
     company_id: OptionalNullable[str] = UNSET
     r"""The company ID the transaction belongs to"""
+
+    location_id: OptionalNullable[str] = UNSET
+    r"""The ID of the location"""
 
     department_id: OptionalNullable[str] = UNSET
     r"""The ID of the department"""
@@ -233,6 +239,7 @@ class CreditNote(BaseModel):
             "number",
             "customer",
             "company_id",
+            "location_id",
             "department_id",
             "currency",
             "currency_rate",
@@ -268,6 +275,7 @@ class CreditNote(BaseModel):
             "number",
             "customer",
             "company_id",
+            "location_id",
             "department_id",
             "currency",
             "currency_rate",
@@ -326,6 +334,8 @@ class CreditNoteInputTypedDict(TypedDict):
     r"""The customer this entity is linked to."""
     company_id: NotRequired[Nullable[str]]
     r"""The company ID the transaction belongs to"""
+    location_id: NotRequired[Nullable[str]]
+    r"""The ID of the location"""
     department_id: NotRequired[Nullable[str]]
     r"""The ID of the department"""
     currency: NotRequired[Nullable[Currency]]
@@ -386,6 +396,9 @@ class CreditNoteInput(BaseModel):
 
     company_id: OptionalNullable[str] = UNSET
     r"""The company ID the transaction belongs to"""
+
+    location_id: OptionalNullable[str] = UNSET
+    r"""The ID of the location"""
 
     department_id: OptionalNullable[str] = UNSET
     r"""The ID of the department"""
@@ -464,6 +477,7 @@ class CreditNoteInput(BaseModel):
             "number",
             "customer",
             "company_id",
+            "location_id",
             "department_id",
             "currency",
             "currency_rate",
@@ -494,6 +508,7 @@ class CreditNoteInput(BaseModel):
             "number",
             "customer",
             "company_id",
+            "location_id",
             "department_id",
             "currency",
             "currency_rate",

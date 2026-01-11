@@ -34,6 +34,8 @@ class SubsidiaryTypedDict(TypedDict):
     r"""The name of the company."""
     display_id: NotRequired[Nullable[str]]
     r"""Display ID of the subsidiary"""
+    downstream_id: NotRequired[Nullable[str]]
+    r"""The third-party API ID of original entity"""
     status: NotRequired[SubsidiaryStatus]
     r"""Based on the status some functionality is enabled or disabled."""
     address: NotRequired[AddressTypedDict]
@@ -67,6 +69,9 @@ class Subsidiary(BaseModel):
 
     display_id: OptionalNullable[str] = UNSET
     r"""Display ID of the subsidiary"""
+
+    downstream_id: OptionalNullable[str] = UNSET
+    r"""The third-party API ID of original entity"""
 
     status: Optional[SubsidiaryStatus] = None
     r"""Based on the status some functionality is enabled or disabled."""
@@ -104,6 +109,7 @@ class Subsidiary(BaseModel):
             "parent_id",
             "name",
             "display_id",
+            "downstream_id",
             "status",
             "address",
             "currencies",
@@ -119,6 +125,7 @@ class Subsidiary(BaseModel):
             "parent_id",
             "name",
             "display_id",
+            "downstream_id",
             "currencies",
             "custom_mappings",
             "row_version",

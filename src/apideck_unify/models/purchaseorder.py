@@ -68,6 +68,8 @@ class PurchaseOrderTypedDict(TypedDict):
     r"""The ID of the subsidiary"""
     company_id: NotRequired[Nullable[str]]
     r"""The company ID the transaction belongs to"""
+    location_id: NotRequired[Nullable[str]]
+    r"""The ID of the location"""
     department_id: NotRequired[Nullable[str]]
     r"""The ID of the department"""
     status: NotRequired[Nullable[PurchaseOrderStatus]]
@@ -167,6 +169,9 @@ class PurchaseOrder(BaseModel):
 
     company_id: OptionalNullable[str] = UNSET
     r"""The company ID the transaction belongs to"""
+
+    location_id: OptionalNullable[str] = UNSET
+    r"""The ID of the location"""
 
     department_id: OptionalNullable[str] = UNSET
     r"""The ID of the department"""
@@ -291,6 +296,7 @@ class PurchaseOrder(BaseModel):
             "supplier",
             "subsidiary_id",
             "company_id",
+            "location_id",
             "department_id",
             "status",
             "issued_date",
@@ -339,6 +345,7 @@ class PurchaseOrder(BaseModel):
             "supplier",
             "subsidiary_id",
             "company_id",
+            "location_id",
             "department_id",
             "status",
             "issued_date",
@@ -413,6 +420,8 @@ class PurchaseOrderInputTypedDict(TypedDict):
     r"""The ID of the subsidiary"""
     company_id: NotRequired[Nullable[str]]
     r"""The company ID the transaction belongs to"""
+    location_id: NotRequired[Nullable[str]]
+    r"""The ID of the location"""
     department_id: NotRequired[Nullable[str]]
     r"""The ID of the department"""
     status: NotRequired[Nullable[PurchaseOrderStatus]]
@@ -496,6 +505,9 @@ class PurchaseOrderInput(BaseModel):
 
     company_id: OptionalNullable[str] = UNSET
     r"""The company ID the transaction belongs to"""
+
+    location_id: OptionalNullable[str] = UNSET
+    r"""The ID of the location"""
 
     department_id: OptionalNullable[str] = UNSET
     r"""The ID of the department"""
@@ -603,6 +615,7 @@ class PurchaseOrderInput(BaseModel):
             "supplier",
             "subsidiary_id",
             "company_id",
+            "location_id",
             "department_id",
             "status",
             "issued_date",
@@ -645,6 +658,7 @@ class PurchaseOrderInput(BaseModel):
             "supplier",
             "subsidiary_id",
             "company_id",
+            "location_id",
             "department_id",
             "status",
             "issued_date",

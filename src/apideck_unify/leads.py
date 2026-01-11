@@ -393,6 +393,7 @@ class Leads(BaseSDK):
         owner_id: OptionalNullable[str] = UNSET,
         owner_name: OptionalNullable[str] = UNSET,
         company_id: OptionalNullable[str] = UNSET,
+        contact_id: OptionalNullable[str] = UNSET,
         lead_id: OptionalNullable[str] = UNSET,
         lead_source: OptionalNullable[str] = UNSET,
         first_name: OptionalNullable[str] = UNSET,
@@ -443,6 +444,7 @@ class Leads(BaseSDK):
         :param owner_id: The owner of the lead.
         :param owner_name: The name of the owner of the lead.
         :param company_id: The company the lead is associated with.
+        :param contact_id: The contact the lead is associated with.
         :param lead_id: The identifier of the lead.
         :param lead_source: The source of the lead.
         :param first_name: The first name of the lead.
@@ -489,6 +491,7 @@ class Leads(BaseSDK):
                 owner_id=owner_id,
                 owner_name=owner_name,
                 company_id=company_id,
+                contact_id=contact_id,
                 lead_id=lead_id,
                 lead_source=lead_source,
                 first_name=first_name,
@@ -635,6 +638,7 @@ class Leads(BaseSDK):
         owner_id: OptionalNullable[str] = UNSET,
         owner_name: OptionalNullable[str] = UNSET,
         company_id: OptionalNullable[str] = UNSET,
+        contact_id: OptionalNullable[str] = UNSET,
         lead_id: OptionalNullable[str] = UNSET,
         lead_source: OptionalNullable[str] = UNSET,
         first_name: OptionalNullable[str] = UNSET,
@@ -685,6 +689,7 @@ class Leads(BaseSDK):
         :param owner_id: The owner of the lead.
         :param owner_name: The name of the owner of the lead.
         :param company_id: The company the lead is associated with.
+        :param contact_id: The contact the lead is associated with.
         :param lead_id: The identifier of the lead.
         :param lead_source: The source of the lead.
         :param first_name: The first name of the lead.
@@ -731,6 +736,7 @@ class Leads(BaseSDK):
                 owner_id=owner_id,
                 owner_name=owner_name,
                 company_id=company_id,
+                contact_id=contact_id,
                 lead_id=lead_id,
                 lead_source=lead_source,
                 first_name=first_name,
@@ -1166,6 +1172,7 @@ class Leads(BaseSDK):
         owner_id: OptionalNullable[str] = UNSET,
         owner_name: OptionalNullable[str] = UNSET,
         company_id: OptionalNullable[str] = UNSET,
+        contact_id: OptionalNullable[str] = UNSET,
         lead_id: OptionalNullable[str] = UNSET,
         lead_source: OptionalNullable[str] = UNSET,
         first_name: OptionalNullable[str] = UNSET,
@@ -1217,6 +1224,7 @@ class Leads(BaseSDK):
         :param owner_id: The owner of the lead.
         :param owner_name: The name of the owner of the lead.
         :param company_id: The company the lead is associated with.
+        :param contact_id: The contact the lead is associated with.
         :param lead_id: The identifier of the lead.
         :param lead_source: The source of the lead.
         :param first_name: The first name of the lead.
@@ -1264,6 +1272,7 @@ class Leads(BaseSDK):
                 owner_id=owner_id,
                 owner_name=owner_name,
                 company_id=company_id,
+                contact_id=contact_id,
                 lead_id=lead_id,
                 lead_source=lead_source,
                 first_name=first_name,
@@ -1411,6 +1420,7 @@ class Leads(BaseSDK):
         owner_id: OptionalNullable[str] = UNSET,
         owner_name: OptionalNullable[str] = UNSET,
         company_id: OptionalNullable[str] = UNSET,
+        contact_id: OptionalNullable[str] = UNSET,
         lead_id: OptionalNullable[str] = UNSET,
         lead_source: OptionalNullable[str] = UNSET,
         first_name: OptionalNullable[str] = UNSET,
@@ -1462,6 +1472,7 @@ class Leads(BaseSDK):
         :param owner_id: The owner of the lead.
         :param owner_name: The name of the owner of the lead.
         :param company_id: The company the lead is associated with.
+        :param contact_id: The contact the lead is associated with.
         :param lead_id: The identifier of the lead.
         :param lead_source: The source of the lead.
         :param first_name: The first name of the lead.
@@ -1509,6 +1520,7 @@ class Leads(BaseSDK):
                 owner_id=owner_id,
                 owner_name=owner_name,
                 company_id=company_id,
+                contact_id=contact_id,
                 lead_id=lead_id,
                 lead_source=lead_source,
                 first_name=first_name,

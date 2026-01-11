@@ -65,6 +65,8 @@ class BillTypedDict(TypedDict):
     r"""The supplier this entity is linked to."""
     company_id: NotRequired[Nullable[str]]
     r"""The company ID the transaction belongs to"""
+    location_id: NotRequired[Nullable[str]]
+    r"""The ID of the location"""
     department_id: NotRequired[Nullable[str]]
     r"""The ID of the department"""
     currency: NotRequired[Nullable[Currency]]
@@ -167,6 +169,9 @@ class Bill(BaseModel):
 
     company_id: OptionalNullable[str] = UNSET
     r"""The company ID the transaction belongs to"""
+
+    location_id: OptionalNullable[str] = UNSET
+    r"""The ID of the location"""
 
     department_id: OptionalNullable[str] = UNSET
     r"""The ID of the department"""
@@ -302,6 +307,7 @@ class Bill(BaseModel):
             "bill_number",
             "supplier",
             "company_id",
+            "location_id",
             "department_id",
             "currency",
             "currency_rate",
@@ -352,6 +358,7 @@ class Bill(BaseModel):
             "bill_number",
             "supplier",
             "company_id",
+            "location_id",
             "department_id",
             "currency",
             "currency_rate",
@@ -427,6 +434,8 @@ class BillInputTypedDict(TypedDict):
     r"""The supplier this entity is linked to."""
     company_id: NotRequired[Nullable[str]]
     r"""The company ID the transaction belongs to"""
+    location_id: NotRequired[Nullable[str]]
+    r"""The ID of the location"""
     department_id: NotRequired[Nullable[str]]
     r"""The ID of the department"""
     currency: NotRequired[Nullable[Currency]]
@@ -513,6 +522,9 @@ class BillInput(BaseModel):
 
     company_id: OptionalNullable[str] = UNSET
     r"""The company ID the transaction belongs to"""
+
+    location_id: OptionalNullable[str] = UNSET
+    r"""The ID of the location"""
 
     department_id: OptionalNullable[str] = UNSET
     r"""The ID of the department"""
@@ -631,6 +643,7 @@ class BillInput(BaseModel):
             "bill_number",
             "supplier",
             "company_id",
+            "location_id",
             "department_id",
             "currency",
             "currency_rate",
@@ -675,6 +688,7 @@ class BillInput(BaseModel):
             "bill_number",
             "supplier",
             "company_id",
+            "location_id",
             "department_id",
             "currency",
             "currency_rate",

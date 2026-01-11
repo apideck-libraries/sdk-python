@@ -9,6 +9,12 @@
 value: str = /* values here */
 ```
 
+### `int`
+
+```python
+value: int = /* values here */
+```
+
 ### `float`
 
 ```python
@@ -21,15 +27,9 @@ value: float = /* values here */
 value: bool = /* values here */
 ```
 
-### `Dict[str, Any]`
+### `List[models.Five]`
 
 ```python
-value: Dict[str, Any] = /* values here */
-```
-
-### `List[Nullable[models.Five]]`
-
-```python
-value: List[Nullable[models.Five]] = /* values here */
+value: List[models.Five] = /* values here */
 ```
 

@@ -4,14 +4,29 @@ from __future__ import annotations
 from apideck_unify.types import BaseModel
 from apideck_unify.utils import FieldMetadata
 from datetime import datetime
+from enum import Enum
 from typing import Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
+
+
+class PaymentsFilterType(str, Enum):
+    ACCOUNTS_RECEIVABLE = "accounts_receivable"
+    ACCOUNTS_PAYABLE = "accounts_payable"
+    ACCOUNTS_RECEIVABLE_CREDIT = "accounts_receivable_credit"
+    ACCOUNTS_PAYABLE_CREDIT = "accounts_payable_credit"
+    ACCOUNTS_RECEIVABLE_OVERPAYMENT = "accounts_receivable_overpayment"
+    ACCOUNTS_PAYABLE_OVERPAYMENT = "accounts_payable_overpayment"
+    ACCOUNTS_RECEIVABLE_PREPAYMENT = "accounts_receivable_prepayment"
+    ACCOUNTS_PAYABLE_PREPAYMENT = "accounts_payable_prepayment"
 
 
 class PaymentsFilterTypedDict(TypedDict):
     updated_since: NotRequired[datetime]
     invoice_id: NotRequired[str]
     supplier_id: NotRequired[str]
+    customer_id: NotRequired[str]
+    r"""Filter by customer id"""
+    type: NotRequired[PaymentsFilterType]
 
 
 class PaymentsFilter(BaseModel):
@@ -20,3 +35,8 @@ class PaymentsFilter(BaseModel):
     invoice_id: Annotated[Optional[str], FieldMetadata(query=True)] = None
 
     supplier_id: Annotated[Optional[str], FieldMetadata(query=True)] = None
+
+    customer_id: Annotated[Optional[str], FieldMetadata(query=True)] = None
+    r"""Filter by customer id"""
+
+    type: Annotated[Optional[PaymentsFilterType], FieldMetadata(query=True)] = None

@@ -129,6 +129,8 @@ class InvoiceTypedDict(TypedDict):
     r"""The customer this entity is linked to."""
     company_id: NotRequired[Nullable[str]]
     r"""The company ID the transaction belongs to"""
+    location_id: NotRequired[Nullable[str]]
+    r"""The ID of the location"""
     department_id: NotRequired[Nullable[str]]
     r"""The ID of the department"""
     invoice_date: NotRequired[Nullable[date]]
@@ -231,6 +233,9 @@ class Invoice(BaseModel):
 
     company_id: OptionalNullable[str] = UNSET
     r"""The company ID the transaction belongs to"""
+
+    location_id: OptionalNullable[str] = UNSET
+    r"""The ID of the location"""
 
     department_id: OptionalNullable[str] = UNSET
     r"""The ID of the department"""
@@ -368,6 +373,7 @@ class Invoice(BaseModel):
             "number",
             "customer",
             "company_id",
+            "location_id",
             "department_id",
             "invoice_date",
             "due_date",
@@ -418,6 +424,7 @@ class Invoice(BaseModel):
             "number",
             "customer",
             "company_id",
+            "location_id",
             "department_id",
             "invoice_date",
             "due_date",
@@ -492,6 +499,8 @@ class InvoiceInputTypedDict(TypedDict):
     r"""The customer this entity is linked to."""
     company_id: NotRequired[Nullable[str]]
     r"""The company ID the transaction belongs to"""
+    location_id: NotRequired[Nullable[str]]
+    r"""The ID of the location"""
     department_id: NotRequired[Nullable[str]]
     r"""The ID of the department"""
     invoice_date: NotRequired[Nullable[date]]
@@ -578,6 +587,9 @@ class InvoiceInput(BaseModel):
 
     company_id: OptionalNullable[str] = UNSET
     r"""The company ID the transaction belongs to"""
+
+    location_id: OptionalNullable[str] = UNSET
+    r"""The ID of the location"""
 
     department_id: OptionalNullable[str] = UNSET
     r"""The ID of the department"""
@@ -698,6 +710,7 @@ class InvoiceInput(BaseModel):
             "number",
             "customer",
             "company_id",
+            "location_id",
             "department_id",
             "invoice_date",
             "due_date",
@@ -742,6 +755,7 @@ class InvoiceInput(BaseModel):
             "number",
             "customer",
             "company_id",
+            "location_id",
             "department_id",
             "invoice_date",
             "due_date",
