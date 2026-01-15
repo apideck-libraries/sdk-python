@@ -13,34 +13,34 @@ from typing import Optional
 from typing_extensions import NotRequired, TypedDict
 
 
-class LinkedBankAccountTypedDict(TypedDict):
+class LinkedDepartmentTypedDict(TypedDict):
     id: NotRequired[str]
-    r"""The unique identifier for the bank account."""
+    r"""A unique identifier for an object."""
+    display_id: NotRequired[Nullable[str]]
+    r"""Id to be displayed."""
     name: NotRequired[Nullable[str]]
-    r"""The name of the bank account"""
-    account_number: NotRequired[Nullable[str]]
-    r"""The bank account number"""
-    bank_name: NotRequired[Nullable[str]]
-    r"""The name of the bank or financial institution"""
+    r"""The name of the resource."""
+    downstream_id: NotRequired[Nullable[str]]
+    r"""The third-party API ID of original entity"""
 
 
-class LinkedBankAccount(BaseModel):
+class LinkedDepartment(BaseModel):
     id: Optional[str] = None
-    r"""The unique identifier for the bank account."""
+    r"""A unique identifier for an object."""
+
+    display_id: OptionalNullable[str] = UNSET
+    r"""Id to be displayed."""
 
     name: OptionalNullable[str] = UNSET
-    r"""The name of the bank account"""
+    r"""The name of the resource."""
 
-    account_number: OptionalNullable[str] = UNSET
-    r"""The bank account number"""
-
-    bank_name: OptionalNullable[str] = UNSET
-    r"""The name of the bank or financial institution"""
+    downstream_id: OptionalNullable[str] = UNSET
+    r"""The third-party API ID of original entity"""
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
-        optional_fields = ["id", "name", "account_number", "bank_name"]
-        nullable_fields = ["name", "account_number", "bank_name"]
+        optional_fields = ["id", "display_id", "name", "downstream_id"]
+        nullable_fields = ["display_id", "name", "downstream_id"]
         null_default_fields = []
 
         serialized = handler(self)

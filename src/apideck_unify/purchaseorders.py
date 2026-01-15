@@ -397,6 +397,7 @@ class PurchaseOrders(BaseSDK):
         ] = UNSET,
         subsidiary_id: OptionalNullable[str] = UNSET,
         company_id: OptionalNullable[str] = UNSET,
+        location_id: OptionalNullable[str] = UNSET,
         department_id: OptionalNullable[str] = UNSET,
         status: OptionalNullable[models.PurchaseOrderStatus] = UNSET,
         issued_date: OptionalNullable[date] = UNSET,
@@ -474,6 +475,7 @@ class PurchaseOrders(BaseSDK):
         :param supplier: The supplier this entity is linked to.
         :param subsidiary_id: The ID of the subsidiary
         :param company_id: The company ID the transaction belongs to
+        :param location_id: The ID of the location
         :param department_id: The ID of the department
         :param status:
         :param issued_date: Date purchase order was issued - YYYY-MM-DD.
@@ -537,6 +539,7 @@ class PurchaseOrders(BaseSDK):
                 ),
                 subsidiary_id=subsidiary_id,
                 company_id=company_id,
+                location_id=location_id,
                 department_id=department_id,
                 status=status,
                 issued_date=issued_date,
@@ -705,6 +708,7 @@ class PurchaseOrders(BaseSDK):
         ] = UNSET,
         subsidiary_id: OptionalNullable[str] = UNSET,
         company_id: OptionalNullable[str] = UNSET,
+        location_id: OptionalNullable[str] = UNSET,
         department_id: OptionalNullable[str] = UNSET,
         status: OptionalNullable[models.PurchaseOrderStatus] = UNSET,
         issued_date: OptionalNullable[date] = UNSET,
@@ -782,6 +786,7 @@ class PurchaseOrders(BaseSDK):
         :param supplier: The supplier this entity is linked to.
         :param subsidiary_id: The ID of the subsidiary
         :param company_id: The company ID the transaction belongs to
+        :param location_id: The ID of the location
         :param department_id: The ID of the department
         :param status:
         :param issued_date: Date purchase order was issued - YYYY-MM-DD.
@@ -845,6 +850,7 @@ class PurchaseOrders(BaseSDK):
                 ),
                 subsidiary_id=subsidiary_id,
                 company_id=company_id,
+                location_id=location_id,
                 department_id=department_id,
                 status=status,
                 issued_date=issued_date,
@@ -1296,6 +1302,7 @@ class PurchaseOrders(BaseSDK):
         ] = UNSET,
         subsidiary_id: OptionalNullable[str] = UNSET,
         company_id: OptionalNullable[str] = UNSET,
+        location_id: OptionalNullable[str] = UNSET,
         department_id: OptionalNullable[str] = UNSET,
         status: OptionalNullable[models.PurchaseOrderStatus] = UNSET,
         issued_date: OptionalNullable[date] = UNSET,
@@ -1374,6 +1381,7 @@ class PurchaseOrders(BaseSDK):
         :param supplier: The supplier this entity is linked to.
         :param subsidiary_id: The ID of the subsidiary
         :param company_id: The company ID the transaction belongs to
+        :param location_id: The ID of the location
         :param department_id: The ID of the department
         :param status:
         :param issued_date: Date purchase order was issued - YYYY-MM-DD.
@@ -1438,6 +1446,7 @@ class PurchaseOrders(BaseSDK):
                 ),
                 subsidiary_id=subsidiary_id,
                 company_id=company_id,
+                location_id=location_id,
                 department_id=department_id,
                 status=status,
                 issued_date=issued_date,
@@ -1607,6 +1616,7 @@ class PurchaseOrders(BaseSDK):
         ] = UNSET,
         subsidiary_id: OptionalNullable[str] = UNSET,
         company_id: OptionalNullable[str] = UNSET,
+        location_id: OptionalNullable[str] = UNSET,
         department_id: OptionalNullable[str] = UNSET,
         status: OptionalNullable[models.PurchaseOrderStatus] = UNSET,
         issued_date: OptionalNullable[date] = UNSET,
@@ -1685,6 +1695,7 @@ class PurchaseOrders(BaseSDK):
         :param supplier: The supplier this entity is linked to.
         :param subsidiary_id: The ID of the subsidiary
         :param company_id: The company ID the transaction belongs to
+        :param location_id: The ID of the location
         :param department_id: The ID of the department
         :param status:
         :param issued_date: Date purchase order was issued - YYYY-MM-DD.
@@ -1749,6 +1760,7 @@ class PurchaseOrders(BaseSDK):
                 ),
                 subsidiary_id=subsidiary_id,
                 company_id=company_id,
+                location_id=location_id,
                 department_id=department_id,
                 status=status,
                 issued_date=issued_date,

@@ -67,8 +67,6 @@ class Options(BaseModel):
 class EcommerceOrderLineItemTypedDict(TypedDict):
     r"""A single line item of an ecommerce order, representing a product or variant with associated options, quantity, and pricing information."""
 
-    name: Nullable[str]
-    r"""The name of the product or variant associated with the line item."""
     quantity: Nullable[str]
     r"""The quantity of the product or variant associated with the line item."""
     id: NotRequired[Nullable[str]]
@@ -79,6 +77,8 @@ class EcommerceOrderLineItemTypedDict(TypedDict):
     r"""A unique identifier for the variant of the product associated with the line item, if applicable."""
     sku: NotRequired[Nullable[str]]
     r"""The SKU of the product or variant associated with the line item."""
+    name: NotRequired[Nullable[str]]
+    r"""The name of the product or variant associated with the line item."""
     description: NotRequired[Nullable[str]]
     r"""The description of the product or variant associated with the line item."""
     options: NotRequired[List[OptionsTypedDict]]
@@ -104,9 +104,6 @@ class EcommerceOrderLineItemTypedDict(TypedDict):
 class EcommerceOrderLineItem(BaseModel):
     r"""A single line item of an ecommerce order, representing a product or variant with associated options, quantity, and pricing information."""
 
-    name: Nullable[str]
-    r"""The name of the product or variant associated with the line item."""
-
     quantity: Nullable[str]
     r"""The quantity of the product or variant associated with the line item."""
 
@@ -121,6 +118,9 @@ class EcommerceOrderLineItem(BaseModel):
 
     sku: OptionalNullable[str] = UNSET
     r"""The SKU of the product or variant associated with the line item."""
+
+    name: OptionalNullable[str] = UNSET
+    r"""The name of the product or variant associated with the line item."""
 
     description: OptionalNullable[str] = UNSET
     r"""The description of the product or variant associated with the line item."""
@@ -160,6 +160,7 @@ class EcommerceOrderLineItem(BaseModel):
             "product_id",
             "variant_id",
             "sku",
+            "name",
             "description",
             "options",
             "unit_price",
