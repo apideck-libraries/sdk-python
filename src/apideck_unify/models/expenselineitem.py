@@ -2,8 +2,11 @@
 
 from __future__ import annotations
 from .lineitemtype import LineItemType
+from .linkedcustomer import LinkedCustomer, LinkedCustomerTypedDict
+from .linkeddepartment import LinkedDepartment, LinkedDepartmentTypedDict
 from .linkedinvoiceitem import LinkedInvoiceItem, LinkedInvoiceItemTypedDict
 from .linkedledgeraccount import LinkedLedgerAccount, LinkedLedgerAccountTypedDict
+from .linkedlocation import LinkedLocation, LinkedLocationTypedDict
 from .linkedtaxrate import LinkedTaxRate, LinkedTaxRateTypedDict
 from .linkedtrackingcategory import (
     LinkedTrackingCategory,
@@ -36,13 +39,15 @@ class ExpenseLineItemTypedDict(TypedDict):
     r"""The unique identifier for the ledger account. Deprecated, use account instead."""
     account: NotRequired[Nullable[LinkedLedgerAccountTypedDict]]
     customer_id: NotRequired[str]
-    r"""The ID of the customer this expense item is linked to."""
+    r"""The ID of the customer this expense item is linked to. Deprecated in favor of `customer`."""
+    customer: NotRequired[Nullable[LinkedCustomerTypedDict]]
+    r"""The customer this entity is linked to."""
     department_id: NotRequired[Nullable[str]]
     r"""The ID of the department"""
+    department: NotRequired[Nullable[LinkedDepartmentTypedDict]]
     location_id: NotRequired[Nullable[str]]
     r"""The ID of the location"""
-    subsidiary_id: NotRequired[Nullable[str]]
-    r"""The ID of the subsidiary"""
+    location: NotRequired[Nullable[LinkedLocationTypedDict]]
     tax_rate: NotRequired[LinkedTaxRateTypedDict]
     description: NotRequired[Nullable[str]]
     r"""The expense line item description"""
@@ -53,8 +58,6 @@ class ExpenseLineItemTypedDict(TypedDict):
     quantity: NotRequired[Nullable[float]]
     unit_price: NotRequired[Nullable[float]]
     item: NotRequired[LinkedInvoiceItemTypedDict]
-    billable: NotRequired[bool]
-    r"""Boolean that indicates if the line item is billable or not."""
     line_number: NotRequired[Nullable[int]]
     r"""Line number of the resource"""
     rebilling: NotRequired[Nullable[RebillingTypedDict]]
@@ -83,17 +86,26 @@ class ExpenseLineItem(BaseModel):
 
     account: OptionalNullable[LinkedLedgerAccount] = UNSET
 
-    customer_id: Optional[str] = None
-    r"""The ID of the customer this expense item is linked to."""
+    customer_id: Annotated[
+        Optional[str],
+        pydantic.Field(
+            deprecated="warning: ** DEPRECATED ** - This will be removed in a future release, please migrate away from it as soon as possible."
+        ),
+    ] = None
+    r"""The ID of the customer this expense item is linked to. Deprecated in favor of `customer`."""
+
+    customer: OptionalNullable[LinkedCustomer] = UNSET
+    r"""The customer this entity is linked to."""
 
     department_id: OptionalNullable[str] = UNSET
     r"""The ID of the department"""
 
+    department: OptionalNullable[LinkedDepartment] = UNSET
+
     location_id: OptionalNullable[str] = UNSET
     r"""The ID of the location"""
 
-    subsidiary_id: OptionalNullable[str] = UNSET
-    r"""The ID of the subsidiary"""
+    location: OptionalNullable[LinkedLocation] = UNSET
 
     tax_rate: Optional[LinkedTaxRate] = None
 
@@ -112,14 +124,6 @@ class ExpenseLineItem(BaseModel):
 
     item: Optional[LinkedInvoiceItem] = None
 
-    billable: Annotated[
-        Optional[bool],
-        pydantic.Field(
-            deprecated="warning: ** DEPRECATED ** - This will be removed in a future release, please migrate away from it as soon as possible."
-        ),
-    ] = None
-    r"""Boolean that indicates if the line item is billable or not."""
-
     line_number: OptionalNullable[int] = UNSET
     r"""Line number of the resource"""
 
@@ -134,9 +138,11 @@ class ExpenseLineItem(BaseModel):
             "account_id",
             "account",
             "customer_id",
+            "customer",
             "department_id",
+            "department",
             "location_id",
-            "subsidiary_id",
+            "location",
             "tax_rate",
             "description",
             "type",
@@ -144,16 +150,17 @@ class ExpenseLineItem(BaseModel):
             "quantity",
             "unit_price",
             "item",
-            "billable",
             "line_number",
             "rebilling",
         ]
         nullable_fields = [
             "tracking_categories",
             "account",
+            "customer",
             "department_id",
+            "department",
             "location_id",
-            "subsidiary_id",
+            "location",
             "description",
             "type",
             "total_amount",

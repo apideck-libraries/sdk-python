@@ -823,6 +823,9 @@ class BankAccounts(BaseSDK):
         self,
         *,
         id: str,
+        filter_: Optional[
+            Union[models.BankAccountFilter, models.BankAccountFilterTypedDict]
+        ] = None,
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
@@ -838,6 +841,7 @@ class BankAccounts(BaseSDK):
         Get Bank Account
 
         :param id: ID of the record you are acting upon.
+        :param filter_: Apply filters
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
@@ -860,6 +864,9 @@ class BankAccounts(BaseSDK):
 
         request = models.AccountingBankAccountsOneRequest(
             id=id,
+            filter_=utils.get_pydantic_model(
+                filter_, Optional[models.BankAccountFilter]
+            ),
             consumer_id=consumer_id,
             app_id=app_id,
             service_id=service_id,
@@ -967,6 +974,9 @@ class BankAccounts(BaseSDK):
         self,
         *,
         id: str,
+        filter_: Optional[
+            Union[models.BankAccountFilter, models.BankAccountFilterTypedDict]
+        ] = None,
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
@@ -982,6 +992,7 @@ class BankAccounts(BaseSDK):
         Get Bank Account
 
         :param id: ID of the record you are acting upon.
+        :param filter_: Apply filters
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
@@ -1004,6 +1015,9 @@ class BankAccounts(BaseSDK):
 
         request = models.AccountingBankAccountsOneRequest(
             id=id,
+            filter_=utils.get_pydantic_model(
+                filter_, Optional[models.BankAccountFilter]
+            ),
             consumer_id=consumer_id,
             app_id=app_id,
             service_id=service_id,
