@@ -27,6 +27,12 @@ class StagesTypedDict(TypedDict):
     r"""The expected probability of winning an Opportunity in this Pipeline Stage. Valid values are [0-100]."""
     display_order: NotRequired[Nullable[int]]
     r"""The order in which the Pipeline Stage is displayed in the UI."""
+    archived: NotRequired[Nullable[bool]]
+    r"""Whether the Pipeline Stage is archived or not."""
+    created_at: NotRequired[Nullable[datetime]]
+    r"""The date and time when the Pipeline Stage was created."""
+    updated_at: NotRequired[Nullable[datetime]]
+    r"""The date and time when the Pipeline Stage was last updated."""
 
 
 class Stages(BaseModel):
@@ -45,10 +51,37 @@ class Stages(BaseModel):
     display_order: OptionalNullable[int] = UNSET
     r"""The order in which the Pipeline Stage is displayed in the UI."""
 
+    archived: OptionalNullable[bool] = UNSET
+    r"""Whether the Pipeline Stage is archived or not."""
+
+    created_at: OptionalNullable[datetime] = UNSET
+    r"""The date and time when the Pipeline Stage was created."""
+
+    updated_at: OptionalNullable[datetime] = UNSET
+    r"""The date and time when the Pipeline Stage was last updated."""
+
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
-        optional_fields = ["id", "name", "value", "win_probability", "display_order"]
-        nullable_fields = ["id", "name", "value", "win_probability", "display_order"]
+        optional_fields = [
+            "id",
+            "name",
+            "value",
+            "win_probability",
+            "display_order",
+            "archived",
+            "created_at",
+            "updated_at",
+        ]
+        nullable_fields = [
+            "id",
+            "name",
+            "value",
+            "win_probability",
+            "display_order",
+            "archived",
+            "created_at",
+            "updated_at",
+        ]
         null_default_fields = []
 
         serialized = handler(self)

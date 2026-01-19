@@ -396,6 +396,7 @@ class Invoices(BaseSDK):
             Union[models.LinkedCustomerInput, models.LinkedCustomerInputTypedDict]
         ] = UNSET,
         company_id: OptionalNullable[str] = UNSET,
+        location_id: OptionalNullable[str] = UNSET,
         department_id: OptionalNullable[str] = UNSET,
         invoice_date: OptionalNullable[date] = UNSET,
         due_date: OptionalNullable[date] = UNSET,
@@ -483,6 +484,7 @@ class Invoices(BaseSDK):
         :param number: Invoice number.
         :param customer: The customer this entity is linked to.
         :param company_id: The company ID the transaction belongs to
+        :param location_id: The ID of the location
         :param department_id: The ID of the department
         :param invoice_date: Date invoice was issued - YYYY-MM-DD.
         :param due_date: The invoice due date is the date on which a payment or invoice is scheduled to be received by the seller - YYYY-MM-DD.
@@ -548,6 +550,7 @@ class Invoices(BaseSDK):
                     customer, OptionalNullable[models.LinkedCustomerInput]
                 ),
                 company_id=company_id,
+                location_id=location_id,
                 department_id=department_id,
                 invoice_date=invoice_date,
                 due_date=due_date,
@@ -724,6 +727,7 @@ class Invoices(BaseSDK):
             Union[models.LinkedCustomerInput, models.LinkedCustomerInputTypedDict]
         ] = UNSET,
         company_id: OptionalNullable[str] = UNSET,
+        location_id: OptionalNullable[str] = UNSET,
         department_id: OptionalNullable[str] = UNSET,
         invoice_date: OptionalNullable[date] = UNSET,
         due_date: OptionalNullable[date] = UNSET,
@@ -811,6 +815,7 @@ class Invoices(BaseSDK):
         :param number: Invoice number.
         :param customer: The customer this entity is linked to.
         :param company_id: The company ID the transaction belongs to
+        :param location_id: The ID of the location
         :param department_id: The ID of the department
         :param invoice_date: Date invoice was issued - YYYY-MM-DD.
         :param due_date: The invoice due date is the date on which a payment or invoice is scheduled to be received by the seller - YYYY-MM-DD.
@@ -876,6 +881,7 @@ class Invoices(BaseSDK):
                     customer, OptionalNullable[models.LinkedCustomerInput]
                 ),
                 company_id=company_id,
+                location_id=location_id,
                 department_id=department_id,
                 invoice_date=invoice_date,
                 due_date=due_date,
@@ -1341,6 +1347,7 @@ class Invoices(BaseSDK):
             Union[models.LinkedCustomerInput, models.LinkedCustomerInputTypedDict]
         ] = UNSET,
         company_id: OptionalNullable[str] = UNSET,
+        location_id: OptionalNullable[str] = UNSET,
         department_id: OptionalNullable[str] = UNSET,
         invoice_date: OptionalNullable[date] = UNSET,
         due_date: OptionalNullable[date] = UNSET,
@@ -1429,6 +1436,7 @@ class Invoices(BaseSDK):
         :param number: Invoice number.
         :param customer: The customer this entity is linked to.
         :param company_id: The company ID the transaction belongs to
+        :param location_id: The ID of the location
         :param department_id: The ID of the department
         :param invoice_date: Date invoice was issued - YYYY-MM-DD.
         :param due_date: The invoice due date is the date on which a payment or invoice is scheduled to be received by the seller - YYYY-MM-DD.
@@ -1495,6 +1503,7 @@ class Invoices(BaseSDK):
                     customer, OptionalNullable[models.LinkedCustomerInput]
                 ),
                 company_id=company_id,
+                location_id=location_id,
                 department_id=department_id,
                 invoice_date=invoice_date,
                 due_date=due_date,
@@ -1672,6 +1681,7 @@ class Invoices(BaseSDK):
             Union[models.LinkedCustomerInput, models.LinkedCustomerInputTypedDict]
         ] = UNSET,
         company_id: OptionalNullable[str] = UNSET,
+        location_id: OptionalNullable[str] = UNSET,
         department_id: OptionalNullable[str] = UNSET,
         invoice_date: OptionalNullable[date] = UNSET,
         due_date: OptionalNullable[date] = UNSET,
@@ -1760,6 +1770,7 @@ class Invoices(BaseSDK):
         :param number: Invoice number.
         :param customer: The customer this entity is linked to.
         :param company_id: The company ID the transaction belongs to
+        :param location_id: The ID of the location
         :param department_id: The ID of the department
         :param invoice_date: Date invoice was issued - YYYY-MM-DD.
         :param due_date: The invoice due date is the date on which a payment or invoice is scheduled to be received by the seller - YYYY-MM-DD.
@@ -1826,6 +1837,7 @@ class Invoices(BaseSDK):
                     customer, OptionalNullable[models.LinkedCustomerInput]
                 ),
                 company_id=company_id,
+                location_id=location_id,
                 department_id=department_id,
                 invoice_date=invoice_date,
                 due_date=due_date,
