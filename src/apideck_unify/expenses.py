@@ -370,21 +370,27 @@ class Expenses(BaseSDK):
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
+        display_id: OptionalNullable[str] = UNSET,
         number: OptionalNullable[str] = UNSET,
         account_id: Optional[str] = None,
         account: OptionalNullable[
-            Union[models.LinkedLedgerAccount, models.LinkedLedgerAccountTypedDict]
+            Union[
+                models.LinkedFinancialAccountInput,
+                models.LinkedFinancialAccountInputTypedDict,
+            ]
         ] = UNSET,
-        bank_account: OptionalNullable[
-            Union[models.LinkedBankAccount, models.LinkedBankAccountTypedDict]
-        ] = UNSET,
-        customer_id: Optional[str] = None,
         supplier_id: Optional[str] = None,
         supplier: OptionalNullable[
             Union[models.LinkedSupplierInput, models.LinkedSupplierInputTypedDict]
         ] = UNSET,
         company_id: OptionalNullable[str] = UNSET,
+        location: OptionalNullable[
+            Union[models.LinkedLocationInput, models.LinkedLocationInputTypedDict]
+        ] = UNSET,
         department_id: OptionalNullable[str] = UNSET,
+        department: OptionalNullable[
+            Union[models.LinkedDepartmentInput, models.LinkedDepartmentInputTypedDict]
+        ] = UNSET,
         payment_type: OptionalNullable[models.ExpensePaymentType] = UNSET,
         currency: OptionalNullable[models.Currency] = UNSET,
         currency_rate: OptionalNullable[float] = UNSET,
@@ -397,6 +403,12 @@ class Expenses(BaseSDK):
         sub_total: OptionalNullable[float] = UNSET,
         total_tax: OptionalNullable[float] = UNSET,
         total_amount: OptionalNullable[float] = UNSET,
+        tracking_categories: OptionalNullable[
+            Union[
+                List[Nullable[models.LinkedTrackingCategory]],
+                List[Nullable[models.LinkedTrackingCategoryTypedDict]],
+            ]
+        ] = UNSET,
         reference: OptionalNullable[str] = UNSET,
         source_document_url: OptionalNullable[str] = UNSET,
         custom_fields: Optional[
@@ -422,15 +434,16 @@ class Expenses(BaseSDK):
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param display_id: Id to be displayed.
         :param number: Number.
         :param account_id: The unique identifier for the ledger account that this expense should be credited to. Deprecated, use account instead.
-        :param account:
-        :param bank_account:
-        :param customer_id: The ID of the customer this entity is linked to. Used for expenses that should be marked as billable to customers.
+        :param account: A flexible account reference that can represent either a ledger account (GL account) or a bank account, depending on the connector's requirements.
         :param supplier_id: The ID of the supplier this entity is linked to. Deprecated, use supplier instead.
         :param supplier: The supplier this entity is linked to.
         :param company_id: The company ID the transaction belongs to
+        :param location:
         :param department_id: The ID of the department
+        :param department:
         :param payment_type: The type of payment for the expense.
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
         :param currency_rate: Currency Exchange Rate at the time entity was recorded/generated.
@@ -441,6 +454,7 @@ class Expenses(BaseSDK):
         :param sub_total: Subtotal amount, normally before tax.
         :param total_tax: Total tax amount applied to this transaction.
         :param total_amount: The total amount of the expense line item.
+        :param tracking_categories: A list of linked tracking categories.
         :param reference: Optional reference identifier for the transaction.
         :param source_document_url: URL link to a source document - shown as 'Go to [appName]' in the downstream app. Currently only supported for Xero.
         :param custom_fields:
@@ -468,22 +482,25 @@ class Expenses(BaseSDK):
             app_id=app_id,
             service_id=service_id,
             expense=models.ExpenseInput(
+                display_id=display_id,
                 number=number,
                 transaction_date=transaction_date,
                 account_id=account_id,
                 account=utils.get_pydantic_model(
-                    account, OptionalNullable[models.LinkedLedgerAccount]
+                    account, OptionalNullable[models.LinkedFinancialAccountInput]
                 ),
-                bank_account=utils.get_pydantic_model(
-                    bank_account, OptionalNullable[models.LinkedBankAccount]
-                ),
-                customer_id=customer_id,
                 supplier_id=supplier_id,
                 supplier=utils.get_pydantic_model(
                     supplier, OptionalNullable[models.LinkedSupplierInput]
                 ),
                 company_id=company_id,
+                location=utils.get_pydantic_model(
+                    location, OptionalNullable[models.LinkedLocationInput]
+                ),
                 department_id=department_id,
+                department=utils.get_pydantic_model(
+                    department, OptionalNullable[models.LinkedDepartmentInput]
+                ),
                 payment_type=payment_type,
                 currency=currency,
                 currency_rate=currency_rate,
@@ -496,6 +513,10 @@ class Expenses(BaseSDK):
                 sub_total=sub_total,
                 total_tax=total_tax,
                 total_amount=total_amount,
+                tracking_categories=utils.get_pydantic_model(
+                    tracking_categories,
+                    OptionalNullable[List[Nullable[models.LinkedTrackingCategory]]],
+                ),
                 line_items=utils.get_pydantic_model(
                     line_items, List[models.ExpenseLineItemInput]
                 ),
@@ -623,21 +644,27 @@ class Expenses(BaseSDK):
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
+        display_id: OptionalNullable[str] = UNSET,
         number: OptionalNullable[str] = UNSET,
         account_id: Optional[str] = None,
         account: OptionalNullable[
-            Union[models.LinkedLedgerAccount, models.LinkedLedgerAccountTypedDict]
+            Union[
+                models.LinkedFinancialAccountInput,
+                models.LinkedFinancialAccountInputTypedDict,
+            ]
         ] = UNSET,
-        bank_account: OptionalNullable[
-            Union[models.LinkedBankAccount, models.LinkedBankAccountTypedDict]
-        ] = UNSET,
-        customer_id: Optional[str] = None,
         supplier_id: Optional[str] = None,
         supplier: OptionalNullable[
             Union[models.LinkedSupplierInput, models.LinkedSupplierInputTypedDict]
         ] = UNSET,
         company_id: OptionalNullable[str] = UNSET,
+        location: OptionalNullable[
+            Union[models.LinkedLocationInput, models.LinkedLocationInputTypedDict]
+        ] = UNSET,
         department_id: OptionalNullable[str] = UNSET,
+        department: OptionalNullable[
+            Union[models.LinkedDepartmentInput, models.LinkedDepartmentInputTypedDict]
+        ] = UNSET,
         payment_type: OptionalNullable[models.ExpensePaymentType] = UNSET,
         currency: OptionalNullable[models.Currency] = UNSET,
         currency_rate: OptionalNullable[float] = UNSET,
@@ -650,6 +677,12 @@ class Expenses(BaseSDK):
         sub_total: OptionalNullable[float] = UNSET,
         total_tax: OptionalNullable[float] = UNSET,
         total_amount: OptionalNullable[float] = UNSET,
+        tracking_categories: OptionalNullable[
+            Union[
+                List[Nullable[models.LinkedTrackingCategory]],
+                List[Nullable[models.LinkedTrackingCategoryTypedDict]],
+            ]
+        ] = UNSET,
         reference: OptionalNullable[str] = UNSET,
         source_document_url: OptionalNullable[str] = UNSET,
         custom_fields: Optional[
@@ -675,15 +708,16 @@ class Expenses(BaseSDK):
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param display_id: Id to be displayed.
         :param number: Number.
         :param account_id: The unique identifier for the ledger account that this expense should be credited to. Deprecated, use account instead.
-        :param account:
-        :param bank_account:
-        :param customer_id: The ID of the customer this entity is linked to. Used for expenses that should be marked as billable to customers.
+        :param account: A flexible account reference that can represent either a ledger account (GL account) or a bank account, depending on the connector's requirements.
         :param supplier_id: The ID of the supplier this entity is linked to. Deprecated, use supplier instead.
         :param supplier: The supplier this entity is linked to.
         :param company_id: The company ID the transaction belongs to
+        :param location:
         :param department_id: The ID of the department
+        :param department:
         :param payment_type: The type of payment for the expense.
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
         :param currency_rate: Currency Exchange Rate at the time entity was recorded/generated.
@@ -694,6 +728,7 @@ class Expenses(BaseSDK):
         :param sub_total: Subtotal amount, normally before tax.
         :param total_tax: Total tax amount applied to this transaction.
         :param total_amount: The total amount of the expense line item.
+        :param tracking_categories: A list of linked tracking categories.
         :param reference: Optional reference identifier for the transaction.
         :param source_document_url: URL link to a source document - shown as 'Go to [appName]' in the downstream app. Currently only supported for Xero.
         :param custom_fields:
@@ -721,22 +756,25 @@ class Expenses(BaseSDK):
             app_id=app_id,
             service_id=service_id,
             expense=models.ExpenseInput(
+                display_id=display_id,
                 number=number,
                 transaction_date=transaction_date,
                 account_id=account_id,
                 account=utils.get_pydantic_model(
-                    account, OptionalNullable[models.LinkedLedgerAccount]
+                    account, OptionalNullable[models.LinkedFinancialAccountInput]
                 ),
-                bank_account=utils.get_pydantic_model(
-                    bank_account, OptionalNullable[models.LinkedBankAccount]
-                ),
-                customer_id=customer_id,
                 supplier_id=supplier_id,
                 supplier=utils.get_pydantic_model(
                     supplier, OptionalNullable[models.LinkedSupplierInput]
                 ),
                 company_id=company_id,
+                location=utils.get_pydantic_model(
+                    location, OptionalNullable[models.LinkedLocationInput]
+                ),
                 department_id=department_id,
+                department=utils.get_pydantic_model(
+                    department, OptionalNullable[models.LinkedDepartmentInput]
+                ),
                 payment_type=payment_type,
                 currency=currency,
                 currency_rate=currency_rate,
@@ -749,6 +787,10 @@ class Expenses(BaseSDK):
                 sub_total=sub_total,
                 total_tax=total_tax,
                 total_amount=total_amount,
+                tracking_categories=utils.get_pydantic_model(
+                    tracking_categories,
+                    OptionalNullable[List[Nullable[models.LinkedTrackingCategory]]],
+                ),
                 line_items=utils.get_pydantic_model(
                     line_items, List[models.ExpenseLineItemInput]
                 ),
@@ -1159,21 +1201,27 @@ class Expenses(BaseSDK):
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
+        display_id: OptionalNullable[str] = UNSET,
         number: OptionalNullable[str] = UNSET,
         account_id: Optional[str] = None,
         account: OptionalNullable[
-            Union[models.LinkedLedgerAccount, models.LinkedLedgerAccountTypedDict]
+            Union[
+                models.LinkedFinancialAccountInput,
+                models.LinkedFinancialAccountInputTypedDict,
+            ]
         ] = UNSET,
-        bank_account: OptionalNullable[
-            Union[models.LinkedBankAccount, models.LinkedBankAccountTypedDict]
-        ] = UNSET,
-        customer_id: Optional[str] = None,
         supplier_id: Optional[str] = None,
         supplier: OptionalNullable[
             Union[models.LinkedSupplierInput, models.LinkedSupplierInputTypedDict]
         ] = UNSET,
         company_id: OptionalNullable[str] = UNSET,
+        location: OptionalNullable[
+            Union[models.LinkedLocationInput, models.LinkedLocationInputTypedDict]
+        ] = UNSET,
         department_id: OptionalNullable[str] = UNSET,
+        department: OptionalNullable[
+            Union[models.LinkedDepartmentInput, models.LinkedDepartmentInputTypedDict]
+        ] = UNSET,
         payment_type: OptionalNullable[models.ExpensePaymentType] = UNSET,
         currency: OptionalNullable[models.Currency] = UNSET,
         currency_rate: OptionalNullable[float] = UNSET,
@@ -1186,6 +1234,12 @@ class Expenses(BaseSDK):
         sub_total: OptionalNullable[float] = UNSET,
         total_tax: OptionalNullable[float] = UNSET,
         total_amount: OptionalNullable[float] = UNSET,
+        tracking_categories: OptionalNullable[
+            Union[
+                List[Nullable[models.LinkedTrackingCategory]],
+                List[Nullable[models.LinkedTrackingCategoryTypedDict]],
+            ]
+        ] = UNSET,
         reference: OptionalNullable[str] = UNSET,
         source_document_url: OptionalNullable[str] = UNSET,
         custom_fields: Optional[
@@ -1212,15 +1266,16 @@ class Expenses(BaseSDK):
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param display_id: Id to be displayed.
         :param number: Number.
         :param account_id: The unique identifier for the ledger account that this expense should be credited to. Deprecated, use account instead.
-        :param account:
-        :param bank_account:
-        :param customer_id: The ID of the customer this entity is linked to. Used for expenses that should be marked as billable to customers.
+        :param account: A flexible account reference that can represent either a ledger account (GL account) or a bank account, depending on the connector's requirements.
         :param supplier_id: The ID of the supplier this entity is linked to. Deprecated, use supplier instead.
         :param supplier: The supplier this entity is linked to.
         :param company_id: The company ID the transaction belongs to
+        :param location:
         :param department_id: The ID of the department
+        :param department:
         :param payment_type: The type of payment for the expense.
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
         :param currency_rate: Currency Exchange Rate at the time entity was recorded/generated.
@@ -1231,6 +1286,7 @@ class Expenses(BaseSDK):
         :param sub_total: Subtotal amount, normally before tax.
         :param total_tax: Total tax amount applied to this transaction.
         :param total_amount: The total amount of the expense line item.
+        :param tracking_categories: A list of linked tracking categories.
         :param reference: Optional reference identifier for the transaction.
         :param source_document_url: URL link to a source document - shown as 'Go to [appName]' in the downstream app. Currently only supported for Xero.
         :param custom_fields:
@@ -1259,22 +1315,25 @@ class Expenses(BaseSDK):
             service_id=service_id,
             raw=raw,
             expense=models.ExpenseInput(
+                display_id=display_id,
                 number=number,
                 transaction_date=transaction_date,
                 account_id=account_id,
                 account=utils.get_pydantic_model(
-                    account, OptionalNullable[models.LinkedLedgerAccount]
+                    account, OptionalNullable[models.LinkedFinancialAccountInput]
                 ),
-                bank_account=utils.get_pydantic_model(
-                    bank_account, OptionalNullable[models.LinkedBankAccount]
-                ),
-                customer_id=customer_id,
                 supplier_id=supplier_id,
                 supplier=utils.get_pydantic_model(
                     supplier, OptionalNullable[models.LinkedSupplierInput]
                 ),
                 company_id=company_id,
+                location=utils.get_pydantic_model(
+                    location, OptionalNullable[models.LinkedLocationInput]
+                ),
                 department_id=department_id,
+                department=utils.get_pydantic_model(
+                    department, OptionalNullable[models.LinkedDepartmentInput]
+                ),
                 payment_type=payment_type,
                 currency=currency,
                 currency_rate=currency_rate,
@@ -1287,6 +1346,10 @@ class Expenses(BaseSDK):
                 sub_total=sub_total,
                 total_tax=total_tax,
                 total_amount=total_amount,
+                tracking_categories=utils.get_pydantic_model(
+                    tracking_categories,
+                    OptionalNullable[List[Nullable[models.LinkedTrackingCategory]]],
+                ),
                 line_items=utils.get_pydantic_model(
                     line_items, List[models.ExpenseLineItemInput]
                 ),
@@ -1415,21 +1478,27 @@ class Expenses(BaseSDK):
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
+        display_id: OptionalNullable[str] = UNSET,
         number: OptionalNullable[str] = UNSET,
         account_id: Optional[str] = None,
         account: OptionalNullable[
-            Union[models.LinkedLedgerAccount, models.LinkedLedgerAccountTypedDict]
+            Union[
+                models.LinkedFinancialAccountInput,
+                models.LinkedFinancialAccountInputTypedDict,
+            ]
         ] = UNSET,
-        bank_account: OptionalNullable[
-            Union[models.LinkedBankAccount, models.LinkedBankAccountTypedDict]
-        ] = UNSET,
-        customer_id: Optional[str] = None,
         supplier_id: Optional[str] = None,
         supplier: OptionalNullable[
             Union[models.LinkedSupplierInput, models.LinkedSupplierInputTypedDict]
         ] = UNSET,
         company_id: OptionalNullable[str] = UNSET,
+        location: OptionalNullable[
+            Union[models.LinkedLocationInput, models.LinkedLocationInputTypedDict]
+        ] = UNSET,
         department_id: OptionalNullable[str] = UNSET,
+        department: OptionalNullable[
+            Union[models.LinkedDepartmentInput, models.LinkedDepartmentInputTypedDict]
+        ] = UNSET,
         payment_type: OptionalNullable[models.ExpensePaymentType] = UNSET,
         currency: OptionalNullable[models.Currency] = UNSET,
         currency_rate: OptionalNullable[float] = UNSET,
@@ -1442,6 +1511,12 @@ class Expenses(BaseSDK):
         sub_total: OptionalNullable[float] = UNSET,
         total_tax: OptionalNullable[float] = UNSET,
         total_amount: OptionalNullable[float] = UNSET,
+        tracking_categories: OptionalNullable[
+            Union[
+                List[Nullable[models.LinkedTrackingCategory]],
+                List[Nullable[models.LinkedTrackingCategoryTypedDict]],
+            ]
+        ] = UNSET,
         reference: OptionalNullable[str] = UNSET,
         source_document_url: OptionalNullable[str] = UNSET,
         custom_fields: Optional[
@@ -1468,15 +1543,16 @@ class Expenses(BaseSDK):
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param display_id: Id to be displayed.
         :param number: Number.
         :param account_id: The unique identifier for the ledger account that this expense should be credited to. Deprecated, use account instead.
-        :param account:
-        :param bank_account:
-        :param customer_id: The ID of the customer this entity is linked to. Used for expenses that should be marked as billable to customers.
+        :param account: A flexible account reference that can represent either a ledger account (GL account) or a bank account, depending on the connector's requirements.
         :param supplier_id: The ID of the supplier this entity is linked to. Deprecated, use supplier instead.
         :param supplier: The supplier this entity is linked to.
         :param company_id: The company ID the transaction belongs to
+        :param location:
         :param department_id: The ID of the department
+        :param department:
         :param payment_type: The type of payment for the expense.
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
         :param currency_rate: Currency Exchange Rate at the time entity was recorded/generated.
@@ -1487,6 +1563,7 @@ class Expenses(BaseSDK):
         :param sub_total: Subtotal amount, normally before tax.
         :param total_tax: Total tax amount applied to this transaction.
         :param total_amount: The total amount of the expense line item.
+        :param tracking_categories: A list of linked tracking categories.
         :param reference: Optional reference identifier for the transaction.
         :param source_document_url: URL link to a source document - shown as 'Go to [appName]' in the downstream app. Currently only supported for Xero.
         :param custom_fields:
@@ -1515,22 +1592,25 @@ class Expenses(BaseSDK):
             service_id=service_id,
             raw=raw,
             expense=models.ExpenseInput(
+                display_id=display_id,
                 number=number,
                 transaction_date=transaction_date,
                 account_id=account_id,
                 account=utils.get_pydantic_model(
-                    account, OptionalNullable[models.LinkedLedgerAccount]
+                    account, OptionalNullable[models.LinkedFinancialAccountInput]
                 ),
-                bank_account=utils.get_pydantic_model(
-                    bank_account, OptionalNullable[models.LinkedBankAccount]
-                ),
-                customer_id=customer_id,
                 supplier_id=supplier_id,
                 supplier=utils.get_pydantic_model(
                     supplier, OptionalNullable[models.LinkedSupplierInput]
                 ),
                 company_id=company_id,
+                location=utils.get_pydantic_model(
+                    location, OptionalNullable[models.LinkedLocationInput]
+                ),
                 department_id=department_id,
+                department=utils.get_pydantic_model(
+                    department, OptionalNullable[models.LinkedDepartmentInput]
+                ),
                 payment_type=payment_type,
                 currency=currency,
                 currency_rate=currency_rate,
@@ -1543,6 +1623,10 @@ class Expenses(BaseSDK):
                 sub_total=sub_total,
                 total_tax=total_tax,
                 total_amount=total_amount,
+                tracking_categories=utils.get_pydantic_model(
+                    tracking_categories,
+                    OptionalNullable[List[Nullable[models.LinkedTrackingCategory]]],
+                ),
                 line_items=utils.get_pydantic_model(
                     line_items, List[models.ExpenseLineItemInput]
                 ),

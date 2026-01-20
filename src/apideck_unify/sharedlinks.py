@@ -27,9 +27,9 @@ class SharedLinks(BaseSDK):
         timeout_ms: Optional[int] = None,
         http_headers: Optional[Mapping[str, str]] = None,
     ) -> Optional[models.FileStorageSharedLinksAllResponse]:
-        r"""List SharedLinks
+        r"""List Shared Links
 
-        List SharedLinks
+        List Shared Links
 
         :param raw: Include raw response. Mostly used for debugging purposes
         :param consumer_id: ID of the consumer which you want to get or push data from
@@ -202,9 +202,9 @@ class SharedLinks(BaseSDK):
         timeout_ms: Optional[int] = None,
         http_headers: Optional[Mapping[str, str]] = None,
     ) -> Optional[models.FileStorageSharedLinksAllResponse]:
-        r"""List SharedLinks
+        r"""List Shared Links
 
-        List SharedLinks
+        List Shared Links
 
         :param raw: Include raw response. Mostly used for debugging purposes
         :param consumer_id: ID of the consumer which you want to get or push data from
