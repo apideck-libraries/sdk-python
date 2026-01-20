@@ -5,7 +5,7 @@
 
 ### Available Operations
 
-* [list](#list) - List SharedLinks
+* [list](#list) - List Shared Links
 * [create](#create) - Create Shared Link
 * [get](#get) - Get Shared Link
 * [update](#update) - Update Shared Link
@@ -13,7 +13,7 @@
 
 ## list
 
-List SharedLinks
+List Shared Links
 
 ### Example Usage
 
