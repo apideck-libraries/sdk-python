@@ -3,6 +3,7 @@
 from __future__ import annotations
 from .currency import Currency
 from .passthroughbody import PassThroughBody, PassThroughBodyTypedDict
+from apideck_unify import models
 from apideck_unify.types import (
     BaseModel,
     Nullable,
@@ -10,10 +11,12 @@ from apideck_unify.types import (
     UNSET,
     UNSET_SENTINEL,
 )
+from apideck_unify.utils import validate_open_enum
 from datetime import datetime
-from pydantic import model_serializer
+from pydantic import field_serializer, model_serializer
+from pydantic.functional_validators import PlainValidator
 from typing import List, Optional
-from typing_extensions import NotRequired, TypedDict
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class StagesTypedDict(TypedDict):
@@ -141,7 +144,9 @@ class Pipeline(BaseModel):
     id: Optional[str] = None
     r"""The unique identifier of the Pipeline."""
 
-    currency: OptionalNullable[Currency] = UNSET
+    currency: Annotated[
+        OptionalNullable[Currency], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
 
     archived: Optional[bool] = None
@@ -167,6 +172,15 @@ class Pipeline(BaseModel):
 
     pass_through: Optional[List[PassThroughBody]] = None
     r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
+
+    @field_serializer("currency")
+    def serialize_currency(self, value):
+        if isinstance(value, str):
+            try:
+                return models.Currency(value)
+            except ValueError:
+                return value
+        return value
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):

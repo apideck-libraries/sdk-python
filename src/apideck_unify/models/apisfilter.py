@@ -2,8 +2,11 @@
 
 from __future__ import annotations
 from .apistatus import APIStatus
+from apideck_unify import models
 from apideck_unify.types import BaseModel
-from apideck_unify.utils import FieldMetadata
+from apideck_unify.utils import FieldMetadata, validate_open_enum
+from pydantic import field_serializer
+from pydantic.functional_validators import PlainValidator
 from typing import Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
@@ -14,5 +17,17 @@ class ApisFilterTypedDict(TypedDict):
 
 
 class ApisFilter(BaseModel):
-    status: Annotated[Optional[APIStatus], FieldMetadata(query=True)] = None
+    status: Annotated[
+        Annotated[Optional[APIStatus], PlainValidator(validate_open_enum(False))],
+        FieldMetadata(query=True),
+    ] = None
     r"""Status of the API. APIs with status live or beta are callable."""
+
+    @field_serializer("status")
+    def serialize_status(self, value):
+        if isinstance(value, str):
+            try:
+                return models.APIStatus(value)
+            except ValueError:
+                return value
+        return value

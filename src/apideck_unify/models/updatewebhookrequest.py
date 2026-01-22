@@ -3,6 +3,7 @@
 from __future__ import annotations
 from .status import Status
 from .webhookeventtype import WebhookEventType
+from apideck_unify import models
 from apideck_unify.types import (
     BaseModel,
     Nullable,
@@ -10,9 +11,11 @@ from apideck_unify.types import (
     UNSET,
     UNSET_SENTINEL,
 )
-from pydantic import model_serializer
+from apideck_unify.utils import validate_open_enum
+from pydantic import field_serializer, model_serializer
+from pydantic.functional_validators import PlainValidator
 from typing import List, Optional
-from typing_extensions import NotRequired, TypedDict
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class UpdateWebhookRequestTypedDict(TypedDict):
@@ -30,14 +33,27 @@ class UpdateWebhookRequest(BaseModel):
     description: OptionalNullable[str] = UNSET
     r"""A description of the object."""
 
-    status: Optional[Status] = None
+    status: Annotated[Optional[Status], PlainValidator(validate_open_enum(False))] = (
+        None
+    )
     r"""The status of the webhook."""
 
     delivery_url: Optional[str] = None
     r"""The delivery url of the webhook endpoint."""
 
-    events: Optional[List[WebhookEventType]] = None
+    events: Optional[
+        List[Annotated[WebhookEventType, PlainValidator(validate_open_enum(False))]]
+    ] = None
     r"""The list of subscribed events for this webhook. [`*`] indicates that all events are enabled."""
+
+    @field_serializer("status")
+    def serialize_status(self, value):
+        if isinstance(value, str):
+            try:
+                return models.Status(value)
+            except ValueError:
+                return value
+        return value
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):

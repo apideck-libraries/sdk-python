@@ -7,6 +7,7 @@ from .profitandlossindicator import (
     ProfitAndLossIndicatorTypedDict,
 )
 from .profitandlosstype import ProfitAndLossType
+from apideck_unify import models
 from apideck_unify.types import (
     BaseModel,
     Nullable,
@@ -14,9 +15,11 @@ from apideck_unify.types import (
     UNSET,
     UNSET_SENTINEL,
 )
-from pydantic import model_serializer
+from apideck_unify.utils import validate_open_enum
+from pydantic import field_serializer, model_serializer
+from pydantic.functional_validators import PlainValidator
 from typing import Any, Dict, Optional
-from typing_extensions import NotRequired, TypedDict
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class IncomeTypedDict(TypedDict):
@@ -52,8 +55,19 @@ class Income(BaseModel):
     title: Optional[str] = None
     r"""The name of the account."""
 
-    type: OptionalNullable[ProfitAndLossType] = UNSET
+    type: Annotated[
+        OptionalNullable[ProfitAndLossType], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""The type of profit and loss"""
+
+    @field_serializer("type")
+    def serialize_type(self, value):
+        if isinstance(value, str):
+            try:
+                return models.ProfitAndLossType(value)
+            except ValueError:
+                return value
+        return value
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
@@ -116,11 +130,22 @@ class CostOfGoodsSold(BaseModel):
     title: Optional[str] = None
     r"""The name of the account."""
 
-    type: OptionalNullable[ProfitAndLossType] = UNSET
+    type: Annotated[
+        OptionalNullable[ProfitAndLossType], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""The type of profit and loss"""
 
     total: OptionalNullable[float] = UNSET
     r"""The aggregated total of all accounts within this category."""
+
+    @field_serializer("type")
+    def serialize_type(self, value):
+        if isinstance(value, str):
+            try:
+                return models.ProfitAndLossType(value)
+            except ValueError:
+                return value
+        return value
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
@@ -186,8 +211,19 @@ class ExpensesModel(BaseModel):
     title: Optional[str] = None
     r"""The name of the account."""
 
-    type: OptionalNullable[ProfitAndLossType] = UNSET
+    type: Annotated[
+        OptionalNullable[ProfitAndLossType], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""The type of profit and loss"""
+
+    @field_serializer("type")
+    def serialize_type(self, value):
+        if isinstance(value, str):
+            try:
+                return models.ProfitAndLossType(value)
+            except ValueError:
+                return value
+        return value
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
@@ -250,11 +286,22 @@ class OtherIncome(BaseModel):
     title: Optional[str] = None
     r"""The name of the account."""
 
-    type: OptionalNullable[ProfitAndLossType] = UNSET
+    type: Annotated[
+        OptionalNullable[ProfitAndLossType], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""The type of profit and loss"""
 
     total: OptionalNullable[float] = UNSET
     r"""The aggregated total of all accounts within this category."""
+
+    @field_serializer("type")
+    def serialize_type(self, value):
+        if isinstance(value, str):
+            try:
+                return models.ProfitAndLossType(value)
+            except ValueError:
+                return value
+        return value
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
@@ -317,11 +364,22 @@ class OtherExpenses(BaseModel):
     title: Optional[str] = None
     r"""The name of the account."""
 
-    type: OptionalNullable[ProfitAndLossType] = UNSET
+    type: Annotated[
+        OptionalNullable[ProfitAndLossType], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""The type of profit and loss"""
 
     total: OptionalNullable[float] = UNSET
     r"""The aggregated total of all accounts within this category."""
+
+    @field_serializer("type")
+    def serialize_type(self, value):
+        if isinstance(value, str):
+            try:
+                return models.ProfitAndLossType(value)
+            except ValueError:
+                return value
+        return value
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
@@ -387,8 +445,19 @@ class UncategorizedAccounts(BaseModel):
     title: Optional[str] = None
     r"""The name of the account."""
 
-    type: OptionalNullable[ProfitAndLossType] = UNSET
+    type: Annotated[
+        OptionalNullable[ProfitAndLossType], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""The type of profit and loss"""
+
+    @field_serializer("type")
+    def serialize_type(self, value):
+        if isinstance(value, str):
+            try:
+                return models.ProfitAndLossType(value)
+            except ValueError:
+                return value
+        return value
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
@@ -472,7 +541,9 @@ class ProfitAndLoss(BaseModel):
     end_date: Optional[str] = None
     r"""The end date of the report"""
 
-    currency: OptionalNullable[Currency] = UNSET
+    currency: Annotated[
+        OptionalNullable[Currency], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
 
     cost_of_goods_sold: Optional[CostOfGoodsSold] = None
@@ -498,6 +569,15 @@ class ProfitAndLoss(BaseModel):
 
     customer: Optional[str] = None
     r"""The customer id"""
+
+    @field_serializer("currency")
+    def serialize_currency(self, value):
+        if isinstance(value, str):
+            try:
+                return models.Currency(value)
+            except ValueError:
+                return value
+        return value
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):

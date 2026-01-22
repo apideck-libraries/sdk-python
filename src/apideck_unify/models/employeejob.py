@@ -4,6 +4,7 @@ from __future__ import annotations
 from .address import Address, AddressTypedDict
 from .currency import Currency
 from .paymentunit import PaymentUnit
+from apideck_unify import models, utils
 from apideck_unify.types import (
     BaseModel,
     Nullable,
@@ -11,14 +12,16 @@ from apideck_unify.types import (
     UNSET,
     UNSET_SENTINEL,
 )
+from apideck_unify.utils import validate_open_enum
 from datetime import date
 from enum import Enum
-from pydantic import model_serializer
+from pydantic import field_serializer, model_serializer
+from pydantic.functional_validators import PlainValidator
 from typing import Optional
-from typing_extensions import NotRequired, TypedDict
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
-class EmployeeJobStatus(str, Enum):
+class EmployeeJobStatus(str, Enum, metaclass=utils.OpenEnumMeta):
     r"""Indicates the status of the job."""
 
     ACTIVE = "active"
@@ -78,10 +81,14 @@ class EmployeeJob(BaseModel):
     compensation_rate: OptionalNullable[float] = UNSET
     r"""The rate of pay for the employee in their current job role."""
 
-    currency: OptionalNullable[Currency] = UNSET
+    currency: Annotated[
+        OptionalNullable[Currency], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
 
-    payment_unit: OptionalNullable[PaymentUnit] = UNSET
+    payment_unit: Annotated[
+        OptionalNullable[PaymentUnit], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""Unit of measurement for employee compensation."""
 
     hired_at: OptionalNullable[date] = UNSET
@@ -93,10 +100,39 @@ class EmployeeJob(BaseModel):
     is_manager: OptionalNullable[bool] = UNSET
     r"""Indicates whether this the employee has a manager role."""
 
-    status: OptionalNullable[EmployeeJobStatus] = UNSET
+    status: Annotated[
+        OptionalNullable[EmployeeJobStatus], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""Indicates the status of the job."""
 
     location: Optional[Address] = None
+
+    @field_serializer("currency")
+    def serialize_currency(self, value):
+        if isinstance(value, str):
+            try:
+                return models.Currency(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("payment_unit")
+    def serialize_payment_unit(self, value):
+        if isinstance(value, str):
+            try:
+                return models.PaymentUnit(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("status")
+    def serialize_status(self, value):
+        if isinstance(value, str):
+            try:
+                return models.EmployeeJobStatus(value)
+            except ValueError:
+                return value
+        return value
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
@@ -200,10 +236,14 @@ class EmployeeJobInput(BaseModel):
     compensation_rate: OptionalNullable[float] = UNSET
     r"""The rate of pay for the employee in their current job role."""
 
-    currency: OptionalNullable[Currency] = UNSET
+    currency: Annotated[
+        OptionalNullable[Currency], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
 
-    payment_unit: OptionalNullable[PaymentUnit] = UNSET
+    payment_unit: Annotated[
+        OptionalNullable[PaymentUnit], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""Unit of measurement for employee compensation."""
 
     hired_at: OptionalNullable[date] = UNSET
@@ -215,10 +255,39 @@ class EmployeeJobInput(BaseModel):
     is_manager: OptionalNullable[bool] = UNSET
     r"""Indicates whether this the employee has a manager role."""
 
-    status: OptionalNullable[EmployeeJobStatus] = UNSET
+    status: Annotated[
+        OptionalNullable[EmployeeJobStatus], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""Indicates the status of the job."""
 
     location: Optional[Address] = None
+
+    @field_serializer("currency")
+    def serialize_currency(self, value):
+        if isinstance(value, str):
+            try:
+                return models.Currency(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("payment_unit")
+    def serialize_payment_unit(self, value):
+        if isinstance(value, str):
+            try:
+                return models.PaymentUnit(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("status")
+    def serialize_status(self, value):
+        if isinstance(value, str):
+            try:
+                return models.EmployeeJobStatus(value)
+            except ValueError:
+                return value
+        return value
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):

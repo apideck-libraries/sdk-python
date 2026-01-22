@@ -2,13 +2,17 @@
 
 from __future__ import annotations
 from .simpleformfieldoption import SimpleFormFieldOption, SimpleFormFieldOptionTypedDict
+from apideck_unify import models, utils
 from apideck_unify.types import BaseModel
+from apideck_unify.utils import validate_open_enum
 from enum import Enum
+from pydantic import field_serializer
+from pydantic.functional_validators import PlainValidator
 from typing import List, Optional
-from typing_extensions import NotRequired, TypedDict
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
-class FormFieldOptionGroupOptionType(str, Enum):
+class FormFieldOptionGroupOptionType(str, Enum, metaclass=utils.OpenEnumMeta):
     GROUP = "group"
 
 
@@ -24,6 +28,17 @@ class FormFieldOptionGroup(BaseModel):
 
     options: List[SimpleFormFieldOption]
 
-    option_type: FormFieldOptionGroupOptionType
+    option_type: Annotated[
+        FormFieldOptionGroupOptionType, PlainValidator(validate_open_enum(False))
+    ]
 
     id: Optional[str] = None
+
+    @field_serializer("option_type")
+    def serialize_option_type(self, value):
+        if isinstance(value, str):
+            try:
+                return models.FormFieldOptionGroupOptionType(value)
+            except ValueError:
+                return value
+        return value

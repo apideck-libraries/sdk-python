@@ -17,6 +17,7 @@ from .linkedtrackingcategory import (
     LinkedTrackingCategoryTypedDict,
 )
 from .linkedworktag import LinkedWorktag, LinkedWorktagTypedDict
+from apideck_unify import models, utils
 from apideck_unify.types import (
     BaseModel,
     Nullable,
@@ -24,14 +25,16 @@ from apideck_unify.types import (
     UNSET,
     UNSET_SENTINEL,
 )
+from apideck_unify.utils import validate_open_enum
 from enum import Enum
 import pydantic
-from pydantic import model_serializer
+from pydantic import field_serializer, model_serializer
+from pydantic.functional_validators import PlainValidator
 from typing import List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
-class JournalEntryLineItemType(str, Enum):
+class JournalEntryLineItemType(str, Enum, metaclass=utils.OpenEnumMeta):
     r"""Debit entries are considered positive, and credit entries are considered negative."""
 
     DEBIT = "debit"
@@ -73,7 +76,7 @@ class JournalEntryLineItemTypedDict(TypedDict):
 
 
 class JournalEntryLineItem(BaseModel):
-    type: JournalEntryLineItemType
+    type: Annotated[JournalEntryLineItemType, PlainValidator(validate_open_enum(False))]
     r"""Debit entries are considered positive, and credit entries are considered negative."""
 
     ledger_account: Nullable[LinkedLedgerAccount]
@@ -98,7 +101,7 @@ class JournalEntryLineItem(BaseModel):
     tracking_category: Annotated[
         OptionalNullable[DeprecatedLinkedTrackingCategory],
         pydantic.Field(
-            deprecated="warning: ** DEPRECATED ** - This will be removed in a future release, please migrate away from it as soon as possible."
+            deprecated="warning: ** DEPRECATED ** - This field is deprecated and may be removed in a future version.."
         ),
     ] = UNSET
 
@@ -124,6 +127,15 @@ class JournalEntryLineItem(BaseModel):
 
     worktags: Optional[List[Nullable[LinkedWorktag]]] = None
     r"""Worktags of the line item. This is currently only supported in Workday."""
+
+    @field_serializer("type")
+    def serialize_type(self, value):
+        if isinstance(value, str):
+            try:
+                return models.JournalEntryLineItemType(value)
+            except ValueError:
+                return value
+        return value
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
@@ -217,7 +229,7 @@ class JournalEntryLineItemInputTypedDict(TypedDict):
 
 
 class JournalEntryLineItemInput(BaseModel):
-    type: JournalEntryLineItemType
+    type: Annotated[JournalEntryLineItemType, PlainValidator(validate_open_enum(False))]
     r"""Debit entries are considered positive, and credit entries are considered negative."""
 
     ledger_account: Nullable[LinkedLedgerAccount]
@@ -239,7 +251,7 @@ class JournalEntryLineItemInput(BaseModel):
     tracking_category: Annotated[
         OptionalNullable[DeprecatedLinkedTrackingCategory],
         pydantic.Field(
-            deprecated="warning: ** DEPRECATED ** - This will be removed in a future release, please migrate away from it as soon as possible."
+            deprecated="warning: ** DEPRECATED ** - This field is deprecated and may be removed in a future version.."
         ),
     ] = UNSET
 
@@ -265,6 +277,15 @@ class JournalEntryLineItemInput(BaseModel):
 
     worktags: Optional[List[Nullable[LinkedWorktag]]] = None
     r"""Worktags of the line item. This is currently only supported in Workday."""
+
+    @field_serializer("type")
+    def serialize_type(self, value):
+        if isinstance(value, str):
+            try:
+                return models.JournalEntryLineItemType(value)
+            except ValueError:
+                return value
+        return value
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):

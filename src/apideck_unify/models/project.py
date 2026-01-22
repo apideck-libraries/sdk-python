@@ -12,6 +12,7 @@ from .linkedtrackingcategory import (
     LinkedTrackingCategory,
     LinkedTrackingCategoryTypedDict,
 )
+from apideck_unify import models, utils
 from apideck_unify.types import (
     BaseModel,
     Nullable,
@@ -19,14 +20,16 @@ from apideck_unify.types import (
     UNSET,
     UNSET_SENTINEL,
 )
+from apideck_unify.utils import validate_open_enum
 from datetime import date, datetime
 from enum import Enum
-from pydantic import model_serializer
+from pydantic import field_serializer, model_serializer
+from pydantic.functional_validators import PlainValidator
 from typing import List, Optional
-from typing_extensions import NotRequired, TypedDict
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
-class ProjectProjectStatus(str, Enum):
+class ProjectProjectStatus(str, Enum, metaclass=utils.OpenEnumMeta):
     r"""Current status of the project"""
 
     ACTIVE = "active"
@@ -39,7 +42,7 @@ class ProjectProjectStatus(str, Enum):
     OTHER = "other"
 
 
-class ProjectType(str, Enum):
+class ProjectType(str, Enum, metaclass=utils.OpenEnumMeta):
     r"""Type or category of the project"""
 
     CLIENT_PROJECT = "client_project"
@@ -50,7 +53,7 @@ class ProjectType(str, Enum):
     OTHER = "other"
 
 
-class Priority(str, Enum):
+class Priority(str, Enum, metaclass=utils.OpenEnumMeta):
     r"""Priority level of the project"""
 
     LOW = "low"
@@ -97,7 +100,7 @@ class ParentProject(BaseModel):
     r"""Name of the parent project"""
 
 
-class BillingMethod(str, Enum):
+class BillingMethod(str, Enum, metaclass=utils.OpenEnumMeta):
     r"""Method used for billing this project"""
 
     FIXED_PRICE = "fixed_price"
@@ -107,7 +110,7 @@ class BillingMethod(str, Enum):
     NON_BILLABLE = "non_billable"
 
 
-class ProjectPhase(str, Enum):
+class ProjectPhase(str, Enum, metaclass=utils.OpenEnumMeta):
     r"""Current phase of the project lifecycle"""
 
     INITIATION = "initiation"
@@ -118,7 +121,7 @@ class ProjectPhase(str, Enum):
     OTHER = "other"
 
 
-class ScheduleStatus(str, Enum):
+class ScheduleStatus(str, Enum, metaclass=utils.OpenEnumMeta):
     r"""Current status of project schedule compared to plan"""
 
     AHEAD_OF_SCHEDULE = "ahead_of_schedule"
@@ -235,16 +238,23 @@ class Project(BaseModel):
     description: OptionalNullable[str] = UNSET
     r"""Detailed description of the project"""
 
-    status: OptionalNullable[ProjectProjectStatus] = UNSET
+    status: Annotated[
+        OptionalNullable[ProjectProjectStatus],
+        PlainValidator(validate_open_enum(False)),
+    ] = UNSET
     r"""Current status of the project"""
 
     active: OptionalNullable[bool] = UNSET
     r"""Indicates whether the project is currently active or inactive"""
 
-    project_type: OptionalNullable[ProjectType] = UNSET
+    project_type: Annotated[
+        OptionalNullable[ProjectType], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""Type or category of the project"""
 
-    priority: OptionalNullable[Priority] = UNSET
+    priority: Annotated[
+        OptionalNullable[Priority], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""Priority level of the project"""
 
     completion_percentage: OptionalNullable[float] = UNSET
@@ -271,7 +281,9 @@ class Project(BaseModel):
     parent_project: OptionalNullable[ParentProject] = UNSET
     r"""Parent project if this is a subproject"""
 
-    currency: OptionalNullable[Currency] = UNSET
+    currency: Annotated[
+        OptionalNullable[Currency], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
 
     budget_amount: OptionalNullable[float] = UNSET
@@ -292,13 +304,17 @@ class Project(BaseModel):
     hourly_rate: OptionalNullable[float] = UNSET
     r"""Default hourly rate for project work"""
 
-    billing_method: OptionalNullable[BillingMethod] = UNSET
+    billing_method: Annotated[
+        OptionalNullable[BillingMethod], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""Method used for billing this project"""
 
     is_billable: OptionalNullable[bool] = True
     r"""Indicates if the project is billable to the customer"""
 
-    phase: OptionalNullable[ProjectPhase] = UNSET
+    phase: Annotated[
+        OptionalNullable[ProjectPhase], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""Current phase of the project lifecycle"""
 
     tax_rate: Optional[LinkedTaxRate] = None
@@ -320,7 +336,9 @@ class Project(BaseModel):
     profit_margin: OptionalNullable[float] = UNSET
     r"""Expected profit margin percentage for the project"""
 
-    schedule_status: OptionalNullable[ScheduleStatus] = UNSET
+    schedule_status: Annotated[
+        OptionalNullable[ScheduleStatus], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""Current status of project schedule compared to plan"""
 
     addresses: Optional[List[Address]] = None
@@ -345,6 +363,69 @@ class Project(BaseModel):
 
     updated_at: OptionalNullable[datetime] = UNSET
     r"""The date and time when the object was last updated."""
+
+    @field_serializer("status")
+    def serialize_status(self, value):
+        if isinstance(value, str):
+            try:
+                return models.ProjectProjectStatus(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("project_type")
+    def serialize_project_type(self, value):
+        if isinstance(value, str):
+            try:
+                return models.ProjectType(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("priority")
+    def serialize_priority(self, value):
+        if isinstance(value, str):
+            try:
+                return models.Priority(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("currency")
+    def serialize_currency(self, value):
+        if isinstance(value, str):
+            try:
+                return models.Currency(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("billing_method")
+    def serialize_billing_method(self, value):
+        if isinstance(value, str):
+            try:
+                return models.BillingMethod(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("phase")
+    def serialize_phase(self, value):
+        if isinstance(value, str):
+            try:
+                return models.ProjectPhase(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("schedule_status")
+    def serialize_schedule_status(self, value):
+        if isinstance(value, str):
+            try:
+                return models.ScheduleStatus(value)
+            except ValueError:
+                return value
+        return value
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
@@ -544,16 +625,23 @@ class ProjectInput(BaseModel):
     description: OptionalNullable[str] = UNSET
     r"""Detailed description of the project"""
 
-    status: OptionalNullable[ProjectProjectStatus] = UNSET
+    status: Annotated[
+        OptionalNullable[ProjectProjectStatus],
+        PlainValidator(validate_open_enum(False)),
+    ] = UNSET
     r"""Current status of the project"""
 
     active: OptionalNullable[bool] = UNSET
     r"""Indicates whether the project is currently active or inactive"""
 
-    project_type: OptionalNullable[ProjectType] = UNSET
+    project_type: Annotated[
+        OptionalNullable[ProjectType], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""Type or category of the project"""
 
-    priority: OptionalNullable[Priority] = UNSET
+    priority: Annotated[
+        OptionalNullable[Priority], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""Priority level of the project"""
 
     completion_percentage: OptionalNullable[float] = UNSET
@@ -580,7 +668,9 @@ class ProjectInput(BaseModel):
     parent_project: OptionalNullable[ParentProject] = UNSET
     r"""Parent project if this is a subproject"""
 
-    currency: OptionalNullable[Currency] = UNSET
+    currency: Annotated[
+        OptionalNullable[Currency], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
 
     budget_amount: OptionalNullable[float] = UNSET
@@ -595,13 +685,17 @@ class ProjectInput(BaseModel):
     hourly_rate: OptionalNullable[float] = UNSET
     r"""Default hourly rate for project work"""
 
-    billing_method: OptionalNullable[BillingMethod] = UNSET
+    billing_method: Annotated[
+        OptionalNullable[BillingMethod], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""Method used for billing this project"""
 
     is_billable: OptionalNullable[bool] = True
     r"""Indicates if the project is billable to the customer"""
 
-    phase: OptionalNullable[ProjectPhase] = UNSET
+    phase: Annotated[
+        OptionalNullable[ProjectPhase], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""Current phase of the project lifecycle"""
 
     tax_rate: Optional[LinkedTaxRateInput] = None
@@ -623,7 +717,9 @@ class ProjectInput(BaseModel):
     profit_margin: OptionalNullable[float] = UNSET
     r"""Expected profit margin percentage for the project"""
 
-    schedule_status: OptionalNullable[ScheduleStatus] = UNSET
+    schedule_status: Annotated[
+        OptionalNullable[ScheduleStatus], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""Current status of project schedule compared to plan"""
 
     addresses: Optional[List[Address]] = None
@@ -636,6 +732,69 @@ class ProjectInput(BaseModel):
 
     row_version: OptionalNullable[str] = UNSET
     r"""A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object."""
+
+    @field_serializer("status")
+    def serialize_status(self, value):
+        if isinstance(value, str):
+            try:
+                return models.ProjectProjectStatus(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("project_type")
+    def serialize_project_type(self, value):
+        if isinstance(value, str):
+            try:
+                return models.ProjectType(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("priority")
+    def serialize_priority(self, value):
+        if isinstance(value, str):
+            try:
+                return models.Priority(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("currency")
+    def serialize_currency(self, value):
+        if isinstance(value, str):
+            try:
+                return models.Currency(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("billing_method")
+    def serialize_billing_method(self, value):
+        if isinstance(value, str):
+            try:
+                return models.BillingMethod(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("phase")
+    def serialize_phase(self, value):
+        if isinstance(value, str):
+            try:
+                return models.ProjectPhase(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("schedule_status")
+    def serialize_schedule_status(self, value):
+        if isinstance(value, str):
+            try:
+                return models.ScheduleStatus(value)
+            except ValueError:
+                return value
+        return value
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):

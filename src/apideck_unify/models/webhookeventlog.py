@@ -2,9 +2,13 @@
 
 from __future__ import annotations
 from .unifiedapiid import UnifiedAPIID
+from apideck_unify import models
 from apideck_unify.types import BaseModel
+from apideck_unify.utils import validate_open_enum
+from pydantic import field_serializer
+from pydantic.functional_validators import PlainValidator
 from typing import List, Optional
-from typing_extensions import NotRequired, TypedDict
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class WebhookEventLogServiceTypedDict(TypedDict):
@@ -102,7 +106,9 @@ class WebhookEventLog(BaseModel):
     consumer_id: Optional[str] = None
     r"""Unique consumer identifier. You can freely choose a consumer ID yourself. Most of the time, this is an ID of your internal data model that represents a user or account in your system (for example account:12345). If the consumer doesn't exist yet, Vault will upsert a consumer based on your ID."""
 
-    unified_api: Optional[UnifiedAPIID] = None
+    unified_api: Annotated[
+        Optional[UnifiedAPIID], PlainValidator(validate_open_enum(False))
+    ] = None
     r"""Name of Apideck Unified API"""
 
     service: Optional[WebhookEventLogService] = None
@@ -137,3 +143,12 @@ class WebhookEventLog(BaseModel):
 
     attempts: Optional[List[Attempts]] = None
     r"""record of each attempt to call webhook endpoint"""
+
+    @field_serializer("unified_api")
+    def serialize_unified_api(self, value):
+        if isinstance(value, str):
+            try:
+                return models.UnifiedAPIID(value)
+            except ValueError:
+                return value
+        return value

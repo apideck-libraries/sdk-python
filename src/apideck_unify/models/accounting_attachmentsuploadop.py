@@ -11,6 +11,7 @@ from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
 )
+from apideck_unify import models
 from apideck_unify.types import BaseModel
 from apideck_unify.utils import (
     FieldMetadata,
@@ -18,9 +19,12 @@ from apideck_unify.utils import (
     PathParamMetadata,
     QueryParamMetadata,
     RequestMetadata,
+    validate_open_enum,
 )
 import io
 import pydantic
+from pydantic import field_serializer
+from pydantic.functional_validators import PlainValidator
 from typing import IO, Optional, Union
 from typing_extensions import Annotated, NotRequired, TypedDict
 
@@ -73,7 +77,7 @@ class AccountingAttachmentsUploadRequestTypedDict(TypedDict):
 
 class AccountingAttachmentsUploadRequest(BaseModel):
     reference_type: Annotated[
-        AttachmentReferenceType,
+        Annotated[AttachmentReferenceType, PlainValidator(validate_open_enum(False))],
         FieldMetadata(path=PathParamMetadata(style="simple", explode=False)),
     ]
     r"""The reference type of the document."""
@@ -121,6 +125,15 @@ class AccountingAttachmentsUploadRequest(BaseModel):
         FieldMetadata(header=HeaderMetadata(style="simple", explode=False)),
     ] = None
     r"""Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API."""
+
+    @field_serializer("reference_type")
+    def serialize_reference_type(self, value):
+        if isinstance(value, str):
+            try:
+                return models.AttachmentReferenceType(value)
+            except ValueError:
+                return value
+        return value
 
 
 class AccountingAttachmentsUploadResponseTypedDict(TypedDict):

@@ -6,6 +6,7 @@ from .currency import Currency
 from .email import Email, EmailTypedDict
 from .phonenumber import PhoneNumber, PhoneNumberTypedDict
 from .taxrate import TaxRate, TaxRateTypedDict
+from apideck_unify import models, utils
 from apideck_unify.types import (
     BaseModel,
     Nullable,
@@ -13,21 +14,23 @@ from apideck_unify.types import (
     UNSET,
     UNSET_SENTINEL,
 )
+from apideck_unify.utils import validate_open_enum
 from datetime import date, datetime
 from enum import Enum
-from pydantic import model_serializer
+from pydantic import field_serializer, model_serializer
+from pydantic.functional_validators import PlainValidator
 from typing import Any, Dict, List, Optional
-from typing_extensions import NotRequired, TypedDict
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
-class CompanyStatus(str, Enum):
+class CompanyStatus(str, Enum, metaclass=utils.OpenEnumMeta):
     r"""Based on the status some functionality is enabled or disabled."""
 
     ACTIVE = "active"
     INACTIVE = "inactive"
 
 
-class TheStartMonthOfFiscalYear(str, Enum):
+class TheStartMonthOfFiscalYear(str, Enum, metaclass=utils.OpenEnumMeta):
     r"""The start month of fiscal year."""
 
     JANUARY = "January"
@@ -44,7 +47,7 @@ class TheStartMonthOfFiscalYear(str, Enum):
     DECEMBER = "December"
 
 
-class TrackingCategoriesMode(str, Enum):
+class TrackingCategoriesMode(str, Enum, metaclass=utils.OpenEnumMeta):
     r"""The mode of tracking categories for the company on transactions"""
 
     TRANSACTION = "transaction"
@@ -106,7 +109,9 @@ class CompanyInfo(BaseModel):
     company_name: OptionalNullable[str] = UNSET
     r"""The name of the company."""
 
-    status: Optional[CompanyStatus] = None
+    status: Annotated[
+        Optional[CompanyStatus], PlainValidator(validate_open_enum(False))
+    ] = None
     r"""Based on the status some functionality is enabled or disabled."""
 
     legal_name: Optional[str] = None
@@ -125,13 +130,17 @@ class CompanyInfo(BaseModel):
 
     default_sales_tax: Optional[TaxRate] = None
 
-    currency: OptionalNullable[Currency] = UNSET
+    currency: Annotated[
+        OptionalNullable[Currency], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
 
     language: OptionalNullable[str] = UNSET
     r"""language code according to ISO 639-1. For the United States - EN"""
 
-    fiscal_year_start_month: Optional[TheStartMonthOfFiscalYear] = None
+    fiscal_year_start_month: Annotated[
+        Optional[TheStartMonthOfFiscalYear], PlainValidator(validate_open_enum(False))
+    ] = None
     r"""The start month of fiscal year."""
 
     company_start_date: Optional[date] = None
@@ -149,7 +158,9 @@ class CompanyInfo(BaseModel):
     tracking_categories_enabled: Optional[bool] = None
     r"""Whether tracking categories are enabled for the company on transactions"""
 
-    tracking_categories_mode: Optional[TrackingCategoriesMode] = None
+    tracking_categories_mode: Annotated[
+        Optional[TrackingCategoriesMode], PlainValidator(validate_open_enum(False))
+    ] = None
     r"""The mode of tracking categories for the company on transactions"""
 
     row_version: OptionalNullable[str] = UNSET
@@ -166,6 +177,42 @@ class CompanyInfo(BaseModel):
 
     created_at: OptionalNullable[datetime] = UNSET
     r"""The date and time when the object was created."""
+
+    @field_serializer("status")
+    def serialize_status(self, value):
+        if isinstance(value, str):
+            try:
+                return models.CompanyStatus(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("currency")
+    def serialize_currency(self, value):
+        if isinstance(value, str):
+            try:
+                return models.Currency(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("fiscal_year_start_month")
+    def serialize_fiscal_year_start_month(self, value):
+        if isinstance(value, str):
+            try:
+                return models.TheStartMonthOfFiscalYear(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("tracking_categories_mode")
+    def serialize_tracking_categories_mode(self, value):
+        if isinstance(value, str):
+            try:
+                return models.TrackingCategoriesMode(value)
+            except ValueError:
+                return value
+        return value
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):

@@ -14,6 +14,7 @@ from .linkedtrackingcategory import (
     LinkedTrackingCategoryTypedDict,
 )
 from .passthroughbody import PassThroughBody, PassThroughBodyTypedDict
+from apideck_unify import models, utils
 from apideck_unify.types import (
     BaseModel,
     Nullable,
@@ -21,14 +22,16 @@ from apideck_unify.types import (
     UNSET,
     UNSET_SENTINEL,
 )
+from apideck_unify.utils import validate_open_enum
 from datetime import datetime
 from enum import Enum
-from pydantic import model_serializer
+from pydantic import field_serializer, model_serializer
+from pydantic.functional_validators import PlainValidator
 from typing import Any, Dict, List, Optional
-from typing_extensions import NotRequired, TypedDict
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
-class JournalEntryStatus(str, Enum):
+class JournalEntryStatus(str, Enum, metaclass=utils.OpenEnumMeta):
     r"""Journal entry status"""
 
     DRAFT = "draft"
@@ -117,7 +120,9 @@ class JournalEntry(BaseModel):
     currency_rate: OptionalNullable[float] = UNSET
     r"""Currency Exchange Rate at the time entity was recorded/generated."""
 
-    currency: OptionalNullable[Currency] = UNSET
+    currency: Annotated[
+        OptionalNullable[Currency], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
 
     company_id: OptionalNullable[str] = UNSET
@@ -126,7 +131,9 @@ class JournalEntry(BaseModel):
     line_items: Optional[List[JournalEntryLineItem]] = None
     r"""Requires a minimum of 2 line items that sum to 0"""
 
-    status: OptionalNullable[JournalEntryStatus] = UNSET
+    status: Annotated[
+        OptionalNullable[JournalEntryStatus], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""Journal entry status"""
 
     memo: OptionalNullable[str] = UNSET
@@ -186,6 +193,24 @@ class JournalEntry(BaseModel):
 
     pass_through: Optional[List[PassThroughBody]] = None
     r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
+
+    @field_serializer("currency")
+    def serialize_currency(self, value):
+        if isinstance(value, str):
+            try:
+                return models.Currency(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("status")
+    def serialize_status(self, value):
+        if isinstance(value, str):
+            try:
+                return models.JournalEntryStatus(value)
+            except ValueError:
+                return value
+        return value
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
@@ -327,7 +352,9 @@ class JournalEntryInput(BaseModel):
     currency_rate: OptionalNullable[float] = UNSET
     r"""Currency Exchange Rate at the time entity was recorded/generated."""
 
-    currency: OptionalNullable[Currency] = UNSET
+    currency: Annotated[
+        OptionalNullable[Currency], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
 
     company_id: OptionalNullable[str] = UNSET
@@ -336,7 +363,9 @@ class JournalEntryInput(BaseModel):
     line_items: Optional[List[JournalEntryLineItemInput]] = None
     r"""Requires a minimum of 2 line items that sum to 0"""
 
-    status: OptionalNullable[JournalEntryStatus] = UNSET
+    status: Annotated[
+        OptionalNullable[JournalEntryStatus], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""Journal entry status"""
 
     memo: OptionalNullable[str] = UNSET
@@ -381,6 +410,24 @@ class JournalEntryInput(BaseModel):
 
     pass_through: Optional[List[PassThroughBody]] = None
     r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
+
+    @field_serializer("currency")
+    def serialize_currency(self, value):
+        if isinstance(value, str):
+            try:
+                return models.Currency(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("status")
+    def serialize_status(self, value):
+        if isinstance(value, str):
+            try:
+                return models.JournalEntryStatus(value)
+            except ValueError:
+                return value
+        return value
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):

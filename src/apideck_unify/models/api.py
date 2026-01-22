@@ -3,6 +3,7 @@
 from __future__ import annotations
 from .apistatus import APIStatus
 from .resourcestatus import ResourceStatus
+from apideck_unify import models, utils
 from apideck_unify.types import (
     BaseModel,
     Nullable,
@@ -10,13 +11,15 @@ from apideck_unify.types import (
     UNSET,
     UNSET_SENTINEL,
 )
+from apideck_unify.utils import validate_open_enum
 from enum import Enum
-from pydantic import model_serializer
+from pydantic import field_serializer, model_serializer
+from pydantic.functional_validators import PlainValidator
 from typing import List, Optional
-from typing_extensions import NotRequired, TypedDict
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
-class APIType(str, Enum):
+class APIType(str, Enum, metaclass=utils.OpenEnumMeta):
     r"""Indicates whether the API is a Unified API. If unified_api is false, the API is a Platform API."""
 
     PLATFORM = "platform"
@@ -41,11 +44,22 @@ class Resources(BaseModel):
     name: Optional[str] = None
     r"""Name of the resource (plural)"""
 
-    status: Optional[ResourceStatus] = None
+    status: Annotated[
+        Optional[ResourceStatus], PlainValidator(validate_open_enum(False))
+    ] = None
     r"""Status of the resource. Resources with status live or beta are callable."""
 
     excluded_from_coverage: Optional[bool] = None
     r"""Exclude from mapping coverage"""
+
+    @field_serializer("status")
+    def serialize_status(self, value):
+        if isinstance(value, str):
+            try:
+                return models.ResourceStatus(value)
+            except ValueError:
+                return value
+        return value
 
 
 class APITypedDict(TypedDict):
@@ -77,7 +91,7 @@ class API(BaseModel):
     id: Optional[str] = None
     r"""ID of the API."""
 
-    type: Optional[APIType] = None
+    type: Annotated[Optional[APIType], PlainValidator(validate_open_enum(False))] = None
     r"""Indicates whether the API is a Unified API. If unified_api is false, the API is a Platform API."""
 
     name: Optional[str] = None
@@ -86,7 +100,9 @@ class API(BaseModel):
     description: OptionalNullable[str] = UNSET
     r"""Description of the API."""
 
-    status: Optional[APIStatus] = None
+    status: Annotated[
+        Optional[APIStatus], PlainValidator(validate_open_enum(False))
+    ] = None
     r"""Status of the API. APIs with status live or beta are callable."""
 
     spec_url: Optional[str] = None
@@ -106,6 +122,24 @@ class API(BaseModel):
 
     events: Optional[List[str]] = None
     r"""List of event types this API supports."""
+
+    @field_serializer("type")
+    def serialize_type(self, value):
+        if isinstance(value, str):
+            try:
+                return models.APIType(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("status")
+    def serialize_status(self, value):
+        if isinstance(value, str):
+            try:
+                return models.APIStatus(value)
+            except ValueError:
+                return value
+        return value
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):

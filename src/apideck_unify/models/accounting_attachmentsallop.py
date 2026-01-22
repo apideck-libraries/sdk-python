@@ -11,6 +11,7 @@ from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
 )
+from apideck_unify import models
 from apideck_unify.types import (
     BaseModel,
     Nullable,
@@ -23,9 +24,11 @@ from apideck_unify.utils import (
     HeaderMetadata,
     PathParamMetadata,
     QueryParamMetadata,
+    validate_open_enum,
 )
 import pydantic
-from pydantic import model_serializer
+from pydantic import field_serializer, model_serializer
+from pydantic.functional_validators import PlainValidator
 from typing import Callable, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
@@ -76,7 +79,7 @@ class AccountingAttachmentsAllRequestTypedDict(TypedDict):
 
 class AccountingAttachmentsAllRequest(BaseModel):
     reference_type: Annotated[
-        AttachmentReferenceType,
+        Annotated[AttachmentReferenceType, PlainValidator(validate_open_enum(False))],
         FieldMetadata(path=PathParamMetadata(style="simple", explode=False)),
     ]
     r"""The reference type of the document."""
@@ -130,6 +133,15 @@ class AccountingAttachmentsAllRequest(BaseModel):
         FieldMetadata(query=QueryParamMetadata(style="form", explode=True)),
     ] = UNSET
     r"""The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded."""
+
+    @field_serializer("reference_type")
+    def serialize_reference_type(self, value):
+        if isinstance(value, str):
+            try:
+                return models.AttachmentReferenceType(value)
+            except ValueError:
+                return value
+        return value
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):

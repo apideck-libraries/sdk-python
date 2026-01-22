@@ -6,6 +6,7 @@ from .assignee_input import AssigneeInput, AssigneeInputTypedDict
 from .collectiontag import CollectionTag, CollectionTagTypedDict
 from .collectiontag_input import CollectionTagInput, CollectionTagInputTypedDict
 from .passthroughbody import PassThroughBody, PassThroughBodyTypedDict
+from apideck_unify import models, utils
 from apideck_unify.types import (
     BaseModel,
     Nullable,
@@ -13,14 +14,16 @@ from apideck_unify.types import (
     UNSET,
     UNSET_SENTINEL,
 )
+from apideck_unify.utils import validate_open_enum
 from datetime import datetime
 from enum import Enum
-from pydantic import model_serializer
+from pydantic import field_serializer, model_serializer
+from pydantic.functional_validators import PlainValidator
 from typing import Any, Dict, List, Optional
-from typing_extensions import NotRequired, TypedDict
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
-class TicketPriority(str, Enum):
+class TicketPriority(str, Enum, metaclass=utils.OpenEnumMeta):
     r"""Priority of the ticket"""
 
     LOW = "low"
@@ -86,7 +89,9 @@ class Ticket(BaseModel):
     status: OptionalNullable[str] = UNSET
     r"""The current status of the ticket. Possible values include: open, in_progress, closed, or - in cases where there is no clear mapping - the original value passed through."""
 
-    priority: OptionalNullable[TicketPriority] = UNSET
+    priority: Annotated[
+        OptionalNullable[TicketPriority], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""Priority of the ticket"""
 
     assignees: Optional[List[Assignee]] = None
@@ -113,6 +118,15 @@ class Ticket(BaseModel):
 
     pass_through: Optional[List[PassThroughBody]] = None
     r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
+
+    @field_serializer("priority")
+    def serialize_priority(self, value):
+        if isinstance(value, str):
+            try:
+                return models.TicketPriority(value)
+            except ValueError:
+                return value
+        return value
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
@@ -213,7 +227,9 @@ class TicketInput(BaseModel):
     status: OptionalNullable[str] = UNSET
     r"""The current status of the ticket. Possible values include: open, in_progress, closed, or - in cases where there is no clear mapping - the original value passed through."""
 
-    priority: OptionalNullable[TicketPriority] = UNSET
+    priority: Annotated[
+        OptionalNullable[TicketPriority], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""Priority of the ticket"""
 
     assignees: Optional[List[AssigneeInput]] = None
@@ -225,6 +241,15 @@ class TicketInput(BaseModel):
 
     pass_through: Optional[List[PassThroughBody]] = None
     r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
+
+    @field_serializer("priority")
+    def serialize_priority(self, value):
+        if isinstance(value, str):
+            try:
+                return models.TicketPriority(value)
+            except ValueError:
+                return value
+        return value
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):

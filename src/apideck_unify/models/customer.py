@@ -13,6 +13,7 @@ from .linkedtaxrate_input import LinkedTaxRateInput, LinkedTaxRateInputTypedDict
 from .passthroughbody import PassThroughBody, PassThroughBodyTypedDict
 from .phonenumber import PhoneNumber, PhoneNumberTypedDict
 from .website import Website, WebsiteTypedDict
+from apideck_unify import models, utils
 from apideck_unify.types import (
     BaseModel,
     Nullable,
@@ -20,14 +21,16 @@ from apideck_unify.types import (
     UNSET,
     UNSET_SENTINEL,
 )
+from apideck_unify.utils import validate_open_enum
 from datetime import datetime
 from enum import Enum
-from pydantic import model_serializer
+from pydantic import field_serializer, model_serializer
+from pydantic.functional_validators import PlainValidator
 from typing import Any, Dict, List, Optional
-from typing_extensions import NotRequired, TypedDict
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
-class CustomerStatusStatus(str, Enum):
+class CustomerStatusStatus(str, Enum, metaclass=utils.OpenEnumMeta):
     r"""Customer status"""
 
     ACTIVE = "active"
@@ -168,7 +171,9 @@ class Customer(BaseModel):
     taxable: OptionalNullable[bool] = UNSET
     r"""Whether the entity is subject to taxation"""
 
-    currency: OptionalNullable[Currency] = UNSET
+    currency: Annotated[
+        OptionalNullable[Currency], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
 
     account: OptionalNullable[LinkedLedgerAccount] = UNSET
@@ -176,7 +181,10 @@ class Customer(BaseModel):
     parent: OptionalNullable[LinkedParentCustomer] = UNSET
     r"""The parent customer this entity is linked to."""
 
-    status: OptionalNullable[CustomerStatusStatus] = UNSET
+    status: Annotated[
+        OptionalNullable[CustomerStatusStatus],
+        PlainValidator(validate_open_enum(False)),
+    ] = UNSET
     r"""Customer status"""
 
     payment_method: OptionalNullable[str] = UNSET
@@ -210,6 +218,24 @@ class Customer(BaseModel):
 
     pass_through: Optional[List[PassThroughBody]] = None
     r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
+
+    @field_serializer("currency")
+    def serialize_currency(self, value):
+        if isinstance(value, str):
+            try:
+                return models.Currency(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("status")
+    def serialize_status(self, value):
+        if isinstance(value, str):
+            try:
+                return models.CustomerStatusStatus(value)
+            except ValueError:
+                return value
+        return value
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
@@ -421,7 +447,9 @@ class CustomerInput(BaseModel):
     taxable: OptionalNullable[bool] = UNSET
     r"""Whether the entity is subject to taxation"""
 
-    currency: OptionalNullable[Currency] = UNSET
+    currency: Annotated[
+        OptionalNullable[Currency], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
 
     account: OptionalNullable[LinkedLedgerAccount] = UNSET
@@ -429,7 +457,10 @@ class CustomerInput(BaseModel):
     parent: OptionalNullable[LinkedParentCustomer] = UNSET
     r"""The parent customer this entity is linked to."""
 
-    status: OptionalNullable[CustomerStatusStatus] = UNSET
+    status: Annotated[
+        OptionalNullable[CustomerStatusStatus],
+        PlainValidator(validate_open_enum(False)),
+    ] = UNSET
     r"""Customer status"""
 
     payment_method: OptionalNullable[str] = UNSET
@@ -448,6 +479,24 @@ class CustomerInput(BaseModel):
 
     pass_through: Optional[List[PassThroughBody]] = None
     r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
+
+    @field_serializer("currency")
+    def serialize_currency(self, value):
+        if isinstance(value, str):
+            try:
+                return models.Currency(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("status")
+    def serialize_status(self, value):
+        if isinstance(value, str):
+            try:
+                return models.CustomerStatusStatus(value)
+            except ValueError:
+                return value
+        return value
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 from .connectionstate import ConnectionState
+from apideck_unify import models
 from apideck_unify.types import (
     BaseModel,
     Nullable,
@@ -9,8 +10,10 @@ from apideck_unify.types import (
     UNSET,
     UNSET_SENTINEL,
 )
+from apideck_unify.utils import validate_open_enum
 import pydantic
-from pydantic import model_serializer
+from pydantic import field_serializer, model_serializer
+from pydantic.functional_validators import PlainValidator
 from typing import Any, Dict, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
@@ -26,8 +29,19 @@ class ValidateConnectionStateResponseData(BaseModel):
     id: Optional[str] = None
     r"""The unique identifier of the connection."""
 
-    state: Optional[ConnectionState] = None
+    state: Annotated[
+        Optional[ConnectionState], PlainValidator(validate_open_enum(False))
+    ] = None
     r"""[Connection state flow](#section/Connection-state)"""
+
+    @field_serializer("state")
+    def serialize_state(self, value):
+        if isinstance(value, str):
+            try:
+                return models.ConnectionState(value)
+            except ValueError:
+                return value
+        return value
 
 
 class ValidateConnectionStateResponseTypedDict(TypedDict):

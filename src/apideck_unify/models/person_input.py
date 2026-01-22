@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 from .gender import Gender
+from apideck_unify import models
 from apideck_unify.types import (
     BaseModel,
     Nullable,
@@ -9,9 +10,11 @@ from apideck_unify.types import (
     UNSET,
     UNSET_SENTINEL,
 )
+from apideck_unify.utils import validate_open_enum
 from datetime import date
-from pydantic import model_serializer
-from typing_extensions import NotRequired, TypedDict
+from pydantic import field_serializer, model_serializer
+from pydantic.functional_validators import PlainValidator
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class PersonInputTypedDict(TypedDict):
@@ -41,7 +44,9 @@ class PersonInput(BaseModel):
     middle_name: OptionalNullable[str] = UNSET
     r"""Middle name of the person."""
 
-    gender: OptionalNullable[Gender] = UNSET
+    gender: Annotated[
+        OptionalNullable[Gender], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""The gender represents the gender identity of a person."""
 
     initials: OptionalNullable[str] = UNSET
@@ -52,6 +57,15 @@ class PersonInput(BaseModel):
 
     deceased_on: OptionalNullable[date] = UNSET
     r"""Date of death"""
+
+    @field_serializer("gender")
+    def serialize_gender(self, value):
+        if isinstance(value, str):
+            try:
+                return models.Gender(value)
+            except ValueError:
+                return value
+        return value
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):

@@ -8,6 +8,7 @@ from .passthroughbody import PassThroughBody, PassThroughBodyTypedDict
 from .phonenumber import PhoneNumber, PhoneNumberTypedDict
 from .sociallink import SocialLink, SocialLinkTypedDict
 from .website import Website, WebsiteTypedDict
+from apideck_unify import models, utils
 from apideck_unify.types import (
     BaseModel,
     Nullable,
@@ -15,15 +16,17 @@ from apideck_unify.types import (
     UNSET,
     UNSET_SENTINEL,
 )
+from apideck_unify.utils import validate_open_enum
 from datetime import datetime
 from enum import Enum
 import pydantic
-from pydantic import model_serializer
+from pydantic import field_serializer, model_serializer
+from pydantic.functional_validators import PlainValidator
 from typing import Any, Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
-class ContactType(str, Enum):
+class ContactType(str, Enum, metaclass=utils.OpenEnumMeta):
     r"""The type of the contact."""
 
     CUSTOMER = "customer"
@@ -32,7 +35,7 @@ class ContactType(str, Enum):
     PERSONAL = "personal"
 
 
-class ContactGender(str, Enum):
+class ContactGender(str, Enum, metaclass=utils.OpenEnumMeta):
     r"""The gender of the contact."""
 
     MALE = "male"
@@ -126,7 +129,9 @@ class Contact(BaseModel):
     owner_id: OptionalNullable[str] = UNSET
     r"""The owner of the contact."""
 
-    type: OptionalNullable[ContactType] = UNSET
+    type: Annotated[
+        OptionalNullable[ContactType], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""The type of the contact."""
 
     company_id: OptionalNullable[str] = UNSET
@@ -162,7 +167,9 @@ class Contact(BaseModel):
     language: OptionalNullable[str] = UNSET
     r"""language code according to ISO 639-1. For the United States - EN"""
 
-    gender: OptionalNullable[ContactGender] = UNSET
+    gender: Annotated[
+        OptionalNullable[ContactGender], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""The gender of the contact."""
 
     birthday: OptionalNullable[str] = UNSET
@@ -171,7 +178,7 @@ class Contact(BaseModel):
     image: Annotated[
         OptionalNullable[str],
         pydantic.Field(
-            deprecated="warning: ** DEPRECATED ** - This will be removed in a future release, please migrate away from it as soon as possible."
+            deprecated="warning: ** DEPRECATED ** - This field is deprecated and may be removed in a future version.."
         ),
     ] = UNSET
 
@@ -235,6 +242,24 @@ class Contact(BaseModel):
 
     pass_through: Optional[List[PassThroughBody]] = None
     r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
+
+    @field_serializer("type")
+    def serialize_type(self, value):
+        if isinstance(value, str):
+            try:
+                return models.ContactType(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("gender")
+    def serialize_gender(self, value):
+        if isinstance(value, str):
+            try:
+                return models.ContactGender(value)
+            except ValueError:
+                return value
+        return value
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
@@ -412,7 +437,9 @@ class ContactInput(BaseModel):
     owner_id: OptionalNullable[str] = UNSET
     r"""The owner of the contact."""
 
-    type: OptionalNullable[ContactType] = UNSET
+    type: Annotated[
+        OptionalNullable[ContactType], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""The type of the contact."""
 
     company_id: OptionalNullable[str] = UNSET
@@ -448,7 +475,9 @@ class ContactInput(BaseModel):
     language: OptionalNullable[str] = UNSET
     r"""language code according to ISO 639-1. For the United States - EN"""
 
-    gender: OptionalNullable[ContactGender] = UNSET
+    gender: Annotated[
+        OptionalNullable[ContactGender], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""The gender of the contact."""
 
     birthday: OptionalNullable[str] = UNSET
@@ -457,7 +486,7 @@ class ContactInput(BaseModel):
     image: Annotated[
         OptionalNullable[str],
         pydantic.Field(
-            deprecated="warning: ** DEPRECATED ** - This will be removed in a future release, please migrate away from it as soon as possible."
+            deprecated="warning: ** DEPRECATED ** - This field is deprecated and may be removed in a future version.."
         ),
     ] = UNSET
 
@@ -503,6 +532,24 @@ class ContactInput(BaseModel):
 
     pass_through: Optional[List[PassThroughBody]] = None
     r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
+
+    @field_serializer("type")
+    def serialize_type(self, value):
+        if isinstance(value, str):
+            try:
+                return models.ContactType(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("gender")
+    def serialize_gender(self, value):
+        if isinstance(value, str):
+            try:
+                return models.ContactGender(value)
+            except ValueError:
+                return value
+        return value
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):

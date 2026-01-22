@@ -15,6 +15,7 @@ from .linkedtrackingcategory import (
     LinkedTrackingCategoryTypedDict,
 )
 from .passthroughbody import PassThroughBody, PassThroughBodyTypedDict
+from apideck_unify import models, utils
 from apideck_unify.types import (
     BaseModel,
     Nullable,
@@ -22,14 +23,16 @@ from apideck_unify.types import (
     UNSET,
     UNSET_SENTINEL,
 )
+from apideck_unify.utils import validate_open_enum
 from datetime import date, datetime
 from enum import Enum
-from pydantic import model_serializer
+from pydantic import field_serializer, model_serializer
+from pydantic.functional_validators import PlainValidator
 from typing import Any, Dict, List, Optional
-from typing_extensions import NotRequired, TypedDict
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
-class BillStatus(str, Enum):
+class BillStatus(str, Enum, metaclass=utils.OpenEnumMeta):
     r"""Invoice status"""
 
     DRAFT = "draft"
@@ -43,7 +46,7 @@ class BillStatus(str, Enum):
     POSTED = "posted"
 
 
-class AmortizationType(str, Enum):
+class AmortizationType(str, Enum, metaclass=utils.OpenEnumMeta):
     r"""Type of amortization"""
 
     MANUAL = "manual"
@@ -176,7 +179,9 @@ class Bill(BaseModel):
     department_id: OptionalNullable[str] = UNSET
     r"""The ID of the department"""
 
-    currency: OptionalNullable[Currency] = UNSET
+    currency: Annotated[
+        OptionalNullable[Currency], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
 
     currency_rate: OptionalNullable[float] = UNSET
@@ -225,7 +230,9 @@ class Bill(BaseModel):
 
     notes: OptionalNullable[str] = UNSET
 
-    status: OptionalNullable[BillStatus] = UNSET
+    status: Annotated[
+        OptionalNullable[BillStatus], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""Invoice status"""
 
     ledger_account: OptionalNullable[LinkedLedgerAccount] = UNSET
@@ -253,7 +260,9 @@ class Bill(BaseModel):
     approved_by: OptionalNullable[str] = UNSET
     r"""The user who approved the bill"""
 
-    amortization_type: OptionalNullable[AmortizationType] = UNSET
+    amortization_type: Annotated[
+        OptionalNullable[AmortizationType], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""Type of amortization"""
 
     tax_method: OptionalNullable[str] = UNSET
@@ -297,6 +306,33 @@ class Bill(BaseModel):
     r"""Accounting period"""
 
     attachments: Optional[List[Nullable[LinkedAttachment]]] = None
+
+    @field_serializer("currency")
+    def serialize_currency(self, value):
+        if isinstance(value, str):
+            try:
+                return models.Currency(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("status")
+    def serialize_status(self, value):
+        if isinstance(value, str):
+            try:
+                return models.BillStatus(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("amortization_type")
+    def serialize_amortization_type(self, value):
+        if isinstance(value, str):
+            try:
+                return models.AmortizationType(value)
+            except ValueError:
+                return value
+        return value
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
@@ -529,7 +565,9 @@ class BillInput(BaseModel):
     department_id: OptionalNullable[str] = UNSET
     r"""The ID of the department"""
 
-    currency: OptionalNullable[Currency] = UNSET
+    currency: Annotated[
+        OptionalNullable[Currency], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
 
     currency_rate: OptionalNullable[float] = UNSET
@@ -578,7 +616,9 @@ class BillInput(BaseModel):
 
     notes: OptionalNullable[str] = UNSET
 
-    status: OptionalNullable[BillStatus] = UNSET
+    status: Annotated[
+        OptionalNullable[BillStatus], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""Invoice status"""
 
     ledger_account: OptionalNullable[LinkedLedgerAccount] = UNSET
@@ -606,7 +646,9 @@ class BillInput(BaseModel):
     approved_by: OptionalNullable[str] = UNSET
     r"""The user who approved the bill"""
 
-    amortization_type: OptionalNullable[AmortizationType] = UNSET
+    amortization_type: Annotated[
+        OptionalNullable[AmortizationType], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""Type of amortization"""
 
     tax_method: OptionalNullable[str] = UNSET
@@ -635,6 +677,33 @@ class BillInput(BaseModel):
     r"""Accounting period"""
 
     attachments: Optional[List[Nullable[LinkedAttachment]]] = None
+
+    @field_serializer("currency")
+    def serialize_currency(self, value):
+        if isinstance(value, str):
+            try:
+                return models.Currency(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("status")
+    def serialize_status(self, value):
+        if isinstance(value, str):
+            try:
+                return models.BillStatus(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("amortization_type")
+    def serialize_amortization_type(self, value):
+        if isinstance(value, str):
+            try:
+                return models.AmortizationType(value)
+            except ValueError:
+                return value
+        return value
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):

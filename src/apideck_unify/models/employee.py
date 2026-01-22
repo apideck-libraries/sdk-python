@@ -25,6 +25,7 @@ from .person_input import PersonInput, PersonInputTypedDict
 from .phonenumber import PhoneNumber, PhoneNumberTypedDict
 from .sociallink import SocialLink, SocialLinkTypedDict
 from .team import Team, TeamTypedDict
+from apideck_unify import models, utils
 from apideck_unify.types import (
     BaseModel,
     Nullable,
@@ -32,15 +33,17 @@ from apideck_unify.types import (
     UNSET,
     UNSET_SENTINEL,
 )
+from apideck_unify.utils import validate_open_enum
 from datetime import date, datetime
 from enum import Enum
 import pydantic
-from pydantic import model_serializer
+from pydantic import field_serializer, model_serializer
+from pydantic.functional_validators import PlainValidator
 from typing import Any, Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
-class LeavingReason(str, Enum):
+class LeavingReason(str, Enum, metaclass=utils.OpenEnumMeta):
     r"""The reason because the employment ended."""
 
     DISMISSED = "dismissed"
@@ -49,7 +52,7 @@ class LeavingReason(str, Enum):
     OTHER = "other"
 
 
-class EmploymentType(str, Enum):
+class EmploymentType(str, Enum, metaclass=utils.OpenEnumMeta):
     r"""The type of employment relationship the employee has with the organization."""
 
     CONTRACTOR = "contractor"
@@ -60,7 +63,7 @@ class EmploymentType(str, Enum):
     OTHER = "other"
 
 
-class EmploymentSubType(str, Enum):
+class EmploymentSubType(str, Enum, metaclass=utils.OpenEnumMeta):
     r"""The work schedule of the employee."""
 
     FULL_TIME = "full_time"
@@ -78,11 +81,33 @@ class EmploymentRoleTypedDict(TypedDict):
 
 
 class EmploymentRole(BaseModel):
-    type: OptionalNullable[EmploymentType] = UNSET
+    type: Annotated[
+        OptionalNullable[EmploymentType], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""The type of employment relationship the employee has with the organization."""
 
-    sub_type: OptionalNullable[EmploymentSubType] = UNSET
+    sub_type: Annotated[
+        OptionalNullable[EmploymentSubType], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""The work schedule of the employee."""
+
+    @field_serializer("type")
+    def serialize_type(self, value):
+        if isinstance(value, str):
+            try:
+                return models.EmploymentType(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("sub_type")
+    def serialize_sub_type(self, value):
+        if isinstance(value, str):
+            try:
+                return models.EmploymentSubType(value)
+            except ValueError:
+                return value
+        return value
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
@@ -146,8 +171,19 @@ class Manager(BaseModel):
     email: OptionalNullable[str] = UNSET
     r"""The email address of the manager."""
 
-    employment_status: OptionalNullable[EmploymentStatus] = UNSET
+    employment_status: Annotated[
+        OptionalNullable[EmploymentStatus], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""The employment status of the employee, indicating whether they are currently employed, inactive, terminated, or in another status."""
+
+    @field_serializer("employment_status")
+    def serialize_employment_status(self, value):
+        if isinstance(value, str):
+            try:
+                return models.EmploymentStatus(value)
+            except ValueError:
+                return value
+        return value
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
@@ -403,7 +439,7 @@ class Employee(BaseModel):
     department: Annotated[
         OptionalNullable[str],
         pydantic.Field(
-            deprecated="warning: ** DEPRECATED ** - This will be removed in a future release, please migrate away from it as soon as possible."
+            deprecated="warning: ** DEPRECATED ** - Deprecated. Use department_id instead.."
         ),
     ] = UNSET
     r"""The department the person is currently in. [Deprecated](https://developers.apideck.com/changelog) in favor of the dedicated department_id and department_name field."""
@@ -429,13 +465,17 @@ class Employee(BaseModel):
     employment_end_date: OptionalNullable[str] = UNSET
     r"""An End Date is the date that the employee ended working at the company"""
 
-    leaving_reason: OptionalNullable[LeavingReason] = UNSET
+    leaving_reason: Annotated[
+        OptionalNullable[LeavingReason], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""The reason because the employment ended."""
 
     employee_number: OptionalNullable[str] = UNSET
     r"""An Employee Number, Employee ID or Employee Code, is a unique number that has been assigned to each individual staff member within a company."""
 
-    employment_status: OptionalNullable[EmploymentStatus] = UNSET
+    employment_status: Annotated[
+        OptionalNullable[EmploymentStatus], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""The employment status of the employee, indicating whether they are currently employed, inactive, terminated, or in another status."""
 
     employment_role: Optional[EmploymentRole] = None
@@ -463,7 +503,9 @@ class Employee(BaseModel):
     description: OptionalNullable[str] = UNSET
     r"""A description of the object."""
 
-    gender: OptionalNullable[Gender] = UNSET
+    gender: Annotated[
+        OptionalNullable[Gender], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""The gender represents the gender identity of a person."""
 
     pronouns: OptionalNullable[str] = UNSET
@@ -546,6 +588,33 @@ class Employee(BaseModel):
 
     pass_through: Optional[List[PassThroughBody]] = None
     r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
+
+    @field_serializer("leaving_reason")
+    def serialize_leaving_reason(self, value):
+        if isinstance(value, str):
+            try:
+                return models.LeavingReason(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("employment_status")
+    def serialize_employment_status(self, value):
+        if isinstance(value, str):
+            try:
+                return models.EmploymentStatus(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("gender")
+    def serialize_gender(self, value):
+        if isinstance(value, str):
+            try:
+                return models.Gender(value)
+            except ValueError:
+                return value
+        return value
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
@@ -850,7 +919,7 @@ class EmployeeInput(BaseModel):
     department: Annotated[
         OptionalNullable[str],
         pydantic.Field(
-            deprecated="warning: ** DEPRECATED ** - This will be removed in a future release, please migrate away from it as soon as possible."
+            deprecated="warning: ** DEPRECATED ** - Deprecated. Use department_id instead.."
         ),
     ] = UNSET
     r"""The department the person is currently in. [Deprecated](https://developers.apideck.com/changelog) in favor of the dedicated department_id and department_name field."""
@@ -876,13 +945,17 @@ class EmployeeInput(BaseModel):
     employment_end_date: OptionalNullable[str] = UNSET
     r"""An End Date is the date that the employee ended working at the company"""
 
-    leaving_reason: OptionalNullable[LeavingReason] = UNSET
+    leaving_reason: Annotated[
+        OptionalNullable[LeavingReason], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""The reason because the employment ended."""
 
     employee_number: OptionalNullable[str] = UNSET
     r"""An Employee Number, Employee ID or Employee Code, is a unique number that has been assigned to each individual staff member within a company."""
 
-    employment_status: OptionalNullable[EmploymentStatus] = UNSET
+    employment_status: Annotated[
+        OptionalNullable[EmploymentStatus], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""The employment status of the employee, indicating whether they are currently employed, inactive, terminated, or in another status."""
 
     employment_role: Optional[EmploymentRole] = None
@@ -910,7 +983,9 @@ class EmployeeInput(BaseModel):
     description: OptionalNullable[str] = UNSET
     r"""A description of the object."""
 
-    gender: OptionalNullable[Gender] = UNSET
+    gender: Annotated[
+        OptionalNullable[Gender], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""The gender represents the gender identity of a person."""
 
     pronouns: OptionalNullable[str] = UNSET
@@ -978,6 +1053,33 @@ class EmployeeInput(BaseModel):
 
     pass_through: Optional[List[PassThroughBody]] = None
     r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
+
+    @field_serializer("leaving_reason")
+    def serialize_leaving_reason(self, value):
+        if isinstance(value, str):
+            try:
+                return models.LeavingReason(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("employment_status")
+    def serialize_employment_status(self, value):
+        if isinstance(value, str):
+            try:
+                return models.EmploymentStatus(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("gender")
+    def serialize_gender(self, value):
+        if isinstance(value, str):
+            try:
+                return models.Gender(value)
+            except ValueError:
+                return value
+        return value
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):

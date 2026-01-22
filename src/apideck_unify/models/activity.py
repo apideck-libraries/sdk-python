@@ -10,6 +10,7 @@ from .activityattendee import (
 from .address import Address, AddressTypedDict
 from .customfield import CustomField, CustomFieldTypedDict
 from .passthroughbody import PassThroughBody, PassThroughBodyTypedDict
+from apideck_unify import models, utils
 from apideck_unify.types import (
     BaseModel,
     Nullable,
@@ -17,13 +18,15 @@ from apideck_unify.types import (
     UNSET,
     UNSET_SENTINEL,
 )
+from apideck_unify.utils import validate_open_enum
 from enum import Enum
-from pydantic import model_serializer
+from pydantic import field_serializer, model_serializer
+from pydantic.functional_validators import PlainValidator
 from typing import Any, Dict, List, Optional
-from typing_extensions import NotRequired, TypedDict
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
-class ActivityType(str, Enum):
+class ActivityType(str, Enum, metaclass=utils.OpenEnumMeta):
     r"""The type of the activity"""
 
     CALL = "call"
@@ -37,7 +40,7 @@ class ActivityType(str, Enum):
     OTHER = "other"
 
 
-class ShowAs(str, Enum):
+class ShowAs(str, Enum, metaclass=utils.OpenEnumMeta):
     FREE = "free"
     BUSY = "busy"
 
@@ -147,7 +150,7 @@ class ActivityTypedDict(TypedDict):
 
 
 class Activity(BaseModel):
-    type: Nullable[ActivityType]
+    type: Annotated[Nullable[ActivityType], PlainValidator(validate_open_enum(False))]
     r"""The type of the activity"""
 
     id: Optional[str] = None
@@ -242,7 +245,9 @@ class Activity(BaseModel):
     deleted: OptionalNullable[bool] = UNSET
     r"""Whether the activity is deleted or not"""
 
-    show_as: OptionalNullable[ShowAs] = UNSET
+    show_as: Annotated[
+        OptionalNullable[ShowAs], PlainValidator(validate_open_enum(False))
+    ] = UNSET
 
     done: OptionalNullable[bool] = UNSET
     r"""Whether the Activity is done or not"""
@@ -299,6 +304,24 @@ class Activity(BaseModel):
 
     pass_through: Optional[List[PassThroughBody]] = None
     r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
+
+    @field_serializer("type")
+    def serialize_type(self, value):
+        if isinstance(value, str):
+            try:
+                return models.ActivityType(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("show_as")
+    def serialize_show_as(self, value):
+        if isinstance(value, str):
+            try:
+                return models.ShowAs(value)
+            except ValueError:
+                return value
+        return value
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
@@ -519,7 +542,7 @@ class ActivityInputTypedDict(TypedDict):
 
 
 class ActivityInput(BaseModel):
-    type: Nullable[ActivityType]
+    type: Annotated[Nullable[ActivityType], PlainValidator(validate_open_enum(False))]
     r"""The type of the activity"""
 
     activity_datetime: OptionalNullable[str] = UNSET
@@ -608,7 +631,9 @@ class ActivityInput(BaseModel):
     deleted: OptionalNullable[bool] = UNSET
     r"""Whether the activity is deleted or not"""
 
-    show_as: OptionalNullable[ShowAs] = UNSET
+    show_as: Annotated[
+        OptionalNullable[ShowAs], PlainValidator(validate_open_enum(False))
+    ] = UNSET
 
     done: OptionalNullable[bool] = UNSET
     r"""Whether the Activity is done or not"""
@@ -647,6 +672,24 @@ class ActivityInput(BaseModel):
 
     pass_through: Optional[List[PassThroughBody]] = None
     r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
+
+    @field_serializer("type")
+    def serialize_type(self, value):
+        if isinstance(value, str):
+            try:
+                return models.ActivityType(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("show_as")
+    def serialize_show_as(self, value):
+        if isinstance(value, str):
+            try:
+                return models.ShowAs(value)
+            except ValueError:
+                return value
+        return value
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):

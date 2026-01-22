@@ -4,6 +4,7 @@ from __future__ import annotations
 from .currency import Currency
 from .paymentfrequency import PaymentFrequency
 from .paymentunit import PaymentUnit
+from apideck_unify import models, utils
 from apideck_unify.types import (
     BaseModel,
     Nullable,
@@ -11,12 +12,14 @@ from apideck_unify.types import (
     UNSET,
     UNSET_SENTINEL,
 )
+from apideck_unify.utils import validate_open_enum
 from enum import Enum
-from pydantic import model_serializer
-from typing_extensions import NotRequired, TypedDict
+from pydantic import field_serializer, model_serializer
+from pydantic.functional_validators import PlainValidator
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
-class FlsaStatus(str, Enum):
+class FlsaStatus(str, Enum, metaclass=utils.OpenEnumMeta):
     r"""The FLSA status for this compensation."""
 
     EXEMPT = "exempt"
@@ -55,20 +58,64 @@ class EmployeeCompensation(BaseModel):
     rate: OptionalNullable[float] = UNSET
     r"""The amount paid per payment unit."""
 
-    payment_unit: OptionalNullable[PaymentUnit] = UNSET
+    payment_unit: Annotated[
+        OptionalNullable[PaymentUnit], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""Unit of measurement for employee compensation."""
 
-    currency: OptionalNullable[Currency] = UNSET
+    currency: Annotated[
+        OptionalNullable[Currency], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
 
-    flsa_status: OptionalNullable[FlsaStatus] = UNSET
+    flsa_status: Annotated[
+        OptionalNullable[FlsaStatus], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""The FLSA status for this compensation."""
 
     effective_date: OptionalNullable[str] = UNSET
     r"""The date on which a change to an employee's compensation takes effect."""
 
-    payment_frequency: OptionalNullable[PaymentFrequency] = UNSET
+    payment_frequency: Annotated[
+        OptionalNullable[PaymentFrequency], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""Frequency of employee compensation."""
+
+    @field_serializer("payment_unit")
+    def serialize_payment_unit(self, value):
+        if isinstance(value, str):
+            try:
+                return models.PaymentUnit(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("currency")
+    def serialize_currency(self, value):
+        if isinstance(value, str):
+            try:
+                return models.Currency(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("flsa_status")
+    def serialize_flsa_status(self, value):
+        if isinstance(value, str):
+            try:
+                return models.FlsaStatus(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("payment_frequency")
+    def serialize_payment_frequency(self, value):
+        if isinstance(value, str):
+            try:
+                return models.PaymentFrequency(value)
+            except ValueError:
+                return value
+        return value
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
@@ -138,20 +185,64 @@ class EmployeeCompensationInput(BaseModel):
     rate: OptionalNullable[float] = UNSET
     r"""The amount paid per payment unit."""
 
-    payment_unit: OptionalNullable[PaymentUnit] = UNSET
+    payment_unit: Annotated[
+        OptionalNullable[PaymentUnit], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""Unit of measurement for employee compensation."""
 
-    currency: OptionalNullable[Currency] = UNSET
+    currency: Annotated[
+        OptionalNullable[Currency], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
 
-    flsa_status: OptionalNullable[FlsaStatus] = UNSET
+    flsa_status: Annotated[
+        OptionalNullable[FlsaStatus], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""The FLSA status for this compensation."""
 
     effective_date: OptionalNullable[str] = UNSET
     r"""The date on which a change to an employee's compensation takes effect."""
 
-    payment_frequency: OptionalNullable[PaymentFrequency] = UNSET
+    payment_frequency: Annotated[
+        OptionalNullable[PaymentFrequency], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""Frequency of employee compensation."""
+
+    @field_serializer("payment_unit")
+    def serialize_payment_unit(self, value):
+        if isinstance(value, str):
+            try:
+                return models.PaymentUnit(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("currency")
+    def serialize_currency(self, value):
+        if isinstance(value, str):
+            try:
+                return models.Currency(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("flsa_status")
+    def serialize_flsa_status(self, value):
+        if isinstance(value, str):
+            try:
+                return models.FlsaStatus(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("payment_frequency")
+    def serialize_payment_frequency(self, value):
+        if isinstance(value, str):
+            try:
+                return models.PaymentFrequency(value)
+            except ValueError:
+                return value
+        return value
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):

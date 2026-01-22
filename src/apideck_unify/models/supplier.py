@@ -14,6 +14,7 @@ from .linkedtaxstatusdetail import LinkedTaxStatusDetail, LinkedTaxStatusDetailT
 from .passthroughbody import PassThroughBody, PassThroughBodyTypedDict
 from .phonenumber import PhoneNumber, PhoneNumberTypedDict
 from .website import Website, WebsiteTypedDict
+from apideck_unify import models, utils
 from apideck_unify.types import (
     BaseModel,
     Nullable,
@@ -21,14 +22,16 @@ from apideck_unify.types import (
     UNSET,
     UNSET_SENTINEL,
 )
+from apideck_unify.utils import validate_open_enum
 from datetime import datetime
 from enum import Enum
-from pydantic import model_serializer
+from pydantic import field_serializer, model_serializer
+from pydantic.functional_validators import PlainValidator
 from typing import Any, Dict, List, Optional
-from typing_extensions import NotRequired, TypedDict
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
-class SupplierStatus(str, Enum):
+class SupplierStatus(str, Enum, metaclass=utils.OpenEnumMeta):
     r"""Supplier status"""
 
     ACTIVE = "active"
@@ -172,12 +175,16 @@ class Supplier(BaseModel):
     taxable: OptionalNullable[bool] = UNSET
     r"""Whether the entity is subject to taxation"""
 
-    currency: OptionalNullable[Currency] = UNSET
+    currency: Annotated[
+        OptionalNullable[Currency], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
 
     account: OptionalNullable[LinkedLedgerAccount] = UNSET
 
-    status: OptionalNullable[SupplierStatus] = UNSET
+    status: Annotated[
+        OptionalNullable[SupplierStatus], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""Supplier status"""
 
     payment_method: OptionalNullable[str] = UNSET
@@ -227,6 +234,24 @@ class Supplier(BaseModel):
 
     integration_system_id: Optional[str] = None
     r"""The integration system the supplier belongs to."""
+
+    @field_serializer("currency")
+    def serialize_currency(self, value):
+        if isinstance(value, str):
+            try:
+                return models.Currency(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("status")
+    def serialize_status(self, value):
+        if isinstance(value, str):
+            try:
+                return models.SupplierStatus(value)
+            except ValueError:
+                return value
+        return value
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
@@ -445,12 +470,16 @@ class SupplierInput(BaseModel):
     taxable: OptionalNullable[bool] = UNSET
     r"""Whether the entity is subject to taxation"""
 
-    currency: OptionalNullable[Currency] = UNSET
+    currency: Annotated[
+        OptionalNullable[Currency], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
 
     account: OptionalNullable[LinkedLedgerAccount] = UNSET
 
-    status: OptionalNullable[SupplierStatus] = UNSET
+    status: Annotated[
+        OptionalNullable[SupplierStatus], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""Supplier status"""
 
     payment_method: OptionalNullable[str] = UNSET
@@ -485,6 +514,24 @@ class SupplierInput(BaseModel):
 
     integration_system_id: Optional[str] = None
     r"""The integration system the supplier belongs to."""
+
+    @field_serializer("currency")
+    def serialize_currency(self, value):
+        if isinstance(value, str):
+            try:
+                return models.Currency(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("status")
+    def serialize_status(self, value):
+        if isinstance(value, str):
+            try:
+                return models.SupplierStatus(value)
+            except ValueError:
+                return value
+        return value
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):

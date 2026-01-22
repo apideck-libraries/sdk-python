@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 from .filetype import FileType
+from apideck_unify import models
 from apideck_unify.types import (
     BaseModel,
     Nullable,
@@ -9,8 +10,10 @@ from apideck_unify.types import (
     UNSET,
     UNSET_SENTINEL,
 )
-from pydantic import model_serializer
-from typing_extensions import NotRequired, TypedDict
+from apideck_unify.utils import validate_open_enum
+from pydantic import field_serializer, model_serializer
+from pydantic.functional_validators import PlainValidator
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class SharedLinkTargetTypedDict(TypedDict):
@@ -29,8 +32,19 @@ class SharedLinkTarget(BaseModel):
     name: OptionalNullable[str] = UNSET
     r"""The name of the file"""
 
-    type: OptionalNullable[FileType] = UNSET
+    type: Annotated[
+        OptionalNullable[FileType], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""The type of resource. Could be file, folder or url"""
+
+    @field_serializer("type")
+    def serialize_type(self, value):
+        if isinstance(value, str):
+            try:
+                return models.FileType(value)
+            except ValueError:
+                return value
+        return value
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):

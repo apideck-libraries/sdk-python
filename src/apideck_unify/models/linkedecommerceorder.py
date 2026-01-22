@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 from .ecommerceorderstatus import EcommerceOrderStatus
+from apideck_unify import models
 from apideck_unify.types import (
     BaseModel,
     Nullable,
@@ -9,9 +10,11 @@ from apideck_unify.types import (
     UNSET,
     UNSET_SENTINEL,
 )
-from pydantic import model_serializer
+from apideck_unify.utils import validate_open_enum
+from pydantic import field_serializer, model_serializer
+from pydantic.functional_validators import PlainValidator
 from typing import Optional
-from typing_extensions import NotRequired, TypedDict
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class LinkedEcommerceOrderTypedDict(TypedDict):
@@ -34,8 +37,20 @@ class LinkedEcommerceOrder(BaseModel):
     total: OptionalNullable[str] = UNSET
     r"""The total amount of the order."""
 
-    status: OptionalNullable[EcommerceOrderStatus] = UNSET
+    status: Annotated[
+        OptionalNullable[EcommerceOrderStatus],
+        PlainValidator(validate_open_enum(False)),
+    ] = UNSET
     r"""Current status of the order."""
+
+    @field_serializer("status")
+    def serialize_status(self, value):
+        if isinstance(value, str):
+            try:
+                return models.EcommerceOrderStatus(value)
+            except ValueError:
+                return value
+        return value
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):

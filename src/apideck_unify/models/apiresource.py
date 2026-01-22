@@ -2,8 +2,12 @@
 
 from __future__ import annotations
 from .resourcestatus import ResourceStatus
+from apideck_unify import models
 from apideck_unify.types import BaseModel
+from apideck_unify.utils import validate_open_enum
 import pydantic
+from pydantic import field_serializer
+from pydantic.functional_validators import PlainValidator
 from typing import List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
@@ -51,7 +55,9 @@ class APIResource(BaseModel):
     name: Optional[str] = None
     r"""Name of the resource (plural)"""
 
-    status: Optional[ResourceStatus] = None
+    status: Annotated[
+        Optional[ResourceStatus], PlainValidator(validate_open_enum(False))
+    ] = None
     r"""Status of the resource. Resources with status live or beta are callable."""
 
     linked_resources: Optional[List[LinkedResources]] = None
@@ -59,3 +65,12 @@ class APIResource(BaseModel):
 
     schema_: Annotated[Optional[Schema], pydantic.Field(alias="schema")] = None
     r"""JSON Schema of the resource in our Unified API"""
+
+    @field_serializer("status")
+    def serialize_status(self, value):
+        if isinstance(value, str):
+            try:
+                return models.ResourceStatus(value)
+            except ValueError:
+                return value
+        return value
