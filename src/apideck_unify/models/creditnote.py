@@ -24,6 +24,7 @@ from .linkedtrackingcategory import (
     LinkedTrackingCategoryTypedDict,
 )
 from .passthroughbody import PassThroughBody, PassThroughBodyTypedDict
+from apideck_unify import models, utils
 from apideck_unify.types import (
     BaseModel,
     Nullable,
@@ -31,14 +32,16 @@ from apideck_unify.types import (
     UNSET,
     UNSET_SENTINEL,
 )
+from apideck_unify.utils import validate_open_enum
 from datetime import datetime
 from enum import Enum
-from pydantic import model_serializer
+from pydantic import field_serializer, model_serializer
+from pydantic.functional_validators import PlainValidator
 from typing import Any, Dict, List, Optional
-from typing_extensions import NotRequired, TypedDict
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
-class CreditNoteStatus(str, Enum):
+class CreditNoteStatus(str, Enum, metaclass=utils.OpenEnumMeta):
     r"""Status of credit notes"""
 
     DRAFT = "draft"
@@ -50,7 +53,7 @@ class CreditNoteStatus(str, Enum):
     DELETED = "deleted"
 
 
-class CreditNoteType(str, Enum):
+class CreditNoteType(str, Enum, metaclass=utils.OpenEnumMeta):
     r"""Type of payment"""
 
     ACCOUNTS_RECEIVABLE_CREDIT = "accounts_receivable_credit"
@@ -150,7 +153,9 @@ class CreditNote(BaseModel):
     department_id: OptionalNullable[str] = UNSET
     r"""The ID of the department"""
 
-    currency: OptionalNullable[Currency] = UNSET
+    currency: Annotated[
+        OptionalNullable[Currency], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
 
     currency_rate: OptionalNullable[float] = UNSET
@@ -174,7 +179,9 @@ class CreditNote(BaseModel):
     remaining_credit: OptionalNullable[float] = UNSET
     r"""Indicates the total credit amount still available to apply towards the payment."""
 
-    status: Optional[CreditNoteStatus] = None
+    status: Annotated[
+        Optional[CreditNoteStatus], PlainValidator(validate_open_enum(False))
+    ] = None
     r"""Status of credit notes"""
 
     reference: OptionalNullable[str] = UNSET
@@ -186,7 +193,9 @@ class CreditNote(BaseModel):
     date_paid: OptionalNullable[datetime] = UNSET
     r"""Date credit note paid - YYYY:MM::DDThh:mm:ss.sTZD"""
 
-    type: Optional[CreditNoteType] = None
+    type: Annotated[
+        Optional[CreditNoteType], PlainValidator(validate_open_enum(False))
+    ] = None
     r"""Type of payment"""
 
     account: OptionalNullable[LinkedLedgerAccount] = UNSET
@@ -232,6 +241,33 @@ class CreditNote(BaseModel):
 
     pass_through: Optional[List[PassThroughBody]] = None
     r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
+
+    @field_serializer("currency")
+    def serialize_currency(self, value):
+        if isinstance(value, str):
+            try:
+                return models.Currency(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("status")
+    def serialize_status(self, value):
+        if isinstance(value, str):
+            try:
+                return models.CreditNoteStatus(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("type")
+    def serialize_type(self, value):
+        if isinstance(value, str):
+            try:
+                return models.CreditNoteType(value)
+            except ValueError:
+                return value
+        return value
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
@@ -403,7 +439,9 @@ class CreditNoteInput(BaseModel):
     department_id: OptionalNullable[str] = UNSET
     r"""The ID of the department"""
 
-    currency: OptionalNullable[Currency] = UNSET
+    currency: Annotated[
+        OptionalNullable[Currency], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
 
     currency_rate: OptionalNullable[float] = UNSET
@@ -427,7 +465,9 @@ class CreditNoteInput(BaseModel):
     remaining_credit: OptionalNullable[float] = UNSET
     r"""Indicates the total credit amount still available to apply towards the payment."""
 
-    status: Optional[CreditNoteStatus] = None
+    status: Annotated[
+        Optional[CreditNoteStatus], PlainValidator(validate_open_enum(False))
+    ] = None
     r"""Status of credit notes"""
 
     reference: OptionalNullable[str] = UNSET
@@ -439,7 +479,9 @@ class CreditNoteInput(BaseModel):
     date_paid: OptionalNullable[datetime] = UNSET
     r"""Date credit note paid - YYYY:MM::DDThh:mm:ss.sTZD"""
 
-    type: Optional[CreditNoteType] = None
+    type: Annotated[
+        Optional[CreditNoteType], PlainValidator(validate_open_enum(False))
+    ] = None
     r"""Type of payment"""
 
     account: OptionalNullable[LinkedLedgerAccount] = UNSET
@@ -470,6 +512,33 @@ class CreditNoteInput(BaseModel):
 
     pass_through: Optional[List[PassThroughBody]] = None
     r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
+
+    @field_serializer("currency")
+    def serialize_currency(self, value):
+        if isinstance(value, str):
+            try:
+                return models.Currency(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("status")
+    def serialize_status(self, value):
+        if isinstance(value, str):
+            try:
+                return models.CreditNoteStatus(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("type")
+    def serialize_type(self, value):
+        if isinstance(value, str):
+            try:
+                return models.CreditNoteType(value)
+            except ValueError:
+                return value
+        return value
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):

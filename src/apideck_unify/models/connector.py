@@ -12,6 +12,7 @@ from .linkedconnectorresource import (
 from .schemasupport import SchemaSupport, SchemaSupportTypedDict
 from .unifiedapiid import UnifiedAPIID
 from .webhooksupport import WebhookSupport, WebhookSupportTypedDict
+from apideck_unify import models, utils
 from apideck_unify.types import (
     BaseModel,
     Nullable,
@@ -19,13 +20,15 @@ from apideck_unify.types import (
     UNSET,
     UNSET_SENTINEL,
 )
+from apideck_unify.utils import validate_open_enum
 from enum import Enum
-from pydantic import model_serializer
+from pydantic import field_serializer, model_serializer
+from pydantic.functional_validators import PlainValidator
 from typing import List, Optional
-from typing_extensions import NotRequired, TypedDict
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
-class ConnectorAuthType(str, Enum):
+class ConnectorAuthType(str, Enum, metaclass=utils.OpenEnumMeta):
     r"""Type of authorization used by the connector"""
 
     OAUTH2 = "oauth2"
@@ -35,7 +38,7 @@ class ConnectorAuthType(str, Enum):
     NONE = "none"
 
 
-class ConnectorOauthGrantType(str, Enum):
+class ConnectorOauthGrantType(str, Enum, metaclass=utils.OpenEnumMeta):
     r"""OAuth grant type used by the connector. More info: https://oauth.net/2/grant-types"""
 
     AUTHORIZATION_CODE = "authorization_code"
@@ -43,7 +46,7 @@ class ConnectorOauthGrantType(str, Enum):
     PASSWORD = "password"
 
 
-class OauthCredentialsSource(str, Enum):
+class OauthCredentialsSource(str, Enum, metaclass=utils.OpenEnumMeta):
     r"""Location of the OAuth client credentials. For most connectors the OAuth client credentials are stored on integration and managed by the application owner. For others they are stored on connection and managed by the consumer in Vault."""
 
     INTEGRATION = "integration"
@@ -106,7 +109,9 @@ class UnifiedApisTypedDict(TypedDict):
 
 
 class UnifiedApis(BaseModel):
-    id: Optional[UnifiedAPIID] = None
+    id: Annotated[Optional[UnifiedAPIID], PlainValidator(validate_open_enum(False))] = (
+        None
+    )
     r"""Name of Apideck Unified API"""
 
     name: Optional[str] = None
@@ -125,6 +130,15 @@ class UnifiedApis(BaseModel):
 
     supported_events: Optional[List[ConnectorEvent]] = None
     r"""List of events that are supported on the connector for this Unified API."""
+
+    @field_serializer("id")
+    def serialize_id(self, value):
+        if isinstance(value, str):
+            try:
+                return models.UnifiedAPIID(value)
+            except ValueError:
+                return value
+        return value
 
 
 class TLSSupportTypedDict(TypedDict):
@@ -203,7 +217,9 @@ class Connector(BaseModel):
     name: Optional[str] = None
     r"""Name of the connector."""
 
-    status: Optional[ConnectorStatus] = None
+    status: Annotated[
+        Optional[ConnectorStatus], PlainValidator(validate_open_enum(False))
+    ] = None
     r"""Status of the connector. Connectors with status live or beta are callable."""
 
     description: OptionalNullable[str] = UNSET
@@ -227,7 +243,9 @@ class Connector(BaseModel):
     free_trial_available: Optional[bool] = None
     r"""Set to `true` when the connector offers a free trial. Use `signup_url` to sign up for a free trial"""
 
-    auth_type: Optional[ConnectorAuthType] = None
+    auth_type: Annotated[
+        Optional[ConnectorAuthType], PlainValidator(validate_open_enum(False))
+    ] = None
     r"""Type of authorization used by the connector"""
 
     auth_only: Optional[bool] = None
@@ -236,10 +254,14 @@ class Connector(BaseModel):
     blind_mapped: Optional[bool] = None
     r"""Set to `true` when connector was implemented from downstream docs only and without API access. This state indicates that integration will require Apideck support, and access to downstream API to validate mapping quality."""
 
-    oauth_grant_type: Optional[ConnectorOauthGrantType] = None
+    oauth_grant_type: Annotated[
+        Optional[ConnectorOauthGrantType], PlainValidator(validate_open_enum(False))
+    ] = None
     r"""OAuth grant type used by the connector. More info: https://oauth.net/2/grant-types"""
 
-    oauth_credentials_source: Optional[OauthCredentialsSource] = None
+    oauth_credentials_source: Annotated[
+        Optional[OauthCredentialsSource], PlainValidator(validate_open_enum(False))
+    ] = None
     r"""Location of the OAuth client credentials. For most connectors the OAuth client credentials are stored on integration and managed by the application owner. For others they are stored on connection and managed by the consumer in Vault."""
 
     oauth_scopes: Optional[List[OauthScopes]] = None
@@ -277,6 +299,42 @@ class Connector(BaseModel):
     docs: Optional[List[ConnectorDoc]] = None
 
     tls_support: Optional[TLSSupport] = None
+
+    @field_serializer("status")
+    def serialize_status(self, value):
+        if isinstance(value, str):
+            try:
+                return models.ConnectorStatus(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("auth_type")
+    def serialize_auth_type(self, value):
+        if isinstance(value, str):
+            try:
+                return models.ConnectorAuthType(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("oauth_grant_type")
+    def serialize_oauth_grant_type(self, value):
+        if isinstance(value, str):
+            try:
+                return models.ConnectorOauthGrantType(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("oauth_credentials_source")
+    def serialize_oauth_credentials_source(self, value):
+        if isinstance(value, str):
+            try:
+                return models.OauthCredentialsSource(value)
+            except ValueError:
+                return value
+        return value
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):

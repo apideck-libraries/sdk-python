@@ -5,6 +5,7 @@ from .currency import Currency
 from .email import Email, EmailTypedDict
 from .linkedecommerceorder import LinkedEcommerceOrder, LinkedEcommerceOrderTypedDict
 from .phonenumber import PhoneNumber, PhoneNumberTypedDict
+from apideck_unify import models, utils
 from apideck_unify.types import (
     BaseModel,
     Nullable,
@@ -12,21 +13,23 @@ from apideck_unify.types import (
     UNSET,
     UNSET_SENTINEL,
 )
+from apideck_unify.utils import validate_open_enum
 from datetime import datetime
 from enum import Enum
-from pydantic import model_serializer
+from pydantic import field_serializer, model_serializer
+from pydantic.functional_validators import PlainValidator
 from typing import Any, Dict, List, Optional
-from typing_extensions import NotRequired, TypedDict
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
-class CustomerStatus(str, Enum):
+class CustomerStatus(str, Enum, metaclass=utils.OpenEnumMeta):
     r"""The current status of the customer"""
 
     ACTIVE = "active"
     ARCHIVED = "archived"
 
 
-class EcommerceCustomerType(str, Enum):
+class EcommerceCustomerType(str, Enum, metaclass=utils.OpenEnumMeta):
     BILLING = "billing"
     SHIPPING = "shipping"
     OTHER = "other"
@@ -51,7 +54,9 @@ class AddressesTypedDict(TypedDict):
 
 
 class Addresses(BaseModel):
-    type: Optional[EcommerceCustomerType] = None
+    type: Annotated[
+        Optional[EcommerceCustomerType], PlainValidator(validate_open_enum(False))
+    ] = None
 
     id: OptionalNullable[str] = UNSET
     r"""A unique identifier for an object."""
@@ -73,6 +78,15 @@ class Addresses(BaseModel):
 
     country: OptionalNullable[str] = UNSET
     r"""Country of the customer"""
+
+    @field_serializer("type")
+    def serialize_type(self, value):
+        if isinstance(value, str):
+            try:
+                return models.EcommerceCustomerType(value)
+            except ValueError:
+                return value
+        return value
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
@@ -168,10 +182,14 @@ class EcommerceCustomer(BaseModel):
     company_name: OptionalNullable[str] = UNSET
     r"""Company name of the customer"""
 
-    status: OptionalNullable[CustomerStatus] = UNSET
+    status: Annotated[
+        OptionalNullable[CustomerStatus], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""The current status of the customer"""
 
-    currency: OptionalNullable[Currency] = UNSET
+    currency: Annotated[
+        OptionalNullable[Currency], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
 
     emails: OptionalNullable[List[Email]] = UNSET
@@ -193,6 +211,24 @@ class EcommerceCustomer(BaseModel):
 
     updated_at: OptionalNullable[datetime] = UNSET
     r"""The date and time when the object was last updated."""
+
+    @field_serializer("status")
+    def serialize_status(self, value):
+        if isinstance(value, str):
+            try:
+                return models.CustomerStatus(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("currency")
+    def serialize_currency(self, value):
+        if isinstance(value, str):
+            try:
+                return models.Currency(value)
+            except ValueError:
+                return value
+        return value
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 from .passthroughbody import PassThroughBody, PassThroughBodyTypedDict
+from apideck_unify import models, utils
 from apideck_unify.types import (
     BaseModel,
     Nullable,
@@ -9,14 +10,16 @@ from apideck_unify.types import (
     UNSET,
     UNSET_SENTINEL,
 )
+from apideck_unify.utils import validate_open_enum
 from datetime import datetime
 from enum import Enum
-from pydantic import model_serializer
+from pydantic import field_serializer, model_serializer
+from pydantic.functional_validators import PlainValidator
 from typing import Any, Dict, List, Optional
-from typing_extensions import NotRequired, TypedDict
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
-class CategoryType(str, Enum):
+class CategoryType(str, Enum, metaclass=utils.OpenEnumMeta):
     r"""The type of the category."""
 
     SUPPLIER = "supplier"
@@ -25,7 +28,7 @@ class CategoryType(str, Enum):
     CUSTOMER = "customer"
 
 
-class CategoryStatus(str, Enum):
+class CategoryStatus(str, Enum, metaclass=utils.OpenEnumMeta):
     r"""Based on the status some functionality is enabled or disabled."""
 
     ACTIVE = "active"
@@ -69,10 +72,14 @@ class Category(BaseModel):
     display_id: OptionalNullable[str] = UNSET
     r"""Display ID of the category"""
 
-    type: Optional[CategoryType] = None
+    type: Annotated[
+        Optional[CategoryType], PlainValidator(validate_open_enum(False))
+    ] = None
     r"""The type of the category."""
 
-    status: Optional[CategoryStatus] = None
+    status: Annotated[
+        Optional[CategoryStatus], PlainValidator(validate_open_enum(False))
+    ] = None
     r"""Based on the status some functionality is enabled or disabled."""
 
     custom_mappings: OptionalNullable[Dict[str, Any]] = UNSET
@@ -95,6 +102,24 @@ class Category(BaseModel):
 
     pass_through: Optional[List[PassThroughBody]] = None
     r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
+
+    @field_serializer("type")
+    def serialize_type(self, value):
+        if isinstance(value, str):
+            try:
+                return models.CategoryType(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("status")
+    def serialize_status(self, value):
+        if isinstance(value, str):
+            try:
+                return models.CategoryStatus(value)
+            except ValueError:
+                return value
+        return value
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):

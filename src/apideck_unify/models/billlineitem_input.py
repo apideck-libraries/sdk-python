@@ -13,6 +13,7 @@ from .linkedtrackingcategory import (
 )
 from .linkedworktag import LinkedWorktag, LinkedWorktagTypedDict
 from .rebilling import Rebilling, RebillingTypedDict
+from apideck_unify import models
 from apideck_unify.types import (
     BaseModel,
     Nullable,
@@ -20,9 +21,11 @@ from apideck_unify.types import (
     UNSET,
     UNSET_SENTINEL,
 )
-from pydantic import model_serializer
+from apideck_unify.utils import validate_open_enum
+from pydantic import field_serializer, model_serializer
+from pydantic.functional_validators import PlainValidator
 from typing import List, Optional
-from typing_extensions import NotRequired, TypedDict
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class BillLineItemInputTypedDict(TypedDict):
@@ -103,7 +106,9 @@ class BillLineItemInput(BaseModel):
     description: OptionalNullable[str] = UNSET
     r"""User defined description"""
 
-    type: OptionalNullable[LineItemType] = UNSET
+    type: Annotated[
+        OptionalNullable[LineItemType], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""Line Item type"""
 
     tax_amount: OptionalNullable[float] = UNSET
@@ -185,6 +190,15 @@ class BillLineItemInput(BaseModel):
 
     worktags: Optional[List[Nullable[LinkedWorktag]]] = None
     r"""A list of linked worktags. This is only supported for Workday."""
+
+    @field_serializer("type")
+    def serialize_type(self, value):
+        if isinstance(value, str):
+            try:
+                return models.LineItemType(value)
+            except ValueError:
+                return value
+        return value
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):

@@ -15,6 +15,7 @@ from .linkedecommercecustomer import (
     LinkedEcommerceCustomerTypedDict,
 )
 from .trackingitem import TrackingItem, TrackingItemTypedDict
+from apideck_unify import models, utils
 from apideck_unify.types import (
     BaseModel,
     Nullable,
@@ -22,14 +23,16 @@ from apideck_unify.types import (
     UNSET,
     UNSET_SENTINEL,
 )
+from apideck_unify.utils import validate_open_enum
 from datetime import datetime
 from enum import Enum
-from pydantic import model_serializer
+from pydantic import field_serializer, model_serializer
+from pydantic.functional_validators import PlainValidator
 from typing import Any, Dict, List, Optional
-from typing_extensions import NotRequired, TypedDict
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
-class EcommerceOrderPaymentStatus(str, Enum):
+class EcommerceOrderPaymentStatus(str, Enum, metaclass=utils.OpenEnumMeta):
     r"""Current payment status of the order."""
 
     PENDING = "pending"
@@ -42,7 +45,7 @@ class EcommerceOrderPaymentStatus(str, Enum):
     PARTIALLY_REFUNDED = "partially_refunded"
 
 
-class FulfillmentStatus(str, Enum):
+class FulfillmentStatus(str, Enum, metaclass=utils.OpenEnumMeta):
     r"""Current fulfillment status of the order."""
 
     PENDING = "pending"
@@ -110,7 +113,9 @@ class EcommerceOrder(BaseModel):
     order_number: OptionalNullable[str] = UNSET
     r"""Order number, if any."""
 
-    currency: OptionalNullable[Currency] = UNSET
+    currency: Annotated[
+        OptionalNullable[Currency], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
 
     discounts: Optional[List[EcommerceDiscount]] = None
@@ -136,13 +141,21 @@ class EcommerceOrder(BaseModel):
     refunded_amount: OptionalNullable[str] = UNSET
     r"""Refunded amount, if any."""
 
-    status: OptionalNullable[EcommerceOrderStatus] = UNSET
+    status: Annotated[
+        OptionalNullable[EcommerceOrderStatus],
+        PlainValidator(validate_open_enum(False)),
+    ] = UNSET
     r"""Current status of the order."""
 
-    payment_status: OptionalNullable[EcommerceOrderPaymentStatus] = UNSET
+    payment_status: Annotated[
+        OptionalNullable[EcommerceOrderPaymentStatus],
+        PlainValidator(validate_open_enum(False)),
+    ] = UNSET
     r"""Current payment status of the order."""
 
-    fulfillment_status: OptionalNullable[FulfillmentStatus] = UNSET
+    fulfillment_status: Annotated[
+        OptionalNullable[FulfillmentStatus], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""Current fulfillment status of the order."""
 
     payment_method: OptionalNullable[str] = UNSET
@@ -174,6 +187,42 @@ class EcommerceOrder(BaseModel):
 
     updated_at: OptionalNullable[datetime] = UNSET
     r"""The date and time when the object was last updated."""
+
+    @field_serializer("currency")
+    def serialize_currency(self, value):
+        if isinstance(value, str):
+            try:
+                return models.Currency(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("status")
+    def serialize_status(self, value):
+        if isinstance(value, str):
+            try:
+                return models.EcommerceOrderStatus(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("payment_status")
+    def serialize_payment_status(self, value):
+        if isinstance(value, str):
+            try:
+                return models.EcommerceOrderPaymentStatus(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("fulfillment_status")
+    def serialize_fulfillment_status(self, value):
+        if isinstance(value, str):
+            try:
+                return models.FulfillmentStatus(value)
+            except ValueError:
+                return value
+        return value
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):

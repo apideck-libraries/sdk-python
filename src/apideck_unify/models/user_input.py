@@ -78,7 +78,7 @@ class UserInput(BaseModel):
     department: Annotated[
         OptionalNullable[str],
         pydantic.Field(
-            deprecated="warning: ** DEPRECATED ** - This will be removed in a future release, please migrate away from it as soon as possible."
+            deprecated="warning: ** DEPRECATED ** - Deprecated. Use department_id instead.."
         ),
     ] = UNSET
     r"""The department the person is currently in. [Deprecated](https://developers.apideck.com/changelog) in favor of the dedicated department_id and department_name field."""

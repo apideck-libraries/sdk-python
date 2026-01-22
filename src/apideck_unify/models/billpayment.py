@@ -12,6 +12,7 @@ from .linkedtrackingcategory import (
 )
 from .passthroughbody import PassThroughBody, PassThroughBodyTypedDict
 from .paymentstatus import PaymentStatus
+from apideck_unify import models, utils
 from apideck_unify.types import (
     BaseModel,
     Nullable,
@@ -19,14 +20,16 @@ from apideck_unify.types import (
     UNSET,
     UNSET_SENTINEL,
 )
+from apideck_unify.utils import validate_open_enum
 from datetime import datetime
 from enum import Enum
-from pydantic import model_serializer
+from pydantic import field_serializer, model_serializer
+from pydantic.functional_validators import PlainValidator
 from typing import Any, Dict, List, Optional
-from typing_extensions import NotRequired, TypedDict
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
-class BillPaymentType(str, Enum):
+class BillPaymentType(str, Enum, metaclass=utils.OpenEnumMeta):
     r"""Type of payment"""
 
     ACCOUNTS_PAYABLE_CREDIT = "accounts_payable_credit"
@@ -35,7 +38,7 @@ class BillPaymentType(str, Enum):
     ACCOUNTS_PAYABLE = "accounts_payable"
 
 
-class BillPaymentAllocationType(str, Enum):
+class BillPaymentAllocationType(str, Enum, metaclass=utils.OpenEnumMeta):
     r"""Type of entity this payment should be attributed to."""
 
     BILL = "bill"
@@ -63,7 +66,9 @@ class Allocations(BaseModel):
     id: OptionalNullable[str] = UNSET
     r"""A unique identifier for an object."""
 
-    type: Optional[BillPaymentAllocationType] = None
+    type: Annotated[
+        Optional[BillPaymentAllocationType], PlainValidator(validate_open_enum(False))
+    ] = None
     r"""Type of entity this payment should be attributed to."""
 
     code: Optional[str] = None
@@ -73,6 +78,15 @@ class Allocations(BaseModel):
 
     allocation_id: Optional[str] = None
     r"""Unique identifier of the allocation"""
+
+    @field_serializer("type")
+    def serialize_type(self, value):
+        if isinstance(value, str):
+            try:
+                return models.BillPaymentAllocationType(value)
+            except ValueError:
+                return value
+        return value
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
@@ -178,7 +192,9 @@ class BillPayment(BaseModel):
     downstream_id: OptionalNullable[str] = UNSET
     r"""The third-party API ID of original entity"""
 
-    currency: OptionalNullable[Currency] = UNSET
+    currency: Annotated[
+        OptionalNullable[Currency], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
 
     currency_rate: OptionalNullable[float] = UNSET
@@ -207,10 +223,14 @@ class BillPayment(BaseModel):
     reconciled: OptionalNullable[bool] = UNSET
     r"""Indicates if the transaction has been reconciled."""
 
-    status: Optional[PaymentStatus] = None
+    status: Annotated[
+        Optional[PaymentStatus], PlainValidator(validate_open_enum(False))
+    ] = None
     r"""Status of payment"""
 
-    type: Optional[BillPaymentType] = None
+    type: Annotated[
+        Optional[BillPaymentType], PlainValidator(validate_open_enum(False))
+    ] = None
     r"""Type of payment"""
 
     allocations: Optional[List[Allocations]] = None
@@ -251,6 +271,33 @@ class BillPayment(BaseModel):
 
     pass_through: Optional[List[PassThroughBody]] = None
     r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
+
+    @field_serializer("currency")
+    def serialize_currency(self, value):
+        if isinstance(value, str):
+            try:
+                return models.Currency(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("status")
+    def serialize_status(self, value):
+        if isinstance(value, str):
+            try:
+                return models.PaymentStatus(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("type")
+    def serialize_type(self, value):
+        if isinstance(value, str):
+            try:
+                return models.BillPaymentType(value)
+            except ValueError:
+                return value
+        return value
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
@@ -349,7 +396,9 @@ class BillPaymentAllocations(BaseModel):
     id: OptionalNullable[str] = UNSET
     r"""A unique identifier for an object."""
 
-    type: Optional[BillPaymentAllocationType] = None
+    type: Annotated[
+        Optional[BillPaymentAllocationType], PlainValidator(validate_open_enum(False))
+    ] = None
     r"""Type of entity this payment should be attributed to."""
 
     amount: OptionalNullable[float] = UNSET
@@ -357,6 +406,15 @@ class BillPaymentAllocations(BaseModel):
 
     allocation_id: Optional[str] = None
     r"""Unique identifier of the allocation"""
+
+    @field_serializer("type")
+    def serialize_type(self, value):
+        if isinstance(value, str):
+            try:
+                return models.BillPaymentAllocationType(value)
+            except ValueError:
+                return value
+        return value
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
@@ -442,7 +500,9 @@ class BillPaymentInput(BaseModel):
     transaction_date: Nullable[datetime]
     r"""The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD"""
 
-    currency: OptionalNullable[Currency] = UNSET
+    currency: Annotated[
+        OptionalNullable[Currency], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
 
     currency_rate: OptionalNullable[float] = UNSET
@@ -471,10 +531,14 @@ class BillPaymentInput(BaseModel):
     reconciled: OptionalNullable[bool] = UNSET
     r"""Indicates if the transaction has been reconciled."""
 
-    status: Optional[PaymentStatus] = None
+    status: Annotated[
+        Optional[PaymentStatus], PlainValidator(validate_open_enum(False))
+    ] = None
     r"""Status of payment"""
 
-    type: Optional[BillPaymentType] = None
+    type: Annotated[
+        Optional[BillPaymentType], PlainValidator(validate_open_enum(False))
+    ] = None
     r"""Type of payment"""
 
     allocations: Optional[List[BillPaymentAllocations]] = None
@@ -500,6 +564,33 @@ class BillPaymentInput(BaseModel):
 
     pass_through: Optional[List[PassThroughBody]] = None
     r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
+
+    @field_serializer("currency")
+    def serialize_currency(self, value):
+        if isinstance(value, str):
+            try:
+                return models.Currency(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("status")
+    def serialize_status(self, value):
+        if isinstance(value, str):
+            try:
+                return models.PaymentStatus(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("type")
+    def serialize_type(self, value):
+        if isinstance(value, str):
+            try:
+                return models.BillPaymentType(value)
+            except ValueError:
+                return value
+        return value
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):

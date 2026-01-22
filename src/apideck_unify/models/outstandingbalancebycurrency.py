@@ -3,6 +3,7 @@
 from __future__ import annotations
 from .balancebyperiod import BalanceByPeriod, BalanceByPeriodTypedDict
 from .currency import Currency
+from apideck_unify import models
 from apideck_unify.types import (
     BaseModel,
     Nullable,
@@ -10,9 +11,11 @@ from apideck_unify.types import (
     UNSET,
     UNSET_SENTINEL,
 )
-from pydantic import model_serializer
+from apideck_unify.utils import validate_open_enum
+from pydantic import field_serializer, model_serializer
+from pydantic.functional_validators import PlainValidator
 from typing import List, Optional
-from typing_extensions import NotRequired, TypedDict
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class OutstandingBalanceByCurrencyTypedDict(TypedDict):
@@ -24,13 +27,24 @@ class OutstandingBalanceByCurrencyTypedDict(TypedDict):
 
 
 class OutstandingBalanceByCurrency(BaseModel):
-    currency: OptionalNullable[Currency] = UNSET
+    currency: Annotated[
+        OptionalNullable[Currency], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
 
     total_amount: Optional[float] = None
     r"""Total amount of the outstanding balance."""
 
     balances_by_period: Optional[List[BalanceByPeriod]] = None
+
+    @field_serializer("currency")
+    def serialize_currency(self, value):
+        if isinstance(value, str):
+            try:
+                return models.Currency(value)
+            except ValueError:
+                return value
+        return value
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):

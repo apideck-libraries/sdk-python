@@ -23,6 +23,7 @@ from .linkedtrackingcategory import (
     LinkedTrackingCategoryTypedDict,
 )
 from .passthroughbody import PassThroughBody, PassThroughBodyTypedDict
+from apideck_unify import models, utils
 from apideck_unify.types import (
     BaseModel,
     Nullable,
@@ -30,15 +31,17 @@ from apideck_unify.types import (
     UNSET,
     UNSET_SENTINEL,
 )
+from apideck_unify.utils import validate_open_enum
 from datetime import date, datetime
 from enum import Enum
 import pydantic
-from pydantic import model_serializer
+from pydantic import field_serializer, model_serializer
+from pydantic.functional_validators import PlainValidator
 from typing import Any, Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
-class InvoiceType(str, Enum):
+class InvoiceType(str, Enum, metaclass=utils.OpenEnumMeta):
     r"""Invoice type"""
 
     STANDARD = "standard"
@@ -49,7 +52,7 @@ class InvoiceType(str, Enum):
     OTHER = "other"
 
 
-class InvoiceStatus(str, Enum):
+class InvoiceStatus(str, Enum, metaclass=utils.OpenEnumMeta):
     r"""Invoice status"""
 
     DRAFT = "draft"
@@ -222,7 +225,9 @@ class Invoice(BaseModel):
     display_id: OptionalNullable[str] = UNSET
     r"""Id to be displayed."""
 
-    type: OptionalNullable[InvoiceType] = UNSET
+    type: Annotated[
+        OptionalNullable[InvoiceType], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""Invoice type"""
 
     number: OptionalNullable[str] = UNSET
@@ -255,13 +260,17 @@ class Invoice(BaseModel):
     reference: OptionalNullable[str] = UNSET
     r"""Optional reference identifier for the transaction."""
 
-    status: OptionalNullable[InvoiceStatus] = UNSET
+    status: Annotated[
+        OptionalNullable[InvoiceStatus], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""Invoice status"""
 
     invoice_sent: Optional[bool] = None
     r"""Invoice sent to contact/customer."""
 
-    currency: OptionalNullable[Currency] = UNSET
+    currency: Annotated[
+        OptionalNullable[Currency], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
 
     currency_rate: OptionalNullable[float] = UNSET
@@ -300,7 +309,7 @@ class Invoice(BaseModel):
     tracking_category: Annotated[
         OptionalNullable[DeprecatedLinkedTrackingCategory],
         pydantic.Field(
-            deprecated="warning: ** DEPRECATED ** - This will be removed in a future release, please migrate away from it as soon as possible."
+            deprecated="warning: ** DEPRECATED ** - This field is deprecated and may be removed in a future version.."
         ),
     ] = UNSET
 
@@ -362,6 +371,33 @@ class Invoice(BaseModel):
 
     pass_through: Optional[List[PassThroughBody]] = None
     r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
+
+    @field_serializer("type")
+    def serialize_type(self, value):
+        if isinstance(value, str):
+            try:
+                return models.InvoiceType(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("status")
+    def serialize_status(self, value):
+        if isinstance(value, str):
+            try:
+                return models.InvoiceStatus(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("currency")
+    def serialize_currency(self, value):
+        if isinstance(value, str):
+            try:
+                return models.Currency(value)
+            except ValueError:
+                return value
+        return value
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
@@ -576,7 +612,9 @@ class InvoiceInput(BaseModel):
     display_id: OptionalNullable[str] = UNSET
     r"""Id to be displayed."""
 
-    type: OptionalNullable[InvoiceType] = UNSET
+    type: Annotated[
+        OptionalNullable[InvoiceType], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""Invoice type"""
 
     number: OptionalNullable[str] = UNSET
@@ -609,13 +647,17 @@ class InvoiceInput(BaseModel):
     reference: OptionalNullable[str] = UNSET
     r"""Optional reference identifier for the transaction."""
 
-    status: OptionalNullable[InvoiceStatus] = UNSET
+    status: Annotated[
+        OptionalNullable[InvoiceStatus], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""Invoice status"""
 
     invoice_sent: Optional[bool] = None
     r"""Invoice sent to contact/customer."""
 
-    currency: OptionalNullable[Currency] = UNSET
+    currency: Annotated[
+        OptionalNullable[Currency], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
 
     currency_rate: OptionalNullable[float] = UNSET
@@ -654,7 +696,7 @@ class InvoiceInput(BaseModel):
     tracking_category: Annotated[
         OptionalNullable[DeprecatedLinkedTrackingCategory],
         pydantic.Field(
-            deprecated="warning: ** DEPRECATED ** - This will be removed in a future release, please migrate away from it as soon as possible."
+            deprecated="warning: ** DEPRECATED ** - This field is deprecated and may be removed in a future version.."
         ),
     ] = UNSET
 
@@ -701,6 +743,33 @@ class InvoiceInput(BaseModel):
 
     pass_through: Optional[List[PassThroughBody]] = None
     r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
+
+    @field_serializer("type")
+    def serialize_type(self, value):
+        if isinstance(value, str):
+            try:
+                return models.InvoiceType(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("status")
+    def serialize_status(self, value):
+        if isinstance(value, str):
+            try:
+                return models.InvoiceStatus(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("currency")
+    def serialize_currency(self, value):
+        if isinstance(value, str):
+            try:
+                return models.Currency(value)
+            except ValueError:
+                return value
+        return value
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):

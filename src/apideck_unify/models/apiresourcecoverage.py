@@ -4,9 +4,13 @@ from __future__ import annotations
 from .paginationcoverage import PaginationCoverage, PaginationCoverageTypedDict
 from .resourcestatus import ResourceStatus
 from .supportedproperty import SupportedProperty, SupportedPropertyTypedDict
+from apideck_unify import models
 from apideck_unify.types import BaseModel
+from apideck_unify.utils import validate_open_enum
+from pydantic import field_serializer
+from pydantic.functional_validators import PlainValidator
 from typing import List, Optional
-from typing_extensions import NotRequired, TypedDict
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class CoverageTypedDict(TypedDict):
@@ -74,7 +78,18 @@ class APIResourceCoverage(BaseModel):
     name: Optional[str] = None
     r"""Name of the resource (plural)"""
 
-    status: Optional[ResourceStatus] = None
+    status: Annotated[
+        Optional[ResourceStatus], PlainValidator(validate_open_enum(False))
+    ] = None
     r"""Status of the resource. Resources with status live or beta are callable."""
 
     coverage: Optional[List[Coverage]] = None
+
+    @field_serializer("status")
+    def serialize_status(self, value):
+        if isinstance(value, str):
+            try:
+                return models.ResourceStatus(value)
+            except ValueError:
+                return value
+        return value

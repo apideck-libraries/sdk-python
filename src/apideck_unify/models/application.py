@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 from .passthroughbody import PassThroughBody, PassThroughBodyTypedDict
+from apideck_unify import models, utils
 from apideck_unify.types import (
     BaseModel,
     Nullable,
@@ -9,14 +10,16 @@ from apideck_unify.types import (
     UNSET,
     UNSET_SENTINEL,
 )
+from apideck_unify.utils import validate_open_enum
 from datetime import datetime
 from enum import Enum
-from pydantic import model_serializer
+from pydantic import field_serializer, model_serializer
+from pydantic.functional_validators import PlainValidator
 from typing import Any, Dict, List, Optional
-from typing_extensions import NotRequired, TypedDict
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
-class ApplicationStatus(str, Enum):
+class ApplicationStatus(str, Enum, metaclass=utils.OpenEnumMeta):
     OPEN = "open"
     REJECTED = "rejected"
     HIRED = "hired"
@@ -96,7 +99,9 @@ class Application(BaseModel):
     id: Optional[str] = None
     r"""A unique identifier for an object."""
 
-    status: OptionalNullable[ApplicationStatus] = UNSET
+    status: Annotated[
+        OptionalNullable[ApplicationStatus], PlainValidator(validate_open_enum(False))
+    ] = UNSET
 
     stage: Optional[Stage] = None
 
@@ -117,6 +122,15 @@ class Application(BaseModel):
 
     pass_through: Optional[List[PassThroughBody]] = None
     r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
+
+    @field_serializer("status")
+    def serialize_status(self, value):
+        if isinstance(value, str):
+            try:
+                return models.ApplicationStatus(value)
+            except ValueError:
+                return value
+        return value
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
@@ -182,12 +196,23 @@ class ApplicationInput(BaseModel):
 
     job_id: Nullable[str]
 
-    status: OptionalNullable[ApplicationStatus] = UNSET
+    status: Annotated[
+        OptionalNullable[ApplicationStatus], PlainValidator(validate_open_enum(False))
+    ] = UNSET
 
     stage: Optional[Stage] = None
 
     pass_through: Optional[List[PassThroughBody]] = None
     r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
+
+    @field_serializer("status")
+    def serialize_status(self, value):
+        if isinstance(value, str):
+            try:
+                return models.ApplicationStatus(value)
+            except ValueError:
+                return value
+        return value
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):

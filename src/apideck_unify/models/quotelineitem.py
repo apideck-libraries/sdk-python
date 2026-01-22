@@ -10,6 +10,7 @@ from .linkedtrackingcategory import (
     LinkedTrackingCategory,
     LinkedTrackingCategoryTypedDict,
 )
+from apideck_unify import models, utils
 from apideck_unify.types import (
     BaseModel,
     Nullable,
@@ -17,14 +18,16 @@ from apideck_unify.types import (
     UNSET,
     UNSET_SENTINEL,
 )
+from apideck_unify.utils import validate_open_enum
 from datetime import date, datetime
 from enum import Enum
-from pydantic import model_serializer
+from pydantic import field_serializer, model_serializer
+from pydantic.functional_validators import PlainValidator
 from typing import List, Optional
-from typing_extensions import NotRequired, TypedDict
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
-class QuoteLineItemType(str, Enum):
+class QuoteLineItemType(str, Enum, metaclass=utils.OpenEnumMeta):
     r"""Item type"""
 
     SALES_ITEM = "sales_item"
@@ -104,7 +107,9 @@ class QuoteLineItem(BaseModel):
     description: OptionalNullable[str] = UNSET
     r"""User defined description"""
 
-    type: OptionalNullable[QuoteLineItemType] = UNSET
+    type: Annotated[
+        OptionalNullable[QuoteLineItemType], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""Item type"""
 
     tax_amount: OptionalNullable[float] = UNSET
@@ -165,6 +170,15 @@ class QuoteLineItem(BaseModel):
 
     updated_at: OptionalNullable[datetime] = UNSET
     r"""The date and time when the object was last updated."""
+
+    @field_serializer("type")
+    def serialize_type(self, value):
+        if isinstance(value, str):
+            try:
+                return models.QuoteLineItemType(value)
+            except ValueError:
+                return value
+        return value
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
@@ -310,7 +324,9 @@ class QuoteLineItemInput(BaseModel):
     description: OptionalNullable[str] = UNSET
     r"""User defined description"""
 
-    type: OptionalNullable[QuoteLineItemType] = UNSET
+    type: Annotated[
+        OptionalNullable[QuoteLineItemType], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""Item type"""
 
     tax_amount: OptionalNullable[float] = UNSET
@@ -359,6 +375,15 @@ class QuoteLineItemInput(BaseModel):
 
     row_version: OptionalNullable[str] = UNSET
     r"""A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object."""
+
+    @field_serializer("type")
+    def serialize_type(self, value):
+        if isinstance(value, str):
+            try:
+                return models.QuoteLineItemType(value)
+            except ValueError:
+                return value
+        return value
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):

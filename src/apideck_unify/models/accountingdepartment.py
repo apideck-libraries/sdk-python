@@ -7,6 +7,7 @@ from .subsidiaryreference_input import (
     SubsidiaryReferenceInput,
     SubsidiaryReferenceInputTypedDict,
 )
+from apideck_unify import models, utils
 from apideck_unify.types import (
     BaseModel,
     Nullable,
@@ -14,14 +15,16 @@ from apideck_unify.types import (
     UNSET,
     UNSET_SENTINEL,
 )
+from apideck_unify.utils import validate_open_enum
 from datetime import datetime
 from enum import Enum
-from pydantic import model_serializer
+from pydantic import field_serializer, model_serializer
+from pydantic.functional_validators import PlainValidator
 from typing import Any, Dict, List, Optional
-from typing_extensions import NotRequired, TypedDict
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
-class DepartmentStatus(str, Enum):
+class DepartmentStatus(str, Enum, metaclass=utils.OpenEnumMeta):
     r"""Based on the status some functionality is enabled or disabled."""
 
     ACTIVE = "active"
@@ -73,7 +76,9 @@ class AccountingDepartment(BaseModel):
     name: OptionalNullable[str] = UNSET
     r"""The name of the department."""
 
-    status: Optional[DepartmentStatus] = None
+    status: Annotated[
+        Optional[DepartmentStatus], PlainValidator(validate_open_enum(False))
+    ] = None
     r"""Based on the status some functionality is enabled or disabled."""
 
     subsidiaries: Optional[List[SubsidiaryReference]] = None
@@ -104,6 +109,15 @@ class AccountingDepartment(BaseModel):
 
     pass_through: Optional[List[PassThroughBody]] = None
     r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
+
+    @field_serializer("status")
+    def serialize_status(self, value):
+        if isinstance(value, str):
+            try:
+                return models.DepartmentStatus(value)
+            except ValueError:
+                return value
+        return value
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
@@ -191,7 +205,9 @@ class AccountingDepartmentInput(BaseModel):
     name: OptionalNullable[str] = UNSET
     r"""The name of the department."""
 
-    status: Optional[DepartmentStatus] = None
+    status: Annotated[
+        Optional[DepartmentStatus], PlainValidator(validate_open_enum(False))
+    ] = None
     r"""Based on the status some functionality is enabled or disabled."""
 
     subsidiaries: Optional[List[SubsidiaryReferenceInput]] = None
@@ -204,6 +220,15 @@ class AccountingDepartmentInput(BaseModel):
 
     pass_through: Optional[List[PassThroughBody]] = None
     r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
+
+    @field_serializer("status")
+    def serialize_status(self, value):
+        if isinstance(value, str):
+            try:
+                return models.DepartmentStatus(value)
+            except ValueError:
+                return value
+        return value
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):

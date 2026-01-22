@@ -15,7 +15,7 @@ from typing_extensions import NotRequired, TypedDict, deprecated
 
 
 @deprecated(
-    "warning: ** DEPRECATED ** - This will be removed in a future release, please migrate away from it as soon as possible."
+    "warning: ** DEPRECATED ** - This field is deprecated and may be removed in a future version.."
 )
 class DeprecatedLinkedSupplierInputTypedDict(TypedDict):
     r"""The supplier this entity is linked to."""
@@ -26,7 +26,7 @@ class DeprecatedLinkedSupplierInputTypedDict(TypedDict):
 
 
 @deprecated(
-    "warning: ** DEPRECATED ** - This will be removed in a future release, please migrate away from it as soon as possible."
+    "warning: ** DEPRECATED ** - This field is deprecated and may be removed in a future version.."
 )
 class DeprecatedLinkedSupplierInput(BaseModel):
     r"""The supplier this entity is linked to."""

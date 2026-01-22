@@ -3,6 +3,7 @@
 from __future__ import annotations
 from .passthroughbody import PassThroughBody, PassThroughBodyTypedDict
 from .sharedlinktarget import SharedLinkTarget, SharedLinkTargetTypedDict
+from apideck_unify import models, utils
 from apideck_unify.types import (
     BaseModel,
     Nullable,
@@ -10,14 +11,16 @@ from apideck_unify.types import (
     UNSET,
     UNSET_SENTINEL,
 )
+from apideck_unify.utils import validate_open_enum
 from datetime import datetime
 from enum import Enum
-from pydantic import model_serializer
+from pydantic import field_serializer, model_serializer
+from pydantic.functional_validators import PlainValidator
 from typing import List, Optional
-from typing_extensions import NotRequired, TypedDict
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
-class Scope(str, Enum):
+class Scope(str, Enum, metaclass=utils.OpenEnumMeta):
     r"""The scope of the shared link."""
 
     PUBLIC = "public"
@@ -52,7 +55,9 @@ class SharedLink(BaseModel):
 
     target: Optional[SharedLinkTarget] = None
 
-    scope: OptionalNullable[Scope] = UNSET
+    scope: Annotated[
+        OptionalNullable[Scope], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""The scope of the shared link."""
 
     password_protected: OptionalNullable[bool] = UNSET
@@ -68,6 +73,15 @@ class SharedLink(BaseModel):
 
     pass_through: Optional[List[PassThroughBody]] = None
     r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
+
+    @field_serializer("scope")
+    def serialize_scope(self, value):
+        if isinstance(value, str):
+            try:
+                return models.Scope(value)
+            except ValueError:
+                return value
+        return value
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
@@ -138,7 +152,9 @@ class SharedLinkInput(BaseModel):
     download_url: OptionalNullable[str] = UNSET
     r"""The URL that can be used to download the file."""
 
-    scope: OptionalNullable[Scope] = UNSET
+    scope: Annotated[
+        OptionalNullable[Scope], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""The scope of the shared link."""
 
     password: OptionalNullable[str] = UNSET
@@ -146,6 +162,15 @@ class SharedLinkInput(BaseModel):
 
     pass_through: Optional[List[PassThroughBody]] = None
     r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
+
+    @field_serializer("scope")
+    def serialize_scope(self, value):
+        if isinstance(value, str):
+            try:
+                return models.Scope(value)
+            except ValueError:
+                return value
+        return value
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):

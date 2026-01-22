@@ -11,14 +11,18 @@ from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
 )
+from apideck_unify import models
 from apideck_unify.types import BaseModel
 from apideck_unify.utils import (
     FieldMetadata,
     HeaderMetadata,
     PathParamMetadata,
     QueryParamMetadata,
+    validate_open_enum,
 )
 import pydantic
+from pydantic import field_serializer
+from pydantic.functional_validators import PlainValidator
 from typing import Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
@@ -65,7 +69,7 @@ class AccountingAttachmentsDeleteRequestTypedDict(TypedDict):
 
 class AccountingAttachmentsDeleteRequest(BaseModel):
     reference_type: Annotated[
-        AttachmentReferenceType,
+        Annotated[AttachmentReferenceType, PlainValidator(validate_open_enum(False))],
         FieldMetadata(path=PathParamMetadata(style="simple", explode=False)),
     ]
     r"""The reference type of the document."""
@@ -106,6 +110,15 @@ class AccountingAttachmentsDeleteRequest(BaseModel):
         FieldMetadata(query=QueryParamMetadata(style="form", explode=True)),
     ] = False
     r"""Include raw response. Mostly used for debugging purposes"""
+
+    @field_serializer("reference_type")
+    def serialize_reference_type(self, value):
+        if isinstance(value, str):
+            try:
+                return models.AttachmentReferenceType(value)
+            except ValueError:
+                return value
+        return value
 
 
 class AccountingAttachmentsDeleteResponseTypedDict(TypedDict):

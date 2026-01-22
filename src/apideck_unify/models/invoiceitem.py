@@ -14,6 +14,7 @@ from .linkedtrackingcategory import (
     LinkedTrackingCategoryTypedDict,
 )
 from .passthroughbody import PassThroughBody, PassThroughBodyTypedDict
+from apideck_unify import models, utils
 from apideck_unify.types import (
     BaseModel,
     Nullable,
@@ -21,15 +22,17 @@ from apideck_unify.types import (
     UNSET,
     UNSET_SENTINEL,
 )
+from apideck_unify.utils import validate_open_enum
 from datetime import date, datetime
 from enum import Enum
 import pydantic
-from pydantic import model_serializer
+from pydantic import field_serializer, model_serializer
+from pydantic.functional_validators import PlainValidator
 from typing import Any, Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
-class InvoiceItemTypeType(str, Enum):
+class InvoiceItemTypeType(str, Enum, metaclass=utils.OpenEnumMeta):
     r"""Item type"""
 
     INVENTORY = "inventory"
@@ -236,7 +239,9 @@ class InvoiceItem(BaseModel):
     inventory_date: OptionalNullable[date] = UNSET
     r"""The date of opening balance if inventory item is tracked - YYYY-MM-DD."""
 
-    type: OptionalNullable[InvoiceItemTypeType] = UNSET
+    type: Annotated[
+        OptionalNullable[InvoiceItemTypeType], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""Item type"""
 
     sales_details: Optional[SalesDetails] = None
@@ -247,7 +252,9 @@ class InvoiceItem(BaseModel):
 
     unit_price: OptionalNullable[float] = UNSET
 
-    currency: OptionalNullable[Currency] = UNSET
+    currency: Annotated[
+        OptionalNullable[Currency], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
 
     asset_account: OptionalNullable[LinkedLedgerAccount] = UNSET
@@ -259,7 +266,7 @@ class InvoiceItem(BaseModel):
     tracking_category: Annotated[
         OptionalNullable[DeprecatedLinkedTrackingCategory],
         pydantic.Field(
-            deprecated="warning: ** DEPRECATED ** - This will be removed in a future release, please migrate away from it as soon as possible."
+            deprecated="warning: ** DEPRECATED ** - This field is deprecated and may be removed in a future version.."
         ),
     ] = UNSET
 
@@ -305,6 +312,24 @@ class InvoiceItem(BaseModel):
 
     pass_through: Optional[List[PassThroughBody]] = None
     r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
+
+    @field_serializer("type")
+    def serialize_type(self, value):
+        if isinstance(value, str):
+            try:
+                return models.InvoiceItemTypeType(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("currency")
+    def serialize_currency(self, value):
+        if isinstance(value, str):
+            try:
+                return models.Currency(value)
+            except ValueError:
+                return value
+        return value
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
@@ -585,7 +610,9 @@ class InvoiceItemInput(BaseModel):
     inventory_date: OptionalNullable[date] = UNSET
     r"""The date of opening balance if inventory item is tracked - YYYY-MM-DD."""
 
-    type: OptionalNullable[InvoiceItemTypeType] = UNSET
+    type: Annotated[
+        OptionalNullable[InvoiceItemTypeType], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""Item type"""
 
     sales_details: Optional[InvoiceItemSalesDetails] = None
@@ -596,7 +623,9 @@ class InvoiceItemInput(BaseModel):
 
     unit_price: OptionalNullable[float] = UNSET
 
-    currency: OptionalNullable[Currency] = UNSET
+    currency: Annotated[
+        OptionalNullable[Currency], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
 
     asset_account: OptionalNullable[LinkedLedgerAccount] = UNSET
@@ -608,7 +637,7 @@ class InvoiceItemInput(BaseModel):
     tracking_category: Annotated[
         OptionalNullable[DeprecatedLinkedTrackingCategory],
         pydantic.Field(
-            deprecated="warning: ** DEPRECATED ** - This will be removed in a future release, please migrate away from it as soon as possible."
+            deprecated="warning: ** DEPRECATED ** - This field is deprecated and may be removed in a future version.."
         ),
     ] = UNSET
 
@@ -639,6 +668,24 @@ class InvoiceItemInput(BaseModel):
 
     pass_through: Optional[List[PassThroughBody]] = None
     r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
+
+    @field_serializer("type")
+    def serialize_type(self, value):
+        if isinstance(value, str):
+            try:
+                return models.InvoiceItemTypeType(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("currency")
+    def serialize_currency(self, value):
+        if isinstance(value, str):
+            try:
+                return models.Currency(value)
+            except ValueError:
+                return value
+        return value
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):

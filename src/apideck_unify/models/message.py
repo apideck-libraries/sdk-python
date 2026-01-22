@@ -3,6 +3,7 @@
 from __future__ import annotations
 from .currency import Currency
 from .passthroughbody import PassThroughBody, PassThroughBodyTypedDict
+from apideck_unify import models, utils
 from apideck_unify.types import (
     BaseModel,
     Nullable,
@@ -10,22 +11,24 @@ from apideck_unify.types import (
     UNSET,
     UNSET_SENTINEL,
 )
+from apideck_unify.utils import validate_open_enum
 from datetime import datetime
 from enum import Enum
 import pydantic
-from pydantic import model_serializer
+from pydantic import field_serializer, model_serializer
+from pydantic.functional_validators import PlainValidator
 from typing import Any, Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
-class MessageType(str, Enum):
+class MessageType(str, Enum, metaclass=utils.OpenEnumMeta):
     r"""Set to sms for SMS messages and mms for MMS messages."""
 
     SMS = "sms"
     MMS = "mms"
 
 
-class Direction(str, Enum):
+class Direction(str, Enum, metaclass=utils.OpenEnumMeta):
     r"""The direction of the message."""
 
     INBOUND = "inbound"
@@ -35,7 +38,7 @@ class Direction(str, Enum):
     UNKNOWN = "unknown"
 
 
-class MessageStatus(str, Enum):
+class MessageStatus(str, Enum, metaclass=utils.OpenEnumMeta):
     r"""Status of the delivery of the message."""
 
     ACCEPTED = "accepted"
@@ -68,8 +71,19 @@ class Price(BaseModel):
 
     total_amount: Optional[str] = None
 
-    currency: OptionalNullable[Currency] = UNSET
+    currency: Annotated[
+        OptionalNullable[Currency], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
+
+    @field_serializer("currency")
+    def serialize_currency(self, value):
+        if isinstance(value, str):
+            try:
+                return models.Currency(value)
+            except ValueError:
+                return value
+        return value
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
@@ -182,7 +196,9 @@ class Message(BaseModel):
 
     subject: Optional[str] = None
 
-    type: Optional[MessageType] = None
+    type: Annotated[
+        Optional[MessageType], PlainValidator(validate_open_enum(False))
+    ] = None
     r"""Set to sms for SMS messages and mms for MMS messages."""
 
     number_of_units: Optional[int] = None
@@ -191,10 +207,14 @@ class Message(BaseModel):
     number_of_media_files: Optional[int] = None
     r"""The number of media files associated with the message."""
 
-    direction: Optional[Direction] = None
+    direction: Annotated[
+        Optional[Direction], PlainValidator(validate_open_enum(False))
+    ] = None
     r"""The direction of the message."""
 
-    status: Optional[MessageStatus] = None
+    status: Annotated[
+        Optional[MessageStatus], PlainValidator(validate_open_enum(False))
+    ] = None
     r"""Status of the delivery of the message."""
 
     scheduled_at: Optional[datetime] = None
@@ -235,6 +255,33 @@ class Message(BaseModel):
 
     pass_through: Optional[List[PassThroughBody]] = None
     r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
+
+    @field_serializer("type")
+    def serialize_type(self, value):
+        if isinstance(value, str):
+            try:
+                return models.MessageType(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("direction")
+    def serialize_direction(self, value):
+        if isinstance(value, str):
+            try:
+                return models.Direction(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("status")
+    def serialize_status(self, value):
+        if isinstance(value, str):
+            try:
+                return models.MessageStatus(value)
+            except ValueError:
+                return value
+        return value
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
@@ -328,7 +375,9 @@ class MessageInput(BaseModel):
 
     subject: Optional[str] = None
 
-    type: Optional[MessageType] = None
+    type: Annotated[
+        Optional[MessageType], PlainValidator(validate_open_enum(False))
+    ] = None
     r"""Set to sms for SMS messages and mms for MMS messages."""
 
     scheduled_at: Optional[datetime] = None
@@ -345,3 +394,12 @@ class MessageInput(BaseModel):
 
     pass_through: Optional[List[PassThroughBody]] = None
     r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
+
+    @field_serializer("type")
+    def serialize_type(self, value):
+        if isinstance(value, str):
+            try:
+                return models.MessageType(value)
+            except ValueError:
+                return value
+        return value

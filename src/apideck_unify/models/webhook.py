@@ -4,6 +4,7 @@ from __future__ import annotations
 from .status import Status
 from .unifiedapiid import UnifiedAPIID
 from .webhookeventtype import WebhookEventType
+from apideck_unify import models, utils
 from apideck_unify.types import (
     BaseModel,
     Nullable,
@@ -11,14 +12,16 @@ from apideck_unify.types import (
     UNSET,
     UNSET_SENTINEL,
 )
+from apideck_unify.utils import validate_open_enum
 from datetime import datetime
 from enum import Enum
-from pydantic import model_serializer
+from pydantic import field_serializer, model_serializer
+from pydantic.functional_validators import PlainValidator
 from typing import List, Optional
-from typing_extensions import NotRequired, TypedDict
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
-class DisabledReason(str, Enum):
+class DisabledReason(str, Enum, metaclass=utils.OpenEnumMeta):
     r"""Indicates why the webhook has been disabled. `retry_limit`: webhook reached its retry limit. `usage_limit`: account is over its usage limit. `delivery_url_validation_failed`: delivery URL failed validation during webhook creation or update."""
 
     NONE = "none"
@@ -50,10 +53,10 @@ class WebhookTypedDict(TypedDict):
 
 
 class Webhook(BaseModel):
-    unified_api: UnifiedAPIID
+    unified_api: Annotated[UnifiedAPIID, PlainValidator(validate_open_enum(False))]
     r"""Name of Apideck Unified API"""
 
-    status: Status
+    status: Annotated[Status, PlainValidator(validate_open_enum(False))]
     r"""The status of the webhook."""
 
     delivery_url: str
@@ -62,7 +65,7 @@ class Webhook(BaseModel):
     execute_base_url: str
     r"""The Unify Base URL events from connectors will be sent to after service id is appended."""
 
-    events: List[WebhookEventType]
+    events: List[Annotated[WebhookEventType, PlainValidator(validate_open_enum(False))]]
     r"""The list of subscribed events for this webhook. [`*`] indicates that all events are enabled."""
 
     id: Optional[str] = None
@@ -70,7 +73,9 @@ class Webhook(BaseModel):
     description: OptionalNullable[str] = UNSET
     r"""A description of the object."""
 
-    disabled_reason: Optional[DisabledReason] = None
+    disabled_reason: Annotated[
+        Optional[DisabledReason], PlainValidator(validate_open_enum(False))
+    ] = None
     r"""Indicates why the webhook has been disabled. `retry_limit`: webhook reached its retry limit. `usage_limit`: account is over its usage limit. `delivery_url_validation_failed`: delivery URL failed validation during webhook creation or update."""
 
     updated_at: OptionalNullable[datetime] = UNSET
@@ -78,6 +83,33 @@ class Webhook(BaseModel):
 
     created_at: OptionalNullable[datetime] = UNSET
     r"""The date and time when the object was created."""
+
+    @field_serializer("unified_api")
+    def serialize_unified_api(self, value):
+        if isinstance(value, str):
+            try:
+                return models.UnifiedAPIID(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("status")
+    def serialize_status(self, value):
+        if isinstance(value, str):
+            try:
+                return models.Status(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("disabled_reason")
+    def serialize_disabled_reason(self, value):
+        if isinstance(value, str):
+            try:
+                return models.DisabledReason(value)
+            except ValueError:
+                return value
+        return value
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):

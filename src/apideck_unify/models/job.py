@@ -6,6 +6,7 @@ from .currency import Currency
 from .customfield import CustomField, CustomFieldTypedDict
 from .department import Department, DepartmentTypedDict
 from .jobstatus import JobStatus
+from apideck_unify import models, utils
 from apideck_unify.types import (
     BaseModel,
     Nullable,
@@ -13,15 +14,17 @@ from apideck_unify.types import (
     UNSET,
     UNSET_SENTINEL,
 )
+from apideck_unify.utils import validate_open_enum
 from datetime import date, datetime
 from enum import Enum
 import pydantic
-from pydantic import model_serializer
+from pydantic import field_serializer, model_serializer
+from pydantic.functional_validators import PlainValidator
 from typing import Any, Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
-class Visibility(str, Enum):
+class Visibility(str, Enum, metaclass=utils.OpenEnumMeta):
     r"""The visibility of the job"""
 
     DRAFT = "draft"
@@ -29,7 +32,7 @@ class Visibility(str, Enum):
     INTERNAL = "internal"
 
 
-class EmploymentTerms(str, Enum):
+class EmploymentTerms(str, Enum, metaclass=utils.OpenEnumMeta):
     FULL_TIME = "full-time"
     PART_TIME = "part-time"
     INTERNSHIP = "internship"
@@ -119,10 +122,21 @@ class Salary(BaseModel):
     max: Optional[int] = None
     r"""Maximum salary payable for the job role."""
 
-    currency: OptionalNullable[Currency] = UNSET
+    currency: Annotated[
+        OptionalNullable[Currency], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
 
     interval: OptionalNullable[str] = UNSET
+
+    @field_serializer("currency")
+    def serialize_currency(self, value):
+        if isinstance(value, str):
+            try:
+                return models.Currency(value)
+            except ValueError:
+                return value
+        return value
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
@@ -155,7 +169,7 @@ class Salary(BaseModel):
         return m
 
 
-class JobType(str, Enum):
+class JobType(str, Enum, metaclass=utils.OpenEnumMeta):
     JOB_PORTAL = "job_portal"
     JOB_DESCRIPTION = "job_description"
 
@@ -166,9 +180,18 @@ class JobLinksTypedDict(TypedDict):
 
 
 class JobLinks(BaseModel):
-    type: Optional[JobType] = None
+    type: Annotated[Optional[JobType], PlainValidator(validate_open_enum(False))] = None
 
     url: Optional[str] = None
+
+    @field_serializer("type")
+    def serialize_type(self, value):
+        if isinstance(value, str):
+            try:
+                return models.JobType(value)
+            except ValueError:
+                return value
+        return value
 
 
 class JobTypedDict(TypedDict):
@@ -253,10 +276,14 @@ class Job(BaseModel):
     sequence: Optional[int] = None
     r"""Sequence in relation to other jobs."""
 
-    visibility: Optional[Visibility] = None
+    visibility: Annotated[
+        Optional[Visibility], PlainValidator(validate_open_enum(False))
+    ] = None
     r"""The visibility of the job"""
 
-    status: Optional[JobStatus] = None
+    status: Annotated[
+        Optional[JobStatus], PlainValidator(validate_open_enum(False))
+    ] = None
     r"""The status of the job."""
 
     code: Optional[str] = None
@@ -265,7 +292,9 @@ class Job(BaseModel):
     language: OptionalNullable[str] = UNSET
     r"""language code according to ISO 639-1. For the United States - EN"""
 
-    employment_terms: OptionalNullable[EmploymentTerms] = UNSET
+    employment_terms: Annotated[
+        OptionalNullable[EmploymentTerms], PlainValidator(validate_open_enum(False))
+    ] = UNSET
 
     experience: Optional[str] = None
     r"""Level of experience required for the job role."""
@@ -311,7 +340,7 @@ class Job(BaseModel):
     url: Annotated[
         OptionalNullable[str],
         pydantic.Field(
-            deprecated="warning: ** DEPRECATED ** - This will be removed in a future release, please migrate away from it as soon as possible."
+            deprecated="warning: ** DEPRECATED ** - This field is deprecated and may be removed in a future version.."
         ),
     ] = UNSET
     r"""URL of the job description"""
@@ -319,7 +348,7 @@ class Job(BaseModel):
     job_portal_url: Annotated[
         OptionalNullable[str],
         pydantic.Field(
-            deprecated="warning: ** DEPRECATED ** - This will be removed in a future release, please migrate away from it as soon as possible."
+            deprecated="warning: ** DEPRECATED ** - This field is deprecated and may be removed in a future version.."
         ),
     ] = UNSET
     r"""URL of the job portal"""
@@ -327,7 +356,7 @@ class Job(BaseModel):
     record_url: Annotated[
         OptionalNullable[str],
         pydantic.Field(
-            deprecated="warning: ** DEPRECATED ** - This will be removed in a future release, please migrate away from it as soon as possible."
+            deprecated="warning: ** DEPRECATED ** - This field is deprecated and may be removed in a future version.."
         ),
     ] = UNSET
 
@@ -365,6 +394,33 @@ class Job(BaseModel):
 
     created_at: OptionalNullable[datetime] = UNSET
     r"""The date and time when the object was created."""
+
+    @field_serializer("visibility")
+    def serialize_visibility(self, value):
+        if isinstance(value, str):
+            try:
+                return models.Visibility(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("status")
+    def serialize_status(self, value):
+        if isinstance(value, str):
+            try:
+                return models.JobStatus(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("employment_terms")
+    def serialize_employment_terms(self, value):
+        if isinstance(value, str):
+            try:
+                return models.EmploymentTerms(value)
+            except ValueError:
+                return value
+        return value
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):

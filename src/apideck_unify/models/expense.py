@@ -27,6 +27,7 @@ from .linkedtrackingcategory import (
     LinkedTrackingCategoryTypedDict,
 )
 from .passthroughbody import PassThroughBody, PassThroughBodyTypedDict
+from apideck_unify import models, utils
 from apideck_unify.types import (
     BaseModel,
     Nullable,
@@ -34,15 +35,17 @@ from apideck_unify.types import (
     UNSET,
     UNSET_SENTINEL,
 )
+from apideck_unify.utils import validate_open_enum
 from datetime import datetime
 from enum import Enum
 import pydantic
-from pydantic import model_serializer
+from pydantic import field_serializer, model_serializer
+from pydantic.functional_validators import PlainValidator
 from typing import Any, Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
-class ExpensePaymentType(str, Enum):
+class ExpensePaymentType(str, Enum, metaclass=utils.OpenEnumMeta):
     r"""The type of payment for the expense."""
 
     CASH = "cash"
@@ -51,14 +54,14 @@ class ExpensePaymentType(str, Enum):
     OTHER = "other"
 
 
-class ExpenseType(str, Enum):
+class ExpenseType(str, Enum, metaclass=utils.OpenEnumMeta):
     r"""The type of expense."""
 
     EXPENSE = "expense"
     REFUND = "refund"
 
 
-class ExpenseStatus(str, Enum):
+class ExpenseStatus(str, Enum, metaclass=utils.OpenEnumMeta):
     r"""Expense status"""
 
     DRAFT = "draft"
@@ -155,7 +158,7 @@ class Expense(BaseModel):
     account_id: Annotated[
         Optional[str],
         pydantic.Field(
-            deprecated="warning: ** DEPRECATED ** - This will be removed in a future release, please migrate away from it as soon as possible."
+            deprecated="warning: ** DEPRECATED ** - Deprecated. Use account instead.."
         ),
     ] = None
     r"""The unique identifier for the ledger account that this expense should be credited to. Deprecated, use account instead."""
@@ -166,7 +169,7 @@ class Expense(BaseModel):
     supplier_id: Annotated[
         Optional[str],
         pydantic.Field(
-            deprecated="warning: ** DEPRECATED ** - This will be removed in a future release, please migrate away from it as soon as possible."
+            deprecated="warning: ** DEPRECATED ** - Deprecated. Use supplier instead.."
         ),
     ] = None
     r"""The ID of the supplier this entity is linked to. Deprecated, use supplier instead."""
@@ -184,16 +187,22 @@ class Expense(BaseModel):
 
     department: OptionalNullable[LinkedDepartment] = UNSET
 
-    payment_type: OptionalNullable[ExpensePaymentType] = UNSET
+    payment_type: Annotated[
+        OptionalNullable[ExpensePaymentType], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""The type of payment for the expense."""
 
-    currency: OptionalNullable[Currency] = UNSET
+    currency: Annotated[
+        OptionalNullable[Currency], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
 
     currency_rate: OptionalNullable[float] = UNSET
     r"""Currency Exchange Rate at the time entity was recorded/generated."""
 
-    type: OptionalNullable[ExpenseType] = UNSET
+    type: Annotated[
+        OptionalNullable[ExpenseType], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""The type of expense."""
 
     memo: OptionalNullable[str] = UNSET
@@ -229,7 +238,9 @@ class Expense(BaseModel):
     custom_mappings: OptionalNullable[Dict[str, Any]] = UNSET
     r"""When custom mappings are configured on the resource, the result is included here."""
 
-    status: OptionalNullable[ExpenseStatus] = UNSET
+    status: Annotated[
+        OptionalNullable[ExpenseStatus], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""Expense status"""
 
     updated_at: OptionalNullable[datetime] = UNSET
@@ -249,6 +260,42 @@ class Expense(BaseModel):
 
     pass_through: Optional[List[PassThroughBody]] = None
     r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
+
+    @field_serializer("payment_type")
+    def serialize_payment_type(self, value):
+        if isinstance(value, str):
+            try:
+                return models.ExpensePaymentType(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("currency")
+    def serialize_currency(self, value):
+        if isinstance(value, str):
+            try:
+                return models.Currency(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("type")
+    def serialize_type(self, value):
+        if isinstance(value, str):
+            try:
+                return models.ExpenseType(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("status")
+    def serialize_status(self, value):
+        if isinstance(value, str):
+            try:
+                return models.ExpenseStatus(value)
+            except ValueError:
+                return value
+        return value
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
@@ -419,7 +466,7 @@ class ExpenseInput(BaseModel):
     account_id: Annotated[
         Optional[str],
         pydantic.Field(
-            deprecated="warning: ** DEPRECATED ** - This will be removed in a future release, please migrate away from it as soon as possible."
+            deprecated="warning: ** DEPRECATED ** - Deprecated. Use account instead.."
         ),
     ] = None
     r"""The unique identifier for the ledger account that this expense should be credited to. Deprecated, use account instead."""
@@ -430,7 +477,7 @@ class ExpenseInput(BaseModel):
     supplier_id: Annotated[
         Optional[str],
         pydantic.Field(
-            deprecated="warning: ** DEPRECATED ** - This will be removed in a future release, please migrate away from it as soon as possible."
+            deprecated="warning: ** DEPRECATED ** - Deprecated. Use supplier instead.."
         ),
     ] = None
     r"""The ID of the supplier this entity is linked to. Deprecated, use supplier instead."""
@@ -448,16 +495,22 @@ class ExpenseInput(BaseModel):
 
     department: OptionalNullable[LinkedDepartmentInput] = UNSET
 
-    payment_type: OptionalNullable[ExpensePaymentType] = UNSET
+    payment_type: Annotated[
+        OptionalNullable[ExpensePaymentType], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""The type of payment for the expense."""
 
-    currency: OptionalNullable[Currency] = UNSET
+    currency: Annotated[
+        OptionalNullable[Currency], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
 
     currency_rate: OptionalNullable[float] = UNSET
     r"""Currency Exchange Rate at the time entity was recorded/generated."""
 
-    type: OptionalNullable[ExpenseType] = UNSET
+    type: Annotated[
+        OptionalNullable[ExpenseType], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""The type of expense."""
 
     memo: OptionalNullable[str] = UNSET
@@ -490,7 +543,9 @@ class ExpenseInput(BaseModel):
 
     custom_fields: Optional[List[CustomField]] = None
 
-    status: OptionalNullable[ExpenseStatus] = UNSET
+    status: Annotated[
+        OptionalNullable[ExpenseStatus], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""Expense status"""
 
     row_version: OptionalNullable[str] = UNSET
@@ -498,6 +553,42 @@ class ExpenseInput(BaseModel):
 
     pass_through: Optional[List[PassThroughBody]] = None
     r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
+
+    @field_serializer("payment_type")
+    def serialize_payment_type(self, value):
+        if isinstance(value, str):
+            try:
+                return models.ExpensePaymentType(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("currency")
+    def serialize_currency(self, value):
+        if isinstance(value, str):
+            try:
+                return models.Currency(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("type")
+    def serialize_type(self, value):
+        if isinstance(value, str):
+            try:
+                return models.ExpenseType(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("status")
+    def serialize_status(self, value):
+        if isinstance(value, str):
+            try:
+                return models.ExpenseStatus(value)
+            except ValueError:
+                return value
+        return value
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):

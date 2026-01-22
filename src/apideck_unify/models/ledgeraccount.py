@@ -7,6 +7,7 @@ from .customfield import CustomField, CustomFieldTypedDict
 from .linkedtaxrate import LinkedTaxRate, LinkedTaxRateTypedDict
 from .linkedtaxrate_input import LinkedTaxRateInput, LinkedTaxRateInputTypedDict
 from .passthroughbody import PassThroughBody, PassThroughBodyTypedDict
+from apideck_unify import models, utils
 from apideck_unify.types import (
     BaseModel,
     Nullable,
@@ -14,15 +15,17 @@ from apideck_unify.types import (
     UNSET,
     UNSET_SENTINEL,
 )
+from apideck_unify.utils import validate_open_enum
 from datetime import date, datetime
 from enum import Enum
 import pydantic
-from pydantic import model_serializer
+from pydantic import field_serializer, model_serializer
+from pydantic.functional_validators import PlainValidator
 from typing import Any, Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
-class LedgerAccountClassification(str, Enum):
+class LedgerAccountClassification(str, Enum, metaclass=utils.OpenEnumMeta):
     r"""The classification of account."""
 
     ASSET = "asset"
@@ -37,7 +40,7 @@ class LedgerAccountClassification(str, Enum):
     OTHER = "other"
 
 
-class LedgerAccountType(str, Enum):
+class LedgerAccountType(str, Enum, metaclass=utils.OpenEnumMeta):
     r"""The type of account."""
 
     ACCOUNTS_PAYABLE = "accounts_payable"
@@ -62,7 +65,7 @@ class LedgerAccountType(str, Enum):
     OTHER = "other"
 
 
-class AccountStatus(str, Enum):
+class AccountStatus(str, Enum, metaclass=utils.OpenEnumMeta):
     r"""The status of the account."""
 
     ACTIVE = "active"
@@ -204,7 +207,7 @@ class LedgerAccount(BaseModel):
     nominal_code: Annotated[
         OptionalNullable[str],
         pydantic.Field(
-            deprecated="warning: ** DEPRECATED ** - This will be removed in a future release, please migrate away from it as soon as possible."
+            deprecated="warning: ** DEPRECATED ** - This field is deprecated and may be removed in a future version.."
         ),
     ] = UNSET
     r"""The nominal code of the ledger account."""
@@ -212,10 +215,15 @@ class LedgerAccount(BaseModel):
     code: OptionalNullable[str] = UNSET
     r"""The code assigned to the account."""
 
-    classification: OptionalNullable[LedgerAccountClassification] = UNSET
+    classification: Annotated[
+        OptionalNullable[LedgerAccountClassification],
+        PlainValidator(validate_open_enum(False)),
+    ] = UNSET
     r"""The classification of account."""
 
-    type: Optional[LedgerAccountType] = None
+    type: Annotated[
+        Optional[LedgerAccountType], PlainValidator(validate_open_enum(False))
+    ] = None
     r"""The type of account."""
 
     sub_type: OptionalNullable[str] = UNSET
@@ -236,7 +244,9 @@ class LedgerAccount(BaseModel):
     current_balance: OptionalNullable[float] = UNSET
     r"""The current balance of the account."""
 
-    currency: OptionalNullable[Currency] = UNSET
+    currency: Annotated[
+        OptionalNullable[Currency], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
 
     tax_type: OptionalNullable[str] = UNSET
@@ -249,7 +259,9 @@ class LedgerAccount(BaseModel):
     active: OptionalNullable[bool] = UNSET
     r"""Whether the account is active or not."""
 
-    status: OptionalNullable[AccountStatus] = UNSET
+    status: Annotated[
+        OptionalNullable[AccountStatus], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""The status of the account."""
 
     header: OptionalNullable[bool] = UNSET
@@ -296,6 +308,42 @@ class LedgerAccount(BaseModel):
 
     pass_through: Optional[List[PassThroughBody]] = None
     r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
+
+    @field_serializer("classification")
+    def serialize_classification(self, value):
+        if isinstance(value, str):
+            try:
+                return models.LedgerAccountClassification(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("type")
+    def serialize_type(self, value):
+        if isinstance(value, str):
+            try:
+                return models.LedgerAccountType(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("currency")
+    def serialize_currency(self, value):
+        if isinstance(value, str):
+            try:
+                return models.Currency(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("status")
+    def serialize_status(self, value):
+        if isinstance(value, str):
+            try:
+                return models.AccountStatus(value)
+            except ValueError:
+                return value
+        return value
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
@@ -444,7 +492,7 @@ class LedgerAccountInput(BaseModel):
     nominal_code: Annotated[
         OptionalNullable[str],
         pydantic.Field(
-            deprecated="warning: ** DEPRECATED ** - This will be removed in a future release, please migrate away from it as soon as possible."
+            deprecated="warning: ** DEPRECATED ** - This field is deprecated and may be removed in a future version.."
         ),
     ] = UNSET
     r"""The nominal code of the ledger account."""
@@ -452,10 +500,15 @@ class LedgerAccountInput(BaseModel):
     code: OptionalNullable[str] = UNSET
     r"""The code assigned to the account."""
 
-    classification: OptionalNullable[LedgerAccountClassification] = UNSET
+    classification: Annotated[
+        OptionalNullable[LedgerAccountClassification],
+        PlainValidator(validate_open_enum(False)),
+    ] = UNSET
     r"""The classification of account."""
 
-    type: Optional[LedgerAccountType] = None
+    type: Annotated[
+        Optional[LedgerAccountType], PlainValidator(validate_open_enum(False))
+    ] = None
     r"""The type of account."""
 
     sub_type: OptionalNullable[str] = UNSET
@@ -476,7 +529,9 @@ class LedgerAccountInput(BaseModel):
     current_balance: OptionalNullable[float] = UNSET
     r"""The current balance of the account."""
 
-    currency: OptionalNullable[Currency] = UNSET
+    currency: Annotated[
+        OptionalNullable[Currency], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
 
     tax_type: OptionalNullable[str] = UNSET
@@ -489,7 +544,9 @@ class LedgerAccountInput(BaseModel):
     active: OptionalNullable[bool] = UNSET
     r"""Whether the account is active or not."""
 
-    status: OptionalNullable[AccountStatus] = UNSET
+    status: Annotated[
+        OptionalNullable[AccountStatus], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""The status of the account."""
 
     header: OptionalNullable[bool] = UNSET
@@ -515,6 +572,42 @@ class LedgerAccountInput(BaseModel):
 
     pass_through: Optional[List[PassThroughBody]] = None
     r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
+
+    @field_serializer("classification")
+    def serialize_classification(self, value):
+        if isinstance(value, str):
+            try:
+                return models.LedgerAccountClassification(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("type")
+    def serialize_type(self, value):
+        if isinstance(value, str):
+            try:
+                return models.LedgerAccountType(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("currency")
+    def serialize_currency(self, value):
+        if isinstance(value, str):
+            try:
+                return models.Currency(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("status")
+    def serialize_status(self, value):
+        if isinstance(value, str):
+            try:
+                return models.AccountStatus(value)
+            except ValueError:
+                return value
+        return value
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):

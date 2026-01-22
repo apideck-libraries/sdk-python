@@ -7,6 +7,7 @@ from .email import Email, EmailTypedDict
 from .passthroughbody import PassThroughBody, PassThroughBodyTypedDict
 from .phonenumber import PhoneNumber, PhoneNumberTypedDict
 from .website import Website, WebsiteTypedDict
+from apideck_unify import models, utils
 from apideck_unify.types import (
     BaseModel,
     Nullable,
@@ -14,14 +15,16 @@ from apideck_unify.types import (
     UNSET,
     UNSET_SENTINEL,
 )
+from apideck_unify.utils import validate_open_enum
 from datetime import datetime
 from enum import Enum
-from pydantic import model_serializer
+from pydantic import field_serializer, model_serializer
+from pydantic.functional_validators import PlainValidator
 from typing import Any, Dict, List, Optional
-from typing_extensions import NotRequired, TypedDict
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
-class HrisCompanyStatus(str, Enum):
+class HrisCompanyStatus(str, Enum, metaclass=utils.OpenEnumMeta):
     ACTIVE = "active"
     INACTIVE = "inactive"
     TRIAL = "trial"
@@ -69,12 +72,16 @@ class HrisCompany(BaseModel):
 
     subdomain: OptionalNullable[str] = UNSET
 
-    status: Optional[HrisCompanyStatus] = None
+    status: Annotated[
+        Optional[HrisCompanyStatus], PlainValidator(validate_open_enum(False))
+    ] = None
 
     company_number: OptionalNullable[str] = UNSET
     r"""An Company Number, Company ID or Company Code, is a unique number that has been assigned to each company."""
 
-    currency: OptionalNullable[Currency] = UNSET
+    currency: Annotated[
+        OptionalNullable[Currency], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
 
     addresses: Optional[List[Address]] = None
@@ -106,6 +113,24 @@ class HrisCompany(BaseModel):
 
     pass_through: Optional[List[PassThroughBody]] = None
     r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
+
+    @field_serializer("status")
+    def serialize_status(self, value):
+        if isinstance(value, str):
+            try:
+                return models.HrisCompanyStatus(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("currency")
+    def serialize_currency(self, value):
+        if isinstance(value, str):
+            try:
+                return models.Currency(value)
+            except ValueError:
+                return value
+        return value
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
@@ -194,12 +219,16 @@ class HrisCompanyInput(BaseModel):
 
     subdomain: OptionalNullable[str] = UNSET
 
-    status: Optional[HrisCompanyStatus] = None
+    status: Annotated[
+        Optional[HrisCompanyStatus], PlainValidator(validate_open_enum(False))
+    ] = None
 
     company_number: OptionalNullable[str] = UNSET
     r"""An Company Number, Company ID or Company Code, is a unique number that has been assigned to each company."""
 
-    currency: OptionalNullable[Currency] = UNSET
+    currency: Annotated[
+        OptionalNullable[Currency], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
 
     addresses: Optional[List[Address]] = None
@@ -214,6 +243,24 @@ class HrisCompanyInput(BaseModel):
 
     pass_through: Optional[List[PassThroughBody]] = None
     r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
+
+    @field_serializer("status")
+    def serialize_status(self, value):
+        if isinstance(value, str):
+            try:
+                return models.HrisCompanyStatus(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("currency")
+    def serialize_currency(self, value):
+        if isinstance(value, str):
+            try:
+                return models.Currency(value)
+            except ValueError:
+                return value
+        return value
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):

@@ -3,13 +3,16 @@
 from __future__ import annotations
 from .consumermetadata import ConsumerMetadata, ConsumerMetadataTypedDict
 from .unifiedapiid import UnifiedAPIID
+from apideck_unify import utils
 from apideck_unify.types import BaseModel
+from apideck_unify.utils import validate_open_enum
 from enum import Enum
+from pydantic.functional_validators import PlainValidator
 from typing import Any, Dict, List, Optional
-from typing_extensions import NotRequired, TypedDict
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
-class AllowActions(str, Enum):
+class AllowActions(str, Enum, metaclass=utils.OpenEnumMeta):
     DELETE = "delete"
     DISCONNECT = "disconnect"
     REAUTHORIZE = "reauthorize"
@@ -49,7 +52,9 @@ class SettingsTypedDict(TypedDict):
 class Settings(BaseModel):
     r"""Settings to change the way the Vault is displayed."""
 
-    unified_apis: Optional[List[UnifiedAPIID]] = None
+    unified_apis: Optional[
+        List[Annotated[UnifiedAPIID, PlainValidator(validate_open_enum(False))]]
+    ] = None
     r"""Provide the IDs of the Unified APIs you want to be visible. Leaving it empty or omitting this field will show all Unified APIs."""
 
     hide_resource_settings: Optional[bool] = False
@@ -79,7 +84,9 @@ class Settings(BaseModel):
     hide_guides: Optional[bool] = False
     r"""Hide Apideck connection guides in [Vault](/apis/vault/reference#section/Get-Started). Defaults to `false`."""
 
-    allow_actions: Optional[List[AllowActions]] = None
+    allow_actions: Optional[
+        List[Annotated[AllowActions, PlainValidator(validate_open_enum(False))]]
+    ] = None
     r"""Hide actions from your users in [Vault](/apis/vault/reference#section/Get-Started). Actions in `allow_actions` will be shown on a connection in Vault.
     Available actions are: `delete`, `disconnect`, `reauthorize` and `disable`.
     Empty array will hide all actions. By default all actions are visible.

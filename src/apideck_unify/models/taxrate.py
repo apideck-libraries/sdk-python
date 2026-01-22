@@ -3,6 +3,7 @@
 from __future__ import annotations
 from .customfield import CustomField, CustomFieldTypedDict
 from .passthroughbody import PassThroughBody, PassThroughBodyTypedDict
+from apideck_unify import models, utils
 from apideck_unify.types import (
     BaseModel,
     Nullable,
@@ -10,11 +11,13 @@ from apideck_unify.types import (
     UNSET,
     UNSET_SENTINEL,
 )
+from apideck_unify.utils import validate_open_enum
 from datetime import datetime
 from enum import Enum
-from pydantic import model_serializer
+from pydantic import field_serializer, model_serializer
+from pydantic.functional_validators import PlainValidator
 from typing import Any, Dict, List, Optional
-from typing_extensions import NotRequired, TypedDict
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class ComponentsTypedDict(TypedDict):
@@ -64,7 +67,7 @@ class Components(BaseModel):
         return m
 
 
-class TaxRateStatus(str, Enum):
+class TaxRateStatus(str, Enum, metaclass=utils.OpenEnumMeta):
     r"""Tax rate status"""
 
     ACTIVE = "active"
@@ -173,7 +176,9 @@ class TaxRate(BaseModel):
     original_tax_rate_id: OptionalNullable[str] = UNSET
     r"""ID of the original tax rate from which the new tax rate is derived. Helps to understand the relationship between corresponding tax rate entities."""
 
-    status: OptionalNullable[TaxRateStatus] = UNSET
+    status: Annotated[
+        OptionalNullable[TaxRateStatus], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""Tax rate status"""
 
     custom_mappings: OptionalNullable[Dict[str, Any]] = UNSET
@@ -201,6 +206,15 @@ class TaxRate(BaseModel):
     r"""The subsidiaries this belongs to."""
 
     custom_fields: Optional[List[CustomField]] = None
+
+    @field_serializer("status")
+    def serialize_status(self, value):
+        if isinstance(value, str):
+            try:
+                return models.TaxRateStatus(value)
+            except ValueError:
+                return value
+        return value
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
@@ -360,7 +374,9 @@ class TaxRateInput(BaseModel):
     original_tax_rate_id: OptionalNullable[str] = UNSET
     r"""ID of the original tax rate from which the new tax rate is derived. Helps to understand the relationship between corresponding tax rate entities."""
 
-    status: OptionalNullable[TaxRateStatus] = UNSET
+    status: Annotated[
+        OptionalNullable[TaxRateStatus], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""Tax rate status"""
 
     row_version: OptionalNullable[str] = UNSET
@@ -373,6 +389,15 @@ class TaxRateInput(BaseModel):
     r"""The subsidiaries this belongs to."""
 
     custom_fields: Optional[List[CustomField]] = None
+
+    @field_serializer("status")
+    def serialize_status(self, value):
+        if isinstance(value, str):
+            try:
+                return models.TaxRateStatus(value)
+            except ValueError:
+                return value
+        return value
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):

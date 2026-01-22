@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 from .creditordebit import CreditOrDebit
+from apideck_unify import models, utils
 from apideck_unify.types import (
     BaseModel,
     Nullable,
@@ -9,14 +10,16 @@ from apideck_unify.types import (
     UNSET,
     UNSET_SENTINEL,
 )
+from apideck_unify.utils import validate_open_enum
 from datetime import datetime
 from enum import Enum
-from pydantic import model_serializer
+from pydantic import field_serializer, model_serializer
+from pydantic.functional_validators import PlainValidator
 from typing import List, Optional
-from typing_extensions import NotRequired, TypedDict
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
-class StatementStatus(str, Enum):
+class StatementStatus(str, Enum, metaclass=utils.OpenEnumMeta):
     r"""The current status of the bank feed statement."""
 
     PENDING = "pending"
@@ -24,7 +27,7 @@ class StatementStatus(str, Enum):
     SUCCESS = "success"
 
 
-class BankFeedStatementTransactionType(str, Enum):
+class BankFeedStatementTransactionType(str, Enum, metaclass=utils.OpenEnumMeta):
     r"""Type of transaction."""
 
     CREDIT = "credit"
@@ -61,7 +64,7 @@ class Transactions(BaseModel):
     amount: float
     r"""The amount of the transaction."""
 
-    credit_or_debit: CreditOrDebit
+    credit_or_debit: Annotated[CreditOrDebit, PlainValidator(validate_open_enum(False))]
     r"""Whether the amount is a credit or debit."""
 
     source_transaction_id: str
@@ -76,8 +79,29 @@ class Transactions(BaseModel):
     reference: Optional[str] = None
     r"""The reference of the transaction."""
 
-    transaction_type: Optional[BankFeedStatementTransactionType] = None
+    transaction_type: Annotated[
+        Optional[BankFeedStatementTransactionType],
+        PlainValidator(validate_open_enum(False)),
+    ] = None
     r"""Type of transaction."""
+
+    @field_serializer("credit_or_debit")
+    def serialize_credit_or_debit(self, value):
+        if isinstance(value, str):
+            try:
+                return models.CreditOrDebit(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("transaction_type")
+    def serialize_transaction_type(self, value):
+        if isinstance(value, str):
+            try:
+                return models.BankFeedStatementTransactionType(value)
+            except ValueError:
+                return value
+        return value
 
 
 class BankFeedStatementTypedDict(TypedDict):
@@ -118,7 +142,9 @@ class BankFeedStatement(BaseModel):
     bank_feed_account_id: Optional[str] = None
     r"""The ID of the bank feed account this statement belongs to."""
 
-    status: Optional[StatementStatus] = None
+    status: Annotated[
+        Optional[StatementStatus], PlainValidator(validate_open_enum(False))
+    ] = None
     r"""The current status of the bank feed statement."""
 
     start_date: Optional[datetime] = None
@@ -130,13 +156,17 @@ class BankFeedStatement(BaseModel):
     start_balance: Optional[float] = None
     r"""Balance amount at the start of the period."""
 
-    start_balance_credit_or_debit: Optional[CreditOrDebit] = None
+    start_balance_credit_or_debit: Annotated[
+        Optional[CreditOrDebit], PlainValidator(validate_open_enum(False))
+    ] = None
     r"""Whether the amount is a credit or debit."""
 
     end_balance: Optional[float] = None
     r"""Balance amount at the end of the period."""
 
-    end_balance_credit_or_debit: Optional[CreditOrDebit] = None
+    end_balance_credit_or_debit: Annotated[
+        Optional[CreditOrDebit], PlainValidator(validate_open_enum(False))
+    ] = None
     r"""Whether the amount is a credit or debit."""
 
     transactions: Optional[List[Transactions]] = None
@@ -153,6 +183,33 @@ class BankFeedStatement(BaseModel):
 
     updated_by: OptionalNullable[str] = UNSET
     r"""The user who last updated the object."""
+
+    @field_serializer("status")
+    def serialize_status(self, value):
+        if isinstance(value, str):
+            try:
+                return models.StatementStatus(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("start_balance_credit_or_debit")
+    def serialize_start_balance_credit_or_debit(self, value):
+        if isinstance(value, str):
+            try:
+                return models.CreditOrDebit(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("end_balance_credit_or_debit")
+    def serialize_end_balance_credit_or_debit(self, value):
+        if isinstance(value, str):
+            try:
+                return models.CreditOrDebit(value)
+            except ValueError:
+                return value
+        return value
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
@@ -224,7 +281,9 @@ class BankFeedStatementInput(BaseModel):
     bank_feed_account_id: Optional[str] = None
     r"""The ID of the bank feed account this statement belongs to."""
 
-    status: Optional[StatementStatus] = None
+    status: Annotated[
+        Optional[StatementStatus], PlainValidator(validate_open_enum(False))
+    ] = None
     r"""The current status of the bank feed statement."""
 
     start_date: Optional[datetime] = None
@@ -236,14 +295,45 @@ class BankFeedStatementInput(BaseModel):
     start_balance: Optional[float] = None
     r"""Balance amount at the start of the period."""
 
-    start_balance_credit_or_debit: Optional[CreditOrDebit] = None
+    start_balance_credit_or_debit: Annotated[
+        Optional[CreditOrDebit], PlainValidator(validate_open_enum(False))
+    ] = None
     r"""Whether the amount is a credit or debit."""
 
     end_balance: Optional[float] = None
     r"""Balance amount at the end of the period."""
 
-    end_balance_credit_or_debit: Optional[CreditOrDebit] = None
+    end_balance_credit_or_debit: Annotated[
+        Optional[CreditOrDebit], PlainValidator(validate_open_enum(False))
+    ] = None
     r"""Whether the amount is a credit or debit."""
 
     transactions: Optional[List[Transactions]] = None
     r"""List of transactions in the bank feed statement."""
+
+    @field_serializer("status")
+    def serialize_status(self, value):
+        if isinstance(value, str):
+            try:
+                return models.StatementStatus(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("start_balance_credit_or_debit")
+    def serialize_start_balance_credit_or_debit(self, value):
+        if isinstance(value, str):
+            try:
+                return models.CreditOrDebit(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("end_balance_credit_or_debit")
+    def serialize_end_balance_credit_or_debit(self, value):
+        if isinstance(value, str):
+            try:
+                return models.CreditOrDebit(value)
+            except ValueError:
+                return value
+        return value

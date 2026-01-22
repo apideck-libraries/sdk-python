@@ -4,6 +4,7 @@ from __future__ import annotations
 from .address import Address, AddressTypedDict
 from .currency import Currency
 from .passthroughbody import PassThroughBody, PassThroughBodyTypedDict
+from apideck_unify import models, utils
 from apideck_unify.types import (
     BaseModel,
     Nullable,
@@ -11,14 +12,16 @@ from apideck_unify.types import (
     UNSET,
     UNSET_SENTINEL,
 )
+from apideck_unify.utils import validate_open_enum
 from datetime import datetime
 from enum import Enum
-from pydantic import model_serializer
+from pydantic import field_serializer, model_serializer
+from pydantic.functional_validators import PlainValidator
 from typing import Any, Dict, List, Optional
-from typing_extensions import NotRequired, TypedDict
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
-class SubsidiaryStatus(str, Enum):
+class SubsidiaryStatus(str, Enum, metaclass=utils.OpenEnumMeta):
     r"""Based on the status some functionality is enabled or disabled."""
 
     ACTIVE = "active"
@@ -73,12 +76,16 @@ class Subsidiary(BaseModel):
     downstream_id: OptionalNullable[str] = UNSET
     r"""The third-party API ID of original entity"""
 
-    status: Optional[SubsidiaryStatus] = None
+    status: Annotated[
+        Optional[SubsidiaryStatus], PlainValidator(validate_open_enum(False))
+    ] = None
     r"""Based on the status some functionality is enabled or disabled."""
 
     address: Optional[Address] = None
 
-    currencies: OptionalNullable[List[Nullable[Currency]]] = UNSET
+    currencies: OptionalNullable[
+        List[Annotated[Nullable[Currency], PlainValidator(validate_open_enum(False))]]
+    ] = UNSET
     r"""List of currencies supported by this subsidiary"""
 
     custom_mappings: OptionalNullable[Dict[str, Any]] = UNSET
@@ -101,6 +108,15 @@ class Subsidiary(BaseModel):
 
     pass_through: Optional[List[PassThroughBody]] = None
     r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
+
+    @field_serializer("status")
+    def serialize_status(self, value):
+        if isinstance(value, str):
+            try:
+                return models.SubsidiaryStatus(value)
+            except ValueError:
+                return value
+        return value
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
@@ -189,12 +205,16 @@ class SubsidiaryInput(BaseModel):
     display_id: OptionalNullable[str] = UNSET
     r"""Display ID of the subsidiary"""
 
-    status: Optional[SubsidiaryStatus] = None
+    status: Annotated[
+        Optional[SubsidiaryStatus], PlainValidator(validate_open_enum(False))
+    ] = None
     r"""Based on the status some functionality is enabled or disabled."""
 
     address: Optional[Address] = None
 
-    currencies: OptionalNullable[List[Nullable[Currency]]] = UNSET
+    currencies: OptionalNullable[
+        List[Annotated[Nullable[Currency], PlainValidator(validate_open_enum(False))]]
+    ] = UNSET
     r"""List of currencies supported by this subsidiary"""
 
     row_version: OptionalNullable[str] = UNSET
@@ -202,6 +222,15 @@ class SubsidiaryInput(BaseModel):
 
     pass_through: Optional[List[PassThroughBody]] = None
     r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
+
+    @field_serializer("status")
+    def serialize_status(self, value):
+        if isinstance(value, str):
+            try:
+                return models.SubsidiaryStatus(value)
+            except ValueError:
+                return value
+        return value
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):

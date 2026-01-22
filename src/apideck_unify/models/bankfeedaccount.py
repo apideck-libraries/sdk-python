@@ -3,6 +3,7 @@
 from __future__ import annotations
 from .currency import Currency
 from .customfield import CustomField, CustomFieldTypedDict
+from apideck_unify import models, utils
 from apideck_unify.types import (
     BaseModel,
     Nullable,
@@ -10,21 +11,23 @@ from apideck_unify.types import (
     UNSET,
     UNSET_SENTINEL,
 )
+from apideck_unify.utils import validate_open_enum
 from datetime import datetime
 from enum import Enum
-from pydantic import model_serializer
+from pydantic import field_serializer, model_serializer
+from pydantic.functional_validators import PlainValidator
 from typing import Any, Dict, List, Optional
-from typing_extensions import NotRequired, TypedDict
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
-class BankAccountType(str, Enum):
+class BankAccountType(str, Enum, metaclass=utils.OpenEnumMeta):
     r"""Type of the bank account."""
 
     BANK = "bank"
     CREDIT_CARD = "credit_card"
 
 
-class FeedStatus(str, Enum):
+class FeedStatus(str, Enum, metaclass=utils.OpenEnumMeta):
     r"""Current status of the bank feed."""
 
     PENDING = "pending"
@@ -67,7 +70,9 @@ class BankFeedAccount(BaseModel):
     id: str
     r"""A unique identifier for an object."""
 
-    bank_account_type: Optional[BankAccountType] = None
+    bank_account_type: Annotated[
+        Optional[BankAccountType], PlainValidator(validate_open_enum(False))
+    ] = None
     r"""Type of the bank account."""
 
     source_account_id: Optional[str] = None
@@ -82,10 +87,14 @@ class BankFeedAccount(BaseModel):
     target_account_number: Optional[str] = None
     r"""Account number of the destination bank account."""
 
-    currency: OptionalNullable[Currency] = UNSET
+    currency: Annotated[
+        OptionalNullable[Currency], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
 
-    feed_status: Optional[FeedStatus] = None
+    feed_status: Annotated[
+        Optional[FeedStatus], PlainValidator(validate_open_enum(False))
+    ] = None
     r"""Current status of the bank feed."""
 
     country: OptionalNullable[str] = UNSET
@@ -107,6 +116,33 @@ class BankFeedAccount(BaseModel):
 
     created_by: OptionalNullable[str] = UNSET
     r"""The user who created the object."""
+
+    @field_serializer("bank_account_type")
+    def serialize_bank_account_type(self, value):
+        if isinstance(value, str):
+            try:
+                return models.BankAccountType(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("currency")
+    def serialize_currency(self, value):
+        if isinstance(value, str):
+            try:
+                return models.Currency(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("feed_status")
+    def serialize_feed_status(self, value):
+        if isinstance(value, str):
+            try:
+                return models.FeedStatus(value)
+            except ValueError:
+                return value
+        return value
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
@@ -183,7 +219,9 @@ class BankFeedAccountInputTypedDict(TypedDict):
 
 
 class BankFeedAccountInput(BaseModel):
-    bank_account_type: Optional[BankAccountType] = None
+    bank_account_type: Annotated[
+        Optional[BankAccountType], PlainValidator(validate_open_enum(False))
+    ] = None
     r"""Type of the bank account."""
 
     source_account_id: Optional[str] = None
@@ -198,16 +236,47 @@ class BankFeedAccountInput(BaseModel):
     target_account_number: Optional[str] = None
     r"""Account number of the destination bank account."""
 
-    currency: OptionalNullable[Currency] = UNSET
+    currency: Annotated[
+        OptionalNullable[Currency], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
 
-    feed_status: Optional[FeedStatus] = None
+    feed_status: Annotated[
+        Optional[FeedStatus], PlainValidator(validate_open_enum(False))
+    ] = None
     r"""Current status of the bank feed."""
 
     country: OptionalNullable[str] = UNSET
     r"""Country code according to ISO 3166-1 alpha-2."""
 
     custom_fields: Optional[List[CustomField]] = None
+
+    @field_serializer("bank_account_type")
+    def serialize_bank_account_type(self, value):
+        if isinstance(value, str):
+            try:
+                return models.BankAccountType(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("currency")
+    def serialize_currency(self, value):
+        if isinstance(value, str):
+            try:
+                return models.Currency(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("feed_status")
+    def serialize_feed_status(self, value):
+        if isinstance(value, str):
+            try:
+                return models.FeedStatus(value)
+            except ValueError:
+                return value
+        return value
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):

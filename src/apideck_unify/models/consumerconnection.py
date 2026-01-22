@@ -3,6 +3,7 @@
 from __future__ import annotations
 from .authtype import AuthType
 from .connectionstate import ConnectionState
+from apideck_unify import models
 from apideck_unify.types import (
     BaseModel,
     Nullable,
@@ -10,9 +11,11 @@ from apideck_unify.types import (
     UNSET,
     UNSET_SENTINEL,
 )
-from pydantic import model_serializer
+from apideck_unify.utils import validate_open_enum
+from pydantic import field_serializer, model_serializer
+from pydantic.functional_validators import PlainValidator
 from typing import Any, Dict, Optional
-from typing_extensions import NotRequired, TypedDict
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class ConsumerConnectionTypedDict(TypedDict):
@@ -57,7 +60,9 @@ class ConsumerConnection(BaseModel):
 
     consumer_id: Optional[str] = None
 
-    auth_type: Optional[AuthType] = None
+    auth_type: Annotated[
+        Optional[AuthType], PlainValidator(validate_open_enum(False))
+    ] = None
     r"""Type of authorization used by the connector"""
 
     enabled: Optional[bool] = None
@@ -72,8 +77,28 @@ class ConsumerConnection(BaseModel):
 
     updated_at: OptionalNullable[str] = UNSET
 
-    state: Optional[ConnectionState] = None
+    state: Annotated[
+        Optional[ConnectionState], PlainValidator(validate_open_enum(False))
+    ] = None
     r"""[Connection state flow](#section/Connection-state)"""
+
+    @field_serializer("auth_type")
+    def serialize_auth_type(self, value):
+        if isinstance(value, str):
+            try:
+                return models.AuthType(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("state")
+    def serialize_state(self, value):
+        if isinstance(value, str):
+            try:
+                return models.ConnectionState(value)
+            except ValueError:
+                return value
+        return value
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):

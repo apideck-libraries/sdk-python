@@ -4,6 +4,7 @@ from __future__ import annotations
 from .currency import Currency
 from .customfield import CustomField, CustomFieldTypedDict
 from .linkedledgeraccount import LinkedLedgerAccount, LinkedLedgerAccountTypedDict
+from apideck_unify import models, utils
 from apideck_unify.types import (
     BaseModel,
     Nullable,
@@ -11,14 +12,16 @@ from apideck_unify.types import (
     UNSET,
     UNSET_SENTINEL,
 )
+from apideck_unify.utils import validate_open_enum
 from datetime import datetime
 from enum import Enum
-from pydantic import model_serializer
+from pydantic import field_serializer, model_serializer
+from pydantic.functional_validators import PlainValidator
 from typing import Any, Dict, List, Optional
-from typing_extensions import NotRequired, TypedDict
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
-class AccountingBankAccountAccountType(str, Enum):
+class AccountingBankAccountAccountType(str, Enum, metaclass=utils.OpenEnumMeta):
     r"""The type of bank account"""
 
     CHECKING = "checking"
@@ -30,7 +33,7 @@ class AccountingBankAccountAccountType(str, Enum):
     CASH = "cash"
 
 
-class AccountingBankAccountStatus(str, Enum):
+class AccountingBankAccountStatus(str, Enum, metaclass=utils.OpenEnumMeta):
     r"""The status of the bank account"""
 
     ACTIVE = "active"
@@ -109,7 +112,10 @@ class AccountingBankAccount(BaseModel):
     account_number: OptionalNullable[str] = UNSET
     r"""The bank account number"""
 
-    account_type: Optional[AccountingBankAccountAccountType] = None
+    account_type: Annotated[
+        Optional[AccountingBankAccountAccountType],
+        PlainValidator(validate_open_enum(False)),
+    ] = None
     r"""The type of bank account"""
 
     ledger_account: OptionalNullable[LinkedLedgerAccount] = UNSET
@@ -117,7 +123,9 @@ class AccountingBankAccount(BaseModel):
     bank_name: OptionalNullable[str] = UNSET
     r"""The name of the bank or financial institution"""
 
-    currency: OptionalNullable[Currency] = UNSET
+    currency: Annotated[
+        OptionalNullable[Currency], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
 
     balance: OptionalNullable[float] = UNSET
@@ -150,7 +158,10 @@ class AccountingBankAccount(BaseModel):
     country: OptionalNullable[str] = UNSET
     r"""Country code according to ISO 3166-1 alpha-2."""
 
-    status: OptionalNullable[AccountingBankAccountStatus] = UNSET
+    status: Annotated[
+        OptionalNullable[AccountingBankAccountStatus],
+        PlainValidator(validate_open_enum(False)),
+    ] = UNSET
     r"""The status of the bank account"""
 
     description: OptionalNullable[str] = UNSET
@@ -172,6 +183,33 @@ class AccountingBankAccount(BaseModel):
 
     updated_by: OptionalNullable[str] = UNSET
     r"""The user who last updated the object."""
+
+    @field_serializer("account_type")
+    def serialize_account_type(self, value):
+        if isinstance(value, str):
+            try:
+                return models.AccountingBankAccountAccountType(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("currency")
+    def serialize_currency(self, value):
+        if isinstance(value, str):
+            try:
+                return models.Currency(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("status")
+    def serialize_status(self, value):
+        if isinstance(value, str):
+            try:
+                return models.AccountingBankAccountStatus(value)
+            except ValueError:
+                return value
+        return value
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
@@ -307,7 +345,10 @@ class AccountingBankAccountInput(BaseModel):
     account_number: OptionalNullable[str] = UNSET
     r"""The bank account number"""
 
-    account_type: Optional[AccountingBankAccountAccountType] = None
+    account_type: Annotated[
+        Optional[AccountingBankAccountAccountType],
+        PlainValidator(validate_open_enum(False)),
+    ] = None
     r"""The type of bank account"""
 
     ledger_account: OptionalNullable[LinkedLedgerAccount] = UNSET
@@ -315,7 +356,9 @@ class AccountingBankAccountInput(BaseModel):
     bank_name: OptionalNullable[str] = UNSET
     r"""The name of the bank or financial institution"""
 
-    currency: OptionalNullable[Currency] = UNSET
+    currency: Annotated[
+        OptionalNullable[Currency], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
 
     balance: OptionalNullable[float] = UNSET
@@ -348,13 +391,43 @@ class AccountingBankAccountInput(BaseModel):
     country: OptionalNullable[str] = UNSET
     r"""Country code according to ISO 3166-1 alpha-2."""
 
-    status: OptionalNullable[AccountingBankAccountStatus] = UNSET
+    status: Annotated[
+        OptionalNullable[AccountingBankAccountStatus],
+        PlainValidator(validate_open_enum(False)),
+    ] = UNSET
     r"""The status of the bank account"""
 
     description: OptionalNullable[str] = UNSET
     r"""Description or notes about the bank account"""
 
     custom_fields: Optional[List[CustomField]] = None
+
+    @field_serializer("account_type")
+    def serialize_account_type(self, value):
+        if isinstance(value, str):
+            try:
+                return models.AccountingBankAccountAccountType(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("currency")
+    def serialize_currency(self, value):
+        if isinstance(value, str):
+            try:
+                return models.Currency(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("status")
+    def serialize_status(self, value):
+        if isinstance(value, str):
+            try:
+                return models.AccountingBankAccountStatus(value)
+            except ValueError:
+                return value
+        return value
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):

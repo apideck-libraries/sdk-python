@@ -2,14 +2,17 @@
 
 from __future__ import annotations
 from .sortdirection import SortDirection
+from apideck_unify import models, utils
 from apideck_unify.types import BaseModel
-from apideck_unify.utils import FieldMetadata
+from apideck_unify.utils import FieldMetadata, validate_open_enum
 from enum import Enum
+from pydantic import field_serializer
+from pydantic.functional_validators import PlainValidator
 from typing import Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
-class PaymentsSortBy(str, Enum):
+class PaymentsSortBy(str, Enum, metaclass=utils.OpenEnumMeta):
     r"""The field on which to sort the Payments"""
 
     UPDATED_AT = "updated_at"
@@ -24,10 +27,32 @@ class PaymentsSortTypedDict(TypedDict):
 
 
 class PaymentsSort(BaseModel):
-    by: Annotated[Optional[PaymentsSortBy], FieldMetadata(query=True)] = None
+    by: Annotated[
+        Annotated[Optional[PaymentsSortBy], PlainValidator(validate_open_enum(False))],
+        FieldMetadata(query=True),
+    ] = None
     r"""The field on which to sort the Payments"""
 
-    direction: Annotated[Optional[SortDirection], FieldMetadata(query=True)] = (
-        SortDirection.ASC
-    )
+    direction: Annotated[
+        Annotated[Optional[SortDirection], PlainValidator(validate_open_enum(False))],
+        FieldMetadata(query=True),
+    ] = SortDirection.ASC
     r"""The direction in which to sort the results"""
+
+    @field_serializer("by")
+    def serialize_by(self, value):
+        if isinstance(value, str):
+            try:
+                return models.PaymentsSortBy(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("direction")
+    def serialize_direction(self, value):
+        if isinstance(value, str):
+            try:
+                return models.SortDirection(value)
+            except ValueError:
+                return value
+        return value

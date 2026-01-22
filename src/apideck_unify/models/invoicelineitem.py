@@ -11,6 +11,7 @@ from .linkedtrackingcategory import (
     LinkedTrackingCategoryTypedDict,
 )
 from .linkedworktag import LinkedWorktag, LinkedWorktagTypedDict
+from apideck_unify import models, utils
 from apideck_unify.types import (
     BaseModel,
     Nullable,
@@ -18,14 +19,16 @@ from apideck_unify.types import (
     UNSET,
     UNSET_SENTINEL,
 )
+from apideck_unify.utils import validate_open_enum
 from datetime import date, datetime
 from enum import Enum
-from pydantic import model_serializer
+from pydantic import field_serializer, model_serializer
+from pydantic.functional_validators import PlainValidator
 from typing import List, Optional
-from typing_extensions import NotRequired, TypedDict
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
-class InvoiceLineItemType(str, Enum):
+class InvoiceLineItemType(str, Enum, metaclass=utils.OpenEnumMeta):
     r"""Item type"""
 
     SALES_ITEM = "sales_item"
@@ -121,7 +124,9 @@ class InvoiceLineItem(BaseModel):
     description: OptionalNullable[str] = UNSET
     r"""User defined description"""
 
-    type: OptionalNullable[InvoiceLineItemType] = UNSET
+    type: Annotated[
+        OptionalNullable[InvoiceLineItemType], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""Item type"""
 
     tax_amount: OptionalNullable[float] = UNSET
@@ -206,6 +211,15 @@ class InvoiceLineItem(BaseModel):
 
     updated_at: OptionalNullable[datetime] = UNSET
     r"""The date and time when the object was last updated."""
+
+    @field_serializer("type")
+    def serialize_type(self, value):
+        if isinstance(value, str):
+            try:
+                return models.InvoiceLineItemType(value)
+            except ValueError:
+                return value
+        return value
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
@@ -382,7 +396,9 @@ class InvoiceLineItemInput(BaseModel):
     description: OptionalNullable[str] = UNSET
     r"""User defined description"""
 
-    type: OptionalNullable[InvoiceLineItemType] = UNSET
+    type: Annotated[
+        OptionalNullable[InvoiceLineItemType], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""Item type"""
 
     tax_amount: OptionalNullable[float] = UNSET
@@ -455,6 +471,15 @@ class InvoiceLineItemInput(BaseModel):
 
     row_version: OptionalNullable[str] = UNSET
     r"""A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object."""
+
+    @field_serializer("type")
+    def serialize_type(self, value):
+        if isinstance(value, str):
+            try:
+                return models.InvoiceLineItemType(value)
+            except ValueError:
+                return value
+        return value
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):

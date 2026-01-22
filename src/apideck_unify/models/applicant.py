@@ -6,6 +6,7 @@ from .customfield import CustomField, CustomFieldTypedDict
 from .email import Email, EmailTypedDict
 from .passthroughbody import PassThroughBody, PassThroughBodyTypedDict
 from .phonenumber import PhoneNumber, PhoneNumberTypedDict
+from apideck_unify import models, utils
 from apideck_unify.types import (
     BaseModel,
     Nullable,
@@ -13,15 +14,17 @@ from apideck_unify.types import (
     UNSET,
     UNSET_SENTINEL,
 )
+from apideck_unify.utils import validate_open_enum
 from datetime import date, datetime
 from enum import Enum
 import pydantic
-from pydantic import model_serializer
+from pydantic import field_serializer, model_serializer
+from pydantic.functional_validators import PlainValidator
 from typing import Any, Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
-class ApplicantGender(str, Enum):
+class ApplicantGender(str, Enum, metaclass=utils.OpenEnumMeta):
     r"""The gender represents the gender identity of a person."""
 
     MALE = "male"
@@ -31,7 +34,7 @@ class ApplicantGender(str, Enum):
     NOT_SPECIFIED = "not_specified"
 
 
-class ApplicantType(str, Enum):
+class ApplicantType(str, Enum, metaclass=utils.OpenEnumMeta):
     r"""The type of website"""
 
     PRIMARY = "primary"
@@ -57,8 +60,19 @@ class Websites(BaseModel):
     id: OptionalNullable[str] = UNSET
     r"""Unique identifier for the website"""
 
-    type: OptionalNullable[ApplicantType] = UNSET
+    type: Annotated[
+        OptionalNullable[ApplicantType], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""The type of website"""
+
+    @field_serializer("type")
+    def serialize_type(self, value):
+        if isinstance(value, str):
+            try:
+                return models.ApplicantType(value)
+            except ValueError:
+                return value
+        return value
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
@@ -241,7 +255,9 @@ class Applicant(BaseModel):
     birthday: OptionalNullable[date] = UNSET
     r"""The date of birth of the person."""
 
-    gender: OptionalNullable[ApplicantGender] = UNSET
+    gender: Annotated[
+        OptionalNullable[ApplicantGender], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""The gender represents the gender identity of a person."""
 
     social_security_number: OptionalNullable[str] = UNSET
@@ -285,7 +301,7 @@ class Applicant(BaseModel):
     applications: Annotated[
         OptionalNullable[List[str]],
         pydantic.Field(
-            deprecated="warning: ** DEPRECATED ** - This will be removed in a future release, please migrate away from it as soon as possible."
+            deprecated="warning: ** DEPRECATED ** - Deprecated. Use application_ids instead.."
         ),
     ] = UNSET
     r"""Deprecated: Use application_ids instead. Array of application IDs associated with the applicant."""
@@ -342,6 +358,15 @@ class Applicant(BaseModel):
 
     pass_through: Optional[List[PassThroughBody]] = None
     r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
+
+    @field_serializer("gender")
+    def serialize_gender(self, value):
+        if isinstance(value, str):
+            try:
+                return models.ApplicantGender(value)
+            except ValueError:
+                return value
+        return value
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
@@ -530,7 +555,9 @@ class ApplicantInput(BaseModel):
     birthday: OptionalNullable[date] = UNSET
     r"""The date of birth of the person."""
 
-    gender: OptionalNullable[ApplicantGender] = UNSET
+    gender: Annotated[
+        OptionalNullable[ApplicantGender], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""The gender represents the gender identity of a person."""
 
     social_security_number: OptionalNullable[str] = UNSET
@@ -572,7 +599,7 @@ class ApplicantInput(BaseModel):
     applications: Annotated[
         OptionalNullable[List[str]],
         pydantic.Field(
-            deprecated="warning: ** DEPRECATED ** - This will be removed in a future release, please migrate away from it as soon as possible."
+            deprecated="warning: ** DEPRECATED ** - Deprecated. Use application_ids instead.."
         ),
     ] = UNSET
     r"""Deprecated: Use application_ids instead. Array of application IDs associated with the applicant."""
@@ -598,6 +625,15 @@ class ApplicantInput(BaseModel):
 
     pass_through: Optional[List[PassThroughBody]] = None
     r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
+
+    @field_serializer("gender")
+    def serialize_gender(self, value):
+        if isinstance(value, str):
+            try:
+                return models.ApplicantGender(value)
+            except ValueError:
+                return value
+        return value
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 from .passthroughbody import PassThroughBody, PassThroughBodyTypedDict
+from apideck_unify import models, utils
 from apideck_unify.types import (
     BaseModel,
     Nullable,
@@ -9,14 +10,16 @@ from apideck_unify.types import (
     UNSET,
     UNSET_SENTINEL,
 )
+from apideck_unify.utils import validate_open_enum
 from datetime import datetime
 from enum import Enum
-from pydantic import model_serializer
+from pydantic import field_serializer, model_serializer
+from pydantic.functional_validators import PlainValidator
 from typing import Any, Dict, List, Optional
-from typing_extensions import NotRequired, TypedDict
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
-class TimeOffRequestStatusStatus(str, Enum):
+class TimeOffRequestStatusStatus(str, Enum, metaclass=utils.OpenEnumMeta):
     r"""The status of the time off request."""
 
     REQUESTED = "requested"
@@ -27,7 +30,7 @@ class TimeOffRequestStatusStatus(str, Enum):
     OTHER = "other"
 
 
-class RequestType(str, Enum):
+class RequestType(str, Enum, metaclass=utils.OpenEnumMeta):
     r"""The type of request"""
 
     VACATION = "vacation"
@@ -39,7 +42,7 @@ class RequestType(str, Enum):
     OTHER = "other"
 
 
-class Units(str, Enum):
+class Units(str, Enum, metaclass=utils.OpenEnumMeta):
     r"""The unit of time off requested. Possible values include: `hours`, `days`, or `other`."""
 
     DAYS = "days"
@@ -142,7 +145,10 @@ class TimeOffRequest(BaseModel):
     policy_id: OptionalNullable[str] = UNSET
     r"""ID of the policy"""
 
-    status: OptionalNullable[TimeOffRequestStatusStatus] = UNSET
+    status: Annotated[
+        OptionalNullable[TimeOffRequestStatusStatus],
+        PlainValidator(validate_open_enum(False)),
+    ] = UNSET
     r"""The status of the time off request."""
 
     description: OptionalNullable[str] = UNSET
@@ -157,13 +163,17 @@ class TimeOffRequest(BaseModel):
     request_date: OptionalNullable[str] = UNSET
     r"""The date the request was made."""
 
-    request_type: OptionalNullable[RequestType] = UNSET
+    request_type: Annotated[
+        OptionalNullable[RequestType], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""The type of request"""
 
     approval_date: OptionalNullable[str] = UNSET
     r"""The date the request was approved"""
 
-    units: OptionalNullable[Units] = UNSET
+    units: Annotated[
+        OptionalNullable[Units], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""The unit of time off requested. Possible values include: `hours`, `days`, or `other`."""
 
     amount: OptionalNullable[float] = UNSET
@@ -194,6 +204,33 @@ class TimeOffRequest(BaseModel):
 
     policy_type: Optional[str] = None
     r"""The policy type of the time off request"""
+
+    @field_serializer("status")
+    def serialize_status(self, value):
+        if isinstance(value, str):
+            try:
+                return models.TimeOffRequestStatusStatus(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("request_type")
+    def serialize_request_type(self, value):
+        if isinstance(value, str):
+            try:
+                return models.RequestType(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("units")
+    def serialize_units(self, value):
+        if isinstance(value, str):
+            try:
+                return models.Units(value)
+            except ValueError:
+                return value
+        return value
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
@@ -305,7 +342,10 @@ class TimeOffRequestInput(BaseModel):
     policy_id: OptionalNullable[str] = UNSET
     r"""ID of the policy"""
 
-    status: OptionalNullable[TimeOffRequestStatusStatus] = UNSET
+    status: Annotated[
+        OptionalNullable[TimeOffRequestStatusStatus],
+        PlainValidator(validate_open_enum(False)),
+    ] = UNSET
     r"""The status of the time off request."""
 
     description: OptionalNullable[str] = UNSET
@@ -320,13 +360,17 @@ class TimeOffRequestInput(BaseModel):
     request_date: OptionalNullable[str] = UNSET
     r"""The date the request was made."""
 
-    request_type: OptionalNullable[RequestType] = UNSET
+    request_type: Annotated[
+        OptionalNullable[RequestType], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""The type of request"""
 
     approval_date: OptionalNullable[str] = UNSET
     r"""The date the request was approved"""
 
-    units: OptionalNullable[Units] = UNSET
+    units: Annotated[
+        OptionalNullable[Units], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""The unit of time off requested. Possible values include: `hours`, `days`, or `other`."""
 
     amount: OptionalNullable[float] = UNSET
@@ -342,6 +386,33 @@ class TimeOffRequestInput(BaseModel):
 
     policy_type: Optional[str] = None
     r"""The policy type of the time off request"""
+
+    @field_serializer("status")
+    def serialize_status(self, value):
+        if isinstance(value, str):
+            try:
+                return models.TimeOffRequestStatusStatus(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("request_type")
+    def serialize_request_type(self, value):
+        if isinstance(value, str):
+            try:
+                return models.RequestType(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("units")
+    def serialize_units(self, value):
+        if isinstance(value, str):
+            try:
+                return models.Units(value)
+            except ValueError:
+                return value
+        return value
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):

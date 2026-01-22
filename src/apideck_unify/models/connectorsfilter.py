@@ -3,8 +3,11 @@
 from __future__ import annotations
 from .connectorstatus import ConnectorStatus
 from .unifiedapiid import UnifiedAPIID
+from apideck_unify import models
 from apideck_unify.types import BaseModel
-from apideck_unify.utils import FieldMetadata
+from apideck_unify.utils import FieldMetadata, validate_open_enum
+from pydantic import field_serializer
+from pydantic.functional_validators import PlainValidator
 from typing import Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
@@ -17,8 +20,32 @@ class ConnectorsFilterTypedDict(TypedDict):
 
 
 class ConnectorsFilter(BaseModel):
-    unified_api: Annotated[Optional[UnifiedAPIID], FieldMetadata(query=True)] = None
+    unified_api: Annotated[
+        Annotated[Optional[UnifiedAPIID], PlainValidator(validate_open_enum(False))],
+        FieldMetadata(query=True),
+    ] = None
     r"""Name of Apideck Unified API"""
 
-    status: Annotated[Optional[ConnectorStatus], FieldMetadata(query=True)] = None
+    status: Annotated[
+        Annotated[Optional[ConnectorStatus], PlainValidator(validate_open_enum(False))],
+        FieldMetadata(query=True),
+    ] = None
     r"""Status of the connector. Connectors with status live or beta are callable."""
+
+    @field_serializer("unified_api")
+    def serialize_unified_api(self, value):
+        if isinstance(value, str):
+            try:
+                return models.UnifiedAPIID(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("status")
+    def serialize_status(self, value):
+        if isinstance(value, str):
+            try:
+                return models.ConnectorStatus(value)
+            except ValueError:
+                return value
+        return value

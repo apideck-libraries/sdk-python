@@ -13,6 +13,7 @@ from .linkedtrackingcategory import (
     LinkedTrackingCategoryTypedDict,
 )
 from .rebilling import Rebilling, RebillingTypedDict
+from apideck_unify import models
 from apideck_unify.types import (
     BaseModel,
     Nullable,
@@ -20,8 +21,10 @@ from apideck_unify.types import (
     UNSET,
     UNSET_SENTINEL,
 )
+from apideck_unify.utils import validate_open_enum
 import pydantic
-from pydantic import model_serializer
+from pydantic import field_serializer, model_serializer
+from pydantic.functional_validators import PlainValidator
 from typing import List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
@@ -79,7 +82,7 @@ class ExpenseLineItem(BaseModel):
     account_id: Annotated[
         Optional[str],
         pydantic.Field(
-            deprecated="warning: ** DEPRECATED ** - This will be removed in a future release, please migrate away from it as soon as possible."
+            deprecated="warning: ** DEPRECATED ** - Deprecated. Use account instead.."
         ),
     ] = None
     r"""The unique identifier for the ledger account. Deprecated, use account instead."""
@@ -89,7 +92,7 @@ class ExpenseLineItem(BaseModel):
     customer_id: Annotated[
         Optional[str],
         pydantic.Field(
-            deprecated="warning: ** DEPRECATED ** - This will be removed in a future release, please migrate away from it as soon as possible."
+            deprecated="warning: ** DEPRECATED ** - Deprecated. Use customer instead.."
         ),
     ] = None
     r"""The ID of the customer this expense item is linked to. Deprecated in favor of `customer`."""
@@ -112,7 +115,9 @@ class ExpenseLineItem(BaseModel):
     description: OptionalNullable[str] = UNSET
     r"""The expense line item description"""
 
-    type: OptionalNullable[LineItemType] = UNSET
+    type: Annotated[
+        OptionalNullable[LineItemType], PlainValidator(validate_open_enum(False))
+    ] = UNSET
     r"""Line Item type"""
 
     tax_amount: OptionalNullable[float] = UNSET
@@ -129,6 +134,15 @@ class ExpenseLineItem(BaseModel):
 
     rebilling: OptionalNullable[Rebilling] = UNSET
     r"""Rebilling metadata for this line item."""
+
+    @field_serializer("type")
+    def serialize_type(self, value):
+        if isinstance(value, str):
+            try:
+                return models.LineItemType(value)
+            except ValueError:
+                return value
+        return value
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):

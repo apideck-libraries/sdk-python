@@ -46,7 +46,7 @@ class LinkedCustomer(BaseModel):
     name: Annotated[
         Optional[str],
         pydantic.Field(
-            deprecated="warning: ** DEPRECATED ** - This will be removed in a future release, please migrate away from it as soon as possible."
+            deprecated="warning: ** DEPRECATED ** - Deprecated. Use display_name instead.."
         ),
     ] = None
     r"""The name of the customer. Deprecated, use display_name instead."""

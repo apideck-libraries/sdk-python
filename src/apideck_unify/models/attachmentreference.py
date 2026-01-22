@@ -2,9 +2,13 @@
 
 from __future__ import annotations
 from .attachmentreferencetype import AttachmentReferenceType
+from apideck_unify import models
 from apideck_unify.types import BaseModel
+from apideck_unify.utils import validate_open_enum
+from pydantic import field_serializer
+from pydantic.functional_validators import PlainValidator
 from typing import Optional
-from typing_extensions import NotRequired, TypedDict
+from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class AttachmentReferenceTypedDict(TypedDict):
@@ -14,7 +18,18 @@ class AttachmentReferenceTypedDict(TypedDict):
 
 
 class AttachmentReference(BaseModel):
-    type: Optional[AttachmentReferenceType] = None
+    type: Annotated[
+        Optional[AttachmentReferenceType], PlainValidator(validate_open_enum(False))
+    ] = None
 
     id: Optional[str] = None
     r"""A unique identifier for an object."""
+
+    @field_serializer("type")
+    def serialize_type(self, value):
+        if isinstance(value, str):
+            try:
+                return models.AttachmentReferenceType(value)
+            except ValueError:
+                return value
+        return value

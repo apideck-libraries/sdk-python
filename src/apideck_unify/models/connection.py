@@ -15,6 +15,7 @@ from .formfieldoption import FormFieldOption, FormFieldOptionTypedDict
 from .integrationstate import IntegrationState
 from .oauthgranttype import OAuthGrantType
 from .webhooksubscription import WebhookSubscription, WebhookSubscriptionTypedDict
+from apideck_unify import models, utils
 from apideck_unify.types import (
     BaseModel,
     Nullable,
@@ -22,13 +23,15 @@ from apideck_unify.types import (
     UNSET,
     UNSET_SENTINEL,
 )
+from apideck_unify.utils import validate_open_enum
 from enum import Enum
-from pydantic import model_serializer
+from pydantic import field_serializer, model_serializer
+from pydantic.functional_validators import PlainValidator
 from typing import Any, Dict, List, Optional, Union
-from typing_extensions import NotRequired, TypeAliasType, TypedDict
+from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
 
 
-class ConnectionStatus(str, Enum):
+class ConnectionStatus(str, Enum, metaclass=utils.OpenEnumMeta):
     r"""Status of the connection."""
 
     LIVE = "live"
@@ -36,7 +39,7 @@ class ConnectionStatus(str, Enum):
     REQUESTED = "requested"
 
 
-class Target(str, Enum):
+class Target(str, Enum, metaclass=utils.OpenEnumMeta):
     CUSTOM_FIELDS = "custom_fields"
     RESOURCE = "resource"
 
@@ -65,13 +68,24 @@ class DefaultsTypedDict(TypedDict):
 
 
 class Defaults(BaseModel):
-    target: Optional[Target] = None
+    target: Annotated[Optional[Target], PlainValidator(validate_open_enum(False))] = (
+        None
+    )
 
     id: Optional[str] = None
 
     options: Optional[List[FormFieldOption]] = None
 
     value: Optional[ConnectionValue] = None
+
+    @field_serializer("target")
+    def serialize_target(self, value):
+        if isinstance(value, str):
+            try:
+                return models.Target(value)
+            except ValueError:
+                return value
+        return value
 
 
 class ConfigurationTypedDict(TypedDict):
@@ -85,7 +99,7 @@ class Configuration(BaseModel):
     defaults: Optional[List[Defaults]] = None
 
 
-class Health(str, Enum):
+class Health(str, Enum, metaclass=utils.OpenEnumMeta):
     r"""Operational health status of the connection"""
 
     REVOKED = "revoked"
@@ -178,19 +192,29 @@ class Connection(BaseModel):
     unified_api: Optional[str] = None
     r"""The unified API category where the connection belongs to."""
 
-    state: Optional[ConnectionState] = None
+    state: Annotated[
+        Optional[ConnectionState], PlainValidator(validate_open_enum(False))
+    ] = None
     r"""[Connection state flow](#section/Connection-state)"""
 
-    integration_state: Optional[IntegrationState] = None
+    integration_state: Annotated[
+        Optional[IntegrationState], PlainValidator(validate_open_enum(False))
+    ] = None
     r"""The current state of the Integration."""
 
-    auth_type: Optional[AuthType] = None
+    auth_type: Annotated[
+        Optional[AuthType], PlainValidator(validate_open_enum(False))
+    ] = None
     r"""Type of authorization used by the connector"""
 
-    oauth_grant_type: Optional[OAuthGrantType] = None
+    oauth_grant_type: Annotated[
+        Optional[OAuthGrantType], PlainValidator(validate_open_enum(False))
+    ] = None
     r"""OAuth grant type used by the connector. More info: https://oauth.net/2/grant-types"""
 
-    status: Optional[ConnectionStatus] = None
+    status: Annotated[
+        Optional[ConnectionStatus], PlainValidator(validate_open_enum(False))
+    ] = None
     r"""Status of the connection."""
 
     enabled: Optional[bool] = None
@@ -243,7 +267,9 @@ class Connection(BaseModel):
     custom_mappings: Optional[List[CustomMapping]] = None
     r"""List of custom mappings configured for this connection"""
 
-    consent_state: Optional[ConsentState] = None
+    consent_state: Annotated[
+        Optional[ConsentState], PlainValidator(validate_open_enum(False))
+    ] = None
     r"""The current consent state of the connection"""
 
     consents: Optional[List[ConsentRecord]] = None
@@ -253,7 +279,9 @@ class Connection(BaseModel):
 
     application_data_scopes: Optional[DataScopes] = None
 
-    health: Optional[Health] = None
+    health: Annotated[Optional[Health], PlainValidator(validate_open_enum(False))] = (
+        None
+    )
     r"""Operational health status of the connection"""
 
     credentials_expire_at: Optional[float] = None
@@ -265,6 +293,69 @@ class Connection(BaseModel):
     created_at: Optional[float] = None
 
     updated_at: OptionalNullable[float] = UNSET
+
+    @field_serializer("state")
+    def serialize_state(self, value):
+        if isinstance(value, str):
+            try:
+                return models.ConnectionState(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("integration_state")
+    def serialize_integration_state(self, value):
+        if isinstance(value, str):
+            try:
+                return models.IntegrationState(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("auth_type")
+    def serialize_auth_type(self, value):
+        if isinstance(value, str):
+            try:
+                return models.AuthType(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("oauth_grant_type")
+    def serialize_oauth_grant_type(self, value):
+        if isinstance(value, str):
+            try:
+                return models.OAuthGrantType(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("status")
+    def serialize_status(self, value):
+        if isinstance(value, str):
+            try:
+                return models.ConnectionStatus(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("consent_state")
+    def serialize_consent_state(self, value):
+        if isinstance(value, str):
+            try:
+                return models.ConsentState(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("health")
+    def serialize_health(self, value):
+        if isinstance(value, str):
+            try:
+                return models.Health(value)
+            except ValueError:
+                return value
+        return value
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
@@ -398,12 +489,23 @@ class ConnectionInput(BaseModel):
     custom_mappings: Optional[List[CustomMappingInput]] = None
     r"""List of custom mappings configured for this connection"""
 
-    consent_state: Optional[ConsentState] = None
+    consent_state: Annotated[
+        Optional[ConsentState], PlainValidator(validate_open_enum(False))
+    ] = None
     r"""The current consent state of the connection"""
 
     latest_consent: Optional[ConsentRecordInput] = None
 
     application_data_scopes: Optional[DataScopesInput] = None
+
+    @field_serializer("consent_state")
+    def serialize_consent_state(self, value):
+        if isinstance(value, str):
+            try:
+                return models.ConsentState(value)
+            except ValueError:
+                return value
+        return value
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
