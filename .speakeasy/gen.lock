@@ -1,12 +1,12 @@
 lockVersion: 2.0.0
 id: fca0ac3a-5f4e-452c-bbc7-2311afa8da40
 management:
-  docChecksum: af5b75d3af3da5db2c520dd99ce3058d
-  docVersion: 10.23.10
+  docChecksum: 39012f8f9afad411ad585cb129152445
+  docVersion: 10.23.6
   speakeasyVersion: 1.656.1
   generationVersion: 2.753.1
-  releaseVersion: 0.30.0
-  configChecksum: db86ebe1bb281d550390e9b1140c1b46
+  releaseVersion: 0.30.1
+  configChecksum: 1da238dfe65896c36f0f39a056ef6951
   repoURL: https://github.com/apideck-libraries/sdk-python.git
   installationURL: https://github.com/apideck-libraries/sdk-python.git
   published: true
@@ -11614,7 +11614,7 @@ examples:
         query:
           raw: false
           limit: 20
-          filter: {"email": "elon@musk.com", "phone_number": "111-111-1111"}
+          filter: {"email": "elon@musk.com", "phone_number": "111-111-1111", "customer_ids": ["12345", "67890"]}
           pass_through: {"search": "San Francisco"}
           fields: "id,updated_at"
         header:
@@ -18498,6 +18498,9 @@ examples:
           application/json: {"status_code": 400, "error": "Bad Request", "type_name": "RequestHeadersValidationError", "message": "Invalid Params", "detail": "Missing Header: x-apideck-consumer-id", "ref": "https://developers.apideck.com/errors#unauthorizederror"}
 examplesVersion: 1.0.2
 generatedTests: {}
+releaseNotes: |
+  ## Python SDK Changes Detected:
+  * `apideck.ecommerce.customers.list()`:  `request.filter` **Changed**
 trackedFiles:
   .devcontainer/README.md:
     last_write_checksum: sha1:07adb0c0c051a9be4d479ea06461f3a9b3bbeb2f
@@ -20342,11 +20345,11 @@ trackedFiles:
   docs/models/ecommercecustomersallglobals.md:
     last_write_checksum: sha1:da35b96d4c663055097d09f0079d7e260e2d1b58
   docs/models/ecommercecustomersallrequest.md:
-    last_write_checksum: sha1:2e0bcf72dec57837ff0f163914a9d47193ae686a
+    last_write_checksum: sha1:1ecdc6eecf1981fc3c9e1a60e0b78b1af75c0b45
   docs/models/ecommercecustomersallresponse.md:
     last_write_checksum: sha1:ab2abd6aa8fdf19994e06c102e1a658eeecb851d
   docs/models/ecommercecustomersfilter.md:
-    last_write_checksum: sha1:bae019a24c644228f8c0e062fc7bdf5604968514
+    last_write_checksum: sha1:1fcb374c3ee43a5b0ef6a1a0c45c7af4cff6dc9d
   docs/models/ecommercecustomersoneglobals.md:
     last_write_checksum: sha1:06bc86b000df23a58466263e1cad2a5284cb8f6c
   docs/models/ecommercecustomersonerequest.md:
@@ -22172,7 +22175,7 @@ trackedFiles:
   docs/sdks/apideckcompanies/README.md:
     last_write_checksum: sha1:95db1bd89275bf430df2ab0ce0a077bdb3a87e16
   docs/sdks/apideckcustomers/README.md:
-    last_write_checksum: sha1:bfbf3af1548503dca47af51edcbafab40c71fe1d
+    last_write_checksum: sha1:871fa56324790c24852d7667fb63575edb84d5aa
   docs/sdks/apideckdepartments/README.md:
     last_write_checksum: sha1:f9b2d7e94ad6332c1477b3d4e8e8a3b08a413b72
   docs/sdks/apiresourcecoveragesdk/README.md:
@@ -22342,7 +22345,7 @@ trackedFiles:
   pylintrc:
     last_write_checksum: sha1:7b1b40297729ca6f879ec366a3bc9fd867194306
   pyproject.toml:
-    last_write_checksum: sha1:e25f85f730bfa5c14e98ace1521c8e0d70634739
+    last_write_checksum: sha1:e85c5ca22b26b126128451ddaf1a0f229c3c01d2
   scripts/prepare_readme.py:
     last_write_checksum: sha1:798a05bafe4fbbfff5b67037866fa25efc52f11a
   scripts/publish.sh:
@@ -22356,7 +22359,7 @@ trackedFiles:
   src/apideck_unify/_hooks/types.py:
     last_write_checksum: sha1:4b923d3d84d979af6169a9db6b81bfc373079a25
   src/apideck_unify/_version.py:
-    last_write_checksum: sha1:f0fb89ff5201c92e9dc52a75edde60010611f88a
+    last_write_checksum: sha1:5198b9b562755a32bb2da90a47be83cf9dd5720c
   src/apideck_unify/accounting.py:
     last_write_checksum: sha1:bd5b63b1d179c5a3b6b70c782cc3ca47fd46f0a4
   src/apideck_unify/activities.py:
@@ -23350,7 +23353,7 @@ trackedFiles:
   src/apideck_unify/models/ecommercecustomer.py:
     last_write_checksum: sha1:76e1505f22a6bf74252b7d89c9e8ec2c738e0a83
   src/apideck_unify/models/ecommercecustomersfilter.py:
-    last_write_checksum: sha1:4ae8996d84b8c29453b9eff4cc59f9f39173457a
+    last_write_checksum: sha1:c3988d1b047b48782b2567cf8138eb0642f102a6
   src/apideck_unify/models/ecommercediscount.py:
     last_write_checksum: sha1:cb2dce214bf41c14eee65a500cb1515586c333d3
   src/apideck_unify/models/ecommerceorder.py:

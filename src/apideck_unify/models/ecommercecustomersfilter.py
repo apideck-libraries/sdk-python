@@ -3,7 +3,7 @@
 from __future__ import annotations
 from apideck_unify.types import BaseModel
 from apideck_unify.utils import FieldMetadata
-from typing import Optional
+from typing import List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
@@ -12,6 +12,8 @@ class EcommerceCustomersFilterTypedDict(TypedDict):
     r"""Customer email address to filter on"""
     phone_number: NotRequired[str]
     r"""Customer phone number to filter on"""
+    customer_ids: NotRequired[List[str]]
+    r"""Filter by customer IDs"""
 
 
 class EcommerceCustomersFilter(BaseModel):
@@ -20,3 +22,6 @@ class EcommerceCustomersFilter(BaseModel):
 
     phone_number: Annotated[Optional[str], FieldMetadata(query=True)] = None
     r"""Customer phone number to filter on"""
+
+    customer_ids: Annotated[Optional[List[str]], FieldMetadata(query=True)] = None
+    r"""Filter by customer IDs"""
