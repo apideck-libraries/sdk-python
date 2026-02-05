@@ -1,12 +1,12 @@
 lockVersion: 2.0.0
 id: fca0ac3a-5f4e-452c-bbc7-2311afa8da40
 management:
-  docChecksum: af5b75d3af3da5db2c520dd99ce3058d
-  docVersion: 10.23.10
+  docChecksum: 58da831f56234fb9aa568fb3f03b74ef
+  docVersion: 10.23.13
   speakeasyVersion: 1.656.1
   generationVersion: 2.753.1
-  releaseVersion: 0.30.0
-  configChecksum: db86ebe1bb281d550390e9b1140c1b46
+  releaseVersion: 0.30.1
+  configChecksum: eae3c18ae7feab3018de63faa54c89ea
   repoURL: https://github.com/apideck-libraries/sdk-python.git
   installationURL: https://github.com/apideck-libraries/sdk-python.git
   published: true
@@ -11614,7 +11614,7 @@ examples:
         query:
           raw: false
           limit: 20
-          filter: {"email": "elon@musk.com", "phone_number": "111-111-1111"}
+          filter: {"email": "elon@musk.com", "phone_number": "111-111-1111", "customer_ids": "12345,67890"}
           pass_through: {"search": "San Francisco"}
           fields: "id,updated_at"
         header:
@@ -18400,7 +18400,7 @@ examples:
           x-apideck-app-id: "dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX"
           x-apideck-service-id: "salesforce"
       requestBody:
-        application/json: {"name": "Website Redesign Project", "display_id": "PROJ-001", "reference_id": "WD-REF-2024-001", "description": "Complete redesign of the company website including new branding and improved user experience", "status": "active", "active": true, "project_type": "client_project", "priority": "high", "completion_percentage": 75.5, "start_date": "2024-01-15", "end_date": "2024-06-30", "customer": {"id": "12345", "display_name": "Windsurf Shop", "email": "boring@boring.com"}, "department": {"id": "DEPT-001", "name": "Marketing"}, "company_id": "12345", "owner_id": "12345", "parent_project": {"id": "PROJ-PARENT-001", "name": "Company Website Overhaul"}, "currency": "USD", "budget_amount": 50000, "approved_amount": 48000, "budget_hours": 400, "hourly_rate": 125, "billing_method": "time_and_materials", "is_billable": true, "phase": "execution", "tax_rate": {"id": "123456", "code": "N-T", "rate": 10}, "tracking_categories": [{"id": "123456", "name": "New York", "parent_id": "123456", "parent_name": "New York"}], "tags": ["website", "redesign", "urgent"], "notes": "Client has requested modern design with mobile-first approach", "contract_number": "CNT-2024-001", "profit_margin": 15.5, "schedule_status": "on_schedule", "addresses": [{"id": "123", "type": "primary", "string": "25 Spring Street, Blackburn, VIC 3130", "name": "HQ US", "line1": "Main street", "line2": "apt #", "line3": "Suite #", "line4": "delivery instructions", "line5": "Attention: Finance Dept", "street_number": "25", "city": "San Francisco", "state": "CA", "postal_code": "94104", "country": "US", "latitude": "40.759211", "longitude": "-73.984638", "county": "Santa Clara", "contact_name": "Elon Musk", "salutation": "Mr", "phone_number": "111-111-1111", "fax": "122-111-1111", "email": "elon@musk.com", "website": "https://elonmusk.com", "notes": "Address notes or delivery instructions.", "row_version": "1-12345"}], "team_size": 8, "custom_fields": [{"id": "2389328923893298", "name": "employee_level", "description": "Employee Level", "value": "Uses Salesforce and Marketo"}], "row_version": "1-12345"}
+        application/json: {"name": "Website Redesign Project", "display_id": "PROJ-001", "reference_id": "WD-REF-2024-001", "description": "Complete redesign of the company website including new branding and improved user experience", "status": "active", "active": true, "project_type": "client_project", "priority": "high", "completion_percentage": 75.5, "start_date": "2024-01-15", "end_date": "2024-06-30", "completion_date": "2024-08-06", "customer": {"id": "12345", "display_name": "Windsurf Shop", "email": "boring@boring.com"}, "department": {"id": "DEPT-001", "name": "Marketing"}, "company_id": "12345", "owner_id": "12345", "parent_project": {"id": "PROJ-PARENT-001", "name": "Company Website Overhaul"}, "currency": "USD", "budget_amount": 50000, "approved_amount": 48000, "budget_hours": 400, "hourly_rate": 125, "billing_method": "time_and_materials", "is_billable": true, "phase": "execution", "tax_rate": {"id": "123456", "code": "N-T", "rate": 10}, "tracking_categories": [{"id": "123456", "name": "New York", "parent_id": "123456", "parent_name": "New York"}], "tags": ["website", "redesign", "urgent"], "notes": "Client has requested modern design with mobile-first approach", "contract_number": "CNT-2024-001", "profit_margin": 15.5, "schedule_status": "on_schedule", "addresses": [{"id": "123", "type": "primary", "string": "25 Spring Street, Blackburn, VIC 3130", "name": "HQ US", "line1": "Main street", "line2": "apt #", "line3": "Suite #", "line4": "delivery instructions", "line5": "Attention: Finance Dept", "street_number": "25", "city": "San Francisco", "state": "CA", "postal_code": "94104", "country": "US", "latitude": "40.759211", "longitude": "-73.984638", "county": "Santa Clara", "contact_name": "Elon Musk", "salutation": "Mr", "phone_number": "111-111-1111", "fax": "122-111-1111", "email": "elon@musk.com", "website": "https://elonmusk.com", "notes": "Address notes or delivery instructions.", "row_version": "1-12345"}], "team_size": 8, "custom_fields": [{"id": "2389328923893298", "name": "employee_level", "description": "Employee Level", "value": "Uses Salesforce and Marketo"}], "row_version": "1-12345"}
       responses:
         "201":
           application/json: {"status_code": 200, "status": "OK", "service": "quickbooks", "resource": "Projects", "operation": "add", "data": {"id": "12345"}}
@@ -18429,7 +18429,7 @@ examples:
           x-apideck-service-id: "salesforce"
       responses:
         "200":
-          application/json: {"status_code": 200, "status": "OK", "service": "quickbooks", "resource": "Projects", "operation": "one", "data": {"id": "12345", "downstream_id": "12345", "name": "Website Redesign Project", "display_id": "PROJ-001", "reference_id": "WD-REF-2024-001", "description": "Complete redesign of the company website including new branding and improved user experience", "status": "active", "active": true, "project_type": "client_project", "priority": "high", "completion_percentage": 75.5, "start_date": "2024-01-15", "end_date": "2024-06-30", "customer": {"id": "12345", "display_id": "CUST00101", "display_name": "Windsurf Shop", "company_name": "The boring company", "email": "boring@boring.com"}, "department": {"id": "DEPT-001", "name": "Marketing"}, "company_id": "12345", "owner_id": "12345", "parent_project": {"id": "PROJ-PARENT-001", "name": "Company Website Overhaul"}, "currency": "USD", "budget_amount": 50000, "approved_amount": 48000, "actual_amount": 45250.75, "budget_hours": 400, "actual_hours": 385.5, "hourly_rate": 125, "billing_method": "time_and_materials", "is_billable": true, "phase": "execution", "tax_rate": {"id": "123456", "code": "N-T", "name": "GST on Purchases", "rate": 10}, "tracking_categories": [{"id": "123456", "name": "New York", "parent_id": "123456", "parent_name": "New York"}], "tags": ["website", "redesign", "urgent"], "notes": "Client has requested modern design with mobile-first approach", "contract_number": "CNT-2024-001", "profit_margin": 15.5, "schedule_status": "on_schedule", "addresses": [{"id": "123", "type": "primary", "string": "25 Spring Street, Blackburn, VIC 3130", "name": "HQ US", "line1": "Main street", "line2": "apt #", "line3": "Suite #", "line4": "delivery instructions", "line5": "Attention: Finance Dept", "street_number": "25", "city": "San Francisco", "state": "CA", "postal_code": "94104", "country": "US", "latitude": "40.759211", "longitude": "-73.984638", "county": "Santa Clara", "contact_name": "Elon Musk", "salutation": "Mr", "phone_number": "111-111-1111", "fax": "122-111-1111", "email": "elon@musk.com", "website": "https://elonmusk.com", "notes": "Address notes or delivery instructions.", "row_version": "1-12345"}], "team_size": 8, "custom_fields": [{"id": "2389328923893298", "name": "employee_level", "description": "Employee Level", "value": "Uses Salesforce and Marketo"}], "row_version": "1-12345", "updated_by": "12345", "created_by": "12345", "created_at": "2020-09-30T07:43:32.000Z", "updated_at": "2020-09-30T07:43:32.000Z"}}
+          application/json: {"status_code": 200, "status": "OK", "service": "quickbooks", "resource": "Projects", "operation": "one", "data": {"id": "12345", "downstream_id": "12345", "name": "Website Redesign Project", "display_id": "PROJ-001", "reference_id": "WD-REF-2024-001", "description": "Complete redesign of the company website including new branding and improved user experience", "status": "active", "active": true, "project_type": "client_project", "priority": "high", "completion_percentage": 75.5, "start_date": "2024-01-15", "end_date": "2024-06-30", "completion_date": "2024-08-06", "customer": {"id": "12345", "display_id": "CUST00101", "display_name": "Windsurf Shop", "company_name": "The boring company", "email": "boring@boring.com"}, "department": {"id": "DEPT-001", "name": "Marketing"}, "company_id": "12345", "owner_id": "12345", "parent_project": {"id": "PROJ-PARENT-001", "name": "Company Website Overhaul"}, "currency": "USD", "budget_amount": 50000, "approved_amount": 48000, "actual_amount": 45250.75, "budget_hours": 400, "actual_hours": 385.5, "hourly_rate": 125, "billing_method": "time_and_materials", "is_billable": true, "phase": "execution", "tax_rate": {"id": "123456", "code": "N-T", "name": "GST on Purchases", "rate": 10}, "tracking_categories": [{"id": "123456", "name": "New York", "parent_id": "123456", "parent_name": "New York"}], "tags": ["website", "redesign", "urgent"], "notes": "Client has requested modern design with mobile-first approach", "contract_number": "CNT-2024-001", "profit_margin": 15.5, "schedule_status": "on_schedule", "addresses": [{"id": "123", "type": "primary", "string": "25 Spring Street, Blackburn, VIC 3130", "name": "HQ US", "line1": "Main street", "line2": "apt #", "line3": "Suite #", "line4": "delivery instructions", "line5": "Attention: Finance Dept", "street_number": "25", "city": "San Francisco", "state": "CA", "postal_code": "94104", "country": "US", "latitude": "40.759211", "longitude": "-73.984638", "county": "Santa Clara", "contact_name": "Elon Musk", "salutation": "Mr", "phone_number": "111-111-1111", "fax": "122-111-1111", "email": "elon@musk.com", "website": "https://elonmusk.com", "notes": "Address notes or delivery instructions.", "row_version": "1-12345"}], "team_size": 8, "custom_fields": [{"id": "2389328923893298", "name": "employee_level", "description": "Employee Level", "value": "Uses Salesforce and Marketo"}], "row_version": "1-12345", "updated_by": "12345", "created_by": "12345", "created_at": "2020-09-30T07:43:32.000Z", "updated_at": "2020-09-30T07:43:32.000Z"}}
         "400":
           application/json: {"status_code": 400, "error": "Bad Request", "type_name": "RequestValidationError", "message": "Invalid Params", "detail": "Missing property foobar", "ref": "https://developers.apideck.com/errors#requestvalidationerror"}
         "401":
@@ -18454,7 +18454,7 @@ examples:
           x-apideck-app-id: "dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX"
           x-apideck-service-id: "salesforce"
       requestBody:
-        application/json: {"name": "Website Redesign Project", "display_id": "PROJ-001", "reference_id": "WD-REF-2024-001", "description": "Complete redesign of the company website including new branding and improved user experience", "status": "active", "active": true, "project_type": "client_project", "priority": "high", "completion_percentage": 75.5, "start_date": "2024-01-15", "end_date": "2024-06-30", "customer": null, "department": {"id": "DEPT-001", "name": "Marketing"}, "company_id": "12345", "owner_id": "12345", "parent_project": {"id": "PROJ-PARENT-001", "name": "Company Website Overhaul"}, "currency": "USD", "budget_amount": 50000, "approved_amount": 48000, "budget_hours": 400, "hourly_rate": 125, "billing_method": "time_and_materials", "is_billable": true, "phase": "execution", "tax_rate": {"id": "123456", "code": "N-T", "rate": 10}, "tracking_categories": [{"id": "123456", "name": "New York", "parent_id": "123456", "parent_name": "New York"}], "tags": ["website", "redesign", "urgent"], "notes": "Client has requested modern design with mobile-first approach", "contract_number": "CNT-2024-001", "profit_margin": 15.5, "schedule_status": "on_schedule", "addresses": [{"id": "123", "type": "primary", "string": "25 Spring Street, Blackburn, VIC 3130", "name": "HQ US", "line1": "Main street", "line2": "apt #", "line3": "Suite #", "line4": "delivery instructions", "line5": "Attention: Finance Dept", "street_number": "25", "city": "San Francisco", "state": "CA", "postal_code": "94104", "country": "US", "latitude": "40.759211", "longitude": "-73.984638", "county": "Santa Clara", "contact_name": "Elon Musk", "salutation": "Mr", "phone_number": "111-111-1111", "fax": "122-111-1111", "email": "elon@musk.com", "website": "https://elonmusk.com", "notes": "Address notes or delivery instructions.", "row_version": "1-12345"}], "team_size": 8, "custom_fields": [{"id": "2389328923893298", "name": "employee_level", "description": "Employee Level", "value": "Uses Salesforce and Marketo"}], "row_version": "1-12345"}
+        application/json: {"name": "Website Redesign Project", "display_id": "PROJ-001", "reference_id": "WD-REF-2024-001", "description": "Complete redesign of the company website including new branding and improved user experience", "status": "active", "active": true, "project_type": "client_project", "priority": "high", "completion_percentage": 75.5, "start_date": "2024-01-15", "end_date": "2024-06-30", "completion_date": "2024-08-06", "customer": null, "department": {"id": "DEPT-001", "name": "Marketing"}, "company_id": "12345", "owner_id": "12345", "parent_project": {"id": "PROJ-PARENT-001", "name": "Company Website Overhaul"}, "currency": "USD", "budget_amount": 50000, "approved_amount": 48000, "budget_hours": 400, "hourly_rate": 125, "billing_method": "time_and_materials", "is_billable": true, "phase": "execution", "tax_rate": {"id": "123456", "code": "N-T", "rate": 10}, "tracking_categories": [{"id": "123456", "name": "New York", "parent_id": "123456", "parent_name": "New York"}], "tags": ["website", "redesign", "urgent"], "notes": "Client has requested modern design with mobile-first approach", "contract_number": "CNT-2024-001", "profit_margin": 15.5, "schedule_status": "on_schedule", "addresses": [{"id": "123", "type": "primary", "string": "25 Spring Street, Blackburn, VIC 3130", "name": "HQ US", "line1": "Main street", "line2": "apt #", "line3": "Suite #", "line4": "delivery instructions", "line5": "Attention: Finance Dept", "street_number": "25", "city": "San Francisco", "state": "CA", "postal_code": "94104", "country": "US", "latitude": "40.759211", "longitude": "-73.984638", "county": "Santa Clara", "contact_name": "Elon Musk", "salutation": "Mr", "phone_number": "111-111-1111", "fax": "122-111-1111", "email": "elon@musk.com", "website": "https://elonmusk.com", "notes": "Address notes or delivery instructions.", "row_version": "1-12345"}], "team_size": 8, "custom_fields": [{"id": "2389328923893298", "name": "employee_level", "description": "Employee Level", "value": "Uses Salesforce and Marketo"}], "row_version": "1-12345"}
       responses:
         "200":
           application/json: {"status_code": 200, "status": "OK", "service": "quickbooks", "resource": "Projects", "operation": "update", "data": {"id": "12345"}}
@@ -18498,6 +18498,7 @@ examples:
           application/json: {"status_code": 400, "error": "Bad Request", "type_name": "RequestHeadersValidationError", "message": "Invalid Params", "detail": "Missing Header: x-apideck-consumer-id", "ref": "https://developers.apideck.com/errors#unauthorizederror"}
 examplesVersion: 1.0.2
 generatedTests: {}
+releaseNotes: "## Python SDK Changes Detected:\n* `apideck.accounting.projects.list()`: \n  *  `request.filter` **Changed**\n  *  `response.data.[].completion_date` **Added**\n* `apideck.accounting.projects.create()`:  `request.completion_date` **Added**\n* `apideck.accounting.projects.get()`:  `response.data.completion_date` **Added**\n* `apideck.accounting.projects.update()`:  `request.completion_date` **Added**\n* `apideck.ecommerce.customers.list()`:  `request.filter` **Changed**\n"
 trackedFiles:
   .devcontainer/README.md:
     last_write_checksum: sha1:07adb0c0c051a9be4d479ea06461f3a9b3bbeb2f
@@ -20342,11 +20343,11 @@ trackedFiles:
   docs/models/ecommercecustomersallglobals.md:
     last_write_checksum: sha1:da35b96d4c663055097d09f0079d7e260e2d1b58
   docs/models/ecommercecustomersallrequest.md:
-    last_write_checksum: sha1:2e0bcf72dec57837ff0f163914a9d47193ae686a
+    last_write_checksum: sha1:71051495dd7d594241211f143862f7bac07649c3
   docs/models/ecommercecustomersallresponse.md:
     last_write_checksum: sha1:ab2abd6aa8fdf19994e06c102e1a658eeecb851d
   docs/models/ecommercecustomersfilter.md:
-    last_write_checksum: sha1:bae019a24c644228f8c0e062fc7bdf5604968514
+    last_write_checksum: sha1:0a4f57f3741f8e077a4c6bef62554dd2591770c4
   docs/models/ecommercecustomersoneglobals.md:
     last_write_checksum: sha1:06bc86b000df23a58466263e1cad2a5284cb8f6c
   docs/models/ecommercecustomersonerequest.md:
@@ -21562,11 +21563,11 @@ trackedFiles:
   docs/models/profitandlosstype.md:
     last_write_checksum: sha1:2e830252085f3863009588b5bd43161bb6c4c124
   docs/models/project.md:
-    last_write_checksum: sha1:788d62f933f7b3b5aa09354db4b3dd37488ad8a4
+    last_write_checksum: sha1:2c12f5301a8bd64f5df45f45a8c57989e2d8e42c
   docs/models/projectdepartment.md:
     last_write_checksum: sha1:c5f6f2d585cca9269e2eb96be3a650da7e2b055a
   docs/models/projectinput.md:
-    last_write_checksum: sha1:ef4462bb639926ed6ec2acec16dc6402cd982089
+    last_write_checksum: sha1:9dfdcdb5d54dabc4c1718c1f896f7f4c1dd5e9a1
   docs/models/projectphase.md:
     last_write_checksum: sha1:6cd2bd1996c8a4c38b3eed909ef130e34ce4204a
   docs/models/projectprojectstatus.md:
@@ -21578,7 +21579,7 @@ trackedFiles:
   docs/models/projectssortsortby.md:
     last_write_checksum: sha1:537ebc299c60ed3f5d125f5ecc17e39effb8a30e
   docs/models/projectstatus.md:
-    last_write_checksum: sha1:860364724234517a10f4df9432b88559e7c20ad2
+    last_write_checksum: sha1:be5de627ef6542ee02b74078e11edf3f93e84fbb
   docs/models/projecttype.md:
     last_write_checksum: sha1:9b7f39d032d4d2525865607ee3fc05c8b3820d5d
   docs/models/purchasedetails.md:
@@ -22172,7 +22173,7 @@ trackedFiles:
   docs/sdks/apideckcompanies/README.md:
     last_write_checksum: sha1:95db1bd89275bf430df2ab0ce0a077bdb3a87e16
   docs/sdks/apideckcustomers/README.md:
-    last_write_checksum: sha1:bfbf3af1548503dca47af51edcbafab40c71fe1d
+    last_write_checksum: sha1:917713fd58c423fc4c387126a7d16e8e198c7135
   docs/sdks/apideckdepartments/README.md:
     last_write_checksum: sha1:f9b2d7e94ad6332c1477b3d4e8e8a3b08a413b72
   docs/sdks/apiresourcecoveragesdk/README.md:
@@ -22306,7 +22307,7 @@ trackedFiles:
   docs/sdks/profitandlosssdk/README.md:
     last_write_checksum: sha1:e8f56e7931185dd7242dbe151c09655e92717998
   docs/sdks/projects/README.md:
-    last_write_checksum: sha1:336ccd64843b5da8ab64a43b9a38123e90ddb9c0
+    last_write_checksum: sha1:1db18baf0fb667a6e289125c99dc3601db88180b
   docs/sdks/purchaseorders/README.md:
     last_write_checksum: sha1:762e4cc42f3a094dc7534be186cbd89309db8f5c
   docs/sdks/quotes/README.md:
@@ -22340,9 +22341,9 @@ trackedFiles:
   py.typed:
     last_write_checksum: sha1:8efc425ffe830805ffcc0f3055871bdcdc542c60
   pylintrc:
-    last_write_checksum: sha1:7b1b40297729ca6f879ec366a3bc9fd867194306
+    last_write_checksum: sha1:9dd6d5925551f6c9f30e6d9276512edb04b5db83
   pyproject.toml:
-    last_write_checksum: sha1:e25f85f730bfa5c14e98ace1521c8e0d70634739
+    last_write_checksum: sha1:f493d43c88958cd1ae52f9d8bb31dd4ca0e7c32b
   scripts/prepare_readme.py:
     last_write_checksum: sha1:798a05bafe4fbbfff5b67037866fa25efc52f11a
   scripts/publish.sh:
@@ -22356,7 +22357,7 @@ trackedFiles:
   src/apideck_unify/_hooks/types.py:
     last_write_checksum: sha1:4b923d3d84d979af6169a9db6b81bfc373079a25
   src/apideck_unify/_version.py:
-    last_write_checksum: sha1:f0fb89ff5201c92e9dc52a75edde60010611f88a
+    last_write_checksum: sha1:de578f978e44f2b94498133b04381815bf83027e
   src/apideck_unify/accounting.py:
     last_write_checksum: sha1:bd5b63b1d179c5a3b6b70c782cc3ca47fd46f0a4
   src/apideck_unify/activities.py:
@@ -23350,7 +23351,7 @@ trackedFiles:
   src/apideck_unify/models/ecommercecustomer.py:
     last_write_checksum: sha1:76e1505f22a6bf74252b7d89c9e8ec2c738e0a83
   src/apideck_unify/models/ecommercecustomersfilter.py:
-    last_write_checksum: sha1:4ae8996d84b8c29453b9eff4cc59f9f39173457a
+    last_write_checksum: sha1:8cf83fb95a43b7dd73a0e42bbc0366f4a7bb1404
   src/apideck_unify/models/ecommercediscount.py:
     last_write_checksum: sha1:cb2dce214bf41c14eee65a500cb1515586c333d3
   src/apideck_unify/models/ecommerceorder.py:
@@ -24026,9 +24027,9 @@ trackedFiles:
   src/apideck_unify/models/profitandlosstype.py:
     last_write_checksum: sha1:3bd7d80270249ec8f66df5799909174a3f9f3843
   src/apideck_unify/models/project.py:
-    last_write_checksum: sha1:2a121d3b990eea62510237461c1309db2c590a73
+    last_write_checksum: sha1:a757ac0c3cd6c33d9c5259ad8b2bca98d5dd7b1d
   src/apideck_unify/models/projectsfilter.py:
-    last_write_checksum: sha1:e36243ce0ea39e98ef38b4356a4b3b07fb68c37f
+    last_write_checksum: sha1:d628826f3c0c282654d92c3d4e430a5db1e77d4f
   src/apideck_unify/models/projectssort.py:
     last_write_checksum: sha1:6da3da9480e97558c3ee3c277dbae8bda36f167b
   src/apideck_unify/models/purchaseorder.py:
@@ -24334,7 +24335,7 @@ trackedFiles:
   src/apideck_unify/profitandloss_sdk.py:
     last_write_checksum: sha1:4aa70e196e6cac80252327df3076196fd8e034e5
   src/apideck_unify/projects.py:
-    last_write_checksum: sha1:fe38b2cdda6c45290ba6334b6b53e9b46dcfd60c
+    last_write_checksum: sha1:cad624247aa59550f9359d6396bf8b2da6e86aa5
   src/apideck_unify/purchaseorders.py:
     last_write_checksum: sha1:10087d944986109ae24b27f32954df988be2addb
   src/apideck_unify/py.typed:
@@ -24372,7 +24373,7 @@ trackedFiles:
   src/apideck_unify/users.py:
     last_write_checksum: sha1:bf9559ff819260cb89eb50c14a8f405ab70f5f12
   src/apideck_unify/utils/__init__.py:
-    last_write_checksum: sha1:ffaf69e6877a274b08066215f5a31a1b344f5402
+    last_write_checksum: sha1:141be7a6debce43d0acfb482e4b3dab85a894c4a
   src/apideck_unify/utils/annotations.py:
     last_write_checksum: sha1:a4824ad65f730303e4e1e3ec1febf87b4eb46dbc
   src/apideck_unify/utils/datetimes.py:
@@ -24380,7 +24381,7 @@ trackedFiles:
   src/apideck_unify/utils/enums.py:
     last_write_checksum: sha1:bc8c3c1285ae09ba8a094ee5c3d9c7f41fa1284d
   src/apideck_unify/utils/eventstreaming.py:
-    last_write_checksum: sha1:bababae5d54b7efc360db701daa49e18a92c2f3b
+    last_write_checksum: sha1:ffa870a25a7e4e2015bfd7a467ccd3aa1de97f0e
   src/apideck_unify/utils/forms.py:
     last_write_checksum: sha1:15fa7e9ab1611e062a9984cf06cb20969713d295
   src/apideck_unify/utils/headers.py:
@@ -24396,7 +24397,7 @@ trackedFiles:
   src/apideck_unify/utils/retries.py:
     last_write_checksum: sha1:5b97ac4f59357d70c2529975d50364c88bcad607
   src/apideck_unify/utils/security.py:
-    last_write_checksum: sha1:da11c92acdccdb9d25e9fe6ca249d992b263a476
+    last_write_checksum: sha1:ba36ede663a67e6fe1146627d1b53a03311a09c0
   src/apideck_unify/utils/serializers.py:
     last_write_checksum: sha1:ce1d8d7f500a9ccba0aeca5057cee9c271f4dfd7
   src/apideck_unify/utils/unmarshal_json_response.py:

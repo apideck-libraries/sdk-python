@@ -156,7 +156,9 @@ class ProjectTypedDict(TypedDict):
     start_date: NotRequired[Nullable[date]]
     r"""Start date of the project"""
     end_date: NotRequired[Nullable[date]]
-    r"""Expected or actual end date of the project"""
+    r"""Expected or planned end date of the project"""
+    completion_date: NotRequired[Nullable[date]]
+    r"""Actual end date of the project"""
     customer: NotRequired[Nullable[LinkedCustomerTypedDict]]
     r"""The customer this entity is linked to."""
     department: NotRequired[Nullable[ProjectDepartmentTypedDict]]
@@ -264,7 +266,10 @@ class Project(BaseModel):
     r"""Start date of the project"""
 
     end_date: OptionalNullable[date] = UNSET
-    r"""Expected or actual end date of the project"""
+    r"""Expected or planned end date of the project"""
+
+    completion_date: OptionalNullable[date] = UNSET
+    r"""Actual end date of the project"""
 
     customer: OptionalNullable[LinkedCustomer] = UNSET
     r"""The customer this entity is linked to."""
@@ -442,6 +447,7 @@ class Project(BaseModel):
             "completion_percentage",
             "start_date",
             "end_date",
+            "completion_date",
             "customer",
             "department",
             "company_id",
@@ -485,6 +491,7 @@ class Project(BaseModel):
             "completion_percentage",
             "start_date",
             "end_date",
+            "completion_date",
             "customer",
             "department",
             "company_id",
@@ -561,7 +568,9 @@ class ProjectInputTypedDict(TypedDict):
     start_date: NotRequired[Nullable[date]]
     r"""Start date of the project"""
     end_date: NotRequired[Nullable[date]]
-    r"""Expected or actual end date of the project"""
+    r"""Expected or planned end date of the project"""
+    completion_date: NotRequired[Nullable[date]]
+    r"""Actual end date of the project"""
     customer: NotRequired[Nullable[LinkedCustomerInputTypedDict]]
     r"""The customer this entity is linked to."""
     department: NotRequired[Nullable[ProjectDepartmentTypedDict]]
@@ -651,7 +660,10 @@ class ProjectInput(BaseModel):
     r"""Start date of the project"""
 
     end_date: OptionalNullable[date] = UNSET
-    r"""Expected or actual end date of the project"""
+    r"""Expected or planned end date of the project"""
+
+    completion_date: OptionalNullable[date] = UNSET
+    r"""Actual end date of the project"""
 
     customer: OptionalNullable[LinkedCustomerInput] = UNSET
     r"""The customer this entity is linked to."""
@@ -809,6 +821,7 @@ class ProjectInput(BaseModel):
             "completion_percentage",
             "start_date",
             "end_date",
+            "completion_date",
             "customer",
             "department",
             "company_id",
@@ -845,6 +858,7 @@ class ProjectInput(BaseModel):
             "completion_percentage",
             "start_date",
             "end_date",
+            "completion_date",
             "customer",
             "department",
             "company_id",

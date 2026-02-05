@@ -29,8 +29,9 @@ generation:
     generateNewTests: false
     skipResponseBodyAssertions: false
   persistentEdits: {}
+  versioningStrategy: automatic
 python:
-  version: 0.30.0
+  version: 0.30.1
   additionalDependencies:
     dev: {}
     main: {}

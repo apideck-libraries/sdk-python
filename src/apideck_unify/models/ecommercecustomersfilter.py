@@ -12,6 +12,8 @@ class EcommerceCustomersFilterTypedDict(TypedDict):
     r"""Customer email address to filter on"""
     phone_number: NotRequired[str]
     r"""Customer phone number to filter on"""
+    customer_ids: NotRequired[str]
+    r"""Filter by customer IDs. Specify multiple IDs as a comma-separated string."""
 
 
 class EcommerceCustomersFilter(BaseModel):
@@ -20,3 +22,6 @@ class EcommerceCustomersFilter(BaseModel):
 
     phone_number: Annotated[Optional[str], FieldMetadata(query=True)] = None
     r"""Customer phone number to filter on"""
+
+    customer_ids: Annotated[Optional[str], FieldMetadata(query=True)] = None
+    r"""Filter by customer IDs. Specify multiple IDs as a comma-separated string."""
