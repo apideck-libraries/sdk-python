@@ -3,10 +3,10 @@
 import importlib.metadata
 
 __title__: str = "apideck-unify"
-__version__: str = "0.30.0"
-__openapi_doc_version__: str = "10.23.10"
+__version__: str = "0.30.1"
+__openapi_doc_version__: str = "10.23.11"
 __gen_version__: str = "2.753.1"
-__user_agent__: str = "speakeasy-sdk/python 0.30.0 2.753.1 10.23.10 apideck-unify"
+__user_agent__: str = "speakeasy-sdk/python 0.30.1 2.753.1 10.23.11 apideck-unify"
 
 try:
     if __package__ is not None:
