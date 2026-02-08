@@ -1192,6 +1192,8 @@ if TYPE_CHECKING:
         BadRequestResponse,
         BadRequestResponseData,
         BadRequestResponseDetail,
+        DownstreamErrors,
+        DownstreamErrorsTypedDict,
     )
     from .balancebyperiod import BalanceByPeriod, BalanceByPeriodTypedDict
     from .balancebytransaction import (
@@ -6288,6 +6290,8 @@ __all__ = [
     "DetailTypedDict",
     "Direction",
     "DisabledReason",
+    "DownstreamErrors",
+    "DownstreamErrorsTypedDict",
     "Drive",
     "DriveGroup",
     "DriveGroupInput",
@@ -8919,6 +8923,8 @@ _dynamic_imports: dict[str, str] = {
     "BadRequestResponse": ".badrequestresponse",
     "BadRequestResponseData": ".badrequestresponse",
     "BadRequestResponseDetail": ".badrequestresponse",
+    "DownstreamErrors": ".badrequestresponse",
+    "DownstreamErrorsTypedDict": ".badrequestresponse",
     "BalanceByPeriod": ".balancebyperiod",
     "BalanceByPeriodTypedDict": ".balancebyperiod",
     "BalanceByTransaction": ".balancebytransaction",
