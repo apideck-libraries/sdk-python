@@ -400,6 +400,7 @@ class Projects(BaseSDK):
         completion_percentage: OptionalNullable[float] = UNSET,
         start_date: OptionalNullable[date] = UNSET,
         end_date: OptionalNullable[date] = UNSET,
+        completion_date: OptionalNullable[date] = UNSET,
         customer: OptionalNullable[
             Union[models.LinkedCustomerInput, models.LinkedCustomerInputTypedDict]
         ] = UNSET,
@@ -464,7 +465,8 @@ class Projects(BaseSDK):
         :param priority: Priority level of the project
         :param completion_percentage: Percentage of project completion (0-100)
         :param start_date: Start date of the project
-        :param end_date: Expected or actual end date of the project
+        :param end_date: Expected or planned end date of the project
+        :param completion_date: Actual end date of the project
         :param customer: The customer this entity is linked to.
         :param department: Department or organizational unit associated with the project
         :param company_id: The company ID the transaction belongs to
@@ -521,6 +523,7 @@ class Projects(BaseSDK):
                 completion_percentage=completion_percentage,
                 start_date=start_date,
                 end_date=end_date,
+                completion_date=completion_date,
                 customer=utils.get_pydantic_model(
                     customer, OptionalNullable[models.LinkedCustomerInput]
                 ),
@@ -680,6 +683,7 @@ class Projects(BaseSDK):
         completion_percentage: OptionalNullable[float] = UNSET,
         start_date: OptionalNullable[date] = UNSET,
         end_date: OptionalNullable[date] = UNSET,
+        completion_date: OptionalNullable[date] = UNSET,
         customer: OptionalNullable[
             Union[models.LinkedCustomerInput, models.LinkedCustomerInputTypedDict]
         ] = UNSET,
@@ -744,7 +748,8 @@ class Projects(BaseSDK):
         :param priority: Priority level of the project
         :param completion_percentage: Percentage of project completion (0-100)
         :param start_date: Start date of the project
-        :param end_date: Expected or actual end date of the project
+        :param end_date: Expected or planned end date of the project
+        :param completion_date: Actual end date of the project
         :param customer: The customer this entity is linked to.
         :param department: Department or organizational unit associated with the project
         :param company_id: The company ID the transaction belongs to
@@ -801,6 +806,7 @@ class Projects(BaseSDK):
                 completion_percentage=completion_percentage,
                 start_date=start_date,
                 end_date=end_date,
+                completion_date=completion_date,
                 customer=utils.get_pydantic_model(
                     customer, OptionalNullable[models.LinkedCustomerInput]
                 ),
@@ -1243,6 +1249,7 @@ class Projects(BaseSDK):
         completion_percentage: OptionalNullable[float] = UNSET,
         start_date: OptionalNullable[date] = UNSET,
         end_date: OptionalNullable[date] = UNSET,
+        completion_date: OptionalNullable[date] = UNSET,
         customer: OptionalNullable[
             Union[models.LinkedCustomerInput, models.LinkedCustomerInputTypedDict]
         ] = UNSET,
@@ -1308,7 +1315,8 @@ class Projects(BaseSDK):
         :param priority: Priority level of the project
         :param completion_percentage: Percentage of project completion (0-100)
         :param start_date: Start date of the project
-        :param end_date: Expected or actual end date of the project
+        :param end_date: Expected or planned end date of the project
+        :param completion_date: Actual end date of the project
         :param customer: The customer this entity is linked to.
         :param department: Department or organizational unit associated with the project
         :param company_id: The company ID the transaction belongs to
@@ -1366,6 +1374,7 @@ class Projects(BaseSDK):
                 completion_percentage=completion_percentage,
                 start_date=start_date,
                 end_date=end_date,
+                completion_date=completion_date,
                 customer=utils.get_pydantic_model(
                     customer, OptionalNullable[models.LinkedCustomerInput]
                 ),
@@ -1526,6 +1535,7 @@ class Projects(BaseSDK):
         completion_percentage: OptionalNullable[float] = UNSET,
         start_date: OptionalNullable[date] = UNSET,
         end_date: OptionalNullable[date] = UNSET,
+        completion_date: OptionalNullable[date] = UNSET,
         customer: OptionalNullable[
             Union[models.LinkedCustomerInput, models.LinkedCustomerInputTypedDict]
         ] = UNSET,
@@ -1591,7 +1601,8 @@ class Projects(BaseSDK):
         :param priority: Priority level of the project
         :param completion_percentage: Percentage of project completion (0-100)
         :param start_date: Start date of the project
-        :param end_date: Expected or actual end date of the project
+        :param end_date: Expected or planned end date of the project
+        :param completion_date: Actual end date of the project
         :param customer: The customer this entity is linked to.
         :param department: Department or organizational unit associated with the project
         :param company_id: The company ID the transaction belongs to
@@ -1649,6 +1660,7 @@ class Projects(BaseSDK):
                 completion_percentage=completion_percentage,
                 start_date=start_date,
                 end_date=end_date,
+                completion_date=completion_date,
                 customer=utils.get_pydantic_model(
                     customer, OptionalNullable[models.LinkedCustomerInput]
                 ),
