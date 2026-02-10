@@ -20,6 +20,9 @@ class ProjectStatus(str, Enum, metaclass=utils.OpenEnumMeta):
     ON_HOLD = "on_hold"
     CANCELLED = "cancelled"
     DRAFT = "draft"
+    IN_PROGRESS = "in_progress"
+    APPROVED = "approved"
+    OTHER = "other"
 
 
 class ProjectsFilterTypedDict(TypedDict):
