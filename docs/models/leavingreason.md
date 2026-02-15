@@ -10,4 +10,5 @@ The reason because the employment ended.
 | `DISMISSED`  | dismissed    |
 | `RESIGNED`   | resigned     |
 | `REDUNDANCY` | redundancy   |
+| `RETIRED`    | retired      |
 | `OTHER`      | other        |

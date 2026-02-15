@@ -5,8 +5,8 @@ from apideck_unify.models import ApideckError
 from apideck_unify.types import BaseModel
 from dataclasses import dataclass, field
 import httpx
-from typing import Any, Dict, Optional, Union
-from typing_extensions import TypeAliasType
+from typing import Any, Dict, List, Optional, Union
+from typing_extensions import NotRequired, TypeAliasType, TypedDict
 
 
 BadRequestResponseDetailTypedDict = TypeAliasType(
@@ -19,6 +19,26 @@ BadRequestResponseDetail = TypeAliasType(
     "BadRequestResponseDetail", Union[str, Dict[str, Any]]
 )
 r"""Contains parameter or domain specific information related to the error and why it occurred."""
+
+
+class DownstreamErrorsTypedDict(TypedDict):
+    message: NotRequired[str]
+    r"""Error message from the downstream provider"""
+    detail: NotRequired[str]
+    r"""Additional error details"""
+    code: NotRequired[str]
+    r"""Error code from the downstream provider"""
+
+
+class DownstreamErrors(BaseModel):
+    message: Optional[str] = None
+    r"""Error message from the downstream provider"""
+
+    detail: Optional[str] = None
+    r"""Additional error details"""
+
+    code: Optional[str] = None
+    r"""Error code from the downstream provider"""
 
 
 class BadRequestResponseData(BaseModel):
@@ -39,6 +59,9 @@ class BadRequestResponseData(BaseModel):
 
     ref: Optional[str] = None
     r"""Link to documentation of error type"""
+
+    downstream_errors: Optional[List[DownstreamErrors]] = None
+    r"""Contains downstream errors returned from the connector. Only present when type_name is ConnectorExecutionError."""
 
 
 @dataclass(unsafe_hash=True)

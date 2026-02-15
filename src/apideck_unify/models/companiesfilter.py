@@ -3,6 +3,7 @@
 from __future__ import annotations
 from apideck_unify.types import BaseModel
 from apideck_unify.utils import FieldMetadata
+from datetime import datetime
 from typing import Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
@@ -10,8 +11,14 @@ from typing_extensions import Annotated, NotRequired, TypedDict
 class CompaniesFilterTypedDict(TypedDict):
     name: NotRequired[str]
     r"""Name of the company to filter on"""
+    updated_since: NotRequired[datetime]
+    created_since: NotRequired[datetime]
 
 
 class CompaniesFilter(BaseModel):
     name: Annotated[Optional[str], FieldMetadata(query=True)] = None
     r"""Name of the company to filter on"""
+
+    updated_since: Annotated[Optional[datetime], FieldMetadata(query=True)] = None
+
+    created_since: Annotated[Optional[datetime], FieldMetadata(query=True)] = None
