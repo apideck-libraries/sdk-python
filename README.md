@@ -715,6 +715,15 @@ with Apideck(
 * [list](docs/sdks/collections/README.md#list) - List Collections
 * [get](docs/sdks/collections/README.md#get) - Get Collection
 
+### [proxy](docs/sdks/proxy/README.md)
+
+* [get](docs/sdks/proxy/README.md#get) - GET
+* [options](docs/sdks/proxy/README.md#options) - OPTIONS
+* [post](docs/sdks/proxy/README.md#post) - POST
+* [put](docs/sdks/proxy/README.md#put) - PUT
+* [patch](docs/sdks/proxy/README.md#patch) - PATCH
+* [delete](docs/sdks/proxy/README.md#delete) - DELETE
+
 #### [sms.messages](docs/sdks/messages/README.md)
 
 * [list](docs/sdks/messages/README.md#list) - List Messages
@@ -1002,13 +1011,13 @@ with Apideck(
 ### Error Classes
 **Primary errors:**
 * [`ApideckError`](./src/apideck_unify/models/apideckerror.py): The base class for HTTP error responses.
-  * [`UnauthorizedResponse`](./src/apideck_unify/models/unauthorizedresponse.py): Unauthorized. Status code `401`.
-  * [`PaymentRequiredResponse`](./src/apideck_unify/models/paymentrequiredresponse.py): Payment Required. Status code `402`.
+  * [`UnauthorizedResponse`](./src/apideck_unify/models/unauthorizedresponse.py): Unauthorized. Status code `401`. *
+  * [`PaymentRequiredResponse`](./src/apideck_unify/models/paymentrequiredresponse.py): Payment Required. Status code `402`. *
   * [`NotFoundResponse`](./src/apideck_unify/models/notfoundresponse.py): The specified resource was not found. Status code `404`. *
   * [`BadRequestResponse`](./src/apideck_unify/models/badrequestresponse.py): Bad Request. Status code `400`. *
   * [`UnprocessableResponse`](./src/apideck_unify/models/unprocessableresponse.py): Unprocessable. Status code `422`. *
 
-<details><summary>Less common errors (5)</summary>
+<details><summary>Less common errors (6)</summary>
 
 <br />
 
@@ -1019,6 +1028,7 @@ with Apideck(
 
 
 **Inherit from [`ApideckError`](./src/apideck_unify/models/apideckerror.py)**:
+* [`Unauthorized`](./src/apideck_unify/models/unauthorized.py): Unauthorized. Status code `401`. Applicable to 6 of 311 methods.*
 * [`ResponseValidationError`](./src/apideck_unify/models/responsevalidationerror.py): Type mismatch between the response data and the expected Pydantic model. Provides access to the Pydantic validation error via the `cause` attribute.
 
 </details>
