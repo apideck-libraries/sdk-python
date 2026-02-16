@@ -3,6 +3,8 @@
 
 ## Fields
 
-| Field                            | Type                             | Required                         | Description                      | Example                          |
-| -------------------------------- | -------------------------------- | -------------------------------- | -------------------------------- | -------------------------------- |
-| `name`                           | *Optional[str]*                  | :heavy_minus_sign:               | Name of the company to filter on | SpaceX                           |
+| Field                                                                | Type                                                                 | Required                                                             | Description                                                          | Example                                                              |
+| -------------------------------------------------------------------- | -------------------------------------------------------------------- | -------------------------------------------------------------------- | -------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| `name`                                                               | *Optional[str]*                                                      | :heavy_minus_sign:                                                   | Name of the company to filter on                                     | SpaceX                                                               |
+| `updated_since`                                                      | [date](https://docs.python.org/3/library/datetime.html#date-objects) | :heavy_minus_sign:                                                   | N/A                                                                  | 2020-09-30T07:43:32.000Z                                             |
+| `created_since`                                                      | [date](https://docs.python.org/3/library/datetime.html#date-objects) | :heavy_minus_sign:                                                   | N/A                                                                  | 2020-09-30T07:43:32.000Z                                             |
