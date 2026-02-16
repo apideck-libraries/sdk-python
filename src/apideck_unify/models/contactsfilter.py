@@ -3,6 +3,7 @@
 from __future__ import annotations
 from apideck_unify.types import BaseModel
 from apideck_unify.utils import FieldMetadata
+from datetime import datetime
 from typing import Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
@@ -22,6 +23,8 @@ class ContactsFilterTypedDict(TypedDict):
     r"""Unique identifier for the associated company of the contact to filter on"""
     owner_id: NotRequired[str]
     r"""Unique identifier for the owner of the contact to filter on"""
+    updated_since: NotRequired[datetime]
+    created_since: NotRequired[datetime]
 
 
 class ContactsFilter(BaseModel):
@@ -45,3 +48,7 @@ class ContactsFilter(BaseModel):
 
     owner_id: Annotated[Optional[str], FieldMetadata(query=True)] = None
     r"""Unique identifier for the owner of the contact to filter on"""
+
+    updated_since: Annotated[Optional[datetime], FieldMetadata(query=True)] = None
+
+    created_since: Annotated[Optional[datetime], FieldMetadata(query=True)] = None

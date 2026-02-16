@@ -24,6 +24,7 @@ if TYPE_CHECKING:
     from apideck_unify.filestorage import FileStorage
     from apideck_unify.hris import Hris
     from apideck_unify.issuetracking import IssueTracking
+    from apideck_unify.proxy import Proxy
     from apideck_unify.sms import Sms
     from apideck_unify.vault import Vault
     from apideck_unify.webhook_sdk import WebhookSDK
@@ -43,6 +44,7 @@ class Apideck(BaseSDK):
     sms: "Sms"
     issue_tracking: "IssueTracking"
     connector: "ConnectorSDK"
+    proxy: "Proxy"
     vault: "Vault"
     webhook: "WebhookSDK"
     _sub_sdk_map = {
@@ -55,6 +57,7 @@ class Apideck(BaseSDK):
         "sms": ("apideck_unify.sms", "Sms"),
         "issue_tracking": ("apideck_unify.issuetracking", "IssueTracking"),
         "connector": ("apideck_unify.connector_sdk", "ConnectorSDK"),
+        "proxy": ("apideck_unify.proxy", "Proxy"),
         "vault": ("apideck_unify.vault", "Vault"),
         "webhook": ("apideck_unify.webhook_sdk", "WebhookSDK"),
     }

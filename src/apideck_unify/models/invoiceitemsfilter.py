@@ -10,6 +10,7 @@ from apideck_unify.types import (
     UNSET_SENTINEL,
 )
 from apideck_unify.utils import FieldMetadata, validate_open_enum
+from datetime import datetime
 from enum import Enum
 from pydantic import field_serializer, model_serializer
 from pydantic.functional_validators import PlainValidator
@@ -33,6 +34,7 @@ class TransactionType(str, Enum, metaclass=utils.OpenEnumMeta):
 
 
 class InvoiceItemsFilterTypedDict(TypedDict):
+    updated_since: NotRequired[datetime]
     name: NotRequired[str]
     r"""Name of Invoice Items to search for"""
     type: NotRequired[Nullable[InvoiceItemType]]
@@ -42,6 +44,8 @@ class InvoiceItemsFilterTypedDict(TypedDict):
 
 
 class InvoiceItemsFilter(BaseModel):
+    updated_since: Annotated[Optional[datetime], FieldMetadata(query=True)] = None
+
     name: Annotated[Optional[str], FieldMetadata(query=True)] = None
     r"""Name of Invoice Items to search for"""
 
@@ -81,7 +85,7 @@ class InvoiceItemsFilter(BaseModel):
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
-        optional_fields = ["name", "type", "transaction_type"]
+        optional_fields = ["updated_since", "name", "type", "transaction_type"]
         nullable_fields = ["type", "transaction_type"]
         null_default_fields = []
 
