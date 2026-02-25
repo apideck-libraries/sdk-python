@@ -16,6 +16,7 @@ generation:
     requestResponseComponentNamesFeb2024: true
     securityFeb2025: false
     sharedErrorComponentsApr2025: false
+    nameOverrideFeb2026: false
     sharedNestedComponentsJan2026: false
   auth:
     oAuth2ClientCredentialsEnabled: true
@@ -31,7 +32,7 @@ generation:
   persistentEdits: {}
   versioningStrategy: automatic
 python:
-  version: 0.30.2
+  version: 0.30.3
   additionalDependencies:
     dev: {}
     main: {}

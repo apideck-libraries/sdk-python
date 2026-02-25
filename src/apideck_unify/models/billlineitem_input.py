@@ -34,7 +34,7 @@ class BillLineItemInputTypedDict(TypedDict):
     code: NotRequired[Nullable[str]]
     r"""User defined item code"""
     line_number: NotRequired[Nullable[int]]
-    r"""Line number in the invoice"""
+    r"""Line number of the resource"""
     description: NotRequired[Nullable[str]]
     r"""User defined description"""
     type: NotRequired[Nullable[LineItemType]]
@@ -101,7 +101,7 @@ class BillLineItemInput(BaseModel):
     r"""User defined item code"""
 
     line_number: OptionalNullable[int] = UNSET
-    r"""Line number in the invoice"""
+    r"""Line number of the resource"""
 
     description: OptionalNullable[str] = UNSET
     r"""User defined description"""

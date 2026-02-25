@@ -327,6 +327,30 @@ with Apideck(
 * [update](docs/sdks/departments/README.md#update) - Update Department
 * [delete](docs/sdks/departments/README.md#delete) - Delete Department
 
+#### [accounting.employees](docs/sdks/employees/README.md)
+
+* [list](docs/sdks/employees/README.md#list) - List Employees
+* [create](docs/sdks/employees/README.md#create) - Create Employee
+* [get](docs/sdks/employees/README.md#get) - Get Employee
+* [update](docs/sdks/employees/README.md#update) - Update Employee
+* [delete](docs/sdks/employees/README.md#delete) - Delete Employee
+
+#### [accounting.expense_categories](docs/sdks/expensecategories/README.md)
+
+* [list](docs/sdks/expensecategories/README.md#list) - List Expense Categories
+* [create](docs/sdks/expensecategories/README.md#create) - Create Expense Category
+* [get](docs/sdks/expensecategories/README.md#get) - Get Expense Category
+* [update](docs/sdks/expensecategories/README.md#update) - Update Expense Category
+* [delete](docs/sdks/expensecategories/README.md#delete) - Delete Expense Category
+
+#### [accounting.expense_reports](docs/sdks/expensereports/README.md)
+
+* [list](docs/sdks/expensereports/README.md#list) - List Expense Reports
+* [create](docs/sdks/expensereports/README.md#create) - Create Expense Report
+* [get](docs/sdks/expensereports/README.md#get) - Get Expense Report
+* [update](docs/sdks/expensereports/README.md#update) - Update Expense Report
+* [delete](docs/sdks/expensereports/README.md#delete) - Delete Expense Report
+
 #### [accounting.expenses](docs/sdks/expenses/README.md)
 
 * [list](docs/sdks/expenses/README.md#list) - List Expenses
@@ -664,13 +688,13 @@ with Apideck(
 
 * [list](docs/sdks/employeeschedulessdk/README.md#list) - List Employee Schedules
 
-#### [hris.employees](docs/sdks/employees/README.md)
+#### [hris.employees](docs/sdks/apideckemployees/README.md)
 
-* [list](docs/sdks/employees/README.md#list) - List Employees
-* [create](docs/sdks/employees/README.md#create) - Create Employee
-* [get](docs/sdks/employees/README.md#get) - Get Employee
-* [update](docs/sdks/employees/README.md#update) - Update Employee
-* [delete](docs/sdks/employees/README.md#delete) - Delete Employee
+* [list](docs/sdks/apideckemployees/README.md#list) - List Employees
+* [create](docs/sdks/apideckemployees/README.md#create) - Create Employee
+* [get](docs/sdks/apideckemployees/README.md#get) - Get Employee
+* [update](docs/sdks/apideckemployees/README.md#update) - Update Employee
+* [delete](docs/sdks/apideckemployees/README.md#delete) - Delete Employee
 
 #### [hris.payrolls](docs/sdks/payrolls/README.md)
 
@@ -1028,7 +1052,7 @@ with Apideck(
 
 
 **Inherit from [`ApideckError`](./src/apideck_unify/models/apideckerror.py)**:
-* [`Unauthorized`](./src/apideck_unify/models/unauthorized.py): Unauthorized. Status code `401`. Applicable to 6 of 311 methods.*
+* [`Unauthorized`](./src/apideck_unify/models/unauthorized.py): Unauthorized. Status code `401`. Applicable to 6 of 326 methods.*
 * [`ResponseValidationError`](./src/apideck_unify/models/responsevalidationerror.py): Type mismatch between the response data and the expected Pydantic model. Provides access to the Pydantic validation error via the `cause` attribute.
 
 </details>

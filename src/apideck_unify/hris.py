@@ -4,8 +4,8 @@ from .basesdk import BaseSDK
 from .sdkconfiguration import SDKConfiguration
 from apideck_unify.apideck_companies import ApideckCompanies
 from apideck_unify.apideck_departments import ApideckDepartments
+from apideck_unify.apideck_employees import ApideckEmployees
 from apideck_unify.employeepayrolls import EmployeePayrolls
-from apideck_unify.employees import Employees
 from apideck_unify.employeeschedules_sdk import EmployeeSchedulesSDK
 from apideck_unify.payrolls import Payrolls
 from apideck_unify.timeoffrequests import TimeOffRequests
@@ -13,7 +13,7 @@ from typing import Optional
 
 
 class Hris(BaseSDK):
-    employees: Employees
+    employees: ApideckEmployees
     companies: ApideckCompanies
     departments: ApideckDepartments
     payrolls: Payrolls
@@ -29,7 +29,9 @@ class Hris(BaseSDK):
         self._init_sdks()
 
     def _init_sdks(self):
-        self.employees = Employees(self.sdk_configuration, parent_ref=self.parent_ref)
+        self.employees = ApideckEmployees(
+            self.sdk_configuration, parent_ref=self.parent_ref
+        )
         self.companies = ApideckCompanies(
             self.sdk_configuration, parent_ref=self.parent_ref
         )

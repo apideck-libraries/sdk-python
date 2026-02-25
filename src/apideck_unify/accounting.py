@@ -16,6 +16,9 @@ from apideck_unify.companyinfo_sdk import CompanyInfoSDK
 from apideck_unify.creditnotes import CreditNotes
 from apideck_unify.customers import Customers
 from apideck_unify.departments import Departments
+from apideck_unify.employees import Employees
+from apideck_unify.expensecategories import ExpenseCategories
+from apideck_unify.expensereports import ExpenseReports
 from apideck_unify.expenses import Expenses
 from apideck_unify.invoiceitems import InvoiceItems
 from apideck_unify.invoices import Invoices
@@ -64,6 +67,9 @@ class Accounting(BaseSDK):
     categories: Categories
     quotes: Quotes
     projects: Projects
+    employees: Employees
+    expense_categories: ExpenseCategories
+    expense_reports: ExpenseReports
 
     def __init__(
         self, sdk_config: SDKConfiguration, parent_ref: Optional[object] = None
@@ -138,3 +144,10 @@ class Accounting(BaseSDK):
         self.categories = Categories(self.sdk_configuration, parent_ref=self.parent_ref)
         self.quotes = Quotes(self.sdk_configuration, parent_ref=self.parent_ref)
         self.projects = Projects(self.sdk_configuration, parent_ref=self.parent_ref)
+        self.employees = Employees(self.sdk_configuration, parent_ref=self.parent_ref)
+        self.expense_categories = ExpenseCategories(
+            self.sdk_configuration, parent_ref=self.parent_ref
+        )
+        self.expense_reports = ExpenseReports(
+            self.sdk_configuration, parent_ref=self.parent_ref
+        )
