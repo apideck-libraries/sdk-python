@@ -1,0 +1,10 @@
+# AccountingExpenseReportsUpdateResponse
+
+
+## Fields
+
+| Field                                                                                    | Type                                                                                     | Required                                                                                 | Description                                                                              |
+| ---------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| `http_meta`                                                                              | [models.HTTPMetadata](../models/httpmetadata.md)                                         | :heavy_check_mark:                                                                       | N/A                                                                                      |
+| `update_expense_report_response`                                                         | [Optional[models.UpdateExpenseReportResponse]](../models/updateexpensereportresponse.md) | :heavy_minus_sign:                                                                       | Expense Reports                                                                          |
+| `unexpected_error_response`                                                              | [Optional[models.UnexpectedErrorResponse]](../models/unexpectederrorresponse.md)         | :heavy_minus_sign:                                                                       | Unexpected error                                                                         |
