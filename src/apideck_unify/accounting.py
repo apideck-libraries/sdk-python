@@ -12,6 +12,7 @@ from apideck_unify.bankfeedstatements import BankFeedStatements
 from apideck_unify.billpayments import BillPayments
 from apideck_unify.bills import Bills
 from apideck_unify.categories import Categories
+from apideck_unify.companies import Companies
 from apideck_unify.companyinfo_sdk import CompanyInfoSDK
 from apideck_unify.creditnotes import CreditNotes
 from apideck_unify.customers import Customers
@@ -48,6 +49,7 @@ class Accounting(BaseSDK):
     suppliers: Suppliers
     payments: Payments
     company_info: CompanyInfoSDK
+    companies: Companies
     balance_sheet: BalanceSheetSDK
     profit_and_loss: ProfitAndLossSDK
     journal_entries: JournalEntries
@@ -97,6 +99,7 @@ class Accounting(BaseSDK):
         self.company_info = CompanyInfoSDK(
             self.sdk_configuration, parent_ref=self.parent_ref
         )
+        self.companies = Companies(self.sdk_configuration, parent_ref=self.parent_ref)
         self.balance_sheet = BalanceSheetSDK(
             self.sdk_configuration, parent_ref=self.parent_ref
         )

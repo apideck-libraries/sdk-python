@@ -54,6 +54,8 @@ class AccountingTaxRatesUpdateRequestTypedDict(TypedDict):
     r"""The ID of your Unify application"""
     service_id: NotRequired[str]
     r"""Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API."""
+    company_id: NotRequired[str]
+    r"""The ID of the company to scope requests to. For connectors that support multi-company, this overrides the default company configured in connection settings."""
     raw: NotRequired[bool]
     r"""Include raw response. Mostly used for debugging purposes"""
 
@@ -91,6 +93,13 @@ class AccountingTaxRatesUpdateRequest(BaseModel):
         FieldMetadata(header=HeaderMetadata(style="simple", explode=False)),
     ] = None
     r"""Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API."""
+
+    company_id: Annotated[
+        Optional[str],
+        pydantic.Field(alias="x-apideck-company-id"),
+        FieldMetadata(header=HeaderMetadata(style="simple", explode=False)),
+    ] = None
+    r"""The ID of the company to scope requests to. For connectors that support multi-company, this overrides the default company configured in connection settings."""
 
     raw: Annotated[
         Optional[bool],

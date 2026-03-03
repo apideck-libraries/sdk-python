@@ -48,6 +48,8 @@ class AccountingBalanceSheetOneRequestTypedDict(TypedDict):
     r"""The ID of your Unify application"""
     service_id: NotRequired[str]
     r"""Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API."""
+    company_id: NotRequired[str]
+    r"""The ID of the company to scope requests to. For connectors that support multi-company, this overrides the default company configured in connection settings."""
     pass_through: NotRequired[Dict[str, Any]]
     r"""Optional unmapped key/values that will be passed through to downstream as query parameters. Ie: ?pass_through[search]=leads becomes ?search=leads"""
     filter_: NotRequired[BalanceSheetFilterTypedDict]
@@ -77,6 +79,13 @@ class AccountingBalanceSheetOneRequest(BaseModel):
         FieldMetadata(header=HeaderMetadata(style="simple", explode=False)),
     ] = None
     r"""Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API."""
+
+    company_id: Annotated[
+        Optional[str],
+        pydantic.Field(alias="x-apideck-company-id"),
+        FieldMetadata(header=HeaderMetadata(style="simple", explode=False)),
+    ] = None
+    r"""The ID of the company to scope requests to. For connectors that support multi-company, this overrides the default company configured in connection settings."""
 
     pass_through: Annotated[
         Optional[Dict[str, Any]],

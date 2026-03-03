@@ -1,4 +1,4 @@
-# HrisCompaniesAllGlobals
+# AccountingCompaniesAllGlobals
 
 
 ## Fields

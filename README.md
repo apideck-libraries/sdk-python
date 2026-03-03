@@ -134,7 +134,7 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.accounting.tax_rates.list(raw=False, service_id="salesforce", limit=20, filter_={
+    res = apideck.accounting.tax_rates.list(raw=False, service_id="salesforce", company_id="12345", limit=20, filter_={
         "assets": True,
         "equity": True,
         "expenses": True,
@@ -168,7 +168,7 @@ async def main():
         api_key=os.getenv("APIDECK_API_KEY", ""),
     ) as apideck:
 
-        res = await apideck.accounting.tax_rates.list_async(raw=False, service_id="salesforce", limit=20, filter_={
+        res = await apideck.accounting.tax_rates.list_async(raw=False, service_id="salesforce", company_id="12345", limit=20, filter_={
             "assets": True,
             "equity": True,
             "expenses": True,
@@ -210,7 +210,7 @@ with Apideck(
     app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
 ) as apideck:
 
-    res = apideck.accounting.tax_rates.list(raw=False, service_id="salesforce", limit=20, filter_={
+    res = apideck.accounting.tax_rates.list(raw=False, service_id="salesforce", company_id="12345", limit=20, filter_={
         "assets": True,
         "equity": True,
         "expenses": True,
@@ -298,6 +298,10 @@ with Apideck(
 
 * [list](docs/sdks/categories/README.md#list) - List Categories
 * [get](docs/sdks/categories/README.md#get) - Get Category
+
+#### [accounting.companies](docs/sdks/companies/README.md)
+
+* [list](docs/sdks/companies/README.md#list) - List companies
 
 #### [accounting.company_info](docs/sdks/companyinfosdk/README.md)
 
@@ -522,13 +526,13 @@ with Apideck(
 * [update](docs/sdks/activities/README.md#update) - Update activity
 * [delete](docs/sdks/activities/README.md#delete) - Delete activity
 
-#### [crm.companies](docs/sdks/companies/README.md)
+#### [crm.companies](docs/sdks/apideckcompanies/README.md)
 
-* [list](docs/sdks/companies/README.md#list) - List companies
-* [create](docs/sdks/companies/README.md#create) - Create company
-* [get](docs/sdks/companies/README.md#get) - Get company
-* [update](docs/sdks/companies/README.md#update) - Update company
-* [delete](docs/sdks/companies/README.md#delete) - Delete company
+* [list](docs/sdks/apideckcompanies/README.md#list) - List companies
+* [create](docs/sdks/apideckcompanies/README.md#create) - Create company
+* [get](docs/sdks/apideckcompanies/README.md#get) - Get company
+* [update](docs/sdks/apideckcompanies/README.md#update) - Update company
+* [delete](docs/sdks/apideckcompanies/README.md#delete) - Delete company
 
 #### [crm.contacts](docs/sdks/contacts/README.md)
 
@@ -663,13 +667,13 @@ with Apideck(
 * [delete](docs/sdks/uploadsessions/README.md#delete) - Abort Upload Session
 * [finish](docs/sdks/uploadsessions/README.md#finish) - Finish Upload Session
 
-#### [hris.companies](docs/sdks/apideckcompanies/README.md)
+#### [hris.companies](docs/sdks/apideckhriscompanies/README.md)
 
-* [list](docs/sdks/apideckcompanies/README.md#list) - List Companies
-* [create](docs/sdks/apideckcompanies/README.md#create) - Create Company
-* [get](docs/sdks/apideckcompanies/README.md#get) - Get Company
-* [update](docs/sdks/apideckcompanies/README.md#update) - Update Company
-* [delete](docs/sdks/apideckcompanies/README.md#delete) - Delete Company
+* [all](docs/sdks/apideckhriscompanies/README.md#all) - List Companies
+* [create](docs/sdks/apideckhriscompanies/README.md#create) - Create Company
+* [get](docs/sdks/apideckhriscompanies/README.md#get) - Get Company
+* [update](docs/sdks/apideckhriscompanies/README.md#update) - Update Company
+* [delete](docs/sdks/apideckhriscompanies/README.md#delete) - Delete Company
 
 #### [hris.departments](docs/sdks/apideckdepartments/README.md)
 
@@ -852,7 +856,7 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.accounting.tax_rates.list(raw=False, service_id="salesforce", limit=20, filter_={
+    res = apideck.accounting.tax_rates.list(raw=False, service_id="salesforce", company_id="12345", limit=20, filter_={
         "assets": True,
         "equity": True,
         "expenses": True,
@@ -920,7 +924,7 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.accounting.tax_rates.list(raw=False, service_id="salesforce", limit=20, filter_={
+    res = apideck.accounting.tax_rates.list(raw=False, service_id="salesforce", company_id="12345", limit=20, filter_={
         "assets": True,
         "equity": True,
         "expenses": True,
@@ -952,7 +956,7 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.accounting.tax_rates.list(raw=False, service_id="salesforce", limit=20, filter_={
+    res = apideck.accounting.tax_rates.list(raw=False, service_id="salesforce", company_id="12345", limit=20, filter_={
         "assets": True,
         "equity": True,
         "expenses": True,
@@ -999,7 +1003,7 @@ with Apideck(
     res = None
     try:
 
-        res = apideck.accounting.tax_rates.list(raw=False, service_id="salesforce", limit=20, filter_={
+        res = apideck.accounting.tax_rates.list(raw=False, service_id="salesforce", company_id="12345", limit=20, filter_={
             "assets": True,
             "equity": True,
             "expenses": True,
@@ -1052,7 +1056,7 @@ with Apideck(
 
 
 **Inherit from [`ApideckError`](./src/apideck_unify/models/apideckerror.py)**:
-* [`Unauthorized`](./src/apideck_unify/models/unauthorized.py): Unauthorized. Status code `401`. Applicable to 6 of 326 methods.*
+* [`Unauthorized`](./src/apideck_unify/models/unauthorized.py): Unauthorized. Status code `401`. Applicable to 6 of 327 methods.*
 * [`ResponseValidationError`](./src/apideck_unify/models/responsevalidationerror.py): Type mismatch between the response data and the expected Pydantic model. Provides access to the Pydantic validation error via the `cause` attribute.
 
 </details>
@@ -1078,7 +1082,7 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.accounting.tax_rates.list(raw=False, service_id="salesforce", limit=20, filter_={
+    res = apideck.accounting.tax_rates.list(raw=False, service_id="salesforce", company_id="12345", limit=20, filter_={
         "assets": True,
         "equity": True,
         "expenses": True,
