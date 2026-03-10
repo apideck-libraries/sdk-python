@@ -3,7 +3,7 @@
 from .basesdk import BaseSDK
 from .sdkconfiguration import SDKConfiguration
 from apideck_unify.activities import Activities
-from apideck_unify.companies import Companies
+from apideck_unify.apideck_companies import ApideckCompanies
 from apideck_unify.contacts import Contacts
 from apideck_unify.customobjects import CustomObjects
 from apideck_unify.customobjectschemas import CustomObjectSchemas
@@ -16,7 +16,7 @@ from typing import Optional
 
 
 class Crm(BaseSDK):
-    companies: Companies
+    companies: ApideckCompanies
     contacts: Contacts
     opportunities: Opportunities
     leads: Leads
@@ -35,7 +35,9 @@ class Crm(BaseSDK):
         self._init_sdks()
 
     def _init_sdks(self):
-        self.companies = Companies(self.sdk_configuration, parent_ref=self.parent_ref)
+        self.companies = ApideckCompanies(
+            self.sdk_configuration, parent_ref=self.parent_ref
+        )
         self.contacts = Contacts(self.sdk_configuration, parent_ref=self.parent_ref)
         self.opportunities = Opportunities(
             self.sdk_configuration, parent_ref=self.parent_ref

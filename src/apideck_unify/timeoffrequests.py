@@ -401,6 +401,7 @@ class TimeOffRequests(BaseSDK):
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
         ] = None,
         policy_type: Optional[str] = None,
+        additional_properties: Optional[Dict[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -429,6 +430,7 @@ class TimeOffRequests(BaseSDK):
         :param notes:
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param policy_type: The policy type of the time off request
+        :param additional_properties:
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -467,6 +469,7 @@ class TimeOffRequests(BaseSDK):
                     pass_through, Optional[List[models.PassThroughBody]]
                 ),
                 policy_type=policy_type,
+                **(additional_properties or {}),
             ),
         )
 
@@ -597,6 +600,7 @@ class TimeOffRequests(BaseSDK):
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
         ] = None,
         policy_type: Optional[str] = None,
+        additional_properties: Optional[Dict[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -625,6 +629,7 @@ class TimeOffRequests(BaseSDK):
         :param notes:
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param policy_type: The policy type of the time off request
+        :param additional_properties:
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -663,6 +668,7 @@ class TimeOffRequests(BaseSDK):
                     pass_through, Optional[List[models.PassThroughBody]]
                 ),
                 policy_type=policy_type,
+                **(additional_properties or {}),
             ),
         )
 
@@ -1089,6 +1095,7 @@ class TimeOffRequests(BaseSDK):
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
         ] = None,
         policy_type: Optional[str] = None,
+        additional_properties: Optional[Dict[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -1119,6 +1126,7 @@ class TimeOffRequests(BaseSDK):
         :param notes:
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param policy_type: The policy type of the time off request
+        :param additional_properties:
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -1159,6 +1167,7 @@ class TimeOffRequests(BaseSDK):
                     pass_through, Optional[List[models.PassThroughBody]]
                 ),
                 policy_type=policy_type,
+                **(additional_properties or {}),
             ),
         )
 
@@ -1291,6 +1300,7 @@ class TimeOffRequests(BaseSDK):
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
         ] = None,
         policy_type: Optional[str] = None,
+        additional_properties: Optional[Dict[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -1321,6 +1331,7 @@ class TimeOffRequests(BaseSDK):
         :param notes:
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param policy_type: The policy type of the time off request
+        :param additional_properties:
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -1361,6 +1372,7 @@ class TimeOffRequests(BaseSDK):
                     pass_through, Optional[List[models.PassThroughBody]]
                 ),
                 policy_type=policy_type,
+                **(additional_properties or {}),
             ),
         )
 

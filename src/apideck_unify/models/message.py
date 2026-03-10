@@ -15,7 +15,7 @@ from apideck_unify.utils import validate_open_enum
 from datetime import datetime
 from enum import Enum
 import pydantic
-from pydantic import field_serializer, model_serializer
+from pydantic import ConfigDict, field_serializer, model_serializer
 from pydantic.functional_validators import PlainValidator
 from typing import Any, Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
@@ -134,15 +134,15 @@ class Error(BaseModel):
 
 
 class MessageTypedDict(TypedDict):
-    from_: str
-    r"""The phone number that initiated the message."""
-    to: str
-    r"""The phone number that received the message."""
-    body: str
-    r"""The message text."""
     id: NotRequired[str]
     r"""A unique identifier for an object."""
+    from_: NotRequired[str]
+    r"""The phone number that initiated the message."""
+    to: NotRequired[str]
+    r"""The phone number that received the message."""
     subject: NotRequired[str]
+    body: NotRequired[str]
+    r"""The message text."""
     type: NotRequired[MessageType]
     r"""Set to sms for SMS messages and mms for MMS messages."""
     number_of_units: NotRequired[int]
@@ -182,19 +182,24 @@ class MessageTypedDict(TypedDict):
 
 
 class Message(BaseModel):
-    from_: Annotated[str, pydantic.Field(alias="from")]
-    r"""The phone number that initiated the message."""
-
-    to: str
-    r"""The phone number that received the message."""
-
-    body: str
-    r"""The message text."""
+    model_config = ConfigDict(
+        populate_by_name=True, arbitrary_types_allowed=True, extra="allow"
+    )
+    __pydantic_extra__: Dict[str, Any] = pydantic.Field(init=False)
 
     id: Optional[str] = None
     r"""A unique identifier for an object."""
 
+    from_: Annotated[Optional[str], pydantic.Field(alias="from")] = None
+    r"""The phone number that initiated the message."""
+
+    to: Optional[str] = None
+    r"""The phone number that received the message."""
+
     subject: Optional[str] = None
+
+    body: Optional[str] = None
+    r"""The message text."""
 
     type: Annotated[
         Optional[MessageType], PlainValidator(validate_open_enum(False))
@@ -256,6 +261,14 @@ class Message(BaseModel):
     pass_through: Optional[List[PassThroughBody]] = None
     r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
 
+    @property
+    def additional_properties(self):
+        return self.__pydantic_extra__
+
+    @additional_properties.setter
+    def additional_properties(self, value):
+        self.__pydantic_extra__ = value  # pyright: ignore[reportIncompatibleVariableOverride]
+
     @field_serializer("type")
     def serialize_type(self, value):
         if isinstance(value, str):
@@ -287,7 +300,10 @@ class Message(BaseModel):
     def serialize_model(self, handler):
         optional_fields = [
             "id",
+            "from",
+            "to",
             "subject",
+            "body",
             "type",
             "number_of_units",
             "number_of_media_files",
@@ -338,17 +354,20 @@ class Message(BaseModel):
             ):
                 m[k] = val
 
+        for k, v in serialized.items():
+            m[k] = v
+
         return m
 
 
 class MessageInputTypedDict(TypedDict):
-    from_: str
+    from_: NotRequired[str]
     r"""The phone number that initiated the message."""
-    to: str
+    to: NotRequired[str]
     r"""The phone number that received the message."""
-    body: str
-    r"""The message text."""
     subject: NotRequired[str]
+    body: NotRequired[str]
+    r"""The message text."""
     type: NotRequired[MessageType]
     r"""Set to sms for SMS messages and mms for MMS messages."""
     scheduled_at: NotRequired[datetime]
@@ -364,16 +383,21 @@ class MessageInputTypedDict(TypedDict):
 
 
 class MessageInput(BaseModel):
-    from_: Annotated[str, pydantic.Field(alias="from")]
+    model_config = ConfigDict(
+        populate_by_name=True, arbitrary_types_allowed=True, extra="allow"
+    )
+    __pydantic_extra__: Dict[str, Any] = pydantic.Field(init=False)
+
+    from_: Annotated[Optional[str], pydantic.Field(alias="from")] = None
     r"""The phone number that initiated the message."""
 
-    to: str
+    to: Optional[str] = None
     r"""The phone number that received the message."""
 
-    body: str
-    r"""The message text."""
-
     subject: Optional[str] = None
+
+    body: Optional[str] = None
+    r"""The message text."""
 
     type: Annotated[
         Optional[MessageType], PlainValidator(validate_open_enum(False))
@@ -394,6 +418,14 @@ class MessageInput(BaseModel):
 
     pass_through: Optional[List[PassThroughBody]] = None
     r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
+
+    @property
+    def additional_properties(self):
+        return self.__pydantic_extra__
+
+    @additional_properties.setter
+    def additional_properties(self, value):
+        self.__pydantic_extra__ = value  # pyright: ignore[reportIncompatibleVariableOverride]
 
     @field_serializer("type")
     def serialize_type(self, value):

@@ -31,7 +31,7 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.accounting.expenses.list(raw=False, service_id="salesforce", limit=20, filter_={
+    res = apideck.accounting.expenses.list(raw=False, service_id="salesforce", company_id="12345", limit=20, filter_={
         "updated_since": parse_datetime("2020-09-30T07:43:32.000Z"),
         "status": apideck_unify.ExpensesFilterStatus.DRAFT,
         "type": apideck_unify.ExpensesFilterType.EXPENSE,
@@ -46,16 +46,17 @@ with Apideck(
 
 ### Parameters
 
-| Parameter                                                                                                                                     | Type                                                                                                                                          | Required                                                                                                                                      | Description                                                                                                                                   | Example                                                                                                                                       |
-| --------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| `raw`                                                                                                                                         | *Optional[bool]*                                                                                                                              | :heavy_minus_sign:                                                                                                                            | Include raw response. Mostly used for debugging purposes                                                                                      |                                                                                                                                               |
-| `consumer_id`                                                                                                                                 | *Optional[str]*                                                                                                                               | :heavy_minus_sign:                                                                                                                            | ID of the consumer which you want to get or push data from                                                                                    | test-consumer                                                                                                                                 |
-| `app_id`                                                                                                                                      | *Optional[str]*                                                                                                                               | :heavy_minus_sign:                                                                                                                            | The ID of your Unify application                                                                                                              | dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX                                                                                                       |
-| `service_id`                                                                                                                                  | *Optional[str]*                                                                                                                               | :heavy_minus_sign:                                                                                                                            | Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API. | salesforce                                                                                                                                    |
-| `cursor`                                                                                                                                      | *OptionalNullable[str]*                                                                                                                       | :heavy_minus_sign:                                                                                                                            | Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.                              |                                                                                                                                               |
-| `limit`                                                                                                                                       | *Optional[int]*                                                                                                                               | :heavy_minus_sign:                                                                                                                            | Number of results to return. Minimum 1, Maximum 200, Default 20                                                                               |                                                                                                                                               |
-| `filter_`                                                                                                                                     | [Optional[models.ExpensesFilter]](../../models/expensesfilter.md)                                                                             | :heavy_minus_sign:                                                                                                                            | Apply filters                                                                                                                                 | {<br/>"updated_since": "2020-09-30T07:43:32.000Z",<br/>"status": "draft",<br/>"type": "expense"<br/>}                                         |
-| `retries`                                                                                                                                     | [Optional[utils.RetryConfig]](../../models/utils/retryconfig.md)                                                                              | :heavy_minus_sign:                                                                                                                            | Configuration to override the default retry behavior of the client.                                                                           |                                                                                                                                               |
+| Parameter                                                                                                                                                    | Type                                                                                                                                                         | Required                                                                                                                                                     | Description                                                                                                                                                  | Example                                                                                                                                                      |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `raw`                                                                                                                                                        | *Optional[bool]*                                                                                                                                             | :heavy_minus_sign:                                                                                                                                           | Include raw response. Mostly used for debugging purposes                                                                                                     |                                                                                                                                                              |
+| `consumer_id`                                                                                                                                                | *Optional[str]*                                                                                                                                              | :heavy_minus_sign:                                                                                                                                           | ID of the consumer which you want to get or push data from                                                                                                   | test-consumer                                                                                                                                                |
+| `app_id`                                                                                                                                                     | *Optional[str]*                                                                                                                                              | :heavy_minus_sign:                                                                                                                                           | The ID of your Unify application                                                                                                                             | dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX                                                                                                                      |
+| `service_id`                                                                                                                                                 | *Optional[str]*                                                                                                                                              | :heavy_minus_sign:                                                                                                                                           | Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.                | salesforce                                                                                                                                                   |
+| `company_id`                                                                                                                                                 | *Optional[str]*                                                                                                                                              | :heavy_minus_sign:                                                                                                                                           | The ID of the company to scope requests to. For connectors that support multi-company, this overrides the default company configured in connection settings. | 12345                                                                                                                                                        |
+| `cursor`                                                                                                                                                     | *OptionalNullable[str]*                                                                                                                                      | :heavy_minus_sign:                                                                                                                                           | Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.                                             |                                                                                                                                                              |
+| `limit`                                                                                                                                                      | *Optional[int]*                                                                                                                                              | :heavy_minus_sign:                                                                                                                                           | Number of results to return. Minimum 1, Maximum 200, Default 20                                                                                              |                                                                                                                                                              |
+| `filter_`                                                                                                                                                    | [Optional[models.ExpensesFilter]](../../models/expensesfilter.md)                                                                                            | :heavy_minus_sign:                                                                                                                                           | Apply filters                                                                                                                                                | {<br/>"updated_since": "2020-09-30T07:43:32.000Z",<br/>"status": "draft",<br/>"type": "expense"<br/>}                                                        |
+| `retries`                                                                                                                                                    | [Optional[utils.RetryConfig]](../../models/utils/retryconfig.md)                                                                                             | :heavy_minus_sign:                                                                                                                                           | Configuration to override the default retry behavior of the client.                                                                                          |                                                                                                                                                              |
 
 ### Response
 
@@ -92,77 +93,53 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.accounting.expenses.create(transaction_date=parse_datetime("2021-05-01T12:00:00.000Z"), line_items=[
-        {
-            "tracking_categories": [
-                {
-                    "id": "123456",
-                    "name": "New York",
-                },
-                {
-                    "id": "123456",
-                    "name": "New York",
-                },
-            ],
-            "account_id": "123456",
-            "customer_id": "12345",
-            "department_id": "12345",
-            "location_id": "12345",
-            "tax_rate": {
-                "id": "123456",
-                "rate": 10,
-            },
-            "description": "Travel US.",
-            "total_amount": 275,
-            "line_number": 1,
-        },
-    ], raw=False, service_id="salesforce", display_id="123456", number="OIT00546", account_id="123456", account={
-        "id": "123456",
-        "type": apideck_unify.LinkedFinancialAccountAccountType.LEDGER_ACCOUNT,
-        "code": "1100",
-        "display_id": "123456",
-        "account_number": "123465",
-    }, supplier_id="12345", supplier={
-        "id": "12345",
-        "display_name": "Windsurf Shop",
-        "address": {
-            "id": "123",
-            "type": apideck_unify.Type.PRIMARY,
-            "string": "25 Spring Street, Blackburn, VIC 3130",
-            "name": "HQ US",
-            "line1": "Main street",
-            "line2": "apt #",
-            "line3": "Suite #",
-            "line4": "delivery instructions",
-            "line5": "Attention: Finance Dept",
-            "street_number": "25",
-            "city": "San Francisco",
-            "state": "CA",
-            "postal_code": "94104",
-            "country": "US",
-            "latitude": "40.759211",
-            "longitude": "-73.984638",
-            "county": "Santa Clara",
-            "contact_name": "Elon Musk",
-            "salutation": "Mr",
-            "phone_number": "111-111-1111",
-            "fax": "122-111-1111",
-            "email": "elon@musk.com",
-            "website": "https://elonmusk.com",
-            "notes": "Address notes or delivery instructions.",
-            "row_version": "1-12345",
-        },
-    }, company_id="12345", location={
+    res = apideck.accounting.expenses.create(raw=False, service_id="salesforce", company_id_param="12345", display_id="123456", number="OIT00546", transaction_date=parse_datetime("2021-05-01T12:00:00.000Z"), account_id="123456", account=apideck_unify.LinkedFinancialAccountInput(
+        id="123456",
+        type=apideck_unify.LinkedFinancialAccountAccountType.LEDGER_ACCOUNT,
+        code="1100",
+        display_id="123456",
+        account_number="123465",
+    ), supplier_id="12345", supplier=apideck_unify.LinkedSupplierInput(
+        id="12345",
+        display_name="Windsurf Shop",
+        address=apideck_unify.Address(
+            id="123",
+            type=apideck_unify.Type.PRIMARY,
+            string="25 Spring Street, Blackburn, VIC 3130",
+            name="HQ US",
+            line1="Main street",
+            line2="apt #",
+            line3="Suite #",
+            line4="delivery instructions",
+            line5="Attention: Finance Dept",
+            street_number="25",
+            city="San Francisco",
+            state="CA",
+            postal_code="94104",
+            country="US",
+            latitude="40.759211",
+            longitude="-73.984638",
+            county="Santa Clara",
+            contact_name="Elon Musk",
+            salutation="Mr",
+            phone_number="111-111-1111",
+            fax="122-111-1111",
+            email="elon@musk.com",
+            website="https://elonmusk.com",
+            notes="Address notes or delivery instructions.",
+            row_version="1-12345",
+        ),
+    ), company_id="12345", location={
         "id": "123456",
         "display_id": "123456",
         "name": "New York Office",
     }, department_id="12345", department={
         "display_id": "123456",
         "name": "Acme Inc.",
-    }, payment_type=apideck_unify.ExpensePaymentType.CASH, currency=apideck_unify.Currency.USD, currency_rate=0.69, type_=apideck_unify.ExpenseType.EXPENSE, memo="For travel expenses incurred on 2024-05-15", tax_rate={
-        "id": "123456",
-        "rate": 10,
-    }, tax_inclusive=True, sub_total=250, total_tax=25, total_amount=275, tracking_categories=[
+    }, payment_type=apideck_unify.ExpensePaymentType.CASH, currency=apideck_unify.Currency.USD, currency_rate=0.69, type_=apideck_unify.ExpenseType.EXPENSE, memo="For travel expenses incurred on 2024-05-15", tax_rate=apideck_unify.LinkedTaxRateInput(
+        id="123456",
+        rate=10,
+    ), tax_inclusive=True, sub_total=250, total_tax=25, total_amount=275, tracking_categories=[
         {
             "id": "123456",
             "code": "100",
@@ -170,97 +147,127 @@ with Apideck(
             "parent_id": "123456",
             "parent_name": "New York",
         },
+    ], line_items=[
+        apideck_unify.ExpenseLineItemInput(
+            tracking_categories=[
+                apideck_unify.LinkedTrackingCategory(
+                    id="123456",
+                    name="New York",
+                ),
+                apideck_unify.LinkedTrackingCategory(
+                    id="123456",
+                    name="New York",
+                ),
+            ],
+            account_id="123456",
+            customer_id="12345",
+            department_id="12345",
+            location_id="12345",
+            tax_rate=apideck_unify.LinkedTaxRateInput(
+                id="123456",
+                rate=10,
+            ),
+            description="Travel US.",
+            total_amount=275,
+            line_number=1,
+            **{
+                "subsidiary_id": "12345",
+                "billable": True,
+            },
+        ),
     ], reference="INV-2024-001", source_document_url="https://www.invoicesolution.com/expense/123456", custom_fields=[
-        {
-            "id": "2389328923893298",
-            "name": "employee_level",
-            "description": "Employee Level",
-            "value": {
+        apideck_unify.CustomField(
+            id="2389328923893298",
+            name="employee_level",
+            description="Employee Level",
+            value={
                 "0": {
 
                 },
             },
-        },
-        {
-            "id": "2389328923893298",
-            "name": "employee_level",
-            "description": "Employee Level",
-            "value": {
+        ),
+        apideck_unify.CustomField(
+            id="2389328923893298",
+            name="employee_level",
+            description="Employee Level",
+            value={
                 "0": {
 
                 },
             },
-        },
-        {
-            "id": "2389328923893298",
-            "name": "employee_level",
-            "description": "Employee Level",
-            "value": {
+        ),
+        apideck_unify.CustomField(
+            id="2389328923893298",
+            name="employee_level",
+            description="Employee Level",
+            value={
                 "0": {
 
                 },
             },
-        },
+        ),
     ], status=apideck_unify.ExpenseStatus.DRAFT, row_version="1-12345", pass_through=[
-        {
-            "service_id": "<id>",
-            "extend_paths": [
-                {
-                    "path": "$.nested.property",
-                    "value": {
+        apideck_unify.PassThroughBody(
+            service_id="<id>",
+            extend_paths=[
+                apideck_unify.ExtendPaths(
+                    path="$.nested.property",
+                    value={
                         "TaxClassificationRef": {
                             "value": "EUC-99990201-V1-00020000",
                         },
                     },
-                },
-                {
-                    "path": "$.nested.property",
-                    "value": {
+                ),
+                apideck_unify.ExtendPaths(
+                    path="$.nested.property",
+                    value={
                         "TaxClassificationRef": {
                             "value": "EUC-99990201-V1-00020000",
                         },
                     },
-                },
-                {
-                    "path": "$.nested.property",
-                    "value": {
+                ),
+                apideck_unify.ExtendPaths(
+                    path="$.nested.property",
+                    value={
                         "TaxClassificationRef": {
                             "value": "EUC-99990201-V1-00020000",
                         },
                     },
-                },
+                ),
             ],
-        },
-        {
-            "service_id": "<id>",
-            "extend_paths": [
-                {
-                    "path": "$.nested.property",
-                    "value": {
+        ),
+        apideck_unify.PassThroughBody(
+            service_id="<id>",
+            extend_paths=[
+                apideck_unify.ExtendPaths(
+                    path="$.nested.property",
+                    value={
                         "TaxClassificationRef": {
                             "value": "EUC-99990201-V1-00020000",
                         },
                     },
-                },
-                {
-                    "path": "$.nested.property",
-                    "value": {
+                ),
+                apideck_unify.ExtendPaths(
+                    path="$.nested.property",
+                    value={
                         "TaxClassificationRef": {
                             "value": "EUC-99990201-V1-00020000",
                         },
                     },
-                },
-                {
-                    "path": "$.nested.property",
-                    "value": {
+                ),
+                apideck_unify.ExtendPaths(
+                    path="$.nested.property",
+                    value={
                         "TaxClassificationRef": {
                             "value": "EUC-99990201-V1-00020000",
                         },
                     },
-                },
+                ),
             ],
-        },
-    ])
+        ),
+    ], additional_properties={
+        "customer_id": "12345",
+    })
 
     assert res.create_expense_response is not None
 
@@ -273,14 +280,14 @@ with Apideck(
 
 | Parameter                                                                                                                                                                              | Type                                                                                                                                                                                   | Required                                                                                                                                                                               | Description                                                                                                                                                                            | Example                                                                                                                                                                                |
 | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `transaction_date`                                                                                                                                                                     | [date](https://docs.python.org/3/library/datetime.html#date-objects)                                                                                                                   | :heavy_check_mark:                                                                                                                                                                     | The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD                                                                                                                                | 2021-05-01T12:00:00.000Z                                                                                                                                                               |
-| `line_items`                                                                                                                                                                           | List[[models.ExpenseLineItemInput](../../models/expenselineiteminput.md)]                                                                                                              | :heavy_check_mark:                                                                                                                                                                     | Expense line items linked to this expense.                                                                                                                                             |                                                                                                                                                                                        |
 | `raw`                                                                                                                                                                                  | *Optional[bool]*                                                                                                                                                                       | :heavy_minus_sign:                                                                                                                                                                     | Include raw response. Mostly used for debugging purposes                                                                                                                               |                                                                                                                                                                                        |
 | `consumer_id`                                                                                                                                                                          | *Optional[str]*                                                                                                                                                                        | :heavy_minus_sign:                                                                                                                                                                     | ID of the consumer which you want to get or push data from                                                                                                                             | test-consumer                                                                                                                                                                          |
 | `app_id`                                                                                                                                                                               | *Optional[str]*                                                                                                                                                                        | :heavy_minus_sign:                                                                                                                                                                     | The ID of your Unify application                                                                                                                                                       | dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX                                                                                                                                                |
 | `service_id`                                                                                                                                                                           | *Optional[str]*                                                                                                                                                                        | :heavy_minus_sign:                                                                                                                                                                     | Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.                                          | salesforce                                                                                                                                                                             |
+| `company_id_param`                                                                                                                                                                     | *Optional[str]*                                                                                                                                                                        | :heavy_minus_sign:                                                                                                                                                                     | The ID of the company to scope requests to. For connectors that support multi-company, this overrides the default company configured in connection settings.                           | 12345                                                                                                                                                                                  |
 | `display_id`                                                                                                                                                                           | *OptionalNullable[str]*                                                                                                                                                                | :heavy_minus_sign:                                                                                                                                                                     | Id to be displayed.                                                                                                                                                                    | 123456                                                                                                                                                                                 |
 | `number`                                                                                                                                                                               | *OptionalNullable[str]*                                                                                                                                                                | :heavy_minus_sign:                                                                                                                                                                     | Number.                                                                                                                                                                                | OIT00546                                                                                                                                                                               |
+| `transaction_date`                                                                                                                                                                     | [date](https://docs.python.org/3/library/datetime.html#date-objects)                                                                                                                   | :heavy_minus_sign:                                                                                                                                                                     | The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD                                                                                                                                | 2021-05-01T12:00:00.000Z                                                                                                                                                               |
 | `account_id`                                                                                                                                                                           | *Optional[str]*                                                                                                                                                                        | :heavy_minus_sign:                                                                                                                                                                     | : warning: ** DEPRECATED **: Deprecated. Use account instead..<br/><br/>The unique identifier for the ledger account that this expense should be credited to. Deprecated, use account instead. | 123456                                                                                                                                                                                 |
 | `account`                                                                                                                                                                              | [OptionalNullable[models.LinkedFinancialAccountInput]](../../models/linkedfinancialaccountinput.md)                                                                                    | :heavy_minus_sign:                                                                                                                                                                     | A flexible account reference that can represent either a ledger account (GL account) or a bank account, depending on the connector's requirements.                                     |                                                                                                                                                                                        |
 | `supplier_id`                                                                                                                                                                          | *Optional[str]*                                                                                                                                                                        | :heavy_minus_sign:                                                                                                                                                                     | : warning: ** DEPRECATED **: Deprecated. Use supplier instead..<br/><br/>The ID of the supplier this entity is linked to. Deprecated, use supplier instead.                            | 12345                                                                                                                                                                                  |
@@ -300,12 +307,14 @@ with Apideck(
 | `total_tax`                                                                                                                                                                            | *OptionalNullable[float]*                                                                                                                                                              | :heavy_minus_sign:                                                                                                                                                                     | Total tax amount applied to this transaction.                                                                                                                                          | 25                                                                                                                                                                                     |
 | `total_amount`                                                                                                                                                                         | *OptionalNullable[float]*                                                                                                                                                              | :heavy_minus_sign:                                                                                                                                                                     | The total amount of the expense line item.                                                                                                                                             | 275                                                                                                                                                                                    |
 | `tracking_categories`                                                                                                                                                                  | List[[Nullable[models.LinkedTrackingCategory]](../../models/linkedtrackingcategory.md)]                                                                                                | :heavy_minus_sign:                                                                                                                                                                     | A list of linked tracking categories.                                                                                                                                                  |                                                                                                                                                                                        |
+| `line_items`                                                                                                                                                                           | List[[models.ExpenseLineItemInput](../../models/expenselineiteminput.md)]                                                                                                              | :heavy_minus_sign:                                                                                                                                                                     | Expense line items linked to this expense.                                                                                                                                             |                                                                                                                                                                                        |
 | `reference`                                                                                                                                                                            | *OptionalNullable[str]*                                                                                                                                                                | :heavy_minus_sign:                                                                                                                                                                     | Optional reference identifier for the transaction.                                                                                                                                     | INV-2024-001                                                                                                                                                                           |
 | `source_document_url`                                                                                                                                                                  | *OptionalNullable[str]*                                                                                                                                                                | :heavy_minus_sign:                                                                                                                                                                     | URL link to a source document - shown as 'Go to [appName]' in the downstream app. Currently only supported for Xero.                                                                   | https://www.invoicesolution.com/expense/123456                                                                                                                                         |
 | `custom_fields`                                                                                                                                                                        | List[[models.CustomField](../../models/customfield.md)]                                                                                                                                | :heavy_minus_sign:                                                                                                                                                                     | N/A                                                                                                                                                                                    |                                                                                                                                                                                        |
 | `status`                                                                                                                                                                               | [OptionalNullable[models.ExpenseStatus]](../../models/expensestatus.md)                                                                                                                | :heavy_minus_sign:                                                                                                                                                                     | Expense status                                                                                                                                                                         | draft                                                                                                                                                                                  |
 | `row_version`                                                                                                                                                                          | *OptionalNullable[str]*                                                                                                                                                                | :heavy_minus_sign:                                                                                                                                                                     | A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.                                             | 1-12345                                                                                                                                                                                |
 | `pass_through`                                                                                                                                                                         | List[[models.PassThroughBody](../../models/passthroughbody.md)]                                                                                                                        | :heavy_minus_sign:                                                                                                                                                                     | The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.                                |                                                                                                                                                                                        |
+| `additional_properties`                                                                                                                                                                | Dict[str, *Any*]                                                                                                                                                                       | :heavy_minus_sign:                                                                                                                                                                     | N/A                                                                                                                                                                                    |                                                                                                                                                                                        |
 | `retries`                                                                                                                                                                              | [Optional[utils.RetryConfig]](../../models/utils/retryconfig.md)                                                                                                                       | :heavy_minus_sign:                                                                                                                                                                     | Configuration to override the default retry behavior of the client.                                                                                                                    |                                                                                                                                                                                        |
 
 ### Response
@@ -341,7 +350,7 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.accounting.expenses.get(id="<id>", service_id="salesforce", raw=False)
+    res = apideck.accounting.expenses.get(id="<id>", service_id="salesforce", company_id="12345", raw=False)
 
     assert res.get_expense_response is not None
 
@@ -352,14 +361,15 @@ with Apideck(
 
 ### Parameters
 
-| Parameter                                                                                                                                     | Type                                                                                                                                          | Required                                                                                                                                      | Description                                                                                                                                   | Example                                                                                                                                       |
-| --------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| `id`                                                                                                                                          | *str*                                                                                                                                         | :heavy_check_mark:                                                                                                                            | ID of the record you are acting upon.                                                                                                         |                                                                                                                                               |
-| `consumer_id`                                                                                                                                 | *Optional[str]*                                                                                                                               | :heavy_minus_sign:                                                                                                                            | ID of the consumer which you want to get or push data from                                                                                    | test-consumer                                                                                                                                 |
-| `app_id`                                                                                                                                      | *Optional[str]*                                                                                                                               | :heavy_minus_sign:                                                                                                                            | The ID of your Unify application                                                                                                              | dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX                                                                                                       |
-| `service_id`                                                                                                                                  | *Optional[str]*                                                                                                                               | :heavy_minus_sign:                                                                                                                            | Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API. | salesforce                                                                                                                                    |
-| `raw`                                                                                                                                         | *Optional[bool]*                                                                                                                              | :heavy_minus_sign:                                                                                                                            | Include raw response. Mostly used for debugging purposes                                                                                      |                                                                                                                                               |
-| `retries`                                                                                                                                     | [Optional[utils.RetryConfig]](../../models/utils/retryconfig.md)                                                                              | :heavy_minus_sign:                                                                                                                            | Configuration to override the default retry behavior of the client.                                                                           |                                                                                                                                               |
+| Parameter                                                                                                                                                    | Type                                                                                                                                                         | Required                                                                                                                                                     | Description                                                                                                                                                  | Example                                                                                                                                                      |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `id`                                                                                                                                                         | *str*                                                                                                                                                        | :heavy_check_mark:                                                                                                                                           | ID of the record you are acting upon.                                                                                                                        |                                                                                                                                                              |
+| `consumer_id`                                                                                                                                                | *Optional[str]*                                                                                                                                              | :heavy_minus_sign:                                                                                                                                           | ID of the consumer which you want to get or push data from                                                                                                   | test-consumer                                                                                                                                                |
+| `app_id`                                                                                                                                                     | *Optional[str]*                                                                                                                                              | :heavy_minus_sign:                                                                                                                                           | The ID of your Unify application                                                                                                                             | dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX                                                                                                                      |
+| `service_id`                                                                                                                                                 | *Optional[str]*                                                                                                                                              | :heavy_minus_sign:                                                                                                                                           | Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.                | salesforce                                                                                                                                                   |
+| `company_id`                                                                                                                                                 | *Optional[str]*                                                                                                                                              | :heavy_minus_sign:                                                                                                                                           | The ID of the company to scope requests to. For connectors that support multi-company, this overrides the default company configured in connection settings. | 12345                                                                                                                                                        |
+| `raw`                                                                                                                                                        | *Optional[bool]*                                                                                                                                             | :heavy_minus_sign:                                                                                                                                           | Include raw response. Mostly used for debugging purposes                                                                                                     |                                                                                                                                                              |
+| `retries`                                                                                                                                                    | [Optional[utils.RetryConfig]](../../models/utils/retryconfig.md)                                                                                             | :heavy_minus_sign:                                                                                                                                           | Configuration to override the default retry behavior of the client.                                                                                          |                                                                                                                                                              |
 
 ### Response
 
@@ -396,74 +406,50 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.accounting.expenses.update(id="<id>", transaction_date=parse_datetime("2021-05-01T12:00:00.000Z"), line_items=[
-        {
-            "tracking_categories": [
-                {
-                    "id": "123456",
-                    "name": "New York",
-                },
-                {
-                    "id": "123456",
-                    "name": "New York",
-                },
-            ],
-            "account_id": "123456",
-            "customer_id": "12345",
-            "department_id": "12345",
-            "location_id": "12345",
-            "tax_rate": {
-                "id": "123456",
-                "rate": 10,
-            },
-            "description": "Travel US.",
-            "total_amount": 275,
-            "line_number": 1,
-        },
-    ], service_id="salesforce", raw=False, display_id="123456", number="OIT00546", account_id="123456", account={
-        "id": "123456",
-        "type": apideck_unify.LinkedFinancialAccountAccountType.LEDGER_ACCOUNT,
-        "code": "1100",
-        "display_id": "123456",
-        "account_number": "123465",
-    }, supplier_id="12345", supplier={
-        "id": "12345",
-        "display_name": "Windsurf Shop",
-        "address": {
-            "id": "123",
-            "type": apideck_unify.Type.PRIMARY,
-            "string": "25 Spring Street, Blackburn, VIC 3130",
-            "name": "HQ US",
-            "line1": "Main street",
-            "line2": "apt #",
-            "line3": "Suite #",
-            "line4": "delivery instructions",
-            "line5": "Attention: Finance Dept",
-            "street_number": "25",
-            "city": "San Francisco",
-            "state": "CA",
-            "postal_code": "94104",
-            "country": "US",
-            "latitude": "40.759211",
-            "longitude": "-73.984638",
-            "county": "Santa Clara",
-            "contact_name": "Elon Musk",
-            "salutation": "Mr",
-            "phone_number": "111-111-1111",
-            "fax": "122-111-1111",
-            "email": "elon@musk.com",
-            "website": "https://elonmusk.com",
-            "notes": "Address notes or delivery instructions.",
-            "row_version": "1-12345",
-        },
-    }, company_id="12345", location={
+    res = apideck.accounting.expenses.update(id="<id>", service_id="salesforce", raw=False, display_id="123456", number="OIT00546", transaction_date=parse_datetime("2021-05-01T12:00:00.000Z"), account_id="123456", account=apideck_unify.LinkedFinancialAccountInput(
+        id="123456",
+        type=apideck_unify.LinkedFinancialAccountAccountType.LEDGER_ACCOUNT,
+        code="1100",
+        display_id="123456",
+        account_number="123465",
+    ), supplier_id="12345", supplier=apideck_unify.LinkedSupplierInput(
+        id="12345",
+        display_name="Windsurf Shop",
+        address=apideck_unify.Address(
+            id="123",
+            type=apideck_unify.Type.PRIMARY,
+            string="25 Spring Street, Blackburn, VIC 3130",
+            name="HQ US",
+            line1="Main street",
+            line2="apt #",
+            line3="Suite #",
+            line4="delivery instructions",
+            line5="Attention: Finance Dept",
+            street_number="25",
+            city="San Francisco",
+            state="CA",
+            postal_code="94104",
+            country="US",
+            latitude="40.759211",
+            longitude="-73.984638",
+            county="Santa Clara",
+            contact_name="Elon Musk",
+            salutation="Mr",
+            phone_number="111-111-1111",
+            fax="122-111-1111",
+            email="elon@musk.com",
+            website="https://elonmusk.com",
+            notes="Address notes or delivery instructions.",
+            row_version="1-12345",
+        ),
+    ), company_id="12345", location={
         "id": "123456",
         "display_id": "123456",
         "name": "New York Office",
-    }, department_id="12345", department=None, payment_type=apideck_unify.ExpensePaymentType.CASH, currency=apideck_unify.Currency.USD, currency_rate=0.69, type_=apideck_unify.ExpenseType.EXPENSE, memo="For travel expenses incurred on 2024-05-15", tax_rate={
-        "id": "123456",
-        "rate": 10,
-    }, tax_inclusive=True, sub_total=250, total_tax=25, total_amount=275, tracking_categories=[
+    }, department_id="12345", department=None, payment_type=apideck_unify.ExpensePaymentType.CASH, currency=apideck_unify.Currency.USD, currency_rate=0.69, type_=apideck_unify.ExpenseType.EXPENSE, memo="For travel expenses incurred on 2024-05-15", tax_rate=apideck_unify.LinkedTaxRateInput(
+        id="123456",
+        rate=10,
+    ), tax_inclusive=True, sub_total=250, total_tax=25, total_amount=275, tracking_categories=[
         {
             "id": "123456",
             "code": "100",
@@ -471,114 +457,144 @@ with Apideck(
             "parent_id": "123456",
             "parent_name": "New York",
         },
+    ], line_items=[
+        apideck_unify.ExpenseLineItemInput(
+            tracking_categories=[
+                apideck_unify.LinkedTrackingCategory(
+                    id="123456",
+                    name="New York",
+                ),
+                apideck_unify.LinkedTrackingCategory(
+                    id="123456",
+                    name="New York",
+                ),
+            ],
+            account_id="123456",
+            customer_id="12345",
+            department_id="12345",
+            location_id="12345",
+            tax_rate=apideck_unify.LinkedTaxRateInput(
+                id="123456",
+                rate=10,
+            ),
+            description="Travel US.",
+            total_amount=275,
+            line_number=1,
+            **{
+                "subsidiary_id": "12345",
+                "billable": True,
+            },
+        ),
     ], reference="INV-2024-001", source_document_url="https://www.invoicesolution.com/expense/123456", custom_fields=[
-        {
-            "id": "2389328923893298",
-            "name": "employee_level",
-            "description": "Employee Level",
-            "value": "Uses Salesforce and Marketo",
-        },
-        {
-            "id": "2389328923893298",
-            "name": "employee_level",
-            "description": "Employee Level",
-            "value": "Uses Salesforce and Marketo",
-        },
-        {
-            "id": "2389328923893298",
-            "name": "employee_level",
-            "description": "Employee Level",
-            "value": "Uses Salesforce and Marketo",
-        },
+        apideck_unify.CustomField(
+            id="2389328923893298",
+            name="employee_level",
+            description="Employee Level",
+            value="Uses Salesforce and Marketo",
+        ),
+        apideck_unify.CustomField(
+            id="2389328923893298",
+            name="employee_level",
+            description="Employee Level",
+            value="Uses Salesforce and Marketo",
+        ),
+        apideck_unify.CustomField(
+            id="2389328923893298",
+            name="employee_level",
+            description="Employee Level",
+            value="Uses Salesforce and Marketo",
+        ),
     ], status=apideck_unify.ExpenseStatus.DRAFT, row_version="1-12345", pass_through=[
-        {
-            "service_id": "<id>",
-            "extend_paths": [
-                {
-                    "path": "$.nested.property",
-                    "value": {
+        apideck_unify.PassThroughBody(
+            service_id="<id>",
+            extend_paths=[
+                apideck_unify.ExtendPaths(
+                    path="$.nested.property",
+                    value={
                         "TaxClassificationRef": {
                             "value": "EUC-99990201-V1-00020000",
                         },
                     },
-                },
-                {
-                    "path": "$.nested.property",
-                    "value": {
+                ),
+                apideck_unify.ExtendPaths(
+                    path="$.nested.property",
+                    value={
                         "TaxClassificationRef": {
                             "value": "EUC-99990201-V1-00020000",
                         },
                     },
-                },
-                {
-                    "path": "$.nested.property",
-                    "value": {
+                ),
+                apideck_unify.ExtendPaths(
+                    path="$.nested.property",
+                    value={
                         "TaxClassificationRef": {
                             "value": "EUC-99990201-V1-00020000",
                         },
                     },
-                },
+                ),
             ],
-        },
-        {
-            "service_id": "<id>",
-            "extend_paths": [
-                {
-                    "path": "$.nested.property",
-                    "value": {
+        ),
+        apideck_unify.PassThroughBody(
+            service_id="<id>",
+            extend_paths=[
+                apideck_unify.ExtendPaths(
+                    path="$.nested.property",
+                    value={
                         "TaxClassificationRef": {
                             "value": "EUC-99990201-V1-00020000",
                         },
                     },
-                },
-                {
-                    "path": "$.nested.property",
-                    "value": {
+                ),
+                apideck_unify.ExtendPaths(
+                    path="$.nested.property",
+                    value={
                         "TaxClassificationRef": {
                             "value": "EUC-99990201-V1-00020000",
                         },
                     },
-                },
-                {
-                    "path": "$.nested.property",
-                    "value": {
+                ),
+                apideck_unify.ExtendPaths(
+                    path="$.nested.property",
+                    value={
                         "TaxClassificationRef": {
                             "value": "EUC-99990201-V1-00020000",
                         },
                     },
-                },
+                ),
             ],
-        },
-        {
-            "service_id": "<id>",
-            "extend_paths": [
-                {
-                    "path": "$.nested.property",
-                    "value": {
+        ),
+        apideck_unify.PassThroughBody(
+            service_id="<id>",
+            extend_paths=[
+                apideck_unify.ExtendPaths(
+                    path="$.nested.property",
+                    value={
                         "TaxClassificationRef": {
                             "value": "EUC-99990201-V1-00020000",
                         },
                     },
-                },
-                {
-                    "path": "$.nested.property",
-                    "value": {
+                ),
+                apideck_unify.ExtendPaths(
+                    path="$.nested.property",
+                    value={
                         "TaxClassificationRef": {
                             "value": "EUC-99990201-V1-00020000",
                         },
                     },
-                },
-                {
-                    "path": "$.nested.property",
-                    "value": {
+                ),
+                apideck_unify.ExtendPaths(
+                    path="$.nested.property",
+                    value={
                         "TaxClassificationRef": {
                             "value": "EUC-99990201-V1-00020000",
                         },
                     },
-                },
+                ),
             ],
-        },
-    ])
+        ),
+    ], additional_properties={
+        "customer_id": "12345",
+    })
 
     assert res.update_expense_response is not None
 
@@ -592,14 +608,13 @@ with Apideck(
 | Parameter                                                                                                                                                                              | Type                                                                                                                                                                                   | Required                                                                                                                                                                               | Description                                                                                                                                                                            | Example                                                                                                                                                                                |
 | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `id`                                                                                                                                                                                   | *str*                                                                                                                                                                                  | :heavy_check_mark:                                                                                                                                                                     | ID of the record you are acting upon.                                                                                                                                                  |                                                                                                                                                                                        |
-| `transaction_date`                                                                                                                                                                     | [date](https://docs.python.org/3/library/datetime.html#date-objects)                                                                                                                   | :heavy_check_mark:                                                                                                                                                                     | The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD                                                                                                                                | 2021-05-01T12:00:00.000Z                                                                                                                                                               |
-| `line_items`                                                                                                                                                                           | List[[models.ExpenseLineItemInput](../../models/expenselineiteminput.md)]                                                                                                              | :heavy_check_mark:                                                                                                                                                                     | Expense line items linked to this expense.                                                                                                                                             |                                                                                                                                                                                        |
 | `consumer_id`                                                                                                                                                                          | *Optional[str]*                                                                                                                                                                        | :heavy_minus_sign:                                                                                                                                                                     | ID of the consumer which you want to get or push data from                                                                                                                             | test-consumer                                                                                                                                                                          |
 | `app_id`                                                                                                                                                                               | *Optional[str]*                                                                                                                                                                        | :heavy_minus_sign:                                                                                                                                                                     | The ID of your Unify application                                                                                                                                                       | dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX                                                                                                                                                |
 | `service_id`                                                                                                                                                                           | *Optional[str]*                                                                                                                                                                        | :heavy_minus_sign:                                                                                                                                                                     | Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.                                          | salesforce                                                                                                                                                                             |
 | `raw`                                                                                                                                                                                  | *Optional[bool]*                                                                                                                                                                       | :heavy_minus_sign:                                                                                                                                                                     | Include raw response. Mostly used for debugging purposes                                                                                                                               |                                                                                                                                                                                        |
 | `display_id`                                                                                                                                                                           | *OptionalNullable[str]*                                                                                                                                                                | :heavy_minus_sign:                                                                                                                                                                     | Id to be displayed.                                                                                                                                                                    | 123456                                                                                                                                                                                 |
 | `number`                                                                                                                                                                               | *OptionalNullable[str]*                                                                                                                                                                | :heavy_minus_sign:                                                                                                                                                                     | Number.                                                                                                                                                                                | OIT00546                                                                                                                                                                               |
+| `transaction_date`                                                                                                                                                                     | [date](https://docs.python.org/3/library/datetime.html#date-objects)                                                                                                                   | :heavy_minus_sign:                                                                                                                                                                     | The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD                                                                                                                                | 2021-05-01T12:00:00.000Z                                                                                                                                                               |
 | `account_id`                                                                                                                                                                           | *Optional[str]*                                                                                                                                                                        | :heavy_minus_sign:                                                                                                                                                                     | : warning: ** DEPRECATED **: Deprecated. Use account instead..<br/><br/>The unique identifier for the ledger account that this expense should be credited to. Deprecated, use account instead. | 123456                                                                                                                                                                                 |
 | `account`                                                                                                                                                                              | [OptionalNullable[models.LinkedFinancialAccountInput]](../../models/linkedfinancialaccountinput.md)                                                                                    | :heavy_minus_sign:                                                                                                                                                                     | A flexible account reference that can represent either a ledger account (GL account) or a bank account, depending on the connector's requirements.                                     |                                                                                                                                                                                        |
 | `supplier_id`                                                                                                                                                                          | *Optional[str]*                                                                                                                                                                        | :heavy_minus_sign:                                                                                                                                                                     | : warning: ** DEPRECATED **: Deprecated. Use supplier instead..<br/><br/>The ID of the supplier this entity is linked to. Deprecated, use supplier instead.                            | 12345                                                                                                                                                                                  |
@@ -619,12 +634,14 @@ with Apideck(
 | `total_tax`                                                                                                                                                                            | *OptionalNullable[float]*                                                                                                                                                              | :heavy_minus_sign:                                                                                                                                                                     | Total tax amount applied to this transaction.                                                                                                                                          | 25                                                                                                                                                                                     |
 | `total_amount`                                                                                                                                                                         | *OptionalNullable[float]*                                                                                                                                                              | :heavy_minus_sign:                                                                                                                                                                     | The total amount of the expense line item.                                                                                                                                             | 275                                                                                                                                                                                    |
 | `tracking_categories`                                                                                                                                                                  | List[[Nullable[models.LinkedTrackingCategory]](../../models/linkedtrackingcategory.md)]                                                                                                | :heavy_minus_sign:                                                                                                                                                                     | A list of linked tracking categories.                                                                                                                                                  |                                                                                                                                                                                        |
+| `line_items`                                                                                                                                                                           | List[[models.ExpenseLineItemInput](../../models/expenselineiteminput.md)]                                                                                                              | :heavy_minus_sign:                                                                                                                                                                     | Expense line items linked to this expense.                                                                                                                                             |                                                                                                                                                                                        |
 | `reference`                                                                                                                                                                            | *OptionalNullable[str]*                                                                                                                                                                | :heavy_minus_sign:                                                                                                                                                                     | Optional reference identifier for the transaction.                                                                                                                                     | INV-2024-001                                                                                                                                                                           |
 | `source_document_url`                                                                                                                                                                  | *OptionalNullable[str]*                                                                                                                                                                | :heavy_minus_sign:                                                                                                                                                                     | URL link to a source document - shown as 'Go to [appName]' in the downstream app. Currently only supported for Xero.                                                                   | https://www.invoicesolution.com/expense/123456                                                                                                                                         |
 | `custom_fields`                                                                                                                                                                        | List[[models.CustomField](../../models/customfield.md)]                                                                                                                                | :heavy_minus_sign:                                                                                                                                                                     | N/A                                                                                                                                                                                    |                                                                                                                                                                                        |
 | `status`                                                                                                                                                                               | [OptionalNullable[models.ExpenseStatus]](../../models/expensestatus.md)                                                                                                                | :heavy_minus_sign:                                                                                                                                                                     | Expense status                                                                                                                                                                         | draft                                                                                                                                                                                  |
 | `row_version`                                                                                                                                                                          | *OptionalNullable[str]*                                                                                                                                                                | :heavy_minus_sign:                                                                                                                                                                     | A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.                                             | 1-12345                                                                                                                                                                                |
 | `pass_through`                                                                                                                                                                         | List[[models.PassThroughBody](../../models/passthroughbody.md)]                                                                                                                        | :heavy_minus_sign:                                                                                                                                                                     | The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.                                |                                                                                                                                                                                        |
+| `additional_properties`                                                                                                                                                                | Dict[str, *Any*]                                                                                                                                                                       | :heavy_minus_sign:                                                                                                                                                                     | N/A                                                                                                                                                                                    |                                                                                                                                                                                        |
 | `retries`                                                                                                                                                                              | [Optional[utils.RetryConfig]](../../models/utils/retryconfig.md)                                                                                                                       | :heavy_minus_sign:                                                                                                                                                                     | Configuration to override the default retry behavior of the client.                                                                                                                    |                                                                                                                                                                                        |
 
 ### Response

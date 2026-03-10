@@ -19,6 +19,7 @@ class Consumers(BaseSDK):
         metadata: Optional[
             Union[models.ConsumerMetadata, models.ConsumerMetadataTypedDict]
         ] = None,
+        additional_properties: Optional[Dict[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -31,6 +32,7 @@ class Consumers(BaseSDK):
         :param consumer_id: Unique consumer identifier. You can freely choose a consumer ID yourself. Most of the time, this is an ID of your internal data model that represents a user or account in your system (for example account:12345). If the consumer doesn't exist yet, Vault will upsert a consumer based on your ID.
         :param app_id: The ID of your Unify application
         :param metadata: The metadata of the consumer. This is used to display the consumer in the sidebar. This is optional, but recommended.
+        :param additional_properties:
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -53,6 +55,7 @@ class Consumers(BaseSDK):
                 metadata=utils.get_pydantic_model(
                     metadata, Optional[models.ConsumerMetadata]
                 ),
+                **(additional_properties or {}),
             ),
         )
 
@@ -166,6 +169,7 @@ class Consumers(BaseSDK):
         metadata: Optional[
             Union[models.ConsumerMetadata, models.ConsumerMetadataTypedDict]
         ] = None,
+        additional_properties: Optional[Dict[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -178,6 +182,7 @@ class Consumers(BaseSDK):
         :param consumer_id: Unique consumer identifier. You can freely choose a consumer ID yourself. Most of the time, this is an ID of your internal data model that represents a user or account in your system (for example account:12345). If the consumer doesn't exist yet, Vault will upsert a consumer based on your ID.
         :param app_id: The ID of your Unify application
         :param metadata: The metadata of the consumer. This is used to display the consumer in the sidebar. This is optional, but recommended.
+        :param additional_properties:
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -200,6 +205,7 @@ class Consumers(BaseSDK):
                 metadata=utils.get_pydantic_model(
                     metadata, Optional[models.ConsumerMetadata]
                 ),
+                **(additional_properties or {}),
             ),
         )
 
@@ -887,6 +893,7 @@ class Consumers(BaseSDK):
         metadata: Optional[
             Union[models.ConsumerMetadata, models.ConsumerMetadataTypedDict]
         ] = None,
+        additional_properties: Optional[Dict[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -899,6 +906,7 @@ class Consumers(BaseSDK):
         :param consumer_id: ID of the consumer to return
         :param app_id: The ID of your Unify application
         :param metadata: The metadata of the consumer. This is used to display the consumer in the sidebar. This is optional, but recommended.
+        :param additional_properties:
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -921,6 +929,7 @@ class Consumers(BaseSDK):
                 metadata=utils.get_pydantic_model(
                     metadata, Optional[models.ConsumerMetadata]
                 ),
+                **(additional_properties or {}),
             ),
         )
 
@@ -1034,6 +1043,7 @@ class Consumers(BaseSDK):
         metadata: Optional[
             Union[models.ConsumerMetadata, models.ConsumerMetadataTypedDict]
         ] = None,
+        additional_properties: Optional[Dict[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -1046,6 +1056,7 @@ class Consumers(BaseSDK):
         :param consumer_id: ID of the consumer to return
         :param app_id: The ID of your Unify application
         :param metadata: The metadata of the consumer. This is used to display the consumer in the sidebar. This is optional, but recommended.
+        :param additional_properties:
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -1068,6 +1079,7 @@ class Consumers(BaseSDK):
                 metadata=utils.get_pydantic_model(
                     metadata, Optional[models.ConsumerMetadata]
                 ),
+                **(additional_properties or {}),
             ),
         )
 

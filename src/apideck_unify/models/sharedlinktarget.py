@@ -11,13 +11,15 @@ from apideck_unify.types import (
     UNSET_SENTINEL,
 )
 from apideck_unify.utils import validate_open_enum
-from pydantic import field_serializer, model_serializer
+import pydantic
+from pydantic import ConfigDict, field_serializer, model_serializer
 from pydantic.functional_validators import PlainValidator
+from typing import Any, Dict, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class SharedLinkTargetTypedDict(TypedDict):
-    id: str
+    id: NotRequired[str]
     r"""A unique identifier for an object."""
     name: NotRequired[Nullable[str]]
     r"""The name of the file"""
@@ -26,7 +28,12 @@ class SharedLinkTargetTypedDict(TypedDict):
 
 
 class SharedLinkTarget(BaseModel):
-    id: str
+    model_config = ConfigDict(
+        populate_by_name=True, arbitrary_types_allowed=True, extra="allow"
+    )
+    __pydantic_extra__: Dict[str, Any] = pydantic.Field(init=False)
+
+    id: Optional[str] = None
     r"""A unique identifier for an object."""
 
     name: OptionalNullable[str] = UNSET
@@ -36,6 +43,14 @@ class SharedLinkTarget(BaseModel):
         OptionalNullable[FileType], PlainValidator(validate_open_enum(False))
     ] = UNSET
     r"""The type of resource. Could be file, folder or url"""
+
+    @property
+    def additional_properties(self):
+        return self.__pydantic_extra__
+
+    @additional_properties.setter
+    def additional_properties(self, value):
+        self.__pydantic_extra__ = value  # pyright: ignore[reportIncompatibleVariableOverride]
 
     @field_serializer("type")
     def serialize_type(self, value):
@@ -48,7 +63,7 @@ class SharedLinkTarget(BaseModel):
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
-        optional_fields = ["name", "type"]
+        optional_fields = ["id", "name", "type"]
         nullable_fields = ["name", "type"]
         null_default_fields = []
 
@@ -73,5 +88,8 @@ class SharedLinkTarget(BaseModel):
                 not k in optional_fields or (optional_nullable and is_set)
             ):
                 m[k] = val
+
+        for k, v in serialized.items():
+            m[k] = v
 
         return m

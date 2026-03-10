@@ -26,15 +26,13 @@ from apideck_unify.types import (
 )
 from apideck_unify.utils import validate_open_enum
 import pydantic
-from pydantic import field_serializer, model_serializer
+from pydantic import ConfigDict, field_serializer, model_serializer
 from pydantic.functional_validators import PlainValidator
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class ExpenseLineItemInputTypedDict(TypedDict):
-    total_amount: Nullable[float]
-    r"""The total amount of the expense line item."""
     tracking_categories: NotRequired[
         Nullable[List[Nullable[LinkedTrackingCategoryTypedDict]]]
     ]
@@ -57,6 +55,8 @@ class ExpenseLineItemInputTypedDict(TypedDict):
     r"""The expense line item description"""
     type: NotRequired[Nullable[LineItemType]]
     r"""Line Item type"""
+    total_amount: NotRequired[Nullable[float]]
+    r"""The total amount of the expense line item."""
     tax_amount: NotRequired[Nullable[float]]
     r"""Tax amount"""
     quantity: NotRequired[Nullable[float]]
@@ -69,8 +69,10 @@ class ExpenseLineItemInputTypedDict(TypedDict):
 
 
 class ExpenseLineItemInput(BaseModel):
-    total_amount: Nullable[float]
-    r"""The total amount of the expense line item."""
+    model_config = ConfigDict(
+        populate_by_name=True, arbitrary_types_allowed=True, extra="allow"
+    )
+    __pydantic_extra__: Dict[str, Any] = pydantic.Field(init=False)
 
     tracking_categories: OptionalNullable[List[Nullable[LinkedTrackingCategory]]] = (
         UNSET
@@ -118,6 +120,9 @@ class ExpenseLineItemInput(BaseModel):
     ] = UNSET
     r"""Line Item type"""
 
+    total_amount: OptionalNullable[float] = UNSET
+    r"""The total amount of the expense line item."""
+
     tax_amount: OptionalNullable[float] = UNSET
     r"""Tax amount"""
 
@@ -132,6 +137,14 @@ class ExpenseLineItemInput(BaseModel):
 
     rebilling: OptionalNullable[Rebilling] = UNSET
     r"""Rebilling metadata for this line item."""
+
+    @property
+    def additional_properties(self):
+        return self.__pydantic_extra__
+
+    @additional_properties.setter
+    def additional_properties(self, value):
+        self.__pydantic_extra__ = value  # pyright: ignore[reportIncompatibleVariableOverride]
 
     @field_serializer("type")
     def serialize_type(self, value):
@@ -157,6 +170,7 @@ class ExpenseLineItemInput(BaseModel):
             "tax_rate",
             "description",
             "type",
+            "total_amount",
             "tax_amount",
             "quantity",
             "unit_price",
@@ -204,5 +218,8 @@ class ExpenseLineItemInput(BaseModel):
                 not k in optional_fields or (optional_nullable and is_set)
             ):
                 m[k] = val
+
+        for k, v in serialized.items():
+            m[k] = v
 
         return m

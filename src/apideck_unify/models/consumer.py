@@ -13,7 +13,7 @@ from typing_extensions import NotRequired, TypedDict
 
 
 class ConsumerTypedDict(TypedDict):
-    consumer_id: str
+    consumer_id: NotRequired[str]
     r"""Unique consumer identifier. You can freely choose a consumer ID yourself. Most of the time, this is an ID of your internal data model that represents a user or account in your system (for example account:12345). If the consumer doesn't exist yet, Vault will upsert a consumer based on your ID."""
     application_id: NotRequired[str]
     r"""ID of your Apideck Application"""
@@ -29,7 +29,7 @@ class ConsumerTypedDict(TypedDict):
 
 
 class Consumer(BaseModel):
-    consumer_id: str
+    consumer_id: Optional[str] = None
     r"""Unique consumer identifier. You can freely choose a consumer ID yourself. Most of the time, this is an ID of your internal data model that represents a user or account in your system (for example account:12345). If the consumer doesn't exist yet, Vault will upsert a consumer based on your ID."""
 
     application_id: Optional[str] = None

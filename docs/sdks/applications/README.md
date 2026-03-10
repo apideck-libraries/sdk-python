@@ -87,32 +87,34 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.ats.applications.create(applicant_id="12345", job_id="12345", raw=False, service_id="salesforce", status=apideck_unify.ApplicationStatus.OPEN, stage={
+    res = apideck.ats.applications.create(raw=False, service_id="salesforce", applicant_id="12345", job_id="12345", status=apideck_unify.ApplicationStatus.OPEN, stage={
         "id": "12345",
         "name": "12345",
     }, pass_through=[
-        {
-            "service_id": "<id>",
-            "extend_paths": [
-                {
-                    "path": "$.nested.property",
-                    "value": {
+        apideck_unify.PassThroughBody(
+            service_id="<id>",
+            extend_paths=[
+                apideck_unify.ExtendPaths(
+                    path="$.nested.property",
+                    value={
                         "TaxClassificationRef": {
                             "value": "EUC-99990201-V1-00020000",
                         },
                     },
-                },
-                {
-                    "path": "$.nested.property",
-                    "value": {
+                ),
+                apideck_unify.ExtendPaths(
+                    path="$.nested.property",
+                    value={
                         "TaxClassificationRef": {
                             "value": "EUC-99990201-V1-00020000",
                         },
                     },
-                },
+                ),
             ],
-        },
-    ])
+        ),
+    ], additional_properties={
+
+    })
 
     assert res.create_application_response is not None
 
@@ -125,15 +127,16 @@ with Apideck(
 
 | Parameter                                                                                                                                               | Type                                                                                                                                                    | Required                                                                                                                                                | Description                                                                                                                                             | Example                                                                                                                                                 |
 | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `applicant_id`                                                                                                                                          | *Nullable[str]*                                                                                                                                         | :heavy_check_mark:                                                                                                                                      | N/A                                                                                                                                                     | 12345                                                                                                                                                   |
-| `job_id`                                                                                                                                                | *Nullable[str]*                                                                                                                                         | :heavy_check_mark:                                                                                                                                      | N/A                                                                                                                                                     | 12345                                                                                                                                                   |
 | `raw`                                                                                                                                                   | *Optional[bool]*                                                                                                                                        | :heavy_minus_sign:                                                                                                                                      | Include raw response. Mostly used for debugging purposes                                                                                                |                                                                                                                                                         |
 | `consumer_id`                                                                                                                                           | *Optional[str]*                                                                                                                                         | :heavy_minus_sign:                                                                                                                                      | ID of the consumer which you want to get or push data from                                                                                              | test-consumer                                                                                                                                           |
 | `app_id`                                                                                                                                                | *Optional[str]*                                                                                                                                         | :heavy_minus_sign:                                                                                                                                      | The ID of your Unify application                                                                                                                        | dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX                                                                                                                 |
 | `service_id`                                                                                                                                            | *Optional[str]*                                                                                                                                         | :heavy_minus_sign:                                                                                                                                      | Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.           | salesforce                                                                                                                                              |
+| `applicant_id`                                                                                                                                          | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | N/A                                                                                                                                                     | 12345                                                                                                                                                   |
+| `job_id`                                                                                                                                                | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | N/A                                                                                                                                                     | 12345                                                                                                                                                   |
 | `status`                                                                                                                                                | [OptionalNullable[models.ApplicationStatus]](../../models/applicationstatus.md)                                                                         | :heavy_minus_sign:                                                                                                                                      | N/A                                                                                                                                                     | open                                                                                                                                                    |
 | `stage`                                                                                                                                                 | [Optional[models.Stage]](../../models/stage.md)                                                                                                         | :heavy_minus_sign:                                                                                                                                      | N/A                                                                                                                                                     |                                                                                                                                                         |
 | `pass_through`                                                                                                                                          | List[[models.PassThroughBody](../../models/passthroughbody.md)]                                                                                         | :heavy_minus_sign:                                                                                                                                      | The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources. |                                                                                                                                                         |
+| `additional_properties`                                                                                                                                 | Dict[str, *Any*]                                                                                                                                        | :heavy_minus_sign:                                                                                                                                      | N/A                                                                                                                                                     |                                                                                                                                                         |
 | `retries`                                                                                                                                               | [Optional[utils.RetryConfig]](../../models/utils/retryconfig.md)                                                                                        | :heavy_minus_sign:                                                                                                                                      | Configuration to override the default retry behavior of the client.                                                                                     |                                                                                                                                                         |
 
 ### Response
@@ -223,98 +226,100 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.ats.applications.update(id="<id>", applicant_id="12345", job_id="12345", service_id="salesforce", raw=False, status=apideck_unify.ApplicationStatus.OPEN, stage={
+    res = apideck.ats.applications.update(id="<id>", service_id="salesforce", raw=False, applicant_id="12345", job_id="12345", status=apideck_unify.ApplicationStatus.OPEN, stage={
         "id": "12345",
         "name": "12345",
     }, pass_through=[
-        {
-            "service_id": "<id>",
-            "extend_paths": [
-                {
-                    "path": "$.nested.property",
-                    "value": {
+        apideck_unify.PassThroughBody(
+            service_id="<id>",
+            extend_paths=[
+                apideck_unify.ExtendPaths(
+                    path="$.nested.property",
+                    value={
                         "TaxClassificationRef": {
                             "value": "EUC-99990201-V1-00020000",
                         },
                     },
-                },
-                {
-                    "path": "$.nested.property",
-                    "value": {
+                ),
+                apideck_unify.ExtendPaths(
+                    path="$.nested.property",
+                    value={
                         "TaxClassificationRef": {
                             "value": "EUC-99990201-V1-00020000",
                         },
                     },
-                },
-                {
-                    "path": "$.nested.property",
-                    "value": {
+                ),
+                apideck_unify.ExtendPaths(
+                    path="$.nested.property",
+                    value={
                         "TaxClassificationRef": {
                             "value": "EUC-99990201-V1-00020000",
                         },
                     },
-                },
+                ),
             ],
-        },
-        {
-            "service_id": "<id>",
-            "extend_paths": [
-                {
-                    "path": "$.nested.property",
-                    "value": {
+        ),
+        apideck_unify.PassThroughBody(
+            service_id="<id>",
+            extend_paths=[
+                apideck_unify.ExtendPaths(
+                    path="$.nested.property",
+                    value={
                         "TaxClassificationRef": {
                             "value": "EUC-99990201-V1-00020000",
                         },
                     },
-                },
-                {
-                    "path": "$.nested.property",
-                    "value": {
+                ),
+                apideck_unify.ExtendPaths(
+                    path="$.nested.property",
+                    value={
                         "TaxClassificationRef": {
                             "value": "EUC-99990201-V1-00020000",
                         },
                     },
-                },
-                {
-                    "path": "$.nested.property",
-                    "value": {
+                ),
+                apideck_unify.ExtendPaths(
+                    path="$.nested.property",
+                    value={
                         "TaxClassificationRef": {
                             "value": "EUC-99990201-V1-00020000",
                         },
                     },
-                },
+                ),
             ],
-        },
-        {
-            "service_id": "<id>",
-            "extend_paths": [
-                {
-                    "path": "$.nested.property",
-                    "value": {
+        ),
+        apideck_unify.PassThroughBody(
+            service_id="<id>",
+            extend_paths=[
+                apideck_unify.ExtendPaths(
+                    path="$.nested.property",
+                    value={
                         "TaxClassificationRef": {
                             "value": "EUC-99990201-V1-00020000",
                         },
                     },
-                },
-                {
-                    "path": "$.nested.property",
-                    "value": {
+                ),
+                apideck_unify.ExtendPaths(
+                    path="$.nested.property",
+                    value={
                         "TaxClassificationRef": {
                             "value": "EUC-99990201-V1-00020000",
                         },
                     },
-                },
-                {
-                    "path": "$.nested.property",
-                    "value": {
+                ),
+                apideck_unify.ExtendPaths(
+                    path="$.nested.property",
+                    value={
                         "TaxClassificationRef": {
                             "value": "EUC-99990201-V1-00020000",
                         },
                     },
-                },
+                ),
             ],
-        },
-    ])
+        ),
+    ], additional_properties={
+
+    })
 
     assert res.update_application_response is not None
 
@@ -328,15 +333,16 @@ with Apideck(
 | Parameter                                                                                                                                               | Type                                                                                                                                                    | Required                                                                                                                                                | Description                                                                                                                                             | Example                                                                                                                                                 |
 | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `id`                                                                                                                                                    | *str*                                                                                                                                                   | :heavy_check_mark:                                                                                                                                      | ID of the record you are acting upon.                                                                                                                   |                                                                                                                                                         |
-| `applicant_id`                                                                                                                                          | *Nullable[str]*                                                                                                                                         | :heavy_check_mark:                                                                                                                                      | N/A                                                                                                                                                     | 12345                                                                                                                                                   |
-| `job_id`                                                                                                                                                | *Nullable[str]*                                                                                                                                         | :heavy_check_mark:                                                                                                                                      | N/A                                                                                                                                                     | 12345                                                                                                                                                   |
 | `consumer_id`                                                                                                                                           | *Optional[str]*                                                                                                                                         | :heavy_minus_sign:                                                                                                                                      | ID of the consumer which you want to get or push data from                                                                                              | test-consumer                                                                                                                                           |
 | `app_id`                                                                                                                                                | *Optional[str]*                                                                                                                                         | :heavy_minus_sign:                                                                                                                                      | The ID of your Unify application                                                                                                                        | dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX                                                                                                                 |
 | `service_id`                                                                                                                                            | *Optional[str]*                                                                                                                                         | :heavy_minus_sign:                                                                                                                                      | Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.           | salesforce                                                                                                                                              |
 | `raw`                                                                                                                                                   | *Optional[bool]*                                                                                                                                        | :heavy_minus_sign:                                                                                                                                      | Include raw response. Mostly used for debugging purposes                                                                                                |                                                                                                                                                         |
+| `applicant_id`                                                                                                                                          | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | N/A                                                                                                                                                     | 12345                                                                                                                                                   |
+| `job_id`                                                                                                                                                | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | N/A                                                                                                                                                     | 12345                                                                                                                                                   |
 | `status`                                                                                                                                                | [OptionalNullable[models.ApplicationStatus]](../../models/applicationstatus.md)                                                                         | :heavy_minus_sign:                                                                                                                                      | N/A                                                                                                                                                     | open                                                                                                                                                    |
 | `stage`                                                                                                                                                 | [Optional[models.Stage]](../../models/stage.md)                                                                                                         | :heavy_minus_sign:                                                                                                                                      | N/A                                                                                                                                                     |                                                                                                                                                         |
 | `pass_through`                                                                                                                                          | List[[models.PassThroughBody](../../models/passthroughbody.md)]                                                                                         | :heavy_minus_sign:                                                                                                                                      | The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources. |                                                                                                                                                         |
+| `additional_properties`                                                                                                                                 | Dict[str, *Any*]                                                                                                                                        | :heavy_minus_sign:                                                                                                                                      | N/A                                                                                                                                                     |                                                                                                                                                         |
 | `retries`                                                                                                                                               | [Optional[utils.RetryConfig]](../../models/utils/retryconfig.md)                                                                                        | :heavy_minus_sign:                                                                                                                                      | Configuration to override the default retry behavior of the client.                                                                                     |                                                                                                                                                         |
 
 ### Response

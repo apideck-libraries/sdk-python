@@ -17,22 +17,23 @@ class FormFieldOptionGroupOptionType(str, Enum, metaclass=utils.OpenEnumMeta):
 
 
 class FormFieldOptionGroupTypedDict(TypedDict):
-    label: str
-    options: List[SimpleFormFieldOptionTypedDict]
-    option_type: FormFieldOptionGroupOptionType
     id: NotRequired[str]
+    label: NotRequired[str]
+    options: NotRequired[List[SimpleFormFieldOptionTypedDict]]
+    option_type: NotRequired[FormFieldOptionGroupOptionType]
 
 
 class FormFieldOptionGroup(BaseModel):
-    label: str
+    id: Optional[str] = None
 
-    options: List[SimpleFormFieldOption]
+    label: Optional[str] = None
+
+    options: Optional[List[SimpleFormFieldOption]] = None
 
     option_type: Annotated[
-        FormFieldOptionGroupOptionType, PlainValidator(validate_open_enum(False))
-    ]
-
-    id: Optional[str] = None
+        Optional[FormFieldOptionGroupOptionType],
+        PlainValidator(validate_open_enum(False)),
+    ] = None
 
     @field_serializer("option_type")
     def serialize_option_type(self, value):

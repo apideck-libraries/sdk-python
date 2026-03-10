@@ -395,7 +395,6 @@ class Files(BaseSDK):
     def search(
         self,
         *,
-        query: str,
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
@@ -407,10 +406,12 @@ class Files(BaseSDK):
         filter_: Optional[
             Union[models.FilesFilter, models.FilesFilterTypedDict]
         ] = None,
+        query: Optional[str] = None,
         drive_id: Optional[str] = None,
         pass_through: Optional[
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
         ] = None,
+        additional_properties: Optional[Dict[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -420,7 +421,6 @@ class Files(BaseSDK):
 
         Search Files
 
-        :param query: The query to search for. May match across multiple fields.
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
@@ -430,8 +430,10 @@ class Files(BaseSDK):
         :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
         :param raw: Include raw response. Mostly used for debugging purposes
         :param filter_: Apply filters
+        :param query: The query to search for. May match across multiple fields.
         :param drive_id: ID of the drive to filter on
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
+        :param additional_properties:
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -463,6 +465,7 @@ class Files(BaseSDK):
                 pass_through=utils.get_pydantic_model(
                     pass_through, Optional[List[models.PassThroughBody]]
                 ),
+                **(additional_properties or {}),
             ),
         )
 
@@ -568,7 +571,6 @@ class Files(BaseSDK):
     async def search_async(
         self,
         *,
-        query: str,
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
@@ -580,10 +582,12 @@ class Files(BaseSDK):
         filter_: Optional[
             Union[models.FilesFilter, models.FilesFilterTypedDict]
         ] = None,
+        query: Optional[str] = None,
         drive_id: Optional[str] = None,
         pass_through: Optional[
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
         ] = None,
+        additional_properties: Optional[Dict[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -593,7 +597,6 @@ class Files(BaseSDK):
 
         Search Files
 
-        :param query: The query to search for. May match across multiple fields.
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
@@ -603,8 +606,10 @@ class Files(BaseSDK):
         :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
         :param raw: Include raw response. Mostly used for debugging purposes
         :param filter_: Apply filters
+        :param query: The query to search for. May match across multiple fields.
         :param drive_id: ID of the drive to filter on
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
+        :param additional_properties:
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -636,6 +641,7 @@ class Files(BaseSDK):
                 pass_through=utils.get_pydantic_model(
                     pass_through, Optional[List[models.PassThroughBody]]
                 ),
+                **(additional_properties or {}),
             ),
         )
 
@@ -1040,6 +1046,7 @@ class Files(BaseSDK):
         pass_through: Optional[
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
         ] = None,
+        additional_properties: Optional[Dict[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -1058,6 +1065,7 @@ class Files(BaseSDK):
         :param description: Optional description of the file.
         :param parent_folder_id: The parent folder to create the new file within. This can be an ID or a path depending on the downstream folder. Please see the connector section below to see downstream specific gotchas.
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
+        :param additional_properties:
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -1086,6 +1094,7 @@ class Files(BaseSDK):
                 pass_through=utils.get_pydantic_model(
                     pass_through, Optional[List[models.PassThroughBody]]
                 ),
+                **(additional_properties or {}),
             ),
         )
 
@@ -1206,6 +1215,7 @@ class Files(BaseSDK):
         pass_through: Optional[
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
         ] = None,
+        additional_properties: Optional[Dict[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -1224,6 +1234,7 @@ class Files(BaseSDK):
         :param description: Optional description of the file.
         :param parent_folder_id: The parent folder to create the new file within. This can be an ID or a path depending on the downstream folder. Please see the connector section below to see downstream specific gotchas.
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
+        :param additional_properties:
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -1252,6 +1263,7 @@ class Files(BaseSDK):
                 pass_through=utils.get_pydantic_model(
                     pass_through, Optional[List[models.PassThroughBody]]
                 ),
+                **(additional_properties or {}),
             ),
         )
 

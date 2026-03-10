@@ -384,11 +384,11 @@ class Leads(BaseSDK):
     def create(
         self,
         *,
-        name: str,
         raw: Optional[bool] = False,
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
+        name: Optional[str] = None,
         company_name: OptionalNullable[str] = UNSET,
         owner_id: OptionalNullable[str] = UNSET,
         owner_name: OptionalNullable[str] = UNSET,
@@ -426,6 +426,7 @@ class Leads(BaseSDK):
         pass_through: Optional[
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
         ] = None,
+        additional_properties: Optional[Dict[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -435,11 +436,11 @@ class Leads(BaseSDK):
 
         Create lead
 
-        :param name: Full name of the lead.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param name: Full name of the lead.
         :param company_name: The name of the company the lead is associated with.
         :param owner_id: The owner of the lead.
         :param owner_name: The name of the owner of the lead.
@@ -465,6 +466,7 @@ class Leads(BaseSDK):
         :param custom_fields:
         :param tags:
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
+        :param additional_properties:
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -524,6 +526,7 @@ class Leads(BaseSDK):
                 pass_through=utils.get_pydantic_model(
                     pass_through, Optional[List[models.PassThroughBody]]
                 ),
+                **(additional_properties or {}),
             ),
         )
 
@@ -629,11 +632,11 @@ class Leads(BaseSDK):
     async def create_async(
         self,
         *,
-        name: str,
         raw: Optional[bool] = False,
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
+        name: Optional[str] = None,
         company_name: OptionalNullable[str] = UNSET,
         owner_id: OptionalNullable[str] = UNSET,
         owner_name: OptionalNullable[str] = UNSET,
@@ -671,6 +674,7 @@ class Leads(BaseSDK):
         pass_through: Optional[
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
         ] = None,
+        additional_properties: Optional[Dict[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -680,11 +684,11 @@ class Leads(BaseSDK):
 
         Create lead
 
-        :param name: Full name of the lead.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param name: Full name of the lead.
         :param company_name: The name of the company the lead is associated with.
         :param owner_id: The owner of the lead.
         :param owner_name: The name of the owner of the lead.
@@ -710,6 +714,7 @@ class Leads(BaseSDK):
         :param custom_fields:
         :param tags:
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
+        :param additional_properties:
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -769,6 +774,7 @@ class Leads(BaseSDK):
                 pass_through=utils.get_pydantic_model(
                     pass_through, Optional[List[models.PassThroughBody]]
                 ),
+                **(additional_properties or {}),
             ),
         )
 
@@ -1163,11 +1169,11 @@ class Leads(BaseSDK):
         self,
         *,
         id: str,
-        name: str,
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
+        name: Optional[str] = None,
         company_name: OptionalNullable[str] = UNSET,
         owner_id: OptionalNullable[str] = UNSET,
         owner_name: OptionalNullable[str] = UNSET,
@@ -1205,6 +1211,7 @@ class Leads(BaseSDK):
         pass_through: Optional[
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
         ] = None,
+        additional_properties: Optional[Dict[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -1215,11 +1222,11 @@ class Leads(BaseSDK):
         Update lead
 
         :param id: ID of the record you are acting upon.
-        :param name: Full name of the lead.
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param name: Full name of the lead.
         :param company_name: The name of the company the lead is associated with.
         :param owner_id: The owner of the lead.
         :param owner_name: The name of the owner of the lead.
@@ -1245,6 +1252,7 @@ class Leads(BaseSDK):
         :param custom_fields:
         :param tags:
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
+        :param additional_properties:
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -1305,6 +1313,7 @@ class Leads(BaseSDK):
                 pass_through=utils.get_pydantic_model(
                     pass_through, Optional[List[models.PassThroughBody]]
                 ),
+                **(additional_properties or {}),
             ),
         )
 
@@ -1411,11 +1420,11 @@ class Leads(BaseSDK):
         self,
         *,
         id: str,
-        name: str,
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
+        name: Optional[str] = None,
         company_name: OptionalNullable[str] = UNSET,
         owner_id: OptionalNullable[str] = UNSET,
         owner_name: OptionalNullable[str] = UNSET,
@@ -1453,6 +1462,7 @@ class Leads(BaseSDK):
         pass_through: Optional[
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
         ] = None,
+        additional_properties: Optional[Dict[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -1463,11 +1473,11 @@ class Leads(BaseSDK):
         Update lead
 
         :param id: ID of the record you are acting upon.
-        :param name: Full name of the lead.
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param name: Full name of the lead.
         :param company_name: The name of the company the lead is associated with.
         :param owner_id: The owner of the lead.
         :param owner_name: The name of the owner of the lead.
@@ -1493,6 +1503,7 @@ class Leads(BaseSDK):
         :param custom_fields:
         :param tags:
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
+        :param additional_properties:
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -1553,6 +1564,7 @@ class Leads(BaseSDK):
                 pass_through=utils.get_pydantic_model(
                     pass_through, Optional[List[models.PassThroughBody]]
                 ),
+                **(additional_properties or {}),
             ),
         )
 

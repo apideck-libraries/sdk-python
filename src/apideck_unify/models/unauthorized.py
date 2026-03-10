@@ -69,7 +69,7 @@ class DetailDebug(BaseModel):
     r"""Milliseconds remaining in cooldown period before retry is allowed."""
 
 
-class DetailUnauthorized2TypedDict(TypedDict):
+class Detail2TypedDict(TypedDict):
     type: NotRequired[str]
     r"""Error type identifier"""
     message: NotRequired[str]
@@ -78,7 +78,7 @@ class DetailUnauthorized2TypedDict(TypedDict):
     r"""Debug information including request/response details and OAuth timing metadata"""
 
 
-class DetailUnauthorized2(BaseModel):
+class Detail2(BaseModel):
     type: Optional[str] = None
     r"""Error type identifier"""
 
@@ -90,14 +90,12 @@ class DetailUnauthorized2(BaseModel):
 
 
 UnauthorizedDetailTypedDict = TypeAliasType(
-    "UnauthorizedDetailTypedDict", Union[DetailUnauthorized2TypedDict, str]
+    "UnauthorizedDetailTypedDict", Union[Detail2TypedDict, str]
 )
 r"""Contains parameter or domain specific information related to the error and why it occurred."""
 
 
-UnauthorizedDetail = TypeAliasType(
-    "UnauthorizedDetail", Union[DetailUnauthorized2, str]
-)
+UnauthorizedDetail = TypeAliasType("UnauthorizedDetail", Union[Detail2, str])
 r"""Contains parameter or domain specific information related to the error and why it occurred."""
 
 

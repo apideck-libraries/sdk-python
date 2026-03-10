@@ -9,7 +9,7 @@ from typing_extensions import NotRequired, TypedDict
 class LinkedParentCustomerTypedDict(TypedDict):
     r"""The parent customer this entity is linked to."""
 
-    id: str
+    id: NotRequired[str]
     r"""The parent ID of the customer this entity is linked to."""
     name: NotRequired[str]
     r"""The name of the parent customer."""
@@ -18,7 +18,7 @@ class LinkedParentCustomerTypedDict(TypedDict):
 class LinkedParentCustomer(BaseModel):
     r"""The parent customer this entity is linked to."""
 
-    id: str
+    id: Optional[str] = None
     r"""The parent ID of the customer this entity is linked to."""
 
     name: Optional[str] = None

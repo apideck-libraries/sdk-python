@@ -11,8 +11,10 @@ from apideck_unify.types import (
 )
 from apideck_unify.utils import validate_open_enum
 from enum import Enum
-from pydantic import field_serializer, model_serializer
+import pydantic
+from pydantic import ConfigDict, field_serializer, model_serializer
 from pydantic.functional_validators import PlainValidator
+from typing import Any, Dict
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
@@ -28,25 +30,38 @@ class EmailType(str, Enum, metaclass=utils.OpenEnumMeta):
 
 
 class EmailTypedDict(TypedDict):
-    email: Nullable[str]
-    r"""Email address"""
     id: NotRequired[Nullable[str]]
     r"""Unique identifier for the email address"""
+    email: NotRequired[Nullable[str]]
+    r"""Email address"""
     type: NotRequired[Nullable[EmailType]]
     r"""Email type"""
 
 
 class Email(BaseModel):
-    email: Nullable[str]
-    r"""Email address"""
+    model_config = ConfigDict(
+        populate_by_name=True, arbitrary_types_allowed=True, extra="allow"
+    )
+    __pydantic_extra__: Dict[str, Any] = pydantic.Field(init=False)
 
     id: OptionalNullable[str] = UNSET
     r"""Unique identifier for the email address"""
+
+    email: OptionalNullable[str] = UNSET
+    r"""Email address"""
 
     type: Annotated[
         OptionalNullable[EmailType], PlainValidator(validate_open_enum(False))
     ] = UNSET
     r"""Email type"""
+
+    @property
+    def additional_properties(self):
+        return self.__pydantic_extra__
+
+    @additional_properties.setter
+    def additional_properties(self, value):
+        self.__pydantic_extra__ = value  # pyright: ignore[reportIncompatibleVariableOverride]
 
     @field_serializer("type")
     def serialize_type(self, value):
@@ -59,7 +74,7 @@ class Email(BaseModel):
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
-        optional_fields = ["id", "type"]
+        optional_fields = ["id", "email", "type"]
         nullable_fields = ["id", "email", "type"]
         null_default_fields = []
 
@@ -84,5 +99,8 @@ class Email(BaseModel):
                 not k in optional_fields or (optional_nullable and is_set)
             ):
                 m[k] = val
+
+        for k, v in serialized.items():
+            m[k] = v
 
         return m

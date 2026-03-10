@@ -24,7 +24,8 @@ from apideck_unify.types import (
 from apideck_unify.utils import validate_open_enum
 from datetime import datetime
 from enum import Enum
-from pydantic import field_serializer, model_serializer
+import pydantic
+from pydantic import ConfigDict, field_serializer, model_serializer
 from pydantic.functional_validators import PlainValidator
 from typing import Any, Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
@@ -41,7 +42,7 @@ class CustomerStatusStatus(str, Enum, metaclass=utils.OpenEnumMeta):
 
 
 class CustomerTypedDict(TypedDict):
-    id: str
+    id: NotRequired[str]
     r"""A unique identifier for an object."""
     downstream_id: NotRequired[Nullable[str]]
     r"""The third-party API ID of original entity"""
@@ -90,6 +91,8 @@ class CustomerTypedDict(TypedDict):
     r"""Payment method used for the transaction, such as cash, credit card, bank transfer, or check"""
     terms: NotRequired[Nullable[str]]
     r"""Terms of payment."""
+    terms_id: NotRequired[Nullable[str]]
+    r"""The ID of the payment terms"""
     channel: NotRequired[Nullable[str]]
     r"""The channel through which the transaction is processed."""
     custom_fields: NotRequired[List[CustomFieldTypedDict]]
@@ -110,7 +113,12 @@ class CustomerTypedDict(TypedDict):
 
 
 class Customer(BaseModel):
-    id: str
+    model_config = ConfigDict(
+        populate_by_name=True, arbitrary_types_allowed=True, extra="allow"
+    )
+    __pydantic_extra__: Dict[str, Any] = pydantic.Field(init=False)
+
+    id: Optional[str] = None
     r"""A unique identifier for an object."""
 
     downstream_id: OptionalNullable[str] = UNSET
@@ -193,6 +201,9 @@ class Customer(BaseModel):
     terms: OptionalNullable[str] = UNSET
     r"""Terms of payment."""
 
+    terms_id: OptionalNullable[str] = UNSET
+    r"""The ID of the payment terms"""
+
     channel: OptionalNullable[str] = UNSET
     r"""The channel through which the transaction is processed."""
 
@@ -219,6 +230,14 @@ class Customer(BaseModel):
     pass_through: Optional[List[PassThroughBody]] = None
     r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
 
+    @property
+    def additional_properties(self):
+        return self.__pydantic_extra__
+
+    @additional_properties.setter
+    def additional_properties(self, value):
+        self.__pydantic_extra__ = value  # pyright: ignore[reportIncompatibleVariableOverride]
+
     @field_serializer("currency")
     def serialize_currency(self, value):
         if isinstance(value, str):
@@ -240,6 +259,7 @@ class Customer(BaseModel):
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
         optional_fields = [
+            "id",
             "downstream_id",
             "display_id",
             "display_name",
@@ -268,6 +288,7 @@ class Customer(BaseModel):
             "status",
             "payment_method",
             "terms",
+            "terms_id",
             "channel",
             "custom_fields",
             "custom_mappings",
@@ -301,6 +322,7 @@ class Customer(BaseModel):
             "status",
             "payment_method",
             "terms",
+            "terms_id",
             "channel",
             "custom_mappings",
             "updated_by",
@@ -332,6 +354,9 @@ class Customer(BaseModel):
                 not k in optional_fields or (optional_nullable and is_set)
             ):
                 m[k] = val
+
+        for k, v in serialized.items():
+            m[k] = v
 
         return m
 
@@ -382,6 +407,8 @@ class CustomerInputTypedDict(TypedDict):
     r"""Payment method used for the transaction, such as cash, credit card, bank transfer, or check"""
     terms: NotRequired[Nullable[str]]
     r"""Terms of payment."""
+    terms_id: NotRequired[Nullable[str]]
+    r"""The ID of the payment terms"""
     channel: NotRequired[Nullable[str]]
     r"""The channel through which the transaction is processed."""
     custom_fields: NotRequired[List[CustomFieldTypedDict]]
@@ -392,6 +419,11 @@ class CustomerInputTypedDict(TypedDict):
 
 
 class CustomerInput(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True, arbitrary_types_allowed=True, extra="allow"
+    )
+    __pydantic_extra__: Dict[str, Any] = pydantic.Field(init=False)
+
     display_id: OptionalNullable[str] = UNSET
     r"""Display ID"""
 
@@ -469,6 +501,9 @@ class CustomerInput(BaseModel):
     terms: OptionalNullable[str] = UNSET
     r"""Terms of payment."""
 
+    terms_id: OptionalNullable[str] = UNSET
+    r"""The ID of the payment terms"""
+
     channel: OptionalNullable[str] = UNSET
     r"""The channel through which the transaction is processed."""
 
@@ -479,6 +514,14 @@ class CustomerInput(BaseModel):
 
     pass_through: Optional[List[PassThroughBody]] = None
     r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
+
+    @property
+    def additional_properties(self):
+        return self.__pydantic_extra__
+
+    @additional_properties.setter
+    def additional_properties(self, value):
+        self.__pydantic_extra__ = value  # pyright: ignore[reportIncompatibleVariableOverride]
 
     @field_serializer("currency")
     def serialize_currency(self, value):
@@ -528,6 +571,7 @@ class CustomerInput(BaseModel):
             "status",
             "payment_method",
             "terms",
+            "terms_id",
             "channel",
             "custom_fields",
             "row_version",
@@ -555,6 +599,7 @@ class CustomerInput(BaseModel):
             "status",
             "payment_method",
             "terms",
+            "terms_id",
             "channel",
             "row_version",
         ]
@@ -581,5 +626,8 @@ class CustomerInput(BaseModel):
                 not k in optional_fields or (optional_nullable and is_set)
             ):
                 m[k] = val
+
+        for k, v in serialized.items():
+            m[k] = v
 
         return m

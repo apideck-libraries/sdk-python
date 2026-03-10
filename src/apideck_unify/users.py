@@ -364,7 +364,6 @@ class Users(BaseSDK):
     def create(
         self,
         *,
-        emails: Union[List[models.Email], List[models.EmailTypedDict]],
         raw: Optional[bool] = False,
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
@@ -389,6 +388,7 @@ class Users(BaseSDK):
         phone_numbers: Optional[
             Union[List[models.PhoneNumber], List[models.PhoneNumberTypedDict]]
         ] = None,
+        emails: Optional[Union[List[models.Email], List[models.EmailTypedDict]]] = None,
         pass_through: Optional[
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
         ] = None,
@@ -401,7 +401,6 @@ class Users(BaseSDK):
 
         Create user
 
-        :param emails:
         :param raw: Include raw response. Mostly used for debugging purposes
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
@@ -422,6 +421,7 @@ class Users(BaseSDK):
         :param password: The password of the user
         :param addresses:
         :param phone_numbers:
+        :param emails:
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
@@ -464,7 +464,7 @@ class Users(BaseSDK):
                 phone_numbers=utils.get_pydantic_model(
                     phone_numbers, Optional[List[models.PhoneNumber]]
                 ),
-                emails=utils.get_pydantic_model(emails, List[models.Email]),
+                emails=utils.get_pydantic_model(emails, Optional[List[models.Email]]),
                 pass_through=utils.get_pydantic_model(
                     pass_through, Optional[List[models.PassThroughBody]]
                 ),
@@ -573,7 +573,6 @@ class Users(BaseSDK):
     async def create_async(
         self,
         *,
-        emails: Union[List[models.Email], List[models.EmailTypedDict]],
         raw: Optional[bool] = False,
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
@@ -598,6 +597,7 @@ class Users(BaseSDK):
         phone_numbers: Optional[
             Union[List[models.PhoneNumber], List[models.PhoneNumberTypedDict]]
         ] = None,
+        emails: Optional[Union[List[models.Email], List[models.EmailTypedDict]]] = None,
         pass_through: Optional[
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
         ] = None,
@@ -610,7 +610,6 @@ class Users(BaseSDK):
 
         Create user
 
-        :param emails:
         :param raw: Include raw response. Mostly used for debugging purposes
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
@@ -631,6 +630,7 @@ class Users(BaseSDK):
         :param password: The password of the user
         :param addresses:
         :param phone_numbers:
+        :param emails:
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
@@ -673,7 +673,7 @@ class Users(BaseSDK):
                 phone_numbers=utils.get_pydantic_model(
                     phone_numbers, Optional[List[models.PhoneNumber]]
                 ),
-                emails=utils.get_pydantic_model(emails, List[models.Email]),
+                emails=utils.get_pydantic_model(emails, Optional[List[models.Email]]),
                 pass_through=utils.get_pydantic_model(
                     pass_through, Optional[List[models.PassThroughBody]]
                 ),
@@ -1071,7 +1071,6 @@ class Users(BaseSDK):
         self,
         *,
         id: str,
-        emails: Union[List[models.Email], List[models.EmailTypedDict]],
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
@@ -1096,6 +1095,7 @@ class Users(BaseSDK):
         phone_numbers: Optional[
             Union[List[models.PhoneNumber], List[models.PhoneNumberTypedDict]]
         ] = None,
+        emails: Optional[Union[List[models.Email], List[models.EmailTypedDict]]] = None,
         pass_through: Optional[
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
         ] = None,
@@ -1109,7 +1109,6 @@ class Users(BaseSDK):
         Update user
 
         :param id: ID of the record you are acting upon.
-        :param emails:
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
@@ -1130,6 +1129,7 @@ class Users(BaseSDK):
         :param password: The password of the user
         :param addresses:
         :param phone_numbers:
+        :param emails:
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
@@ -1173,7 +1173,7 @@ class Users(BaseSDK):
                 phone_numbers=utils.get_pydantic_model(
                     phone_numbers, Optional[List[models.PhoneNumber]]
                 ),
-                emails=utils.get_pydantic_model(emails, List[models.Email]),
+                emails=utils.get_pydantic_model(emails, Optional[List[models.Email]]),
                 pass_through=utils.get_pydantic_model(
                     pass_through, Optional[List[models.PassThroughBody]]
                 ),
@@ -1283,7 +1283,6 @@ class Users(BaseSDK):
         self,
         *,
         id: str,
-        emails: Union[List[models.Email], List[models.EmailTypedDict]],
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
@@ -1308,6 +1307,7 @@ class Users(BaseSDK):
         phone_numbers: Optional[
             Union[List[models.PhoneNumber], List[models.PhoneNumberTypedDict]]
         ] = None,
+        emails: Optional[Union[List[models.Email], List[models.EmailTypedDict]]] = None,
         pass_through: Optional[
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
         ] = None,
@@ -1321,7 +1321,6 @@ class Users(BaseSDK):
         Update user
 
         :param id: ID of the record you are acting upon.
-        :param emails:
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
@@ -1342,6 +1341,7 @@ class Users(BaseSDK):
         :param password: The password of the user
         :param addresses:
         :param phone_numbers:
+        :param emails:
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
@@ -1385,7 +1385,7 @@ class Users(BaseSDK):
                 phone_numbers=utils.get_pydantic_model(
                     phone_numbers, Optional[List[models.PhoneNumber]]
                 ),
-                emails=utils.get_pydantic_model(emails, List[models.Email]),
+                emails=utils.get_pydantic_model(emails, Optional[List[models.Email]]),
                 pass_through=utils.get_pydantic_model(
                     pass_through, Optional[List[models.PassThroughBody]]
                 ),

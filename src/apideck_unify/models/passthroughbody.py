@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 from apideck_unify.types import BaseModel
+import pydantic
+from pydantic import ConfigDict
 from typing import Any, Dict, List, Optional
 from typing_extensions import NotRequired, TypedDict
 
@@ -14,11 +16,24 @@ class ExtendPathsTypedDict(TypedDict):
 
 
 class ExtendPaths(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True, arbitrary_types_allowed=True, extra="allow"
+    )
+    __pydantic_extra__: Dict[str, Any] = pydantic.Field(init=False)
+
     path: str
     r"""JSONPath string specifying where to apply the value."""
 
     value: Any
     r"""The value to set at the specified path, can be any type."""
+
+    @property
+    def additional_properties(self):
+        return self.__pydantic_extra__
+
+    @additional_properties.setter
+    def additional_properties(self, value):
+        self.__pydantic_extra__ = value  # pyright: ignore[reportIncompatibleVariableOverride]
 
 
 class PassThroughBodyTypedDict(TypedDict):
@@ -33,6 +48,11 @@ class PassThroughBodyTypedDict(TypedDict):
 
 
 class PassThroughBody(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True, arbitrary_types_allowed=True, extra="allow"
+    )
+    __pydantic_extra__: Dict[str, Any] = pydantic.Field(init=False)
+
     service_id: str
     r"""Identifier for the service to which this pass_through should be applied."""
 
@@ -44,3 +64,11 @@ class PassThroughBody(BaseModel):
 
     extend_paths: Optional[List[ExtendPaths]] = None
     r"""Array of objects for structured data modifications via paths."""
+
+    @property
+    def additional_properties(self):
+        return self.__pydantic_extra__
+
+    @additional_properties.setter
+    def additional_properties(self, value):
+        self.__pydantic_extra__ = value  # pyright: ignore[reportIncompatibleVariableOverride]

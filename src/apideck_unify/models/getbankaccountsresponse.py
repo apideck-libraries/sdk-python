@@ -5,7 +5,9 @@ from .accountingbankaccount import AccountingBankAccount, AccountingBankAccountT
 from .links import Links, LinksTypedDict
 from .meta import Meta, MetaTypedDict
 from apideck_unify.types import BaseModel
-from typing import List, Optional
+import pydantic
+from pydantic import ConfigDict
+from typing import Any, Dict, List, Optional
 from typing_extensions import NotRequired, TypedDict
 
 
@@ -32,6 +34,11 @@ class GetBankAccountsResponseTypedDict(TypedDict):
 class GetBankAccountsResponse(BaseModel):
     r"""Bank Accounts"""
 
+    model_config = ConfigDict(
+        populate_by_name=True, arbitrary_types_allowed=True, extra="allow"
+    )
+    __pydantic_extra__: Dict[str, Any] = pydantic.Field(init=False)
+
     status_code: int
     r"""HTTP Response Status Code"""
 
@@ -54,3 +61,11 @@ class GetBankAccountsResponse(BaseModel):
 
     links: Optional[Links] = None
     r"""Links to navigate to previous or next pages through the API"""
+
+    @property
+    def additional_properties(self):
+        return self.__pydantic_extra__
+
+    @additional_properties.setter
+    def additional_properties(self, value):
+        self.__pydantic_extra__ = value  # pyright: ignore[reportIncompatibleVariableOverride]

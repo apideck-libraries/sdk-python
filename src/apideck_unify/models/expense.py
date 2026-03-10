@@ -39,7 +39,7 @@ from apideck_unify.utils import validate_open_enum
 from datetime import datetime
 from enum import Enum
 import pydantic
-from pydantic import field_serializer, model_serializer
+from pydantic import ConfigDict, field_serializer, model_serializer
 from pydantic.functional_validators import PlainValidator
 from typing import Any, Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
@@ -66,19 +66,18 @@ class ExpenseStatus(str, Enum, metaclass=utils.OpenEnumMeta):
 
     DRAFT = "draft"
     POSTED = "posted"
+    VOIDED = "voided"
 
 
 class ExpenseTypedDict(TypedDict):
-    transaction_date: Nullable[datetime]
-    r"""The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD"""
-    line_items: List[ExpenseLineItemTypedDict]
-    r"""Expense line items linked to this expense."""
     id: NotRequired[str]
     r"""A unique identifier for an object."""
     display_id: NotRequired[Nullable[str]]
     r"""Id to be displayed."""
     number: NotRequired[Nullable[str]]
     r"""Number."""
+    transaction_date: NotRequired[Nullable[datetime]]
+    r"""The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD"""
     account_id: NotRequired[str]
     r"""The unique identifier for the ledger account that this expense should be credited to. Deprecated, use account instead."""
     account: NotRequired[Nullable[LinkedFinancialAccountTypedDict]]
@@ -116,6 +115,8 @@ class ExpenseTypedDict(TypedDict):
         Nullable[List[Nullable[LinkedTrackingCategoryTypedDict]]]
     ]
     r"""A list of linked tracking categories."""
+    line_items: NotRequired[List[ExpenseLineItemTypedDict]]
+    r"""Expense line items linked to this expense."""
     reference: NotRequired[Nullable[str]]
     r"""Optional reference identifier for the transaction."""
     source_document_url: NotRequired[Nullable[str]]
@@ -140,11 +141,10 @@ class ExpenseTypedDict(TypedDict):
 
 
 class Expense(BaseModel):
-    transaction_date: Nullable[datetime]
-    r"""The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD"""
-
-    line_items: List[ExpenseLineItem]
-    r"""Expense line items linked to this expense."""
+    model_config = ConfigDict(
+        populate_by_name=True, arbitrary_types_allowed=True, extra="allow"
+    )
+    __pydantic_extra__: Dict[str, Any] = pydantic.Field(init=False)
 
     id: Optional[str] = None
     r"""A unique identifier for an object."""
@@ -154,6 +154,9 @@ class Expense(BaseModel):
 
     number: OptionalNullable[str] = UNSET
     r"""Number."""
+
+    transaction_date: OptionalNullable[datetime] = UNSET
+    r"""The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD"""
 
     account_id: Annotated[
         Optional[str],
@@ -227,6 +230,9 @@ class Expense(BaseModel):
     )
     r"""A list of linked tracking categories."""
 
+    line_items: Optional[List[ExpenseLineItem]] = None
+    r"""Expense line items linked to this expense."""
+
     reference: OptionalNullable[str] = UNSET
     r"""Optional reference identifier for the transaction."""
 
@@ -260,6 +266,14 @@ class Expense(BaseModel):
 
     pass_through: Optional[List[PassThroughBody]] = None
     r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
+
+    @property
+    def additional_properties(self):
+        return self.__pydantic_extra__
+
+    @additional_properties.setter
+    def additional_properties(self, value):
+        self.__pydantic_extra__ = value  # pyright: ignore[reportIncompatibleVariableOverride]
 
     @field_serializer("payment_type")
     def serialize_payment_type(self, value):
@@ -303,6 +317,7 @@ class Expense(BaseModel):
             "id",
             "display_id",
             "number",
+            "transaction_date",
             "account_id",
             "account",
             "supplier_id",
@@ -322,6 +337,7 @@ class Expense(BaseModel):
             "total_tax",
             "total_amount",
             "tracking_categories",
+            "line_items",
             "reference",
             "source_document_url",
             "custom_fields",
@@ -388,18 +404,19 @@ class Expense(BaseModel):
             ):
                 m[k] = val
 
+        for k, v in serialized.items():
+            m[k] = v
+
         return m
 
 
 class ExpenseInputTypedDict(TypedDict):
-    transaction_date: Nullable[datetime]
-    r"""The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD"""
-    line_items: List[ExpenseLineItemInputTypedDict]
-    r"""Expense line items linked to this expense."""
     display_id: NotRequired[Nullable[str]]
     r"""Id to be displayed."""
     number: NotRequired[Nullable[str]]
     r"""Number."""
+    transaction_date: NotRequired[Nullable[datetime]]
+    r"""The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD"""
     account_id: NotRequired[str]
     r"""The unique identifier for the ledger account that this expense should be credited to. Deprecated, use account instead."""
     account: NotRequired[Nullable[LinkedFinancialAccountInputTypedDict]]
@@ -437,6 +454,8 @@ class ExpenseInputTypedDict(TypedDict):
         Nullable[List[Nullable[LinkedTrackingCategoryTypedDict]]]
     ]
     r"""A list of linked tracking categories."""
+    line_items: NotRequired[List[ExpenseLineItemInputTypedDict]]
+    r"""Expense line items linked to this expense."""
     reference: NotRequired[Nullable[str]]
     r"""Optional reference identifier for the transaction."""
     source_document_url: NotRequired[Nullable[str]]
@@ -451,17 +470,19 @@ class ExpenseInputTypedDict(TypedDict):
 
 
 class ExpenseInput(BaseModel):
-    transaction_date: Nullable[datetime]
-    r"""The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD"""
-
-    line_items: List[ExpenseLineItemInput]
-    r"""Expense line items linked to this expense."""
+    model_config = ConfigDict(
+        populate_by_name=True, arbitrary_types_allowed=True, extra="allow"
+    )
+    __pydantic_extra__: Dict[str, Any] = pydantic.Field(init=False)
 
     display_id: OptionalNullable[str] = UNSET
     r"""Id to be displayed."""
 
     number: OptionalNullable[str] = UNSET
     r"""Number."""
+
+    transaction_date: OptionalNullable[datetime] = UNSET
+    r"""The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD"""
 
     account_id: Annotated[
         Optional[str],
@@ -535,6 +556,9 @@ class ExpenseInput(BaseModel):
     )
     r"""A list of linked tracking categories."""
 
+    line_items: Optional[List[ExpenseLineItemInput]] = None
+    r"""Expense line items linked to this expense."""
+
     reference: OptionalNullable[str] = UNSET
     r"""Optional reference identifier for the transaction."""
 
@@ -553,6 +577,14 @@ class ExpenseInput(BaseModel):
 
     pass_through: Optional[List[PassThroughBody]] = None
     r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
+
+    @property
+    def additional_properties(self):
+        return self.__pydantic_extra__
+
+    @additional_properties.setter
+    def additional_properties(self, value):
+        self.__pydantic_extra__ = value  # pyright: ignore[reportIncompatibleVariableOverride]
 
     @field_serializer("payment_type")
     def serialize_payment_type(self, value):
@@ -595,6 +627,7 @@ class ExpenseInput(BaseModel):
         optional_fields = [
             "display_id",
             "number",
+            "transaction_date",
             "account_id",
             "account",
             "supplier_id",
@@ -614,6 +647,7 @@ class ExpenseInput(BaseModel):
             "total_tax",
             "total_amount",
             "tracking_categories",
+            "line_items",
             "reference",
             "source_document_url",
             "custom_fields",
@@ -669,5 +703,8 @@ class ExpenseInput(BaseModel):
                 not k in optional_fields or (optional_nullable and is_set)
             ):
                 m[k] = val
+
+        for k, v in serialized.items():
+            m[k] = v
 
         return m

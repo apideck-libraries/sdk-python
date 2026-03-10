@@ -28,9 +28,9 @@ from apideck_unify.types import (
 from apideck_unify.utils import validate_open_enum
 from enum import Enum
 import pydantic
-from pydantic import field_serializer, model_serializer
+from pydantic import ConfigDict, field_serializer, model_serializer
 from pydantic.functional_validators import PlainValidator
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
@@ -42,9 +42,6 @@ class JournalEntryLineItemType(str, Enum, metaclass=utils.OpenEnumMeta):
 
 
 class JournalEntryLineItemTypedDict(TypedDict):
-    type: JournalEntryLineItemType
-    r"""Debit entries are considered positive, and credit entries are considered negative."""
-    ledger_account: Nullable[LinkedLedgerAccountTypedDict]
     id: NotRequired[str]
     r"""A unique identifier for an object."""
     description: NotRequired[Nullable[str]]
@@ -55,12 +52,15 @@ class JournalEntryLineItemTypedDict(TypedDict):
     r"""Sub-total amount, normally before tax."""
     total_amount: NotRequired[Nullable[float]]
     r"""Debit entries are considered positive, and credit entries are considered negative."""
+    type: NotRequired[JournalEntryLineItemType]
+    r"""Debit entries are considered positive, and credit entries are considered negative."""
     tax_rate: NotRequired[LinkedTaxRateTypedDict]
     tracking_category: NotRequired[Nullable[DeprecatedLinkedTrackingCategoryTypedDict]]
     tracking_categories: NotRequired[
         Nullable[List[Nullable[LinkedTrackingCategoryTypedDict]]]
     ]
     r"""A list of linked tracking categories."""
+    ledger_account: NotRequired[Nullable[LinkedLedgerAccountTypedDict]]
     customer: NotRequired[Nullable[LinkedCustomerTypedDict]]
     r"""The customer this entity is linked to."""
     supplier: NotRequired[Nullable[LinkedSupplierTypedDict]]
@@ -76,10 +76,10 @@ class JournalEntryLineItemTypedDict(TypedDict):
 
 
 class JournalEntryLineItem(BaseModel):
-    type: Annotated[JournalEntryLineItemType, PlainValidator(validate_open_enum(False))]
-    r"""Debit entries are considered positive, and credit entries are considered negative."""
-
-    ledger_account: Nullable[LinkedLedgerAccount]
+    model_config = ConfigDict(
+        populate_by_name=True, arbitrary_types_allowed=True, extra="allow"
+    )
+    __pydantic_extra__: Dict[str, Any] = pydantic.Field(init=False)
 
     id: Optional[str] = None
     r"""A unique identifier for an object."""
@@ -96,6 +96,11 @@ class JournalEntryLineItem(BaseModel):
     total_amount: OptionalNullable[float] = UNSET
     r"""Debit entries are considered positive, and credit entries are considered negative."""
 
+    type: Annotated[
+        Optional[JournalEntryLineItemType], PlainValidator(validate_open_enum(False))
+    ] = None
+    r"""Debit entries are considered positive, and credit entries are considered negative."""
+
     tax_rate: Optional[LinkedTaxRate] = None
 
     tracking_category: Annotated[
@@ -109,6 +114,8 @@ class JournalEntryLineItem(BaseModel):
         UNSET
     )
     r"""A list of linked tracking categories."""
+
+    ledger_account: OptionalNullable[LinkedLedgerAccount] = UNSET
 
     customer: OptionalNullable[LinkedCustomer] = UNSET
     r"""The customer this entity is linked to."""
@@ -128,6 +135,14 @@ class JournalEntryLineItem(BaseModel):
     worktags: Optional[List[Nullable[LinkedWorktag]]] = None
     r"""Worktags of the line item. This is currently only supported in Workday."""
 
+    @property
+    def additional_properties(self):
+        return self.__pydantic_extra__
+
+    @additional_properties.setter
+    def additional_properties(self, value):
+        self.__pydantic_extra__ = value  # pyright: ignore[reportIncompatibleVariableOverride]
+
     @field_serializer("type")
     def serialize_type(self, value):
         if isinstance(value, str):
@@ -145,9 +160,11 @@ class JournalEntryLineItem(BaseModel):
             "tax_amount",
             "sub_total",
             "total_amount",
+            "type",
             "tax_rate",
             "tracking_category",
             "tracking_categories",
+            "ledger_account",
             "customer",
             "supplier",
             "department_id",
@@ -193,13 +210,13 @@ class JournalEntryLineItem(BaseModel):
             ):
                 m[k] = val
 
+        for k, v in serialized.items():
+            m[k] = v
+
         return m
 
 
 class JournalEntryLineItemInputTypedDict(TypedDict):
-    type: JournalEntryLineItemType
-    r"""Debit entries are considered positive, and credit entries are considered negative."""
-    ledger_account: Nullable[LinkedLedgerAccountTypedDict]
     description: NotRequired[Nullable[str]]
     r"""User defined description"""
     tax_amount: NotRequired[Nullable[float]]
@@ -208,12 +225,15 @@ class JournalEntryLineItemInputTypedDict(TypedDict):
     r"""Sub-total amount, normally before tax."""
     total_amount: NotRequired[Nullable[float]]
     r"""Debit entries are considered positive, and credit entries are considered negative."""
+    type: NotRequired[JournalEntryLineItemType]
+    r"""Debit entries are considered positive, and credit entries are considered negative."""
     tax_rate: NotRequired[LinkedTaxRateInputTypedDict]
     tracking_category: NotRequired[Nullable[DeprecatedLinkedTrackingCategoryTypedDict]]
     tracking_categories: NotRequired[
         Nullable[List[Nullable[LinkedTrackingCategoryTypedDict]]]
     ]
     r"""A list of linked tracking categories."""
+    ledger_account: NotRequired[Nullable[LinkedLedgerAccountTypedDict]]
     customer: NotRequired[Nullable[LinkedCustomerInputTypedDict]]
     r"""The customer this entity is linked to."""
     supplier: NotRequired[Nullable[LinkedSupplierInputTypedDict]]
@@ -229,10 +249,10 @@ class JournalEntryLineItemInputTypedDict(TypedDict):
 
 
 class JournalEntryLineItemInput(BaseModel):
-    type: Annotated[JournalEntryLineItemType, PlainValidator(validate_open_enum(False))]
-    r"""Debit entries are considered positive, and credit entries are considered negative."""
-
-    ledger_account: Nullable[LinkedLedgerAccount]
+    model_config = ConfigDict(
+        populate_by_name=True, arbitrary_types_allowed=True, extra="allow"
+    )
+    __pydantic_extra__: Dict[str, Any] = pydantic.Field(init=False)
 
     description: OptionalNullable[str] = UNSET
     r"""User defined description"""
@@ -244,6 +264,11 @@ class JournalEntryLineItemInput(BaseModel):
     r"""Sub-total amount, normally before tax."""
 
     total_amount: OptionalNullable[float] = UNSET
+    r"""Debit entries are considered positive, and credit entries are considered negative."""
+
+    type: Annotated[
+        Optional[JournalEntryLineItemType], PlainValidator(validate_open_enum(False))
+    ] = None
     r"""Debit entries are considered positive, and credit entries are considered negative."""
 
     tax_rate: Optional[LinkedTaxRateInput] = None
@@ -259,6 +284,8 @@ class JournalEntryLineItemInput(BaseModel):
         UNSET
     )
     r"""A list of linked tracking categories."""
+
+    ledger_account: OptionalNullable[LinkedLedgerAccount] = UNSET
 
     customer: OptionalNullable[LinkedCustomerInput] = UNSET
     r"""The customer this entity is linked to."""
@@ -278,6 +305,14 @@ class JournalEntryLineItemInput(BaseModel):
     worktags: Optional[List[Nullable[LinkedWorktag]]] = None
     r"""Worktags of the line item. This is currently only supported in Workday."""
 
+    @property
+    def additional_properties(self):
+        return self.__pydantic_extra__
+
+    @additional_properties.setter
+    def additional_properties(self, value):
+        self.__pydantic_extra__ = value  # pyright: ignore[reportIncompatibleVariableOverride]
+
     @field_serializer("type")
     def serialize_type(self, value):
         if isinstance(value, str):
@@ -294,9 +329,11 @@ class JournalEntryLineItemInput(BaseModel):
             "tax_amount",
             "sub_total",
             "total_amount",
+            "type",
             "tax_rate",
             "tracking_category",
             "tracking_categories",
+            "ledger_account",
             "customer",
             "supplier",
             "department_id",
@@ -341,5 +378,8 @@ class JournalEntryLineItemInput(BaseModel):
                 not k in optional_fields or (optional_nullable and is_set)
             ):
                 m[k] = val
+
+        for k, v in serialized.items():
+            m[k] = v
 
         return m

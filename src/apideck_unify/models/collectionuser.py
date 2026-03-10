@@ -9,7 +9,8 @@ from apideck_unify.types import (
     UNSET_SENTINEL,
 )
 from datetime import datetime
-from pydantic import model_serializer
+import pydantic
+from pydantic import ConfigDict, model_serializer
 from typing import Any, Dict
 from typing_extensions import NotRequired, TypedDict
 
@@ -36,6 +37,11 @@ class CollectionUserTypedDict(TypedDict):
 
 
 class CollectionUser(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True, arbitrary_types_allowed=True, extra="allow"
+    )
+    __pydantic_extra__: Dict[str, Any] = pydantic.Field(init=False)
+
     id: OptionalNullable[str] = UNSET
     r"""A unique identifier for an object."""
 
@@ -62,6 +68,14 @@ class CollectionUser(BaseModel):
 
     created_at: OptionalNullable[datetime] = UNSET
     r"""The date and time when the object was created."""
+
+    @property
+    def additional_properties(self):
+        return self.__pydantic_extra__
+
+    @additional_properties.setter
+    def additional_properties(self, value):
+        self.__pydantic_extra__ = value  # pyright: ignore[reportIncompatibleVariableOverride]
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
@@ -110,5 +124,8 @@ class CollectionUser(BaseModel):
                 not k in optional_fields or (optional_nullable and is_set)
             ):
                 m[k] = val
+
+        for k, v in serialized.items():
+            m[k] = v
 
         return m

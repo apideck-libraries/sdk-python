@@ -10,8 +10,9 @@ from apideck_unify.types import (
     UNSET_SENTINEL,
 )
 from datetime import date
-from pydantic import model_serializer
-from typing import List, Optional
+import pydantic
+from pydantic import ConfigDict, model_serializer
+from typing import Any, Dict, List, Optional
 from typing_extensions import NotRequired, TypedDict
 
 
@@ -26,6 +27,11 @@ class BalanceByPeriodTypedDict(TypedDict):
 
 
 class BalanceByPeriod(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True, arbitrary_types_allowed=True, extra="allow"
+    )
+    __pydantic_extra__: Dict[str, Any] = pydantic.Field(init=False)
+
     start_date: OptionalNullable[date] = UNSET
     r"""The starting date of the period. If not provided, it represents the oldest period, where all transactions due before the specified `end_date` are included."""
 
@@ -36,6 +42,14 @@ class BalanceByPeriod(BaseModel):
     r"""Total amount of the period."""
 
     balances_by_transaction: Optional[List[BalanceByTransaction]] = None
+
+    @property
+    def additional_properties(self):
+        return self.__pydantic_extra__
+
+    @additional_properties.setter
+    def additional_properties(self, value):
+        self.__pydantic_extra__ = value  # pyright: ignore[reportIncompatibleVariableOverride]
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
@@ -69,5 +83,8 @@ class BalanceByPeriod(BaseModel):
                 not k in optional_fields or (optional_nullable and is_set)
             ):
                 m[k] = val
+
+        for k, v in serialized.items():
+            m[k] = v
 
         return m

@@ -3,7 +3,9 @@
 from __future__ import annotations
 from .consumermetadata import ConsumerMetadata, ConsumerMetadataTypedDict
 from apideck_unify.types import BaseModel
-from typing import Optional
+import pydantic
+from pydantic import ConfigDict
+from typing import Any, Dict, Optional
 from typing_extensions import NotRequired, TypedDict
 
 
@@ -13,5 +15,18 @@ class UpdateConsumerRequestTypedDict(TypedDict):
 
 
 class UpdateConsumerRequest(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True, arbitrary_types_allowed=True, extra="allow"
+    )
+    __pydantic_extra__: Dict[str, Any] = pydantic.Field(init=False)
+
     metadata: Optional[ConsumerMetadata] = None
     r"""The metadata of the consumer. This is used to display the consumer in the sidebar. This is optional, but recommended."""
+
+    @property
+    def additional_properties(self):
+        return self.__pydantic_extra__
+
+    @additional_properties.setter
+    def additional_properties(self, value):
+        self.__pydantic_extra__ = value  # pyright: ignore[reportIncompatibleVariableOverride]

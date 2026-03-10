@@ -23,9 +23,10 @@ from apideck_unify.types import (
 from apideck_unify.utils import validate_open_enum
 from datetime import date, datetime
 from enum import Enum
-from pydantic import field_serializer, model_serializer
+import pydantic
+from pydantic import ConfigDict, field_serializer, model_serializer
 from pydantic.functional_validators import PlainValidator
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
@@ -131,12 +132,12 @@ class ScheduleStatus(str, Enum, metaclass=utils.OpenEnumMeta):
 
 
 class ProjectTypedDict(TypedDict):
-    name: str
-    r"""Name of the project"""
     id: NotRequired[str]
     r"""A unique identifier for an object."""
     downstream_id: NotRequired[Nullable[str]]
     r"""The third-party API ID of original entity"""
+    name: NotRequired[str]
+    r"""Name of the project"""
     display_id: NotRequired[Nullable[str]]
     r"""User-friendly project identifier"""
     reference_id: NotRequired[Nullable[str]]
@@ -222,14 +223,19 @@ class ProjectTypedDict(TypedDict):
 
 
 class Project(BaseModel):
-    name: str
-    r"""Name of the project"""
+    model_config = ConfigDict(
+        populate_by_name=True, arbitrary_types_allowed=True, extra="allow"
+    )
+    __pydantic_extra__: Dict[str, Any] = pydantic.Field(init=False)
 
     id: Optional[str] = None
     r"""A unique identifier for an object."""
 
     downstream_id: OptionalNullable[str] = UNSET
     r"""The third-party API ID of original entity"""
+
+    name: Optional[str] = None
+    r"""Name of the project"""
 
     display_id: OptionalNullable[str] = UNSET
     r"""User-friendly project identifier"""
@@ -369,6 +375,14 @@ class Project(BaseModel):
     updated_at: OptionalNullable[datetime] = UNSET
     r"""The date and time when the object was last updated."""
 
+    @property
+    def additional_properties(self):
+        return self.__pydantic_extra__
+
+    @additional_properties.setter
+    def additional_properties(self, value):
+        self.__pydantic_extra__ = value  # pyright: ignore[reportIncompatibleVariableOverride]
+
     @field_serializer("status")
     def serialize_status(self, value):
         if isinstance(value, str):
@@ -437,6 +451,7 @@ class Project(BaseModel):
         optional_fields = [
             "id",
             "downstream_id",
+            "name",
             "display_id",
             "reference_id",
             "description",
@@ -543,11 +558,14 @@ class Project(BaseModel):
             ):
                 m[k] = val
 
+        for k, v in serialized.items():
+            m[k] = v
+
         return m
 
 
 class ProjectInputTypedDict(TypedDict):
-    name: str
+    name: NotRequired[str]
     r"""Name of the project"""
     display_id: NotRequired[Nullable[str]]
     r"""User-friendly project identifier"""
@@ -622,7 +640,12 @@ class ProjectInputTypedDict(TypedDict):
 
 
 class ProjectInput(BaseModel):
-    name: str
+    model_config = ConfigDict(
+        populate_by_name=True, arbitrary_types_allowed=True, extra="allow"
+    )
+    __pydantic_extra__: Dict[str, Any] = pydantic.Field(init=False)
+
+    name: Optional[str] = None
     r"""Name of the project"""
 
     display_id: OptionalNullable[str] = UNSET
@@ -745,6 +768,14 @@ class ProjectInput(BaseModel):
     row_version: OptionalNullable[str] = UNSET
     r"""A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object."""
 
+    @property
+    def additional_properties(self):
+        return self.__pydantic_extra__
+
+    @additional_properties.setter
+    def additional_properties(self, value):
+        self.__pydantic_extra__ = value  # pyright: ignore[reportIncompatibleVariableOverride]
+
     @field_serializer("status")
     def serialize_status(self, value):
         if isinstance(value, str):
@@ -811,6 +842,7 @@ class ProjectInput(BaseModel):
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
         optional_fields = [
+            "name",
             "display_id",
             "reference_id",
             "description",
@@ -903,5 +935,8 @@ class ProjectInput(BaseModel):
                 not k in optional_fields or (optional_nullable and is_set)
             ):
                 m[k] = val
+
+        for k, v in serialized.items():
+            m[k] = v
 
         return m

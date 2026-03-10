@@ -37,7 +37,8 @@ from apideck_unify.types import (
 from apideck_unify.utils import validate_open_enum
 from datetime import date, datetime
 from enum import Enum
-from pydantic import field_serializer, model_serializer
+import pydantic
+from pydantic import ConfigDict, field_serializer, model_serializer
 from pydantic.functional_validators import PlainValidator
 from typing import Any, Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
@@ -203,12 +204,6 @@ class ApprovedBy(BaseModel):
 
 
 class ExpenseReportTypedDict(TypedDict):
-    employee: ExpenseReportEmployeeTypedDict
-    r"""The employee who submitted the expense report."""
-    transaction_date: Nullable[datetime]
-    r"""The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD"""
-    line_items: List[ExpenseReportLineItemTypedDict]
-    r"""Expense line items linked to this expense report."""
     id: NotRequired[str]
     r"""A unique identifier for an object."""
     display_id: NotRequired[Nullable[str]]
@@ -217,8 +212,12 @@ class ExpenseReportTypedDict(TypedDict):
     r"""The expense report number."""
     title: NotRequired[Nullable[str]]
     r"""Title or purpose of the expense report."""
+    employee: NotRequired[ExpenseReportEmployeeTypedDict]
+    r"""The employee who submitted the expense report."""
     status: NotRequired[Nullable[ExpenseReportStatus]]
     r"""The status of the expense report."""
+    transaction_date: NotRequired[Nullable[datetime]]
+    r"""The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD"""
     posting_date: NotRequired[Nullable[date]]
     r"""The date the expense report was posted to the general ledger."""
     due_date: NotRequired[Nullable[date]]
@@ -242,6 +241,8 @@ class ExpenseReportTypedDict(TypedDict):
     account: NotRequired[Nullable[LinkedLedgerAccountTypedDict]]
     accounting_period: NotRequired[Nullable[AccountingPeriodTypedDict]]
     r"""The accounting period the expense report is posted to."""
+    line_items: NotRequired[List[ExpenseReportLineItemTypedDict]]
+    r"""Expense line items linked to this expense report."""
     subsidiary: NotRequired[Nullable[LinkedSubsidiaryTypedDict]]
     tracking_categories: NotRequired[
         Nullable[List[Nullable[LinkedTrackingCategoryTypedDict]]]
@@ -269,14 +270,10 @@ class ExpenseReportTypedDict(TypedDict):
 
 
 class ExpenseReport(BaseModel):
-    employee: ExpenseReportEmployee
-    r"""The employee who submitted the expense report."""
-
-    transaction_date: Nullable[datetime]
-    r"""The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD"""
-
-    line_items: List[ExpenseReportLineItem]
-    r"""Expense line items linked to this expense report."""
+    model_config = ConfigDict(
+        populate_by_name=True, arbitrary_types_allowed=True, extra="allow"
+    )
+    __pydantic_extra__: Dict[str, Any] = pydantic.Field(init=False)
 
     id: Optional[str] = None
     r"""A unique identifier for an object."""
@@ -290,10 +287,16 @@ class ExpenseReport(BaseModel):
     title: OptionalNullable[str] = UNSET
     r"""Title or purpose of the expense report."""
 
+    employee: Optional[ExpenseReportEmployee] = None
+    r"""The employee who submitted the expense report."""
+
     status: Annotated[
         OptionalNullable[ExpenseReportStatus], PlainValidator(validate_open_enum(False))
     ] = UNSET
     r"""The status of the expense report."""
+
+    transaction_date: OptionalNullable[datetime] = UNSET
+    r"""The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD"""
 
     posting_date: OptionalNullable[date] = UNSET
     r"""The date the expense report was posted to the general ledger."""
@@ -333,6 +336,9 @@ class ExpenseReport(BaseModel):
     accounting_period: OptionalNullable[AccountingPeriod] = UNSET
     r"""The accounting period the expense report is posted to."""
 
+    line_items: Optional[List[ExpenseReportLineItem]] = None
+    r"""Expense line items linked to this expense report."""
+
     subsidiary: OptionalNullable[LinkedSubsidiary] = UNSET
 
     tracking_categories: OptionalNullable[List[Nullable[LinkedTrackingCategory]]] = (
@@ -369,6 +375,14 @@ class ExpenseReport(BaseModel):
     pass_through: Optional[List[PassThroughBody]] = None
     r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
 
+    @property
+    def additional_properties(self):
+        return self.__pydantic_extra__
+
+    @additional_properties.setter
+    def additional_properties(self, value):
+        self.__pydantic_extra__ = value  # pyright: ignore[reportIncompatibleVariableOverride]
+
     @field_serializer("status")
     def serialize_status(self, value):
         if isinstance(value, str):
@@ -394,7 +408,9 @@ class ExpenseReport(BaseModel):
             "display_id",
             "number",
             "title",
+            "employee",
             "status",
+            "transaction_date",
             "posting_date",
             "due_date",
             "currency",
@@ -408,6 +424,7 @@ class ExpenseReport(BaseModel):
             "location",
             "account",
             "accounting_period",
+            "line_items",
             "subsidiary",
             "tracking_categories",
             "tax_inclusive",
@@ -475,24 +492,25 @@ class ExpenseReport(BaseModel):
             ):
                 m[k] = val
 
+        for k, v in serialized.items():
+            m[k] = v
+
         return m
 
 
 class ExpenseReportInputTypedDict(TypedDict):
-    employee: ExpenseReportEmployeeTypedDict
-    r"""The employee who submitted the expense report."""
-    transaction_date: Nullable[datetime]
-    r"""The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD"""
-    line_items: List[ExpenseReportLineItemInputTypedDict]
-    r"""Expense line items linked to this expense report."""
     display_id: NotRequired[Nullable[str]]
     r"""Id to be displayed."""
     number: NotRequired[Nullable[str]]
     r"""The expense report number."""
     title: NotRequired[Nullable[str]]
     r"""Title or purpose of the expense report."""
+    employee: NotRequired[ExpenseReportEmployeeTypedDict]
+    r"""The employee who submitted the expense report."""
     status: NotRequired[Nullable[ExpenseReportStatus]]
     r"""The status of the expense report."""
+    transaction_date: NotRequired[Nullable[datetime]]
+    r"""The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD"""
     posting_date: NotRequired[Nullable[date]]
     r"""The date the expense report was posted to the general ledger."""
     due_date: NotRequired[Nullable[date]]
@@ -516,6 +534,8 @@ class ExpenseReportInputTypedDict(TypedDict):
     account: NotRequired[Nullable[LinkedLedgerAccountTypedDict]]
     accounting_period: NotRequired[Nullable[AccountingPeriodTypedDict]]
     r"""The accounting period the expense report is posted to."""
+    line_items: NotRequired[List[ExpenseReportLineItemInputTypedDict]]
+    r"""Expense line items linked to this expense report."""
     subsidiary: NotRequired[Nullable[LinkedSubsidiaryInputTypedDict]]
     tracking_categories: NotRequired[
         Nullable[List[Nullable[LinkedTrackingCategoryTypedDict]]]
@@ -533,14 +553,10 @@ class ExpenseReportInputTypedDict(TypedDict):
 
 
 class ExpenseReportInput(BaseModel):
-    employee: ExpenseReportEmployee
-    r"""The employee who submitted the expense report."""
-
-    transaction_date: Nullable[datetime]
-    r"""The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD"""
-
-    line_items: List[ExpenseReportLineItemInput]
-    r"""Expense line items linked to this expense report."""
+    model_config = ConfigDict(
+        populate_by_name=True, arbitrary_types_allowed=True, extra="allow"
+    )
+    __pydantic_extra__: Dict[str, Any] = pydantic.Field(init=False)
 
     display_id: OptionalNullable[str] = UNSET
     r"""Id to be displayed."""
@@ -551,10 +567,16 @@ class ExpenseReportInput(BaseModel):
     title: OptionalNullable[str] = UNSET
     r"""Title or purpose of the expense report."""
 
+    employee: Optional[ExpenseReportEmployee] = None
+    r"""The employee who submitted the expense report."""
+
     status: Annotated[
         OptionalNullable[ExpenseReportStatus], PlainValidator(validate_open_enum(False))
     ] = UNSET
     r"""The status of the expense report."""
+
+    transaction_date: OptionalNullable[datetime] = UNSET
+    r"""The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD"""
 
     posting_date: OptionalNullable[date] = UNSET
     r"""The date the expense report was posted to the general ledger."""
@@ -594,6 +616,9 @@ class ExpenseReportInput(BaseModel):
     accounting_period: OptionalNullable[AccountingPeriod] = UNSET
     r"""The accounting period the expense report is posted to."""
 
+    line_items: Optional[List[ExpenseReportLineItemInput]] = None
+    r"""Expense line items linked to this expense report."""
+
     subsidiary: OptionalNullable[LinkedSubsidiaryInput] = UNSET
 
     tracking_categories: OptionalNullable[List[Nullable[LinkedTrackingCategory]]] = (
@@ -614,6 +639,14 @@ class ExpenseReportInput(BaseModel):
 
     pass_through: Optional[List[PassThroughBody]] = None
     r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
+
+    @property
+    def additional_properties(self):
+        return self.__pydantic_extra__
+
+    @additional_properties.setter
+    def additional_properties(self, value):
+        self.__pydantic_extra__ = value  # pyright: ignore[reportIncompatibleVariableOverride]
 
     @field_serializer("status")
     def serialize_status(self, value):
@@ -639,7 +672,9 @@ class ExpenseReportInput(BaseModel):
             "display_id",
             "number",
             "title",
+            "employee",
             "status",
+            "transaction_date",
             "posting_date",
             "due_date",
             "currency",
@@ -653,6 +688,7 @@ class ExpenseReportInput(BaseModel):
             "location",
             "account",
             "accounting_period",
+            "line_items",
             "subsidiary",
             "tracking_categories",
             "tax_inclusive",
@@ -709,5 +745,8 @@ class ExpenseReportInput(BaseModel):
                 not k in optional_fields or (optional_nullable and is_set)
             ):
                 m[k] = val
+
+        for k, v in serialized.items():
+            m[k] = v
 
         return m

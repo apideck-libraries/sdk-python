@@ -31,7 +31,7 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.accounting.invoices.list(raw=False, service_id="salesforce", limit=20, filter_={
+    res = apideck.accounting.invoices.list(raw=False, service_id="salesforce", company_id="12345", limit=20, filter_={
         "updated_since": parse_datetime("2020-09-30T07:43:32.000Z"),
         "created_since": parse_datetime("2020-09-30T07:43:32.000Z"),
         "number": "OIT00546",
@@ -57,6 +57,7 @@ with Apideck(
 | `consumer_id`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | *Optional[str]*                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | :heavy_minus_sign:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | ID of the consumer which you want to get or push data from                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      | test-consumer                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | `app_id`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | *Optional[str]*                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | :heavy_minus_sign:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | The ID of your Unify application                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | `service_id`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | *Optional[str]*                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | :heavy_minus_sign:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | salesforce                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| `company_id`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | *Optional[str]*                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | :heavy_minus_sign:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | The ID of the company to scope requests to. For connectors that support multi-company, this overrides the default company configured in connection settings.                                                                                                                                                                                                                                                                                                                                                                                                                                                    | 12345                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | `cursor`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | *OptionalNullable[str]*                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | :heavy_minus_sign:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | `limit`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | *Optional[int]*                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | :heavy_minus_sign:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Number of results to return. Minimum 1, Maximum 200, Default 20                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | `filter_`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       | [Optional[models.InvoicesFilter]](../../models/invoicesfilter.md)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | :heavy_minus_sign:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Apply filters                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | {<br/>"updated_since": "2020-09-30T07:43:32.000Z",<br/>"created_since": "2020-09-30T07:43:32.000Z",<br/>"number": "OIT00546",<br/>"supplier_id": "123"<br/>}                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
@@ -101,11 +102,11 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.accounting.invoices.create(raw=False, service_id="salesforce", display_id="123456", type_=apideck_unify.InvoiceType.SERVICE, number="OIT00546", customer={
+    res = apideck.accounting.invoices.create(raw=False, service_id="salesforce", company_id_param="12345", display_id="123456", type_=apideck_unify.InvoiceType.SERVICE, number="OIT00546", customer={
         "id": "12345",
         "display_name": "Windsurf Shop",
         "email": "boring@boring.com",
-    }, company_id="12345", location_id="12345", department_id="12345", invoice_date=date.fromisoformat("2020-09-30"), due_date=date.fromisoformat("2020-09-30"), terms="Net 30 days", po_number="90000117", reference="123456", status=apideck_unify.InvoiceStatus.DRAFT, invoice_sent=True, currency=apideck_unify.Currency.USD, currency_rate=0.69, tax_inclusive=True, sub_total=27500, total_tax=2500, tax_code="1234", discount_percentage=5.5, discount_amount=25, total=27500, balance=27500, deposit=0, customer_memo="Thank you for your business and have a great day!", tracking_categories=[
+    }, company_id="12345", location_id="12345", department_id="12345", invoice_date=date.fromisoformat("2020-09-30"), due_date=date.fromisoformat("2020-09-30"), terms="Net 30 days", terms_id="12345", po_number="90000117", reference="123456", status=apideck_unify.InvoiceStatus.DRAFT, invoice_sent=True, currency=apideck_unify.Currency.USD, currency_rate=0.69, tax_inclusive=True, sub_total=27500, total_tax=2500, tax_code="1234", discount_percentage=5.5, discount_amount=25, total=27500, balance=27500, deposit=0, customer_memo="Thank you for your business and have a great day!", tracking_categories=[
         {
             "id": "123456",
             "name": "New York",
@@ -119,227 +120,229 @@ with Apideck(
             "name": "New York",
         },
     ], line_items=[
-        {
-            "id": "12345",
-            "row_id": "12345",
-            "code": "120-C",
-            "line_number": 1,
-            "description": "Model Y is a fully electric, mid-size SUV, with seating for up to seven, dual motor AWD and unparalleled protection.",
-            "type": apideck_unify.InvoiceLineItemType.SALES_ITEM,
-            "tax_amount": 27500,
-            "total_amount": 27500,
-            "quantity": 1,
-            "unit_price": 27500.5,
-            "unit_of_measure": "pc.",
-            "discount_percentage": 0.01,
-            "discount_amount": 19.99,
-            "location_id": "12345",
-            "department_id": "12345",
-            "item": {
-                "id": "12344",
-                "code": "120-C",
-                "name": "Model Y",
-            },
-            "tax_rate": {
-                "id": "123456",
-                "rate": 10,
-            },
-            "tracking_categories": [
-                {
-                    "id": "123456",
-                    "name": "New York",
-                },
+        apideck_unify.InvoiceLineItemInput(
+            id="12345",
+            row_id="12345",
+            code="120-C",
+            line_number=1,
+            description="Model Y is a fully electric, mid-size SUV, with seating for up to seven, dual motor AWD and unparalleled protection.",
+            type=apideck_unify.InvoiceLineItemType.SALES_ITEM,
+            tax_amount=27500,
+            total_amount=27500,
+            quantity=1,
+            unit_price=27500.5,
+            unit_of_measure="pc.",
+            discount_percentage=0.01,
+            discount_amount=19.99,
+            location_id="12345",
+            department_id="12345",
+            item=apideck_unify.LinkedInvoiceItem(
+                id="12344",
+                code="120-C",
+                name="Model Y",
+            ),
+            tax_rate=apideck_unify.LinkedTaxRateInput(
+                id="123456",
+                rate=10,
+            ),
+            tracking_categories=[
+                apideck_unify.LinkedTrackingCategory(
+                    id="123456",
+                    name="New York",
+                ),
             ],
-            "ledger_account": {
-                "id": "123456",
-                "nominal_code": "N091",
-                "code": "453",
-            },
-            "custom_fields": [
-                {
-                    "id": "2389328923893298",
-                    "name": "employee_level",
-                    "description": "Employee Level",
-                    "value": {
+            ledger_account=apideck_unify.LinkedLedgerAccount(
+                id="123456",
+                nominal_code="N091",
+                code="453",
+            ),
+            custom_fields=[
+                apideck_unify.CustomField(
+                    id="2389328923893298",
+                    name="employee_level",
+                    description="Employee Level",
+                    value={
 
                     },
-                },
+                ),
             ],
-            "row_version": "1-12345",
-        },
-        {
-            "id": "12345",
-            "row_id": "12345",
-            "code": "120-C",
-            "line_number": 1,
-            "description": "Model Y is a fully electric, mid-size SUV, with seating for up to seven, dual motor AWD and unparalleled protection.",
-            "type": apideck_unify.InvoiceLineItemType.SALES_ITEM,
-            "tax_amount": 27500,
-            "total_amount": 27500,
-            "quantity": 1,
-            "unit_price": 27500.5,
-            "unit_of_measure": "pc.",
-            "discount_percentage": 0.01,
-            "discount_amount": 19.99,
-            "location_id": "12345",
-            "department_id": "12345",
-            "item": {
-                "id": "12344",
-                "code": "120-C",
-                "name": "Model Y",
-            },
-            "tax_rate": {
-                "id": "123456",
-                "rate": 10,
-            },
-            "tracking_categories": [
-                {
-                    "id": "123456",
-                    "name": "New York",
-                },
+            row_version="1-12345",
+        ),
+        apideck_unify.InvoiceLineItemInput(
+            id="12345",
+            row_id="12345",
+            code="120-C",
+            line_number=1,
+            description="Model Y is a fully electric, mid-size SUV, with seating for up to seven, dual motor AWD and unparalleled protection.",
+            type=apideck_unify.InvoiceLineItemType.SALES_ITEM,
+            tax_amount=27500,
+            total_amount=27500,
+            quantity=1,
+            unit_price=27500.5,
+            unit_of_measure="pc.",
+            discount_percentage=0.01,
+            discount_amount=19.99,
+            location_id="12345",
+            department_id="12345",
+            item=apideck_unify.LinkedInvoiceItem(
+                id="12344",
+                code="120-C",
+                name="Model Y",
+            ),
+            tax_rate=apideck_unify.LinkedTaxRateInput(
+                id="123456",
+                rate=10,
+            ),
+            tracking_categories=[
+                apideck_unify.LinkedTrackingCategory(
+                    id="123456",
+                    name="New York",
+                ),
             ],
-            "ledger_account": {
-                "id": "123456",
-                "nominal_code": "N091",
-                "code": "453",
-            },
-            "custom_fields": [
-                {
-                    "id": "2389328923893298",
-                    "name": "employee_level",
-                    "description": "Employee Level",
-                    "value": {
+            ledger_account=apideck_unify.LinkedLedgerAccount(
+                id="123456",
+                nominal_code="N091",
+                code="453",
+            ),
+            custom_fields=[
+                apideck_unify.CustomField(
+                    id="2389328923893298",
+                    name="employee_level",
+                    description="Employee Level",
+                    value={
 
                     },
-                },
+                ),
             ],
-            "row_version": "1-12345",
-        },
-    ], billing_address={
-        "id": "123",
-        "type": apideck_unify.Type.PRIMARY,
-        "string": "25 Spring Street, Blackburn, VIC 3130",
-        "name": "HQ US",
-        "line1": "Main street",
-        "line2": "apt #",
-        "line3": "Suite #",
-        "line4": "delivery instructions",
-        "street_number": "25",
-        "city": "San Francisco",
-        "state": "CA",
-        "postal_code": "94104",
-        "country": "US",
-        "latitude": "40.759211",
-        "longitude": "-73.984638",
-        "county": "Santa Clara",
-        "contact_name": "Elon Musk",
-        "salutation": "Mr",
-        "phone_number": "111-111-1111",
-        "fax": "122-111-1111",
-        "email": "elon@musk.com",
-        "website": "https://elonmusk.com",
-        "notes": "Address notes or delivery instructions.",
-        "row_version": "1-12345",
-    }, shipping_address={
-        "id": "123",
-        "type": apideck_unify.Type.PRIMARY,
-        "string": "25 Spring Street, Blackburn, VIC 3130",
-        "name": "HQ US",
-        "line1": "Main street",
-        "line2": "apt #",
-        "line3": "Suite #",
-        "line4": "delivery instructions",
-        "street_number": "25",
-        "city": "San Francisco",
-        "state": "CA",
-        "postal_code": "94104",
-        "country": "US",
-        "latitude": "40.759211",
-        "longitude": "-73.984638",
-        "county": "Santa Clara",
-        "contact_name": "Elon Musk",
-        "salutation": "Mr",
-        "phone_number": "111-111-1111",
-        "fax": "122-111-1111",
-        "email": "elon@musk.com",
-        "website": "https://elonmusk.com",
-        "notes": "Address notes or delivery instructions.",
-        "row_version": "1-12345",
-    }, template_id="123456", source_document_url="https://www.invoicesolution.com/invoice/123456", payment_allocations=[
+            row_version="1-12345",
+        ),
+    ], billing_address=apideck_unify.Address(
+        id="123",
+        type=apideck_unify.Type.PRIMARY,
+        string="25 Spring Street, Blackburn, VIC 3130",
+        name="HQ US",
+        line1="Main street",
+        line2="apt #",
+        line3="Suite #",
+        line4="delivery instructions",
+        street_number="25",
+        city="San Francisco",
+        state="CA",
+        postal_code="94104",
+        country="US",
+        latitude="40.759211",
+        longitude="-73.984638",
+        county="Santa Clara",
+        contact_name="Elon Musk",
+        salutation="Mr",
+        phone_number="111-111-1111",
+        fax="122-111-1111",
+        email="elon@musk.com",
+        website="https://elonmusk.com",
+        notes="Address notes or delivery instructions.",
+        row_version="1-12345",
+    ), shipping_address=apideck_unify.Address(
+        id="123",
+        type=apideck_unify.Type.PRIMARY,
+        string="25 Spring Street, Blackburn, VIC 3130",
+        name="HQ US",
+        line1="Main street",
+        line2="apt #",
+        line3="Suite #",
+        line4="delivery instructions",
+        street_number="25",
+        city="San Francisco",
+        state="CA",
+        postal_code="94104",
+        country="US",
+        latitude="40.759211",
+        longitude="-73.984638",
+        county="Santa Clara",
+        contact_name="Elon Musk",
+        salutation="Mr",
+        phone_number="111-111-1111",
+        fax="122-111-1111",
+        email="elon@musk.com",
+        website="https://elonmusk.com",
+        notes="Address notes or delivery instructions.",
+        row_version="1-12345",
+    ), template_id="123456", source_document_url="https://www.invoicesolution.com/invoice/123456", payment_allocations=[
         {
             "id": "123456",
             "allocated_amount": 1000,
             "date_": parse_datetime("2020-09-30T07:43:32.000Z"),
         },
-    ], payment_method="cash", channel="email", language="EN", accounting_by_row=False, bank_account={
-        "bank_name": "Monzo",
-        "account_number": "123465",
-        "account_name": "SPACEX LLC",
-        "account_type": apideck_unify.AccountType.CREDIT_CARD,
-        "iban": "CH2989144532982975332",
-        "bic": "AUDSCHGGXXX",
-        "routing_number": "012345678",
-        "bsb_number": "062-001",
-        "branch_identifier": "001",
-        "bank_code": "BNH",
-        "currency": apideck_unify.Currency.USD,
-    }, ledger_account={
-        "id": "123456",
-        "nominal_code": "N091",
-        "code": "453",
-    }, custom_fields=[
-        {
-            "id": "2389328923893298",
-            "name": "employee_level",
-            "description": "Employee Level",
-            "value": {
+    ], payment_method="cash", channel="email", language="EN", accounting_by_row=False, bank_account=apideck_unify.BankAccount(
+        bank_name="Monzo",
+        account_number="123465",
+        account_name="SPACEX LLC",
+        account_type=apideck_unify.AccountType.CREDIT_CARD,
+        iban="CH2989144532982975332",
+        bic="AUDSCHGGXXX",
+        routing_number="012345678",
+        bsb_number="062-001",
+        branch_identifier="001",
+        bank_code="BNH",
+        currency=apideck_unify.Currency.USD,
+    ), ledger_account=apideck_unify.LinkedLedgerAccount(
+        id="123456",
+        nominal_code="N091",
+        code="453",
+    ), custom_fields=[
+        apideck_unify.CustomField(
+            id="2389328923893298",
+            name="employee_level",
+            description="Employee Level",
+            value={
 
             },
-        },
+        ),
     ], row_version="1-12345", pass_through=[
-        {
-            "service_id": "<id>",
-            "extend_paths": [
-                {
-                    "path": "$.nested.property",
-                    "value": {
+        apideck_unify.PassThroughBody(
+            service_id="<id>",
+            extend_paths=[
+                apideck_unify.ExtendPaths(
+                    path="$.nested.property",
+                    value={
                         "TaxClassificationRef": {
                             "value": "EUC-99990201-V1-00020000",
                         },
                     },
-                },
-                {
-                    "path": "$.nested.property",
-                    "value": {
+                ),
+                apideck_unify.ExtendPaths(
+                    path="$.nested.property",
+                    value={
                         "TaxClassificationRef": {
                             "value": "EUC-99990201-V1-00020000",
                         },
                     },
-                },
+                ),
             ],
-        },
-        {
-            "service_id": "<id>",
-            "extend_paths": [
-                {
-                    "path": "$.nested.property",
-                    "value": {
+        ),
+        apideck_unify.PassThroughBody(
+            service_id="<id>",
+            extend_paths=[
+                apideck_unify.ExtendPaths(
+                    path="$.nested.property",
+                    value={
                         "TaxClassificationRef": {
                             "value": "EUC-99990201-V1-00020000",
                         },
                     },
-                },
-                {
-                    "path": "$.nested.property",
-                    "value": {
+                ),
+                apideck_unify.ExtendPaths(
+                    path="$.nested.property",
+                    value={
                         "TaxClassificationRef": {
                             "value": "EUC-99990201-V1-00020000",
                         },
                     },
-                },
+                ),
             ],
-        },
-    ])
+        ),
+    ], additional_properties={
+
+    })
 
     assert res.create_invoice_response is not None
 
@@ -356,6 +359,7 @@ with Apideck(
 | `consumer_id`                                                                                                                                                    | *Optional[str]*                                                                                                                                                  | :heavy_minus_sign:                                                                                                                                               | ID of the consumer which you want to get or push data from                                                                                                       | test-consumer                                                                                                                                                    |
 | `app_id`                                                                                                                                                         | *Optional[str]*                                                                                                                                                  | :heavy_minus_sign:                                                                                                                                               | The ID of your Unify application                                                                                                                                 | dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX                                                                                                                          |
 | `service_id`                                                                                                                                                     | *Optional[str]*                                                                                                                                                  | :heavy_minus_sign:                                                                                                                                               | Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.                    | salesforce                                                                                                                                                       |
+| `company_id_param`                                                                                                                                               | *Optional[str]*                                                                                                                                                  | :heavy_minus_sign:                                                                                                                                               | The ID of the company to scope requests to. For connectors that support multi-company, this overrides the default company configured in connection settings.     | 12345                                                                                                                                                            |
 | `display_id`                                                                                                                                                     | *OptionalNullable[str]*                                                                                                                                          | :heavy_minus_sign:                                                                                                                                               | Id to be displayed.                                                                                                                                              | 123456                                                                                                                                                           |
 | `type`                                                                                                                                                           | [OptionalNullable[models.InvoiceType]](../../models/invoicetype.md)                                                                                              | :heavy_minus_sign:                                                                                                                                               | Invoice type                                                                                                                                                     | service                                                                                                                                                          |
 | `number`                                                                                                                                                         | *OptionalNullable[str]*                                                                                                                                          | :heavy_minus_sign:                                                                                                                                               | Invoice number.                                                                                                                                                  | OIT00546                                                                                                                                                         |
@@ -366,6 +370,7 @@ with Apideck(
 | `invoice_date`                                                                                                                                                   | [datetime](https://docs.python.org/3/library/datetime.html#datetime-objects)                                                                                     | :heavy_minus_sign:                                                                                                                                               | Date invoice was issued - YYYY-MM-DD.                                                                                                                            | 2020-09-30                                                                                                                                                       |
 | `due_date`                                                                                                                                                       | [datetime](https://docs.python.org/3/library/datetime.html#datetime-objects)                                                                                     | :heavy_minus_sign:                                                                                                                                               | The invoice due date is the date on which a payment or invoice is scheduled to be received by the seller - YYYY-MM-DD.                                           | 2020-09-30                                                                                                                                                       |
 | `terms`                                                                                                                                                          | *OptionalNullable[str]*                                                                                                                                          | :heavy_minus_sign:                                                                                                                                               | Terms of payment.                                                                                                                                                | Net 30 days                                                                                                                                                      |
+| `terms_id`                                                                                                                                                       | *OptionalNullable[str]*                                                                                                                                          | :heavy_minus_sign:                                                                                                                                               | The ID of the payment terms                                                                                                                                      | 12345                                                                                                                                                            |
 | `po_number`                                                                                                                                                      | *OptionalNullable[str]*                                                                                                                                          | :heavy_minus_sign:                                                                                                                                               | A PO Number uniquely identifies a purchase order and is generally defined by the buyer. The buyer will match the PO number in the invoice to the Purchase Order. | 90000117                                                                                                                                                         |
 | `reference`                                                                                                                                                      | *OptionalNullable[str]*                                                                                                                                          | :heavy_minus_sign:                                                                                                                                               | Optional reference identifier for the transaction.                                                                                                               | INV-2024-001                                                                                                                                                     |
 | `status`                                                                                                                                                         | [OptionalNullable[models.InvoiceStatus]](../../models/invoicestatus.md)                                                                                          | :heavy_minus_sign:                                                                                                                                               | Invoice status                                                                                                                                                   | draft                                                                                                                                                            |
@@ -399,6 +404,7 @@ with Apideck(
 | `custom_fields`                                                                                                                                                  | List[[models.CustomField](../../models/customfield.md)]                                                                                                          | :heavy_minus_sign:                                                                                                                                               | N/A                                                                                                                                                              |                                                                                                                                                                  |
 | `row_version`                                                                                                                                                    | *OptionalNullable[str]*                                                                                                                                          | :heavy_minus_sign:                                                                                                                                               | A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.                       | 1-12345                                                                                                                                                          |
 | `pass_through`                                                                                                                                                   | List[[models.PassThroughBody](../../models/passthroughbody.md)]                                                                                                  | :heavy_minus_sign:                                                                                                                                               | The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.          |                                                                                                                                                                  |
+| `additional_properties`                                                                                                                                          | Dict[str, *Any*]                                                                                                                                                 | :heavy_minus_sign:                                                                                                                                               | N/A                                                                                                                                                              |                                                                                                                                                                  |
 | `retries`                                                                                                                                                        | [Optional[utils.RetryConfig]](../../models/utils/retryconfig.md)                                                                                                 | :heavy_minus_sign:                                                                                                                                               | Configuration to override the default retry behavior of the client.                                                                                              |                                                                                                                                                                  |
 
 ### Response
@@ -434,7 +440,7 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.accounting.invoices.get(id="<id>", service_id="salesforce", raw=False, fields="id,updated_at")
+    res = apideck.accounting.invoices.get(id="<id>", service_id="salesforce", company_id="12345", raw=False, fields="id,updated_at")
 
     assert res.get_invoice_response is not None
 
@@ -451,6 +457,7 @@ with Apideck(
 | `consumer_id`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | *Optional[str]*                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | :heavy_minus_sign:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | ID of the consumer which you want to get or push data from                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      | test-consumer                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | `app_id`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | *Optional[str]*                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | :heavy_minus_sign:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | The ID of your Unify application                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | `service_id`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | *Optional[str]*                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | :heavy_minus_sign:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | salesforce                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| `company_id`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | *Optional[str]*                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | :heavy_minus_sign:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | The ID of the company to scope requests to. For connectors that support multi-company, this overrides the default company configured in connection settings.                                                                                                                                                                                                                                                                                                                                                                                                                                                    | 12345                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | `raw`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           | *Optional[bool]*                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | :heavy_minus_sign:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Include raw response. Mostly used for debugging purposes                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | `fields`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | *OptionalNullable[str]*                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | :heavy_minus_sign:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields "name", "email" and "addresses.city". If any other fields are available, they will be excluded. | id,updated_at                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | `retries`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       | [Optional[utils.RetryConfig]](../../models/utils/retryconfig.md)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | :heavy_minus_sign:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Configuration to override the default retry behavior of the client.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
@@ -495,7 +502,7 @@ with Apideck(
         "id": "12345",
         "display_name": "Windsurf Shop",
         "email": "boring@boring.com",
-    }, company_id="12345", location_id="12345", department_id="12345", invoice_date=date.fromisoformat("2020-09-30"), due_date=date.fromisoformat("2020-09-30"), terms="Net 30 days", po_number="90000117", reference="123456", status=apideck_unify.InvoiceStatus.DRAFT, invoice_sent=True, currency=apideck_unify.Currency.USD, currency_rate=0.69, tax_inclusive=True, sub_total=27500, total_tax=2500, tax_code="1234", discount_percentage=5.5, discount_amount=25, total=27500, balance=27500, deposit=0, customer_memo="Thank you for your business and have a great day!", tracking_categories=[
+    }, company_id="12345", location_id="12345", department_id="12345", invoice_date=date.fromisoformat("2020-09-30"), due_date=date.fromisoformat("2020-09-30"), terms="Net 30 days", terms_id="12345", po_number="90000117", reference="123456", status=apideck_unify.InvoiceStatus.DRAFT, invoice_sent=True, currency=apideck_unify.Currency.USD, currency_rate=0.69, tax_inclusive=True, sub_total=27500, total_tax=2500, tax_code="1234", discount_percentage=5.5, discount_amount=25, total=27500, balance=27500, deposit=0, customer_memo="Thank you for your business and have a great day!", tracking_categories=[
         {
             "id": "123456",
             "name": "New York",
@@ -505,195 +512,195 @@ with Apideck(
             "name": "New York",
         },
     ], line_items=[
-        {
-            "id": "12345",
-            "row_id": "12345",
-            "code": "120-C",
-            "line_number": 1,
-            "description": "Model Y is a fully electric, mid-size SUV, with seating for up to seven, dual motor AWD and unparalleled protection.",
-            "type": apideck_unify.InvoiceLineItemType.SALES_ITEM,
-            "tax_amount": 27500,
-            "total_amount": 27500,
-            "quantity": 1,
-            "unit_price": 27500.5,
-            "unit_of_measure": "pc.",
-            "discount_percentage": 0.01,
-            "discount_amount": 19.99,
-            "location_id": "12345",
-            "department_id": "12345",
-            "item": {
-                "id": "12344",
-                "code": "120-C",
-                "name": "Model Y",
-            },
-            "tax_rate": {
-                "id": "123456",
-                "rate": 10,
-            },
-            "tracking_categories": [
-                {
-                    "id": "123456",
-                    "name": "New York",
-                },
+        apideck_unify.InvoiceLineItemInput(
+            id="12345",
+            row_id="12345",
+            code="120-C",
+            line_number=1,
+            description="Model Y is a fully electric, mid-size SUV, with seating for up to seven, dual motor AWD and unparalleled protection.",
+            type=apideck_unify.InvoiceLineItemType.SALES_ITEM,
+            tax_amount=27500,
+            total_amount=27500,
+            quantity=1,
+            unit_price=27500.5,
+            unit_of_measure="pc.",
+            discount_percentage=0.01,
+            discount_amount=19.99,
+            location_id="12345",
+            department_id="12345",
+            item=apideck_unify.LinkedInvoiceItem(
+                id="12344",
+                code="120-C",
+                name="Model Y",
+            ),
+            tax_rate=apideck_unify.LinkedTaxRateInput(
+                id="123456",
+                rate=10,
+            ),
+            tracking_categories=[
+                apideck_unify.LinkedTrackingCategory(
+                    id="123456",
+                    name="New York",
+                ),
             ],
-            "ledger_account": {
-                "id": "123456",
-                "nominal_code": "N091",
-                "code": "453",
-            },
-            "custom_fields": [
-                {
-                    "id": "2389328923893298",
-                    "name": "employee_level",
-                    "description": "Employee Level",
-                    "value": "Uses Salesforce and Marketo",
-                },
+            ledger_account=apideck_unify.LinkedLedgerAccount(
+                id="123456",
+                nominal_code="N091",
+                code="453",
+            ),
+            custom_fields=[
+                apideck_unify.CustomField(
+                    id="2389328923893298",
+                    name="employee_level",
+                    description="Employee Level",
+                    value="Uses Salesforce and Marketo",
+                ),
             ],
-            "row_version": "1-12345",
-        },
-        {
-            "id": "12345",
-            "row_id": "12345",
-            "code": "120-C",
-            "line_number": 1,
-            "description": "Model Y is a fully electric, mid-size SUV, with seating for up to seven, dual motor AWD and unparalleled protection.",
-            "type": apideck_unify.InvoiceLineItemType.SALES_ITEM,
-            "tax_amount": 27500,
-            "total_amount": 27500,
-            "quantity": 1,
-            "unit_price": 27500.5,
-            "unit_of_measure": "pc.",
-            "discount_percentage": 0.01,
-            "discount_amount": 19.99,
-            "location_id": "12345",
-            "department_id": "12345",
-            "item": {
-                "id": "12344",
-                "code": "120-C",
-                "name": "Model Y",
-            },
-            "tax_rate": {
-                "id": "123456",
-                "rate": 10,
-            },
-            "tracking_categories": [
-                {
-                    "id": "123456",
-                    "name": "New York",
-                },
+            row_version="1-12345",
+        ),
+        apideck_unify.InvoiceLineItemInput(
+            id="12345",
+            row_id="12345",
+            code="120-C",
+            line_number=1,
+            description="Model Y is a fully electric, mid-size SUV, with seating for up to seven, dual motor AWD and unparalleled protection.",
+            type=apideck_unify.InvoiceLineItemType.SALES_ITEM,
+            tax_amount=27500,
+            total_amount=27500,
+            quantity=1,
+            unit_price=27500.5,
+            unit_of_measure="pc.",
+            discount_percentage=0.01,
+            discount_amount=19.99,
+            location_id="12345",
+            department_id="12345",
+            item=apideck_unify.LinkedInvoiceItem(
+                id="12344",
+                code="120-C",
+                name="Model Y",
+            ),
+            tax_rate=apideck_unify.LinkedTaxRateInput(
+                id="123456",
+                rate=10,
+            ),
+            tracking_categories=[
+                apideck_unify.LinkedTrackingCategory(
+                    id="123456",
+                    name="New York",
+                ),
             ],
-            "ledger_account": {
-                "id": "123456",
-                "nominal_code": "N091",
-                "code": "453",
-            },
-            "custom_fields": [
-                {
-                    "id": "2389328923893298",
-                    "name": "employee_level",
-                    "description": "Employee Level",
-                    "value": "Uses Salesforce and Marketo",
-                },
+            ledger_account=apideck_unify.LinkedLedgerAccount(
+                id="123456",
+                nominal_code="N091",
+                code="453",
+            ),
+            custom_fields=[
+                apideck_unify.CustomField(
+                    id="2389328923893298",
+                    name="employee_level",
+                    description="Employee Level",
+                    value="Uses Salesforce and Marketo",
+                ),
             ],
-            "row_version": "1-12345",
-        },
-        {
-            "id": "12345",
-            "row_id": "12345",
-            "code": "120-C",
-            "line_number": 1,
-            "description": "Model Y is a fully electric, mid-size SUV, with seating for up to seven, dual motor AWD and unparalleled protection.",
-            "type": apideck_unify.InvoiceLineItemType.SALES_ITEM,
-            "tax_amount": 27500,
-            "total_amount": 27500,
-            "quantity": 1,
-            "unit_price": 27500.5,
-            "unit_of_measure": "pc.",
-            "discount_percentage": 0.01,
-            "discount_amount": 19.99,
-            "location_id": "12345",
-            "department_id": "12345",
-            "item": {
-                "id": "12344",
-                "code": "120-C",
-                "name": "Model Y",
-            },
-            "tax_rate": {
-                "id": "123456",
-                "rate": 10,
-            },
-            "tracking_categories": [
-                {
-                    "id": "123456",
-                    "name": "New York",
-                },
+            row_version="1-12345",
+        ),
+        apideck_unify.InvoiceLineItemInput(
+            id="12345",
+            row_id="12345",
+            code="120-C",
+            line_number=1,
+            description="Model Y is a fully electric, mid-size SUV, with seating for up to seven, dual motor AWD and unparalleled protection.",
+            type=apideck_unify.InvoiceLineItemType.SALES_ITEM,
+            tax_amount=27500,
+            total_amount=27500,
+            quantity=1,
+            unit_price=27500.5,
+            unit_of_measure="pc.",
+            discount_percentage=0.01,
+            discount_amount=19.99,
+            location_id="12345",
+            department_id="12345",
+            item=apideck_unify.LinkedInvoiceItem(
+                id="12344",
+                code="120-C",
+                name="Model Y",
+            ),
+            tax_rate=apideck_unify.LinkedTaxRateInput(
+                id="123456",
+                rate=10,
+            ),
+            tracking_categories=[
+                apideck_unify.LinkedTrackingCategory(
+                    id="123456",
+                    name="New York",
+                ),
             ],
-            "ledger_account": {
-                "id": "123456",
-                "nominal_code": "N091",
-                "code": "453",
-            },
-            "custom_fields": [
-                {
-                    "id": "2389328923893298",
-                    "name": "employee_level",
-                    "description": "Employee Level",
-                    "value": "Uses Salesforce and Marketo",
-                },
+            ledger_account=apideck_unify.LinkedLedgerAccount(
+                id="123456",
+                nominal_code="N091",
+                code="453",
+            ),
+            custom_fields=[
+                apideck_unify.CustomField(
+                    id="2389328923893298",
+                    name="employee_level",
+                    description="Employee Level",
+                    value="Uses Salesforce and Marketo",
+                ),
             ],
-            "row_version": "1-12345",
-        },
-    ], billing_address={
-        "id": "123",
-        "type": apideck_unify.Type.PRIMARY,
-        "string": "25 Spring Street, Blackburn, VIC 3130",
-        "name": "HQ US",
-        "line1": "Main street",
-        "line2": "apt #",
-        "line3": "Suite #",
-        "line4": "delivery instructions",
-        "street_number": "25",
-        "city": "San Francisco",
-        "state": "CA",
-        "postal_code": "94104",
-        "country": "US",
-        "latitude": "40.759211",
-        "longitude": "-73.984638",
-        "county": "Santa Clara",
-        "contact_name": "Elon Musk",
-        "salutation": "Mr",
-        "phone_number": "111-111-1111",
-        "fax": "122-111-1111",
-        "email": "elon@musk.com",
-        "website": "https://elonmusk.com",
-        "notes": "Address notes or delivery instructions.",
-        "row_version": "1-12345",
-    }, shipping_address={
-        "id": "123",
-        "type": apideck_unify.Type.PRIMARY,
-        "string": "25 Spring Street, Blackburn, VIC 3130",
-        "name": "HQ US",
-        "line1": "Main street",
-        "line2": "apt #",
-        "line3": "Suite #",
-        "line4": "delivery instructions",
-        "street_number": "25",
-        "city": "San Francisco",
-        "state": "CA",
-        "postal_code": "94104",
-        "country": "US",
-        "latitude": "40.759211",
-        "longitude": "-73.984638",
-        "county": "Santa Clara",
-        "contact_name": "Elon Musk",
-        "salutation": "Mr",
-        "phone_number": "111-111-1111",
-        "fax": "122-111-1111",
-        "email": "elon@musk.com",
-        "website": "https://elonmusk.com",
-        "notes": "Address notes or delivery instructions.",
-        "row_version": "1-12345",
-    }, template_id="123456", source_document_url="https://www.invoicesolution.com/invoice/123456", payment_allocations=[
+            row_version="1-12345",
+        ),
+    ], billing_address=apideck_unify.Address(
+        id="123",
+        type=apideck_unify.Type.PRIMARY,
+        string="25 Spring Street, Blackburn, VIC 3130",
+        name="HQ US",
+        line1="Main street",
+        line2="apt #",
+        line3="Suite #",
+        line4="delivery instructions",
+        street_number="25",
+        city="San Francisco",
+        state="CA",
+        postal_code="94104",
+        country="US",
+        latitude="40.759211",
+        longitude="-73.984638",
+        county="Santa Clara",
+        contact_name="Elon Musk",
+        salutation="Mr",
+        phone_number="111-111-1111",
+        fax="122-111-1111",
+        email="elon@musk.com",
+        website="https://elonmusk.com",
+        notes="Address notes or delivery instructions.",
+        row_version="1-12345",
+    ), shipping_address=apideck_unify.Address(
+        id="123",
+        type=apideck_unify.Type.PRIMARY,
+        string="25 Spring Street, Blackburn, VIC 3130",
+        name="HQ US",
+        line1="Main street",
+        line2="apt #",
+        line3="Suite #",
+        line4="delivery instructions",
+        street_number="25",
+        city="San Francisco",
+        state="CA",
+        postal_code="94104",
+        country="US",
+        latitude="40.759211",
+        longitude="-73.984638",
+        county="Santa Clara",
+        contact_name="Elon Musk",
+        salutation="Mr",
+        phone_number="111-111-1111",
+        fax="122-111-1111",
+        email="elon@musk.com",
+        website="https://elonmusk.com",
+        notes="Address notes or delivery instructions.",
+        row_version="1-12345",
+    ), template_id="123456", source_document_url="https://www.invoicesolution.com/invoice/123456", payment_allocations=[
         {
             "id": "123456",
             "allocated_amount": 1000,
@@ -709,76 +716,78 @@ with Apideck(
             "allocated_amount": 1000,
             "date_": parse_datetime("2020-09-30T07:43:32.000Z"),
         },
-    ], payment_method="cash", channel="email", language="EN", accounting_by_row=False, bank_account={
-        "bank_name": "Monzo",
-        "account_number": "123465",
-        "account_name": "SPACEX LLC",
-        "account_type": apideck_unify.AccountType.CREDIT_CARD,
-        "iban": "CH2989144532982975332",
-        "bic": "AUDSCHGGXXX",
-        "routing_number": "012345678",
-        "bsb_number": "062-001",
-        "branch_identifier": "001",
-        "bank_code": "BNH",
-        "currency": apideck_unify.Currency.USD,
-    }, ledger_account={
-        "id": "123456",
-        "nominal_code": "N091",
-        "code": "453",
-    }, custom_fields=[
-        {
-            "id": "2389328923893298",
-            "name": "employee_level",
-            "description": "Employee Level",
-            "value": "Uses Salesforce and Marketo",
-        },
-        {
-            "id": "2389328923893298",
-            "name": "employee_level",
-            "description": "Employee Level",
-            "value": "Uses Salesforce and Marketo",
-        },
+    ], payment_method="cash", channel="email", language="EN", accounting_by_row=False, bank_account=apideck_unify.BankAccount(
+        bank_name="Monzo",
+        account_number="123465",
+        account_name="SPACEX LLC",
+        account_type=apideck_unify.AccountType.CREDIT_CARD,
+        iban="CH2989144532982975332",
+        bic="AUDSCHGGXXX",
+        routing_number="012345678",
+        bsb_number="062-001",
+        branch_identifier="001",
+        bank_code="BNH",
+        currency=apideck_unify.Currency.USD,
+    ), ledger_account=apideck_unify.LinkedLedgerAccount(
+        id="123456",
+        nominal_code="N091",
+        code="453",
+    ), custom_fields=[
+        apideck_unify.CustomField(
+            id="2389328923893298",
+            name="employee_level",
+            description="Employee Level",
+            value="Uses Salesforce and Marketo",
+        ),
+        apideck_unify.CustomField(
+            id="2389328923893298",
+            name="employee_level",
+            description="Employee Level",
+            value="Uses Salesforce and Marketo",
+        ),
     ], row_version="1-12345", pass_through=[
-        {
-            "service_id": "<id>",
-            "extend_paths": [
-                {
-                    "path": "$.nested.property",
-                    "value": {
+        apideck_unify.PassThroughBody(
+            service_id="<id>",
+            extend_paths=[
+                apideck_unify.ExtendPaths(
+                    path="$.nested.property",
+                    value={
                         "TaxClassificationRef": {
                             "value": "EUC-99990201-V1-00020000",
                         },
                     },
-                },
+                ),
             ],
-        },
-        {
-            "service_id": "<id>",
-            "extend_paths": [
-                {
-                    "path": "$.nested.property",
-                    "value": {
+        ),
+        apideck_unify.PassThroughBody(
+            service_id="<id>",
+            extend_paths=[
+                apideck_unify.ExtendPaths(
+                    path="$.nested.property",
+                    value={
                         "TaxClassificationRef": {
                             "value": "EUC-99990201-V1-00020000",
                         },
                     },
-                },
+                ),
             ],
-        },
-        {
-            "service_id": "<id>",
-            "extend_paths": [
-                {
-                    "path": "$.nested.property",
-                    "value": {
+        ),
+        apideck_unify.PassThroughBody(
+            service_id="<id>",
+            extend_paths=[
+                apideck_unify.ExtendPaths(
+                    path="$.nested.property",
+                    value={
                         "TaxClassificationRef": {
                             "value": "EUC-99990201-V1-00020000",
                         },
                     },
-                },
+                ),
             ],
-        },
-    ])
+        ),
+    ], additional_properties={
+
+    })
 
     assert res.update_invoice_response is not None
 
@@ -806,6 +815,7 @@ with Apideck(
 | `invoice_date`                                                                                                                                                   | [datetime](https://docs.python.org/3/library/datetime.html#datetime-objects)                                                                                     | :heavy_minus_sign:                                                                                                                                               | Date invoice was issued - YYYY-MM-DD.                                                                                                                            | 2020-09-30                                                                                                                                                       |
 | `due_date`                                                                                                                                                       | [datetime](https://docs.python.org/3/library/datetime.html#datetime-objects)                                                                                     | :heavy_minus_sign:                                                                                                                                               | The invoice due date is the date on which a payment or invoice is scheduled to be received by the seller - YYYY-MM-DD.                                           | 2020-09-30                                                                                                                                                       |
 | `terms`                                                                                                                                                          | *OptionalNullable[str]*                                                                                                                                          | :heavy_minus_sign:                                                                                                                                               | Terms of payment.                                                                                                                                                | Net 30 days                                                                                                                                                      |
+| `terms_id`                                                                                                                                                       | *OptionalNullable[str]*                                                                                                                                          | :heavy_minus_sign:                                                                                                                                               | The ID of the payment terms                                                                                                                                      | 12345                                                                                                                                                            |
 | `po_number`                                                                                                                                                      | *OptionalNullable[str]*                                                                                                                                          | :heavy_minus_sign:                                                                                                                                               | A PO Number uniquely identifies a purchase order and is generally defined by the buyer. The buyer will match the PO number in the invoice to the Purchase Order. | 90000117                                                                                                                                                         |
 | `reference`                                                                                                                                                      | *OptionalNullable[str]*                                                                                                                                          | :heavy_minus_sign:                                                                                                                                               | Optional reference identifier for the transaction.                                                                                                               | INV-2024-001                                                                                                                                                     |
 | `status`                                                                                                                                                         | [OptionalNullable[models.InvoiceStatus]](../../models/invoicestatus.md)                                                                                          | :heavy_minus_sign:                                                                                                                                               | Invoice status                                                                                                                                                   | draft                                                                                                                                                            |
@@ -839,6 +849,7 @@ with Apideck(
 | `custom_fields`                                                                                                                                                  | List[[models.CustomField](../../models/customfield.md)]                                                                                                          | :heavy_minus_sign:                                                                                                                                               | N/A                                                                                                                                                              |                                                                                                                                                                  |
 | `row_version`                                                                                                                                                    | *OptionalNullable[str]*                                                                                                                                          | :heavy_minus_sign:                                                                                                                                               | A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.                       | 1-12345                                                                                                                                                          |
 | `pass_through`                                                                                                                                                   | List[[models.PassThroughBody](../../models/passthroughbody.md)]                                                                                                  | :heavy_minus_sign:                                                                                                                                               | The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.          |                                                                                                                                                                  |
+| `additional_properties`                                                                                                                                          | Dict[str, *Any*]                                                                                                                                                 | :heavy_minus_sign:                                                                                                                                               | N/A                                                                                                                                                              |                                                                                                                                                                  |
 | `retries`                                                                                                                                                        | [Optional[utils.RetryConfig]](../../models/utils/retryconfig.md)                                                                                                 | :heavy_minus_sign:                                                                                                                                               | Configuration to override the default retry behavior of the client.                                                                                              |                                                                                                                                                                  |
 
 ### Response

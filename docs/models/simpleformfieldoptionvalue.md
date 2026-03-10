@@ -1,4 +1,4 @@
-# CustomFieldValue5
+# SimpleFormFieldOptionValue
 
 
 ## Supported Types
@@ -7,6 +7,12 @@
 
 ```python
 value: str = /* values here */
+```
+
+### `int`
+
+```python
+value: int = /* values here */
 ```
 
 ### `float`
@@ -21,9 +27,9 @@ value: float = /* values here */
 value: bool = /* values here */
 ```
 
-### `Dict[str, Any]`
+### `List[models.Value5]`
 
 ```python
-value: Dict[str, Any] = /* values here */
+value: List[models.Value5] = /* values here */
 ```
 

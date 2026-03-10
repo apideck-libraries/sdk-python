@@ -168,12 +168,12 @@ with Apideck(
             ],
         },
     ], custom_mappings=[
-        {
-            "value": "$.root.training.first_aid",
-        },
-        {
-            "value": "$.root.training.first_aid",
-        },
+        apideck_unify.CustomMappingInput(
+            value="$.root.training.first_aid",
+        ),
+        apideck_unify.CustomMappingInput(
+            value="$.root.training.first_aid",
+        ),
     ], consent_state=apideck_unify.ConsentState.GRANTED, latest_consent={
         "granted": True,
         "resources": {

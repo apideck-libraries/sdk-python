@@ -9,8 +9,9 @@ from apideck_unify.types import (
     UNSET_SENTINEL,
 )
 from datetime import datetime
-from pydantic import model_serializer
-from typing import Optional
+import pydantic
+from pydantic import ConfigDict, model_serializer
+from typing import Any, Dict, Optional
 from typing_extensions import NotRequired, TypedDict
 
 
@@ -29,6 +30,11 @@ class UploadSessionTypedDict(TypedDict):
 
 
 class UploadSession(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True, arbitrary_types_allowed=True, extra="allow"
+    )
+    __pydantic_extra__: Dict[str, Any] = pydantic.Field(init=False)
+
     id: Optional[str] = None
     r"""A unique identifier for an object."""
 
@@ -45,6 +51,14 @@ class UploadSession(BaseModel):
     r"""The range of bytes that was successfully uploaded."""
 
     expires_at: OptionalNullable[datetime] = UNSET
+
+    @property
+    def additional_properties(self):
+        return self.__pydantic_extra__
+
+    @additional_properties.setter
+    def additional_properties(self, value):
+        self.__pydantic_extra__ = value  # pyright: ignore[reportIncompatibleVariableOverride]
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
@@ -80,5 +94,8 @@ class UploadSession(BaseModel):
                 not k in optional_fields or (optional_nullable and is_set)
             ):
                 m[k] = val
+
+        for k, v in serialized.items():
+            m[k] = v
 
         return m

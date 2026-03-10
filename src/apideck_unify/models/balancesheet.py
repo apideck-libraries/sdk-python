@@ -12,7 +12,8 @@ from apideck_unify.types import (
 )
 from apideck_unify.utils import validate_open_enum
 from datetime import datetime
-from pydantic import field_serializer, model_serializer
+import pydantic
+from pydantic import ConfigDict, field_serializer, model_serializer
 from pydantic.functional_validators import PlainValidator
 from typing import Any, Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
@@ -36,6 +37,11 @@ class BalanceSheetAssetsAccountTypedDict(TypedDict):
 class BalanceSheetAssetsAccount(BaseModel):
     r"""A balance sheet assets account represents the financial position of a company at a specific point in time."""
 
+    model_config = ConfigDict(
+        populate_by_name=True, arbitrary_types_allowed=True, extra="allow"
+    )
+    __pydantic_extra__: Dict[str, Any] = pydantic.Field(init=False)
+
     account_id: Optional[str] = None
     r"""The unique identifier for the account."""
 
@@ -50,6 +56,14 @@ class BalanceSheetAssetsAccount(BaseModel):
 
     items: Optional[Any] = None
     r"""A list of balance sheet accounts"""
+
+    @property
+    def additional_properties(self):
+        return self.__pydantic_extra__
+
+    @additional_properties.setter
+    def additional_properties(self, value):
+        self.__pydantic_extra__ = value  # pyright: ignore[reportIncompatibleVariableOverride]
 
 
 class BalanceSheetLiabilitiesAccountTypedDict(TypedDict):
@@ -70,6 +84,11 @@ class BalanceSheetLiabilitiesAccountTypedDict(TypedDict):
 class BalanceSheetLiabilitiesAccount(BaseModel):
     r"""A balance sheet liabilities account represents the financial position of a company at a specific point in time."""
 
+    model_config = ConfigDict(
+        populate_by_name=True, arbitrary_types_allowed=True, extra="allow"
+    )
+    __pydantic_extra__: Dict[str, Any] = pydantic.Field(init=False)
+
     account_id: Optional[str] = None
     r"""The unique identifier for the account."""
 
@@ -84,6 +103,14 @@ class BalanceSheetLiabilitiesAccount(BaseModel):
 
     items: Optional[Any] = None
     r"""A list of balance sheet accounts"""
+
+    @property
+    def additional_properties(self):
+        return self.__pydantic_extra__
+
+    @additional_properties.setter
+    def additional_properties(self, value):
+        self.__pydantic_extra__ = value  # pyright: ignore[reportIncompatibleVariableOverride]
 
 
 class BalanceSheetEquityAccountTypedDict(TypedDict):
@@ -104,6 +131,11 @@ class BalanceSheetEquityAccountTypedDict(TypedDict):
 class BalanceSheetEquityAccount(BaseModel):
     r"""A balance sheet equity account represents the financial position of a company at a specific point in time."""
 
+    model_config = ConfigDict(
+        populate_by_name=True, arbitrary_types_allowed=True, extra="allow"
+    )
+    __pydantic_extra__: Dict[str, Any] = pydantic.Field(init=False)
+
     account_id: Optional[str] = None
     r"""The unique identifier for the account."""
 
@@ -118,6 +150,14 @@ class BalanceSheetEquityAccount(BaseModel):
 
     items: Optional[Any] = None
     r"""A list of balance sheet accounts"""
+
+    @property
+    def additional_properties(self):
+        return self.__pydantic_extra__
+
+    @additional_properties.setter
+    def additional_properties(self, value):
+        self.__pydantic_extra__ = value  # pyright: ignore[reportIncompatibleVariableOverride]
 
 
 class BalanceSheetUncategorizedItemsAccountTypedDict(TypedDict):
@@ -138,6 +178,11 @@ class BalanceSheetUncategorizedItemsAccountTypedDict(TypedDict):
 class BalanceSheetUncategorizedItemsAccount(BaseModel):
     r"""A balance sheet uncategorized items account represents the financial position of a company at a specific point in time."""
 
+    model_config = ConfigDict(
+        populate_by_name=True, arbitrary_types_allowed=True, extra="allow"
+    )
+    __pydantic_extra__: Dict[str, Any] = pydantic.Field(init=False)
+
     account_id: Optional[str] = None
     r"""The unique identifier for the account."""
 
@@ -152,6 +197,14 @@ class BalanceSheetUncategorizedItemsAccount(BaseModel):
 
     items: Optional[Any] = None
     r"""A list of balance sheet accounts"""
+
+    @property
+    def additional_properties(self):
+        return self.__pydantic_extra__
+
+    @additional_properties.setter
+    def additional_properties(self, value):
+        self.__pydantic_extra__ = value  # pyright: ignore[reportIncompatibleVariableOverride]
 
 
 class ReportsTypedDict(TypedDict):
@@ -188,6 +241,11 @@ class ReportsTypedDict(TypedDict):
 
 
 class Reports(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True, arbitrary_types_allowed=True, extra="allow"
+    )
+    __pydantic_extra__: Dict[str, Any] = pydantic.Field(init=False)
+
     end_date: str
     r"""The start date of the report"""
 
@@ -234,6 +292,14 @@ class Reports(BaseModel):
 
     uncategorized_items: Optional[BalanceSheetUncategorizedItemsAccount] = None
     r"""A balance sheet uncategorized items account represents the financial position of a company at a specific point in time."""
+
+    @property
+    def additional_properties(self):
+        return self.__pydantic_extra__
+
+    @additional_properties.setter
+    def additional_properties(self, value):
+        self.__pydantic_extra__ = value  # pyright: ignore[reportIncompatibleVariableOverride]
 
     @field_serializer("currency")
     def serialize_currency(self, value):
@@ -291,12 +357,28 @@ class Reports(BaseModel):
             ):
                 m[k] = val
 
+        for k, v in serialized.items():
+            m[k] = v
+
         return m
 
 
 class BalanceSheetTypedDict(TypedDict):
-    reports: List[ReportsTypedDict]
+    reports: NotRequired[List[ReportsTypedDict]]
 
 
 class BalanceSheet(BaseModel):
-    reports: List[Reports]
+    model_config = ConfigDict(
+        populate_by_name=True, arbitrary_types_allowed=True, extra="allow"
+    )
+    __pydantic_extra__: Dict[str, Any] = pydantic.Field(init=False)
+
+    reports: Optional[List[Reports]] = None
+
+    @property
+    def additional_properties(self):
+        return self.__pydantic_extra__
+
+    @additional_properties.setter
+    def additional_properties(self, value):
+        self.__pydantic_extra__ = value  # pyright: ignore[reportIncompatibleVariableOverride]

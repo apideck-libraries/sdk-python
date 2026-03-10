@@ -16,9 +16,9 @@ from typing_extensions import NotRequired, TypedDict
 class TrackingItemTypedDict(TypedDict):
     r"""Represents the tracking information associated with an ecommerce order."""
 
-    provider: Nullable[str]
+    provider: NotRequired[Nullable[str]]
     r"""The name or code of the carrier or shipping company that is handling the shipment."""
-    number: Nullable[str]
+    number: NotRequired[Nullable[str]]
     r"""The tracking number associated with the shipment, which can be used to track the progress of the delivery."""
     url: NotRequired[Nullable[str]]
     r"""The URL of the carrier's tracking page, which can be used to view detailed information about the shipment's progress."""
@@ -29,10 +29,10 @@ class TrackingItemTypedDict(TypedDict):
 class TrackingItem(BaseModel):
     r"""Represents the tracking information associated with an ecommerce order."""
 
-    provider: Nullable[str]
+    provider: OptionalNullable[str] = UNSET
     r"""The name or code of the carrier or shipping company that is handling the shipment."""
 
-    number: Nullable[str]
+    number: OptionalNullable[str] = UNSET
     r"""The tracking number associated with the shipment, which can be used to track the progress of the delivery."""
 
     url: OptionalNullable[str] = UNSET
@@ -43,7 +43,7 @@ class TrackingItem(BaseModel):
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
-        optional_fields = ["url", "updated_at"]
+        optional_fields = ["provider", "number", "url", "updated_at"]
         nullable_fields = ["provider", "number", "url", "updated_at"]
         null_default_fields = []
 

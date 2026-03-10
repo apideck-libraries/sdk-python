@@ -14,7 +14,8 @@ from apideck_unify.types import (
 from apideck_unify.utils import validate_open_enum
 from datetime import datetime
 from enum import Enum
-from pydantic import field_serializer, model_serializer
+import pydantic
+from pydantic import ConfigDict, field_serializer, model_serializer
 from pydantic.functional_validators import PlainValidator
 from typing import Any, Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
@@ -35,7 +36,7 @@ class FeedStatus(str, Enum, metaclass=utils.OpenEnumMeta):
 
 
 class BankFeedAccountTypedDict(TypedDict):
-    id: str
+    id: NotRequired[str]
     r"""A unique identifier for an object."""
     bank_account_type: NotRequired[BankAccountType]
     r"""Type of the bank account."""
@@ -67,7 +68,12 @@ class BankFeedAccountTypedDict(TypedDict):
 
 
 class BankFeedAccount(BaseModel):
-    id: str
+    model_config = ConfigDict(
+        populate_by_name=True, arbitrary_types_allowed=True, extra="allow"
+    )
+    __pydantic_extra__: Dict[str, Any] = pydantic.Field(init=False)
+
+    id: Optional[str] = None
     r"""A unique identifier for an object."""
 
     bank_account_type: Annotated[
@@ -117,6 +123,14 @@ class BankFeedAccount(BaseModel):
     created_by: OptionalNullable[str] = UNSET
     r"""The user who created the object."""
 
+    @property
+    def additional_properties(self):
+        return self.__pydantic_extra__
+
+    @additional_properties.setter
+    def additional_properties(self, value):
+        self.__pydantic_extra__ = value  # pyright: ignore[reportIncompatibleVariableOverride]
+
     @field_serializer("bank_account_type")
     def serialize_bank_account_type(self, value):
         if isinstance(value, str):
@@ -147,6 +161,7 @@ class BankFeedAccount(BaseModel):
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
         optional_fields = [
+            "id",
             "bank_account_type",
             "source_account_id",
             "target_account_id",
@@ -195,6 +210,9 @@ class BankFeedAccount(BaseModel):
             ):
                 m[k] = val
 
+        for k, v in serialized.items():
+            m[k] = v
+
         return m
 
 
@@ -219,6 +237,11 @@ class BankFeedAccountInputTypedDict(TypedDict):
 
 
 class BankFeedAccountInput(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True, arbitrary_types_allowed=True, extra="allow"
+    )
+    __pydantic_extra__: Dict[str, Any] = pydantic.Field(init=False)
+
     bank_account_type: Annotated[
         Optional[BankAccountType], PlainValidator(validate_open_enum(False))
     ] = None
@@ -250,6 +273,14 @@ class BankFeedAccountInput(BaseModel):
     r"""Country code according to ISO 3166-1 alpha-2."""
 
     custom_fields: Optional[List[CustomField]] = None
+
+    @property
+    def additional_properties(self):
+        return self.__pydantic_extra__
+
+    @additional_properties.setter
+    def additional_properties(self, value):
+        self.__pydantic_extra__ = value  # pyright: ignore[reportIncompatibleVariableOverride]
 
     @field_serializer("bank_account_type")
     def serialize_bank_account_type(self, value):
@@ -315,5 +346,8 @@ class BankFeedAccountInput(BaseModel):
                 not k in optional_fields or (optional_nullable and is_set)
             ):
                 m[k] = val
+
+        for k, v in serialized.items():
+            m[k] = v
 
         return m

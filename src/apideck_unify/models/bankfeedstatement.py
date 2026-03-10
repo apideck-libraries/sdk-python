@@ -13,9 +13,10 @@ from apideck_unify.types import (
 from apideck_unify.utils import validate_open_enum
 from datetime import datetime
 from enum import Enum
-from pydantic import field_serializer, model_serializer
+import pydantic
+from pydantic import ConfigDict, field_serializer, model_serializer
 from pydantic.functional_validators import PlainValidator
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
@@ -105,7 +106,7 @@ class Transactions(BaseModel):
 
 
 class BankFeedStatementTypedDict(TypedDict):
-    id: str
+    id: NotRequired[str]
     r"""A unique identifier for an object."""
     bank_feed_account_id: NotRequired[str]
     r"""The ID of the bank feed account this statement belongs to."""
@@ -136,7 +137,12 @@ class BankFeedStatementTypedDict(TypedDict):
 
 
 class BankFeedStatement(BaseModel):
-    id: str
+    model_config = ConfigDict(
+        populate_by_name=True, arbitrary_types_allowed=True, extra="allow"
+    )
+    __pydantic_extra__: Dict[str, Any] = pydantic.Field(init=False)
+
+    id: Optional[str] = None
     r"""A unique identifier for an object."""
 
     bank_feed_account_id: Optional[str] = None
@@ -184,6 +190,14 @@ class BankFeedStatement(BaseModel):
     updated_by: OptionalNullable[str] = UNSET
     r"""The user who last updated the object."""
 
+    @property
+    def additional_properties(self):
+        return self.__pydantic_extra__
+
+    @additional_properties.setter
+    def additional_properties(self, value):
+        self.__pydantic_extra__ = value  # pyright: ignore[reportIncompatibleVariableOverride]
+
     @field_serializer("status")
     def serialize_status(self, value):
         if isinstance(value, str):
@@ -214,6 +228,7 @@ class BankFeedStatement(BaseModel):
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
         optional_fields = [
+            "id",
             "bank_feed_account_id",
             "status",
             "start_date",
@@ -253,6 +268,9 @@ class BankFeedStatement(BaseModel):
             ):
                 m[k] = val
 
+        for k, v in serialized.items():
+            m[k] = v
+
         return m
 
 
@@ -278,6 +296,11 @@ class BankFeedStatementInputTypedDict(TypedDict):
 
 
 class BankFeedStatementInput(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True, arbitrary_types_allowed=True, extra="allow"
+    )
+    __pydantic_extra__: Dict[str, Any] = pydantic.Field(init=False)
+
     bank_feed_account_id: Optional[str] = None
     r"""The ID of the bank feed account this statement belongs to."""
 
@@ -310,6 +333,14 @@ class BankFeedStatementInput(BaseModel):
 
     transactions: Optional[List[Transactions]] = None
     r"""List of transactions in the bank feed statement."""
+
+    @property
+    def additional_properties(self):
+        return self.__pydantic_extra__
+
+    @additional_properties.setter
+    def additional_properties(self, value):
+        self.__pydantic_extra__ = value  # pyright: ignore[reportIncompatibleVariableOverride]
 
     @field_serializer("status")
     def serialize_status(self, value):

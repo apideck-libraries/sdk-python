@@ -8,25 +8,40 @@ from apideck_unify.types import (
     UNSET,
     UNSET_SENTINEL,
 )
-from pydantic import model_serializer
+import pydantic
+from pydantic import ConfigDict, model_serializer
+from typing import Any, Dict, Optional
 from typing_extensions import NotRequired, TypedDict
 
 
 class AssigneeTypedDict(TypedDict):
-    id: str
+    id: NotRequired[str]
     r"""A unique identifier for an object."""
     username: NotRequired[Nullable[str]]
 
 
 class Assignee(BaseModel):
-    id: str
+    model_config = ConfigDict(
+        populate_by_name=True, arbitrary_types_allowed=True, extra="allow"
+    )
+    __pydantic_extra__: Dict[str, Any] = pydantic.Field(init=False)
+
+    id: Optional[str] = None
     r"""A unique identifier for an object."""
 
     username: OptionalNullable[str] = UNSET
 
+    @property
+    def additional_properties(self):
+        return self.__pydantic_extra__
+
+    @additional_properties.setter
+    def additional_properties(self, value):
+        self.__pydantic_extra__ = value  # pyright: ignore[reportIncompatibleVariableOverride]
+
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
-        optional_fields = ["username"]
+        optional_fields = ["id", "username"]
         nullable_fields = ["username"]
         null_default_fields = []
 
@@ -51,5 +66,8 @@ class Assignee(BaseModel):
                 not k in optional_fields or (optional_nullable and is_set)
             ):
                 m[k] = val
+
+        for k, v in serialized.items():
+            m[k] = v
 
         return m

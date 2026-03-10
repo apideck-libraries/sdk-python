@@ -3,7 +3,7 @@
 from .basesdk import BaseSDK
 from apideck_unify import models, utils
 from apideck_unify._hooks import HookContext
-from apideck_unify.types import Nullable, OptionalNullable, UNSET
+from apideck_unify.types import OptionalNullable, UNSET
 from apideck_unify.utils import get_security_from_env
 from apideck_unify.utils.unmarshal_json_response import unmarshal_json_response
 from jsonpath import JSONPath
@@ -392,7 +392,6 @@ class Activities(BaseSDK):
     def create(
         self,
         *,
-        type_: Nullable[models.ActivityType],
         raw: Optional[bool] = False,
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
@@ -413,6 +412,7 @@ class Activities(BaseSDK):
         product_id: OptionalNullable[str] = UNSET,
         solution_id: OptionalNullable[str] = UNSET,
         custom_object_id: OptionalNullable[str] = UNSET,
+        type_: OptionalNullable[models.ActivityType] = UNSET,
         title: OptionalNullable[str] = UNSET,
         description: OptionalNullable[str] = UNSET,
         note: OptionalNullable[str] = UNSET,
@@ -451,6 +451,7 @@ class Activities(BaseSDK):
         pass_through: Optional[
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
         ] = None,
+        additional_properties: Optional[Dict[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -460,7 +461,6 @@ class Activities(BaseSDK):
 
         Create activity
 
-        :param type: The type of the activity
         :param raw: Include raw response. Mostly used for debugging purposes
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
@@ -481,6 +481,7 @@ class Activities(BaseSDK):
         :param product_id: The product related to the activity
         :param solution_id: The solution related to the activity
         :param custom_object_id: The custom object related to the activity
+        :param type: The type of the activity
         :param title: The title of the activity
         :param description: A description of the activity
         :param note: An internal note about the activity
@@ -508,6 +509,7 @@ class Activities(BaseSDK):
         :param custom_fields: Custom fields of the activity
         :param attendees:
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
+        :param additional_properties:
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -581,6 +583,7 @@ class Activities(BaseSDK):
                 pass_through=utils.get_pydantic_model(
                     pass_through, Optional[List[models.PassThroughBody]]
                 ),
+                **(additional_properties or {}),
             ),
         )
 
@@ -686,7 +689,6 @@ class Activities(BaseSDK):
     async def create_async(
         self,
         *,
-        type_: Nullable[models.ActivityType],
         raw: Optional[bool] = False,
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
@@ -707,6 +709,7 @@ class Activities(BaseSDK):
         product_id: OptionalNullable[str] = UNSET,
         solution_id: OptionalNullable[str] = UNSET,
         custom_object_id: OptionalNullable[str] = UNSET,
+        type_: OptionalNullable[models.ActivityType] = UNSET,
         title: OptionalNullable[str] = UNSET,
         description: OptionalNullable[str] = UNSET,
         note: OptionalNullable[str] = UNSET,
@@ -745,6 +748,7 @@ class Activities(BaseSDK):
         pass_through: Optional[
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
         ] = None,
+        additional_properties: Optional[Dict[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -754,7 +758,6 @@ class Activities(BaseSDK):
 
         Create activity
 
-        :param type: The type of the activity
         :param raw: Include raw response. Mostly used for debugging purposes
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
@@ -775,6 +778,7 @@ class Activities(BaseSDK):
         :param product_id: The product related to the activity
         :param solution_id: The solution related to the activity
         :param custom_object_id: The custom object related to the activity
+        :param type: The type of the activity
         :param title: The title of the activity
         :param description: A description of the activity
         :param note: An internal note about the activity
@@ -802,6 +806,7 @@ class Activities(BaseSDK):
         :param custom_fields: Custom fields of the activity
         :param attendees:
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
+        :param additional_properties:
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -875,6 +880,7 @@ class Activities(BaseSDK):
                 pass_through=utils.get_pydantic_model(
                     pass_through, Optional[List[models.PassThroughBody]]
                 ),
+                **(additional_properties or {}),
             ),
         )
 
@@ -1269,7 +1275,6 @@ class Activities(BaseSDK):
         self,
         *,
         id: str,
-        type_: Nullable[models.ActivityType],
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
@@ -1290,6 +1295,7 @@ class Activities(BaseSDK):
         product_id: OptionalNullable[str] = UNSET,
         solution_id: OptionalNullable[str] = UNSET,
         custom_object_id: OptionalNullable[str] = UNSET,
+        type_: OptionalNullable[models.ActivityType] = UNSET,
         title: OptionalNullable[str] = UNSET,
         description: OptionalNullable[str] = UNSET,
         note: OptionalNullable[str] = UNSET,
@@ -1328,6 +1334,7 @@ class Activities(BaseSDK):
         pass_through: Optional[
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
         ] = None,
+        additional_properties: Optional[Dict[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -1338,7 +1345,6 @@ class Activities(BaseSDK):
         Update activity
 
         :param id: ID of the record you are acting upon.
-        :param type: The type of the activity
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
@@ -1359,6 +1365,7 @@ class Activities(BaseSDK):
         :param product_id: The product related to the activity
         :param solution_id: The solution related to the activity
         :param custom_object_id: The custom object related to the activity
+        :param type: The type of the activity
         :param title: The title of the activity
         :param description: A description of the activity
         :param note: An internal note about the activity
@@ -1386,6 +1393,7 @@ class Activities(BaseSDK):
         :param custom_fields: Custom fields of the activity
         :param attendees:
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
+        :param additional_properties:
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -1460,6 +1468,7 @@ class Activities(BaseSDK):
                 pass_through=utils.get_pydantic_model(
                     pass_through, Optional[List[models.PassThroughBody]]
                 ),
+                **(additional_properties or {}),
             ),
         )
 
@@ -1566,7 +1575,6 @@ class Activities(BaseSDK):
         self,
         *,
         id: str,
-        type_: Nullable[models.ActivityType],
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
@@ -1587,6 +1595,7 @@ class Activities(BaseSDK):
         product_id: OptionalNullable[str] = UNSET,
         solution_id: OptionalNullable[str] = UNSET,
         custom_object_id: OptionalNullable[str] = UNSET,
+        type_: OptionalNullable[models.ActivityType] = UNSET,
         title: OptionalNullable[str] = UNSET,
         description: OptionalNullable[str] = UNSET,
         note: OptionalNullable[str] = UNSET,
@@ -1625,6 +1634,7 @@ class Activities(BaseSDK):
         pass_through: Optional[
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
         ] = None,
+        additional_properties: Optional[Dict[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -1635,7 +1645,6 @@ class Activities(BaseSDK):
         Update activity
 
         :param id: ID of the record you are acting upon.
-        :param type: The type of the activity
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
@@ -1656,6 +1665,7 @@ class Activities(BaseSDK):
         :param product_id: The product related to the activity
         :param solution_id: The solution related to the activity
         :param custom_object_id: The custom object related to the activity
+        :param type: The type of the activity
         :param title: The title of the activity
         :param description: A description of the activity
         :param note: An internal note about the activity
@@ -1683,6 +1693,7 @@ class Activities(BaseSDK):
         :param custom_fields: Custom fields of the activity
         :param attendees:
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
+        :param additional_properties:
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -1757,6 +1768,7 @@ class Activities(BaseSDK):
                 pass_through=utils.get_pydantic_model(
                     pass_through, Optional[List[models.PassThroughBody]]
                 ),
+                **(additional_properties or {}),
             ),
         )
 

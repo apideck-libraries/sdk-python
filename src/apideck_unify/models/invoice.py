@@ -35,7 +35,7 @@ from apideck_unify.utils import validate_open_enum
 from datetime import date, datetime
 from enum import Enum
 import pydantic
-from pydantic import field_serializer, model_serializer
+from pydantic import ConfigDict, field_serializer, model_serializer
 from pydantic.functional_validators import PlainValidator
 from typing import Any, Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
@@ -142,6 +142,8 @@ class InvoiceTypedDict(TypedDict):
     r"""The invoice due date is the date on which a payment or invoice is scheduled to be received by the seller - YYYY-MM-DD."""
     terms: NotRequired[Nullable[str]]
     r"""Terms of payment."""
+    terms_id: NotRequired[Nullable[str]]
+    r"""The ID of the payment terms"""
     po_number: NotRequired[Nullable[str]]
     r"""A PO Number uniquely identifies a purchase order and is generally defined by the buyer. The buyer will match the PO number in the invoice to the Purchase Order."""
     reference: NotRequired[Nullable[str]]
@@ -216,6 +218,11 @@ class InvoiceTypedDict(TypedDict):
 
 
 class Invoice(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True, arbitrary_types_allowed=True, extra="allow"
+    )
+    __pydantic_extra__: Dict[str, Any] = pydantic.Field(init=False)
+
     id: Optional[str] = None
     r"""A unique identifier for an object."""
 
@@ -253,6 +260,9 @@ class Invoice(BaseModel):
 
     terms: OptionalNullable[str] = UNSET
     r"""Terms of payment."""
+
+    terms_id: OptionalNullable[str] = UNSET
+    r"""The ID of the payment terms"""
 
     po_number: OptionalNullable[str] = UNSET
     r"""A PO Number uniquely identifies a purchase order and is generally defined by the buyer. The buyer will match the PO number in the invoice to the Purchase Order."""
@@ -372,6 +382,14 @@ class Invoice(BaseModel):
     pass_through: Optional[List[PassThroughBody]] = None
     r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
 
+    @property
+    def additional_properties(self):
+        return self.__pydantic_extra__
+
+    @additional_properties.setter
+    def additional_properties(self, value):
+        self.__pydantic_extra__ = value  # pyright: ignore[reportIncompatibleVariableOverride]
+
     @field_serializer("type")
     def serialize_type(self, value):
         if isinstance(value, str):
@@ -414,6 +432,7 @@ class Invoice(BaseModel):
             "invoice_date",
             "due_date",
             "terms",
+            "terms_id",
             "po_number",
             "reference",
             "status",
@@ -465,6 +484,7 @@ class Invoice(BaseModel):
             "invoice_date",
             "due_date",
             "terms",
+            "terms_id",
             "po_number",
             "reference",
             "status",
@@ -521,6 +541,9 @@ class Invoice(BaseModel):
             ):
                 m[k] = val
 
+        for k, v in serialized.items():
+            m[k] = v
+
         return m
 
 
@@ -545,6 +568,8 @@ class InvoiceInputTypedDict(TypedDict):
     r"""The invoice due date is the date on which a payment or invoice is scheduled to be received by the seller - YYYY-MM-DD."""
     terms: NotRequired[Nullable[str]]
     r"""Terms of payment."""
+    terms_id: NotRequired[Nullable[str]]
+    r"""The ID of the payment terms"""
     po_number: NotRequired[Nullable[str]]
     r"""A PO Number uniquely identifies a purchase order and is generally defined by the buyer. The buyer will match the PO number in the invoice to the Purchase Order."""
     reference: NotRequired[Nullable[str]]
@@ -609,6 +634,11 @@ class InvoiceInputTypedDict(TypedDict):
 
 
 class InvoiceInput(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True, arbitrary_types_allowed=True, extra="allow"
+    )
+    __pydantic_extra__: Dict[str, Any] = pydantic.Field(init=False)
+
     display_id: OptionalNullable[str] = UNSET
     r"""Id to be displayed."""
 
@@ -640,6 +670,9 @@ class InvoiceInput(BaseModel):
 
     terms: OptionalNullable[str] = UNSET
     r"""Terms of payment."""
+
+    terms_id: OptionalNullable[str] = UNSET
+    r"""The ID of the payment terms"""
 
     po_number: OptionalNullable[str] = UNSET
     r"""A PO Number uniquely identifies a purchase order and is generally defined by the buyer. The buyer will match the PO number in the invoice to the Purchase Order."""
@@ -744,6 +777,14 @@ class InvoiceInput(BaseModel):
     pass_through: Optional[List[PassThroughBody]] = None
     r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
 
+    @property
+    def additional_properties(self):
+        return self.__pydantic_extra__
+
+    @additional_properties.setter
+    def additional_properties(self, value):
+        self.__pydantic_extra__ = value  # pyright: ignore[reportIncompatibleVariableOverride]
+
     @field_serializer("type")
     def serialize_type(self, value):
         if isinstance(value, str):
@@ -784,6 +825,7 @@ class InvoiceInput(BaseModel):
             "invoice_date",
             "due_date",
             "terms",
+            "terms_id",
             "po_number",
             "reference",
             "status",
@@ -829,6 +871,7 @@ class InvoiceInput(BaseModel):
             "invoice_date",
             "due_date",
             "terms",
+            "terms_id",
             "po_number",
             "reference",
             "status",
@@ -879,5 +922,8 @@ class InvoiceInput(BaseModel):
                 not k in optional_fields or (optional_nullable and is_set)
             ):
                 m[k] = val
+
+        for k, v in serialized.items():
+            m[k] = v
 
         return m

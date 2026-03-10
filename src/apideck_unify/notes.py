@@ -380,6 +380,7 @@ class Notes(BaseSDK):
         pass_through: Optional[
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
         ] = None,
+        additional_properties: Optional[Dict[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -403,6 +404,7 @@ class Notes(BaseSDK):
         :param lead_id: The lead that is related to the note.
         :param active: Whether the Note is active or not.
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
+        :param additional_properties:
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -436,6 +438,7 @@ class Notes(BaseSDK):
                 pass_through=utils.get_pydantic_model(
                     pass_through, Optional[List[models.PassThroughBody]]
                 ),
+                **(additional_properties or {}),
             ),
         )
 
@@ -557,6 +560,7 @@ class Notes(BaseSDK):
         pass_through: Optional[
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
         ] = None,
+        additional_properties: Optional[Dict[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -580,6 +584,7 @@ class Notes(BaseSDK):
         :param lead_id: The lead that is related to the note.
         :param active: Whether the Note is active or not.
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
+        :param additional_properties:
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -613,6 +618,7 @@ class Notes(BaseSDK):
                 pass_through=utils.get_pydantic_model(
                     pass_through, Optional[List[models.PassThroughBody]]
                 ),
+                **(additional_properties or {}),
             ),
         )
 
@@ -1023,6 +1029,7 @@ class Notes(BaseSDK):
         pass_through: Optional[
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
         ] = None,
+        additional_properties: Optional[Dict[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -1047,6 +1054,7 @@ class Notes(BaseSDK):
         :param lead_id: The lead that is related to the note.
         :param active: Whether the Note is active or not.
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
+        :param additional_properties:
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -1081,6 +1089,7 @@ class Notes(BaseSDK):
                 pass_through=utils.get_pydantic_model(
                     pass_through, Optional[List[models.PassThroughBody]]
                 ),
+                **(additional_properties or {}),
             ),
         )
 
@@ -1203,6 +1212,7 @@ class Notes(BaseSDK):
         pass_through: Optional[
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
         ] = None,
+        additional_properties: Optional[Dict[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -1227,6 +1237,7 @@ class Notes(BaseSDK):
         :param lead_id: The lead that is related to the note.
         :param active: Whether the Note is active or not.
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
+        :param additional_properties:
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -1261,6 +1272,7 @@ class Notes(BaseSDK):
                 pass_through=utils.get_pydantic_model(
                     pass_through, Optional[List[models.PassThroughBody]]
                 ),
+                **(additional_properties or {}),
             ),
         )
 

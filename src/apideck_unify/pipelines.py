@@ -364,12 +364,12 @@ class Pipelines(BaseSDK):
     def create(
         self,
         *,
-        name: str,
         raw: Optional[bool] = False,
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         id: Optional[str] = None,
+        name: Optional[str] = None,
         currency: OptionalNullable[models.Currency] = UNSET,
         archived: Optional[bool] = None,
         active: Optional[bool] = None,
@@ -381,6 +381,7 @@ class Pipelines(BaseSDK):
         pass_through: Optional[
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
         ] = None,
+        additional_properties: Optional[Dict[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -390,12 +391,12 @@ class Pipelines(BaseSDK):
 
         Create pipeline
 
-        :param name: The name of the Pipeline.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param id: The unique identifier of the Pipeline.
+        :param name: The name of the Pipeline.
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
         :param archived: Whether the Pipeline is archived or not.
         :param active: Whether the Pipeline is active or not.
@@ -403,6 +404,7 @@ class Pipelines(BaseSDK):
         :param win_probability_enabled: Whether the Pipeline has win probability enabled or not.
         :param stages: The Pipeline Stages.
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
+        :param additional_properties:
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -437,6 +439,7 @@ class Pipelines(BaseSDK):
                 pass_through=utils.get_pydantic_model(
                     pass_through, Optional[List[models.PassThroughBody]]
                 ),
+                **(additional_properties or {}),
             ),
         )
 
@@ -542,12 +545,12 @@ class Pipelines(BaseSDK):
     async def create_async(
         self,
         *,
-        name: str,
         raw: Optional[bool] = False,
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         id: Optional[str] = None,
+        name: Optional[str] = None,
         currency: OptionalNullable[models.Currency] = UNSET,
         archived: Optional[bool] = None,
         active: Optional[bool] = None,
@@ -559,6 +562,7 @@ class Pipelines(BaseSDK):
         pass_through: Optional[
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
         ] = None,
+        additional_properties: Optional[Dict[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -568,12 +572,12 @@ class Pipelines(BaseSDK):
 
         Create pipeline
 
-        :param name: The name of the Pipeline.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param id: The unique identifier of the Pipeline.
+        :param name: The name of the Pipeline.
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
         :param archived: Whether the Pipeline is archived or not.
         :param active: Whether the Pipeline is active or not.
@@ -581,6 +585,7 @@ class Pipelines(BaseSDK):
         :param win_probability_enabled: Whether the Pipeline has win probability enabled or not.
         :param stages: The Pipeline Stages.
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
+        :param additional_properties:
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -615,6 +620,7 @@ class Pipelines(BaseSDK):
                 pass_through=utils.get_pydantic_model(
                     pass_through, Optional[List[models.PassThroughBody]]
                 ),
+                **(additional_properties or {}),
             ),
         )
 
@@ -1009,12 +1015,12 @@ class Pipelines(BaseSDK):
         self,
         *,
         id_param: str,
-        name: str,
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
         id: Optional[str] = None,
+        name: Optional[str] = None,
         currency: OptionalNullable[models.Currency] = UNSET,
         archived: Optional[bool] = None,
         active: Optional[bool] = None,
@@ -1026,6 +1032,7 @@ class Pipelines(BaseSDK):
         pass_through: Optional[
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
         ] = None,
+        additional_properties: Optional[Dict[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -1036,12 +1043,12 @@ class Pipelines(BaseSDK):
         Update pipeline
 
         :param id_param: ID of the record you are acting upon.
-        :param name: The name of the Pipeline.
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param id: The unique identifier of the Pipeline.
+        :param name: The name of the Pipeline.
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
         :param archived: Whether the Pipeline is archived or not.
         :param active: Whether the Pipeline is active or not.
@@ -1049,6 +1056,7 @@ class Pipelines(BaseSDK):
         :param win_probability_enabled: Whether the Pipeline has win probability enabled or not.
         :param stages: The Pipeline Stages.
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
+        :param additional_properties:
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -1084,6 +1092,7 @@ class Pipelines(BaseSDK):
                 pass_through=utils.get_pydantic_model(
                     pass_through, Optional[List[models.PassThroughBody]]
                 ),
+                **(additional_properties or {}),
             ),
         )
 
@@ -1190,12 +1199,12 @@ class Pipelines(BaseSDK):
         self,
         *,
         id_param: str,
-        name: str,
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
         id: Optional[str] = None,
+        name: Optional[str] = None,
         currency: OptionalNullable[models.Currency] = UNSET,
         archived: Optional[bool] = None,
         active: Optional[bool] = None,
@@ -1207,6 +1216,7 @@ class Pipelines(BaseSDK):
         pass_through: Optional[
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
         ] = None,
+        additional_properties: Optional[Dict[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -1217,12 +1227,12 @@ class Pipelines(BaseSDK):
         Update pipeline
 
         :param id_param: ID of the record you are acting upon.
-        :param name: The name of the Pipeline.
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param id: The unique identifier of the Pipeline.
+        :param name: The name of the Pipeline.
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
         :param archived: Whether the Pipeline is archived or not.
         :param active: Whether the Pipeline is active or not.
@@ -1230,6 +1240,7 @@ class Pipelines(BaseSDK):
         :param win_probability_enabled: Whether the Pipeline has win probability enabled or not.
         :param stages: The Pipeline Stages.
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
+        :param additional_properties:
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -1265,6 +1276,7 @@ class Pipelines(BaseSDK):
                 pass_through=utils.get_pydantic_model(
                     pass_through, Optional[List[models.PassThroughBody]]
                 ),
+                **(additional_properties or {}),
             ),
         )
 

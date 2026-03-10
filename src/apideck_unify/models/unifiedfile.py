@@ -14,7 +14,8 @@ from apideck_unify.types import (
 )
 from apideck_unify.utils import validate_open_enum
 from datetime import datetime
-from pydantic import field_serializer, model_serializer
+import pydantic
+from pydantic import ConfigDict, field_serializer, model_serializer
 from pydantic.functional_validators import PlainValidator
 from typing import Any, Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
@@ -35,16 +36,16 @@ class Permissions(BaseModel):
 
 
 class UnifiedFileTypedDict(TypedDict):
-    id: str
+    id: NotRequired[str]
     r"""A unique identifier for an object."""
-    name: Nullable[str]
-    r"""The name of the file"""
-    type: Nullable[FileType]
-    r"""The type of resource. Could be file, folder or url"""
     downstream_id: NotRequired[Nullable[str]]
     r"""The third-party API ID of original entity"""
+    name: NotRequired[Nullable[str]]
+    r"""The name of the file"""
     description: NotRequired[Nullable[str]]
     r"""Optional description of the file"""
+    type: NotRequired[Nullable[FileType]]
+    r"""The type of resource. Could be file, folder or url"""
     path: NotRequired[Nullable[str]]
     r"""The full path of the file or folder (includes the file name)"""
     mime_type: NotRequired[Nullable[str]]
@@ -77,20 +78,27 @@ class UnifiedFileTypedDict(TypedDict):
 
 
 class UnifiedFile(BaseModel):
-    id: str
+    model_config = ConfigDict(
+        populate_by_name=True, arbitrary_types_allowed=True, extra="allow"
+    )
+    __pydantic_extra__: Dict[str, Any] = pydantic.Field(init=False)
+
+    id: Optional[str] = None
     r"""A unique identifier for an object."""
-
-    name: Nullable[str]
-    r"""The name of the file"""
-
-    type: Annotated[Nullable[FileType], PlainValidator(validate_open_enum(False))]
-    r"""The type of resource. Could be file, folder or url"""
 
     downstream_id: OptionalNullable[str] = UNSET
     r"""The third-party API ID of original entity"""
 
+    name: OptionalNullable[str] = UNSET
+    r"""The name of the file"""
+
     description: OptionalNullable[str] = UNSET
     r"""Optional description of the file"""
+
+    type: Annotated[
+        OptionalNullable[FileType], PlainValidator(validate_open_enum(False))
+    ] = UNSET
+    r"""The type of resource. Could be file, folder or url"""
 
     path: OptionalNullable[str] = UNSET
     r"""The full path of the file or folder (includes the file name)"""
@@ -136,6 +144,14 @@ class UnifiedFile(BaseModel):
     created_at: OptionalNullable[datetime] = UNSET
     r"""The date and time when the object was created."""
 
+    @property
+    def additional_properties(self):
+        return self.__pydantic_extra__
+
+    @additional_properties.setter
+    def additional_properties(self, value):
+        self.__pydantic_extra__ = value  # pyright: ignore[reportIncompatibleVariableOverride]
+
     @field_serializer("type")
     def serialize_type(self, value):
         if isinstance(value, str):
@@ -148,8 +164,11 @@ class UnifiedFile(BaseModel):
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
         optional_fields = [
+            "id",
             "downstream_id",
+            "name",
             "description",
+            "type",
             "path",
             "mime_type",
             "downloadable",
@@ -204,5 +223,8 @@ class UnifiedFile(BaseModel):
                 not k in optional_fields or (optional_nullable and is_set)
             ):
                 m[k] = val
+
+        for k, v in serialized.items():
+            m[k] = v
 
         return m

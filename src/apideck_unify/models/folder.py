@@ -11,20 +11,19 @@ from apideck_unify.types import (
     UNSET_SENTINEL,
 )
 from datetime import datetime
-from pydantic import model_serializer
+import pydantic
+from pydantic import ConfigDict, model_serializer
 from typing import Any, Dict, List, Optional
 from typing_extensions import NotRequired, TypedDict
 
 
 class FolderTypedDict(TypedDict):
-    name: str
-    r"""The name of the folder"""
-    parent_folders: List[LinkedFolderTypedDict]
-    r"""The parent folders of the file, starting from the root"""
     id: NotRequired[str]
     r"""A unique identifier for an object."""
     downstream_id: NotRequired[Nullable[str]]
     r"""The third-party API ID of original entity"""
+    name: NotRequired[str]
+    r"""The name of the folder"""
     description: NotRequired[Nullable[str]]
     r"""Optional description of the folder"""
     path: NotRequired[Nullable[str]]
@@ -34,6 +33,8 @@ class FolderTypedDict(TypedDict):
     downloadable: NotRequired[Nullable[bool]]
     r"""Whether the current user can download the contents of this folder"""
     owner: NotRequired[OwnerTypedDict]
+    parent_folders: NotRequired[List[LinkedFolderTypedDict]]
+    r"""The parent folders of the file, starting from the root"""
     parent_folders_complete: NotRequired[bool]
     r"""Whether the list of parent folder is complete. Some connectors only return the direct parent of a folder"""
     custom_mappings: NotRequired[Nullable[Dict[str, Any]]]
@@ -49,17 +50,19 @@ class FolderTypedDict(TypedDict):
 
 
 class Folder(BaseModel):
-    name: str
-    r"""The name of the folder"""
-
-    parent_folders: List[LinkedFolder]
-    r"""The parent folders of the file, starting from the root"""
+    model_config = ConfigDict(
+        populate_by_name=True, arbitrary_types_allowed=True, extra="allow"
+    )
+    __pydantic_extra__: Dict[str, Any] = pydantic.Field(init=False)
 
     id: Optional[str] = None
     r"""A unique identifier for an object."""
 
     downstream_id: OptionalNullable[str] = UNSET
     r"""The third-party API ID of original entity"""
+
+    name: Optional[str] = None
+    r"""The name of the folder"""
 
     description: OptionalNullable[str] = UNSET
     r"""Optional description of the folder"""
@@ -74,6 +77,9 @@ class Folder(BaseModel):
     r"""Whether the current user can download the contents of this folder"""
 
     owner: Optional[Owner] = None
+
+    parent_folders: Optional[List[LinkedFolder]] = None
+    r"""The parent folders of the file, starting from the root"""
 
     parent_folders_complete: Optional[bool] = None
     r"""Whether the list of parent folder is complete. Some connectors only return the direct parent of a folder"""
@@ -93,16 +99,26 @@ class Folder(BaseModel):
     created_at: OptionalNullable[datetime] = UNSET
     r"""The date and time when the object was created."""
 
+    @property
+    def additional_properties(self):
+        return self.__pydantic_extra__
+
+    @additional_properties.setter
+    def additional_properties(self, value):
+        self.__pydantic_extra__ = value  # pyright: ignore[reportIncompatibleVariableOverride]
+
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
         optional_fields = [
             "id",
             "downstream_id",
+            "name",
             "description",
             "path",
             "size",
             "downloadable",
             "owner",
+            "parent_folders",
             "parent_folders_complete",
             "custom_mappings",
             "updated_by",
@@ -145,5 +161,8 @@ class Folder(BaseModel):
                 not k in optional_fields or (optional_nullable and is_set)
             ):
                 m[k] = val
+
+        for k, v in serialized.items():
+            m[k] = v
 
         return m

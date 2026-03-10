@@ -35,7 +35,8 @@ from apideck_unify.types import (
 from apideck_unify.utils import validate_open_enum
 from datetime import datetime
 from enum import Enum
-from pydantic import field_serializer, model_serializer
+import pydantic
+from pydantic import ConfigDict, field_serializer, model_serializer
 from pydantic.functional_validators import PlainValidator
 from typing import Any, Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
@@ -61,10 +62,8 @@ class CreditNoteType(str, Enum, metaclass=utils.OpenEnumMeta):
 
 
 class CreditNoteTypedDict(TypedDict):
-    id: str
+    id: NotRequired[str]
     r"""Unique identifier representing the entity"""
-    total_amount: float
-    r"""Amount of transaction"""
     number: NotRequired[Nullable[str]]
     r"""Credit note number."""
     customer: NotRequired[Nullable[LinkedCustomerTypedDict]]
@@ -83,6 +82,8 @@ class CreditNoteTypedDict(TypedDict):
     r"""Amounts are including tax"""
     sub_total: NotRequired[Nullable[float]]
     r"""Sub-total amount, normally before tax."""
+    total_amount: NotRequired[float]
+    r"""Amount of transaction"""
     total_tax: NotRequired[Nullable[float]]
     r"""Total tax amount applied to this invoice."""
     tax_code: NotRequired[Nullable[str]]
@@ -108,6 +109,8 @@ class CreditNoteTypedDict(TypedDict):
     r"""Optional note to be associated with the credit note."""
     terms: NotRequired[Nullable[str]]
     r"""Optional terms to be associated with the credit note."""
+    terms_id: NotRequired[Nullable[str]]
+    r"""The ID of the payment terms"""
     billing_address: NotRequired[AddressTypedDict]
     shipping_address: NotRequired[AddressTypedDict]
     tracking_categories: NotRequired[
@@ -132,11 +135,13 @@ class CreditNoteTypedDict(TypedDict):
 
 
 class CreditNote(BaseModel):
-    id: str
-    r"""Unique identifier representing the entity"""
+    model_config = ConfigDict(
+        populate_by_name=True, arbitrary_types_allowed=True, extra="allow"
+    )
+    __pydantic_extra__: Dict[str, Any] = pydantic.Field(init=False)
 
-    total_amount: float
-    r"""Amount of transaction"""
+    id: Optional[str] = None
+    r"""Unique identifier representing the entity"""
 
     number: OptionalNullable[str] = UNSET
     r"""Credit note number."""
@@ -166,6 +171,9 @@ class CreditNote(BaseModel):
 
     sub_total: OptionalNullable[float] = UNSET
     r"""Sub-total amount, normally before tax."""
+
+    total_amount: Optional[float] = None
+    r"""Amount of transaction"""
 
     total_tax: OptionalNullable[float] = UNSET
     r"""Total tax amount applied to this invoice."""
@@ -210,6 +218,9 @@ class CreditNote(BaseModel):
     terms: OptionalNullable[str] = UNSET
     r"""Optional terms to be associated with the credit note."""
 
+    terms_id: OptionalNullable[str] = UNSET
+    r"""The ID of the payment terms"""
+
     billing_address: Optional[Address] = None
 
     shipping_address: Optional[Address] = None
@@ -242,6 +253,14 @@ class CreditNote(BaseModel):
     pass_through: Optional[List[PassThroughBody]] = None
     r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
 
+    @property
+    def additional_properties(self):
+        return self.__pydantic_extra__
+
+    @additional_properties.setter
+    def additional_properties(self, value):
+        self.__pydantic_extra__ = value  # pyright: ignore[reportIncompatibleVariableOverride]
+
     @field_serializer("currency")
     def serialize_currency(self, value):
         if isinstance(value, str):
@@ -272,6 +291,7 @@ class CreditNote(BaseModel):
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
         optional_fields = [
+            "id",
             "number",
             "customer",
             "company_id",
@@ -281,6 +301,7 @@ class CreditNote(BaseModel):
             "currency_rate",
             "tax_inclusive",
             "sub_total",
+            "total_amount",
             "total_tax",
             "tax_code",
             "balance",
@@ -295,6 +316,7 @@ class CreditNote(BaseModel):
             "allocations",
             "note",
             "terms",
+            "terms_id",
             "billing_address",
             "shipping_address",
             "tracking_categories",
@@ -326,6 +348,7 @@ class CreditNote(BaseModel):
             "account",
             "note",
             "terms",
+            "terms_id",
             "tracking_categories",
             "custom_mappings",
             "row_version",
@@ -358,12 +381,13 @@ class CreditNote(BaseModel):
             ):
                 m[k] = val
 
+        for k, v in serialized.items():
+            m[k] = v
+
         return m
 
 
 class CreditNoteInputTypedDict(TypedDict):
-    total_amount: float
-    r"""Amount of transaction"""
     number: NotRequired[Nullable[str]]
     r"""Credit note number."""
     customer: NotRequired[Nullable[LinkedCustomerInputTypedDict]]
@@ -382,6 +406,8 @@ class CreditNoteInputTypedDict(TypedDict):
     r"""Amounts are including tax"""
     sub_total: NotRequired[Nullable[float]]
     r"""Sub-total amount, normally before tax."""
+    total_amount: NotRequired[float]
+    r"""Amount of transaction"""
     total_tax: NotRequired[Nullable[float]]
     r"""Total tax amount applied to this invoice."""
     tax_code: NotRequired[Nullable[str]]
@@ -407,6 +433,8 @@ class CreditNoteInputTypedDict(TypedDict):
     r"""Optional note to be associated with the credit note."""
     terms: NotRequired[Nullable[str]]
     r"""Optional terms to be associated with the credit note."""
+    terms_id: NotRequired[Nullable[str]]
+    r"""The ID of the payment terms"""
     billing_address: NotRequired[AddressTypedDict]
     shipping_address: NotRequired[AddressTypedDict]
     tracking_categories: NotRequired[
@@ -421,8 +449,10 @@ class CreditNoteInputTypedDict(TypedDict):
 
 
 class CreditNoteInput(BaseModel):
-    total_amount: float
-    r"""Amount of transaction"""
+    model_config = ConfigDict(
+        populate_by_name=True, arbitrary_types_allowed=True, extra="allow"
+    )
+    __pydantic_extra__: Dict[str, Any] = pydantic.Field(init=False)
 
     number: OptionalNullable[str] = UNSET
     r"""Credit note number."""
@@ -452,6 +482,9 @@ class CreditNoteInput(BaseModel):
 
     sub_total: OptionalNullable[float] = UNSET
     r"""Sub-total amount, normally before tax."""
+
+    total_amount: Optional[float] = None
+    r"""Amount of transaction"""
 
     total_tax: OptionalNullable[float] = UNSET
     r"""Total tax amount applied to this invoice."""
@@ -496,6 +529,9 @@ class CreditNoteInput(BaseModel):
     terms: OptionalNullable[str] = UNSET
     r"""Optional terms to be associated with the credit note."""
 
+    terms_id: OptionalNullable[str] = UNSET
+    r"""The ID of the payment terms"""
+
     billing_address: Optional[Address] = None
 
     shipping_address: Optional[Address] = None
@@ -512,6 +548,14 @@ class CreditNoteInput(BaseModel):
 
     pass_through: Optional[List[PassThroughBody]] = None
     r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
+
+    @property
+    def additional_properties(self):
+        return self.__pydantic_extra__
+
+    @additional_properties.setter
+    def additional_properties(self, value):
+        self.__pydantic_extra__ = value  # pyright: ignore[reportIncompatibleVariableOverride]
 
     @field_serializer("currency")
     def serialize_currency(self, value):
@@ -552,6 +596,7 @@ class CreditNoteInput(BaseModel):
             "currency_rate",
             "tax_inclusive",
             "sub_total",
+            "total_amount",
             "total_tax",
             "tax_code",
             "balance",
@@ -566,6 +611,7 @@ class CreditNoteInput(BaseModel):
             "allocations",
             "note",
             "terms",
+            "terms_id",
             "billing_address",
             "shipping_address",
             "tracking_categories",
@@ -592,6 +638,7 @@ class CreditNoteInput(BaseModel):
             "account",
             "note",
             "terms",
+            "terms_id",
             "tracking_categories",
             "row_version",
         ]
@@ -618,5 +665,8 @@ class CreditNoteInput(BaseModel):
                 not k in optional_fields or (optional_nullable and is_set)
             ):
                 m[k] = val
+
+        for k, v in serialized.items():
+            m[k] = v
 
         return m

@@ -67,8 +67,6 @@ class Options(BaseModel):
 class EcommerceOrderLineItemTypedDict(TypedDict):
     r"""A single line item of an ecommerce order, representing a product or variant with associated options, quantity, and pricing information."""
 
-    quantity: Nullable[str]
-    r"""The quantity of the product or variant associated with the line item."""
     id: NotRequired[Nullable[str]]
     r"""A unique identifier for an object."""
     product_id: NotRequired[Nullable[str]]
@@ -82,6 +80,8 @@ class EcommerceOrderLineItemTypedDict(TypedDict):
     description: NotRequired[Nullable[str]]
     r"""The description of the product or variant associated with the line item."""
     options: NotRequired[List[OptionsTypedDict]]
+    quantity: NotRequired[Nullable[str]]
+    r"""The quantity of the product or variant associated with the line item."""
     unit_price: NotRequired[Nullable[str]]
     r"""The unit price of the product or variant associated with the line item."""
     tax_rate: NotRequired[Nullable[str]]
@@ -104,9 +104,6 @@ class EcommerceOrderLineItemTypedDict(TypedDict):
 class EcommerceOrderLineItem(BaseModel):
     r"""A single line item of an ecommerce order, representing a product or variant with associated options, quantity, and pricing information."""
 
-    quantity: Nullable[str]
-    r"""The quantity of the product or variant associated with the line item."""
-
     id: OptionalNullable[str] = UNSET
     r"""A unique identifier for an object."""
 
@@ -126,6 +123,9 @@ class EcommerceOrderLineItem(BaseModel):
     r"""The description of the product or variant associated with the line item."""
 
     options: Optional[List[Options]] = None
+
+    quantity: OptionalNullable[str] = UNSET
+    r"""The quantity of the product or variant associated with the line item."""
 
     unit_price: OptionalNullable[str] = UNSET
     r"""The unit price of the product or variant associated with the line item."""
@@ -163,6 +163,7 @@ class EcommerceOrderLineItem(BaseModel):
             "name",
             "description",
             "options",
+            "quantity",
             "unit_price",
             "tax_rate",
             "tax_amount",

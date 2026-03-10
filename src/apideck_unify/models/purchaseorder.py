@@ -30,7 +30,8 @@ from apideck_unify.types import (
 from apideck_unify.utils import validate_open_enum
 from datetime import date, datetime
 from enum import Enum
-from pydantic import field_serializer, model_serializer
+import pydantic
+from pydantic import ConfigDict, field_serializer, model_serializer
 from pydantic.functional_validators import PlainValidator
 from typing import Any, Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
@@ -111,6 +112,8 @@ class PurchaseOrderTypedDict(TypedDict):
     r"""Payment method used for the transaction, such as cash, credit card, bank transfer, or check"""
     terms: NotRequired[Nullable[str]]
     r"""Terms of payment."""
+    terms_id: NotRequired[Nullable[str]]
+    r"""The ID of the payment terms"""
     amortization_type: NotRequired[Nullable[PurchaseOrderAmortizationType]]
     r"""Type of amortization"""
     tax_code: NotRequired[Nullable[str]]
@@ -149,6 +152,11 @@ class PurchaseOrderTypedDict(TypedDict):
 
 
 class PurchaseOrder(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True, arbitrary_types_allowed=True, extra="allow"
+    )
+    __pydantic_extra__: Dict[str, Any] = pydantic.Field(init=False)
+
     id: Optional[str] = None
     r"""A unique identifier for an object."""
 
@@ -240,6 +248,9 @@ class PurchaseOrder(BaseModel):
     terms: OptionalNullable[str] = UNSET
     r"""Terms of payment."""
 
+    terms_id: OptionalNullable[str] = UNSET
+    r"""The ID of the payment terms"""
+
     amortization_type: Annotated[
         OptionalNullable[PurchaseOrderAmortizationType],
         PlainValidator(validate_open_enum(False)),
@@ -294,6 +305,14 @@ class PurchaseOrder(BaseModel):
 
     pass_through: Optional[List[PassThroughBody]] = None
     r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
+
+    @property
+    def additional_properties(self):
+        return self.__pydantic_extra__
+
+    @additional_properties.setter
+    def additional_properties(self, value):
+        self.__pydantic_extra__ = value  # pyright: ignore[reportIncompatibleVariableOverride]
 
     @field_serializer("status")
     def serialize_status(self, value):
@@ -356,6 +375,7 @@ class PurchaseOrder(BaseModel):
             "due_date",
             "payment_method",
             "terms",
+            "terms_id",
             "amortization_type",
             "tax_code",
             "tax_method",
@@ -401,6 +421,7 @@ class PurchaseOrder(BaseModel):
             "due_date",
             "payment_method",
             "terms",
+            "terms_id",
             "amortization_type",
             "tax_code",
             "tax_method",
@@ -440,6 +461,9 @@ class PurchaseOrder(BaseModel):
                 not k in optional_fields or (optional_nullable and is_set)
             ):
                 m[k] = val
+
+        for k, v in serialized.items():
+            m[k] = v
 
         return m
 
@@ -497,6 +521,8 @@ class PurchaseOrderInputTypedDict(TypedDict):
     r"""Payment method used for the transaction, such as cash, credit card, bank transfer, or check"""
     terms: NotRequired[Nullable[str]]
     r"""Terms of payment."""
+    terms_id: NotRequired[Nullable[str]]
+    r"""The ID of the payment terms"""
     amortization_type: NotRequired[Nullable[PurchaseOrderAmortizationType]]
     r"""Type of amortization"""
     tax_code: NotRequired[Nullable[str]]
@@ -525,6 +551,11 @@ class PurchaseOrderInputTypedDict(TypedDict):
 
 
 class PurchaseOrderInput(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True, arbitrary_types_allowed=True, extra="allow"
+    )
+    __pydantic_extra__: Dict[str, Any] = pydantic.Field(init=False)
+
     display_id: OptionalNullable[str] = UNSET
     r"""Display ID of the purchase order"""
 
@@ -610,6 +641,9 @@ class PurchaseOrderInput(BaseModel):
     terms: OptionalNullable[str] = UNSET
     r"""Terms of payment."""
 
+    terms_id: OptionalNullable[str] = UNSET
+    r"""The ID of the payment terms"""
+
     amortization_type: Annotated[
         OptionalNullable[PurchaseOrderAmortizationType],
         PlainValidator(validate_open_enum(False)),
@@ -649,6 +683,14 @@ class PurchaseOrderInput(BaseModel):
 
     pass_through: Optional[List[PassThroughBody]] = None
     r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
+
+    @property
+    def additional_properties(self):
+        return self.__pydantic_extra__
+
+    @additional_properties.setter
+    def additional_properties(self, value):
+        self.__pydantic_extra__ = value  # pyright: ignore[reportIncompatibleVariableOverride]
 
     @field_serializer("status")
     def serialize_status(self, value):
@@ -709,6 +751,7 @@ class PurchaseOrderInput(BaseModel):
             "due_date",
             "payment_method",
             "terms",
+            "terms_id",
             "amortization_type",
             "tax_code",
             "tax_method",
@@ -748,6 +791,7 @@ class PurchaseOrderInput(BaseModel):
             "due_date",
             "payment_method",
             "terms",
+            "terms_id",
             "amortization_type",
             "tax_code",
             "tax_method",
@@ -782,5 +826,8 @@ class PurchaseOrderInput(BaseModel):
                 not k in optional_fields or (optional_nullable and is_set)
             ):
                 m[k] = val
+
+        for k, v in serialized.items():
+            m[k] = v
 
         return m

@@ -357,14 +357,14 @@ class Messages(BaseSDK):
     def create(
         self,
         *,
-        from_: str,
-        to: str,
-        body: str,
         raw: Optional[bool] = False,
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
+        from_: Optional[str] = None,
+        to: Optional[str] = None,
         subject: Optional[str] = None,
+        body: Optional[str] = None,
         type_: Optional[models.MessageType] = None,
         scheduled_at: Optional[datetime] = None,
         webhook_url: Optional[str] = None,
@@ -373,6 +373,7 @@ class Messages(BaseSDK):
         pass_through: Optional[
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
         ] = None,
+        additional_properties: Optional[Dict[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -382,20 +383,21 @@ class Messages(BaseSDK):
 
         Create Message
 
-        :param from_: The phone number that initiated the message.
-        :param to: The phone number that received the message.
-        :param body: The message text.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param from_: The phone number that initiated the message.
+        :param to: The phone number that received the message.
         :param subject:
+        :param body: The message text.
         :param type: Set to sms for SMS messages and mms for MMS messages.
         :param scheduled_at: The scheduled date and time of the message.
         :param webhook_url: Define a webhook to receive delivery notifications.
         :param reference: A client reference.
         :param messaging_service_id: The ID of the Messaging Service used with the message. In case of Plivo this links to the Powerpack ID.
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
+        :param additional_properties:
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -429,6 +431,7 @@ class Messages(BaseSDK):
                 pass_through=utils.get_pydantic_model(
                     pass_through, Optional[List[models.PassThroughBody]]
                 ),
+                **(additional_properties or {}),
             ),
         )
 
@@ -534,14 +537,14 @@ class Messages(BaseSDK):
     async def create_async(
         self,
         *,
-        from_: str,
-        to: str,
-        body: str,
         raw: Optional[bool] = False,
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
+        from_: Optional[str] = None,
+        to: Optional[str] = None,
         subject: Optional[str] = None,
+        body: Optional[str] = None,
         type_: Optional[models.MessageType] = None,
         scheduled_at: Optional[datetime] = None,
         webhook_url: Optional[str] = None,
@@ -550,6 +553,7 @@ class Messages(BaseSDK):
         pass_through: Optional[
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
         ] = None,
+        additional_properties: Optional[Dict[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -559,20 +563,21 @@ class Messages(BaseSDK):
 
         Create Message
 
-        :param from_: The phone number that initiated the message.
-        :param to: The phone number that received the message.
-        :param body: The message text.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param from_: The phone number that initiated the message.
+        :param to: The phone number that received the message.
         :param subject:
+        :param body: The message text.
         :param type: Set to sms for SMS messages and mms for MMS messages.
         :param scheduled_at: The scheduled date and time of the message.
         :param webhook_url: Define a webhook to receive delivery notifications.
         :param reference: A client reference.
         :param messaging_service_id: The ID of the Messaging Service used with the message. In case of Plivo this links to the Powerpack ID.
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
+        :param additional_properties:
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -606,6 +611,7 @@ class Messages(BaseSDK):
                 pass_through=utils.get_pydantic_model(
                     pass_through, Optional[List[models.PassThroughBody]]
                 ),
+                **(additional_properties or {}),
             ),
         )
 
@@ -1000,14 +1006,14 @@ class Messages(BaseSDK):
         self,
         *,
         id: str,
-        from_: str,
-        to: str,
-        body: str,
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
+        from_: Optional[str] = None,
+        to: Optional[str] = None,
         subject: Optional[str] = None,
+        body: Optional[str] = None,
         type_: Optional[models.MessageType] = None,
         scheduled_at: Optional[datetime] = None,
         webhook_url: Optional[str] = None,
@@ -1016,6 +1022,7 @@ class Messages(BaseSDK):
         pass_through: Optional[
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
         ] = None,
+        additional_properties: Optional[Dict[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -1026,20 +1033,21 @@ class Messages(BaseSDK):
         Update Message
 
         :param id: ID of the record you are acting upon.
-        :param from_: The phone number that initiated the message.
-        :param to: The phone number that received the message.
-        :param body: The message text.
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param from_: The phone number that initiated the message.
+        :param to: The phone number that received the message.
         :param subject:
+        :param body: The message text.
         :param type: Set to sms for SMS messages and mms for MMS messages.
         :param scheduled_at: The scheduled date and time of the message.
         :param webhook_url: Define a webhook to receive delivery notifications.
         :param reference: A client reference.
         :param messaging_service_id: The ID of the Messaging Service used with the message. In case of Plivo this links to the Powerpack ID.
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
+        :param additional_properties:
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -1074,6 +1082,7 @@ class Messages(BaseSDK):
                 pass_through=utils.get_pydantic_model(
                     pass_through, Optional[List[models.PassThroughBody]]
                 ),
+                **(additional_properties or {}),
             ),
         )
 
@@ -1180,14 +1189,14 @@ class Messages(BaseSDK):
         self,
         *,
         id: str,
-        from_: str,
-        to: str,
-        body: str,
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
+        from_: Optional[str] = None,
+        to: Optional[str] = None,
         subject: Optional[str] = None,
+        body: Optional[str] = None,
         type_: Optional[models.MessageType] = None,
         scheduled_at: Optional[datetime] = None,
         webhook_url: Optional[str] = None,
@@ -1196,6 +1205,7 @@ class Messages(BaseSDK):
         pass_through: Optional[
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
         ] = None,
+        additional_properties: Optional[Dict[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -1206,20 +1216,21 @@ class Messages(BaseSDK):
         Update Message
 
         :param id: ID of the record you are acting upon.
-        :param from_: The phone number that initiated the message.
-        :param to: The phone number that received the message.
-        :param body: The message text.
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param from_: The phone number that initiated the message.
+        :param to: The phone number that received the message.
         :param subject:
+        :param body: The message text.
         :param type: Set to sms for SMS messages and mms for MMS messages.
         :param scheduled_at: The scheduled date and time of the message.
         :param webhook_url: Define a webhook to receive delivery notifications.
         :param reference: A client reference.
         :param messaging_service_id: The ID of the Messaging Service used with the message. In case of Plivo this links to the Powerpack ID.
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
+        :param additional_properties:
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -1254,6 +1265,7 @@ class Messages(BaseSDK):
                 pass_through=utils.get_pydantic_model(
                     pass_through, Optional[List[models.PassThroughBody]]
                 ),
+                **(additional_properties or {}),
             ),
         )
 

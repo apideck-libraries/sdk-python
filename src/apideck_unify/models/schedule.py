@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 from apideck_unify.types import BaseModel
-from typing import Optional
+import pydantic
+from pydantic import ConfigDict
+from typing import Any, Dict, Optional
 from typing_extensions import NotRequired, TypedDict
 
 
@@ -70,23 +72,36 @@ class WorkPattern(BaseModel):
 
 
 class ScheduleTypedDict(TypedDict):
-    id: str
+    id: NotRequired[str]
     r"""A unique identifier for an object."""
-    start_date: str
+    start_date: NotRequired[str]
     r"""The start date, inclusive, of the schedule period."""
-    end_date: str
+    end_date: NotRequired[str]
     r"""The end date, inclusive, of the schedule period."""
-    work_pattern: WorkPatternTypedDict
+    work_pattern: NotRequired[WorkPatternTypedDict]
 
 
 class Schedule(BaseModel):
-    id: str
+    model_config = ConfigDict(
+        populate_by_name=True, arbitrary_types_allowed=True, extra="allow"
+    )
+    __pydantic_extra__: Dict[str, Any] = pydantic.Field(init=False)
+
+    id: Optional[str] = None
     r"""A unique identifier for an object."""
 
-    start_date: str
+    start_date: Optional[str] = None
     r"""The start date, inclusive, of the schedule period."""
 
-    end_date: str
+    end_date: Optional[str] = None
     r"""The end date, inclusive, of the schedule period."""
 
-    work_pattern: WorkPattern
+    work_pattern: Optional[WorkPattern] = None
+
+    @property
+    def additional_properties(self):
+        return self.__pydantic_extra__
+
+    @additional_properties.setter
+    def additional_properties(self, value):
+        self.__pydantic_extra__ = value  # pyright: ignore[reportIncompatibleVariableOverride]

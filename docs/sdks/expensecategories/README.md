@@ -91,39 +91,41 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.accounting.expense_categories.create(name="Travel", raw=False, service_id="salesforce", display_id="123456", code="TRAVEL-001", description="Travel-related expenses including flights, hotels, and ground transportation.", status=apideck_unify.ExpenseCategoryStatus.ACTIVE, account={
-        "id": "123456",
-        "name": "Bank account",
-        "nominal_code": "N091",
-        "code": "453",
-        "parent_id": "123456",
-        "display_id": "123456",
-    }, offset_account={
-        "id": "123456",
-        "name": "Bank account",
-        "nominal_code": "N091",
-        "code": "453",
-        "parent_id": "123456",
-        "display_id": "123456",
-    }, tax_rate={
-        "id": "123456",
-        "code": "N-T",
-        "rate": 10,
-    }, rate_required=False, default_rate=0.67, row_version="1-12345", pass_through=[
-        {
-            "service_id": "<id>",
-            "extend_paths": [
-                {
-                    "path": "$.nested.property",
-                    "value": {
+    res = apideck.accounting.expense_categories.create(raw=False, service_id="salesforce", display_id="123456", name="Travel", code="TRAVEL-001", description="Travel-related expenses including flights, hotels, and ground transportation.", status=apideck_unify.ExpenseCategoryStatus.ACTIVE, account=apideck_unify.LinkedLedgerAccount(
+        id="123456",
+        name="Bank account",
+        nominal_code="N091",
+        code="453",
+        parent_id="123456",
+        display_id="123456",
+    ), offset_account=apideck_unify.LinkedLedgerAccount(
+        id="123456",
+        name="Bank account",
+        nominal_code="N091",
+        code="453",
+        parent_id="123456",
+        display_id="123456",
+    ), tax_rate=apideck_unify.LinkedTaxRateInput(
+        id="123456",
+        code="N-T",
+        rate=10,
+    ), rate_required=False, default_rate=0.67, row_version="1-12345", pass_through=[
+        apideck_unify.PassThroughBody(
+            service_id="<id>",
+            extend_paths=[
+                apideck_unify.ExtendPaths(
+                    path="$.nested.property",
+                    value={
                         "TaxClassificationRef": {
                             "value": "EUC-99990201-V1-00020000",
                         },
                     },
-                },
+                ),
             ],
-        },
-    ])
+        ),
+    ], additional_properties={
+
+    })
 
     assert res.create_expense_category_response is not None
 
@@ -136,12 +138,12 @@ with Apideck(
 
 | Parameter                                                                                                                                               | Type                                                                                                                                                    | Required                                                                                                                                                | Description                                                                                                                                             | Example                                                                                                                                                 |
 | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `name`                                                                                                                                                  | *str*                                                                                                                                                   | :heavy_check_mark:                                                                                                                                      | The name of the expense category.                                                                                                                       | Travel                                                                                                                                                  |
 | `raw`                                                                                                                                                   | *Optional[bool]*                                                                                                                                        | :heavy_minus_sign:                                                                                                                                      | Include raw response. Mostly used for debugging purposes                                                                                                |                                                                                                                                                         |
 | `consumer_id`                                                                                                                                           | *Optional[str]*                                                                                                                                         | :heavy_minus_sign:                                                                                                                                      | ID of the consumer which you want to get or push data from                                                                                              | test-consumer                                                                                                                                           |
 | `app_id`                                                                                                                                                | *Optional[str]*                                                                                                                                         | :heavy_minus_sign:                                                                                                                                      | The ID of your Unify application                                                                                                                        | dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX                                                                                                                 |
 | `service_id`                                                                                                                                            | *Optional[str]*                                                                                                                                         | :heavy_minus_sign:                                                                                                                                      | Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.           | salesforce                                                                                                                                              |
 | `display_id`                                                                                                                                            | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | Id to be displayed.                                                                                                                                     | 123456                                                                                                                                                  |
+| `name`                                                                                                                                                  | *Optional[str]*                                                                                                                                         | :heavy_minus_sign:                                                                                                                                      | The name of the expense category.                                                                                                                       | Travel                                                                                                                                                  |
 | `code`                                                                                                                                                  | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | The code or external identifier of the expense category.                                                                                                | TRAVEL-001                                                                                                                                              |
 | `description`                                                                                                                                           | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | The description of the expense category.                                                                                                                | Travel-related expenses including flights, hotels, and ground transportation.                                                                           |
 | `status`                                                                                                                                                | [OptionalNullable[models.ExpenseCategoryStatus]](../../models/expensecategorystatus.md)                                                                 | :heavy_minus_sign:                                                                                                                                      | The status of the expense category.                                                                                                                     | active                                                                                                                                                  |
@@ -152,6 +154,7 @@ with Apideck(
 | `default_rate`                                                                                                                                          | *OptionalNullable[float]*                                                                                                                               | :heavy_minus_sign:                                                                                                                                      | Default rate when rate_required is true (e.g. 0.67 for mileage).                                                                                        | 0.67                                                                                                                                                    |
 | `row_version`                                                                                                                                           | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.              | 1-12345                                                                                                                                                 |
 | `pass_through`                                                                                                                                          | List[[models.PassThroughBody](../../models/passthroughbody.md)]                                                                                         | :heavy_minus_sign:                                                                                                                                      | The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources. |                                                                                                                                                         |
+| `additional_properties`                                                                                                                                 | Dict[str, *Any*]                                                                                                                                        | :heavy_minus_sign:                                                                                                                                      | N/A                                                                                                                                                     |                                                                                                                                                         |
 | `retries`                                                                                                                                               | [Optional[utils.RetryConfig]](../../models/utils/retryconfig.md)                                                                                        | :heavy_minus_sign:                                                                                                                                      | Configuration to override the default retry behavior of the client.                                                                                     |                                                                                                                                                         |
 
 ### Response
@@ -242,39 +245,41 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.accounting.expense_categories.update(id="<id>", name="Travel", service_id="salesforce", raw=False, display_id="123456", code="TRAVEL-001", description="Travel-related expenses including flights, hotels, and ground transportation.", status=apideck_unify.ExpenseCategoryStatus.ACTIVE, account={
-        "id": "123456",
-        "name": "Bank account",
-        "nominal_code": "N091",
-        "code": "453",
-        "parent_id": "123456",
-        "display_id": "123456",
-    }, offset_account={
-        "id": "123456",
-        "name": "Bank account",
-        "nominal_code": "N091",
-        "code": "453",
-        "parent_id": "123456",
-        "display_id": "123456",
-    }, tax_rate={
-        "id": "123456",
-        "code": "N-T",
-        "rate": 10,
-    }, rate_required=False, default_rate=0.67, row_version="1-12345", pass_through=[
-        {
-            "service_id": "<id>",
-            "extend_paths": [
-                {
-                    "path": "$.nested.property",
-                    "value": {
+    res = apideck.accounting.expense_categories.update(id="<id>", service_id="salesforce", raw=False, display_id="123456", name="Travel", code="TRAVEL-001", description="Travel-related expenses including flights, hotels, and ground transportation.", status=apideck_unify.ExpenseCategoryStatus.ACTIVE, account=apideck_unify.LinkedLedgerAccount(
+        id="123456",
+        name="Bank account",
+        nominal_code="N091",
+        code="453",
+        parent_id="123456",
+        display_id="123456",
+    ), offset_account=apideck_unify.LinkedLedgerAccount(
+        id="123456",
+        name="Bank account",
+        nominal_code="N091",
+        code="453",
+        parent_id="123456",
+        display_id="123456",
+    ), tax_rate=apideck_unify.LinkedTaxRateInput(
+        id="123456",
+        code="N-T",
+        rate=10,
+    ), rate_required=False, default_rate=0.67, row_version="1-12345", pass_through=[
+        apideck_unify.PassThroughBody(
+            service_id="<id>",
+            extend_paths=[
+                apideck_unify.ExtendPaths(
+                    path="$.nested.property",
+                    value={
                         "TaxClassificationRef": {
                             "value": "EUC-99990201-V1-00020000",
                         },
                     },
-                },
+                ),
             ],
-        },
-    ])
+        ),
+    ], additional_properties={
+
+    })
 
     assert res.update_expense_category_response is not None
 
@@ -288,12 +293,12 @@ with Apideck(
 | Parameter                                                                                                                                               | Type                                                                                                                                                    | Required                                                                                                                                                | Description                                                                                                                                             | Example                                                                                                                                                 |
 | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `id`                                                                                                                                                    | *str*                                                                                                                                                   | :heavy_check_mark:                                                                                                                                      | ID of the record you are acting upon.                                                                                                                   |                                                                                                                                                         |
-| `name`                                                                                                                                                  | *str*                                                                                                                                                   | :heavy_check_mark:                                                                                                                                      | The name of the expense category.                                                                                                                       | Travel                                                                                                                                                  |
 | `consumer_id`                                                                                                                                           | *Optional[str]*                                                                                                                                         | :heavy_minus_sign:                                                                                                                                      | ID of the consumer which you want to get or push data from                                                                                              | test-consumer                                                                                                                                           |
 | `app_id`                                                                                                                                                | *Optional[str]*                                                                                                                                         | :heavy_minus_sign:                                                                                                                                      | The ID of your Unify application                                                                                                                        | dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX                                                                                                                 |
 | `service_id`                                                                                                                                            | *Optional[str]*                                                                                                                                         | :heavy_minus_sign:                                                                                                                                      | Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.           | salesforce                                                                                                                                              |
 | `raw`                                                                                                                                                   | *Optional[bool]*                                                                                                                                        | :heavy_minus_sign:                                                                                                                                      | Include raw response. Mostly used for debugging purposes                                                                                                |                                                                                                                                                         |
 | `display_id`                                                                                                                                            | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | Id to be displayed.                                                                                                                                     | 123456                                                                                                                                                  |
+| `name`                                                                                                                                                  | *Optional[str]*                                                                                                                                         | :heavy_minus_sign:                                                                                                                                      | The name of the expense category.                                                                                                                       | Travel                                                                                                                                                  |
 | `code`                                                                                                                                                  | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | The code or external identifier of the expense category.                                                                                                | TRAVEL-001                                                                                                                                              |
 | `description`                                                                                                                                           | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | The description of the expense category.                                                                                                                | Travel-related expenses including flights, hotels, and ground transportation.                                                                           |
 | `status`                                                                                                                                                | [OptionalNullable[models.ExpenseCategoryStatus]](../../models/expensecategorystatus.md)                                                                 | :heavy_minus_sign:                                                                                                                                      | The status of the expense category.                                                                                                                     | active                                                                                                                                                  |
@@ -304,6 +309,7 @@ with Apideck(
 | `default_rate`                                                                                                                                          | *OptionalNullable[float]*                                                                                                                               | :heavy_minus_sign:                                                                                                                                      | Default rate when rate_required is true (e.g. 0.67 for mileage).                                                                                        | 0.67                                                                                                                                                    |
 | `row_version`                                                                                                                                           | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.              | 1-12345                                                                                                                                                 |
 | `pass_through`                                                                                                                                          | List[[models.PassThroughBody](../../models/passthroughbody.md)]                                                                                         | :heavy_minus_sign:                                                                                                                                      | The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources. |                                                                                                                                                         |
+| `additional_properties`                                                                                                                                 | Dict[str, *Any*]                                                                                                                                        | :heavy_minus_sign:                                                                                                                                      | N/A                                                                                                                                                     |                                                                                                                                                         |
 | `retries`                                                                                                                                               | [Optional[utils.RetryConfig]](../../models/utils/retryconfig.md)                                                                                        | :heavy_minus_sign:                                                                                                                                      | Configuration to override the default retry behavior of the client.                                                                                     |                                                                                                                                                         |
 
 ### Response

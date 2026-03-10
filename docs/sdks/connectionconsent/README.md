@@ -26,7 +26,9 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.vault.connection_consent.update(service_id="pipedrive", unified_api="crm", resources=apideck_unify.Two.WILDCARD_, granted=True)
+    res = apideck.vault.connection_consent.update(service_id="pipedrive", unified_api="crm", resources=apideck_unify.Two.WILDCARD_, granted=True, additional_properties={
+
+    })
 
     assert res.update_consent_response is not None
 
@@ -45,6 +47,7 @@ with Apideck(
 | `granted`                                                                             | *bool*                                                                                | :heavy_check_mark:                                                                    | Whether consent is being granted (true) or denied/revoked (false)                     | true                                                                                  |
 | `consumer_id`                                                                         | *Optional[str]*                                                                       | :heavy_minus_sign:                                                                    | ID of the consumer which you want to get or push data from                            | test-consumer                                                                         |
 | `app_id`                                                                              | *Optional[str]*                                                                       | :heavy_minus_sign:                                                                    | The ID of your Unify application                                                      | dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX                                               |
+| `additional_properties`                                                               | Dict[str, *Any*]                                                                      | :heavy_minus_sign:                                                                    | N/A                                                                                   |                                                                                       |
 | `retries`                                                                             | [Optional[utils.RetryConfig]](../../models/utils/retryconfig.md)                      | :heavy_minus_sign:                                                                    | Configuration to override the default retry behavior of the client.                   |                                                                                       |
 
 ### Response

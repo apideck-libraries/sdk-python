@@ -28,21 +28,19 @@ from apideck_unify.types import (
 from apideck_unify.utils import validate_open_enum
 from datetime import datetime
 import pydantic
-from pydantic import field_serializer, model_serializer
+from pydantic import ConfigDict, field_serializer, model_serializer
 from pydantic.functional_validators import PlainValidator
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class PaymentInputTypedDict(TypedDict):
-    total_amount: Nullable[float]
-    r"""The total amount of the transaction or record"""
-    transaction_date: Nullable[datetime]
-    r"""The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD"""
     currency: NotRequired[Nullable[Currency]]
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
     currency_rate: NotRequired[Nullable[float]]
     r"""Currency Exchange Rate at the time entity was recorded/generated."""
+    total_amount: NotRequired[Nullable[float]]
+    r"""The total amount of the transaction or record"""
     reference: NotRequired[Nullable[str]]
     r"""Optional transaction reference message ie: Debit remittance detail."""
     payment_method: NotRequired[Nullable[str]]
@@ -56,6 +54,8 @@ class PaymentInputTypedDict(TypedDict):
     accounts_receivable_account_id: NotRequired[Nullable[str]]
     r"""Unique identifier for the account to allocate payment to."""
     account: NotRequired[Nullable[LinkedLedgerAccountTypedDict]]
+    transaction_date: NotRequired[Nullable[datetime]]
+    r"""The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD"""
     customer: NotRequired[Nullable[LinkedCustomerInputTypedDict]]
     r"""The customer this entity is linked to."""
     supplier: NotRequired[Nullable[DeprecatedLinkedSupplierInputTypedDict]]
@@ -87,11 +87,10 @@ class PaymentInputTypedDict(TypedDict):
 
 
 class PaymentInput(BaseModel):
-    total_amount: Nullable[float]
-    r"""The total amount of the transaction or record"""
-
-    transaction_date: Nullable[datetime]
-    r"""The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD"""
+    model_config = ConfigDict(
+        populate_by_name=True, arbitrary_types_allowed=True, extra="allow"
+    )
+    __pydantic_extra__: Dict[str, Any] = pydantic.Field(init=False)
 
     currency: Annotated[
         OptionalNullable[Currency], PlainValidator(validate_open_enum(False))
@@ -100,6 +99,9 @@ class PaymentInput(BaseModel):
 
     currency_rate: OptionalNullable[float] = UNSET
     r"""Currency Exchange Rate at the time entity was recorded/generated."""
+
+    total_amount: OptionalNullable[float] = UNSET
+    r"""The total amount of the transaction or record"""
 
     reference: OptionalNullable[str] = UNSET
     r"""Optional transaction reference message ie: Debit remittance detail."""
@@ -130,6 +132,9 @@ class PaymentInput(BaseModel):
     r"""Unique identifier for the account to allocate payment to."""
 
     account: OptionalNullable[LinkedLedgerAccount] = UNSET
+
+    transaction_date: OptionalNullable[datetime] = UNSET
+    r"""The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD"""
 
     customer: OptionalNullable[LinkedCustomerInput] = UNSET
     r"""The customer this entity is linked to."""
@@ -182,6 +187,14 @@ class PaymentInput(BaseModel):
     pass_through: Optional[List[PassThroughBody]] = None
     r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
 
+    @property
+    def additional_properties(self):
+        return self.__pydantic_extra__
+
+    @additional_properties.setter
+    def additional_properties(self, value):
+        self.__pydantic_extra__ = value  # pyright: ignore[reportIncompatibleVariableOverride]
+
     @field_serializer("currency")
     def serialize_currency(self, value):
         if isinstance(value, str):
@@ -214,6 +227,7 @@ class PaymentInput(BaseModel):
         optional_fields = [
             "currency",
             "currency_rate",
+            "total_amount",
             "reference",
             "payment_method",
             "payment_method_reference",
@@ -221,6 +235,7 @@ class PaymentInput(BaseModel):
             "accounts_receivable_account_type",
             "accounts_receivable_account_id",
             "account",
+            "transaction_date",
             "customer",
             "supplier",
             "company_id",
@@ -281,5 +296,8 @@ class PaymentInput(BaseModel):
                 not k in optional_fields or (optional_nullable and is_set)
             ):
                 m[k] = val
+
+        for k, v in serialized.items():
+            m[k] = v
 
         return m

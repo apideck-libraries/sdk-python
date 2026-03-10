@@ -19,7 +19,6 @@ from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class UserTypedDict(TypedDict):
-    emails: List[EmailTypedDict]
     id: NotRequired[str]
     r"""The unique identifier for the user"""
     parent_id: NotRequired[Nullable[str]]
@@ -50,6 +49,7 @@ class UserTypedDict(TypedDict):
     r"""The status of the user"""
     addresses: NotRequired[List[AddressTypedDict]]
     phone_numbers: NotRequired[List[PhoneNumberTypedDict]]
+    emails: NotRequired[List[EmailTypedDict]]
     custom_mappings: NotRequired[Nullable[Dict[str, Any]]]
     r"""When custom mappings are configured on the resource, the result is included here."""
     updated_at: NotRequired[Nullable[str]]
@@ -61,8 +61,6 @@ class UserTypedDict(TypedDict):
 
 
 class User(BaseModel):
-    emails: List[Email]
-
     id: Optional[str] = None
     r"""The unique identifier for the user"""
 
@@ -114,6 +112,8 @@ class User(BaseModel):
 
     phone_numbers: Optional[List[PhoneNumber]] = None
 
+    emails: Optional[List[Email]] = None
+
     custom_mappings: OptionalNullable[Dict[str, Any]] = UNSET
     r"""When custom mappings are configured on the resource, the result is included here."""
 
@@ -145,6 +145,7 @@ class User(BaseModel):
             "status",
             "addresses",
             "phone_numbers",
+            "emails",
             "custom_mappings",
             "updated_at",
             "created_at",

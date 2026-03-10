@@ -11,8 +11,10 @@ from apideck_unify.types import (
 )
 from apideck_unify.utils import validate_open_enum
 from enum import Enum
-from pydantic import field_serializer, model_serializer
+import pydantic
+from pydantic import ConfigDict, field_serializer, model_serializer
 from pydantic.functional_validators import PlainValidator
+from typing import Any, Dict, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
@@ -28,11 +30,24 @@ class OperationTypedDict(TypedDict):
 class Operation(BaseModel):
     r"""The request as defined in OpenApi Spec."""
 
+    model_config = ConfigDict(
+        populate_by_name=True, arbitrary_types_allowed=True, extra="allow"
+    )
+    __pydantic_extra__: Dict[str, Any] = pydantic.Field(init=False)
+
     id: str
     r"""The OpenApi Operation Id associated with the request"""
 
     name: str
     r"""The OpenApi Operation name associated with the request"""
+
+    @property
+    def additional_properties(self):
+        return self.__pydantic_extra__
+
+    @additional_properties.setter
+    def additional_properties(self, value):
+        self.__pydantic_extra__ = value  # pyright: ignore[reportIncompatibleVariableOverride]
 
 
 class ServiceTypedDict(TypedDict):
@@ -47,11 +62,24 @@ class ServiceTypedDict(TypedDict):
 class Service(BaseModel):
     r"""Apideck service provider associated with request."""
 
+    model_config = ConfigDict(
+        populate_by_name=True, arbitrary_types_allowed=True, extra="allow"
+    )
+    __pydantic_extra__: Dict[str, Any] = pydantic.Field(init=False)
+
     id: str
     r"""Apideck service provider id."""
 
     name: str
     r"""Apideck service provider name."""
+
+    @property
+    def additional_properties(self):
+        return self.__pydantic_extra__
+
+    @additional_properties.setter
+    def additional_properties(self, value):
+        self.__pydantic_extra__ = value  # pyright: ignore[reportIncompatibleVariableOverride]
 
 
 class UnifiedAPI(str, Enum, metaclass=utils.OpenEnumMeta):
@@ -72,113 +100,128 @@ class UnifiedAPI(str, Enum, metaclass=utils.OpenEnumMeta):
 
 
 class LogTypedDict(TypedDict):
-    api_style: str
+    api_style: NotRequired[str]
     r"""Indicates if the request was made via REST or Graphql endpoint."""
-    base_url: str
+    base_url: NotRequired[str]
     r"""The Apideck base URL the request was made to."""
-    child_request: bool
+    child_request: NotRequired[bool]
     r"""Indicates whether or not this is a child or parent request."""
-    consumer_id: str
+    consumer_id: NotRequired[str]
     r"""The consumer Id associated with the request."""
-    duration: float
+    duration: NotRequired[float]
     r"""The entire execution time in milliseconds it took to call the Apideck service provider."""
-    execution: int
-    r"""The entire execution time in milliseconds it took to make the request."""
-    has_children: bool
-    r"""When request is a parent request, this indicates if there are child requests associated."""
-    http_method: str
-    r"""HTTP Method of request."""
-    id: str
-    r"""UUID acting as Request Identifier."""
-    latency: float
-    r"""Latency added by making this request via Unified Api."""
-    operation: OperationTypedDict
-    r"""The request as defined in OpenApi Spec."""
-    parent_id: Nullable[str]
-    r"""When request is a child request, this UUID indicates it's parent request."""
-    path: str
-    r"""The path component of the URI the request was made to."""
-    sandbox: bool
-    r"""Indicates whether the request was made using Apidecks sandbox credentials or not."""
-    service: ServiceTypedDict
-    r"""Apideck service provider associated with request."""
-    status_code: int
-    r"""HTTP Status code that was returned."""
-    success: bool
-    r"""Whether or not the request was successful."""
-    timestamp: str
-    r"""ISO Date and time when the request was made."""
-    unified_api: UnifiedAPI
-    r"""Which Unified Api request was made to."""
     error_message: NotRequired[Nullable[str]]
     r"""If error occurred, this is brief explanation"""
+    execution: NotRequired[int]
+    r"""The entire execution time in milliseconds it took to make the request."""
+    has_children: NotRequired[bool]
+    r"""When request is a parent request, this indicates if there are child requests associated."""
+    http_method: NotRequired[str]
+    r"""HTTP Method of request."""
+    id: NotRequired[str]
+    r"""UUID acting as Request Identifier."""
+    latency: NotRequired[float]
+    r"""Latency added by making this request via Unified Api."""
+    operation: NotRequired[OperationTypedDict]
+    r"""The request as defined in OpenApi Spec."""
+    parent_id: NotRequired[Nullable[str]]
+    r"""When request is a child request, this UUID indicates it's parent request."""
+    path: NotRequired[str]
+    r"""The path component of the URI the request was made to."""
+    sandbox: NotRequired[bool]
+    r"""Indicates whether the request was made using Apidecks sandbox credentials or not."""
+    service: NotRequired[ServiceTypedDict]
+    r"""Apideck service provider associated with request."""
     source_ip: NotRequired[Nullable[str]]
     r"""The IP address of the source of the request."""
+    status_code: NotRequired[int]
+    r"""HTTP Status code that was returned."""
+    success: NotRequired[bool]
+    r"""Whether or not the request was successful."""
+    timestamp: NotRequired[str]
+    r"""ISO Date and time when the request was made."""
+    unified_api: NotRequired[UnifiedAPI]
+    r"""Which Unified Api request was made to."""
 
 
 class Log(BaseModel):
-    api_style: str
+    model_config = ConfigDict(
+        populate_by_name=True, arbitrary_types_allowed=True, extra="allow"
+    )
+    __pydantic_extra__: Dict[str, Any] = pydantic.Field(init=False)
+
+    api_style: Optional[str] = None
     r"""Indicates if the request was made via REST or Graphql endpoint."""
 
-    base_url: str
+    base_url: Optional[str] = None
     r"""The Apideck base URL the request was made to."""
 
-    child_request: bool
+    child_request: Optional[bool] = None
     r"""Indicates whether or not this is a child or parent request."""
 
-    consumer_id: str
+    consumer_id: Optional[str] = None
     r"""The consumer Id associated with the request."""
 
-    duration: float
+    duration: Optional[float] = None
     r"""The entire execution time in milliseconds it took to call the Apideck service provider."""
-
-    execution: int
-    r"""The entire execution time in milliseconds it took to make the request."""
-
-    has_children: bool
-    r"""When request is a parent request, this indicates if there are child requests associated."""
-
-    http_method: str
-    r"""HTTP Method of request."""
-
-    id: str
-    r"""UUID acting as Request Identifier."""
-
-    latency: float
-    r"""Latency added by making this request via Unified Api."""
-
-    operation: Operation
-    r"""The request as defined in OpenApi Spec."""
-
-    parent_id: Nullable[str]
-    r"""When request is a child request, this UUID indicates it's parent request."""
-
-    path: str
-    r"""The path component of the URI the request was made to."""
-
-    sandbox: bool
-    r"""Indicates whether the request was made using Apidecks sandbox credentials or not."""
-
-    service: Service
-    r"""Apideck service provider associated with request."""
-
-    status_code: int
-    r"""HTTP Status code that was returned."""
-
-    success: bool
-    r"""Whether or not the request was successful."""
-
-    timestamp: str
-    r"""ISO Date and time when the request was made."""
-
-    unified_api: Annotated[UnifiedAPI, PlainValidator(validate_open_enum(False))]
-    r"""Which Unified Api request was made to."""
 
     error_message: OptionalNullable[str] = UNSET
     r"""If error occurred, this is brief explanation"""
 
+    execution: Optional[int] = None
+    r"""The entire execution time in milliseconds it took to make the request."""
+
+    has_children: Optional[bool] = None
+    r"""When request is a parent request, this indicates if there are child requests associated."""
+
+    http_method: Optional[str] = None
+    r"""HTTP Method of request."""
+
+    id: Optional[str] = None
+    r"""UUID acting as Request Identifier."""
+
+    latency: Optional[float] = None
+    r"""Latency added by making this request via Unified Api."""
+
+    operation: Optional[Operation] = None
+    r"""The request as defined in OpenApi Spec."""
+
+    parent_id: OptionalNullable[str] = UNSET
+    r"""When request is a child request, this UUID indicates it's parent request."""
+
+    path: Optional[str] = None
+    r"""The path component of the URI the request was made to."""
+
+    sandbox: Optional[bool] = None
+    r"""Indicates whether the request was made using Apidecks sandbox credentials or not."""
+
+    service: Optional[Service] = None
+    r"""Apideck service provider associated with request."""
+
     source_ip: OptionalNullable[str] = UNSET
     r"""The IP address of the source of the request."""
+
+    status_code: Optional[int] = None
+    r"""HTTP Status code that was returned."""
+
+    success: Optional[bool] = None
+    r"""Whether or not the request was successful."""
+
+    timestamp: Optional[str] = None
+    r"""ISO Date and time when the request was made."""
+
+    unified_api: Annotated[
+        Optional[UnifiedAPI], PlainValidator(validate_open_enum(False))
+    ] = None
+    r"""Which Unified Api request was made to."""
+
+    @property
+    def additional_properties(self):
+        return self.__pydantic_extra__
+
+    @additional_properties.setter
+    def additional_properties(self, value):
+        self.__pydantic_extra__ = value  # pyright: ignore[reportIncompatibleVariableOverride]
 
     @field_serializer("unified_api")
     def serialize_unified_api(self, value):
@@ -191,7 +234,29 @@ class Log(BaseModel):
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
-        optional_fields = ["error_message", "source_ip"]
+        optional_fields = [
+            "api_style",
+            "base_url",
+            "child_request",
+            "consumer_id",
+            "duration",
+            "error_message",
+            "execution",
+            "has_children",
+            "http_method",
+            "id",
+            "latency",
+            "operation",
+            "parent_id",
+            "path",
+            "sandbox",
+            "service",
+            "source_ip",
+            "status_code",
+            "success",
+            "timestamp",
+            "unified_api",
+        ]
         nullable_fields = ["error_message", "parent_id", "source_ip"]
         null_default_fields = []
 
@@ -216,5 +281,8 @@ class Log(BaseModel):
                 not k in optional_fields or (optional_nullable and is_set)
             ):
                 m[k] = val
+
+        for k, v in serialized.items():
+            m[k] = v
 
         return m

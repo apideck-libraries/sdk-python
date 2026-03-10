@@ -101,90 +101,92 @@ with Apideck(
 ) as apideck:
 
     res = apideck.issue_tracking.collection_tickets.create(collection_id="apideck-io", raw=False, service_id="salesforce", parent_id="12345", type_="Technical", subject="Technical Support Request", description="I am facing issues with my internet connection", status="open", priority=apideck_unify.TicketPriority.HIGH, assignees=[
-        {
-            "id": "12345",
-        },
-        {
-            "id": "12345",
-        },
-        {
-            "id": "12345",
-        },
+        apideck_unify.AssigneeInput(
+            id="12345",
+        ),
+        apideck_unify.AssigneeInput(
+            id="12345",
+        ),
+        apideck_unify.AssigneeInput(
+            id="12345",
+        ),
     ], due_date=parse_datetime("2020-09-30T07:43:32.000Z"), tags=[
-        {
-            "id": "12345",
-        },
-        {
-            "id": "12345",
-        },
-        {
-            "id": "12345",
-        },
+        apideck_unify.CollectionTagInput(
+            id="12345",
+        ),
+        apideck_unify.CollectionTagInput(
+            id="12345",
+        ),
+        apideck_unify.CollectionTagInput(
+            id="12345",
+        ),
     ], pass_through=[
-        {
-            "service_id": "<id>",
-            "extend_paths": [
-                {
-                    "path": "$.nested.property",
-                    "value": {
+        apideck_unify.PassThroughBody(
+            service_id="<id>",
+            extend_paths=[
+                apideck_unify.ExtendPaths(
+                    path="$.nested.property",
+                    value={
                         "TaxClassificationRef": {
                             "value": "EUC-99990201-V1-00020000",
                         },
                     },
-                },
-                {
-                    "path": "$.nested.property",
-                    "value": {
+                ),
+                apideck_unify.ExtendPaths(
+                    path="$.nested.property",
+                    value={
                         "TaxClassificationRef": {
                             "value": "EUC-99990201-V1-00020000",
                         },
                     },
-                },
+                ),
             ],
-        },
-        {
-            "service_id": "<id>",
-            "extend_paths": [
-                {
-                    "path": "$.nested.property",
-                    "value": {
+        ),
+        apideck_unify.PassThroughBody(
+            service_id="<id>",
+            extend_paths=[
+                apideck_unify.ExtendPaths(
+                    path="$.nested.property",
+                    value={
                         "TaxClassificationRef": {
                             "value": "EUC-99990201-V1-00020000",
                         },
                     },
-                },
-                {
-                    "path": "$.nested.property",
-                    "value": {
+                ),
+                apideck_unify.ExtendPaths(
+                    path="$.nested.property",
+                    value={
                         "TaxClassificationRef": {
                             "value": "EUC-99990201-V1-00020000",
                         },
                     },
-                },
+                ),
             ],
-        },
-        {
-            "service_id": "<id>",
-            "extend_paths": [
-                {
-                    "path": "$.nested.property",
-                    "value": {
+        ),
+        apideck_unify.PassThroughBody(
+            service_id="<id>",
+            extend_paths=[
+                apideck_unify.ExtendPaths(
+                    path="$.nested.property",
+                    value={
                         "TaxClassificationRef": {
                             "value": "EUC-99990201-V1-00020000",
                         },
                     },
-                },
-                {
-                    "path": "$.nested.property",
-                    "value": {
+                ),
+                apideck_unify.ExtendPaths(
+                    path="$.nested.property",
+                    value={
                         "TaxClassificationRef": {
                             "value": "EUC-99990201-V1-00020000",
                         },
                     },
-                },
+                ),
             ],
-        },
-    ])
+        ),
+    ], additional_properties={
+
+    })
 
     assert res.create_ticket_response is not None
 
@@ -212,6 +214,7 @@ with Apideck(
 | `due_date`                                                                                                                                                               | [date](https://docs.python.org/3/library/datetime.html#date-objects)                                                                                                     | :heavy_minus_sign:                                                                                                                                                       | Due date of the ticket                                                                                                                                                   | 2020-09-30T07:43:32.000Z                                                                                                                                                 |
 | `tags`                                                                                                                                                                   | List[[models.CollectionTagInput](../../models/collectiontaginput.md)]                                                                                                    | :heavy_minus_sign:                                                                                                                                                       | N/A                                                                                                                                                                      |                                                                                                                                                                          |
 | `pass_through`                                                                                                                                                           | List[[models.PassThroughBody](../../models/passthroughbody.md)]                                                                                                          | :heavy_minus_sign:                                                                                                                                                       | The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.                  |                                                                                                                                                                          |
+| `additional_properties`                                                                                                                                                  | Dict[str, *Any*]                                                                                                                                                         | :heavy_minus_sign:                                                                                                                                                       | N/A                                                                                                                                                                      |                                                                                                                                                                          |
 | `retries`                                                                                                                                                                | [Optional[utils.RetryConfig]](../../models/utils/retryconfig.md)                                                                                                         | :heavy_minus_sign:                                                                                                                                                       | Configuration to override the default retry behavior of the client.                                                                                                      |                                                                                                                                                                          |
 
 ### Response
@@ -305,81 +308,83 @@ with Apideck(
 ) as apideck:
 
     res = apideck.issue_tracking.collection_tickets.update(ticket_id="<id>", collection_id="apideck-io", service_id="salesforce", raw=False, parent_id="12345", type_="Technical", subject="Technical Support Request", description="I am facing issues with my internet connection", status="open", priority=apideck_unify.TicketPriority.HIGH, assignees=[
-        {
-            "id": "12345",
-        },
-        {
-            "id": "12345",
-        },
+        apideck_unify.AssigneeInput(
+            id="12345",
+        ),
+        apideck_unify.AssigneeInput(
+            id="12345",
+        ),
     ], due_date=parse_datetime("2020-09-30T07:43:32.000Z"), tags=[
-        {
-            "id": "12345",
-        },
+        apideck_unify.CollectionTagInput(
+            id="12345",
+        ),
     ], pass_through=[
-        {
-            "service_id": "<id>",
-            "extend_paths": [
-                {
-                    "path": "$.nested.property",
-                    "value": {
+        apideck_unify.PassThroughBody(
+            service_id="<id>",
+            extend_paths=[
+                apideck_unify.ExtendPaths(
+                    path="$.nested.property",
+                    value={
                         "TaxClassificationRef": {
                             "value": "EUC-99990201-V1-00020000",
                         },
                     },
-                },
-                {
-                    "path": "$.nested.property",
-                    "value": {
+                ),
+                apideck_unify.ExtendPaths(
+                    path="$.nested.property",
+                    value={
                         "TaxClassificationRef": {
                             "value": "EUC-99990201-V1-00020000",
                         },
                     },
-                },
+                ),
             ],
-        },
-        {
-            "service_id": "<id>",
-            "extend_paths": [
-                {
-                    "path": "$.nested.property",
-                    "value": {
+        ),
+        apideck_unify.PassThroughBody(
+            service_id="<id>",
+            extend_paths=[
+                apideck_unify.ExtendPaths(
+                    path="$.nested.property",
+                    value={
                         "TaxClassificationRef": {
                             "value": "EUC-99990201-V1-00020000",
                         },
                     },
-                },
-                {
-                    "path": "$.nested.property",
-                    "value": {
+                ),
+                apideck_unify.ExtendPaths(
+                    path="$.nested.property",
+                    value={
                         "TaxClassificationRef": {
                             "value": "EUC-99990201-V1-00020000",
                         },
                     },
-                },
+                ),
             ],
-        },
-        {
-            "service_id": "<id>",
-            "extend_paths": [
-                {
-                    "path": "$.nested.property",
-                    "value": {
+        ),
+        apideck_unify.PassThroughBody(
+            service_id="<id>",
+            extend_paths=[
+                apideck_unify.ExtendPaths(
+                    path="$.nested.property",
+                    value={
                         "TaxClassificationRef": {
                             "value": "EUC-99990201-V1-00020000",
                         },
                     },
-                },
-                {
-                    "path": "$.nested.property",
-                    "value": {
+                ),
+                apideck_unify.ExtendPaths(
+                    path="$.nested.property",
+                    value={
                         "TaxClassificationRef": {
                             "value": "EUC-99990201-V1-00020000",
                         },
                     },
-                },
+                ),
             ],
-        },
-    ])
+        ),
+    ], additional_properties={
+
+    })
 
     assert res.update_ticket_response is not None
 
@@ -408,6 +413,7 @@ with Apideck(
 | `due_date`                                                                                                                                                               | [date](https://docs.python.org/3/library/datetime.html#date-objects)                                                                                                     | :heavy_minus_sign:                                                                                                                                                       | Due date of the ticket                                                                                                                                                   | 2020-09-30T07:43:32.000Z                                                                                                                                                 |
 | `tags`                                                                                                                                                                   | List[[models.CollectionTagInput](../../models/collectiontaginput.md)]                                                                                                    | :heavy_minus_sign:                                                                                                                                                       | N/A                                                                                                                                                                      |                                                                                                                                                                          |
 | `pass_through`                                                                                                                                                           | List[[models.PassThroughBody](../../models/passthroughbody.md)]                                                                                                          | :heavy_minus_sign:                                                                                                                                                       | The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.                  |                                                                                                                                                                          |
+| `additional_properties`                                                                                                                                                  | Dict[str, *Any*]                                                                                                                                                         | :heavy_minus_sign:                                                                                                                                                       | N/A                                                                                                                                                                      |                                                                                                                                                                          |
 | `retries`                                                                                                                                                                | [Optional[utils.RetryConfig]](../../models/utils/retryconfig.md)                                                                                                         | :heavy_minus_sign:                                                                                                                                                       | Configuration to override the default retry behavior of the client.                                                                                                      |                                                                                                                                                                          |
 
 ### Response

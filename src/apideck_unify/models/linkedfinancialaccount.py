@@ -11,9 +11,10 @@ from apideck_unify.types import (
 )
 from apideck_unify.utils import validate_open_enum
 from enum import Enum
-from pydantic import field_serializer, model_serializer
+import pydantic
+from pydantic import ConfigDict, field_serializer, model_serializer
 from pydantic.functional_validators import PlainValidator
-from typing import Optional
+from typing import Any, Dict, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
@@ -46,6 +47,11 @@ class LinkedFinancialAccountTypedDict(TypedDict):
 class LinkedFinancialAccount(BaseModel):
     r"""A flexible account reference that can represent either a ledger account (GL account) or a bank account, depending on the connector's requirements."""
 
+    model_config = ConfigDict(
+        populate_by_name=True, arbitrary_types_allowed=True, extra="allow"
+    )
+    __pydantic_extra__: Dict[str, Any] = pydantic.Field(init=False)
+
     id: Optional[str] = None
     r"""The unique identifier for the account. This can be a ledger account ID or bank account ID depending on the `type` field."""
 
@@ -69,6 +75,14 @@ class LinkedFinancialAccount(BaseModel):
 
     downstream_id: OptionalNullable[str] = UNSET
     r"""The third-party API ID of original entity"""
+
+    @property
+    def additional_properties(self):
+        return self.__pydantic_extra__
+
+    @additional_properties.setter
+    def additional_properties(self, value):
+        self.__pydantic_extra__ = value  # pyright: ignore[reportIncompatibleVariableOverride]
 
     @field_serializer("type")
     def serialize_type(self, value):
@@ -115,6 +129,9 @@ class LinkedFinancialAccount(BaseModel):
             ):
                 m[k] = val
 
+        for k, v in serialized.items():
+            m[k] = v
+
         return m
 
 
@@ -136,6 +153,11 @@ class LinkedFinancialAccountInputTypedDict(TypedDict):
 class LinkedFinancialAccountInput(BaseModel):
     r"""A flexible account reference that can represent either a ledger account (GL account) or a bank account, depending on the connector's requirements."""
 
+    model_config = ConfigDict(
+        populate_by_name=True, arbitrary_types_allowed=True, extra="allow"
+    )
+    __pydantic_extra__: Dict[str, Any] = pydantic.Field(init=False)
+
     id: Optional[str] = None
     r"""The unique identifier for the account. This can be a ledger account ID or bank account ID depending on the `type` field."""
 
@@ -153,6 +175,14 @@ class LinkedFinancialAccountInput(BaseModel):
 
     account_number: OptionalNullable[str] = UNSET
     r"""The bank account number"""
+
+    @property
+    def additional_properties(self):
+        return self.__pydantic_extra__
+
+    @additional_properties.setter
+    def additional_properties(self, value):
+        self.__pydantic_extra__ = value  # pyright: ignore[reportIncompatibleVariableOverride]
 
     @field_serializer("type")
     def serialize_type(self, value):
@@ -190,5 +220,8 @@ class LinkedFinancialAccountInput(BaseModel):
                 not k in optional_fields or (optional_nullable and is_set)
             ):
                 m[k] = val
+
+        for k, v in serialized.items():
+            m[k] = v
 
         return m

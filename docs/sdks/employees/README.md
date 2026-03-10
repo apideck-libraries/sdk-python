@@ -93,11 +93,11 @@ with Apideck(
 ) as apideck:
 
     res = apideck.accounting.employees.create(raw=False, service_id="salesforce", display_id="123456", first_name="John", last_name="Doe", display_name="John Doe", emails=[
-        {
-            "id": "123",
-            "email": "elon@musk.com",
-            "type": apideck_unify.EmailType.PRIMARY,
-        },
+        apideck_unify.Email(
+            id="123",
+            email="elon@musk.com",
+            type=apideck_unify.EmailType.PRIMARY,
+        ),
     ], employee_number="EMP-001", job_title="Senior Accountant", status=apideck_unify.EmployeeStatus.ACTIVE, is_contractor=False, department={
         "display_id": "123456",
         "name": "Acme Inc.",
@@ -120,64 +120,66 @@ with Apideck(
             "parent_name": "New York",
         },
     ], currency=apideck_unify.Currency.USD, notes="Some notes about this employee", addresses=[
-        {
-            "id": "123",
-            "type": apideck_unify.Type.PRIMARY,
-            "string": "25 Spring Street, Blackburn, VIC 3130",
-            "name": "HQ US",
-            "line1": "Main street",
-            "line2": "apt #",
-            "line3": "Suite #",
-            "line4": "delivery instructions",
-            "line5": "Attention: Finance Dept",
-            "street_number": "25",
-            "city": "San Francisco",
-            "state": "CA",
-            "postal_code": "94104",
-            "country": "US",
-            "latitude": "40.759211",
-            "longitude": "-73.984638",
-            "county": "Santa Clara",
-            "contact_name": "Elon Musk",
-            "salutation": "Mr",
-            "phone_number": "111-111-1111",
-            "fax": "122-111-1111",
-            "email": "elon@musk.com",
-            "website": "https://elonmusk.com",
-            "notes": "Address notes or delivery instructions.",
-            "row_version": "1-12345",
-        },
+        apideck_unify.Address(
+            id="123",
+            type=apideck_unify.Type.PRIMARY,
+            string="25 Spring Street, Blackburn, VIC 3130",
+            name="HQ US",
+            line1="Main street",
+            line2="apt #",
+            line3="Suite #",
+            line4="delivery instructions",
+            line5="Attention: Finance Dept",
+            street_number="25",
+            city="San Francisco",
+            state="CA",
+            postal_code="94104",
+            country="US",
+            latitude="40.759211",
+            longitude="-73.984638",
+            county="Santa Clara",
+            contact_name="Elon Musk",
+            salutation="Mr",
+            phone_number="111-111-1111",
+            fax="122-111-1111",
+            email="elon@musk.com",
+            website="https://elonmusk.com",
+            notes="Address notes or delivery instructions.",
+            row_version="1-12345",
+        ),
     ], phone_numbers=[
-        {
-            "id": "12345",
-            "country_code": "1",
-            "area_code": "323",
-            "number": "111-111-1111",
-            "extension": "105",
-            "type": apideck_unify.PhoneNumberType.PRIMARY,
-        },
+        apideck_unify.PhoneNumber(
+            id="12345",
+            country_code="1",
+            area_code="323",
+            number="111-111-1111",
+            extension="105",
+            type=apideck_unify.PhoneNumberType.PRIMARY,
+        ),
     ], custom_fields=[
-        {
-            "id": "2389328923893298",
-            "name": "employee_level",
-            "description": "Employee Level",
-            "value": "Uses Salesforce and Marketo",
-        },
+        apideck_unify.CustomField(
+            id="2389328923893298",
+            name="employee_level",
+            description="Employee Level",
+            value="Uses Salesforce and Marketo",
+        ),
     ], row_version="1-12345", pass_through=[
-        {
-            "service_id": "<id>",
-            "extend_paths": [
-                {
-                    "path": "$.nested.property",
-                    "value": {
+        apideck_unify.PassThroughBody(
+            service_id="<id>",
+            extend_paths=[
+                apideck_unify.ExtendPaths(
+                    path="$.nested.property",
+                    value={
                         "TaxClassificationRef": {
                             "value": "EUC-99990201-V1-00020000",
                         },
                     },
-                },
+                ),
             ],
-        },
-    ])
+        ),
+    ], additional_properties={
+
+    })
 
     assert res.create_accounting_employee_response is not None
 
@@ -219,6 +221,7 @@ with Apideck(
 | `custom_fields`                                                                                                                                         | List[[models.CustomField](../../models/customfield.md)]                                                                                                 | :heavy_minus_sign:                                                                                                                                      | N/A                                                                                                                                                     |                                                                                                                                                         |
 | `row_version`                                                                                                                                           | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.              | 1-12345                                                                                                                                                 |
 | `pass_through`                                                                                                                                          | List[[models.PassThroughBody](../../models/passthroughbody.md)]                                                                                         | :heavy_minus_sign:                                                                                                                                      | The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources. |                                                                                                                                                         |
+| `additional_properties`                                                                                                                                 | Dict[str, *Any*]                                                                                                                                        | :heavy_minus_sign:                                                                                                                                      | N/A                                                                                                                                                     |                                                                                                                                                         |
 | `retries`                                                                                                                                               | [Optional[utils.RetryConfig]](../../models/utils/retryconfig.md)                                                                                        | :heavy_minus_sign:                                                                                                                                      | Configuration to override the default retry behavior of the client.                                                                                     |                                                                                                                                                         |
 
 ### Response
@@ -311,11 +314,11 @@ with Apideck(
 ) as apideck:
 
     res = apideck.accounting.employees.update(id="<id>", service_id="salesforce", raw=False, display_id="123456", first_name="John", last_name="Doe", display_name="John Doe", emails=[
-        {
-            "id": "123",
-            "email": "elon@musk.com",
-            "type": apideck_unify.EmailType.PRIMARY,
-        },
+        apideck_unify.Email(
+            id="123",
+            email="elon@musk.com",
+            type=apideck_unify.EmailType.PRIMARY,
+        ),
     ], employee_number="EMP-001", job_title="Senior Accountant", status=apideck_unify.EmployeeStatus.ACTIVE, is_contractor=False, department={
         "display_id": "123456",
         "name": "Acme Inc.",
@@ -338,64 +341,66 @@ with Apideck(
             "parent_name": "New York",
         },
     ], currency=apideck_unify.Currency.USD, notes="Some notes about this employee", addresses=[
-        {
-            "id": "123",
-            "type": apideck_unify.Type.PRIMARY,
-            "string": "25 Spring Street, Blackburn, VIC 3130",
-            "name": "HQ US",
-            "line1": "Main street",
-            "line2": "apt #",
-            "line3": "Suite #",
-            "line4": "delivery instructions",
-            "line5": "Attention: Finance Dept",
-            "street_number": "25",
-            "city": "San Francisco",
-            "state": "CA",
-            "postal_code": "94104",
-            "country": "US",
-            "latitude": "40.759211",
-            "longitude": "-73.984638",
-            "county": "Santa Clara",
-            "contact_name": "Elon Musk",
-            "salutation": "Mr",
-            "phone_number": "111-111-1111",
-            "fax": "122-111-1111",
-            "email": "elon@musk.com",
-            "website": "https://elonmusk.com",
-            "notes": "Address notes or delivery instructions.",
-            "row_version": "1-12345",
-        },
+        apideck_unify.Address(
+            id="123",
+            type=apideck_unify.Type.PRIMARY,
+            string="25 Spring Street, Blackburn, VIC 3130",
+            name="HQ US",
+            line1="Main street",
+            line2="apt #",
+            line3="Suite #",
+            line4="delivery instructions",
+            line5="Attention: Finance Dept",
+            street_number="25",
+            city="San Francisco",
+            state="CA",
+            postal_code="94104",
+            country="US",
+            latitude="40.759211",
+            longitude="-73.984638",
+            county="Santa Clara",
+            contact_name="Elon Musk",
+            salutation="Mr",
+            phone_number="111-111-1111",
+            fax="122-111-1111",
+            email="elon@musk.com",
+            website="https://elonmusk.com",
+            notes="Address notes or delivery instructions.",
+            row_version="1-12345",
+        ),
     ], phone_numbers=[
-        {
-            "id": "12345",
-            "country_code": "1",
-            "area_code": "323",
-            "number": "111-111-1111",
-            "extension": "105",
-            "type": apideck_unify.PhoneNumberType.PRIMARY,
-        },
+        apideck_unify.PhoneNumber(
+            id="12345",
+            country_code="1",
+            area_code="323",
+            number="111-111-1111",
+            extension="105",
+            type=apideck_unify.PhoneNumberType.PRIMARY,
+        ),
     ], custom_fields=[
-        {
-            "id": "2389328923893298",
-            "name": "employee_level",
-            "description": "Employee Level",
-            "value": "Uses Salesforce and Marketo",
-        },
+        apideck_unify.CustomField(
+            id="2389328923893298",
+            name="employee_level",
+            description="Employee Level",
+            value="Uses Salesforce and Marketo",
+        ),
     ], row_version="1-12345", pass_through=[
-        {
-            "service_id": "<id>",
-            "extend_paths": [
-                {
-                    "path": "$.nested.property",
-                    "value": {
+        apideck_unify.PassThroughBody(
+            service_id="<id>",
+            extend_paths=[
+                apideck_unify.ExtendPaths(
+                    path="$.nested.property",
+                    value={
                         "TaxClassificationRef": {
                             "value": "EUC-99990201-V1-00020000",
                         },
                     },
-                },
+                ),
             ],
-        },
-    ])
+        ),
+    ], additional_properties={
+
+    })
 
     assert res.update_accounting_employee_response is not None
 
@@ -438,6 +443,7 @@ with Apideck(
 | `custom_fields`                                                                                                                                         | List[[models.CustomField](../../models/customfield.md)]                                                                                                 | :heavy_minus_sign:                                                                                                                                      | N/A                                                                                                                                                     |                                                                                                                                                         |
 | `row_version`                                                                                                                                           | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.              | 1-12345                                                                                                                                                 |
 | `pass_through`                                                                                                                                          | List[[models.PassThroughBody](../../models/passthroughbody.md)]                                                                                         | :heavy_minus_sign:                                                                                                                                      | The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources. |                                                                                                                                                         |
+| `additional_properties`                                                                                                                                 | Dict[str, *Any*]                                                                                                                                        | :heavy_minus_sign:                                                                                                                                      | N/A                                                                                                                                                     |                                                                                                                                                         |
 | `retries`                                                                                                                                               | [Optional[utils.RetryConfig]](../../models/utils/retryconfig.md)                                                                                        | :heavy_minus_sign:                                                                                                                                      | Configuration to override the default retry behavior of the client.                                                                                     |                                                                                                                                                         |
 
 ### Response

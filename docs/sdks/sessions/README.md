@@ -30,31 +30,31 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.vault.sessions.create(session={
-        "consumer_metadata": {
-            "account_name": "SpaceX",
-            "user_name": "Elon Musk",
-            "email": "elon@musk.com",
-            "image": "https://www.spacex.com/static/images/share.jpg",
-        },
-        "redirect_uri": "https://mysaas.com/dashboard",
-        "settings": {
-            "unified_apis": [
+    res = apideck.vault.sessions.create(session=apideck_unify.Session(
+        consumer_metadata=apideck_unify.ConsumerMetadata(
+            account_name="SpaceX",
+            user_name="Elon Musk",
+            email="elon@musk.com",
+            image="https://www.spacex.com/static/images/share.jpg",
+        ),
+        redirect_uri="https://mysaas.com/dashboard",
+        settings=apideck_unify.Settings(
+            unified_apis=[
                 apideck_unify.UnifiedAPIID.CRM,
             ],
-            "session_length": "30m",
-        },
-        "theme": {
-            "favicon": "https://res.cloudinary.com/apideck/icons/intercom",
-            "logo": "https://res.cloudinary.com/apideck/icons/intercom",
-            "primary_color": "#286efa",
-            "sidepanel_background_color": "#286efa",
-            "sidepanel_text_color": "#FFFFFF",
-            "vault_name": "Intercom",
-            "privacy_url": "https://compliance.apideck.com/privacy-policy",
-            "terms_url": "https://www.termsfeed.com/terms-conditions/957c85c1b089ae9e3219c83eff65377e",
-        },
-        "custom_consumer_settings": {
+            session_length="30m",
+        ),
+        theme=apideck_unify.Theme(
+            favicon="https://res.cloudinary.com/apideck/icons/intercom",
+            logo="https://res.cloudinary.com/apideck/icons/intercom",
+            primary_color="#286efa",
+            sidepanel_background_color="#286efa",
+            sidepanel_text_color="#FFFFFF",
+            vault_name="Intercom",
+            privacy_url="https://compliance.apideck.com/privacy-policy",
+            terms_url="https://www.termsfeed.com/terms-conditions/957c85c1b089ae9e3219c83eff65377e",
+        ),
+        custom_consumer_settings={
             "feature_flag_1": True,
             "tax_rates": [
                 {
@@ -67,7 +67,7 @@ with Apideck(
                 },
             ],
         },
-    })
+    ))
 
     assert res.create_session_response is not None
 

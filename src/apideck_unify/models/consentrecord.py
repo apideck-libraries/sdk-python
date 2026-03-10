@@ -3,29 +3,30 @@
 from __future__ import annotations
 from .datascopesresources import DataScopesResources, DataScopesResourcesTypedDict
 from apideck_unify.types import BaseModel
-from typing_extensions import TypedDict
+from typing import Optional
+from typing_extensions import NotRequired, TypedDict
 
 
 class ConsentRecordTypedDict(TypedDict):
-    id: str
+    id: NotRequired[str]
     r"""Unique identifier for this consent record"""
-    created_at: str
+    created_at: NotRequired[str]
     r"""ISO timestamp when consent was recorded"""
-    granted: bool
+    granted: NotRequired[bool]
     r"""Whether consent was granted (true) or denied/revoked (false)"""
-    resources: DataScopesResourcesTypedDict
+    resources: NotRequired[DataScopesResourcesTypedDict]
     r"""Data scopes resource configuration that can be either detailed field permissions or a wildcard"""
 
 
 class ConsentRecord(BaseModel):
-    id: str
+    id: Optional[str] = None
     r"""Unique identifier for this consent record"""
 
-    created_at: str
+    created_at: Optional[str] = None
     r"""ISO timestamp when consent was recorded"""
 
-    granted: bool
+    granted: Optional[bool] = None
     r"""Whether consent was granted (true) or denied/revoked (false)"""
 
-    resources: DataScopesResources
+    resources: Optional[DataScopesResources] = None
     r"""Data scopes resource configuration that can be either detailed field permissions or a wildcard"""

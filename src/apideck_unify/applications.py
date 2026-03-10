@@ -3,7 +3,7 @@
 from .basesdk import BaseSDK
 from apideck_unify import models, utils
 from apideck_unify._hooks import HookContext
-from apideck_unify.types import Nullable, OptionalNullable, UNSET
+from apideck_unify.types import OptionalNullable, UNSET
 from apideck_unify.utils import get_security_from_env
 from apideck_unify.utils.unmarshal_json_response import unmarshal_json_response
 from jsonpath import JSONPath
@@ -356,17 +356,18 @@ class Applications(BaseSDK):
     def create(
         self,
         *,
-        applicant_id: Nullable[str],
-        job_id: Nullable[str],
         raw: Optional[bool] = False,
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
+        applicant_id: OptionalNullable[str] = UNSET,
+        job_id: OptionalNullable[str] = UNSET,
         status: OptionalNullable[models.ApplicationStatus] = UNSET,
         stage: Optional[Union[models.Stage, models.StageTypedDict]] = None,
         pass_through: Optional[
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
         ] = None,
+        additional_properties: Optional[Dict[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -376,15 +377,16 @@ class Applications(BaseSDK):
 
         Create Application
 
-        :param applicant_id:
-        :param job_id:
         :param raw: Include raw response. Mostly used for debugging purposes
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param applicant_id:
+        :param job_id:
         :param status:
         :param stage:
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
+        :param additional_properties:
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -413,6 +415,7 @@ class Applications(BaseSDK):
                 pass_through=utils.get_pydantic_model(
                     pass_through, Optional[List[models.PassThroughBody]]
                 ),
+                **(additional_properties or {}),
             ),
         )
 
@@ -518,17 +521,18 @@ class Applications(BaseSDK):
     async def create_async(
         self,
         *,
-        applicant_id: Nullable[str],
-        job_id: Nullable[str],
         raw: Optional[bool] = False,
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
+        applicant_id: OptionalNullable[str] = UNSET,
+        job_id: OptionalNullable[str] = UNSET,
         status: OptionalNullable[models.ApplicationStatus] = UNSET,
         stage: Optional[Union[models.Stage, models.StageTypedDict]] = None,
         pass_through: Optional[
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
         ] = None,
+        additional_properties: Optional[Dict[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -538,15 +542,16 @@ class Applications(BaseSDK):
 
         Create Application
 
-        :param applicant_id:
-        :param job_id:
         :param raw: Include raw response. Mostly used for debugging purposes
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param applicant_id:
+        :param job_id:
         :param status:
         :param stage:
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
+        :param additional_properties:
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -575,6 +580,7 @@ class Applications(BaseSDK):
                 pass_through=utils.get_pydantic_model(
                     pass_through, Optional[List[models.PassThroughBody]]
                 ),
+                **(additional_properties or {}),
             ),
         )
 
@@ -963,17 +969,18 @@ class Applications(BaseSDK):
         self,
         *,
         id: str,
-        applicant_id: Nullable[str],
-        job_id: Nullable[str],
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
+        applicant_id: OptionalNullable[str] = UNSET,
+        job_id: OptionalNullable[str] = UNSET,
         status: OptionalNullable[models.ApplicationStatus] = UNSET,
         stage: Optional[Union[models.Stage, models.StageTypedDict]] = None,
         pass_through: Optional[
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
         ] = None,
+        additional_properties: Optional[Dict[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -984,15 +991,16 @@ class Applications(BaseSDK):
         Update Application
 
         :param id: ID of the record you are acting upon.
-        :param applicant_id:
-        :param job_id:
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param applicant_id:
+        :param job_id:
         :param status:
         :param stage:
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
+        :param additional_properties:
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -1022,6 +1030,7 @@ class Applications(BaseSDK):
                 pass_through=utils.get_pydantic_model(
                     pass_through, Optional[List[models.PassThroughBody]]
                 ),
+                **(additional_properties or {}),
             ),
         )
 
@@ -1128,17 +1137,18 @@ class Applications(BaseSDK):
         self,
         *,
         id: str,
-        applicant_id: Nullable[str],
-        job_id: Nullable[str],
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
+        applicant_id: OptionalNullable[str] = UNSET,
+        job_id: OptionalNullable[str] = UNSET,
         status: OptionalNullable[models.ApplicationStatus] = UNSET,
         stage: Optional[Union[models.Stage, models.StageTypedDict]] = None,
         pass_through: Optional[
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
         ] = None,
+        additional_properties: Optional[Dict[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -1149,15 +1159,16 @@ class Applications(BaseSDK):
         Update Application
 
         :param id: ID of the record you are acting upon.
-        :param applicant_id:
-        :param job_id:
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param applicant_id:
+        :param job_id:
         :param status:
         :param stage:
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
+        :param additional_properties:
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -1187,6 +1198,7 @@ class Applications(BaseSDK):
                 pass_through=utils.get_pydantic_model(
                     pass_through, Optional[List[models.PassThroughBody]]
                 ),
+                **(additional_properties or {}),
             ),
         )
 

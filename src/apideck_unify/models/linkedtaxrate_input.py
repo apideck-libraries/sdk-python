@@ -8,7 +8,9 @@ from apideck_unify.types import (
     UNSET,
     UNSET_SENTINEL,
 )
-from pydantic import model_serializer
+import pydantic
+from pydantic import ConfigDict, model_serializer
+from typing import Any, Dict
 from typing_extensions import NotRequired, TypedDict
 
 
@@ -22,6 +24,11 @@ class LinkedTaxRateInputTypedDict(TypedDict):
 
 
 class LinkedTaxRateInput(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True, arbitrary_types_allowed=True, extra="allow"
+    )
+    __pydantic_extra__: Dict[str, Any] = pydantic.Field(init=False)
+
     id: OptionalNullable[str] = UNSET
     r"""The ID of the object."""
 
@@ -30,6 +37,14 @@ class LinkedTaxRateInput(BaseModel):
 
     rate: OptionalNullable[float] = UNSET
     r"""Rate of the tax rate"""
+
+    @property
+    def additional_properties(self):
+        return self.__pydantic_extra__
+
+    @additional_properties.setter
+    def additional_properties(self, value):
+        self.__pydantic_extra__ = value  # pyright: ignore[reportIncompatibleVariableOverride]
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
@@ -58,5 +73,8 @@ class LinkedTaxRateInput(BaseModel):
                 not k in optional_fields or (optional_nullable and is_set)
             ):
                 m[k] = val
+
+        for k, v in serialized.items():
+            m[k] = v
 
         return m

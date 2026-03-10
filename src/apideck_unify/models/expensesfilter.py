@@ -14,13 +14,8 @@ from typing_extensions import Annotated, NotRequired, TypedDict
 
 class ExpensesFilterStatus(str, Enum, metaclass=utils.OpenEnumMeta):
     DRAFT = "draft"
-    PENDING_APPROVAL = "pending_approval"
-    APPROVED = "approved"
     POSTED = "posted"
     VOIDED = "voided"
-    REJECTED = "rejected"
-    DELETED = "deleted"
-    OTHER = "other"
 
 
 class ExpensesFilterType(str, Enum, metaclass=utils.OpenEnumMeta):

@@ -7,7 +7,9 @@ from .outstandingbalancebycustomer import (
 )
 from apideck_unify.types import BaseModel
 from datetime import date, datetime
-from typing import List, Optional
+import pydantic
+from pydantic import ConfigDict
+from typing import Any, Dict, List, Optional
 from typing_extensions import NotRequired, TypedDict
 
 
@@ -24,6 +26,11 @@ class AgedDebtorsTypedDict(TypedDict):
 
 
 class AgedDebtors(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True, arbitrary_types_allowed=True, extra="allow"
+    )
+    __pydantic_extra__: Dict[str, Any] = pydantic.Field(init=False)
+
     report_generated_at: Optional[datetime] = None
     r"""The exact date and time the report was generated."""
 
@@ -37,3 +44,11 @@ class AgedDebtors(BaseModel):
     r"""Length of each aging period in days."""
 
     outstanding_balances: Optional[List[OutstandingBalanceByCustomer]] = None
+
+    @property
+    def additional_properties(self):
+        return self.__pydantic_extra__
+
+    @additional_properties.setter
+    def additional_properties(self, value):
+        self.__pydantic_extra__ = value  # pyright: ignore[reportIncompatibleVariableOverride]

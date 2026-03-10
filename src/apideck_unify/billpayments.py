@@ -19,6 +19,7 @@ class BillPayments(BaseSDK):
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
+        company_id: Optional[str] = None,
         cursor: OptionalNullable[str] = UNSET,
         limit: Optional[int] = 20,
         filter_: Optional[
@@ -40,6 +41,7 @@ class BillPayments(BaseSDK):
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param company_id: The ID of the company to scope requests to. For connectors that support multi-company, this overrides the default company configured in connection settings.
         :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
         :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
         :param filter_: Apply filters
@@ -66,6 +68,7 @@ class BillPayments(BaseSDK):
             consumer_id=consumer_id,
             app_id=app_id,
             service_id=service_id,
+            company_id=company_id,
             cursor=cursor,
             limit=limit,
             filter_=utils.get_pydantic_model(filter_, Optional[models.PaymentsFilter]),
@@ -137,6 +140,7 @@ class BillPayments(BaseSDK):
                 consumer_id=consumer_id,
                 app_id=app_id,
                 service_id=service_id,
+                company_id=company_id,
                 cursor=next_cursor,
                 limit=limit,
                 filter_=filter_,
@@ -204,6 +208,7 @@ class BillPayments(BaseSDK):
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
+        company_id: Optional[str] = None,
         cursor: OptionalNullable[str] = UNSET,
         limit: Optional[int] = 20,
         filter_: Optional[
@@ -225,6 +230,7 @@ class BillPayments(BaseSDK):
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param company_id: The ID of the company to scope requests to. For connectors that support multi-company, this overrides the default company configured in connection settings.
         :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
         :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
         :param filter_: Apply filters
@@ -251,6 +257,7 @@ class BillPayments(BaseSDK):
             consumer_id=consumer_id,
             app_id=app_id,
             service_id=service_id,
+            company_id=company_id,
             cursor=cursor,
             limit=limit,
             filter_=utils.get_pydantic_model(filter_, Optional[models.PaymentsFilter]),
@@ -322,6 +329,7 @@ class BillPayments(BaseSDK):
                 consumer_id=consumer_id,
                 app_id=app_id,
                 service_id=service_id,
+                company_id=company_id,
                 cursor=next_cursor,
                 limit=limit,
                 filter_=filter_,
@@ -385,14 +393,14 @@ class BillPayments(BaseSDK):
     def create(
         self,
         *,
-        total_amount: Nullable[float],
-        transaction_date: Nullable[datetime],
         raw: Optional[bool] = False,
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
+        company_id_param: Optional[str] = None,
         currency: OptionalNullable[models.Currency] = UNSET,
         currency_rate: OptionalNullable[float] = UNSET,
+        total_amount: OptionalNullable[float] = UNSET,
         reference: OptionalNullable[str] = UNSET,
         payment_method: OptionalNullable[str] = UNSET,
         payment_method_reference: OptionalNullable[str] = UNSET,
@@ -400,6 +408,7 @@ class BillPayments(BaseSDK):
         account: OptionalNullable[
             Union[models.LinkedLedgerAccount, models.LinkedLedgerAccountTypedDict]
         ] = UNSET,
+        transaction_date: OptionalNullable[datetime] = UNSET,
         supplier: OptionalNullable[
             Union[models.LinkedSupplierInput, models.LinkedSupplierInputTypedDict]
         ] = UNSET,
@@ -429,6 +438,7 @@ class BillPayments(BaseSDK):
         pass_through: Optional[
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
         ] = None,
+        additional_properties: Optional[Dict[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -438,19 +448,20 @@ class BillPayments(BaseSDK):
 
         Create Bill Payment
 
-        :param total_amount: The total amount of the transaction or record
-        :param transaction_date: The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD
         :param raw: Include raw response. Mostly used for debugging purposes
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param company_id_param: The ID of the company to scope requests to. For connectors that support multi-company, this overrides the default company configured in connection settings.
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
         :param currency_rate: Currency Exchange Rate at the time entity was recorded/generated.
+        :param total_amount: The total amount of the transaction or record
         :param reference: Optional transaction reference message ie: Debit remittance detail.
         :param payment_method: Payment method used for the transaction, such as cash, credit card, bank transfer, or check
         :param payment_method_reference: Optional reference message returned by payment method on processing
         :param payment_method_id: A unique identifier for an object.
         :param account:
+        :param transaction_date: The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD
         :param supplier: The supplier this entity is linked to.
         :param company_id: The company ID the transaction belongs to
         :param reconciled: Indicates if the transaction has been reconciled.
@@ -464,6 +475,7 @@ class BillPayments(BaseSDK):
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
         :param display_id: Id to be displayed.
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
+        :param additional_properties:
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -484,6 +496,7 @@ class BillPayments(BaseSDK):
             consumer_id=consumer_id,
             app_id=app_id,
             service_id=service_id,
+            company_id_param=company_id_param,
             bill_payment=models.BillPaymentInput(
                 currency=currency,
                 currency_rate=currency_rate,
@@ -520,6 +533,7 @@ class BillPayments(BaseSDK):
                 pass_through=utils.get_pydantic_model(
                     pass_through, Optional[List[models.PassThroughBody]]
                 ),
+                **(additional_properties or {}),
             ),
         )
 
@@ -625,14 +639,14 @@ class BillPayments(BaseSDK):
     async def create_async(
         self,
         *,
-        total_amount: Nullable[float],
-        transaction_date: Nullable[datetime],
         raw: Optional[bool] = False,
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
+        company_id_param: Optional[str] = None,
         currency: OptionalNullable[models.Currency] = UNSET,
         currency_rate: OptionalNullable[float] = UNSET,
+        total_amount: OptionalNullable[float] = UNSET,
         reference: OptionalNullable[str] = UNSET,
         payment_method: OptionalNullable[str] = UNSET,
         payment_method_reference: OptionalNullable[str] = UNSET,
@@ -640,6 +654,7 @@ class BillPayments(BaseSDK):
         account: OptionalNullable[
             Union[models.LinkedLedgerAccount, models.LinkedLedgerAccountTypedDict]
         ] = UNSET,
+        transaction_date: OptionalNullable[datetime] = UNSET,
         supplier: OptionalNullable[
             Union[models.LinkedSupplierInput, models.LinkedSupplierInputTypedDict]
         ] = UNSET,
@@ -669,6 +684,7 @@ class BillPayments(BaseSDK):
         pass_through: Optional[
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
         ] = None,
+        additional_properties: Optional[Dict[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -678,19 +694,20 @@ class BillPayments(BaseSDK):
 
         Create Bill Payment
 
-        :param total_amount: The total amount of the transaction or record
-        :param transaction_date: The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD
         :param raw: Include raw response. Mostly used for debugging purposes
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param company_id_param: The ID of the company to scope requests to. For connectors that support multi-company, this overrides the default company configured in connection settings.
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
         :param currency_rate: Currency Exchange Rate at the time entity was recorded/generated.
+        :param total_amount: The total amount of the transaction or record
         :param reference: Optional transaction reference message ie: Debit remittance detail.
         :param payment_method: Payment method used for the transaction, such as cash, credit card, bank transfer, or check
         :param payment_method_reference: Optional reference message returned by payment method on processing
         :param payment_method_id: A unique identifier for an object.
         :param account:
+        :param transaction_date: The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD
         :param supplier: The supplier this entity is linked to.
         :param company_id: The company ID the transaction belongs to
         :param reconciled: Indicates if the transaction has been reconciled.
@@ -704,6 +721,7 @@ class BillPayments(BaseSDK):
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
         :param display_id: Id to be displayed.
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
+        :param additional_properties:
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -724,6 +742,7 @@ class BillPayments(BaseSDK):
             consumer_id=consumer_id,
             app_id=app_id,
             service_id=service_id,
+            company_id_param=company_id_param,
             bill_payment=models.BillPaymentInput(
                 currency=currency,
                 currency_rate=currency_rate,
@@ -760,6 +779,7 @@ class BillPayments(BaseSDK):
                 pass_through=utils.get_pydantic_model(
                     pass_through, Optional[List[models.PassThroughBody]]
                 ),
+                **(additional_properties or {}),
             ),
         )
 
@@ -869,6 +889,7 @@ class BillPayments(BaseSDK):
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
+        company_id: Optional[str] = None,
         raw: Optional[bool] = False,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
@@ -884,6 +905,7 @@ class BillPayments(BaseSDK):
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param company_id: The ID of the company to scope requests to. For connectors that support multi-company, this overrides the default company configured in connection settings.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param fields: The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded.
         :param retries: Override the default retry configuration for this method
@@ -906,6 +928,7 @@ class BillPayments(BaseSDK):
             consumer_id=consumer_id,
             app_id=app_id,
             service_id=service_id,
+            company_id=company_id,
             raw=raw,
             fields=fields,
         )
@@ -1013,6 +1036,7 @@ class BillPayments(BaseSDK):
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
+        company_id: Optional[str] = None,
         raw: Optional[bool] = False,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
@@ -1028,6 +1052,7 @@ class BillPayments(BaseSDK):
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param company_id: The ID of the company to scope requests to. For connectors that support multi-company, this overrides the default company configured in connection settings.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param fields: The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded.
         :param retries: Override the default retry configuration for this method
@@ -1050,6 +1075,7 @@ class BillPayments(BaseSDK):
             consumer_id=consumer_id,
             app_id=app_id,
             service_id=service_id,
+            company_id=company_id,
             raw=raw,
             fields=fields,
         )
@@ -1154,14 +1180,13 @@ class BillPayments(BaseSDK):
         self,
         *,
         id: str,
-        total_amount: Nullable[float],
-        transaction_date: Nullable[datetime],
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
         currency: OptionalNullable[models.Currency] = UNSET,
         currency_rate: OptionalNullable[float] = UNSET,
+        total_amount: OptionalNullable[float] = UNSET,
         reference: OptionalNullable[str] = UNSET,
         payment_method: OptionalNullable[str] = UNSET,
         payment_method_reference: OptionalNullable[str] = UNSET,
@@ -1169,6 +1194,7 @@ class BillPayments(BaseSDK):
         account: OptionalNullable[
             Union[models.LinkedLedgerAccount, models.LinkedLedgerAccountTypedDict]
         ] = UNSET,
+        transaction_date: OptionalNullable[datetime] = UNSET,
         supplier: OptionalNullable[
             Union[models.LinkedSupplierInput, models.LinkedSupplierInputTypedDict]
         ] = UNSET,
@@ -1198,6 +1224,7 @@ class BillPayments(BaseSDK):
         pass_through: Optional[
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
         ] = None,
+        additional_properties: Optional[Dict[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -1208,19 +1235,19 @@ class BillPayments(BaseSDK):
         Update Bill Payment
 
         :param id: ID of the record you are acting upon.
-        :param total_amount: The total amount of the transaction or record
-        :param transaction_date: The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
         :param currency_rate: Currency Exchange Rate at the time entity was recorded/generated.
+        :param total_amount: The total amount of the transaction or record
         :param reference: Optional transaction reference message ie: Debit remittance detail.
         :param payment_method: Payment method used for the transaction, such as cash, credit card, bank transfer, or check
         :param payment_method_reference: Optional reference message returned by payment method on processing
         :param payment_method_id: A unique identifier for an object.
         :param account:
+        :param transaction_date: The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD
         :param supplier: The supplier this entity is linked to.
         :param company_id: The company ID the transaction belongs to
         :param reconciled: Indicates if the transaction has been reconciled.
@@ -1234,6 +1261,7 @@ class BillPayments(BaseSDK):
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
         :param display_id: Id to be displayed.
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
+        :param additional_properties:
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -1291,6 +1319,7 @@ class BillPayments(BaseSDK):
                 pass_through=utils.get_pydantic_model(
                     pass_through, Optional[List[models.PassThroughBody]]
                 ),
+                **(additional_properties or {}),
             ),
         )
 
@@ -1397,14 +1426,13 @@ class BillPayments(BaseSDK):
         self,
         *,
         id: str,
-        total_amount: Nullable[float],
-        transaction_date: Nullable[datetime],
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
         currency: OptionalNullable[models.Currency] = UNSET,
         currency_rate: OptionalNullable[float] = UNSET,
+        total_amount: OptionalNullable[float] = UNSET,
         reference: OptionalNullable[str] = UNSET,
         payment_method: OptionalNullable[str] = UNSET,
         payment_method_reference: OptionalNullable[str] = UNSET,
@@ -1412,6 +1440,7 @@ class BillPayments(BaseSDK):
         account: OptionalNullable[
             Union[models.LinkedLedgerAccount, models.LinkedLedgerAccountTypedDict]
         ] = UNSET,
+        transaction_date: OptionalNullable[datetime] = UNSET,
         supplier: OptionalNullable[
             Union[models.LinkedSupplierInput, models.LinkedSupplierInputTypedDict]
         ] = UNSET,
@@ -1441,6 +1470,7 @@ class BillPayments(BaseSDK):
         pass_through: Optional[
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
         ] = None,
+        additional_properties: Optional[Dict[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -1451,19 +1481,19 @@ class BillPayments(BaseSDK):
         Update Bill Payment
 
         :param id: ID of the record you are acting upon.
-        :param total_amount: The total amount of the transaction or record
-        :param transaction_date: The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
         :param currency_rate: Currency Exchange Rate at the time entity was recorded/generated.
+        :param total_amount: The total amount of the transaction or record
         :param reference: Optional transaction reference message ie: Debit remittance detail.
         :param payment_method: Payment method used for the transaction, such as cash, credit card, bank transfer, or check
         :param payment_method_reference: Optional reference message returned by payment method on processing
         :param payment_method_id: A unique identifier for an object.
         :param account:
+        :param transaction_date: The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD
         :param supplier: The supplier this entity is linked to.
         :param company_id: The company ID the transaction belongs to
         :param reconciled: Indicates if the transaction has been reconciled.
@@ -1477,6 +1507,7 @@ class BillPayments(BaseSDK):
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
         :param display_id: Id to be displayed.
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
+        :param additional_properties:
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -1534,6 +1565,7 @@ class BillPayments(BaseSDK):
                 pass_through=utils.get_pydantic_model(
                     pass_through, Optional[List[models.PassThroughBody]]
                 ),
+                **(additional_properties or {}),
             ),
         )
 

@@ -3,10 +3,9 @@
 from .basesdk import BaseSDK
 from apideck_unify import models, utils
 from apideck_unify._hooks import HookContext
-from apideck_unify.types import Nullable, OptionalNullable, UNSET
+from apideck_unify.types import OptionalNullable, UNSET
 from apideck_unify.utils import get_security_from_env
 from apideck_unify.utils.unmarshal_json_response import unmarshal_json_response
-from datetime import date
 from jsonpath import JSONPath
 from typing import Any, Dict, List, Mapping, Optional, Union
 
@@ -19,34 +18,26 @@ class Companies(BaseSDK):
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
+        company_id: Optional[str] = None,
         cursor: OptionalNullable[str] = UNSET,
         limit: Optional[int] = 20,
-        filter_: Optional[
-            Union[models.CompaniesFilter, models.CompaniesFilterTypedDict]
-        ] = None,
-        sort: Optional[
-            Union[models.CompaniesSort, models.CompaniesSortTypedDict]
-        ] = None,
-        pass_through: Optional[Dict[str, Any]] = None,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
         http_headers: Optional[Mapping[str, str]] = None,
-    ) -> Optional[models.CrmCompaniesAllResponse]:
+    ) -> Optional[models.AccountingCompaniesAllResponse]:
         r"""List companies
 
-        List companies
+        List all companies accessible through the current connection. Only connectors that support multi-company access (x-apideck-supports-multi-company) will return a list of companies. Use the returned company ID in the x-apideck-company-id header to scope subsequent requests to a specific company.
 
         :param raw: Include raw response. Mostly used for debugging purposes
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param company_id: The ID of the company to scope requests to. For connectors that support multi-company, this overrides the default company configured in connection settings.
         :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
         :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
-        :param filter_: Apply filters
-        :param sort: Apply sorting
-        :param pass_through: Optional unmapped key/values that will be passed through to downstream as query parameters. Ie: ?pass_through[search]=leads becomes ?search=leads
         :param fields: The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
@@ -63,22 +54,20 @@ class Companies(BaseSDK):
         else:
             base_url = self._get_url(base_url, url_variables)
 
-        request = models.CrmCompaniesAllRequest(
+        request = models.AccountingCompaniesAllRequest(
             raw=raw,
             consumer_id=consumer_id,
             app_id=app_id,
             service_id=service_id,
+            company_id=company_id,
             cursor=cursor,
             limit=limit,
-            filter_=utils.get_pydantic_model(filter_, Optional[models.CompaniesFilter]),
-            sort=utils.get_pydantic_model(sort, Optional[models.CompaniesSort]),
-            pass_through=pass_through,
             fields=fields,
         )
 
         req = self._build_request(
             method="GET",
-            path="/crm/companies",
+            path="/accounting/companies",
             base_url=base_url,
             url_variables=url_variables,
             request=request,
@@ -88,7 +77,7 @@ class Companies(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             http_headers=http_headers,
-            _globals=models.CrmCompaniesAllGlobals(
+            _globals=models.AccountingCompaniesAllGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
@@ -112,7 +101,7 @@ class Companies(BaseSDK):
             hook_ctx=HookContext(
                 config=self.sdk_configuration,
                 base_url=base_url or "",
-                operation_id="crm.companiesAll",
+                operation_id="accounting.companiesAll",
                 oauth2_scopes=None,
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
@@ -123,7 +112,7 @@ class Companies(BaseSDK):
             retry_config=retry_config,
         )
 
-        def next_func() -> Optional[models.CrmCompaniesAllResponse]:
+        def next_func() -> Optional[models.AccountingCompaniesAllResponse]:
             body = utils.unmarshal_json(http_res.text, Union[Dict[Any, Any], List[Any]])
             next_cursor = JSONPath("$.meta.cursors.next").parse(body)
 
@@ -139,18 +128,16 @@ class Companies(BaseSDK):
                 consumer_id=consumer_id,
                 app_id=app_id,
                 service_id=service_id,
+                company_id=company_id,
                 cursor=next_cursor,
                 limit=limit,
-                filter_=filter_,
-                sort=sort,
-                pass_through=pass_through,
                 fields=fields,
                 retries=retries,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return models.CrmCompaniesAllResponse(
+            return models.AccountingCompaniesAllResponse(
                 get_companies_response=unmarshal_json_response(
                     Optional[models.GetCompaniesResponse], http_res
                 ),
@@ -189,7 +176,7 @@ class Companies(BaseSDK):
             http_res_text = utils.stream_to_text(http_res)
             raise models.APIError("API error occurred", http_res, http_res_text)
         if utils.match_response(http_res, "default", "application/json"):
-            return models.CrmCompaniesAllResponse(
+            return models.AccountingCompaniesAllResponse(
                 unexpected_error_response=unmarshal_json_response(
                     Optional[models.UnexpectedErrorResponse], http_res
                 ),
@@ -206,34 +193,26 @@ class Companies(BaseSDK):
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
+        company_id: Optional[str] = None,
         cursor: OptionalNullable[str] = UNSET,
         limit: Optional[int] = 20,
-        filter_: Optional[
-            Union[models.CompaniesFilter, models.CompaniesFilterTypedDict]
-        ] = None,
-        sort: Optional[
-            Union[models.CompaniesSort, models.CompaniesSortTypedDict]
-        ] = None,
-        pass_through: Optional[Dict[str, Any]] = None,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
         http_headers: Optional[Mapping[str, str]] = None,
-    ) -> Optional[models.CrmCompaniesAllResponse]:
+    ) -> Optional[models.AccountingCompaniesAllResponse]:
         r"""List companies
 
-        List companies
+        List all companies accessible through the current connection. Only connectors that support multi-company access (x-apideck-supports-multi-company) will return a list of companies. Use the returned company ID in the x-apideck-company-id header to scope subsequent requests to a specific company.
 
         :param raw: Include raw response. Mostly used for debugging purposes
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param company_id: The ID of the company to scope requests to. For connectors that support multi-company, this overrides the default company configured in connection settings.
         :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
         :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
-        :param filter_: Apply filters
-        :param sort: Apply sorting
-        :param pass_through: Optional unmapped key/values that will be passed through to downstream as query parameters. Ie: ?pass_through[search]=leads becomes ?search=leads
         :param fields: The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
@@ -250,22 +229,20 @@ class Companies(BaseSDK):
         else:
             base_url = self._get_url(base_url, url_variables)
 
-        request = models.CrmCompaniesAllRequest(
+        request = models.AccountingCompaniesAllRequest(
             raw=raw,
             consumer_id=consumer_id,
             app_id=app_id,
             service_id=service_id,
+            company_id=company_id,
             cursor=cursor,
             limit=limit,
-            filter_=utils.get_pydantic_model(filter_, Optional[models.CompaniesFilter]),
-            sort=utils.get_pydantic_model(sort, Optional[models.CompaniesSort]),
-            pass_through=pass_through,
             fields=fields,
         )
 
         req = self._build_request_async(
             method="GET",
-            path="/crm/companies",
+            path="/accounting/companies",
             base_url=base_url,
             url_variables=url_variables,
             request=request,
@@ -275,7 +252,7 @@ class Companies(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             http_headers=http_headers,
-            _globals=models.CrmCompaniesAllGlobals(
+            _globals=models.AccountingCompaniesAllGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
@@ -299,7 +276,7 @@ class Companies(BaseSDK):
             hook_ctx=HookContext(
                 config=self.sdk_configuration,
                 base_url=base_url or "",
-                operation_id="crm.companiesAll",
+                operation_id="accounting.companiesAll",
                 oauth2_scopes=None,
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
@@ -310,7 +287,7 @@ class Companies(BaseSDK):
             retry_config=retry_config,
         )
 
-        def next_func() -> Optional[models.CrmCompaniesAllResponse]:
+        def next_func() -> Optional[models.AccountingCompaniesAllResponse]:
             body = utils.unmarshal_json(http_res.text, Union[Dict[Any, Any], List[Any]])
             next_cursor = JSONPath("$.meta.cursors.next").parse(body)
 
@@ -326,18 +303,16 @@ class Companies(BaseSDK):
                 consumer_id=consumer_id,
                 app_id=app_id,
                 service_id=service_id,
+                company_id=company_id,
                 cursor=next_cursor,
                 limit=limit,
-                filter_=filter_,
-                sort=sort,
-                pass_through=pass_through,
                 fields=fields,
                 retries=retries,
             )
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return models.CrmCompaniesAllResponse(
+            return models.AccountingCompaniesAllResponse(
                 get_companies_response=unmarshal_json_response(
                     Optional[models.GetCompaniesResponse], http_res
                 ),
@@ -376,1672 +351,12 @@ class Companies(BaseSDK):
             http_res_text = await utils.stream_to_text_async(http_res)
             raise models.APIError("API error occurred", http_res, http_res_text)
         if utils.match_response(http_res, "default", "application/json"):
-            return models.CrmCompaniesAllResponse(
+            return models.AccountingCompaniesAllResponse(
                 unexpected_error_response=unmarshal_json_response(
                     Optional[models.UnexpectedErrorResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
-            )
-
-        raise models.APIError("Unexpected response received", http_res)
-
-    def create(
-        self,
-        *,
-        name: Nullable[str],
-        raw: Optional[bool] = False,
-        consumer_id: Optional[str] = None,
-        app_id: Optional[str] = None,
-        service_id: Optional[str] = None,
-        owner_id: OptionalNullable[str] = UNSET,
-        image: OptionalNullable[str] = UNSET,
-        description: OptionalNullable[str] = UNSET,
-        vat_number: OptionalNullable[str] = UNSET,
-        currency: OptionalNullable[models.Currency] = UNSET,
-        status: OptionalNullable[str] = UNSET,
-        fax: OptionalNullable[str] = UNSET,
-        annual_revenue: OptionalNullable[str] = UNSET,
-        number_of_employees: OptionalNullable[str] = UNSET,
-        industry: OptionalNullable[str] = UNSET,
-        ownership: OptionalNullable[str] = UNSET,
-        sales_tax_number: OptionalNullable[str] = UNSET,
-        payee_number: OptionalNullable[str] = UNSET,
-        abn_or_tfn: OptionalNullable[str] = UNSET,
-        abn_branch: OptionalNullable[str] = UNSET,
-        acn: OptionalNullable[str] = UNSET,
-        first_name: OptionalNullable[str] = UNSET,
-        last_name: OptionalNullable[str] = UNSET,
-        bank_accounts: Optional[
-            Union[List[models.BankAccount1], List[models.BankAccount1TypedDict]]
-        ] = None,
-        websites: Optional[
-            Union[List[models.Website], List[models.WebsiteTypedDict]]
-        ] = None,
-        addresses: Optional[
-            Union[List[models.Address], List[models.AddressTypedDict]]
-        ] = None,
-        social_links: Optional[
-            Union[List[models.SocialLink], List[models.SocialLinkTypedDict]]
-        ] = None,
-        phone_numbers: Optional[
-            Union[List[models.PhoneNumber], List[models.PhoneNumberTypedDict]]
-        ] = None,
-        emails: Optional[Union[List[models.Email], List[models.EmailTypedDict]]] = None,
-        row_type: Optional[
-            Union[models.CompanyRowType, models.CompanyRowTypeTypedDict]
-        ] = None,
-        custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
-        ] = None,
-        tags: OptionalNullable[List[str]] = UNSET,
-        read_only: OptionalNullable[bool] = UNSET,
-        salutation: OptionalNullable[str] = UNSET,
-        birthday: OptionalNullable[date] = UNSET,
-        pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
-        ] = None,
-        retries: OptionalNullable[utils.RetryConfig] = UNSET,
-        server_url: Optional[str] = None,
-        timeout_ms: Optional[int] = None,
-        http_headers: Optional[Mapping[str, str]] = None,
-    ) -> models.CrmCompaniesAddResponse:
-        r"""Create company
-
-        Create company
-
-        :param name: Name of the company
-        :param raw: Include raw response. Mostly used for debugging purposes
-        :param consumer_id: ID of the consumer which you want to get or push data from
-        :param app_id: The ID of your Unify application
-        :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
-        :param owner_id: Owner ID
-        :param image: The Image URL of the company
-        :param description: A description of the company
-        :param vat_number: The VAT number of the company
-        :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
-        :param status: The status of the company
-        :param fax: The fax number of the company
-        :param annual_revenue: The annual revenue of the company
-        :param number_of_employees: Number of employees
-        :param industry: The industry represents the type of business the company is in.
-        :param ownership: The ownership indicates the type of ownership of the company.
-        :param sales_tax_number: A sales tax number is a unique number that identifies a company for tax purposes.
-        :param payee_number: A payee number is a unique number that identifies a payee for tax purposes.
-        :param abn_or_tfn: An ABN is necessary for operating a business, while a TFN (Tax File Number) is required for any person working in Australia.
-        :param abn_branch: An ABN Branch (also known as a GST Branch) is used if part of your business needs to account for GST separately from its parent entity.
-        :param acn: The Australian Company Number (ACN) is a nine digit number with the last digit being a check digit calculated using a modified modulus 10 calculation. ASIC has adopted a convention of always printing and displaying the ACN in the format XXX XXX XXX; three blocks of three characters, each block separated by a blank.
-        :param first_name: The first name of the person.
-        :param last_name: The last name of the person.
-        :param bank_accounts:
-        :param websites:
-        :param addresses:
-        :param social_links:
-        :param phone_numbers:
-        :param emails:
-        :param row_type:
-        :param custom_fields:
-        :param tags:
-        :param read_only: Whether the company is read-only or not
-        :param salutation: A formal salutation for the person. For example, 'Mr', 'Mrs'
-        :param birthday: The date of birth of the person.
-        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
-        :param retries: Override the default retry configuration for this method
-        :param server_url: Override the default server URL for this method
-        :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
-        :param http_headers: Additional headers to set or replace on requests.
-        """
-        base_url = None
-        url_variables = None
-        if timeout_ms is None:
-            timeout_ms = self.sdk_configuration.timeout_ms
-
-        if server_url is not None:
-            base_url = server_url
-        else:
-            base_url = self._get_url(base_url, url_variables)
-
-        request = models.CrmCompaniesAddRequest(
-            raw=raw,
-            consumer_id=consumer_id,
-            app_id=app_id,
-            service_id=service_id,
-            company1=models.Company1Input(
-                name=name,
-                owner_id=owner_id,
-                image=image,
-                description=description,
-                vat_number=vat_number,
-                currency=currency,
-                status=status,
-                fax=fax,
-                annual_revenue=annual_revenue,
-                number_of_employees=number_of_employees,
-                industry=industry,
-                ownership=ownership,
-                sales_tax_number=sales_tax_number,
-                payee_number=payee_number,
-                abn_or_tfn=abn_or_tfn,
-                abn_branch=abn_branch,
-                acn=acn,
-                first_name=first_name,
-                last_name=last_name,
-                bank_accounts=utils.get_pydantic_model(
-                    bank_accounts, Optional[List[models.BankAccount1]]
-                ),
-                websites=utils.get_pydantic_model(
-                    websites, Optional[List[models.Website]]
-                ),
-                addresses=utils.get_pydantic_model(
-                    addresses, Optional[List[models.Address]]
-                ),
-                social_links=utils.get_pydantic_model(
-                    social_links, Optional[List[models.SocialLink]]
-                ),
-                phone_numbers=utils.get_pydantic_model(
-                    phone_numbers, Optional[List[models.PhoneNumber]]
-                ),
-                emails=utils.get_pydantic_model(emails, Optional[List[models.Email]]),
-                row_type=utils.get_pydantic_model(
-                    row_type, Optional[models.CompanyRowType]
-                ),
-                custom_fields=utils.get_pydantic_model(
-                    custom_fields, Optional[List[models.CustomField]]
-                ),
-                tags=tags,
-                read_only=read_only,
-                salutation=salutation,
-                birthday=birthday,
-                pass_through=utils.get_pydantic_model(
-                    pass_through, Optional[List[models.PassThroughBody]]
-                ),
-            ),
-        )
-
-        req = self._build_request(
-            method="POST",
-            path="/crm/companies",
-            base_url=base_url,
-            url_variables=url_variables,
-            request=request,
-            request_body_required=True,
-            request_has_path_params=False,
-            request_has_query_params=True,
-            user_agent_header="user-agent",
-            accept_header_value="application/json",
-            http_headers=http_headers,
-            _globals=models.CrmCompaniesAddGlobals(
-                consumer_id=self.sdk_configuration.globals.consumer_id,
-                app_id=self.sdk_configuration.globals.app_id,
-            ),
-            security=self.sdk_configuration.security,
-            get_serialized_body=lambda: utils.serialize_request_body(
-                request.company1, False, False, "json", models.Company1Input
-            ),
-            timeout_ms=timeout_ms,
-        )
-
-        if retries == UNSET:
-            if self.sdk_configuration.retry_config is not UNSET:
-                retries = self.sdk_configuration.retry_config
-            else:
-                retries = utils.RetryConfig(
-                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 900000), True
-                )
-
-        retry_config = None
-        if isinstance(retries, utils.RetryConfig):
-            retry_config = (retries, ["408", "500", "502", "503", "504"])
-
-        http_res = self.do_request(
-            hook_ctx=HookContext(
-                config=self.sdk_configuration,
-                base_url=base_url or "",
-                operation_id="crm.companiesAdd",
-                oauth2_scopes=None,
-                security_source=get_security_from_env(
-                    self.sdk_configuration.security, models.Security
-                ),
-            ),
-            request=req,
-            error_status_codes=["400", "401", "402", "404", "422", "4XX", "5XX"],
-            retry_config=retry_config,
-        )
-
-        response_data: Any = None
-        if utils.match_response(http_res, "201", "application/json"):
-            return models.CrmCompaniesAddResponse(
-                create_company_response=unmarshal_json_response(
-                    Optional[models.CreateCompanyResponse], http_res
-                ),
-                http_meta=models.HTTPMetadata(request=req, response=http_res),
-            )
-        if utils.match_response(http_res, "400", "application/json"):
-            response_data = unmarshal_json_response(
-                models.BadRequestResponseData, http_res
-            )
-            raise models.BadRequestResponse(response_data, http_res)
-        if utils.match_response(http_res, "401", "application/json"):
-            response_data = unmarshal_json_response(
-                models.UnauthorizedResponseData, http_res
-            )
-            raise models.UnauthorizedResponse(response_data, http_res)
-        if utils.match_response(http_res, "402", "application/json"):
-            response_data = unmarshal_json_response(
-                models.PaymentRequiredResponseData, http_res
-            )
-            raise models.PaymentRequiredResponse(response_data, http_res)
-        if utils.match_response(http_res, "404", "application/json"):
-            response_data = unmarshal_json_response(
-                models.NotFoundResponseData, http_res
-            )
-            raise models.NotFoundResponse(response_data, http_res)
-        if utils.match_response(http_res, "422", "application/json"):
-            response_data = unmarshal_json_response(
-                models.UnprocessableResponseData, http_res
-            )
-            raise models.UnprocessableResponse(response_data, http_res)
-        if utils.match_response(http_res, "4XX", "*"):
-            http_res_text = utils.stream_to_text(http_res)
-            raise models.APIError("API error occurred", http_res, http_res_text)
-        if utils.match_response(http_res, "5XX", "*"):
-            http_res_text = utils.stream_to_text(http_res)
-            raise models.APIError("API error occurred", http_res, http_res_text)
-        if utils.match_response(http_res, "default", "application/json"):
-            return models.CrmCompaniesAddResponse(
-                unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
-                ),
-                http_meta=models.HTTPMetadata(request=req, response=http_res),
-            )
-
-        raise models.APIError("Unexpected response received", http_res)
-
-    async def create_async(
-        self,
-        *,
-        name: Nullable[str],
-        raw: Optional[bool] = False,
-        consumer_id: Optional[str] = None,
-        app_id: Optional[str] = None,
-        service_id: Optional[str] = None,
-        owner_id: OptionalNullable[str] = UNSET,
-        image: OptionalNullable[str] = UNSET,
-        description: OptionalNullable[str] = UNSET,
-        vat_number: OptionalNullable[str] = UNSET,
-        currency: OptionalNullable[models.Currency] = UNSET,
-        status: OptionalNullable[str] = UNSET,
-        fax: OptionalNullable[str] = UNSET,
-        annual_revenue: OptionalNullable[str] = UNSET,
-        number_of_employees: OptionalNullable[str] = UNSET,
-        industry: OptionalNullable[str] = UNSET,
-        ownership: OptionalNullable[str] = UNSET,
-        sales_tax_number: OptionalNullable[str] = UNSET,
-        payee_number: OptionalNullable[str] = UNSET,
-        abn_or_tfn: OptionalNullable[str] = UNSET,
-        abn_branch: OptionalNullable[str] = UNSET,
-        acn: OptionalNullable[str] = UNSET,
-        first_name: OptionalNullable[str] = UNSET,
-        last_name: OptionalNullable[str] = UNSET,
-        bank_accounts: Optional[
-            Union[List[models.BankAccount1], List[models.BankAccount1TypedDict]]
-        ] = None,
-        websites: Optional[
-            Union[List[models.Website], List[models.WebsiteTypedDict]]
-        ] = None,
-        addresses: Optional[
-            Union[List[models.Address], List[models.AddressTypedDict]]
-        ] = None,
-        social_links: Optional[
-            Union[List[models.SocialLink], List[models.SocialLinkTypedDict]]
-        ] = None,
-        phone_numbers: Optional[
-            Union[List[models.PhoneNumber], List[models.PhoneNumberTypedDict]]
-        ] = None,
-        emails: Optional[Union[List[models.Email], List[models.EmailTypedDict]]] = None,
-        row_type: Optional[
-            Union[models.CompanyRowType, models.CompanyRowTypeTypedDict]
-        ] = None,
-        custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
-        ] = None,
-        tags: OptionalNullable[List[str]] = UNSET,
-        read_only: OptionalNullable[bool] = UNSET,
-        salutation: OptionalNullable[str] = UNSET,
-        birthday: OptionalNullable[date] = UNSET,
-        pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
-        ] = None,
-        retries: OptionalNullable[utils.RetryConfig] = UNSET,
-        server_url: Optional[str] = None,
-        timeout_ms: Optional[int] = None,
-        http_headers: Optional[Mapping[str, str]] = None,
-    ) -> models.CrmCompaniesAddResponse:
-        r"""Create company
-
-        Create company
-
-        :param name: Name of the company
-        :param raw: Include raw response. Mostly used for debugging purposes
-        :param consumer_id: ID of the consumer which you want to get or push data from
-        :param app_id: The ID of your Unify application
-        :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
-        :param owner_id: Owner ID
-        :param image: The Image URL of the company
-        :param description: A description of the company
-        :param vat_number: The VAT number of the company
-        :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
-        :param status: The status of the company
-        :param fax: The fax number of the company
-        :param annual_revenue: The annual revenue of the company
-        :param number_of_employees: Number of employees
-        :param industry: The industry represents the type of business the company is in.
-        :param ownership: The ownership indicates the type of ownership of the company.
-        :param sales_tax_number: A sales tax number is a unique number that identifies a company for tax purposes.
-        :param payee_number: A payee number is a unique number that identifies a payee for tax purposes.
-        :param abn_or_tfn: An ABN is necessary for operating a business, while a TFN (Tax File Number) is required for any person working in Australia.
-        :param abn_branch: An ABN Branch (also known as a GST Branch) is used if part of your business needs to account for GST separately from its parent entity.
-        :param acn: The Australian Company Number (ACN) is a nine digit number with the last digit being a check digit calculated using a modified modulus 10 calculation. ASIC has adopted a convention of always printing and displaying the ACN in the format XXX XXX XXX; three blocks of three characters, each block separated by a blank.
-        :param first_name: The first name of the person.
-        :param last_name: The last name of the person.
-        :param bank_accounts:
-        :param websites:
-        :param addresses:
-        :param social_links:
-        :param phone_numbers:
-        :param emails:
-        :param row_type:
-        :param custom_fields:
-        :param tags:
-        :param read_only: Whether the company is read-only or not
-        :param salutation: A formal salutation for the person. For example, 'Mr', 'Mrs'
-        :param birthday: The date of birth of the person.
-        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
-        :param retries: Override the default retry configuration for this method
-        :param server_url: Override the default server URL for this method
-        :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
-        :param http_headers: Additional headers to set or replace on requests.
-        """
-        base_url = None
-        url_variables = None
-        if timeout_ms is None:
-            timeout_ms = self.sdk_configuration.timeout_ms
-
-        if server_url is not None:
-            base_url = server_url
-        else:
-            base_url = self._get_url(base_url, url_variables)
-
-        request = models.CrmCompaniesAddRequest(
-            raw=raw,
-            consumer_id=consumer_id,
-            app_id=app_id,
-            service_id=service_id,
-            company1=models.Company1Input(
-                name=name,
-                owner_id=owner_id,
-                image=image,
-                description=description,
-                vat_number=vat_number,
-                currency=currency,
-                status=status,
-                fax=fax,
-                annual_revenue=annual_revenue,
-                number_of_employees=number_of_employees,
-                industry=industry,
-                ownership=ownership,
-                sales_tax_number=sales_tax_number,
-                payee_number=payee_number,
-                abn_or_tfn=abn_or_tfn,
-                abn_branch=abn_branch,
-                acn=acn,
-                first_name=first_name,
-                last_name=last_name,
-                bank_accounts=utils.get_pydantic_model(
-                    bank_accounts, Optional[List[models.BankAccount1]]
-                ),
-                websites=utils.get_pydantic_model(
-                    websites, Optional[List[models.Website]]
-                ),
-                addresses=utils.get_pydantic_model(
-                    addresses, Optional[List[models.Address]]
-                ),
-                social_links=utils.get_pydantic_model(
-                    social_links, Optional[List[models.SocialLink]]
-                ),
-                phone_numbers=utils.get_pydantic_model(
-                    phone_numbers, Optional[List[models.PhoneNumber]]
-                ),
-                emails=utils.get_pydantic_model(emails, Optional[List[models.Email]]),
-                row_type=utils.get_pydantic_model(
-                    row_type, Optional[models.CompanyRowType]
-                ),
-                custom_fields=utils.get_pydantic_model(
-                    custom_fields, Optional[List[models.CustomField]]
-                ),
-                tags=tags,
-                read_only=read_only,
-                salutation=salutation,
-                birthday=birthday,
-                pass_through=utils.get_pydantic_model(
-                    pass_through, Optional[List[models.PassThroughBody]]
-                ),
-            ),
-        )
-
-        req = self._build_request_async(
-            method="POST",
-            path="/crm/companies",
-            base_url=base_url,
-            url_variables=url_variables,
-            request=request,
-            request_body_required=True,
-            request_has_path_params=False,
-            request_has_query_params=True,
-            user_agent_header="user-agent",
-            accept_header_value="application/json",
-            http_headers=http_headers,
-            _globals=models.CrmCompaniesAddGlobals(
-                consumer_id=self.sdk_configuration.globals.consumer_id,
-                app_id=self.sdk_configuration.globals.app_id,
-            ),
-            security=self.sdk_configuration.security,
-            get_serialized_body=lambda: utils.serialize_request_body(
-                request.company1, False, False, "json", models.Company1Input
-            ),
-            timeout_ms=timeout_ms,
-        )
-
-        if retries == UNSET:
-            if self.sdk_configuration.retry_config is not UNSET:
-                retries = self.sdk_configuration.retry_config
-            else:
-                retries = utils.RetryConfig(
-                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 900000), True
-                )
-
-        retry_config = None
-        if isinstance(retries, utils.RetryConfig):
-            retry_config = (retries, ["408", "500", "502", "503", "504"])
-
-        http_res = await self.do_request_async(
-            hook_ctx=HookContext(
-                config=self.sdk_configuration,
-                base_url=base_url or "",
-                operation_id="crm.companiesAdd",
-                oauth2_scopes=None,
-                security_source=get_security_from_env(
-                    self.sdk_configuration.security, models.Security
-                ),
-            ),
-            request=req,
-            error_status_codes=["400", "401", "402", "404", "422", "4XX", "5XX"],
-            retry_config=retry_config,
-        )
-
-        response_data: Any = None
-        if utils.match_response(http_res, "201", "application/json"):
-            return models.CrmCompaniesAddResponse(
-                create_company_response=unmarshal_json_response(
-                    Optional[models.CreateCompanyResponse], http_res
-                ),
-                http_meta=models.HTTPMetadata(request=req, response=http_res),
-            )
-        if utils.match_response(http_res, "400", "application/json"):
-            response_data = unmarshal_json_response(
-                models.BadRequestResponseData, http_res
-            )
-            raise models.BadRequestResponse(response_data, http_res)
-        if utils.match_response(http_res, "401", "application/json"):
-            response_data = unmarshal_json_response(
-                models.UnauthorizedResponseData, http_res
-            )
-            raise models.UnauthorizedResponse(response_data, http_res)
-        if utils.match_response(http_res, "402", "application/json"):
-            response_data = unmarshal_json_response(
-                models.PaymentRequiredResponseData, http_res
-            )
-            raise models.PaymentRequiredResponse(response_data, http_res)
-        if utils.match_response(http_res, "404", "application/json"):
-            response_data = unmarshal_json_response(
-                models.NotFoundResponseData, http_res
-            )
-            raise models.NotFoundResponse(response_data, http_res)
-        if utils.match_response(http_res, "422", "application/json"):
-            response_data = unmarshal_json_response(
-                models.UnprocessableResponseData, http_res
-            )
-            raise models.UnprocessableResponse(response_data, http_res)
-        if utils.match_response(http_res, "4XX", "*"):
-            http_res_text = await utils.stream_to_text_async(http_res)
-            raise models.APIError("API error occurred", http_res, http_res_text)
-        if utils.match_response(http_res, "5XX", "*"):
-            http_res_text = await utils.stream_to_text_async(http_res)
-            raise models.APIError("API error occurred", http_res, http_res_text)
-        if utils.match_response(http_res, "default", "application/json"):
-            return models.CrmCompaniesAddResponse(
-                unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
-                ),
-                http_meta=models.HTTPMetadata(request=req, response=http_res),
-            )
-
-        raise models.APIError("Unexpected response received", http_res)
-
-    def get(
-        self,
-        *,
-        id: str,
-        raw: Optional[bool] = False,
-        consumer_id: Optional[str] = None,
-        app_id: Optional[str] = None,
-        service_id: Optional[str] = None,
-        fields: OptionalNullable[str] = UNSET,
-        retries: OptionalNullable[utils.RetryConfig] = UNSET,
-        server_url: Optional[str] = None,
-        timeout_ms: Optional[int] = None,
-        http_headers: Optional[Mapping[str, str]] = None,
-    ) -> models.CrmCompaniesOneResponse:
-        r"""Get company
-
-        Get company
-
-        :param id: ID of the record you are acting upon.
-        :param raw: Include raw response. Mostly used for debugging purposes
-        :param consumer_id: ID of the consumer which you want to get or push data from
-        :param app_id: The ID of your Unify application
-        :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
-        :param fields: The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded.
-        :param retries: Override the default retry configuration for this method
-        :param server_url: Override the default server URL for this method
-        :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
-        :param http_headers: Additional headers to set or replace on requests.
-        """
-        base_url = None
-        url_variables = None
-        if timeout_ms is None:
-            timeout_ms = self.sdk_configuration.timeout_ms
-
-        if server_url is not None:
-            base_url = server_url
-        else:
-            base_url = self._get_url(base_url, url_variables)
-
-        request = models.CrmCompaniesOneRequest(
-            id=id,
-            raw=raw,
-            consumer_id=consumer_id,
-            app_id=app_id,
-            service_id=service_id,
-            fields=fields,
-        )
-
-        req = self._build_request(
-            method="GET",
-            path="/crm/companies/{id}",
-            base_url=base_url,
-            url_variables=url_variables,
-            request=request,
-            request_body_required=False,
-            request_has_path_params=True,
-            request_has_query_params=True,
-            user_agent_header="user-agent",
-            accept_header_value="application/json",
-            http_headers=http_headers,
-            _globals=models.CrmCompaniesOneGlobals(
-                consumer_id=self.sdk_configuration.globals.consumer_id,
-                app_id=self.sdk_configuration.globals.app_id,
-            ),
-            security=self.sdk_configuration.security,
-            timeout_ms=timeout_ms,
-        )
-
-        if retries == UNSET:
-            if self.sdk_configuration.retry_config is not UNSET:
-                retries = self.sdk_configuration.retry_config
-            else:
-                retries = utils.RetryConfig(
-                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 900000), True
-                )
-
-        retry_config = None
-        if isinstance(retries, utils.RetryConfig):
-            retry_config = (retries, ["408", "500", "502", "503", "504"])
-
-        http_res = self.do_request(
-            hook_ctx=HookContext(
-                config=self.sdk_configuration,
-                base_url=base_url or "",
-                operation_id="crm.companiesOne",
-                oauth2_scopes=None,
-                security_source=get_security_from_env(
-                    self.sdk_configuration.security, models.Security
-                ),
-            ),
-            request=req,
-            error_status_codes=["400", "401", "402", "404", "422", "4XX", "5XX"],
-            retry_config=retry_config,
-        )
-
-        response_data: Any = None
-        if utils.match_response(http_res, "200", "application/json"):
-            return models.CrmCompaniesOneResponse(
-                get_company_response=unmarshal_json_response(
-                    Optional[models.GetCompanyResponse], http_res
-                ),
-                http_meta=models.HTTPMetadata(request=req, response=http_res),
-            )
-        if utils.match_response(http_res, "400", "application/json"):
-            response_data = unmarshal_json_response(
-                models.BadRequestResponseData, http_res
-            )
-            raise models.BadRequestResponse(response_data, http_res)
-        if utils.match_response(http_res, "401", "application/json"):
-            response_data = unmarshal_json_response(
-                models.UnauthorizedResponseData, http_res
-            )
-            raise models.UnauthorizedResponse(response_data, http_res)
-        if utils.match_response(http_res, "402", "application/json"):
-            response_data = unmarshal_json_response(
-                models.PaymentRequiredResponseData, http_res
-            )
-            raise models.PaymentRequiredResponse(response_data, http_res)
-        if utils.match_response(http_res, "404", "application/json"):
-            response_data = unmarshal_json_response(
-                models.NotFoundResponseData, http_res
-            )
-            raise models.NotFoundResponse(response_data, http_res)
-        if utils.match_response(http_res, "422", "application/json"):
-            response_data = unmarshal_json_response(
-                models.UnprocessableResponseData, http_res
-            )
-            raise models.UnprocessableResponse(response_data, http_res)
-        if utils.match_response(http_res, "4XX", "*"):
-            http_res_text = utils.stream_to_text(http_res)
-            raise models.APIError("API error occurred", http_res, http_res_text)
-        if utils.match_response(http_res, "5XX", "*"):
-            http_res_text = utils.stream_to_text(http_res)
-            raise models.APIError("API error occurred", http_res, http_res_text)
-        if utils.match_response(http_res, "default", "application/json"):
-            return models.CrmCompaniesOneResponse(
-                unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
-                ),
-                http_meta=models.HTTPMetadata(request=req, response=http_res),
-            )
-
-        raise models.APIError("Unexpected response received", http_res)
-
-    async def get_async(
-        self,
-        *,
-        id: str,
-        raw: Optional[bool] = False,
-        consumer_id: Optional[str] = None,
-        app_id: Optional[str] = None,
-        service_id: Optional[str] = None,
-        fields: OptionalNullable[str] = UNSET,
-        retries: OptionalNullable[utils.RetryConfig] = UNSET,
-        server_url: Optional[str] = None,
-        timeout_ms: Optional[int] = None,
-        http_headers: Optional[Mapping[str, str]] = None,
-    ) -> models.CrmCompaniesOneResponse:
-        r"""Get company
-
-        Get company
-
-        :param id: ID of the record you are acting upon.
-        :param raw: Include raw response. Mostly used for debugging purposes
-        :param consumer_id: ID of the consumer which you want to get or push data from
-        :param app_id: The ID of your Unify application
-        :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
-        :param fields: The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded.
-        :param retries: Override the default retry configuration for this method
-        :param server_url: Override the default server URL for this method
-        :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
-        :param http_headers: Additional headers to set or replace on requests.
-        """
-        base_url = None
-        url_variables = None
-        if timeout_ms is None:
-            timeout_ms = self.sdk_configuration.timeout_ms
-
-        if server_url is not None:
-            base_url = server_url
-        else:
-            base_url = self._get_url(base_url, url_variables)
-
-        request = models.CrmCompaniesOneRequest(
-            id=id,
-            raw=raw,
-            consumer_id=consumer_id,
-            app_id=app_id,
-            service_id=service_id,
-            fields=fields,
-        )
-
-        req = self._build_request_async(
-            method="GET",
-            path="/crm/companies/{id}",
-            base_url=base_url,
-            url_variables=url_variables,
-            request=request,
-            request_body_required=False,
-            request_has_path_params=True,
-            request_has_query_params=True,
-            user_agent_header="user-agent",
-            accept_header_value="application/json",
-            http_headers=http_headers,
-            _globals=models.CrmCompaniesOneGlobals(
-                consumer_id=self.sdk_configuration.globals.consumer_id,
-                app_id=self.sdk_configuration.globals.app_id,
-            ),
-            security=self.sdk_configuration.security,
-            timeout_ms=timeout_ms,
-        )
-
-        if retries == UNSET:
-            if self.sdk_configuration.retry_config is not UNSET:
-                retries = self.sdk_configuration.retry_config
-            else:
-                retries = utils.RetryConfig(
-                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 900000), True
-                )
-
-        retry_config = None
-        if isinstance(retries, utils.RetryConfig):
-            retry_config = (retries, ["408", "500", "502", "503", "504"])
-
-        http_res = await self.do_request_async(
-            hook_ctx=HookContext(
-                config=self.sdk_configuration,
-                base_url=base_url or "",
-                operation_id="crm.companiesOne",
-                oauth2_scopes=None,
-                security_source=get_security_from_env(
-                    self.sdk_configuration.security, models.Security
-                ),
-            ),
-            request=req,
-            error_status_codes=["400", "401", "402", "404", "422", "4XX", "5XX"],
-            retry_config=retry_config,
-        )
-
-        response_data: Any = None
-        if utils.match_response(http_res, "200", "application/json"):
-            return models.CrmCompaniesOneResponse(
-                get_company_response=unmarshal_json_response(
-                    Optional[models.GetCompanyResponse], http_res
-                ),
-                http_meta=models.HTTPMetadata(request=req, response=http_res),
-            )
-        if utils.match_response(http_res, "400", "application/json"):
-            response_data = unmarshal_json_response(
-                models.BadRequestResponseData, http_res
-            )
-            raise models.BadRequestResponse(response_data, http_res)
-        if utils.match_response(http_res, "401", "application/json"):
-            response_data = unmarshal_json_response(
-                models.UnauthorizedResponseData, http_res
-            )
-            raise models.UnauthorizedResponse(response_data, http_res)
-        if utils.match_response(http_res, "402", "application/json"):
-            response_data = unmarshal_json_response(
-                models.PaymentRequiredResponseData, http_res
-            )
-            raise models.PaymentRequiredResponse(response_data, http_res)
-        if utils.match_response(http_res, "404", "application/json"):
-            response_data = unmarshal_json_response(
-                models.NotFoundResponseData, http_res
-            )
-            raise models.NotFoundResponse(response_data, http_res)
-        if utils.match_response(http_res, "422", "application/json"):
-            response_data = unmarshal_json_response(
-                models.UnprocessableResponseData, http_res
-            )
-            raise models.UnprocessableResponse(response_data, http_res)
-        if utils.match_response(http_res, "4XX", "*"):
-            http_res_text = await utils.stream_to_text_async(http_res)
-            raise models.APIError("API error occurred", http_res, http_res_text)
-        if utils.match_response(http_res, "5XX", "*"):
-            http_res_text = await utils.stream_to_text_async(http_res)
-            raise models.APIError("API error occurred", http_res, http_res_text)
-        if utils.match_response(http_res, "default", "application/json"):
-            return models.CrmCompaniesOneResponse(
-                unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
-                ),
-                http_meta=models.HTTPMetadata(request=req, response=http_res),
-            )
-
-        raise models.APIError("Unexpected response received", http_res)
-
-    def update(
-        self,
-        *,
-        id: str,
-        name: Nullable[str],
-        raw: Optional[bool] = False,
-        consumer_id: Optional[str] = None,
-        app_id: Optional[str] = None,
-        service_id: Optional[str] = None,
-        owner_id: OptionalNullable[str] = UNSET,
-        image: OptionalNullable[str] = UNSET,
-        description: OptionalNullable[str] = UNSET,
-        vat_number: OptionalNullable[str] = UNSET,
-        currency: OptionalNullable[models.Currency] = UNSET,
-        status: OptionalNullable[str] = UNSET,
-        fax: OptionalNullable[str] = UNSET,
-        annual_revenue: OptionalNullable[str] = UNSET,
-        number_of_employees: OptionalNullable[str] = UNSET,
-        industry: OptionalNullable[str] = UNSET,
-        ownership: OptionalNullable[str] = UNSET,
-        sales_tax_number: OptionalNullable[str] = UNSET,
-        payee_number: OptionalNullable[str] = UNSET,
-        abn_or_tfn: OptionalNullable[str] = UNSET,
-        abn_branch: OptionalNullable[str] = UNSET,
-        acn: OptionalNullable[str] = UNSET,
-        first_name: OptionalNullable[str] = UNSET,
-        last_name: OptionalNullable[str] = UNSET,
-        bank_accounts: Optional[
-            Union[List[models.BankAccount1], List[models.BankAccount1TypedDict]]
-        ] = None,
-        websites: Optional[
-            Union[List[models.Website], List[models.WebsiteTypedDict]]
-        ] = None,
-        addresses: Optional[
-            Union[List[models.Address], List[models.AddressTypedDict]]
-        ] = None,
-        social_links: Optional[
-            Union[List[models.SocialLink], List[models.SocialLinkTypedDict]]
-        ] = None,
-        phone_numbers: Optional[
-            Union[List[models.PhoneNumber], List[models.PhoneNumberTypedDict]]
-        ] = None,
-        emails: Optional[Union[List[models.Email], List[models.EmailTypedDict]]] = None,
-        row_type: Optional[
-            Union[models.CompanyRowType, models.CompanyRowTypeTypedDict]
-        ] = None,
-        custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
-        ] = None,
-        tags: OptionalNullable[List[str]] = UNSET,
-        read_only: OptionalNullable[bool] = UNSET,
-        salutation: OptionalNullable[str] = UNSET,
-        birthday: OptionalNullable[date] = UNSET,
-        pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
-        ] = None,
-        retries: OptionalNullable[utils.RetryConfig] = UNSET,
-        server_url: Optional[str] = None,
-        timeout_ms: Optional[int] = None,
-        http_headers: Optional[Mapping[str, str]] = None,
-    ) -> models.CrmCompaniesUpdateResponse:
-        r"""Update company
-
-        Update company
-
-        :param id: ID of the record you are acting upon.
-        :param name: Name of the company
-        :param raw: Include raw response. Mostly used for debugging purposes
-        :param consumer_id: ID of the consumer which you want to get or push data from
-        :param app_id: The ID of your Unify application
-        :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
-        :param owner_id: Owner ID
-        :param image: The Image URL of the company
-        :param description: A description of the company
-        :param vat_number: The VAT number of the company
-        :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
-        :param status: The status of the company
-        :param fax: The fax number of the company
-        :param annual_revenue: The annual revenue of the company
-        :param number_of_employees: Number of employees
-        :param industry: The industry represents the type of business the company is in.
-        :param ownership: The ownership indicates the type of ownership of the company.
-        :param sales_tax_number: A sales tax number is a unique number that identifies a company for tax purposes.
-        :param payee_number: A payee number is a unique number that identifies a payee for tax purposes.
-        :param abn_or_tfn: An ABN is necessary for operating a business, while a TFN (Tax File Number) is required for any person working in Australia.
-        :param abn_branch: An ABN Branch (also known as a GST Branch) is used if part of your business needs to account for GST separately from its parent entity.
-        :param acn: The Australian Company Number (ACN) is a nine digit number with the last digit being a check digit calculated using a modified modulus 10 calculation. ASIC has adopted a convention of always printing and displaying the ACN in the format XXX XXX XXX; three blocks of three characters, each block separated by a blank.
-        :param first_name: The first name of the person.
-        :param last_name: The last name of the person.
-        :param bank_accounts:
-        :param websites:
-        :param addresses:
-        :param social_links:
-        :param phone_numbers:
-        :param emails:
-        :param row_type:
-        :param custom_fields:
-        :param tags:
-        :param read_only: Whether the company is read-only or not
-        :param salutation: A formal salutation for the person. For example, 'Mr', 'Mrs'
-        :param birthday: The date of birth of the person.
-        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
-        :param retries: Override the default retry configuration for this method
-        :param server_url: Override the default server URL for this method
-        :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
-        :param http_headers: Additional headers to set or replace on requests.
-        """
-        base_url = None
-        url_variables = None
-        if timeout_ms is None:
-            timeout_ms = self.sdk_configuration.timeout_ms
-
-        if server_url is not None:
-            base_url = server_url
-        else:
-            base_url = self._get_url(base_url, url_variables)
-
-        request = models.CrmCompaniesUpdateRequest(
-            id=id,
-            raw=raw,
-            consumer_id=consumer_id,
-            app_id=app_id,
-            service_id=service_id,
-            company1=models.Company1Input(
-                name=name,
-                owner_id=owner_id,
-                image=image,
-                description=description,
-                vat_number=vat_number,
-                currency=currency,
-                status=status,
-                fax=fax,
-                annual_revenue=annual_revenue,
-                number_of_employees=number_of_employees,
-                industry=industry,
-                ownership=ownership,
-                sales_tax_number=sales_tax_number,
-                payee_number=payee_number,
-                abn_or_tfn=abn_or_tfn,
-                abn_branch=abn_branch,
-                acn=acn,
-                first_name=first_name,
-                last_name=last_name,
-                bank_accounts=utils.get_pydantic_model(
-                    bank_accounts, Optional[List[models.BankAccount1]]
-                ),
-                websites=utils.get_pydantic_model(
-                    websites, Optional[List[models.Website]]
-                ),
-                addresses=utils.get_pydantic_model(
-                    addresses, Optional[List[models.Address]]
-                ),
-                social_links=utils.get_pydantic_model(
-                    social_links, Optional[List[models.SocialLink]]
-                ),
-                phone_numbers=utils.get_pydantic_model(
-                    phone_numbers, Optional[List[models.PhoneNumber]]
-                ),
-                emails=utils.get_pydantic_model(emails, Optional[List[models.Email]]),
-                row_type=utils.get_pydantic_model(
-                    row_type, Optional[models.CompanyRowType]
-                ),
-                custom_fields=utils.get_pydantic_model(
-                    custom_fields, Optional[List[models.CustomField]]
-                ),
-                tags=tags,
-                read_only=read_only,
-                salutation=salutation,
-                birthday=birthday,
-                pass_through=utils.get_pydantic_model(
-                    pass_through, Optional[List[models.PassThroughBody]]
-                ),
-            ),
-        )
-
-        req = self._build_request(
-            method="PATCH",
-            path="/crm/companies/{id}",
-            base_url=base_url,
-            url_variables=url_variables,
-            request=request,
-            request_body_required=True,
-            request_has_path_params=True,
-            request_has_query_params=True,
-            user_agent_header="user-agent",
-            accept_header_value="application/json",
-            http_headers=http_headers,
-            _globals=models.CrmCompaniesUpdateGlobals(
-                consumer_id=self.sdk_configuration.globals.consumer_id,
-                app_id=self.sdk_configuration.globals.app_id,
-            ),
-            security=self.sdk_configuration.security,
-            get_serialized_body=lambda: utils.serialize_request_body(
-                request.company1, False, False, "json", models.Company1Input
-            ),
-            timeout_ms=timeout_ms,
-        )
-
-        if retries == UNSET:
-            if self.sdk_configuration.retry_config is not UNSET:
-                retries = self.sdk_configuration.retry_config
-            else:
-                retries = utils.RetryConfig(
-                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 900000), True
-                )
-
-        retry_config = None
-        if isinstance(retries, utils.RetryConfig):
-            retry_config = (retries, ["408", "500", "502", "503", "504"])
-
-        http_res = self.do_request(
-            hook_ctx=HookContext(
-                config=self.sdk_configuration,
-                base_url=base_url or "",
-                operation_id="crm.companiesUpdate",
-                oauth2_scopes=None,
-                security_source=get_security_from_env(
-                    self.sdk_configuration.security, models.Security
-                ),
-            ),
-            request=req,
-            error_status_codes=["400", "401", "402", "404", "422", "4XX", "5XX"],
-            retry_config=retry_config,
-        )
-
-        response_data: Any = None
-        if utils.match_response(http_res, "200", "application/json"):
-            return models.CrmCompaniesUpdateResponse(
-                update_company_response=unmarshal_json_response(
-                    Optional[models.UpdateCompanyResponse], http_res
-                ),
-                http_meta=models.HTTPMetadata(request=req, response=http_res),
-            )
-        if utils.match_response(http_res, "400", "application/json"):
-            response_data = unmarshal_json_response(
-                models.BadRequestResponseData, http_res
-            )
-            raise models.BadRequestResponse(response_data, http_res)
-        if utils.match_response(http_res, "401", "application/json"):
-            response_data = unmarshal_json_response(
-                models.UnauthorizedResponseData, http_res
-            )
-            raise models.UnauthorizedResponse(response_data, http_res)
-        if utils.match_response(http_res, "402", "application/json"):
-            response_data = unmarshal_json_response(
-                models.PaymentRequiredResponseData, http_res
-            )
-            raise models.PaymentRequiredResponse(response_data, http_res)
-        if utils.match_response(http_res, "404", "application/json"):
-            response_data = unmarshal_json_response(
-                models.NotFoundResponseData, http_res
-            )
-            raise models.NotFoundResponse(response_data, http_res)
-        if utils.match_response(http_res, "422", "application/json"):
-            response_data = unmarshal_json_response(
-                models.UnprocessableResponseData, http_res
-            )
-            raise models.UnprocessableResponse(response_data, http_res)
-        if utils.match_response(http_res, "4XX", "*"):
-            http_res_text = utils.stream_to_text(http_res)
-            raise models.APIError("API error occurred", http_res, http_res_text)
-        if utils.match_response(http_res, "5XX", "*"):
-            http_res_text = utils.stream_to_text(http_res)
-            raise models.APIError("API error occurred", http_res, http_res_text)
-        if utils.match_response(http_res, "default", "application/json"):
-            return models.CrmCompaniesUpdateResponse(
-                unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
-                ),
-                http_meta=models.HTTPMetadata(request=req, response=http_res),
-            )
-
-        raise models.APIError("Unexpected response received", http_res)
-
-    async def update_async(
-        self,
-        *,
-        id: str,
-        name: Nullable[str],
-        raw: Optional[bool] = False,
-        consumer_id: Optional[str] = None,
-        app_id: Optional[str] = None,
-        service_id: Optional[str] = None,
-        owner_id: OptionalNullable[str] = UNSET,
-        image: OptionalNullable[str] = UNSET,
-        description: OptionalNullable[str] = UNSET,
-        vat_number: OptionalNullable[str] = UNSET,
-        currency: OptionalNullable[models.Currency] = UNSET,
-        status: OptionalNullable[str] = UNSET,
-        fax: OptionalNullable[str] = UNSET,
-        annual_revenue: OptionalNullable[str] = UNSET,
-        number_of_employees: OptionalNullable[str] = UNSET,
-        industry: OptionalNullable[str] = UNSET,
-        ownership: OptionalNullable[str] = UNSET,
-        sales_tax_number: OptionalNullable[str] = UNSET,
-        payee_number: OptionalNullable[str] = UNSET,
-        abn_or_tfn: OptionalNullable[str] = UNSET,
-        abn_branch: OptionalNullable[str] = UNSET,
-        acn: OptionalNullable[str] = UNSET,
-        first_name: OptionalNullable[str] = UNSET,
-        last_name: OptionalNullable[str] = UNSET,
-        bank_accounts: Optional[
-            Union[List[models.BankAccount1], List[models.BankAccount1TypedDict]]
-        ] = None,
-        websites: Optional[
-            Union[List[models.Website], List[models.WebsiteTypedDict]]
-        ] = None,
-        addresses: Optional[
-            Union[List[models.Address], List[models.AddressTypedDict]]
-        ] = None,
-        social_links: Optional[
-            Union[List[models.SocialLink], List[models.SocialLinkTypedDict]]
-        ] = None,
-        phone_numbers: Optional[
-            Union[List[models.PhoneNumber], List[models.PhoneNumberTypedDict]]
-        ] = None,
-        emails: Optional[Union[List[models.Email], List[models.EmailTypedDict]]] = None,
-        row_type: Optional[
-            Union[models.CompanyRowType, models.CompanyRowTypeTypedDict]
-        ] = None,
-        custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
-        ] = None,
-        tags: OptionalNullable[List[str]] = UNSET,
-        read_only: OptionalNullable[bool] = UNSET,
-        salutation: OptionalNullable[str] = UNSET,
-        birthday: OptionalNullable[date] = UNSET,
-        pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
-        ] = None,
-        retries: OptionalNullable[utils.RetryConfig] = UNSET,
-        server_url: Optional[str] = None,
-        timeout_ms: Optional[int] = None,
-        http_headers: Optional[Mapping[str, str]] = None,
-    ) -> models.CrmCompaniesUpdateResponse:
-        r"""Update company
-
-        Update company
-
-        :param id: ID of the record you are acting upon.
-        :param name: Name of the company
-        :param raw: Include raw response. Mostly used for debugging purposes
-        :param consumer_id: ID of the consumer which you want to get or push data from
-        :param app_id: The ID of your Unify application
-        :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
-        :param owner_id: Owner ID
-        :param image: The Image URL of the company
-        :param description: A description of the company
-        :param vat_number: The VAT number of the company
-        :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
-        :param status: The status of the company
-        :param fax: The fax number of the company
-        :param annual_revenue: The annual revenue of the company
-        :param number_of_employees: Number of employees
-        :param industry: The industry represents the type of business the company is in.
-        :param ownership: The ownership indicates the type of ownership of the company.
-        :param sales_tax_number: A sales tax number is a unique number that identifies a company for tax purposes.
-        :param payee_number: A payee number is a unique number that identifies a payee for tax purposes.
-        :param abn_or_tfn: An ABN is necessary for operating a business, while a TFN (Tax File Number) is required for any person working in Australia.
-        :param abn_branch: An ABN Branch (also known as a GST Branch) is used if part of your business needs to account for GST separately from its parent entity.
-        :param acn: The Australian Company Number (ACN) is a nine digit number with the last digit being a check digit calculated using a modified modulus 10 calculation. ASIC has adopted a convention of always printing and displaying the ACN in the format XXX XXX XXX; three blocks of three characters, each block separated by a blank.
-        :param first_name: The first name of the person.
-        :param last_name: The last name of the person.
-        :param bank_accounts:
-        :param websites:
-        :param addresses:
-        :param social_links:
-        :param phone_numbers:
-        :param emails:
-        :param row_type:
-        :param custom_fields:
-        :param tags:
-        :param read_only: Whether the company is read-only or not
-        :param salutation: A formal salutation for the person. For example, 'Mr', 'Mrs'
-        :param birthday: The date of birth of the person.
-        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
-        :param retries: Override the default retry configuration for this method
-        :param server_url: Override the default server URL for this method
-        :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
-        :param http_headers: Additional headers to set or replace on requests.
-        """
-        base_url = None
-        url_variables = None
-        if timeout_ms is None:
-            timeout_ms = self.sdk_configuration.timeout_ms
-
-        if server_url is not None:
-            base_url = server_url
-        else:
-            base_url = self._get_url(base_url, url_variables)
-
-        request = models.CrmCompaniesUpdateRequest(
-            id=id,
-            raw=raw,
-            consumer_id=consumer_id,
-            app_id=app_id,
-            service_id=service_id,
-            company1=models.Company1Input(
-                name=name,
-                owner_id=owner_id,
-                image=image,
-                description=description,
-                vat_number=vat_number,
-                currency=currency,
-                status=status,
-                fax=fax,
-                annual_revenue=annual_revenue,
-                number_of_employees=number_of_employees,
-                industry=industry,
-                ownership=ownership,
-                sales_tax_number=sales_tax_number,
-                payee_number=payee_number,
-                abn_or_tfn=abn_or_tfn,
-                abn_branch=abn_branch,
-                acn=acn,
-                first_name=first_name,
-                last_name=last_name,
-                bank_accounts=utils.get_pydantic_model(
-                    bank_accounts, Optional[List[models.BankAccount1]]
-                ),
-                websites=utils.get_pydantic_model(
-                    websites, Optional[List[models.Website]]
-                ),
-                addresses=utils.get_pydantic_model(
-                    addresses, Optional[List[models.Address]]
-                ),
-                social_links=utils.get_pydantic_model(
-                    social_links, Optional[List[models.SocialLink]]
-                ),
-                phone_numbers=utils.get_pydantic_model(
-                    phone_numbers, Optional[List[models.PhoneNumber]]
-                ),
-                emails=utils.get_pydantic_model(emails, Optional[List[models.Email]]),
-                row_type=utils.get_pydantic_model(
-                    row_type, Optional[models.CompanyRowType]
-                ),
-                custom_fields=utils.get_pydantic_model(
-                    custom_fields, Optional[List[models.CustomField]]
-                ),
-                tags=tags,
-                read_only=read_only,
-                salutation=salutation,
-                birthday=birthday,
-                pass_through=utils.get_pydantic_model(
-                    pass_through, Optional[List[models.PassThroughBody]]
-                ),
-            ),
-        )
-
-        req = self._build_request_async(
-            method="PATCH",
-            path="/crm/companies/{id}",
-            base_url=base_url,
-            url_variables=url_variables,
-            request=request,
-            request_body_required=True,
-            request_has_path_params=True,
-            request_has_query_params=True,
-            user_agent_header="user-agent",
-            accept_header_value="application/json",
-            http_headers=http_headers,
-            _globals=models.CrmCompaniesUpdateGlobals(
-                consumer_id=self.sdk_configuration.globals.consumer_id,
-                app_id=self.sdk_configuration.globals.app_id,
-            ),
-            security=self.sdk_configuration.security,
-            get_serialized_body=lambda: utils.serialize_request_body(
-                request.company1, False, False, "json", models.Company1Input
-            ),
-            timeout_ms=timeout_ms,
-        )
-
-        if retries == UNSET:
-            if self.sdk_configuration.retry_config is not UNSET:
-                retries = self.sdk_configuration.retry_config
-            else:
-                retries = utils.RetryConfig(
-                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 900000), True
-                )
-
-        retry_config = None
-        if isinstance(retries, utils.RetryConfig):
-            retry_config = (retries, ["408", "500", "502", "503", "504"])
-
-        http_res = await self.do_request_async(
-            hook_ctx=HookContext(
-                config=self.sdk_configuration,
-                base_url=base_url or "",
-                operation_id="crm.companiesUpdate",
-                oauth2_scopes=None,
-                security_source=get_security_from_env(
-                    self.sdk_configuration.security, models.Security
-                ),
-            ),
-            request=req,
-            error_status_codes=["400", "401", "402", "404", "422", "4XX", "5XX"],
-            retry_config=retry_config,
-        )
-
-        response_data: Any = None
-        if utils.match_response(http_res, "200", "application/json"):
-            return models.CrmCompaniesUpdateResponse(
-                update_company_response=unmarshal_json_response(
-                    Optional[models.UpdateCompanyResponse], http_res
-                ),
-                http_meta=models.HTTPMetadata(request=req, response=http_res),
-            )
-        if utils.match_response(http_res, "400", "application/json"):
-            response_data = unmarshal_json_response(
-                models.BadRequestResponseData, http_res
-            )
-            raise models.BadRequestResponse(response_data, http_res)
-        if utils.match_response(http_res, "401", "application/json"):
-            response_data = unmarshal_json_response(
-                models.UnauthorizedResponseData, http_res
-            )
-            raise models.UnauthorizedResponse(response_data, http_res)
-        if utils.match_response(http_res, "402", "application/json"):
-            response_data = unmarshal_json_response(
-                models.PaymentRequiredResponseData, http_res
-            )
-            raise models.PaymentRequiredResponse(response_data, http_res)
-        if utils.match_response(http_res, "404", "application/json"):
-            response_data = unmarshal_json_response(
-                models.NotFoundResponseData, http_res
-            )
-            raise models.NotFoundResponse(response_data, http_res)
-        if utils.match_response(http_res, "422", "application/json"):
-            response_data = unmarshal_json_response(
-                models.UnprocessableResponseData, http_res
-            )
-            raise models.UnprocessableResponse(response_data, http_res)
-        if utils.match_response(http_res, "4XX", "*"):
-            http_res_text = await utils.stream_to_text_async(http_res)
-            raise models.APIError("API error occurred", http_res, http_res_text)
-        if utils.match_response(http_res, "5XX", "*"):
-            http_res_text = await utils.stream_to_text_async(http_res)
-            raise models.APIError("API error occurred", http_res, http_res_text)
-        if utils.match_response(http_res, "default", "application/json"):
-            return models.CrmCompaniesUpdateResponse(
-                unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
-                ),
-                http_meta=models.HTTPMetadata(request=req, response=http_res),
-            )
-
-        raise models.APIError("Unexpected response received", http_res)
-
-    def delete(
-        self,
-        *,
-        id: str,
-        raw: Optional[bool] = False,
-        consumer_id: Optional[str] = None,
-        app_id: Optional[str] = None,
-        service_id: Optional[str] = None,
-        retries: OptionalNullable[utils.RetryConfig] = UNSET,
-        server_url: Optional[str] = None,
-        timeout_ms: Optional[int] = None,
-        http_headers: Optional[Mapping[str, str]] = None,
-    ) -> models.CrmCompaniesDeleteResponse:
-        r"""Delete company
-
-        Delete company
-
-        :param id: ID of the record you are acting upon.
-        :param raw: Include raw response. Mostly used for debugging purposes
-        :param consumer_id: ID of the consumer which you want to get or push data from
-        :param app_id: The ID of your Unify application
-        :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
-        :param retries: Override the default retry configuration for this method
-        :param server_url: Override the default server URL for this method
-        :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
-        :param http_headers: Additional headers to set or replace on requests.
-        """
-        base_url = None
-        url_variables = None
-        if timeout_ms is None:
-            timeout_ms = self.sdk_configuration.timeout_ms
-
-        if server_url is not None:
-            base_url = server_url
-        else:
-            base_url = self._get_url(base_url, url_variables)
-
-        request = models.CrmCompaniesDeleteRequest(
-            id=id,
-            raw=raw,
-            consumer_id=consumer_id,
-            app_id=app_id,
-            service_id=service_id,
-        )
-
-        req = self._build_request(
-            method="DELETE",
-            path="/crm/companies/{id}",
-            base_url=base_url,
-            url_variables=url_variables,
-            request=request,
-            request_body_required=False,
-            request_has_path_params=True,
-            request_has_query_params=True,
-            user_agent_header="user-agent",
-            accept_header_value="application/json",
-            http_headers=http_headers,
-            _globals=models.CrmCompaniesDeleteGlobals(
-                consumer_id=self.sdk_configuration.globals.consumer_id,
-                app_id=self.sdk_configuration.globals.app_id,
-            ),
-            security=self.sdk_configuration.security,
-            timeout_ms=timeout_ms,
-        )
-
-        if retries == UNSET:
-            if self.sdk_configuration.retry_config is not UNSET:
-                retries = self.sdk_configuration.retry_config
-            else:
-                retries = utils.RetryConfig(
-                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 900000), True
-                )
-
-        retry_config = None
-        if isinstance(retries, utils.RetryConfig):
-            retry_config = (retries, ["408", "500", "502", "503", "504"])
-
-        http_res = self.do_request(
-            hook_ctx=HookContext(
-                config=self.sdk_configuration,
-                base_url=base_url or "",
-                operation_id="crm.companiesDelete",
-                oauth2_scopes=None,
-                security_source=get_security_from_env(
-                    self.sdk_configuration.security, models.Security
-                ),
-            ),
-            request=req,
-            error_status_codes=["400", "401", "402", "404", "422", "4XX", "5XX"],
-            retry_config=retry_config,
-        )
-
-        response_data: Any = None
-        if utils.match_response(http_res, "200", "application/json"):
-            return models.CrmCompaniesDeleteResponse(
-                delete_company_response=unmarshal_json_response(
-                    Optional[models.DeleteCompanyResponse], http_res
-                ),
-                http_meta=models.HTTPMetadata(request=req, response=http_res),
-            )
-        if utils.match_response(http_res, "400", "application/json"):
-            response_data = unmarshal_json_response(
-                models.BadRequestResponseData, http_res
-            )
-            raise models.BadRequestResponse(response_data, http_res)
-        if utils.match_response(http_res, "401", "application/json"):
-            response_data = unmarshal_json_response(
-                models.UnauthorizedResponseData, http_res
-            )
-            raise models.UnauthorizedResponse(response_data, http_res)
-        if utils.match_response(http_res, "402", "application/json"):
-            response_data = unmarshal_json_response(
-                models.PaymentRequiredResponseData, http_res
-            )
-            raise models.PaymentRequiredResponse(response_data, http_res)
-        if utils.match_response(http_res, "404", "application/json"):
-            response_data = unmarshal_json_response(
-                models.NotFoundResponseData, http_res
-            )
-            raise models.NotFoundResponse(response_data, http_res)
-        if utils.match_response(http_res, "422", "application/json"):
-            response_data = unmarshal_json_response(
-                models.UnprocessableResponseData, http_res
-            )
-            raise models.UnprocessableResponse(response_data, http_res)
-        if utils.match_response(http_res, "4XX", "*"):
-            http_res_text = utils.stream_to_text(http_res)
-            raise models.APIError("API error occurred", http_res, http_res_text)
-        if utils.match_response(http_res, "5XX", "*"):
-            http_res_text = utils.stream_to_text(http_res)
-            raise models.APIError("API error occurred", http_res, http_res_text)
-        if utils.match_response(http_res, "default", "application/json"):
-            return models.CrmCompaniesDeleteResponse(
-                unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
-                ),
-                http_meta=models.HTTPMetadata(request=req, response=http_res),
-            )
-
-        raise models.APIError("Unexpected response received", http_res)
-
-    async def delete_async(
-        self,
-        *,
-        id: str,
-        raw: Optional[bool] = False,
-        consumer_id: Optional[str] = None,
-        app_id: Optional[str] = None,
-        service_id: Optional[str] = None,
-        retries: OptionalNullable[utils.RetryConfig] = UNSET,
-        server_url: Optional[str] = None,
-        timeout_ms: Optional[int] = None,
-        http_headers: Optional[Mapping[str, str]] = None,
-    ) -> models.CrmCompaniesDeleteResponse:
-        r"""Delete company
-
-        Delete company
-
-        :param id: ID of the record you are acting upon.
-        :param raw: Include raw response. Mostly used for debugging purposes
-        :param consumer_id: ID of the consumer which you want to get or push data from
-        :param app_id: The ID of your Unify application
-        :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
-        :param retries: Override the default retry configuration for this method
-        :param server_url: Override the default server URL for this method
-        :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
-        :param http_headers: Additional headers to set or replace on requests.
-        """
-        base_url = None
-        url_variables = None
-        if timeout_ms is None:
-            timeout_ms = self.sdk_configuration.timeout_ms
-
-        if server_url is not None:
-            base_url = server_url
-        else:
-            base_url = self._get_url(base_url, url_variables)
-
-        request = models.CrmCompaniesDeleteRequest(
-            id=id,
-            raw=raw,
-            consumer_id=consumer_id,
-            app_id=app_id,
-            service_id=service_id,
-        )
-
-        req = self._build_request_async(
-            method="DELETE",
-            path="/crm/companies/{id}",
-            base_url=base_url,
-            url_variables=url_variables,
-            request=request,
-            request_body_required=False,
-            request_has_path_params=True,
-            request_has_query_params=True,
-            user_agent_header="user-agent",
-            accept_header_value="application/json",
-            http_headers=http_headers,
-            _globals=models.CrmCompaniesDeleteGlobals(
-                consumer_id=self.sdk_configuration.globals.consumer_id,
-                app_id=self.sdk_configuration.globals.app_id,
-            ),
-            security=self.sdk_configuration.security,
-            timeout_ms=timeout_ms,
-        )
-
-        if retries == UNSET:
-            if self.sdk_configuration.retry_config is not UNSET:
-                retries = self.sdk_configuration.retry_config
-            else:
-                retries = utils.RetryConfig(
-                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 900000), True
-                )
-
-        retry_config = None
-        if isinstance(retries, utils.RetryConfig):
-            retry_config = (retries, ["408", "500", "502", "503", "504"])
-
-        http_res = await self.do_request_async(
-            hook_ctx=HookContext(
-                config=self.sdk_configuration,
-                base_url=base_url or "",
-                operation_id="crm.companiesDelete",
-                oauth2_scopes=None,
-                security_source=get_security_from_env(
-                    self.sdk_configuration.security, models.Security
-                ),
-            ),
-            request=req,
-            error_status_codes=["400", "401", "402", "404", "422", "4XX", "5XX"],
-            retry_config=retry_config,
-        )
-
-        response_data: Any = None
-        if utils.match_response(http_res, "200", "application/json"):
-            return models.CrmCompaniesDeleteResponse(
-                delete_company_response=unmarshal_json_response(
-                    Optional[models.DeleteCompanyResponse], http_res
-                ),
-                http_meta=models.HTTPMetadata(request=req, response=http_res),
-            )
-        if utils.match_response(http_res, "400", "application/json"):
-            response_data = unmarshal_json_response(
-                models.BadRequestResponseData, http_res
-            )
-            raise models.BadRequestResponse(response_data, http_res)
-        if utils.match_response(http_res, "401", "application/json"):
-            response_data = unmarshal_json_response(
-                models.UnauthorizedResponseData, http_res
-            )
-            raise models.UnauthorizedResponse(response_data, http_res)
-        if utils.match_response(http_res, "402", "application/json"):
-            response_data = unmarshal_json_response(
-                models.PaymentRequiredResponseData, http_res
-            )
-            raise models.PaymentRequiredResponse(response_data, http_res)
-        if utils.match_response(http_res, "404", "application/json"):
-            response_data = unmarshal_json_response(
-                models.NotFoundResponseData, http_res
-            )
-            raise models.NotFoundResponse(response_data, http_res)
-        if utils.match_response(http_res, "422", "application/json"):
-            response_data = unmarshal_json_response(
-                models.UnprocessableResponseData, http_res
-            )
-            raise models.UnprocessableResponse(response_data, http_res)
-        if utils.match_response(http_res, "4XX", "*"):
-            http_res_text = await utils.stream_to_text_async(http_res)
-            raise models.APIError("API error occurred", http_res, http_res_text)
-        if utils.match_response(http_res, "5XX", "*"):
-            http_res_text = await utils.stream_to_text_async(http_res)
-            raise models.APIError("API error occurred", http_res, http_res_text)
-        if utils.match_response(http_res, "default", "application/json"):
-            return models.CrmCompaniesDeleteResponse(
-                unexpected_error_response=unmarshal_json_response(
-                    Optional[models.UnexpectedErrorResponse], http_res
-                ),
-                http_meta=models.HTTPMetadata(request=req, response=http_res),
             )
 
         raise models.APIError("Unexpected response received", http_res)

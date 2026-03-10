@@ -376,12 +376,12 @@ class ExpenseCategories(BaseSDK):
     def create(
         self,
         *,
-        name: str,
         raw: Optional[bool] = False,
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         display_id: OptionalNullable[str] = UNSET,
+        name: Optional[str] = None,
         code: OptionalNullable[str] = UNSET,
         description: OptionalNullable[str] = UNSET,
         status: OptionalNullable[models.ExpenseCategoryStatus] = UNSET,
@@ -400,6 +400,7 @@ class ExpenseCategories(BaseSDK):
         pass_through: Optional[
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
         ] = None,
+        additional_properties: Optional[Dict[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -409,12 +410,12 @@ class ExpenseCategories(BaseSDK):
 
         Create Expense Category
 
-        :param name: The name of the expense category.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param display_id: Id to be displayed.
+        :param name: The name of the expense category.
         :param code: The code or external identifier of the expense category.
         :param description: The description of the expense category.
         :param status: The status of the expense category.
@@ -425,6 +426,7 @@ class ExpenseCategories(BaseSDK):
         :param default_rate: Default rate when rate_required is true (e.g. 0.67 for mileage).
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
+        :param additional_properties:
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -466,6 +468,7 @@ class ExpenseCategories(BaseSDK):
                 pass_through=utils.get_pydantic_model(
                     pass_through, Optional[List[models.PassThroughBody]]
                 ),
+                **(additional_properties or {}),
             ),
         )
 
@@ -575,12 +578,12 @@ class ExpenseCategories(BaseSDK):
     async def create_async(
         self,
         *,
-        name: str,
         raw: Optional[bool] = False,
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         display_id: OptionalNullable[str] = UNSET,
+        name: Optional[str] = None,
         code: OptionalNullable[str] = UNSET,
         description: OptionalNullable[str] = UNSET,
         status: OptionalNullable[models.ExpenseCategoryStatus] = UNSET,
@@ -599,6 +602,7 @@ class ExpenseCategories(BaseSDK):
         pass_through: Optional[
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
         ] = None,
+        additional_properties: Optional[Dict[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -608,12 +612,12 @@ class ExpenseCategories(BaseSDK):
 
         Create Expense Category
 
-        :param name: The name of the expense category.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param display_id: Id to be displayed.
+        :param name: The name of the expense category.
         :param code: The code or external identifier of the expense category.
         :param description: The description of the expense category.
         :param status: The status of the expense category.
@@ -624,6 +628,7 @@ class ExpenseCategories(BaseSDK):
         :param default_rate: Default rate when rate_required is true (e.g. 0.67 for mileage).
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
+        :param additional_properties:
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -665,6 +670,7 @@ class ExpenseCategories(BaseSDK):
                 pass_through=utils.get_pydantic_model(
                     pass_through, Optional[List[models.PassThroughBody]]
                 ),
+                **(additional_properties or {}),
             ),
         )
 
@@ -1063,12 +1069,12 @@ class ExpenseCategories(BaseSDK):
         self,
         *,
         id: str,
-        name: str,
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
         display_id: OptionalNullable[str] = UNSET,
+        name: Optional[str] = None,
         code: OptionalNullable[str] = UNSET,
         description: OptionalNullable[str] = UNSET,
         status: OptionalNullable[models.ExpenseCategoryStatus] = UNSET,
@@ -1087,6 +1093,7 @@ class ExpenseCategories(BaseSDK):
         pass_through: Optional[
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
         ] = None,
+        additional_properties: Optional[Dict[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -1097,12 +1104,12 @@ class ExpenseCategories(BaseSDK):
         Update Expense Category
 
         :param id: ID of the record you are acting upon.
-        :param name: The name of the expense category.
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param display_id: Id to be displayed.
+        :param name: The name of the expense category.
         :param code: The code or external identifier of the expense category.
         :param description: The description of the expense category.
         :param status: The status of the expense category.
@@ -1113,6 +1120,7 @@ class ExpenseCategories(BaseSDK):
         :param default_rate: Default rate when rate_required is true (e.g. 0.67 for mileage).
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
+        :param additional_properties:
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -1155,6 +1163,7 @@ class ExpenseCategories(BaseSDK):
                 pass_through=utils.get_pydantic_model(
                     pass_through, Optional[List[models.PassThroughBody]]
                 ),
+                **(additional_properties or {}),
             ),
         )
 
@@ -1265,12 +1274,12 @@ class ExpenseCategories(BaseSDK):
         self,
         *,
         id: str,
-        name: str,
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
         display_id: OptionalNullable[str] = UNSET,
+        name: Optional[str] = None,
         code: OptionalNullable[str] = UNSET,
         description: OptionalNullable[str] = UNSET,
         status: OptionalNullable[models.ExpenseCategoryStatus] = UNSET,
@@ -1289,6 +1298,7 @@ class ExpenseCategories(BaseSDK):
         pass_through: Optional[
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
         ] = None,
+        additional_properties: Optional[Dict[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -1299,12 +1309,12 @@ class ExpenseCategories(BaseSDK):
         Update Expense Category
 
         :param id: ID of the record you are acting upon.
-        :param name: The name of the expense category.
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param display_id: Id to be displayed.
+        :param name: The name of the expense category.
         :param code: The code or external identifier of the expense category.
         :param description: The description of the expense category.
         :param status: The status of the expense category.
@@ -1315,6 +1325,7 @@ class ExpenseCategories(BaseSDK):
         :param default_rate: Default rate when rate_required is true (e.g. 0.67 for mileage).
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
+        :param additional_properties:
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -1357,6 +1368,7 @@ class ExpenseCategories(BaseSDK):
                 pass_through=utils.get_pydantic_model(
                     pass_through, Optional[List[models.PassThroughBody]]
                 ),
+                **(additional_properties or {}),
             ),
         )
 

@@ -3,12 +3,14 @@
 from __future__ import annotations
 from .passthroughbody import PassThroughBody, PassThroughBodyTypedDict
 from apideck_unify.types import BaseModel
-from typing import List, Optional
+import pydantic
+from pydantic import ConfigDict
+from typing import Any, Dict, List, Optional
 from typing_extensions import NotRequired, TypedDict
 
 
 class FilesSearchTypedDict(TypedDict):
-    query: str
+    query: NotRequired[str]
     r"""The query to search for. May match across multiple fields."""
     drive_id: NotRequired[str]
     r"""ID of the drive to filter on"""
@@ -17,7 +19,12 @@ class FilesSearchTypedDict(TypedDict):
 
 
 class FilesSearch(BaseModel):
-    query: str
+    model_config = ConfigDict(
+        populate_by_name=True, arbitrary_types_allowed=True, extra="allow"
+    )
+    __pydantic_extra__: Dict[str, Any] = pydantic.Field(init=False)
+
+    query: Optional[str] = None
     r"""The query to search for. May match across multiple fields."""
 
     drive_id: Optional[str] = None
@@ -25,3 +32,11 @@ class FilesSearch(BaseModel):
 
     pass_through: Optional[List[PassThroughBody]] = None
     r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
+
+    @property
+    def additional_properties(self):
+        return self.__pydantic_extra__
+
+    @additional_properties.setter
+    def additional_properties(self, value):
+        self.__pydantic_extra__ = value  # pyright: ignore[reportIncompatibleVariableOverride]

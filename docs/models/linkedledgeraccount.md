@@ -11,3 +11,4 @@
 | `code`                                 | *OptionalNullable[str]*                | :heavy_minus_sign:                     | The code assigned to the account.      | 453                                    |
 | `parent_id`                            | *OptionalNullable[str]*                | :heavy_minus_sign:                     | The parent ID of the account.          | 123456                                 |
 | `display_id`                           | *OptionalNullable[str]*                | :heavy_minus_sign:                     | The display ID of the account.         | 123456                                 |
+| `__pydantic_extra__`                   | Dict[str, *Any*]                       | :heavy_minus_sign:                     | N/A                                    |                                        |

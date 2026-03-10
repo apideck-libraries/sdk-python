@@ -28,9 +28,10 @@ from apideck_unify.types import (
 from apideck_unify.utils import validate_open_enum
 from datetime import date, datetime
 from enum import Enum
-from pydantic import field_serializer, model_serializer
+import pydantic
+from pydantic import ConfigDict, field_serializer, model_serializer
 from pydantic.functional_validators import PlainValidator
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
@@ -72,6 +73,8 @@ class QuoteTypedDict(TypedDict):
     r"""The date until which the quote is valid - YYYY-MM-DD."""
     terms: NotRequired[Nullable[str]]
     r"""Terms of the quote."""
+    terms_id: NotRequired[Nullable[str]]
+    r"""The ID of the payment terms"""
     reference: NotRequired[Nullable[str]]
     r"""Optional reference identifier for the transaction."""
     status: NotRequired[Nullable[QuoteStatus]]
@@ -123,6 +126,11 @@ class QuoteTypedDict(TypedDict):
 
 
 class Quote(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True, arbitrary_types_allowed=True, extra="allow"
+    )
+    __pydantic_extra__: Dict[str, Any] = pydantic.Field(init=False)
+
     id: Optional[str] = None
     r"""A unique identifier for an object."""
 
@@ -158,6 +166,9 @@ class Quote(BaseModel):
 
     terms: OptionalNullable[str] = UNSET
     r"""Terms of the quote."""
+
+    terms_id: OptionalNullable[str] = UNSET
+    r"""The ID of the payment terms"""
 
     reference: OptionalNullable[str] = UNSET
     r"""Optional reference identifier for the transaction."""
@@ -236,6 +247,14 @@ class Quote(BaseModel):
     pass_through: Optional[List[PassThroughBody]] = None
     r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
 
+    @property
+    def additional_properties(self):
+        return self.__pydantic_extra__
+
+    @additional_properties.setter
+    def additional_properties(self, value):
+        self.__pydantic_extra__ = value  # pyright: ignore[reportIncompatibleVariableOverride]
+
     @field_serializer("status")
     def serialize_status(self, value):
         if isinstance(value, str):
@@ -269,6 +288,7 @@ class Quote(BaseModel):
             "quote_date",
             "expiry_date",
             "terms",
+            "terms_id",
             "reference",
             "status",
             "currency",
@@ -305,6 +325,7 @@ class Quote(BaseModel):
             "quote_date",
             "expiry_date",
             "terms",
+            "terms_id",
             "reference",
             "status",
             "currency",
@@ -350,6 +371,9 @@ class Quote(BaseModel):
             ):
                 m[k] = val
 
+        for k, v in serialized.items():
+            m[k] = v
+
         return m
 
 
@@ -372,6 +396,8 @@ class QuoteInputTypedDict(TypedDict):
     r"""The date until which the quote is valid - YYYY-MM-DD."""
     terms: NotRequired[Nullable[str]]
     r"""Terms of the quote."""
+    terms_id: NotRequired[Nullable[str]]
+    r"""The ID of the payment terms"""
     reference: NotRequired[Nullable[str]]
     r"""Optional reference identifier for the transaction."""
     status: NotRequired[Nullable[QuoteStatus]]
@@ -415,6 +441,11 @@ class QuoteInputTypedDict(TypedDict):
 
 
 class QuoteInput(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True, arbitrary_types_allowed=True, extra="allow"
+    )
+    __pydantic_extra__: Dict[str, Any] = pydantic.Field(init=False)
+
     number: OptionalNullable[str] = UNSET
     r"""Quote number."""
 
@@ -441,6 +472,9 @@ class QuoteInput(BaseModel):
 
     terms: OptionalNullable[str] = UNSET
     r"""Terms of the quote."""
+
+    terms_id: OptionalNullable[str] = UNSET
+    r"""The ID of the payment terms"""
 
     reference: OptionalNullable[str] = UNSET
     r"""Optional reference identifier for the transaction."""
@@ -507,6 +541,14 @@ class QuoteInput(BaseModel):
     pass_through: Optional[List[PassThroughBody]] = None
     r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
 
+    @property
+    def additional_properties(self):
+        return self.__pydantic_extra__
+
+    @additional_properties.setter
+    def additional_properties(self, value):
+        self.__pydantic_extra__ = value  # pyright: ignore[reportIncompatibleVariableOverride]
+
     @field_serializer("status")
     def serialize_status(self, value):
         if isinstance(value, str):
@@ -537,6 +579,7 @@ class QuoteInput(BaseModel):
             "quote_date",
             "expiry_date",
             "terms",
+            "terms_id",
             "reference",
             "status",
             "currency",
@@ -568,6 +611,7 @@ class QuoteInput(BaseModel):
             "quote_date",
             "expiry_date",
             "terms",
+            "terms_id",
             "reference",
             "status",
             "currency",
@@ -608,5 +652,8 @@ class QuoteInput(BaseModel):
                 not k in optional_fields or (optional_nullable and is_set)
             ):
                 m[k] = val
+
+        for k, v in serialized.items():
+            m[k] = v
 
         return m

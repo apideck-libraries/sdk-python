@@ -8,32 +8,47 @@ from apideck_unify.types import (
     UNSET,
     UNSET_SENTINEL,
 )
-from pydantic import model_serializer
+import pydantic
+from pydantic import ConfigDict, model_serializer
+from typing import Any, Dict, Optional
 from typing_extensions import NotRequired, TypedDict
 
 
 class SocialLinkTypedDict(TypedDict):
-    url: str
-    r"""URL of the social link, e.g. https://www.twitter.com/apideck"""
     id: NotRequired[Nullable[str]]
     r"""Unique identifier of the social link"""
+    url: NotRequired[str]
+    r"""URL of the social link, e.g. https://www.twitter.com/apideck"""
     type: NotRequired[Nullable[str]]
     r"""Type of the social link, e.g. twitter"""
 
 
 class SocialLink(BaseModel):
-    url: str
-    r"""URL of the social link, e.g. https://www.twitter.com/apideck"""
+    model_config = ConfigDict(
+        populate_by_name=True, arbitrary_types_allowed=True, extra="allow"
+    )
+    __pydantic_extra__: Dict[str, Any] = pydantic.Field(init=False)
 
     id: OptionalNullable[str] = UNSET
     r"""Unique identifier of the social link"""
 
+    url: Optional[str] = None
+    r"""URL of the social link, e.g. https://www.twitter.com/apideck"""
+
     type: OptionalNullable[str] = UNSET
     r"""Type of the social link, e.g. twitter"""
 
+    @property
+    def additional_properties(self):
+        return self.__pydantic_extra__
+
+    @additional_properties.setter
+    def additional_properties(self, value):
+        self.__pydantic_extra__ = value  # pyright: ignore[reportIncompatibleVariableOverride]
+
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
-        optional_fields = ["id", "type"]
+        optional_fields = ["id", "url", "type"]
         nullable_fields = ["id", "type"]
         null_default_fields = []
 
@@ -58,5 +73,8 @@ class SocialLink(BaseModel):
                 not k in optional_fields or (optional_nullable and is_set)
             ):
                 m[k] = val
+
+        for k, v in serialized.items():
+            m[k] = v
 
         return m

@@ -66,6 +66,8 @@ class AccountingAttachmentsDownloadRequestTypedDict(TypedDict):
     r"""The ID of your Unify application"""
     service_id: NotRequired[str]
     r"""Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API."""
+    company_id: NotRequired[str]
+    r"""The ID of the company to scope requests to. For connectors that support multi-company, this overrides the default company configured in connection settings."""
     fields: NotRequired[Nullable[str]]
     r"""The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded."""
 
@@ -108,6 +110,13 @@ class AccountingAttachmentsDownloadRequest(BaseModel):
     ] = None
     r"""Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API."""
 
+    company_id: Annotated[
+        Optional[str],
+        pydantic.Field(alias="x-apideck-company-id"),
+        FieldMetadata(header=HeaderMetadata(style="simple", explode=False)),
+    ] = None
+    r"""The ID of the company to scope requests to. For connectors that support multi-company, this overrides the default company configured in connection settings."""
+
     fields: Annotated[
         OptionalNullable[str],
         FieldMetadata(query=QueryParamMetadata(style="form", explode=True)),
@@ -125,7 +134,7 @@ class AccountingAttachmentsDownloadRequest(BaseModel):
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
-        optional_fields = ["consumerId", "appId", "serviceId", "fields"]
+        optional_fields = ["consumerId", "appId", "serviceId", "companyId", "fields"]
         nullable_fields = ["fields"]
         null_default_fields = []
 

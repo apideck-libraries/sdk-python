@@ -99,95 +99,97 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.crm.opportunities.create(title="New Rocket", raw=False, service_id="salesforce", primary_contact_id="12345", description="Opportunities are created for People and Companies that are interested in buying your products or services. Create Opportunities for People and Companies to move them through one of your Pipelines.", type_="Existing Customer - Upgrade", monetary_amount=75000, currency=apideck_unify.Currency.USD, win_probability=40, close_date=date.fromisoformat("2020-10-30"), loss_reason_id="12345", loss_reason="No budget", won_reason_id="12345", won_reason="Best pitch", pipeline_id="12345", pipeline_stage_id="12345", source_id="12345", lead_id="12345", lead_source="Website", contact_id="12345", contact_ids=[
+    res = apideck.crm.opportunities.create(raw=False, service_id="salesforce", title="New Rocket", primary_contact_id="12345", description="Opportunities are created for People and Companies that are interested in buying your products or services. Create Opportunities for People and Companies to move them through one of your Pipelines.", type_="Existing Customer - Upgrade", monetary_amount=75000, currency=apideck_unify.Currency.USD, win_probability=40, close_date=date.fromisoformat("2020-10-30"), loss_reason_id="12345", loss_reason="No budget", won_reason_id="12345", won_reason="Best pitch", pipeline_id="12345", pipeline_stage_id="12345", source_id="12345", lead_id="12345", lead_source="Website", contact_id="12345", contact_ids=[
         "12345",
     ], company_id="12345", company_name="Copper", owner_id="12345", priority="None", status="Open", status_id="12345", tags=[
         "New",
     ], custom_fields=[
-        {
-            "id": "2389328923893298",
-            "name": "employee_level",
-            "description": "Employee Level",
-            "value": {
+        apideck_unify.CustomField(
+            id="2389328923893298",
+            name="employee_level",
+            description="Employee Level",
+            value={
 
             },
-        },
-        {
-            "id": "2389328923893298",
-            "name": "employee_level",
-            "description": "Employee Level",
-            "value": {
+        ),
+        apideck_unify.CustomField(
+            id="2389328923893298",
+            name="employee_level",
+            description="Employee Level",
+            value={
 
             },
-        },
-        {
-            "id": "2389328923893298",
-            "name": "employee_level",
-            "description": "Employee Level",
-            "value": {
+        ),
+        apideck_unify.CustomField(
+            id="2389328923893298",
+            name="employee_level",
+            description="Employee Level",
+            value={
 
             },
-        },
+        ),
     ], stage_last_changed_at=parse_datetime("2020-09-30T07:43:32.000Z"), pass_through=[
-        {
-            "service_id": "<id>",
-            "extend_paths": [
-                {
-                    "path": "$.nested.property",
-                    "value": {
+        apideck_unify.PassThroughBody(
+            service_id="<id>",
+            extend_paths=[
+                apideck_unify.ExtendPaths(
+                    path="$.nested.property",
+                    value={
                         "TaxClassificationRef": {
                             "value": "EUC-99990201-V1-00020000",
                         },
                     },
-                },
-                {
-                    "path": "$.nested.property",
-                    "value": {
+                ),
+                apideck_unify.ExtendPaths(
+                    path="$.nested.property",
+                    value={
                         "TaxClassificationRef": {
                             "value": "EUC-99990201-V1-00020000",
                         },
                     },
-                },
-                {
-                    "path": "$.nested.property",
-                    "value": {
+                ),
+                apideck_unify.ExtendPaths(
+                    path="$.nested.property",
+                    value={
                         "TaxClassificationRef": {
                             "value": "EUC-99990201-V1-00020000",
                         },
                     },
-                },
+                ),
             ],
-        },
-        {
-            "service_id": "<id>",
-            "extend_paths": [
-                {
-                    "path": "$.nested.property",
-                    "value": {
+        ),
+        apideck_unify.PassThroughBody(
+            service_id="<id>",
+            extend_paths=[
+                apideck_unify.ExtendPaths(
+                    path="$.nested.property",
+                    value={
                         "TaxClassificationRef": {
                             "value": "EUC-99990201-V1-00020000",
                         },
                     },
-                },
-                {
-                    "path": "$.nested.property",
-                    "value": {
+                ),
+                apideck_unify.ExtendPaths(
+                    path="$.nested.property",
+                    value={
                         "TaxClassificationRef": {
                             "value": "EUC-99990201-V1-00020000",
                         },
                     },
-                },
-                {
-                    "path": "$.nested.property",
-                    "value": {
+                ),
+                apideck_unify.ExtendPaths(
+                    path="$.nested.property",
+                    value={
                         "TaxClassificationRef": {
                             "value": "EUC-99990201-V1-00020000",
                         },
                     },
-                },
+                ),
             ],
-        },
-    ])
+        ),
+    ], additional_properties={
+
+    })
 
     assert res.create_opportunity_response is not None
 
@@ -200,11 +202,11 @@ with Apideck(
 
 | Parameter                                                                                                                                                                                             | Type                                                                                                                                                                                                  | Required                                                                                                                                                                                              | Description                                                                                                                                                                                           | Example                                                                                                                                                                                               |
 | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `title`                                                                                                                                                                                               | *str*                                                                                                                                                                                                 | :heavy_check_mark:                                                                                                                                                                                    | The title or name of the opportunity.                                                                                                                                                                 | New Rocket                                                                                                                                                                                            |
 | `raw`                                                                                                                                                                                                 | *Optional[bool]*                                                                                                                                                                                      | :heavy_minus_sign:                                                                                                                                                                                    | Include raw response. Mostly used for debugging purposes                                                                                                                                              |                                                                                                                                                                                                       |
 | `consumer_id`                                                                                                                                                                                         | *Optional[str]*                                                                                                                                                                                       | :heavy_minus_sign:                                                                                                                                                                                    | ID of the consumer which you want to get or push data from                                                                                                                                            | test-consumer                                                                                                                                                                                         |
 | `app_id`                                                                                                                                                                                              | *Optional[str]*                                                                                                                                                                                       | :heavy_minus_sign:                                                                                                                                                                                    | The ID of your Unify application                                                                                                                                                                      | dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX                                                                                                                                                               |
 | `service_id`                                                                                                                                                                                          | *Optional[str]*                                                                                                                                                                                       | :heavy_minus_sign:                                                                                                                                                                                    | Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.                                                         | salesforce                                                                                                                                                                                            |
+| `title`                                                                                                                                                                                               | *Optional[str]*                                                                                                                                                                                       | :heavy_minus_sign:                                                                                                                                                                                    | The title or name of the opportunity.                                                                                                                                                                 | New Rocket                                                                                                                                                                                            |
 | `primary_contact_id`                                                                                                                                                                                  | *OptionalNullable[str]*                                                                                                                                                                               | :heavy_minus_sign:                                                                                                                                                                                    | The unique identifier of the primary contact associated with the opportunity.                                                                                                                         | 12345                                                                                                                                                                                                 |
 | `description`                                                                                                                                                                                         | *OptionalNullable[str]*                                                                                                                                                                               | :heavy_minus_sign:                                                                                                                                                                                    | A description of the opportunity.                                                                                                                                                                     | Opportunities are created for People and Companies that are interested in buying your products or services. Create Opportunities for People and Companies to move them through one of your Pipelines. |
 | `type`                                                                                                                                                                                                | *OptionalNullable[str]*                                                                                                                                                                               | :heavy_minus_sign:                                                                                                                                                                                    | The type of the opportunity                                                                                                                                                                           | Existing Customer - Upgrade                                                                                                                                                                           |
@@ -233,6 +235,7 @@ with Apideck(
 | `custom_fields`                                                                                                                                                                                       | List[[models.CustomField](../../models/customfield.md)]                                                                                                                                               | :heavy_minus_sign:                                                                                                                                                                                    | N/A                                                                                                                                                                                                   |                                                                                                                                                                                                       |
 | `stage_last_changed_at`                                                                                                                                                                               | [date](https://docs.python.org/3/library/datetime.html#date-objects)                                                                                                                                  | :heavy_minus_sign:                                                                                                                                                                                    | The date and time when the stage of the opportunity was last changed.                                                                                                                                 | 2020-09-30T07:43:32.000Z                                                                                                                                                                              |
 | `pass_through`                                                                                                                                                                                        | List[[models.PassThroughBody](../../models/passthroughbody.md)]                                                                                                                                       | :heavy_minus_sign:                                                                                                                                                                                    | The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.                                               |                                                                                                                                                                                                       |
+| `additional_properties`                                                                                                                                                                               | Dict[str, *Any*]                                                                                                                                                                                      | :heavy_minus_sign:                                                                                                                                                                                    | N/A                                                                                                                                                                                                   |                                                                                                                                                                                                       |
 | `retries`                                                                                                                                                                                             | [Optional[utils.RetryConfig]](../../models/utils/retryconfig.md)                                                                                                                                      | :heavy_minus_sign:                                                                                                                                                                                    | Configuration to override the default retry behavior of the client.                                                                                                                                   |                                                                                                                                                                                                       |
 
 ### Response
@@ -325,60 +328,62 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.crm.opportunities.update(id="<id>", title="New Rocket", service_id="salesforce", raw=False, primary_contact_id="12345", description="Opportunities are created for People and Companies that are interested in buying your products or services. Create Opportunities for People and Companies to move them through one of your Pipelines.", type_="Existing Customer - Upgrade", monetary_amount=75000, currency=apideck_unify.Currency.USD, win_probability=40, close_date=date.fromisoformat("2020-10-30"), loss_reason_id="12345", loss_reason="No budget", won_reason_id="12345", won_reason="Best pitch", pipeline_id="12345", pipeline_stage_id="12345", source_id="12345", lead_id="12345", lead_source="Website", contact_id="12345", contact_ids=[
+    res = apideck.crm.opportunities.update(id="<id>", service_id="salesforce", raw=False, title="New Rocket", primary_contact_id="12345", description="Opportunities are created for People and Companies that are interested in buying your products or services. Create Opportunities for People and Companies to move them through one of your Pipelines.", type_="Existing Customer - Upgrade", monetary_amount=75000, currency=apideck_unify.Currency.USD, win_probability=40, close_date=date.fromisoformat("2020-10-30"), loss_reason_id="12345", loss_reason="No budget", won_reason_id="12345", won_reason="Best pitch", pipeline_id="12345", pipeline_stage_id="12345", source_id="12345", lead_id="12345", lead_source="Website", contact_id="12345", contact_ids=[
         "12345",
     ], company_id="12345", company_name="Copper", owner_id="12345", priority="None", status="Open", status_id="12345", tags=[
         "New",
     ], custom_fields=[
-        {
-            "id": "2389328923893298",
-            "name": "employee_level",
-            "description": "Employee Level",
-            "value": 10,
-        },
-        {
-            "id": "2389328923893298",
-            "name": "employee_level",
-            "description": "Employee Level",
-            "value": 10,
-        },
-        {
-            "id": "2389328923893298",
-            "name": "employee_level",
-            "description": "Employee Level",
-            "value": 10,
-        },
+        apideck_unify.CustomField(
+            id="2389328923893298",
+            name="employee_level",
+            description="Employee Level",
+            value=10,
+        ),
+        apideck_unify.CustomField(
+            id="2389328923893298",
+            name="employee_level",
+            description="Employee Level",
+            value=10,
+        ),
+        apideck_unify.CustomField(
+            id="2389328923893298",
+            name="employee_level",
+            description="Employee Level",
+            value=10,
+        ),
     ], stage_last_changed_at=parse_datetime("2020-09-30T07:43:32.000Z"), pass_through=[
-        {
-            "service_id": "<id>",
-            "extend_paths": [
-                {
-                    "path": "$.nested.property",
-                    "value": {
+        apideck_unify.PassThroughBody(
+            service_id="<id>",
+            extend_paths=[
+                apideck_unify.ExtendPaths(
+                    path="$.nested.property",
+                    value={
                         "TaxClassificationRef": {
                             "value": "EUC-99990201-V1-00020000",
                         },
                     },
-                },
-                {
-                    "path": "$.nested.property",
-                    "value": {
+                ),
+                apideck_unify.ExtendPaths(
+                    path="$.nested.property",
+                    value={
                         "TaxClassificationRef": {
                             "value": "EUC-99990201-V1-00020000",
                         },
                     },
-                },
-                {
-                    "path": "$.nested.property",
-                    "value": {
+                ),
+                apideck_unify.ExtendPaths(
+                    path="$.nested.property",
+                    value={
                         "TaxClassificationRef": {
                             "value": "EUC-99990201-V1-00020000",
                         },
                     },
-                },
+                ),
             ],
-        },
-    ])
+        ),
+    ], additional_properties={
+
+    })
 
     assert res.update_opportunity_response is not None
 
@@ -392,11 +397,11 @@ with Apideck(
 | Parameter                                                                                                                                                                                             | Type                                                                                                                                                                                                  | Required                                                                                                                                                                                              | Description                                                                                                                                                                                           | Example                                                                                                                                                                                               |
 | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `id`                                                                                                                                                                                                  | *str*                                                                                                                                                                                                 | :heavy_check_mark:                                                                                                                                                                                    | ID of the record you are acting upon.                                                                                                                                                                 |                                                                                                                                                                                                       |
-| `title`                                                                                                                                                                                               | *str*                                                                                                                                                                                                 | :heavy_check_mark:                                                                                                                                                                                    | The title or name of the opportunity.                                                                                                                                                                 | New Rocket                                                                                                                                                                                            |
 | `consumer_id`                                                                                                                                                                                         | *Optional[str]*                                                                                                                                                                                       | :heavy_minus_sign:                                                                                                                                                                                    | ID of the consumer which you want to get or push data from                                                                                                                                            | test-consumer                                                                                                                                                                                         |
 | `app_id`                                                                                                                                                                                              | *Optional[str]*                                                                                                                                                                                       | :heavy_minus_sign:                                                                                                                                                                                    | The ID of your Unify application                                                                                                                                                                      | dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX                                                                                                                                                               |
 | `service_id`                                                                                                                                                                                          | *Optional[str]*                                                                                                                                                                                       | :heavy_minus_sign:                                                                                                                                                                                    | Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.                                                         | salesforce                                                                                                                                                                                            |
 | `raw`                                                                                                                                                                                                 | *Optional[bool]*                                                                                                                                                                                      | :heavy_minus_sign:                                                                                                                                                                                    | Include raw response. Mostly used for debugging purposes                                                                                                                                              |                                                                                                                                                                                                       |
+| `title`                                                                                                                                                                                               | *Optional[str]*                                                                                                                                                                                       | :heavy_minus_sign:                                                                                                                                                                                    | The title or name of the opportunity.                                                                                                                                                                 | New Rocket                                                                                                                                                                                            |
 | `primary_contact_id`                                                                                                                                                                                  | *OptionalNullable[str]*                                                                                                                                                                               | :heavy_minus_sign:                                                                                                                                                                                    | The unique identifier of the primary contact associated with the opportunity.                                                                                                                         | 12345                                                                                                                                                                                                 |
 | `description`                                                                                                                                                                                         | *OptionalNullable[str]*                                                                                                                                                                               | :heavy_minus_sign:                                                                                                                                                                                    | A description of the opportunity.                                                                                                                                                                     | Opportunities are created for People and Companies that are interested in buying your products or services. Create Opportunities for People and Companies to move them through one of your Pipelines. |
 | `type`                                                                                                                                                                                                | *OptionalNullable[str]*                                                                                                                                                                               | :heavy_minus_sign:                                                                                                                                                                                    | The type of the opportunity                                                                                                                                                                           | Existing Customer - Upgrade                                                                                                                                                                           |
@@ -425,6 +430,7 @@ with Apideck(
 | `custom_fields`                                                                                                                                                                                       | List[[models.CustomField](../../models/customfield.md)]                                                                                                                                               | :heavy_minus_sign:                                                                                                                                                                                    | N/A                                                                                                                                                                                                   |                                                                                                                                                                                                       |
 | `stage_last_changed_at`                                                                                                                                                                               | [date](https://docs.python.org/3/library/datetime.html#date-objects)                                                                                                                                  | :heavy_minus_sign:                                                                                                                                                                                    | The date and time when the stage of the opportunity was last changed.                                                                                                                                 | 2020-09-30T07:43:32.000Z                                                                                                                                                                              |
 | `pass_through`                                                                                                                                                                                        | List[[models.PassThroughBody](../../models/passthroughbody.md)]                                                                                                                                       | :heavy_minus_sign:                                                                                                                                                                                    | The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.                                               |                                                                                                                                                                                                       |
+| `additional_properties`                                                                                                                                                                               | Dict[str, *Any*]                                                                                                                                                                                      | :heavy_minus_sign:                                                                                                                                                                                    | N/A                                                                                                                                                                                                   |                                                                                                                                                                                                       |
 | `retries`                                                                                                                                                                                             | [Optional[utils.RetryConfig]](../../models/utils/retryconfig.md)                                                                                                                                      | :heavy_minus_sign:                                                                                                                                                                                    | Configuration to override the default retry behavior of the client.                                                                                                                                   |                                                                                                                                                                                                       |
 
 ### Response

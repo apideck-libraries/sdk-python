@@ -97,65 +97,67 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.crm.activities.create(type_=apideck_unify.ActivityType.MEETING, raw=False, service_id="salesforce", activity_datetime="2021-05-01T12:00:00.000Z", duration_seconds=1800, user_id="12345", account_id="12345", contact_id="12345", company_id="12345", opportunity_id="12345", lead_id="12345", owner_id="12345", campaign_id="12345", case_id="12345", asset_id="12345", contract_id="12345", product_id="12345", solution_id="12345", custom_object_id="12345", title="Meeting", description="More info about the meeting", note="An internal note about the meeting", location="Space", location_address={
-        "id": "123",
-        "type": apideck_unify.Type.PRIMARY,
-        "string": "25 Spring Street, Blackburn, VIC 3130",
-        "name": "HQ US",
-        "line1": "Main street",
-        "line2": "apt #",
-        "line3": "Suite #",
-        "line4": "delivery instructions",
-        "street_number": "25",
-        "city": "San Francisco",
-        "state": "CA",
-        "postal_code": "94104",
-        "country": "US",
-        "latitude": "40.759211",
-        "longitude": "-73.984638",
-        "county": "Santa Clara",
-        "contact_name": "Elon Musk",
-        "salutation": "Mr",
-        "phone_number": "111-111-1111",
-        "fax": "122-111-1111",
-        "email": "elon@musk.com",
-        "website": "https://elonmusk.com",
-        "notes": "Address notes or delivery instructions.",
-        "row_version": "1-12345",
-    }, all_day_event=False, private=True, group_event=True, event_sub_type="debrief", group_event_type="Proposed", child=False, archived=False, deleted=False, show_as=apideck_unify.ShowAs.BUSY, done=False, start_datetime="2021-05-01T12:00:00.000Z", end_datetime="2021-05-01T12:30:00.000Z", activity_date="2021-05-01", end_date="2021-05-01", recurrent=False, reminder_datetime="2021-05-01T17:00:00.000Z", reminder_set=False, video_conference_url="https://us02web.zoom.us/j/88120759396", video_conference_id="zoom:88120759396", custom_fields=[
-        {
-            "id": "2389328923893298",
-            "name": "employee_level",
-            "description": "Employee Level",
-            "value": "Uses Salesforce and Marketo",
-        },
+    res = apideck.crm.activities.create(raw=False, service_id="salesforce", activity_datetime="2021-05-01T12:00:00.000Z", duration_seconds=1800, user_id="12345", account_id="12345", contact_id="12345", company_id="12345", opportunity_id="12345", lead_id="12345", owner_id="12345", campaign_id="12345", case_id="12345", asset_id="12345", contract_id="12345", product_id="12345", solution_id="12345", custom_object_id="12345", type_=apideck_unify.ActivityType.MEETING, title="Meeting", description="More info about the meeting", note="An internal note about the meeting", location="Space", location_address=apideck_unify.Address(
+        id="123",
+        type=apideck_unify.Type.PRIMARY,
+        string="25 Spring Street, Blackburn, VIC 3130",
+        name="HQ US",
+        line1="Main street",
+        line2="apt #",
+        line3="Suite #",
+        line4="delivery instructions",
+        street_number="25",
+        city="San Francisco",
+        state="CA",
+        postal_code="94104",
+        country="US",
+        latitude="40.759211",
+        longitude="-73.984638",
+        county="Santa Clara",
+        contact_name="Elon Musk",
+        salutation="Mr",
+        phone_number="111-111-1111",
+        fax="122-111-1111",
+        email="elon@musk.com",
+        website="https://elonmusk.com",
+        notes="Address notes or delivery instructions.",
+        row_version="1-12345",
+    ), all_day_event=False, private=True, group_event=True, event_sub_type="debrief", group_event_type="Proposed", child=False, archived=False, deleted=False, show_as=apideck_unify.ShowAs.BUSY, done=False, start_datetime="2021-05-01T12:00:00.000Z", end_datetime="2021-05-01T12:30:00.000Z", activity_date="2021-05-01", end_date="2021-05-01", recurrent=False, reminder_datetime="2021-05-01T17:00:00.000Z", reminder_set=False, video_conference_url="https://us02web.zoom.us/j/88120759396", video_conference_id="zoom:88120759396", custom_fields=[
+        apideck_unify.CustomField(
+            id="2389328923893298",
+            name="employee_level",
+            description="Employee Level",
+            value="Uses Salesforce and Marketo",
+        ),
     ], attendees=[
-        {
-            "name": "Elon Musk",
-            "first_name": "Elon",
-            "middle_name": "D.",
-            "last_name": "Musk",
-            "prefix": "Mr.",
-            "suffix": "PhD",
-            "email_address": "elon@musk.com",
-            "is_organizer": True,
-            "status": apideck_unify.ActivityAttendeeStatus.ACCEPTED,
-        },
+        apideck_unify.ActivityAttendeeInput(
+            name="Elon Musk",
+            first_name="Elon",
+            middle_name="D.",
+            last_name="Musk",
+            prefix="Mr.",
+            suffix="PhD",
+            email_address="elon@musk.com",
+            is_organizer=True,
+            status=apideck_unify.ActivityAttendeeStatus.ACCEPTED,
+        ),
     ], pass_through=[
-        {
-            "service_id": "<id>",
-            "extend_paths": [
-                {
-                    "path": "$.nested.property",
-                    "value": {
+        apideck_unify.PassThroughBody(
+            service_id="<id>",
+            extend_paths=[
+                apideck_unify.ExtendPaths(
+                    path="$.nested.property",
+                    value={
                         "TaxClassificationRef": {
                             "value": "EUC-99990201-V1-00020000",
                         },
                     },
-                },
+                ),
             ],
-        },
-    ])
+        ),
+    ], additional_properties={
+
+    })
 
     assert res.create_activity_response is not None
 
@@ -168,7 +170,6 @@ with Apideck(
 
 | Parameter                                                                                                                                               | Type                                                                                                                                                    | Required                                                                                                                                                | Description                                                                                                                                             | Example                                                                                                                                                 |
 | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `type`                                                                                                                                                  | [Nullable[models.ActivityType]](../../models/activitytype.md)                                                                                           | :heavy_check_mark:                                                                                                                                      | The type of the activity                                                                                                                                | meeting                                                                                                                                                 |
 | `raw`                                                                                                                                                   | *Optional[bool]*                                                                                                                                        | :heavy_minus_sign:                                                                                                                                      | Include raw response. Mostly used for debugging purposes                                                                                                |                                                                                                                                                         |
 | `consumer_id`                                                                                                                                           | *Optional[str]*                                                                                                                                         | :heavy_minus_sign:                                                                                                                                      | ID of the consumer which you want to get or push data from                                                                                              | test-consumer                                                                                                                                           |
 | `app_id`                                                                                                                                                | *Optional[str]*                                                                                                                                         | :heavy_minus_sign:                                                                                                                                      | The ID of your Unify application                                                                                                                        | dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX                                                                                                                 |
@@ -189,6 +190,7 @@ with Apideck(
 | `product_id`                                                                                                                                            | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | The product related to the activity                                                                                                                     | 12345                                                                                                                                                   |
 | `solution_id`                                                                                                                                           | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | The solution related to the activity                                                                                                                    | 12345                                                                                                                                                   |
 | `custom_object_id`                                                                                                                                      | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | The custom object related to the activity                                                                                                               | 12345                                                                                                                                                   |
+| `type`                                                                                                                                                  | [OptionalNullable[models.ActivityType]](../../models/activitytype.md)                                                                                   | :heavy_minus_sign:                                                                                                                                      | The type of the activity                                                                                                                                | meeting                                                                                                                                                 |
 | `title`                                                                                                                                                 | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | The title of the activity                                                                                                                               | Meeting                                                                                                                                                 |
 | `description`                                                                                                                                           | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | A description of the activity                                                                                                                           | More info about the meeting                                                                                                                             |
 | `note`                                                                                                                                                  | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | An internal note about the activity                                                                                                                     | An internal note about the meeting                                                                                                                      |
@@ -216,6 +218,7 @@ with Apideck(
 | `custom_fields`                                                                                                                                         | List[[models.CustomField](../../models/customfield.md)]                                                                                                 | :heavy_minus_sign:                                                                                                                                      | Custom fields of the activity                                                                                                                           |                                                                                                                                                         |
 | `attendees`                                                                                                                                             | List[[models.ActivityAttendeeInput](../../models/activityattendeeinput.md)]                                                                             | :heavy_minus_sign:                                                                                                                                      | N/A                                                                                                                                                     |                                                                                                                                                         |
 | `pass_through`                                                                                                                                          | List[[models.PassThroughBody](../../models/passthroughbody.md)]                                                                                         | :heavy_minus_sign:                                                                                                                                      | The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources. |                                                                                                                                                         |
+| `additional_properties`                                                                                                                                 | Dict[str, *Any*]                                                                                                                                        | :heavy_minus_sign:                                                                                                                                      | N/A                                                                                                                                                     |                                                                                                                                                         |
 | `retries`                                                                                                                                               | [Optional[utils.RetryConfig]](../../models/utils/retryconfig.md)                                                                                        | :heavy_minus_sign:                                                                                                                                      | Configuration to override the default retry behavior of the client.                                                                                     |                                                                                                                                                         |
 
 ### Response
@@ -306,147 +309,149 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.crm.activities.update(id="<id>", type_=apideck_unify.ActivityType.MEETING, service_id="salesforce", raw=False, activity_datetime="2021-05-01T12:00:00.000Z", duration_seconds=1800, user_id="12345", account_id="12345", contact_id="12345", company_id="12345", opportunity_id="12345", lead_id="12345", owner_id="12345", campaign_id="12345", case_id="12345", asset_id="12345", contract_id="12345", product_id="12345", solution_id="12345", custom_object_id="12345", title="Meeting", description="More info about the meeting", note="An internal note about the meeting", location="Space", location_address={
-        "id": "123",
-        "type": apideck_unify.Type.PRIMARY,
-        "string": "25 Spring Street, Blackburn, VIC 3130",
-        "name": "HQ US",
-        "line1": "Main street",
-        "line2": "apt #",
-        "line3": "Suite #",
-        "line4": "delivery instructions",
-        "street_number": "25",
-        "city": "San Francisco",
-        "state": "CA",
-        "postal_code": "94104",
-        "country": "US",
-        "latitude": "40.759211",
-        "longitude": "-73.984638",
-        "county": "Santa Clara",
-        "contact_name": "Elon Musk",
-        "salutation": "Mr",
-        "phone_number": "111-111-1111",
-        "fax": "122-111-1111",
-        "email": "elon@musk.com",
-        "website": "https://elonmusk.com",
-        "notes": "Address notes or delivery instructions.",
-        "row_version": "1-12345",
-    }, all_day_event=False, private=True, group_event=True, event_sub_type="debrief", group_event_type="Proposed", child=False, archived=False, deleted=False, show_as=apideck_unify.ShowAs.BUSY, done=False, start_datetime="2021-05-01T12:00:00.000Z", end_datetime="2021-05-01T12:30:00.000Z", activity_date="2021-05-01", end_date="2021-05-01", recurrent=False, reminder_datetime="2021-05-01T17:00:00.000Z", reminder_set=False, video_conference_url="https://us02web.zoom.us/j/88120759396", video_conference_id="zoom:88120759396", custom_fields=[
-        {
-            "id": "2389328923893298",
-            "name": "employee_level",
-            "description": "Employee Level",
-            "value": {
+    res = apideck.crm.activities.update(id="<id>", service_id="salesforce", raw=False, activity_datetime="2021-05-01T12:00:00.000Z", duration_seconds=1800, user_id="12345", account_id="12345", contact_id="12345", company_id="12345", opportunity_id="12345", lead_id="12345", owner_id="12345", campaign_id="12345", case_id="12345", asset_id="12345", contract_id="12345", product_id="12345", solution_id="12345", custom_object_id="12345", type_=apideck_unify.ActivityType.MEETING, title="Meeting", description="More info about the meeting", note="An internal note about the meeting", location="Space", location_address=apideck_unify.Address(
+        id="123",
+        type=apideck_unify.Type.PRIMARY,
+        string="25 Spring Street, Blackburn, VIC 3130",
+        name="HQ US",
+        line1="Main street",
+        line2="apt #",
+        line3="Suite #",
+        line4="delivery instructions",
+        street_number="25",
+        city="San Francisco",
+        state="CA",
+        postal_code="94104",
+        country="US",
+        latitude="40.759211",
+        longitude="-73.984638",
+        county="Santa Clara",
+        contact_name="Elon Musk",
+        salutation="Mr",
+        phone_number="111-111-1111",
+        fax="122-111-1111",
+        email="elon@musk.com",
+        website="https://elonmusk.com",
+        notes="Address notes or delivery instructions.",
+        row_version="1-12345",
+    ), all_day_event=False, private=True, group_event=True, event_sub_type="debrief", group_event_type="Proposed", child=False, archived=False, deleted=False, show_as=apideck_unify.ShowAs.BUSY, done=False, start_datetime="2021-05-01T12:00:00.000Z", end_datetime="2021-05-01T12:30:00.000Z", activity_date="2021-05-01", end_date="2021-05-01", recurrent=False, reminder_datetime="2021-05-01T17:00:00.000Z", reminder_set=False, video_conference_url="https://us02web.zoom.us/j/88120759396", video_conference_id="zoom:88120759396", custom_fields=[
+        apideck_unify.CustomField(
+            id="2389328923893298",
+            name="employee_level",
+            description="Employee Level",
+            value={
 
             },
-        },
-        {
-            "id": "2389328923893298",
-            "name": "employee_level",
-            "description": "Employee Level",
-            "value": {
+        ),
+        apideck_unify.CustomField(
+            id="2389328923893298",
+            name="employee_level",
+            description="Employee Level",
+            value={
 
             },
-        },
+        ),
     ], attendees=[
-        {
-            "name": "Elon Musk",
-            "first_name": "Elon",
-            "middle_name": "D.",
-            "last_name": "Musk",
-            "prefix": "Mr.",
-            "suffix": "PhD",
-            "email_address": "elon@musk.com",
-            "is_organizer": True,
-            "status": apideck_unify.ActivityAttendeeStatus.ACCEPTED,
-        },
-        {
-            "name": "Elon Musk",
-            "first_name": "Elon",
-            "middle_name": "D.",
-            "last_name": "Musk",
-            "prefix": "Mr.",
-            "suffix": "PhD",
-            "email_address": "elon@musk.com",
-            "is_organizer": True,
-            "status": apideck_unify.ActivityAttendeeStatus.ACCEPTED,
-        },
-        {
-            "name": "Elon Musk",
-            "first_name": "Elon",
-            "middle_name": "D.",
-            "last_name": "Musk",
-            "prefix": "Mr.",
-            "suffix": "PhD",
-            "email_address": "elon@musk.com",
-            "is_organizer": True,
-            "status": apideck_unify.ActivityAttendeeStatus.ACCEPTED,
-        },
+        apideck_unify.ActivityAttendeeInput(
+            name="Elon Musk",
+            first_name="Elon",
+            middle_name="D.",
+            last_name="Musk",
+            prefix="Mr.",
+            suffix="PhD",
+            email_address="elon@musk.com",
+            is_organizer=True,
+            status=apideck_unify.ActivityAttendeeStatus.ACCEPTED,
+        ),
+        apideck_unify.ActivityAttendeeInput(
+            name="Elon Musk",
+            first_name="Elon",
+            middle_name="D.",
+            last_name="Musk",
+            prefix="Mr.",
+            suffix="PhD",
+            email_address="elon@musk.com",
+            is_organizer=True,
+            status=apideck_unify.ActivityAttendeeStatus.ACCEPTED,
+        ),
+        apideck_unify.ActivityAttendeeInput(
+            name="Elon Musk",
+            first_name="Elon",
+            middle_name="D.",
+            last_name="Musk",
+            prefix="Mr.",
+            suffix="PhD",
+            email_address="elon@musk.com",
+            is_organizer=True,
+            status=apideck_unify.ActivityAttendeeStatus.ACCEPTED,
+        ),
     ], pass_through=[
-        {
-            "service_id": "<id>",
-            "extend_paths": [
-                {
-                    "path": "$.nested.property",
-                    "value": {
+        apideck_unify.PassThroughBody(
+            service_id="<id>",
+            extend_paths=[
+                apideck_unify.ExtendPaths(
+                    path="$.nested.property",
+                    value={
                         "TaxClassificationRef": {
                             "value": "EUC-99990201-V1-00020000",
                         },
                     },
-                },
-                {
-                    "path": "$.nested.property",
-                    "value": {
+                ),
+                apideck_unify.ExtendPaths(
+                    path="$.nested.property",
+                    value={
                         "TaxClassificationRef": {
                             "value": "EUC-99990201-V1-00020000",
                         },
                     },
-                },
+                ),
             ],
-        },
-        {
-            "service_id": "<id>",
-            "extend_paths": [
-                {
-                    "path": "$.nested.property",
-                    "value": {
+        ),
+        apideck_unify.PassThroughBody(
+            service_id="<id>",
+            extend_paths=[
+                apideck_unify.ExtendPaths(
+                    path="$.nested.property",
+                    value={
                         "TaxClassificationRef": {
                             "value": "EUC-99990201-V1-00020000",
                         },
                     },
-                },
-                {
-                    "path": "$.nested.property",
-                    "value": {
+                ),
+                apideck_unify.ExtendPaths(
+                    path="$.nested.property",
+                    value={
                         "TaxClassificationRef": {
                             "value": "EUC-99990201-V1-00020000",
                         },
                     },
-                },
+                ),
             ],
-        },
-        {
-            "service_id": "<id>",
-            "extend_paths": [
-                {
-                    "path": "$.nested.property",
-                    "value": {
+        ),
+        apideck_unify.PassThroughBody(
+            service_id="<id>",
+            extend_paths=[
+                apideck_unify.ExtendPaths(
+                    path="$.nested.property",
+                    value={
                         "TaxClassificationRef": {
                             "value": "EUC-99990201-V1-00020000",
                         },
                     },
-                },
-                {
-                    "path": "$.nested.property",
-                    "value": {
+                ),
+                apideck_unify.ExtendPaths(
+                    path="$.nested.property",
+                    value={
                         "TaxClassificationRef": {
                             "value": "EUC-99990201-V1-00020000",
                         },
                     },
-                },
+                ),
             ],
-        },
-    ])
+        ),
+    ], additional_properties={
+
+    })
 
     assert res.update_activity_response is not None
 
@@ -460,7 +465,6 @@ with Apideck(
 | Parameter                                                                                                                                               | Type                                                                                                                                                    | Required                                                                                                                                                | Description                                                                                                                                             | Example                                                                                                                                                 |
 | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `id`                                                                                                                                                    | *str*                                                                                                                                                   | :heavy_check_mark:                                                                                                                                      | ID of the record you are acting upon.                                                                                                                   |                                                                                                                                                         |
-| `type`                                                                                                                                                  | [Nullable[models.ActivityType]](../../models/activitytype.md)                                                                                           | :heavy_check_mark:                                                                                                                                      | The type of the activity                                                                                                                                | meeting                                                                                                                                                 |
 | `consumer_id`                                                                                                                                           | *Optional[str]*                                                                                                                                         | :heavy_minus_sign:                                                                                                                                      | ID of the consumer which you want to get or push data from                                                                                              | test-consumer                                                                                                                                           |
 | `app_id`                                                                                                                                                | *Optional[str]*                                                                                                                                         | :heavy_minus_sign:                                                                                                                                      | The ID of your Unify application                                                                                                                        | dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX                                                                                                                 |
 | `service_id`                                                                                                                                            | *Optional[str]*                                                                                                                                         | :heavy_minus_sign:                                                                                                                                      | Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.           | salesforce                                                                                                                                              |
@@ -481,6 +485,7 @@ with Apideck(
 | `product_id`                                                                                                                                            | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | The product related to the activity                                                                                                                     | 12345                                                                                                                                                   |
 | `solution_id`                                                                                                                                           | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | The solution related to the activity                                                                                                                    | 12345                                                                                                                                                   |
 | `custom_object_id`                                                                                                                                      | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | The custom object related to the activity                                                                                                               | 12345                                                                                                                                                   |
+| `type`                                                                                                                                                  | [OptionalNullable[models.ActivityType]](../../models/activitytype.md)                                                                                   | :heavy_minus_sign:                                                                                                                                      | The type of the activity                                                                                                                                | meeting                                                                                                                                                 |
 | `title`                                                                                                                                                 | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | The title of the activity                                                                                                                               | Meeting                                                                                                                                                 |
 | `description`                                                                                                                                           | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | A description of the activity                                                                                                                           | More info about the meeting                                                                                                                             |
 | `note`                                                                                                                                                  | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | An internal note about the activity                                                                                                                     | An internal note about the meeting                                                                                                                      |
@@ -508,6 +513,7 @@ with Apideck(
 | `custom_fields`                                                                                                                                         | List[[models.CustomField](../../models/customfield.md)]                                                                                                 | :heavy_minus_sign:                                                                                                                                      | Custom fields of the activity                                                                                                                           |                                                                                                                                                         |
 | `attendees`                                                                                                                                             | List[[models.ActivityAttendeeInput](../../models/activityattendeeinput.md)]                                                                             | :heavy_minus_sign:                                                                                                                                      | N/A                                                                                                                                                     |                                                                                                                                                         |
 | `pass_through`                                                                                                                                          | List[[models.PassThroughBody](../../models/passthroughbody.md)]                                                                                         | :heavy_minus_sign:                                                                                                                                      | The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources. |                                                                                                                                                         |
+| `additional_properties`                                                                                                                                 | Dict[str, *Any*]                                                                                                                                        | :heavy_minus_sign:                                                                                                                                      | N/A                                                                                                                                                     |                                                                                                                                                         |
 | `retries`                                                                                                                                               | [Optional[utils.RetryConfig]](../../models/utils/retryconfig.md)                                                                                        | :heavy_minus_sign:                                                                                                                                      | Configuration to override the default retry behavior of the client.                                                                                     |                                                                                                                                                         |
 
 ### Response

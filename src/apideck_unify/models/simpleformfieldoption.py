@@ -11,18 +11,21 @@ from typing import List, Optional, Union
 from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
 
 
-FiveTypedDict = TypeAliasType("FiveTypedDict", Union[str, int, float])
+Value5TypedDict = TypeAliasType("Value5TypedDict", Union[str, int, float])
 
 
-Five = TypeAliasType("Five", Union[str, int, float])
+Value5 = TypeAliasType("Value5", Union[str, int, float])
 
 
-ValueTypedDict = TypeAliasType(
-    "ValueTypedDict", Union[str, int, float, bool, List[FiveTypedDict]]
+SimpleFormFieldOptionValueTypedDict = TypeAliasType(
+    "SimpleFormFieldOptionValueTypedDict",
+    Union[str, int, float, bool, List[Value5TypedDict]],
 )
 
 
-Value = TypeAliasType("Value", Union[str, int, float, bool, List[Five]])
+SimpleFormFieldOptionValue = TypeAliasType(
+    "SimpleFormFieldOptionValue", Union[str, int, float, bool, List[Value5]]
+)
 
 
 class OptionType(str, Enum, metaclass=utils.OpenEnumMeta):
@@ -30,17 +33,19 @@ class OptionType(str, Enum, metaclass=utils.OpenEnumMeta):
 
 
 class SimpleFormFieldOptionTypedDict(TypedDict):
-    label: str
-    option_type: OptionType
-    value: NotRequired[ValueTypedDict]
+    label: NotRequired[str]
+    value: NotRequired[SimpleFormFieldOptionValueTypedDict]
+    option_type: NotRequired[OptionType]
 
 
 class SimpleFormFieldOption(BaseModel):
-    label: str
+    label: Optional[str] = None
 
-    option_type: Annotated[OptionType, PlainValidator(validate_open_enum(False))]
+    value: Optional[SimpleFormFieldOptionValue] = None
 
-    value: Optional[Value] = None
+    option_type: Annotated[
+        Optional[OptionType], PlainValidator(validate_open_enum(False))
+    ] = None
 
     @field_serializer("option_type")
     def serialize_option_type(self, value):

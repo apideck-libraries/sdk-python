@@ -10,15 +10,16 @@ from apideck_unify.types import (
     UNSET_SENTINEL,
 )
 from datetime import datetime
-from pydantic import model_serializer
+import pydantic
+from pydantic import ConfigDict, model_serializer
 from typing import Any, Dict, List, Optional
 from typing_extensions import NotRequired, TypedDict
 
 
 class DriveGroupTypedDict(TypedDict):
-    id: str
+    id: NotRequired[str]
     r"""A unique identifier for an object."""
-    name: str
+    name: NotRequired[str]
     r"""The name of the drive group"""
     display_name: NotRequired[Nullable[str]]
     r"""The display name of the drive group"""
@@ -39,10 +40,15 @@ class DriveGroupTypedDict(TypedDict):
 
 
 class DriveGroup(BaseModel):
-    id: str
+    model_config = ConfigDict(
+        populate_by_name=True, arbitrary_types_allowed=True, extra="allow"
+    )
+    __pydantic_extra__: Dict[str, Any] = pydantic.Field(init=False)
+
+    id: Optional[str] = None
     r"""A unique identifier for an object."""
 
-    name: str
+    name: Optional[str] = None
     r"""The name of the drive group"""
 
     display_name: OptionalNullable[str] = UNSET
@@ -69,9 +75,19 @@ class DriveGroup(BaseModel):
     pass_through: Optional[List[PassThroughBody]] = None
     r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
 
+    @property
+    def additional_properties(self):
+        return self.__pydantic_extra__
+
+    @additional_properties.setter
+    def additional_properties(self, value):
+        self.__pydantic_extra__ = value  # pyright: ignore[reportIncompatibleVariableOverride]
+
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
         optional_fields = [
+            "id",
+            "name",
             "display_name",
             "description",
             "custom_mappings",
@@ -113,5 +129,8 @@ class DriveGroup(BaseModel):
                 not k in optional_fields or (optional_nullable and is_set)
             ):
                 m[k] = val
+
+        for k, v in serialized.items():
+            m[k] = v
 
         return m

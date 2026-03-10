@@ -373,14 +373,6 @@ class ExpenseReports(BaseSDK):
     def create(
         self,
         *,
-        employee: Union[
-            models.ExpenseReportEmployee, models.ExpenseReportEmployeeTypedDict
-        ],
-        transaction_date: Nullable[datetime],
-        line_items: Union[
-            List[models.ExpenseReportLineItemInput],
-            List[models.ExpenseReportLineItemInputTypedDict],
-        ],
         raw: Optional[bool] = False,
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
@@ -388,7 +380,11 @@ class ExpenseReports(BaseSDK):
         display_id: OptionalNullable[str] = UNSET,
         number: OptionalNullable[str] = UNSET,
         title: OptionalNullable[str] = UNSET,
+        employee: Optional[
+            Union[models.ExpenseReportEmployee, models.ExpenseReportEmployeeTypedDict]
+        ] = None,
         status: OptionalNullable[models.ExpenseReportStatus] = UNSET,
+        transaction_date: OptionalNullable[datetime] = UNSET,
         posting_date: OptionalNullable[date] = UNSET,
         due_date: OptionalNullable[date] = UNSET,
         currency: OptionalNullable[models.Currency] = UNSET,
@@ -410,6 +406,12 @@ class ExpenseReports(BaseSDK):
         accounting_period: OptionalNullable[
             Union[models.AccountingPeriod, models.AccountingPeriodTypedDict]
         ] = UNSET,
+        line_items: Optional[
+            Union[
+                List[models.ExpenseReportLineItemInput],
+                List[models.ExpenseReportLineItemInputTypedDict],
+            ]
+        ] = None,
         subsidiary: OptionalNullable[
             Union[models.LinkedSubsidiaryInput, models.LinkedSubsidiaryInputTypedDict]
         ] = UNSET,
@@ -430,6 +432,7 @@ class ExpenseReports(BaseSDK):
         pass_through: Optional[
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
         ] = None,
+        additional_properties: Optional[Dict[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -439,9 +442,6 @@ class ExpenseReports(BaseSDK):
 
         Create Expense Report
 
-        :param employee: The employee who submitted the expense report.
-        :param transaction_date: The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD
-        :param line_items: Expense line items linked to this expense report.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
@@ -449,7 +449,9 @@ class ExpenseReports(BaseSDK):
         :param display_id: Id to be displayed.
         :param number: The expense report number.
         :param title: Title or purpose of the expense report.
+        :param employee: The employee who submitted the expense report.
         :param status: The status of the expense report.
+        :param transaction_date: The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD
         :param posting_date: The date the expense report was posted to the general ledger.
         :param due_date: Date when reimbursement is due.
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
@@ -463,6 +465,7 @@ class ExpenseReports(BaseSDK):
         :param location:
         :param account:
         :param accounting_period: The accounting period the expense report is posted to.
+        :param line_items: Expense line items linked to this expense report.
         :param subsidiary:
         :param tracking_categories: A list of linked tracking categories.
         :param tax_inclusive: Amounts are including tax
@@ -470,6 +473,7 @@ class ExpenseReports(BaseSDK):
         :param custom_fields:
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
+        :param additional_properties:
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -495,7 +499,7 @@ class ExpenseReports(BaseSDK):
                 number=number,
                 title=title,
                 employee=utils.get_pydantic_model(
-                    employee, models.ExpenseReportEmployee
+                    employee, Optional[models.ExpenseReportEmployee]
                 ),
                 status=status,
                 transaction_date=transaction_date,
@@ -521,7 +525,7 @@ class ExpenseReports(BaseSDK):
                     accounting_period, OptionalNullable[models.AccountingPeriod]
                 ),
                 line_items=utils.get_pydantic_model(
-                    line_items, List[models.ExpenseReportLineItemInput]
+                    line_items, Optional[List[models.ExpenseReportLineItemInput]]
                 ),
                 subsidiary=utils.get_pydantic_model(
                     subsidiary, OptionalNullable[models.LinkedSubsidiaryInput]
@@ -541,6 +545,7 @@ class ExpenseReports(BaseSDK):
                 pass_through=utils.get_pydantic_model(
                     pass_through, Optional[List[models.PassThroughBody]]
                 ),
+                **(additional_properties or {}),
             ),
         )
 
@@ -646,14 +651,6 @@ class ExpenseReports(BaseSDK):
     async def create_async(
         self,
         *,
-        employee: Union[
-            models.ExpenseReportEmployee, models.ExpenseReportEmployeeTypedDict
-        ],
-        transaction_date: Nullable[datetime],
-        line_items: Union[
-            List[models.ExpenseReportLineItemInput],
-            List[models.ExpenseReportLineItemInputTypedDict],
-        ],
         raw: Optional[bool] = False,
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
@@ -661,7 +658,11 @@ class ExpenseReports(BaseSDK):
         display_id: OptionalNullable[str] = UNSET,
         number: OptionalNullable[str] = UNSET,
         title: OptionalNullable[str] = UNSET,
+        employee: Optional[
+            Union[models.ExpenseReportEmployee, models.ExpenseReportEmployeeTypedDict]
+        ] = None,
         status: OptionalNullable[models.ExpenseReportStatus] = UNSET,
+        transaction_date: OptionalNullable[datetime] = UNSET,
         posting_date: OptionalNullable[date] = UNSET,
         due_date: OptionalNullable[date] = UNSET,
         currency: OptionalNullable[models.Currency] = UNSET,
@@ -683,6 +684,12 @@ class ExpenseReports(BaseSDK):
         accounting_period: OptionalNullable[
             Union[models.AccountingPeriod, models.AccountingPeriodTypedDict]
         ] = UNSET,
+        line_items: Optional[
+            Union[
+                List[models.ExpenseReportLineItemInput],
+                List[models.ExpenseReportLineItemInputTypedDict],
+            ]
+        ] = None,
         subsidiary: OptionalNullable[
             Union[models.LinkedSubsidiaryInput, models.LinkedSubsidiaryInputTypedDict]
         ] = UNSET,
@@ -703,6 +710,7 @@ class ExpenseReports(BaseSDK):
         pass_through: Optional[
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
         ] = None,
+        additional_properties: Optional[Dict[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -712,9 +720,6 @@ class ExpenseReports(BaseSDK):
 
         Create Expense Report
 
-        :param employee: The employee who submitted the expense report.
-        :param transaction_date: The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD
-        :param line_items: Expense line items linked to this expense report.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
@@ -722,7 +727,9 @@ class ExpenseReports(BaseSDK):
         :param display_id: Id to be displayed.
         :param number: The expense report number.
         :param title: Title or purpose of the expense report.
+        :param employee: The employee who submitted the expense report.
         :param status: The status of the expense report.
+        :param transaction_date: The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD
         :param posting_date: The date the expense report was posted to the general ledger.
         :param due_date: Date when reimbursement is due.
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
@@ -736,6 +743,7 @@ class ExpenseReports(BaseSDK):
         :param location:
         :param account:
         :param accounting_period: The accounting period the expense report is posted to.
+        :param line_items: Expense line items linked to this expense report.
         :param subsidiary:
         :param tracking_categories: A list of linked tracking categories.
         :param tax_inclusive: Amounts are including tax
@@ -743,6 +751,7 @@ class ExpenseReports(BaseSDK):
         :param custom_fields:
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
+        :param additional_properties:
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -768,7 +777,7 @@ class ExpenseReports(BaseSDK):
                 number=number,
                 title=title,
                 employee=utils.get_pydantic_model(
-                    employee, models.ExpenseReportEmployee
+                    employee, Optional[models.ExpenseReportEmployee]
                 ),
                 status=status,
                 transaction_date=transaction_date,
@@ -794,7 +803,7 @@ class ExpenseReports(BaseSDK):
                     accounting_period, OptionalNullable[models.AccountingPeriod]
                 ),
                 line_items=utils.get_pydantic_model(
-                    line_items, List[models.ExpenseReportLineItemInput]
+                    line_items, Optional[List[models.ExpenseReportLineItemInput]]
                 ),
                 subsidiary=utils.get_pydantic_model(
                     subsidiary, OptionalNullable[models.LinkedSubsidiaryInput]
@@ -814,6 +823,7 @@ class ExpenseReports(BaseSDK):
                 pass_through=utils.get_pydantic_model(
                     pass_through, Optional[List[models.PassThroughBody]]
                 ),
+                **(additional_properties or {}),
             ),
         )
 
@@ -1208,14 +1218,6 @@ class ExpenseReports(BaseSDK):
         self,
         *,
         id: str,
-        employee: Union[
-            models.ExpenseReportEmployee, models.ExpenseReportEmployeeTypedDict
-        ],
-        transaction_date: Nullable[datetime],
-        line_items: Union[
-            List[models.ExpenseReportLineItemInput],
-            List[models.ExpenseReportLineItemInputTypedDict],
-        ],
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
@@ -1223,7 +1225,11 @@ class ExpenseReports(BaseSDK):
         display_id: OptionalNullable[str] = UNSET,
         number: OptionalNullable[str] = UNSET,
         title: OptionalNullable[str] = UNSET,
+        employee: Optional[
+            Union[models.ExpenseReportEmployee, models.ExpenseReportEmployeeTypedDict]
+        ] = None,
         status: OptionalNullable[models.ExpenseReportStatus] = UNSET,
+        transaction_date: OptionalNullable[datetime] = UNSET,
         posting_date: OptionalNullable[date] = UNSET,
         due_date: OptionalNullable[date] = UNSET,
         currency: OptionalNullable[models.Currency] = UNSET,
@@ -1245,6 +1251,12 @@ class ExpenseReports(BaseSDK):
         accounting_period: OptionalNullable[
             Union[models.AccountingPeriod, models.AccountingPeriodTypedDict]
         ] = UNSET,
+        line_items: Optional[
+            Union[
+                List[models.ExpenseReportLineItemInput],
+                List[models.ExpenseReportLineItemInputTypedDict],
+            ]
+        ] = None,
         subsidiary: OptionalNullable[
             Union[models.LinkedSubsidiaryInput, models.LinkedSubsidiaryInputTypedDict]
         ] = UNSET,
@@ -1265,6 +1277,7 @@ class ExpenseReports(BaseSDK):
         pass_through: Optional[
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
         ] = None,
+        additional_properties: Optional[Dict[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -1275,9 +1288,6 @@ class ExpenseReports(BaseSDK):
         Update Expense Report
 
         :param id: ID of the record you are acting upon.
-        :param employee: The employee who submitted the expense report.
-        :param transaction_date: The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD
-        :param line_items: Expense line items linked to this expense report.
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
@@ -1285,7 +1295,9 @@ class ExpenseReports(BaseSDK):
         :param display_id: Id to be displayed.
         :param number: The expense report number.
         :param title: Title or purpose of the expense report.
+        :param employee: The employee who submitted the expense report.
         :param status: The status of the expense report.
+        :param transaction_date: The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD
         :param posting_date: The date the expense report was posted to the general ledger.
         :param due_date: Date when reimbursement is due.
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
@@ -1299,6 +1311,7 @@ class ExpenseReports(BaseSDK):
         :param location:
         :param account:
         :param accounting_period: The accounting period the expense report is posted to.
+        :param line_items: Expense line items linked to this expense report.
         :param subsidiary:
         :param tracking_categories: A list of linked tracking categories.
         :param tax_inclusive: Amounts are including tax
@@ -1306,6 +1319,7 @@ class ExpenseReports(BaseSDK):
         :param custom_fields:
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
+        :param additional_properties:
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -1332,7 +1346,7 @@ class ExpenseReports(BaseSDK):
                 number=number,
                 title=title,
                 employee=utils.get_pydantic_model(
-                    employee, models.ExpenseReportEmployee
+                    employee, Optional[models.ExpenseReportEmployee]
                 ),
                 status=status,
                 transaction_date=transaction_date,
@@ -1358,7 +1372,7 @@ class ExpenseReports(BaseSDK):
                     accounting_period, OptionalNullable[models.AccountingPeriod]
                 ),
                 line_items=utils.get_pydantic_model(
-                    line_items, List[models.ExpenseReportLineItemInput]
+                    line_items, Optional[List[models.ExpenseReportLineItemInput]]
                 ),
                 subsidiary=utils.get_pydantic_model(
                     subsidiary, OptionalNullable[models.LinkedSubsidiaryInput]
@@ -1378,6 +1392,7 @@ class ExpenseReports(BaseSDK):
                 pass_through=utils.get_pydantic_model(
                     pass_through, Optional[List[models.PassThroughBody]]
                 ),
+                **(additional_properties or {}),
             ),
         )
 
@@ -1484,14 +1499,6 @@ class ExpenseReports(BaseSDK):
         self,
         *,
         id: str,
-        employee: Union[
-            models.ExpenseReportEmployee, models.ExpenseReportEmployeeTypedDict
-        ],
-        transaction_date: Nullable[datetime],
-        line_items: Union[
-            List[models.ExpenseReportLineItemInput],
-            List[models.ExpenseReportLineItemInputTypedDict],
-        ],
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
@@ -1499,7 +1506,11 @@ class ExpenseReports(BaseSDK):
         display_id: OptionalNullable[str] = UNSET,
         number: OptionalNullable[str] = UNSET,
         title: OptionalNullable[str] = UNSET,
+        employee: Optional[
+            Union[models.ExpenseReportEmployee, models.ExpenseReportEmployeeTypedDict]
+        ] = None,
         status: OptionalNullable[models.ExpenseReportStatus] = UNSET,
+        transaction_date: OptionalNullable[datetime] = UNSET,
         posting_date: OptionalNullable[date] = UNSET,
         due_date: OptionalNullable[date] = UNSET,
         currency: OptionalNullable[models.Currency] = UNSET,
@@ -1521,6 +1532,12 @@ class ExpenseReports(BaseSDK):
         accounting_period: OptionalNullable[
             Union[models.AccountingPeriod, models.AccountingPeriodTypedDict]
         ] = UNSET,
+        line_items: Optional[
+            Union[
+                List[models.ExpenseReportLineItemInput],
+                List[models.ExpenseReportLineItemInputTypedDict],
+            ]
+        ] = None,
         subsidiary: OptionalNullable[
             Union[models.LinkedSubsidiaryInput, models.LinkedSubsidiaryInputTypedDict]
         ] = UNSET,
@@ -1541,6 +1558,7 @@ class ExpenseReports(BaseSDK):
         pass_through: Optional[
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
         ] = None,
+        additional_properties: Optional[Dict[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -1551,9 +1569,6 @@ class ExpenseReports(BaseSDK):
         Update Expense Report
 
         :param id: ID of the record you are acting upon.
-        :param employee: The employee who submitted the expense report.
-        :param transaction_date: The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD
-        :param line_items: Expense line items linked to this expense report.
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
@@ -1561,7 +1576,9 @@ class ExpenseReports(BaseSDK):
         :param display_id: Id to be displayed.
         :param number: The expense report number.
         :param title: Title or purpose of the expense report.
+        :param employee: The employee who submitted the expense report.
         :param status: The status of the expense report.
+        :param transaction_date: The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD
         :param posting_date: The date the expense report was posted to the general ledger.
         :param due_date: Date when reimbursement is due.
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
@@ -1575,6 +1592,7 @@ class ExpenseReports(BaseSDK):
         :param location:
         :param account:
         :param accounting_period: The accounting period the expense report is posted to.
+        :param line_items: Expense line items linked to this expense report.
         :param subsidiary:
         :param tracking_categories: A list of linked tracking categories.
         :param tax_inclusive: Amounts are including tax
@@ -1582,6 +1600,7 @@ class ExpenseReports(BaseSDK):
         :param custom_fields:
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
+        :param additional_properties:
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -1608,7 +1627,7 @@ class ExpenseReports(BaseSDK):
                 number=number,
                 title=title,
                 employee=utils.get_pydantic_model(
-                    employee, models.ExpenseReportEmployee
+                    employee, Optional[models.ExpenseReportEmployee]
                 ),
                 status=status,
                 transaction_date=transaction_date,
@@ -1634,7 +1653,7 @@ class ExpenseReports(BaseSDK):
                     accounting_period, OptionalNullable[models.AccountingPeriod]
                 ),
                 line_items=utils.get_pydantic_model(
-                    line_items, List[models.ExpenseReportLineItemInput]
+                    line_items, Optional[List[models.ExpenseReportLineItemInput]]
                 ),
                 subsidiary=utils.get_pydantic_model(
                     subsidiary, OptionalNullable[models.LinkedSubsidiaryInput]
@@ -1654,6 +1673,7 @@ class ExpenseReports(BaseSDK):
                 pass_through=utils.get_pydantic_model(
                     pass_through, Optional[List[models.PassThroughBody]]
                 ),
+                **(additional_properties or {}),
             ),
         )
 

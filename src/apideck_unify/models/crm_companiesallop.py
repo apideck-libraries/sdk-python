@@ -3,7 +3,7 @@
 from __future__ import annotations
 from .companiesfilter import CompaniesFilter, CompaniesFilterTypedDict
 from .companiessort import CompaniesSort, CompaniesSortTypedDict
-from .getcompaniesresponse import GetCompaniesResponse, GetCompaniesResponseTypedDict
+from .getcompaniesresponse1 import GetCompaniesResponse1, GetCompaniesResponse1TypedDict
 from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
@@ -178,7 +178,7 @@ class CrmCompaniesAllRequest(BaseModel):
 
 class CrmCompaniesAllResponseTypedDict(TypedDict):
     http_meta: HTTPMetadataTypedDict
-    get_companies_response: NotRequired[GetCompaniesResponseTypedDict]
+    get_companies_response1: NotRequired[GetCompaniesResponse1TypedDict]
     r"""Companies"""
     unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
     r"""Unexpected error"""
@@ -189,7 +189,7 @@ class CrmCompaniesAllResponse(BaseModel):
 
     http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
 
-    get_companies_response: Optional[GetCompaniesResponse] = None
+    get_companies_response1: Optional[GetCompaniesResponse1] = None
     r"""Companies"""
 
     unexpected_error_response: Optional[UnexpectedErrorResponse] = None

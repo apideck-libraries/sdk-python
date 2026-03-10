@@ -10,26 +10,27 @@ from apideck_unify.types import (
     UNSET,
     UNSET_SENTINEL,
 )
-from pydantic import model_serializer
+import pydantic
+from pydantic import ConfigDict, model_serializer
 from typing import Any, Dict, List, Optional
 from typing_extensions import NotRequired, TypedDict
 
 
 class PayrollTypedDict(TypedDict):
-    id: Nullable[str]
+    id: NotRequired[Nullable[str]]
     r"""A unique identifier for an object."""
-    processed: Nullable[bool]
-    r"""Whether or not the payroll has been successfully processed. Note that processed payrolls cannot be updated."""
-    check_date: Nullable[str]
-    r"""The date on which employees will be paid for the payroll."""
-    start_date: Nullable[str]
-    r"""The start date, inclusive, of the pay period."""
-    end_date: Nullable[str]
-    r"""The end date, inclusive, of the pay period."""
     company_id: NotRequired[Nullable[str]]
     r"""The unique identifier of the company."""
+    processed: NotRequired[Nullable[bool]]
+    r"""Whether or not the payroll has been successfully processed. Note that processed payrolls cannot be updated."""
     processed_date: NotRequired[Nullable[str]]
     r"""The date the payroll was processed."""
+    check_date: NotRequired[Nullable[str]]
+    r"""The date on which employees will be paid for the payroll."""
+    start_date: NotRequired[Nullable[str]]
+    r"""The start date, inclusive, of the pay period."""
+    end_date: NotRequired[Nullable[str]]
+    r"""The end date, inclusive, of the pay period."""
     totals: NotRequired[PayrollTotalsTypedDict]
     r"""The overview of the payroll totals."""
     compensations: NotRequired[List[CompensationTypedDict]]
@@ -39,26 +40,31 @@ class PayrollTypedDict(TypedDict):
 
 
 class Payroll(BaseModel):
-    id: Nullable[str]
+    model_config = ConfigDict(
+        populate_by_name=True, arbitrary_types_allowed=True, extra="allow"
+    )
+    __pydantic_extra__: Dict[str, Any] = pydantic.Field(init=False)
+
+    id: OptionalNullable[str] = UNSET
     r"""A unique identifier for an object."""
-
-    processed: Nullable[bool]
-    r"""Whether or not the payroll has been successfully processed. Note that processed payrolls cannot be updated."""
-
-    check_date: Nullable[str]
-    r"""The date on which employees will be paid for the payroll."""
-
-    start_date: Nullable[str]
-    r"""The start date, inclusive, of the pay period."""
-
-    end_date: Nullable[str]
-    r"""The end date, inclusive, of the pay period."""
 
     company_id: OptionalNullable[str] = UNSET
     r"""The unique identifier of the company."""
 
+    processed: OptionalNullable[bool] = UNSET
+    r"""Whether or not the payroll has been successfully processed. Note that processed payrolls cannot be updated."""
+
     processed_date: OptionalNullable[str] = UNSET
     r"""The date the payroll was processed."""
+
+    check_date: OptionalNullable[str] = UNSET
+    r"""The date on which employees will be paid for the payroll."""
+
+    start_date: OptionalNullable[str] = UNSET
+    r"""The start date, inclusive, of the pay period."""
+
+    end_date: OptionalNullable[str] = UNSET
+    r"""The end date, inclusive, of the pay period."""
 
     totals: Optional[PayrollTotals] = None
     r"""The overview of the payroll totals."""
@@ -69,11 +75,24 @@ class Payroll(BaseModel):
     custom_mappings: OptionalNullable[Dict[str, Any]] = UNSET
     r"""When custom mappings are configured on the resource, the result is included here."""
 
+    @property
+    def additional_properties(self):
+        return self.__pydantic_extra__
+
+    @additional_properties.setter
+    def additional_properties(self, value):
+        self.__pydantic_extra__ = value  # pyright: ignore[reportIncompatibleVariableOverride]
+
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
         optional_fields = [
+            "id",
             "company_id",
+            "processed",
             "processed_date",
+            "check_date",
+            "start_date",
+            "end_date",
             "totals",
             "compensations",
             "custom_mappings",
@@ -111,5 +130,8 @@ class Payroll(BaseModel):
                 not k in optional_fields or (optional_nullable and is_set)
             ):
                 m[k] = val
+
+        for k, v in serialized.items():
+            m[k] = v
 
         return m

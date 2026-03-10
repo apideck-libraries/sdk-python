@@ -20,7 +20,8 @@ from apideck_unify.types import (
 )
 from apideck_unify.utils import validate_open_enum
 from datetime import date, datetime
-from pydantic import field_serializer, model_serializer
+import pydantic
+from pydantic import ConfigDict, field_serializer, model_serializer
 from pydantic.functional_validators import PlainValidator
 from typing import Any, Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
@@ -68,10 +69,10 @@ class CompanyRowType(BaseModel):
 
 
 class Company1TypedDict(TypedDict):
-    name: Nullable[str]
-    r"""Name of the company"""
     id: NotRequired[str]
     r"""Unique identifier for the company"""
+    name: NotRequired[Nullable[str]]
+    r"""Name of the company"""
     interaction_count: NotRequired[Nullable[int]]
     r"""Number of interactions"""
     owner_id: NotRequired[Nullable[str]]
@@ -146,11 +147,16 @@ class Company1TypedDict(TypedDict):
 
 
 class Company1(BaseModel):
-    name: Nullable[str]
-    r"""Name of the company"""
+    model_config = ConfigDict(
+        populate_by_name=True, arbitrary_types_allowed=True, extra="allow"
+    )
+    __pydantic_extra__: Dict[str, Any] = pydantic.Field(init=False)
 
     id: Optional[str] = None
     r"""Unique identifier for the company"""
+
+    name: OptionalNullable[str] = UNSET
+    r"""Name of the company"""
 
     interaction_count: OptionalNullable[int] = UNSET
     r"""Number of interactions"""
@@ -265,6 +271,14 @@ class Company1(BaseModel):
     pass_through: Optional[List[PassThroughBody]] = None
     r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
 
+    @property
+    def additional_properties(self):
+        return self.__pydantic_extra__
+
+    @additional_properties.setter
+    def additional_properties(self, value):
+        self.__pydantic_extra__ = value  # pyright: ignore[reportIncompatibleVariableOverride]
+
     @field_serializer("currency")
     def serialize_currency(self, value):
         if isinstance(value, str):
@@ -278,6 +292,7 @@ class Company1(BaseModel):
     def serialize_model(self, handler):
         optional_fields = [
             "id",
+            "name",
             "interaction_count",
             "owner_id",
             "image",
@@ -376,11 +391,14 @@ class Company1(BaseModel):
             ):
                 m[k] = val
 
+        for k, v in serialized.items():
+            m[k] = v
+
         return m
 
 
 class Company1InputTypedDict(TypedDict):
-    name: Nullable[str]
+    name: NotRequired[Nullable[str]]
     r"""Name of the company"""
     owner_id: NotRequired[Nullable[str]]
     r"""Owner ID"""
@@ -438,7 +456,12 @@ class Company1InputTypedDict(TypedDict):
 
 
 class Company1Input(BaseModel):
-    name: Nullable[str]
+    model_config = ConfigDict(
+        populate_by_name=True, arbitrary_types_allowed=True, extra="allow"
+    )
+    __pydantic_extra__: Dict[str, Any] = pydantic.Field(init=False)
+
+    name: OptionalNullable[str] = UNSET
     r"""Name of the company"""
 
     owner_id: OptionalNullable[str] = UNSET
@@ -527,6 +550,14 @@ class Company1Input(BaseModel):
     pass_through: Optional[List[PassThroughBody]] = None
     r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
 
+    @property
+    def additional_properties(self):
+        return self.__pydantic_extra__
+
+    @additional_properties.setter
+    def additional_properties(self, value):
+        self.__pydantic_extra__ = value  # pyright: ignore[reportIncompatibleVariableOverride]
+
     @field_serializer("currency")
     def serialize_currency(self, value):
         if isinstance(value, str):
@@ -539,6 +570,7 @@ class Company1Input(BaseModel):
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
         optional_fields = [
+            "name",
             "owner_id",
             "image",
             "description",
@@ -619,5 +651,8 @@ class Company1Input(BaseModel):
                 not k in optional_fields or (optional_nullable and is_set)
             ):
                 m[k] = val
+
+        for k, v in serialized.items():
+            m[k] = v
 
         return m

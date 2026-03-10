@@ -20,7 +20,8 @@ from apideck_unify.types import (
 )
 from apideck_unify.utils import validate_open_enum
 from enum import Enum
-from pydantic import field_serializer, model_serializer
+import pydantic
+from pydantic import ConfigDict, field_serializer, model_serializer
 from pydantic.functional_validators import PlainValidator
 from typing import Any, Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
@@ -46,8 +47,6 @@ class ShowAs(str, Enum, metaclass=utils.OpenEnumMeta):
 
 
 class ActivityTypedDict(TypedDict):
-    type: Nullable[ActivityType]
-    r"""The type of the activity"""
     id: NotRequired[str]
     r"""The unique identifier of the activity"""
     downstream_id: NotRequired[Nullable[str]]
@@ -84,6 +83,8 @@ class ActivityTypedDict(TypedDict):
     r"""The solution related to the activity"""
     custom_object_id: NotRequired[Nullable[str]]
     r"""The custom object related to the activity"""
+    type: NotRequired[Nullable[ActivityType]]
+    r"""The type of the activity"""
     title: NotRequired[Nullable[str]]
     r"""The title of the activity"""
     description: NotRequired[Nullable[str]]
@@ -150,8 +151,10 @@ class ActivityTypedDict(TypedDict):
 
 
 class Activity(BaseModel):
-    type: Annotated[Nullable[ActivityType], PlainValidator(validate_open_enum(False))]
-    r"""The type of the activity"""
+    model_config = ConfigDict(
+        populate_by_name=True, arbitrary_types_allowed=True, extra="allow"
+    )
+    __pydantic_extra__: Dict[str, Any] = pydantic.Field(init=False)
 
     id: Optional[str] = None
     r"""The unique identifier of the activity"""
@@ -206,6 +209,11 @@ class Activity(BaseModel):
 
     custom_object_id: OptionalNullable[str] = UNSET
     r"""The custom object related to the activity"""
+
+    type: Annotated[
+        OptionalNullable[ActivityType], PlainValidator(validate_open_enum(False))
+    ] = UNSET
+    r"""The type of the activity"""
 
     title: OptionalNullable[str] = UNSET
     r"""The title of the activity"""
@@ -305,6 +313,14 @@ class Activity(BaseModel):
     pass_through: Optional[List[PassThroughBody]] = None
     r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
 
+    @property
+    def additional_properties(self):
+        return self.__pydantic_extra__
+
+    @additional_properties.setter
+    def additional_properties(self, value):
+        self.__pydantic_extra__ = value  # pyright: ignore[reportIncompatibleVariableOverride]
+
     @field_serializer("type")
     def serialize_type(self, value):
         if isinstance(value, str):
@@ -344,6 +360,7 @@ class Activity(BaseModel):
             "product_id",
             "solution_id",
             "custom_object_id",
+            "type",
             "title",
             "description",
             "note",
@@ -450,12 +467,13 @@ class Activity(BaseModel):
             ):
                 m[k] = val
 
+        for k, v in serialized.items():
+            m[k] = v
+
         return m
 
 
 class ActivityInputTypedDict(TypedDict):
-    type: Nullable[ActivityType]
-    r"""The type of the activity"""
     activity_datetime: NotRequired[Nullable[str]]
     r"""The date and time of the activity"""
     duration_seconds: NotRequired[Nullable[int]]
@@ -488,6 +506,8 @@ class ActivityInputTypedDict(TypedDict):
     r"""The solution related to the activity"""
     custom_object_id: NotRequired[Nullable[str]]
     r"""The custom object related to the activity"""
+    type: NotRequired[Nullable[ActivityType]]
+    r"""The type of the activity"""
     title: NotRequired[Nullable[str]]
     r"""The title of the activity"""
     description: NotRequired[Nullable[str]]
@@ -542,8 +562,10 @@ class ActivityInputTypedDict(TypedDict):
 
 
 class ActivityInput(BaseModel):
-    type: Annotated[Nullable[ActivityType], PlainValidator(validate_open_enum(False))]
-    r"""The type of the activity"""
+    model_config = ConfigDict(
+        populate_by_name=True, arbitrary_types_allowed=True, extra="allow"
+    )
+    __pydantic_extra__: Dict[str, Any] = pydantic.Field(init=False)
 
     activity_datetime: OptionalNullable[str] = UNSET
     r"""The date and time of the activity"""
@@ -592,6 +614,11 @@ class ActivityInput(BaseModel):
 
     custom_object_id: OptionalNullable[str] = UNSET
     r"""The custom object related to the activity"""
+
+    type: Annotated[
+        OptionalNullable[ActivityType], PlainValidator(validate_open_enum(False))
+    ] = UNSET
+    r"""The type of the activity"""
 
     title: OptionalNullable[str] = UNSET
     r"""The title of the activity"""
@@ -673,6 +700,14 @@ class ActivityInput(BaseModel):
     pass_through: Optional[List[PassThroughBody]] = None
     r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
 
+    @property
+    def additional_properties(self):
+        return self.__pydantic_extra__
+
+    @additional_properties.setter
+    def additional_properties(self, value):
+        self.__pydantic_extra__ = value  # pyright: ignore[reportIncompatibleVariableOverride]
+
     @field_serializer("type")
     def serialize_type(self, value):
         if isinstance(value, str):
@@ -710,6 +745,7 @@ class ActivityInput(BaseModel):
             "product_id",
             "solution_id",
             "custom_object_id",
+            "type",
             "title",
             "description",
             "note",
@@ -802,5 +838,8 @@ class ActivityInput(BaseModel):
                 not k in optional_fields or (optional_nullable and is_set)
             ):
                 m[k] = val
+
+        for k, v in serialized.items():
+            m[k] = v
 
         return m

@@ -328,6 +328,7 @@ class Webhooks(BaseSDK):
         events: List[models.WebhookEventType],
         app_id: Optional[str] = None,
         description: OptionalNullable[str] = UNSET,
+        additional_properties: Optional[Dict[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -348,6 +349,7 @@ class Webhooks(BaseSDK):
         :param events: The list of subscribed events for this webhook. [`*`] indicates that all events are enabled.
         :param app_id: The ID of your Unify application
         :param description: A description of the object.
+        :param additional_properties:
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -371,6 +373,7 @@ class Webhooks(BaseSDK):
                 status=status,
                 delivery_url=delivery_url,
                 events=events,
+                **(additional_properties or {}),
             ),
         )
 
@@ -485,6 +488,7 @@ class Webhooks(BaseSDK):
         events: List[models.WebhookEventType],
         app_id: Optional[str] = None,
         description: OptionalNullable[str] = UNSET,
+        additional_properties: Optional[Dict[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -505,6 +509,7 @@ class Webhooks(BaseSDK):
         :param events: The list of subscribed events for this webhook. [`*`] indicates that all events are enabled.
         :param app_id: The ID of your Unify application
         :param description: A description of the object.
+        :param additional_properties:
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -528,6 +533,7 @@ class Webhooks(BaseSDK):
                 status=status,
                 delivery_url=delivery_url,
                 events=events,
+                **(additional_properties or {}),
             ),
         )
 
@@ -904,6 +910,7 @@ class Webhooks(BaseSDK):
         status: Optional[models.Status] = None,
         delivery_url: Optional[str] = None,
         events: Optional[List[models.WebhookEventType]] = None,
+        additional_properties: Optional[Dict[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -924,6 +931,7 @@ class Webhooks(BaseSDK):
         :param status: The status of the webhook.
         :param delivery_url: The delivery url of the webhook endpoint.
         :param events: The list of subscribed events for this webhook. [`*`] indicates that all events are enabled.
+        :param additional_properties:
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -947,6 +955,7 @@ class Webhooks(BaseSDK):
                 status=status,
                 delivery_url=delivery_url,
                 events=events,
+                **(additional_properties or {}),
             ),
         )
 
@@ -1061,6 +1070,7 @@ class Webhooks(BaseSDK):
         status: Optional[models.Status] = None,
         delivery_url: Optional[str] = None,
         events: Optional[List[models.WebhookEventType]] = None,
+        additional_properties: Optional[Dict[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -1081,6 +1091,7 @@ class Webhooks(BaseSDK):
         :param status: The status of the webhook.
         :param delivery_url: The delivery url of the webhook endpoint.
         :param events: The list of subscribed events for this webhook. [`*`] indicates that all events are enabled.
+        :param additional_properties:
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -1104,6 +1115,7 @@ class Webhooks(BaseSDK):
                 status=status,
                 delivery_url=delivery_url,
                 events=events,
+                **(additional_properties or {}),
             ),
         )
 

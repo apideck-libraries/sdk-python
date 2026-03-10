@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 from apideck_unify.types import BaseModel
-from typing import List, Optional
+import pydantic
+from pydantic import ConfigDict
+from typing import Any, Dict, List, Optional
 from typing_extensions import NotRequired, TypedDict
 
 
@@ -20,6 +22,11 @@ class WebhookSubscriptionTypedDict(TypedDict):
 
 
 class WebhookSubscription(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True, arbitrary_types_allowed=True, extra="allow"
+    )
+    __pydantic_extra__: Dict[str, Any] = pydantic.Field(init=False)
+
     downstream_id: Optional[str] = None
     r"""The ID of the downstream service"""
 
@@ -34,3 +41,11 @@ class WebhookSubscription(BaseModel):
 
     created_at: Optional[str] = None
     r"""The date and time the webhook subscription was created downstream"""
+
+    @property
+    def additional_properties(self):
+        return self.__pydantic_extra__
+
+    @additional_properties.setter
+    def additional_properties(self, value):
+        self.__pydantic_extra__ = value  # pyright: ignore[reportIncompatibleVariableOverride]

@@ -3,9 +3,10 @@
 from .basesdk import BaseSDK
 from apideck_unify import models, utils
 from apideck_unify._hooks import HookContext
-from apideck_unify.types import Nullable, OptionalNullable, UNSET
+from apideck_unify.types import OptionalNullable, UNSET
 from apideck_unify.utils import get_security_from_env
 from apideck_unify.utils.unmarshal_json_response import unmarshal_json_response
+from datetime import date
 from jsonpath import JSONPath
 from typing import Any, Dict, List, Mapping, Optional, Union
 
@@ -20,16 +21,22 @@ class ApideckCompanies(BaseSDK):
         service_id: Optional[str] = None,
         cursor: OptionalNullable[str] = UNSET,
         limit: Optional[int] = 20,
+        filter_: Optional[
+            Union[models.CompaniesFilter, models.CompaniesFilterTypedDict]
+        ] = None,
+        sort: Optional[
+            Union[models.CompaniesSort, models.CompaniesSortTypedDict]
+        ] = None,
         pass_through: Optional[Dict[str, Any]] = None,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
         http_headers: Optional[Mapping[str, str]] = None,
-    ) -> Optional[models.HrisCompaniesAllResponse]:
-        r"""List Companies
+    ) -> Optional[models.CrmCompaniesAllResponse]:
+        r"""List companies
 
-        List Companies
+        List companies
 
         :param raw: Include raw response. Mostly used for debugging purposes
         :param consumer_id: ID of the consumer which you want to get or push data from
@@ -37,6 +44,8 @@ class ApideckCompanies(BaseSDK):
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
         :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
+        :param filter_: Apply filters
+        :param sort: Apply sorting
         :param pass_through: Optional unmapped key/values that will be passed through to downstream as query parameters. Ie: ?pass_through[search]=leads becomes ?search=leads
         :param fields: The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded.
         :param retries: Override the default retry configuration for this method
@@ -54,20 +63,22 @@ class ApideckCompanies(BaseSDK):
         else:
             base_url = self._get_url(base_url, url_variables)
 
-        request = models.HrisCompaniesAllRequest(
+        request = models.CrmCompaniesAllRequest(
             raw=raw,
             consumer_id=consumer_id,
             app_id=app_id,
             service_id=service_id,
             cursor=cursor,
             limit=limit,
+            filter_=utils.get_pydantic_model(filter_, Optional[models.CompaniesFilter]),
+            sort=utils.get_pydantic_model(sort, Optional[models.CompaniesSort]),
             pass_through=pass_through,
             fields=fields,
         )
 
         req = self._build_request(
             method="GET",
-            path="/hris/companies",
+            path="/crm/companies",
             base_url=base_url,
             url_variables=url_variables,
             request=request,
@@ -77,7 +88,7 @@ class ApideckCompanies(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             http_headers=http_headers,
-            _globals=models.HrisCompaniesAllGlobals(
+            _globals=models.CrmCompaniesAllGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
@@ -101,7 +112,7 @@ class ApideckCompanies(BaseSDK):
             hook_ctx=HookContext(
                 config=self.sdk_configuration,
                 base_url=base_url or "",
-                operation_id="hris.companiesAll",
+                operation_id="crm.companiesAll",
                 oauth2_scopes=None,
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
@@ -112,7 +123,7 @@ class ApideckCompanies(BaseSDK):
             retry_config=retry_config,
         )
 
-        def next_func() -> Optional[models.HrisCompaniesAllResponse]:
+        def next_func() -> Optional[models.CrmCompaniesAllResponse]:
             body = utils.unmarshal_json(http_res.text, Union[Dict[Any, Any], List[Any]])
             next_cursor = JSONPath("$.meta.cursors.next").parse(body)
 
@@ -130,6 +141,8 @@ class ApideckCompanies(BaseSDK):
                 service_id=service_id,
                 cursor=next_cursor,
                 limit=limit,
+                filter_=filter_,
+                sort=sort,
                 pass_through=pass_through,
                 fields=fields,
                 retries=retries,
@@ -137,9 +150,9 @@ class ApideckCompanies(BaseSDK):
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return models.HrisCompaniesAllResponse(
-                get_hris_companies_response=unmarshal_json_response(
-                    Optional[models.GetHrisCompaniesResponse], http_res
+            return models.CrmCompaniesAllResponse(
+                get_companies_response1=unmarshal_json_response(
+                    Optional[models.GetCompaniesResponse1], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
@@ -176,7 +189,7 @@ class ApideckCompanies(BaseSDK):
             http_res_text = utils.stream_to_text(http_res)
             raise models.APIError("API error occurred", http_res, http_res_text)
         if utils.match_response(http_res, "default", "application/json"):
-            return models.HrisCompaniesAllResponse(
+            return models.CrmCompaniesAllResponse(
                 unexpected_error_response=unmarshal_json_response(
                     Optional[models.UnexpectedErrorResponse], http_res
                 ),
@@ -195,16 +208,22 @@ class ApideckCompanies(BaseSDK):
         service_id: Optional[str] = None,
         cursor: OptionalNullable[str] = UNSET,
         limit: Optional[int] = 20,
+        filter_: Optional[
+            Union[models.CompaniesFilter, models.CompaniesFilterTypedDict]
+        ] = None,
+        sort: Optional[
+            Union[models.CompaniesSort, models.CompaniesSortTypedDict]
+        ] = None,
         pass_through: Optional[Dict[str, Any]] = None,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
         http_headers: Optional[Mapping[str, str]] = None,
-    ) -> Optional[models.HrisCompaniesAllResponse]:
-        r"""List Companies
+    ) -> Optional[models.CrmCompaniesAllResponse]:
+        r"""List companies
 
-        List Companies
+        List companies
 
         :param raw: Include raw response. Mostly used for debugging purposes
         :param consumer_id: ID of the consumer which you want to get or push data from
@@ -212,6 +231,8 @@ class ApideckCompanies(BaseSDK):
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
         :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
+        :param filter_: Apply filters
+        :param sort: Apply sorting
         :param pass_through: Optional unmapped key/values that will be passed through to downstream as query parameters. Ie: ?pass_through[search]=leads becomes ?search=leads
         :param fields: The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded.
         :param retries: Override the default retry configuration for this method
@@ -229,20 +250,22 @@ class ApideckCompanies(BaseSDK):
         else:
             base_url = self._get_url(base_url, url_variables)
 
-        request = models.HrisCompaniesAllRequest(
+        request = models.CrmCompaniesAllRequest(
             raw=raw,
             consumer_id=consumer_id,
             app_id=app_id,
             service_id=service_id,
             cursor=cursor,
             limit=limit,
+            filter_=utils.get_pydantic_model(filter_, Optional[models.CompaniesFilter]),
+            sort=utils.get_pydantic_model(sort, Optional[models.CompaniesSort]),
             pass_through=pass_through,
             fields=fields,
         )
 
         req = self._build_request_async(
             method="GET",
-            path="/hris/companies",
+            path="/crm/companies",
             base_url=base_url,
             url_variables=url_variables,
             request=request,
@@ -252,7 +275,7 @@ class ApideckCompanies(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             http_headers=http_headers,
-            _globals=models.HrisCompaniesAllGlobals(
+            _globals=models.CrmCompaniesAllGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
@@ -276,7 +299,7 @@ class ApideckCompanies(BaseSDK):
             hook_ctx=HookContext(
                 config=self.sdk_configuration,
                 base_url=base_url or "",
-                operation_id="hris.companiesAll",
+                operation_id="crm.companiesAll",
                 oauth2_scopes=None,
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
@@ -287,7 +310,7 @@ class ApideckCompanies(BaseSDK):
             retry_config=retry_config,
         )
 
-        def next_func() -> Optional[models.HrisCompaniesAllResponse]:
+        def next_func() -> Optional[models.CrmCompaniesAllResponse]:
             body = utils.unmarshal_json(http_res.text, Union[Dict[Any, Any], List[Any]])
             next_cursor = JSONPath("$.meta.cursors.next").parse(body)
 
@@ -305,6 +328,8 @@ class ApideckCompanies(BaseSDK):
                 service_id=service_id,
                 cursor=next_cursor,
                 limit=limit,
+                filter_=filter_,
+                sort=sort,
                 pass_through=pass_through,
                 fields=fields,
                 retries=retries,
@@ -312,9 +337,9 @@ class ApideckCompanies(BaseSDK):
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return models.HrisCompaniesAllResponse(
-                get_hris_companies_response=unmarshal_json_response(
-                    Optional[models.GetHrisCompaniesResponse], http_res
+            return models.CrmCompaniesAllResponse(
+                get_companies_response1=unmarshal_json_response(
+                    Optional[models.GetCompaniesResponse1], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
@@ -351,7 +376,7 @@ class ApideckCompanies(BaseSDK):
             http_res_text = await utils.stream_to_text_async(http_res)
             raise models.APIError("API error occurred", http_res, http_res_text)
         if utils.match_response(http_res, "default", "application/json"):
-            return models.HrisCompaniesAllResponse(
+            return models.CrmCompaniesAllResponse(
                 unexpected_error_response=unmarshal_json_response(
                     Optional[models.UnexpectedErrorResponse], http_res
                 ),
@@ -364,55 +389,105 @@ class ApideckCompanies(BaseSDK):
     def create(
         self,
         *,
-        legal_name: Nullable[str],
         raw: Optional[bool] = False,
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
-        display_name: OptionalNullable[str] = UNSET,
-        subdomain: OptionalNullable[str] = UNSET,
-        status: Optional[models.HrisCompanyStatus] = None,
-        company_number: OptionalNullable[str] = UNSET,
+        name: OptionalNullable[str] = UNSET,
+        owner_id: OptionalNullable[str] = UNSET,
+        image: OptionalNullable[str] = UNSET,
+        description: OptionalNullable[str] = UNSET,
+        vat_number: OptionalNullable[str] = UNSET,
         currency: OptionalNullable[models.Currency] = UNSET,
+        status: OptionalNullable[str] = UNSET,
+        fax: OptionalNullable[str] = UNSET,
+        annual_revenue: OptionalNullable[str] = UNSET,
+        number_of_employees: OptionalNullable[str] = UNSET,
+        industry: OptionalNullable[str] = UNSET,
+        ownership: OptionalNullable[str] = UNSET,
+        sales_tax_number: OptionalNullable[str] = UNSET,
+        payee_number: OptionalNullable[str] = UNSET,
+        abn_or_tfn: OptionalNullable[str] = UNSET,
+        abn_branch: OptionalNullable[str] = UNSET,
+        acn: OptionalNullable[str] = UNSET,
+        first_name: OptionalNullable[str] = UNSET,
+        last_name: OptionalNullable[str] = UNSET,
+        bank_accounts: Optional[
+            Union[List[models.BankAccount1], List[models.BankAccount1TypedDict]]
+        ] = None,
+        websites: Optional[
+            Union[List[models.Website], List[models.WebsiteTypedDict]]
+        ] = None,
         addresses: Optional[
             Union[List[models.Address], List[models.AddressTypedDict]]
+        ] = None,
+        social_links: Optional[
+            Union[List[models.SocialLink], List[models.SocialLinkTypedDict]]
         ] = None,
         phone_numbers: Optional[
             Union[List[models.PhoneNumber], List[models.PhoneNumberTypedDict]]
         ] = None,
         emails: Optional[Union[List[models.Email], List[models.EmailTypedDict]]] = None,
-        websites: Optional[
-            Union[List[models.Website], List[models.WebsiteTypedDict]]
+        row_type: Optional[
+            Union[models.CompanyRowType, models.CompanyRowTypeTypedDict]
         ] = None,
-        debtor_id: OptionalNullable[str] = UNSET,
+        custom_fields: Optional[
+            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+        ] = None,
+        tags: OptionalNullable[List[str]] = UNSET,
+        read_only: OptionalNullable[bool] = UNSET,
+        salutation: OptionalNullable[str] = UNSET,
+        birthday: OptionalNullable[date] = UNSET,
         pass_through: Optional[
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
         ] = None,
+        additional_properties: Optional[Dict[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
         http_headers: Optional[Mapping[str, str]] = None,
-    ) -> models.HrisCompaniesAddResponse:
-        r"""Create Company
+    ) -> models.CrmCompaniesAddResponse:
+        r"""Create company
 
-        Create Company
+        Create company
 
-        :param legal_name:
         :param raw: Include raw response. Mostly used for debugging purposes
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
-        :param display_name:
-        :param subdomain:
-        :param status:
-        :param company_number: An Company Number, Company ID or Company Code, is a unique number that has been assigned to each company.
+        :param name: Name of the company
+        :param owner_id: Owner ID
+        :param image: The Image URL of the company
+        :param description: A description of the company
+        :param vat_number: The VAT number of the company
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
+        :param status: The status of the company
+        :param fax: The fax number of the company
+        :param annual_revenue: The annual revenue of the company
+        :param number_of_employees: Number of employees
+        :param industry: The industry represents the type of business the company is in.
+        :param ownership: The ownership indicates the type of ownership of the company.
+        :param sales_tax_number: A sales tax number is a unique number that identifies a company for tax purposes.
+        :param payee_number: A payee number is a unique number that identifies a payee for tax purposes.
+        :param abn_or_tfn: An ABN is necessary for operating a business, while a TFN (Tax File Number) is required for any person working in Australia.
+        :param abn_branch: An ABN Branch (also known as a GST Branch) is used if part of your business needs to account for GST separately from its parent entity.
+        :param acn: The Australian Company Number (ACN) is a nine digit number with the last digit being a check digit calculated using a modified modulus 10 calculation. ASIC has adopted a convention of always printing and displaying the ACN in the format XXX XXX XXX; three blocks of three characters, each block separated by a blank.
+        :param first_name: The first name of the person.
+        :param last_name: The last name of the person.
+        :param bank_accounts:
+        :param websites:
         :param addresses:
+        :param social_links:
         :param phone_numbers:
         :param emails:
-        :param websites:
-        :param debtor_id:
+        :param row_type:
+        :param custom_fields:
+        :param tags:
+        :param read_only: Whether the company is read-only or not
+        :param salutation: A formal salutation for the person. For example, 'Mr', 'Mrs'
+        :param birthday: The date of birth of the person.
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
+        :param additional_properties:
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -428,38 +503,67 @@ class ApideckCompanies(BaseSDK):
         else:
             base_url = self._get_url(base_url, url_variables)
 
-        request = models.HrisCompaniesAddRequest(
+        request = models.CrmCompaniesAddRequest(
             raw=raw,
             consumer_id=consumer_id,
             app_id=app_id,
             service_id=service_id,
-            hris_company=models.HrisCompanyInput(
-                legal_name=legal_name,
-                display_name=display_name,
-                subdomain=subdomain,
-                status=status,
-                company_number=company_number,
+            company1=models.Company1Input(
+                name=name,
+                owner_id=owner_id,
+                image=image,
+                description=description,
+                vat_number=vat_number,
                 currency=currency,
+                status=status,
+                fax=fax,
+                annual_revenue=annual_revenue,
+                number_of_employees=number_of_employees,
+                industry=industry,
+                ownership=ownership,
+                sales_tax_number=sales_tax_number,
+                payee_number=payee_number,
+                abn_or_tfn=abn_or_tfn,
+                abn_branch=abn_branch,
+                acn=acn,
+                first_name=first_name,
+                last_name=last_name,
+                bank_accounts=utils.get_pydantic_model(
+                    bank_accounts, Optional[List[models.BankAccount1]]
+                ),
+                websites=utils.get_pydantic_model(
+                    websites, Optional[List[models.Website]]
+                ),
                 addresses=utils.get_pydantic_model(
                     addresses, Optional[List[models.Address]]
+                ),
+                social_links=utils.get_pydantic_model(
+                    social_links, Optional[List[models.SocialLink]]
                 ),
                 phone_numbers=utils.get_pydantic_model(
                     phone_numbers, Optional[List[models.PhoneNumber]]
                 ),
                 emails=utils.get_pydantic_model(emails, Optional[List[models.Email]]),
-                websites=utils.get_pydantic_model(
-                    websites, Optional[List[models.Website]]
+                row_type=utils.get_pydantic_model(
+                    row_type, Optional[models.CompanyRowType]
                 ),
-                debtor_id=debtor_id,
+                custom_fields=utils.get_pydantic_model(
+                    custom_fields, Optional[List[models.CustomField]]
+                ),
+                tags=tags,
+                read_only=read_only,
+                salutation=salutation,
+                birthday=birthday,
                 pass_through=utils.get_pydantic_model(
                     pass_through, Optional[List[models.PassThroughBody]]
                 ),
+                **(additional_properties or {}),
             ),
         )
 
         req = self._build_request(
             method="POST",
-            path="/hris/companies",
+            path="/crm/companies",
             base_url=base_url,
             url_variables=url_variables,
             request=request,
@@ -469,13 +573,13 @@ class ApideckCompanies(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             http_headers=http_headers,
-            _globals=models.HrisCompaniesAddGlobals(
+            _globals=models.CrmCompaniesAddGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
             get_serialized_body=lambda: utils.serialize_request_body(
-                request.hris_company, False, False, "json", models.HrisCompanyInput
+                request.company1, False, False, "json", models.Company1Input
             ),
             timeout_ms=timeout_ms,
         )
@@ -496,7 +600,7 @@ class ApideckCompanies(BaseSDK):
             hook_ctx=HookContext(
                 config=self.sdk_configuration,
                 base_url=base_url or "",
-                operation_id="hris.companiesAdd",
+                operation_id="crm.companiesAdd",
                 oauth2_scopes=None,
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
@@ -509,9 +613,9 @@ class ApideckCompanies(BaseSDK):
 
         response_data: Any = None
         if utils.match_response(http_res, "201", "application/json"):
-            return models.HrisCompaniesAddResponse(
-                create_hris_company_response=unmarshal_json_response(
-                    Optional[models.CreateHrisCompanyResponse], http_res
+            return models.CrmCompaniesAddResponse(
+                create_company_response=unmarshal_json_response(
+                    Optional[models.CreateCompanyResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
             )
@@ -547,7 +651,7 @@ class ApideckCompanies(BaseSDK):
             http_res_text = utils.stream_to_text(http_res)
             raise models.APIError("API error occurred", http_res, http_res_text)
         if utils.match_response(http_res, "default", "application/json"):
-            return models.HrisCompaniesAddResponse(
+            return models.CrmCompaniesAddResponse(
                 unexpected_error_response=unmarshal_json_response(
                     Optional[models.UnexpectedErrorResponse], http_res
                 ),
@@ -559,55 +663,105 @@ class ApideckCompanies(BaseSDK):
     async def create_async(
         self,
         *,
-        legal_name: Nullable[str],
         raw: Optional[bool] = False,
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
-        display_name: OptionalNullable[str] = UNSET,
-        subdomain: OptionalNullable[str] = UNSET,
-        status: Optional[models.HrisCompanyStatus] = None,
-        company_number: OptionalNullable[str] = UNSET,
+        name: OptionalNullable[str] = UNSET,
+        owner_id: OptionalNullable[str] = UNSET,
+        image: OptionalNullable[str] = UNSET,
+        description: OptionalNullable[str] = UNSET,
+        vat_number: OptionalNullable[str] = UNSET,
         currency: OptionalNullable[models.Currency] = UNSET,
+        status: OptionalNullable[str] = UNSET,
+        fax: OptionalNullable[str] = UNSET,
+        annual_revenue: OptionalNullable[str] = UNSET,
+        number_of_employees: OptionalNullable[str] = UNSET,
+        industry: OptionalNullable[str] = UNSET,
+        ownership: OptionalNullable[str] = UNSET,
+        sales_tax_number: OptionalNullable[str] = UNSET,
+        payee_number: OptionalNullable[str] = UNSET,
+        abn_or_tfn: OptionalNullable[str] = UNSET,
+        abn_branch: OptionalNullable[str] = UNSET,
+        acn: OptionalNullable[str] = UNSET,
+        first_name: OptionalNullable[str] = UNSET,
+        last_name: OptionalNullable[str] = UNSET,
+        bank_accounts: Optional[
+            Union[List[models.BankAccount1], List[models.BankAccount1TypedDict]]
+        ] = None,
+        websites: Optional[
+            Union[List[models.Website], List[models.WebsiteTypedDict]]
+        ] = None,
         addresses: Optional[
             Union[List[models.Address], List[models.AddressTypedDict]]
+        ] = None,
+        social_links: Optional[
+            Union[List[models.SocialLink], List[models.SocialLinkTypedDict]]
         ] = None,
         phone_numbers: Optional[
             Union[List[models.PhoneNumber], List[models.PhoneNumberTypedDict]]
         ] = None,
         emails: Optional[Union[List[models.Email], List[models.EmailTypedDict]]] = None,
-        websites: Optional[
-            Union[List[models.Website], List[models.WebsiteTypedDict]]
+        row_type: Optional[
+            Union[models.CompanyRowType, models.CompanyRowTypeTypedDict]
         ] = None,
-        debtor_id: OptionalNullable[str] = UNSET,
+        custom_fields: Optional[
+            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+        ] = None,
+        tags: OptionalNullable[List[str]] = UNSET,
+        read_only: OptionalNullable[bool] = UNSET,
+        salutation: OptionalNullable[str] = UNSET,
+        birthday: OptionalNullable[date] = UNSET,
         pass_through: Optional[
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
         ] = None,
+        additional_properties: Optional[Dict[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
         http_headers: Optional[Mapping[str, str]] = None,
-    ) -> models.HrisCompaniesAddResponse:
-        r"""Create Company
+    ) -> models.CrmCompaniesAddResponse:
+        r"""Create company
 
-        Create Company
+        Create company
 
-        :param legal_name:
         :param raw: Include raw response. Mostly used for debugging purposes
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
-        :param display_name:
-        :param subdomain:
-        :param status:
-        :param company_number: An Company Number, Company ID or Company Code, is a unique number that has been assigned to each company.
+        :param name: Name of the company
+        :param owner_id: Owner ID
+        :param image: The Image URL of the company
+        :param description: A description of the company
+        :param vat_number: The VAT number of the company
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
+        :param status: The status of the company
+        :param fax: The fax number of the company
+        :param annual_revenue: The annual revenue of the company
+        :param number_of_employees: Number of employees
+        :param industry: The industry represents the type of business the company is in.
+        :param ownership: The ownership indicates the type of ownership of the company.
+        :param sales_tax_number: A sales tax number is a unique number that identifies a company for tax purposes.
+        :param payee_number: A payee number is a unique number that identifies a payee for tax purposes.
+        :param abn_or_tfn: An ABN is necessary for operating a business, while a TFN (Tax File Number) is required for any person working in Australia.
+        :param abn_branch: An ABN Branch (also known as a GST Branch) is used if part of your business needs to account for GST separately from its parent entity.
+        :param acn: The Australian Company Number (ACN) is a nine digit number with the last digit being a check digit calculated using a modified modulus 10 calculation. ASIC has adopted a convention of always printing and displaying the ACN in the format XXX XXX XXX; three blocks of three characters, each block separated by a blank.
+        :param first_name: The first name of the person.
+        :param last_name: The last name of the person.
+        :param bank_accounts:
+        :param websites:
         :param addresses:
+        :param social_links:
         :param phone_numbers:
         :param emails:
-        :param websites:
-        :param debtor_id:
+        :param row_type:
+        :param custom_fields:
+        :param tags:
+        :param read_only: Whether the company is read-only or not
+        :param salutation: A formal salutation for the person. For example, 'Mr', 'Mrs'
+        :param birthday: The date of birth of the person.
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
+        :param additional_properties:
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -623,38 +777,67 @@ class ApideckCompanies(BaseSDK):
         else:
             base_url = self._get_url(base_url, url_variables)
 
-        request = models.HrisCompaniesAddRequest(
+        request = models.CrmCompaniesAddRequest(
             raw=raw,
             consumer_id=consumer_id,
             app_id=app_id,
             service_id=service_id,
-            hris_company=models.HrisCompanyInput(
-                legal_name=legal_name,
-                display_name=display_name,
-                subdomain=subdomain,
-                status=status,
-                company_number=company_number,
+            company1=models.Company1Input(
+                name=name,
+                owner_id=owner_id,
+                image=image,
+                description=description,
+                vat_number=vat_number,
                 currency=currency,
+                status=status,
+                fax=fax,
+                annual_revenue=annual_revenue,
+                number_of_employees=number_of_employees,
+                industry=industry,
+                ownership=ownership,
+                sales_tax_number=sales_tax_number,
+                payee_number=payee_number,
+                abn_or_tfn=abn_or_tfn,
+                abn_branch=abn_branch,
+                acn=acn,
+                first_name=first_name,
+                last_name=last_name,
+                bank_accounts=utils.get_pydantic_model(
+                    bank_accounts, Optional[List[models.BankAccount1]]
+                ),
+                websites=utils.get_pydantic_model(
+                    websites, Optional[List[models.Website]]
+                ),
                 addresses=utils.get_pydantic_model(
                     addresses, Optional[List[models.Address]]
+                ),
+                social_links=utils.get_pydantic_model(
+                    social_links, Optional[List[models.SocialLink]]
                 ),
                 phone_numbers=utils.get_pydantic_model(
                     phone_numbers, Optional[List[models.PhoneNumber]]
                 ),
                 emails=utils.get_pydantic_model(emails, Optional[List[models.Email]]),
-                websites=utils.get_pydantic_model(
-                    websites, Optional[List[models.Website]]
+                row_type=utils.get_pydantic_model(
+                    row_type, Optional[models.CompanyRowType]
                 ),
-                debtor_id=debtor_id,
+                custom_fields=utils.get_pydantic_model(
+                    custom_fields, Optional[List[models.CustomField]]
+                ),
+                tags=tags,
+                read_only=read_only,
+                salutation=salutation,
+                birthday=birthday,
                 pass_through=utils.get_pydantic_model(
                     pass_through, Optional[List[models.PassThroughBody]]
                 ),
+                **(additional_properties or {}),
             ),
         )
 
         req = self._build_request_async(
             method="POST",
-            path="/hris/companies",
+            path="/crm/companies",
             base_url=base_url,
             url_variables=url_variables,
             request=request,
@@ -664,13 +847,13 @@ class ApideckCompanies(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             http_headers=http_headers,
-            _globals=models.HrisCompaniesAddGlobals(
+            _globals=models.CrmCompaniesAddGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
             get_serialized_body=lambda: utils.serialize_request_body(
-                request.hris_company, False, False, "json", models.HrisCompanyInput
+                request.company1, False, False, "json", models.Company1Input
             ),
             timeout_ms=timeout_ms,
         )
@@ -691,7 +874,7 @@ class ApideckCompanies(BaseSDK):
             hook_ctx=HookContext(
                 config=self.sdk_configuration,
                 base_url=base_url or "",
-                operation_id="hris.companiesAdd",
+                operation_id="crm.companiesAdd",
                 oauth2_scopes=None,
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
@@ -704,9 +887,9 @@ class ApideckCompanies(BaseSDK):
 
         response_data: Any = None
         if utils.match_response(http_res, "201", "application/json"):
-            return models.HrisCompaniesAddResponse(
-                create_hris_company_response=unmarshal_json_response(
-                    Optional[models.CreateHrisCompanyResponse], http_res
+            return models.CrmCompaniesAddResponse(
+                create_company_response=unmarshal_json_response(
+                    Optional[models.CreateCompanyResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
             )
@@ -742,7 +925,7 @@ class ApideckCompanies(BaseSDK):
             http_res_text = await utils.stream_to_text_async(http_res)
             raise models.APIError("API error occurred", http_res, http_res_text)
         if utils.match_response(http_res, "default", "application/json"):
-            return models.HrisCompaniesAddResponse(
+            return models.CrmCompaniesAddResponse(
                 unexpected_error_response=unmarshal_json_response(
                     Optional[models.UnexpectedErrorResponse], http_res
                 ),
@@ -755,25 +938,25 @@ class ApideckCompanies(BaseSDK):
         self,
         *,
         id: str,
+        raw: Optional[bool] = False,
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
-        raw: Optional[bool] = False,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
         http_headers: Optional[Mapping[str, str]] = None,
-    ) -> models.HrisCompaniesOneResponse:
-        r"""Get Company
+    ) -> models.CrmCompaniesOneResponse:
+        r"""Get company
 
-        Get Company
+        Get company
 
         :param id: ID of the record you are acting upon.
+        :param raw: Include raw response. Mostly used for debugging purposes
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
-        :param raw: Include raw response. Mostly used for debugging purposes
         :param fields: The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
@@ -790,18 +973,18 @@ class ApideckCompanies(BaseSDK):
         else:
             base_url = self._get_url(base_url, url_variables)
 
-        request = models.HrisCompaniesOneRequest(
+        request = models.CrmCompaniesOneRequest(
             id=id,
+            raw=raw,
             consumer_id=consumer_id,
             app_id=app_id,
             service_id=service_id,
-            raw=raw,
             fields=fields,
         )
 
         req = self._build_request(
             method="GET",
-            path="/hris/companies/{id}",
+            path="/crm/companies/{id}",
             base_url=base_url,
             url_variables=url_variables,
             request=request,
@@ -811,7 +994,7 @@ class ApideckCompanies(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             http_headers=http_headers,
-            _globals=models.HrisCompaniesOneGlobals(
+            _globals=models.CrmCompaniesOneGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
@@ -835,7 +1018,7 @@ class ApideckCompanies(BaseSDK):
             hook_ctx=HookContext(
                 config=self.sdk_configuration,
                 base_url=base_url or "",
-                operation_id="hris.companiesOne",
+                operation_id="crm.companiesOne",
                 oauth2_scopes=None,
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
@@ -848,9 +1031,9 @@ class ApideckCompanies(BaseSDK):
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return models.HrisCompaniesOneResponse(
-                get_hris_company_response=unmarshal_json_response(
-                    Optional[models.GetHrisCompanyResponse], http_res
+            return models.CrmCompaniesOneResponse(
+                get_company_response=unmarshal_json_response(
+                    Optional[models.GetCompanyResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
             )
@@ -886,7 +1069,7 @@ class ApideckCompanies(BaseSDK):
             http_res_text = utils.stream_to_text(http_res)
             raise models.APIError("API error occurred", http_res, http_res_text)
         if utils.match_response(http_res, "default", "application/json"):
-            return models.HrisCompaniesOneResponse(
+            return models.CrmCompaniesOneResponse(
                 unexpected_error_response=unmarshal_json_response(
                     Optional[models.UnexpectedErrorResponse], http_res
                 ),
@@ -899,25 +1082,25 @@ class ApideckCompanies(BaseSDK):
         self,
         *,
         id: str,
+        raw: Optional[bool] = False,
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
-        raw: Optional[bool] = False,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
         http_headers: Optional[Mapping[str, str]] = None,
-    ) -> models.HrisCompaniesOneResponse:
-        r"""Get Company
+    ) -> models.CrmCompaniesOneResponse:
+        r"""Get company
 
-        Get Company
+        Get company
 
         :param id: ID of the record you are acting upon.
+        :param raw: Include raw response. Mostly used for debugging purposes
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
-        :param raw: Include raw response. Mostly used for debugging purposes
         :param fields: The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
@@ -934,18 +1117,18 @@ class ApideckCompanies(BaseSDK):
         else:
             base_url = self._get_url(base_url, url_variables)
 
-        request = models.HrisCompaniesOneRequest(
+        request = models.CrmCompaniesOneRequest(
             id=id,
+            raw=raw,
             consumer_id=consumer_id,
             app_id=app_id,
             service_id=service_id,
-            raw=raw,
             fields=fields,
         )
 
         req = self._build_request_async(
             method="GET",
-            path="/hris/companies/{id}",
+            path="/crm/companies/{id}",
             base_url=base_url,
             url_variables=url_variables,
             request=request,
@@ -955,7 +1138,7 @@ class ApideckCompanies(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             http_headers=http_headers,
-            _globals=models.HrisCompaniesOneGlobals(
+            _globals=models.CrmCompaniesOneGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
@@ -979,7 +1162,7 @@ class ApideckCompanies(BaseSDK):
             hook_ctx=HookContext(
                 config=self.sdk_configuration,
                 base_url=base_url or "",
-                operation_id="hris.companiesOne",
+                operation_id="crm.companiesOne",
                 oauth2_scopes=None,
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
@@ -992,9 +1175,9 @@ class ApideckCompanies(BaseSDK):
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return models.HrisCompaniesOneResponse(
-                get_hris_company_response=unmarshal_json_response(
-                    Optional[models.GetHrisCompanyResponse], http_res
+            return models.CrmCompaniesOneResponse(
+                get_company_response=unmarshal_json_response(
+                    Optional[models.GetCompanyResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
             )
@@ -1030,7 +1213,7 @@ class ApideckCompanies(BaseSDK):
             http_res_text = await utils.stream_to_text_async(http_res)
             raise models.APIError("API error occurred", http_res, http_res_text)
         if utils.match_response(http_res, "default", "application/json"):
-            return models.HrisCompaniesOneResponse(
+            return models.CrmCompaniesOneResponse(
                 unexpected_error_response=unmarshal_json_response(
                     Optional[models.UnexpectedErrorResponse], http_res
                 ),
@@ -1043,56 +1226,106 @@ class ApideckCompanies(BaseSDK):
         self,
         *,
         id: str,
-        legal_name: Nullable[str],
+        raw: Optional[bool] = False,
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
-        raw: Optional[bool] = False,
-        display_name: OptionalNullable[str] = UNSET,
-        subdomain: OptionalNullable[str] = UNSET,
-        status: Optional[models.HrisCompanyStatus] = None,
-        company_number: OptionalNullable[str] = UNSET,
+        name: OptionalNullable[str] = UNSET,
+        owner_id: OptionalNullable[str] = UNSET,
+        image: OptionalNullable[str] = UNSET,
+        description: OptionalNullable[str] = UNSET,
+        vat_number: OptionalNullable[str] = UNSET,
         currency: OptionalNullable[models.Currency] = UNSET,
+        status: OptionalNullable[str] = UNSET,
+        fax: OptionalNullable[str] = UNSET,
+        annual_revenue: OptionalNullable[str] = UNSET,
+        number_of_employees: OptionalNullable[str] = UNSET,
+        industry: OptionalNullable[str] = UNSET,
+        ownership: OptionalNullable[str] = UNSET,
+        sales_tax_number: OptionalNullable[str] = UNSET,
+        payee_number: OptionalNullable[str] = UNSET,
+        abn_or_tfn: OptionalNullable[str] = UNSET,
+        abn_branch: OptionalNullable[str] = UNSET,
+        acn: OptionalNullable[str] = UNSET,
+        first_name: OptionalNullable[str] = UNSET,
+        last_name: OptionalNullable[str] = UNSET,
+        bank_accounts: Optional[
+            Union[List[models.BankAccount1], List[models.BankAccount1TypedDict]]
+        ] = None,
+        websites: Optional[
+            Union[List[models.Website], List[models.WebsiteTypedDict]]
+        ] = None,
         addresses: Optional[
             Union[List[models.Address], List[models.AddressTypedDict]]
+        ] = None,
+        social_links: Optional[
+            Union[List[models.SocialLink], List[models.SocialLinkTypedDict]]
         ] = None,
         phone_numbers: Optional[
             Union[List[models.PhoneNumber], List[models.PhoneNumberTypedDict]]
         ] = None,
         emails: Optional[Union[List[models.Email], List[models.EmailTypedDict]]] = None,
-        websites: Optional[
-            Union[List[models.Website], List[models.WebsiteTypedDict]]
+        row_type: Optional[
+            Union[models.CompanyRowType, models.CompanyRowTypeTypedDict]
         ] = None,
-        debtor_id: OptionalNullable[str] = UNSET,
+        custom_fields: Optional[
+            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+        ] = None,
+        tags: OptionalNullable[List[str]] = UNSET,
+        read_only: OptionalNullable[bool] = UNSET,
+        salutation: OptionalNullable[str] = UNSET,
+        birthday: OptionalNullable[date] = UNSET,
         pass_through: Optional[
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
         ] = None,
+        additional_properties: Optional[Dict[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
         http_headers: Optional[Mapping[str, str]] = None,
-    ) -> models.HrisCompaniesUpdateResponse:
-        r"""Update Company
+    ) -> models.CrmCompaniesUpdateResponse:
+        r"""Update company
 
-        Update Company
+        Update company
 
         :param id: ID of the record you are acting upon.
-        :param legal_name:
+        :param raw: Include raw response. Mostly used for debugging purposes
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
-        :param raw: Include raw response. Mostly used for debugging purposes
-        :param display_name:
-        :param subdomain:
-        :param status:
-        :param company_number: An Company Number, Company ID or Company Code, is a unique number that has been assigned to each company.
+        :param name: Name of the company
+        :param owner_id: Owner ID
+        :param image: The Image URL of the company
+        :param description: A description of the company
+        :param vat_number: The VAT number of the company
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
+        :param status: The status of the company
+        :param fax: The fax number of the company
+        :param annual_revenue: The annual revenue of the company
+        :param number_of_employees: Number of employees
+        :param industry: The industry represents the type of business the company is in.
+        :param ownership: The ownership indicates the type of ownership of the company.
+        :param sales_tax_number: A sales tax number is a unique number that identifies a company for tax purposes.
+        :param payee_number: A payee number is a unique number that identifies a payee for tax purposes.
+        :param abn_or_tfn: An ABN is necessary for operating a business, while a TFN (Tax File Number) is required for any person working in Australia.
+        :param abn_branch: An ABN Branch (also known as a GST Branch) is used if part of your business needs to account for GST separately from its parent entity.
+        :param acn: The Australian Company Number (ACN) is a nine digit number with the last digit being a check digit calculated using a modified modulus 10 calculation. ASIC has adopted a convention of always printing and displaying the ACN in the format XXX XXX XXX; three blocks of three characters, each block separated by a blank.
+        :param first_name: The first name of the person.
+        :param last_name: The last name of the person.
+        :param bank_accounts:
+        :param websites:
         :param addresses:
+        :param social_links:
         :param phone_numbers:
         :param emails:
-        :param websites:
-        :param debtor_id:
+        :param row_type:
+        :param custom_fields:
+        :param tags:
+        :param read_only: Whether the company is read-only or not
+        :param salutation: A formal salutation for the person. For example, 'Mr', 'Mrs'
+        :param birthday: The date of birth of the person.
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
+        :param additional_properties:
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -1108,39 +1341,68 @@ class ApideckCompanies(BaseSDK):
         else:
             base_url = self._get_url(base_url, url_variables)
 
-        request = models.HrisCompaniesUpdateRequest(
+        request = models.CrmCompaniesUpdateRequest(
             id=id,
+            raw=raw,
             consumer_id=consumer_id,
             app_id=app_id,
             service_id=service_id,
-            raw=raw,
-            hris_company=models.HrisCompanyInput(
-                legal_name=legal_name,
-                display_name=display_name,
-                subdomain=subdomain,
-                status=status,
-                company_number=company_number,
+            company1=models.Company1Input(
+                name=name,
+                owner_id=owner_id,
+                image=image,
+                description=description,
+                vat_number=vat_number,
                 currency=currency,
+                status=status,
+                fax=fax,
+                annual_revenue=annual_revenue,
+                number_of_employees=number_of_employees,
+                industry=industry,
+                ownership=ownership,
+                sales_tax_number=sales_tax_number,
+                payee_number=payee_number,
+                abn_or_tfn=abn_or_tfn,
+                abn_branch=abn_branch,
+                acn=acn,
+                first_name=first_name,
+                last_name=last_name,
+                bank_accounts=utils.get_pydantic_model(
+                    bank_accounts, Optional[List[models.BankAccount1]]
+                ),
+                websites=utils.get_pydantic_model(
+                    websites, Optional[List[models.Website]]
+                ),
                 addresses=utils.get_pydantic_model(
                     addresses, Optional[List[models.Address]]
+                ),
+                social_links=utils.get_pydantic_model(
+                    social_links, Optional[List[models.SocialLink]]
                 ),
                 phone_numbers=utils.get_pydantic_model(
                     phone_numbers, Optional[List[models.PhoneNumber]]
                 ),
                 emails=utils.get_pydantic_model(emails, Optional[List[models.Email]]),
-                websites=utils.get_pydantic_model(
-                    websites, Optional[List[models.Website]]
+                row_type=utils.get_pydantic_model(
+                    row_type, Optional[models.CompanyRowType]
                 ),
-                debtor_id=debtor_id,
+                custom_fields=utils.get_pydantic_model(
+                    custom_fields, Optional[List[models.CustomField]]
+                ),
+                tags=tags,
+                read_only=read_only,
+                salutation=salutation,
+                birthday=birthday,
                 pass_through=utils.get_pydantic_model(
                     pass_through, Optional[List[models.PassThroughBody]]
                 ),
+                **(additional_properties or {}),
             ),
         )
 
         req = self._build_request(
             method="PATCH",
-            path="/hris/companies/{id}",
+            path="/crm/companies/{id}",
             base_url=base_url,
             url_variables=url_variables,
             request=request,
@@ -1150,13 +1412,13 @@ class ApideckCompanies(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             http_headers=http_headers,
-            _globals=models.HrisCompaniesUpdateGlobals(
+            _globals=models.CrmCompaniesUpdateGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
             get_serialized_body=lambda: utils.serialize_request_body(
-                request.hris_company, False, False, "json", models.HrisCompanyInput
+                request.company1, False, False, "json", models.Company1Input
             ),
             timeout_ms=timeout_ms,
         )
@@ -1177,7 +1439,7 @@ class ApideckCompanies(BaseSDK):
             hook_ctx=HookContext(
                 config=self.sdk_configuration,
                 base_url=base_url or "",
-                operation_id="hris.companiesUpdate",
+                operation_id="crm.companiesUpdate",
                 oauth2_scopes=None,
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
@@ -1190,9 +1452,9 @@ class ApideckCompanies(BaseSDK):
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return models.HrisCompaniesUpdateResponse(
-                update_hris_company_response=unmarshal_json_response(
-                    Optional[models.UpdateHrisCompanyResponse], http_res
+            return models.CrmCompaniesUpdateResponse(
+                update_company_response=unmarshal_json_response(
+                    Optional[models.UpdateCompanyResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
             )
@@ -1228,7 +1490,7 @@ class ApideckCompanies(BaseSDK):
             http_res_text = utils.stream_to_text(http_res)
             raise models.APIError("API error occurred", http_res, http_res_text)
         if utils.match_response(http_res, "default", "application/json"):
-            return models.HrisCompaniesUpdateResponse(
+            return models.CrmCompaniesUpdateResponse(
                 unexpected_error_response=unmarshal_json_response(
                     Optional[models.UnexpectedErrorResponse], http_res
                 ),
@@ -1241,56 +1503,106 @@ class ApideckCompanies(BaseSDK):
         self,
         *,
         id: str,
-        legal_name: Nullable[str],
+        raw: Optional[bool] = False,
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
-        raw: Optional[bool] = False,
-        display_name: OptionalNullable[str] = UNSET,
-        subdomain: OptionalNullable[str] = UNSET,
-        status: Optional[models.HrisCompanyStatus] = None,
-        company_number: OptionalNullable[str] = UNSET,
+        name: OptionalNullable[str] = UNSET,
+        owner_id: OptionalNullable[str] = UNSET,
+        image: OptionalNullable[str] = UNSET,
+        description: OptionalNullable[str] = UNSET,
+        vat_number: OptionalNullable[str] = UNSET,
         currency: OptionalNullable[models.Currency] = UNSET,
+        status: OptionalNullable[str] = UNSET,
+        fax: OptionalNullable[str] = UNSET,
+        annual_revenue: OptionalNullable[str] = UNSET,
+        number_of_employees: OptionalNullable[str] = UNSET,
+        industry: OptionalNullable[str] = UNSET,
+        ownership: OptionalNullable[str] = UNSET,
+        sales_tax_number: OptionalNullable[str] = UNSET,
+        payee_number: OptionalNullable[str] = UNSET,
+        abn_or_tfn: OptionalNullable[str] = UNSET,
+        abn_branch: OptionalNullable[str] = UNSET,
+        acn: OptionalNullable[str] = UNSET,
+        first_name: OptionalNullable[str] = UNSET,
+        last_name: OptionalNullable[str] = UNSET,
+        bank_accounts: Optional[
+            Union[List[models.BankAccount1], List[models.BankAccount1TypedDict]]
+        ] = None,
+        websites: Optional[
+            Union[List[models.Website], List[models.WebsiteTypedDict]]
+        ] = None,
         addresses: Optional[
             Union[List[models.Address], List[models.AddressTypedDict]]
+        ] = None,
+        social_links: Optional[
+            Union[List[models.SocialLink], List[models.SocialLinkTypedDict]]
         ] = None,
         phone_numbers: Optional[
             Union[List[models.PhoneNumber], List[models.PhoneNumberTypedDict]]
         ] = None,
         emails: Optional[Union[List[models.Email], List[models.EmailTypedDict]]] = None,
-        websites: Optional[
-            Union[List[models.Website], List[models.WebsiteTypedDict]]
+        row_type: Optional[
+            Union[models.CompanyRowType, models.CompanyRowTypeTypedDict]
         ] = None,
-        debtor_id: OptionalNullable[str] = UNSET,
+        custom_fields: Optional[
+            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+        ] = None,
+        tags: OptionalNullable[List[str]] = UNSET,
+        read_only: OptionalNullable[bool] = UNSET,
+        salutation: OptionalNullable[str] = UNSET,
+        birthday: OptionalNullable[date] = UNSET,
         pass_through: Optional[
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
         ] = None,
+        additional_properties: Optional[Dict[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
         http_headers: Optional[Mapping[str, str]] = None,
-    ) -> models.HrisCompaniesUpdateResponse:
-        r"""Update Company
+    ) -> models.CrmCompaniesUpdateResponse:
+        r"""Update company
 
-        Update Company
+        Update company
 
         :param id: ID of the record you are acting upon.
-        :param legal_name:
+        :param raw: Include raw response. Mostly used for debugging purposes
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
-        :param raw: Include raw response. Mostly used for debugging purposes
-        :param display_name:
-        :param subdomain:
-        :param status:
-        :param company_number: An Company Number, Company ID or Company Code, is a unique number that has been assigned to each company.
+        :param name: Name of the company
+        :param owner_id: Owner ID
+        :param image: The Image URL of the company
+        :param description: A description of the company
+        :param vat_number: The VAT number of the company
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
+        :param status: The status of the company
+        :param fax: The fax number of the company
+        :param annual_revenue: The annual revenue of the company
+        :param number_of_employees: Number of employees
+        :param industry: The industry represents the type of business the company is in.
+        :param ownership: The ownership indicates the type of ownership of the company.
+        :param sales_tax_number: A sales tax number is a unique number that identifies a company for tax purposes.
+        :param payee_number: A payee number is a unique number that identifies a payee for tax purposes.
+        :param abn_or_tfn: An ABN is necessary for operating a business, while a TFN (Tax File Number) is required for any person working in Australia.
+        :param abn_branch: An ABN Branch (also known as a GST Branch) is used if part of your business needs to account for GST separately from its parent entity.
+        :param acn: The Australian Company Number (ACN) is a nine digit number with the last digit being a check digit calculated using a modified modulus 10 calculation. ASIC has adopted a convention of always printing and displaying the ACN in the format XXX XXX XXX; three blocks of three characters, each block separated by a blank.
+        :param first_name: The first name of the person.
+        :param last_name: The last name of the person.
+        :param bank_accounts:
+        :param websites:
         :param addresses:
+        :param social_links:
         :param phone_numbers:
         :param emails:
-        :param websites:
-        :param debtor_id:
+        :param row_type:
+        :param custom_fields:
+        :param tags:
+        :param read_only: Whether the company is read-only or not
+        :param salutation: A formal salutation for the person. For example, 'Mr', 'Mrs'
+        :param birthday: The date of birth of the person.
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
+        :param additional_properties:
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -1306,39 +1618,68 @@ class ApideckCompanies(BaseSDK):
         else:
             base_url = self._get_url(base_url, url_variables)
 
-        request = models.HrisCompaniesUpdateRequest(
+        request = models.CrmCompaniesUpdateRequest(
             id=id,
+            raw=raw,
             consumer_id=consumer_id,
             app_id=app_id,
             service_id=service_id,
-            raw=raw,
-            hris_company=models.HrisCompanyInput(
-                legal_name=legal_name,
-                display_name=display_name,
-                subdomain=subdomain,
-                status=status,
-                company_number=company_number,
+            company1=models.Company1Input(
+                name=name,
+                owner_id=owner_id,
+                image=image,
+                description=description,
+                vat_number=vat_number,
                 currency=currency,
+                status=status,
+                fax=fax,
+                annual_revenue=annual_revenue,
+                number_of_employees=number_of_employees,
+                industry=industry,
+                ownership=ownership,
+                sales_tax_number=sales_tax_number,
+                payee_number=payee_number,
+                abn_or_tfn=abn_or_tfn,
+                abn_branch=abn_branch,
+                acn=acn,
+                first_name=first_name,
+                last_name=last_name,
+                bank_accounts=utils.get_pydantic_model(
+                    bank_accounts, Optional[List[models.BankAccount1]]
+                ),
+                websites=utils.get_pydantic_model(
+                    websites, Optional[List[models.Website]]
+                ),
                 addresses=utils.get_pydantic_model(
                     addresses, Optional[List[models.Address]]
+                ),
+                social_links=utils.get_pydantic_model(
+                    social_links, Optional[List[models.SocialLink]]
                 ),
                 phone_numbers=utils.get_pydantic_model(
                     phone_numbers, Optional[List[models.PhoneNumber]]
                 ),
                 emails=utils.get_pydantic_model(emails, Optional[List[models.Email]]),
-                websites=utils.get_pydantic_model(
-                    websites, Optional[List[models.Website]]
+                row_type=utils.get_pydantic_model(
+                    row_type, Optional[models.CompanyRowType]
                 ),
-                debtor_id=debtor_id,
+                custom_fields=utils.get_pydantic_model(
+                    custom_fields, Optional[List[models.CustomField]]
+                ),
+                tags=tags,
+                read_only=read_only,
+                salutation=salutation,
+                birthday=birthday,
                 pass_through=utils.get_pydantic_model(
                     pass_through, Optional[List[models.PassThroughBody]]
                 ),
+                **(additional_properties or {}),
             ),
         )
 
         req = self._build_request_async(
             method="PATCH",
-            path="/hris/companies/{id}",
+            path="/crm/companies/{id}",
             base_url=base_url,
             url_variables=url_variables,
             request=request,
@@ -1348,13 +1689,13 @@ class ApideckCompanies(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             http_headers=http_headers,
-            _globals=models.HrisCompaniesUpdateGlobals(
+            _globals=models.CrmCompaniesUpdateGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
             get_serialized_body=lambda: utils.serialize_request_body(
-                request.hris_company, False, False, "json", models.HrisCompanyInput
+                request.company1, False, False, "json", models.Company1Input
             ),
             timeout_ms=timeout_ms,
         )
@@ -1375,7 +1716,7 @@ class ApideckCompanies(BaseSDK):
             hook_ctx=HookContext(
                 config=self.sdk_configuration,
                 base_url=base_url or "",
-                operation_id="hris.companiesUpdate",
+                operation_id="crm.companiesUpdate",
                 oauth2_scopes=None,
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
@@ -1388,9 +1729,9 @@ class ApideckCompanies(BaseSDK):
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return models.HrisCompaniesUpdateResponse(
-                update_hris_company_response=unmarshal_json_response(
-                    Optional[models.UpdateHrisCompanyResponse], http_res
+            return models.CrmCompaniesUpdateResponse(
+                update_company_response=unmarshal_json_response(
+                    Optional[models.UpdateCompanyResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
             )
@@ -1426,7 +1767,7 @@ class ApideckCompanies(BaseSDK):
             http_res_text = await utils.stream_to_text_async(http_res)
             raise models.APIError("API error occurred", http_res, http_res_text)
         if utils.match_response(http_res, "default", "application/json"):
-            return models.HrisCompaniesUpdateResponse(
+            return models.CrmCompaniesUpdateResponse(
                 unexpected_error_response=unmarshal_json_response(
                     Optional[models.UnexpectedErrorResponse], http_res
                 ),
@@ -1439,24 +1780,24 @@ class ApideckCompanies(BaseSDK):
         self,
         *,
         id: str,
+        raw: Optional[bool] = False,
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
-        raw: Optional[bool] = False,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
         http_headers: Optional[Mapping[str, str]] = None,
-    ) -> models.HrisCompaniesDeleteResponse:
-        r"""Delete Company
+    ) -> models.CrmCompaniesDeleteResponse:
+        r"""Delete company
 
-        Delete Company
+        Delete company
 
         :param id: ID of the record you are acting upon.
+        :param raw: Include raw response. Mostly used for debugging purposes
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
-        :param raw: Include raw response. Mostly used for debugging purposes
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -1472,17 +1813,17 @@ class ApideckCompanies(BaseSDK):
         else:
             base_url = self._get_url(base_url, url_variables)
 
-        request = models.HrisCompaniesDeleteRequest(
+        request = models.CrmCompaniesDeleteRequest(
             id=id,
+            raw=raw,
             consumer_id=consumer_id,
             app_id=app_id,
             service_id=service_id,
-            raw=raw,
         )
 
         req = self._build_request(
             method="DELETE",
-            path="/hris/companies/{id}",
+            path="/crm/companies/{id}",
             base_url=base_url,
             url_variables=url_variables,
             request=request,
@@ -1492,7 +1833,7 @@ class ApideckCompanies(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             http_headers=http_headers,
-            _globals=models.HrisCompaniesDeleteGlobals(
+            _globals=models.CrmCompaniesDeleteGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
@@ -1516,7 +1857,7 @@ class ApideckCompanies(BaseSDK):
             hook_ctx=HookContext(
                 config=self.sdk_configuration,
                 base_url=base_url or "",
-                operation_id="hris.companiesDelete",
+                operation_id="crm.companiesDelete",
                 oauth2_scopes=None,
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
@@ -1529,9 +1870,9 @@ class ApideckCompanies(BaseSDK):
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return models.HrisCompaniesDeleteResponse(
-                delete_hris_company_response=unmarshal_json_response(
-                    Optional[models.DeleteHrisCompanyResponse], http_res
+            return models.CrmCompaniesDeleteResponse(
+                delete_company_response=unmarshal_json_response(
+                    Optional[models.DeleteCompanyResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
             )
@@ -1567,7 +1908,7 @@ class ApideckCompanies(BaseSDK):
             http_res_text = utils.stream_to_text(http_res)
             raise models.APIError("API error occurred", http_res, http_res_text)
         if utils.match_response(http_res, "default", "application/json"):
-            return models.HrisCompaniesDeleteResponse(
+            return models.CrmCompaniesDeleteResponse(
                 unexpected_error_response=unmarshal_json_response(
                     Optional[models.UnexpectedErrorResponse], http_res
                 ),
@@ -1580,24 +1921,24 @@ class ApideckCompanies(BaseSDK):
         self,
         *,
         id: str,
+        raw: Optional[bool] = False,
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
-        raw: Optional[bool] = False,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
         http_headers: Optional[Mapping[str, str]] = None,
-    ) -> models.HrisCompaniesDeleteResponse:
-        r"""Delete Company
+    ) -> models.CrmCompaniesDeleteResponse:
+        r"""Delete company
 
-        Delete Company
+        Delete company
 
         :param id: ID of the record you are acting upon.
+        :param raw: Include raw response. Mostly used for debugging purposes
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
-        :param raw: Include raw response. Mostly used for debugging purposes
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -1613,17 +1954,17 @@ class ApideckCompanies(BaseSDK):
         else:
             base_url = self._get_url(base_url, url_variables)
 
-        request = models.HrisCompaniesDeleteRequest(
+        request = models.CrmCompaniesDeleteRequest(
             id=id,
+            raw=raw,
             consumer_id=consumer_id,
             app_id=app_id,
             service_id=service_id,
-            raw=raw,
         )
 
         req = self._build_request_async(
             method="DELETE",
-            path="/hris/companies/{id}",
+            path="/crm/companies/{id}",
             base_url=base_url,
             url_variables=url_variables,
             request=request,
@@ -1633,7 +1974,7 @@ class ApideckCompanies(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             http_headers=http_headers,
-            _globals=models.HrisCompaniesDeleteGlobals(
+            _globals=models.CrmCompaniesDeleteGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
@@ -1657,7 +1998,7 @@ class ApideckCompanies(BaseSDK):
             hook_ctx=HookContext(
                 config=self.sdk_configuration,
                 base_url=base_url or "",
-                operation_id="hris.companiesDelete",
+                operation_id="crm.companiesDelete",
                 oauth2_scopes=None,
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
@@ -1670,9 +2011,9 @@ class ApideckCompanies(BaseSDK):
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return models.HrisCompaniesDeleteResponse(
-                delete_hris_company_response=unmarshal_json_response(
-                    Optional[models.DeleteHrisCompanyResponse], http_res
+            return models.CrmCompaniesDeleteResponse(
+                delete_company_response=unmarshal_json_response(
+                    Optional[models.DeleteCompanyResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
             )
@@ -1708,7 +2049,7 @@ class ApideckCompanies(BaseSDK):
             http_res_text = await utils.stream_to_text_async(http_res)
             raise models.APIError("API error occurred", http_res, http_res_text)
         if utils.match_response(http_res, "default", "application/json"):
-            return models.HrisCompaniesDeleteResponse(
+            return models.CrmCompaniesDeleteResponse(
                 unexpected_error_response=unmarshal_json_response(
                     Optional[models.UnexpectedErrorResponse], http_res
                 ),

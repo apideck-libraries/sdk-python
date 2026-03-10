@@ -16,6 +16,7 @@ class BalanceSheetSDK(BaseSDK):
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
+        company_id: Optional[str] = None,
         pass_through: Optional[Dict[str, Any]] = None,
         filter_: Optional[
             Union[models.BalanceSheetFilter, models.BalanceSheetFilterTypedDict]
@@ -33,6 +34,7 @@ class BalanceSheetSDK(BaseSDK):
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param company_id: The ID of the company to scope requests to. For connectors that support multi-company, this overrides the default company configured in connection settings.
         :param pass_through: Optional unmapped key/values that will be passed through to downstream as query parameters. Ie: ?pass_through[search]=leads becomes ?search=leads
         :param filter_: Apply filters
         :param raw: Include raw response. Mostly used for debugging purposes
@@ -55,6 +57,7 @@ class BalanceSheetSDK(BaseSDK):
             consumer_id=consumer_id,
             app_id=app_id,
             service_id=service_id,
+            company_id=company_id,
             pass_through=pass_through,
             filter_=utils.get_pydantic_model(
                 filter_, Optional[models.BalanceSheetFilter]
@@ -164,6 +167,7 @@ class BalanceSheetSDK(BaseSDK):
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
+        company_id: Optional[str] = None,
         pass_through: Optional[Dict[str, Any]] = None,
         filter_: Optional[
             Union[models.BalanceSheetFilter, models.BalanceSheetFilterTypedDict]
@@ -181,6 +185,7 @@ class BalanceSheetSDK(BaseSDK):
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param company_id: The ID of the company to scope requests to. For connectors that support multi-company, this overrides the default company configured in connection settings.
         :param pass_through: Optional unmapped key/values that will be passed through to downstream as query parameters. Ie: ?pass_through[search]=leads becomes ?search=leads
         :param filter_: Apply filters
         :param raw: Include raw response. Mostly used for debugging purposes
@@ -203,6 +208,7 @@ class BalanceSheetSDK(BaseSDK):
             consumer_id=consumer_id,
             app_id=app_id,
             service_id=service_id,
+            company_id=company_id,
             pass_through=pass_through,
             filter_=utils.get_pydantic_model(
                 filter_, Optional[models.BalanceSheetFilter]

@@ -12,8 +12,10 @@ from apideck_unify.types import (
 )
 from apideck_unify.utils import validate_open_enum
 from enum import Enum
-from pydantic import field_serializer, model_serializer
+import pydantic
+from pydantic import ConfigDict, field_serializer, model_serializer
 from pydantic.functional_validators import PlainValidator
+from typing import Any, Dict
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
@@ -53,6 +55,11 @@ class BankAccount1TypedDict(TypedDict):
 
 
 class BankAccount1(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True, arbitrary_types_allowed=True, extra="allow"
+    )
+    __pydantic_extra__: Dict[str, Any] = pydantic.Field(init=False)
+
     bank_name: OptionalNullable[str] = UNSET
     r"""The name of the bank or financial institution"""
 
@@ -93,6 +100,14 @@ class BankAccount1(BaseModel):
 
     country: OptionalNullable[str] = UNSET
     r"""Country code according to ISO 3166-1 alpha-2."""
+
+    @property
+    def additional_properties(self):
+        return self.__pydantic_extra__
+
+    @additional_properties.setter
+    def additional_properties(self, value):
+        self.__pydantic_extra__ = value  # pyright: ignore[reportIncompatibleVariableOverride]
 
     @field_serializer("account_type")
     def serialize_account_type(self, value):
@@ -165,5 +180,8 @@ class BankAccount1(BaseModel):
                 not k in optional_fields or (optional_nullable and is_set)
             ):
                 m[k] = val
+
+        for k, v in serialized.items():
+            m[k] = v
 
         return m

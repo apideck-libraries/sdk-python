@@ -9,3 +9,4 @@ Apideck service provider associated with event.
 | ------------------------------ | ------------------------------ | ------------------------------ | ------------------------------ | ------------------------------ |
 | `id`                           | *str*                          | :heavy_check_mark:             | Apideck service provider id.   | 101-data-solution              |
 | `name`                         | *str*                          | :heavy_check_mark:             | Apideck service provider name. | 101 Data Solution              |
+| `__pydantic_extra__`           | Dict[str, *Any*]               | :heavy_minus_sign:             | N/A                            |                                |

@@ -101,174 +101,176 @@ with Apideck(
 ) as apideck:
 
     res = apideck.crm.contacts.create(raw=False, service_id="salesforce", name="Elon Musk", owner_id="54321", type_=apideck_unify.ContactType.PERSONAL, company_id="23456", company_name="23456", lead_id="34567", first_name="Elon", middle_name="D.", last_name="Musk", prefix="Mr.", suffix="PhD", title="CEO", department="Engineering", language="EN", gender=apideck_unify.ContactGender.FEMALE, birthday="2000-08-12", photo_url="https://unavatar.io/elon-musk", lead_source="Cold Call", fax="+12129876543", description="Internal champion", current_balance=10.5, status="open", active=True, websites=[
-        {
-            "id": "12345",
-            "url": "http://example.com",
-            "type": apideck_unify.WebsiteType.PRIMARY,
-        },
+        apideck_unify.Website(
+            id="12345",
+            url="http://example.com",
+            type=apideck_unify.WebsiteType.PRIMARY,
+        ),
     ], addresses=[
-        {
-            "id": "123",
-            "type": apideck_unify.Type.PRIMARY,
-            "string": "25 Spring Street, Blackburn, VIC 3130",
-            "name": "HQ US",
-            "line1": "Main street",
-            "line2": "apt #",
-            "line3": "Suite #",
-            "line4": "delivery instructions",
-            "street_number": "25",
-            "city": "San Francisco",
-            "state": "CA",
-            "postal_code": "94104",
-            "country": "US",
-            "latitude": "40.759211",
-            "longitude": "-73.984638",
-            "county": "Santa Clara",
-            "contact_name": "Elon Musk",
-            "salutation": "Mr",
-            "phone_number": "111-111-1111",
-            "fax": "122-111-1111",
-            "email": "elon@musk.com",
-            "website": "https://elonmusk.com",
-            "notes": "Address notes or delivery instructions.",
-            "row_version": "1-12345",
-        },
-        {
-            "id": "123",
-            "type": apideck_unify.Type.PRIMARY,
-            "string": "25 Spring Street, Blackburn, VIC 3130",
-            "name": "HQ US",
-            "line1": "Main street",
-            "line2": "apt #",
-            "line3": "Suite #",
-            "line4": "delivery instructions",
-            "street_number": "25",
-            "city": "San Francisco",
-            "state": "CA",
-            "postal_code": "94104",
-            "country": "US",
-            "latitude": "40.759211",
-            "longitude": "-73.984638",
-            "county": "Santa Clara",
-            "contact_name": "Elon Musk",
-            "salutation": "Mr",
-            "phone_number": "111-111-1111",
-            "fax": "122-111-1111",
-            "email": "elon@musk.com",
-            "website": "https://elonmusk.com",
-            "notes": "Address notes or delivery instructions.",
-            "row_version": "1-12345",
-        },
-        {
-            "id": "123",
-            "type": apideck_unify.Type.PRIMARY,
-            "string": "25 Spring Street, Blackburn, VIC 3130",
-            "name": "HQ US",
-            "line1": "Main street",
-            "line2": "apt #",
-            "line3": "Suite #",
-            "line4": "delivery instructions",
-            "street_number": "25",
-            "city": "San Francisco",
-            "state": "CA",
-            "postal_code": "94104",
-            "country": "US",
-            "latitude": "40.759211",
-            "longitude": "-73.984638",
-            "county": "Santa Clara",
-            "contact_name": "Elon Musk",
-            "salutation": "Mr",
-            "phone_number": "111-111-1111",
-            "fax": "122-111-1111",
-            "email": "elon@musk.com",
-            "website": "https://elonmusk.com",
-            "notes": "Address notes or delivery instructions.",
-            "row_version": "1-12345",
-        },
+        apideck_unify.Address(
+            id="123",
+            type=apideck_unify.Type.PRIMARY,
+            string="25 Spring Street, Blackburn, VIC 3130",
+            name="HQ US",
+            line1="Main street",
+            line2="apt #",
+            line3="Suite #",
+            line4="delivery instructions",
+            street_number="25",
+            city="San Francisco",
+            state="CA",
+            postal_code="94104",
+            country="US",
+            latitude="40.759211",
+            longitude="-73.984638",
+            county="Santa Clara",
+            contact_name="Elon Musk",
+            salutation="Mr",
+            phone_number="111-111-1111",
+            fax="122-111-1111",
+            email="elon@musk.com",
+            website="https://elonmusk.com",
+            notes="Address notes or delivery instructions.",
+            row_version="1-12345",
+        ),
+        apideck_unify.Address(
+            id="123",
+            type=apideck_unify.Type.PRIMARY,
+            string="25 Spring Street, Blackburn, VIC 3130",
+            name="HQ US",
+            line1="Main street",
+            line2="apt #",
+            line3="Suite #",
+            line4="delivery instructions",
+            street_number="25",
+            city="San Francisco",
+            state="CA",
+            postal_code="94104",
+            country="US",
+            latitude="40.759211",
+            longitude="-73.984638",
+            county="Santa Clara",
+            contact_name="Elon Musk",
+            salutation="Mr",
+            phone_number="111-111-1111",
+            fax="122-111-1111",
+            email="elon@musk.com",
+            website="https://elonmusk.com",
+            notes="Address notes or delivery instructions.",
+            row_version="1-12345",
+        ),
+        apideck_unify.Address(
+            id="123",
+            type=apideck_unify.Type.PRIMARY,
+            string="25 Spring Street, Blackburn, VIC 3130",
+            name="HQ US",
+            line1="Main street",
+            line2="apt #",
+            line3="Suite #",
+            line4="delivery instructions",
+            street_number="25",
+            city="San Francisco",
+            state="CA",
+            postal_code="94104",
+            country="US",
+            latitude="40.759211",
+            longitude="-73.984638",
+            county="Santa Clara",
+            contact_name="Elon Musk",
+            salutation="Mr",
+            phone_number="111-111-1111",
+            fax="122-111-1111",
+            email="elon@musk.com",
+            website="https://elonmusk.com",
+            notes="Address notes or delivery instructions.",
+            row_version="1-12345",
+        ),
     ], social_links=[
-        {
-            "id": "12345",
-            "url": "https://www.twitter.com/apideck",
-            "type": "twitter",
-        },
-        {
-            "id": "12345",
-            "url": "https://www.twitter.com/apideck",
-            "type": "twitter",
-        },
-        {
-            "id": "12345",
-            "url": "https://www.twitter.com/apideck",
-            "type": "twitter",
-        },
+        apideck_unify.SocialLink(
+            id="12345",
+            url="https://www.twitter.com/apideck",
+            type="twitter",
+        ),
+        apideck_unify.SocialLink(
+            id="12345",
+            url="https://www.twitter.com/apideck",
+            type="twitter",
+        ),
+        apideck_unify.SocialLink(
+            id="12345",
+            url="https://www.twitter.com/apideck",
+            type="twitter",
+        ),
     ], phone_numbers=[
-        {
-            "id": "12345",
-            "country_code": "1",
-            "area_code": "323",
-            "number": "111-111-1111",
-            "extension": "105",
-            "type": apideck_unify.PhoneNumberType.PRIMARY,
-        },
-        {
-            "id": "12345",
-            "country_code": "1",
-            "area_code": "323",
-            "number": "111-111-1111",
-            "extension": "105",
-            "type": apideck_unify.PhoneNumberType.PRIMARY,
-        },
+        apideck_unify.PhoneNumber(
+            id="12345",
+            country_code="1",
+            area_code="323",
+            number="111-111-1111",
+            extension="105",
+            type=apideck_unify.PhoneNumberType.PRIMARY,
+        ),
+        apideck_unify.PhoneNumber(
+            id="12345",
+            country_code="1",
+            area_code="323",
+            number="111-111-1111",
+            extension="105",
+            type=apideck_unify.PhoneNumberType.PRIMARY,
+        ),
     ], emails=[
-        {
-            "id": "123",
-            "email": "elon@musk.com",
-            "type": apideck_unify.EmailType.PRIMARY,
-        },
+        apideck_unify.Email(
+            id="123",
+            email="elon@musk.com",
+            type=apideck_unify.EmailType.PRIMARY,
+        ),
     ], email_domain="gmail.com", custom_fields=[
-        {
-            "id": "2389328923893298",
-            "name": "employee_level",
-            "description": "Employee Level",
-            "value": "Uses Salesforce and Marketo",
-        },
-        {
-            "id": "2389328923893298",
-            "name": "employee_level",
-            "description": "Employee Level",
-            "value": "Uses Salesforce and Marketo",
-        },
+        apideck_unify.CustomField(
+            id="2389328923893298",
+            name="employee_level",
+            description="Employee Level",
+            value="Uses Salesforce and Marketo",
+        ),
+        apideck_unify.CustomField(
+            id="2389328923893298",
+            name="employee_level",
+            description="Employee Level",
+            value="Uses Salesforce and Marketo",
+        ),
     ], tags=[
         "New",
     ], opportunity_ids=[
         "12345",
     ], pass_through=[
-        {
-            "service_id": "<id>",
-            "extend_paths": [
-                {
-                    "path": "$.nested.property",
-                    "value": {
+        apideck_unify.PassThroughBody(
+            service_id="<id>",
+            extend_paths=[
+                apideck_unify.ExtendPaths(
+                    path="$.nested.property",
+                    value={
                         "TaxClassificationRef": {
                             "value": "EUC-99990201-V1-00020000",
                         },
                     },
-                },
+                ),
             ],
-        },
-        {
-            "service_id": "<id>",
-            "extend_paths": [
-                {
-                    "path": "$.nested.property",
-                    "value": {
+        ),
+        apideck_unify.PassThroughBody(
+            service_id="<id>",
+            extend_paths=[
+                apideck_unify.ExtendPaths(
+                    path="$.nested.property",
+                    value={
                         "TaxClassificationRef": {
                             "value": "EUC-99990201-V1-00020000",
                         },
                     },
-                },
+                ),
             ],
-        },
-    ])
+        ),
+    ], additional_properties={
+
+    })
 
     assert res.create_contact_response is not None
 
@@ -319,6 +321,7 @@ with Apideck(
 | `tags`                                                                                                                                                  | List[*str*]                                                                                                                                             | :heavy_minus_sign:                                                                                                                                      | N/A                                                                                                                                                     | [<br/>"New"<br/>]                                                                                                                                       |
 | `opportunity_ids`                                                                                                                                       | List[*str*]                                                                                                                                             | :heavy_minus_sign:                                                                                                                                      | The opportunity ids of the contact.                                                                                                                     |                                                                                                                                                         |
 | `pass_through`                                                                                                                                          | List[[models.PassThroughBody](../../models/passthroughbody.md)]                                                                                         | :heavy_minus_sign:                                                                                                                                      | The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources. |                                                                                                                                                         |
+| `additional_properties`                                                                                                                                 | Dict[str, *Any*]                                                                                                                                        | :heavy_minus_sign:                                                                                                                                      | N/A                                                                                                                                                     |                                                                                                                                                         |
 | `retries`                                                                                                                                               | [Optional[utils.RetryConfig]](../../models/utils/retryconfig.md)                                                                                        | :heavy_minus_sign:                                                                                                                                      | Configuration to override the default retry behavior of the client.                                                                                     |                                                                                                                                                         |
 
 ### Response
@@ -417,218 +420,220 @@ with Apideck(
 ) as apideck:
 
     res = apideck.crm.contacts.update(id="<id>", service_id="salesforce", raw=False, name="Elon Musk", owner_id="54321", type_=apideck_unify.ContactType.PERSONAL, company_id="23456", company_name="23456", lead_id="34567", first_name="Elon", middle_name="D.", last_name="Musk", prefix="Mr.", suffix="PhD", title="CEO", department="Engineering", language="EN", gender=apideck_unify.ContactGender.FEMALE, birthday="2000-08-12", photo_url="https://unavatar.io/elon-musk", lead_source="Cold Call", fax="+12129876543", description="Internal champion", current_balance=10.5, status="open", active=True, websites=[
-        {
-            "id": "12345",
-            "url": "http://example.com",
-            "type": apideck_unify.WebsiteType.PRIMARY,
-        },
-        {
-            "id": "12345",
-            "url": "http://example.com",
-            "type": apideck_unify.WebsiteType.PRIMARY,
-        },
+        apideck_unify.Website(
+            id="12345",
+            url="http://example.com",
+            type=apideck_unify.WebsiteType.PRIMARY,
+        ),
+        apideck_unify.Website(
+            id="12345",
+            url="http://example.com",
+            type=apideck_unify.WebsiteType.PRIMARY,
+        ),
     ], addresses=[
-        {
-            "id": "123",
-            "type": apideck_unify.Type.PRIMARY,
-            "string": "25 Spring Street, Blackburn, VIC 3130",
-            "name": "HQ US",
-            "line1": "Main street",
-            "line2": "apt #",
-            "line3": "Suite #",
-            "line4": "delivery instructions",
-            "street_number": "25",
-            "city": "San Francisco",
-            "state": "CA",
-            "postal_code": "94104",
-            "country": "US",
-            "latitude": "40.759211",
-            "longitude": "-73.984638",
-            "county": "Santa Clara",
-            "contact_name": "Elon Musk",
-            "salutation": "Mr",
-            "phone_number": "111-111-1111",
-            "fax": "122-111-1111",
-            "email": "elon@musk.com",
-            "website": "https://elonmusk.com",
-            "notes": "Address notes or delivery instructions.",
-            "row_version": "1-12345",
-        },
-        {
-            "id": "123",
-            "type": apideck_unify.Type.PRIMARY,
-            "string": "25 Spring Street, Blackburn, VIC 3130",
-            "name": "HQ US",
-            "line1": "Main street",
-            "line2": "apt #",
-            "line3": "Suite #",
-            "line4": "delivery instructions",
-            "street_number": "25",
-            "city": "San Francisco",
-            "state": "CA",
-            "postal_code": "94104",
-            "country": "US",
-            "latitude": "40.759211",
-            "longitude": "-73.984638",
-            "county": "Santa Clara",
-            "contact_name": "Elon Musk",
-            "salutation": "Mr",
-            "phone_number": "111-111-1111",
-            "fax": "122-111-1111",
-            "email": "elon@musk.com",
-            "website": "https://elonmusk.com",
-            "notes": "Address notes or delivery instructions.",
-            "row_version": "1-12345",
-        },
-        {
-            "id": "123",
-            "type": apideck_unify.Type.PRIMARY,
-            "string": "25 Spring Street, Blackburn, VIC 3130",
-            "name": "HQ US",
-            "line1": "Main street",
-            "line2": "apt #",
-            "line3": "Suite #",
-            "line4": "delivery instructions",
-            "street_number": "25",
-            "city": "San Francisco",
-            "state": "CA",
-            "postal_code": "94104",
-            "country": "US",
-            "latitude": "40.759211",
-            "longitude": "-73.984638",
-            "county": "Santa Clara",
-            "contact_name": "Elon Musk",
-            "salutation": "Mr",
-            "phone_number": "111-111-1111",
-            "fax": "122-111-1111",
-            "email": "elon@musk.com",
-            "website": "https://elonmusk.com",
-            "notes": "Address notes or delivery instructions.",
-            "row_version": "1-12345",
-        },
+        apideck_unify.Address(
+            id="123",
+            type=apideck_unify.Type.PRIMARY,
+            string="25 Spring Street, Blackburn, VIC 3130",
+            name="HQ US",
+            line1="Main street",
+            line2="apt #",
+            line3="Suite #",
+            line4="delivery instructions",
+            street_number="25",
+            city="San Francisco",
+            state="CA",
+            postal_code="94104",
+            country="US",
+            latitude="40.759211",
+            longitude="-73.984638",
+            county="Santa Clara",
+            contact_name="Elon Musk",
+            salutation="Mr",
+            phone_number="111-111-1111",
+            fax="122-111-1111",
+            email="elon@musk.com",
+            website="https://elonmusk.com",
+            notes="Address notes or delivery instructions.",
+            row_version="1-12345",
+        ),
+        apideck_unify.Address(
+            id="123",
+            type=apideck_unify.Type.PRIMARY,
+            string="25 Spring Street, Blackburn, VIC 3130",
+            name="HQ US",
+            line1="Main street",
+            line2="apt #",
+            line3="Suite #",
+            line4="delivery instructions",
+            street_number="25",
+            city="San Francisco",
+            state="CA",
+            postal_code="94104",
+            country="US",
+            latitude="40.759211",
+            longitude="-73.984638",
+            county="Santa Clara",
+            contact_name="Elon Musk",
+            salutation="Mr",
+            phone_number="111-111-1111",
+            fax="122-111-1111",
+            email="elon@musk.com",
+            website="https://elonmusk.com",
+            notes="Address notes or delivery instructions.",
+            row_version="1-12345",
+        ),
+        apideck_unify.Address(
+            id="123",
+            type=apideck_unify.Type.PRIMARY,
+            string="25 Spring Street, Blackburn, VIC 3130",
+            name="HQ US",
+            line1="Main street",
+            line2="apt #",
+            line3="Suite #",
+            line4="delivery instructions",
+            street_number="25",
+            city="San Francisco",
+            state="CA",
+            postal_code="94104",
+            country="US",
+            latitude="40.759211",
+            longitude="-73.984638",
+            county="Santa Clara",
+            contact_name="Elon Musk",
+            salutation="Mr",
+            phone_number="111-111-1111",
+            fax="122-111-1111",
+            email="elon@musk.com",
+            website="https://elonmusk.com",
+            notes="Address notes or delivery instructions.",
+            row_version="1-12345",
+        ),
     ], social_links=[
-        {
-            "id": "12345",
-            "url": "https://www.twitter.com/apideck",
-            "type": "twitter",
-        },
+        apideck_unify.SocialLink(
+            id="12345",
+            url="https://www.twitter.com/apideck",
+            type="twitter",
+        ),
     ], phone_numbers=[
-        {
-            "id": "12345",
-            "country_code": "1",
-            "area_code": "323",
-            "number": "111-111-1111",
-            "extension": "105",
-            "type": apideck_unify.PhoneNumberType.PRIMARY,
-        },
-        {
-            "id": "12345",
-            "country_code": "1",
-            "area_code": "323",
-            "number": "111-111-1111",
-            "extension": "105",
-            "type": apideck_unify.PhoneNumberType.PRIMARY,
-        },
-        {
-            "id": "12345",
-            "country_code": "1",
-            "area_code": "323",
-            "number": "111-111-1111",
-            "extension": "105",
-            "type": apideck_unify.PhoneNumberType.PRIMARY,
-        },
+        apideck_unify.PhoneNumber(
+            id="12345",
+            country_code="1",
+            area_code="323",
+            number="111-111-1111",
+            extension="105",
+            type=apideck_unify.PhoneNumberType.PRIMARY,
+        ),
+        apideck_unify.PhoneNumber(
+            id="12345",
+            country_code="1",
+            area_code="323",
+            number="111-111-1111",
+            extension="105",
+            type=apideck_unify.PhoneNumberType.PRIMARY,
+        ),
+        apideck_unify.PhoneNumber(
+            id="12345",
+            country_code="1",
+            area_code="323",
+            number="111-111-1111",
+            extension="105",
+            type=apideck_unify.PhoneNumberType.PRIMARY,
+        ),
     ], emails=[
-        {
-            "id": "123",
-            "email": "elon@musk.com",
-            "type": apideck_unify.EmailType.PRIMARY,
-        },
-        {
-            "id": "123",
-            "email": "elon@musk.com",
-            "type": apideck_unify.EmailType.PRIMARY,
-        },
-        {
-            "id": "123",
-            "email": "elon@musk.com",
-            "type": apideck_unify.EmailType.PRIMARY,
-        },
+        apideck_unify.Email(
+            id="123",
+            email="elon@musk.com",
+            type=apideck_unify.EmailType.PRIMARY,
+        ),
+        apideck_unify.Email(
+            id="123",
+            email="elon@musk.com",
+            type=apideck_unify.EmailType.PRIMARY,
+        ),
+        apideck_unify.Email(
+            id="123",
+            email="elon@musk.com",
+            type=apideck_unify.EmailType.PRIMARY,
+        ),
     ], email_domain="gmail.com", custom_fields=[
-        {
-            "id": "2389328923893298",
-            "name": "employee_level",
-            "description": "Employee Level",
-            "value": {
+        apideck_unify.CustomField(
+            id="2389328923893298",
+            name="employee_level",
+            description="Employee Level",
+            value={
                 "0": "<value 1>",
                 "1": "<value 2>",
             },
-        },
-        {
-            "id": "2389328923893298",
-            "name": "employee_level",
-            "description": "Employee Level",
-            "value": {
+        ),
+        apideck_unify.CustomField(
+            id="2389328923893298",
+            name="employee_level",
+            description="Employee Level",
+            value={
                 "0": "<value 1>",
                 "1": "<value 2>",
             },
-        },
-        {
-            "id": "2389328923893298",
-            "name": "employee_level",
-            "description": "Employee Level",
-            "value": {
+        ),
+        apideck_unify.CustomField(
+            id="2389328923893298",
+            name="employee_level",
+            description="Employee Level",
+            value={
                 "0": "<value 1>",
                 "1": "<value 2>",
             },
-        },
+        ),
     ], tags=[
         "New",
     ], opportunity_ids=[
         "12345",
     ], pass_through=[
-        {
-            "service_id": "<id>",
-            "extend_paths": [
-                {
-                    "path": "$.nested.property",
-                    "value": {
+        apideck_unify.PassThroughBody(
+            service_id="<id>",
+            extend_paths=[
+                apideck_unify.ExtendPaths(
+                    path="$.nested.property",
+                    value={
                         "TaxClassificationRef": {
                             "value": "EUC-99990201-V1-00020000",
                         },
                     },
-                },
-                {
-                    "path": "$.nested.property",
-                    "value": {
+                ),
+                apideck_unify.ExtendPaths(
+                    path="$.nested.property",
+                    value={
                         "TaxClassificationRef": {
                             "value": "EUC-99990201-V1-00020000",
                         },
                     },
-                },
+                ),
             ],
-        },
-        {
-            "service_id": "<id>",
-            "extend_paths": [
-                {
-                    "path": "$.nested.property",
-                    "value": {
+        ),
+        apideck_unify.PassThroughBody(
+            service_id="<id>",
+            extend_paths=[
+                apideck_unify.ExtendPaths(
+                    path="$.nested.property",
+                    value={
                         "TaxClassificationRef": {
                             "value": "EUC-99990201-V1-00020000",
                         },
                     },
-                },
-                {
-                    "path": "$.nested.property",
-                    "value": {
+                ),
+                apideck_unify.ExtendPaths(
+                    path="$.nested.property",
+                    value={
                         "TaxClassificationRef": {
                             "value": "EUC-99990201-V1-00020000",
                         },
                     },
-                },
+                ),
             ],
-        },
-    ])
+        ),
+    ], additional_properties={
+
+    })
 
     assert res.update_contact_response is not None
 
@@ -680,6 +685,7 @@ with Apideck(
 | `tags`                                                                                                                                                  | List[*str*]                                                                                                                                             | :heavy_minus_sign:                                                                                                                                      | N/A                                                                                                                                                     | [<br/>"New"<br/>]                                                                                                                                       |
 | `opportunity_ids`                                                                                                                                       | List[*str*]                                                                                                                                             | :heavy_minus_sign:                                                                                                                                      | The opportunity ids of the contact.                                                                                                                     |                                                                                                                                                         |
 | `pass_through`                                                                                                                                          | List[[models.PassThroughBody](../../models/passthroughbody.md)]                                                                                         | :heavy_minus_sign:                                                                                                                                      | The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources. |                                                                                                                                                         |
+| `additional_properties`                                                                                                                                 | Dict[str, *Any*]                                                                                                                                        | :heavy_minus_sign:                                                                                                                                      | N/A                                                                                                                                                     |                                                                                                                                                         |
 | `retries`                                                                                                                                               | [Optional[utils.RetryConfig]](../../models/utils/retryconfig.md)                                                                                        | :heavy_minus_sign:                                                                                                                                      | Configuration to override the default retry behavior of the client.                                                                                     |                                                                                                                                                         |
 
 ### Response

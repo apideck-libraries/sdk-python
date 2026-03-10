@@ -2,14 +2,30 @@
 
 from __future__ import annotations
 from apideck_unify.types import BaseModel
-from typing_extensions import TypedDict
+import pydantic
+from pydantic import ConfigDict
+from typing import Any, Dict, Optional
+from typing_extensions import NotRequired, TypedDict
 
 
 class AssigneeInputTypedDict(TypedDict):
-    id: str
+    id: NotRequired[str]
     r"""A unique identifier for an object."""
 
 
 class AssigneeInput(BaseModel):
-    id: str
+    model_config = ConfigDict(
+        populate_by_name=True, arbitrary_types_allowed=True, extra="allow"
+    )
+    __pydantic_extra__: Dict[str, Any] = pydantic.Field(init=False)
+
+    id: Optional[str] = None
     r"""A unique identifier for an object."""
+
+    @property
+    def additional_properties(self):
+        return self.__pydantic_extra__
+
+    @additional_properties.setter
+    def additional_properties(self, value):
+        self.__pydantic_extra__ = value  # pyright: ignore[reportIncompatibleVariableOverride]

@@ -13,9 +13,10 @@ from apideck_unify.types import (
 )
 from apideck_unify.utils import validate_open_enum
 from datetime import datetime
-from pydantic import field_serializer, model_serializer
+import pydantic
+from pydantic import ConfigDict, field_serializer, model_serializer
 from pydantic.functional_validators import PlainValidator
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
@@ -39,6 +40,11 @@ class StagesTypedDict(TypedDict):
 
 
 class Stages(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True, arbitrary_types_allowed=True, extra="allow"
+    )
+    __pydantic_extra__: Dict[str, Any] = pydantic.Field(init=False)
+
     id: OptionalNullable[str] = UNSET
     r"""The unique identifier of the Pipeline Stage."""
 
@@ -62,6 +68,14 @@ class Stages(BaseModel):
 
     updated_at: OptionalNullable[datetime] = UNSET
     r"""The date and time when the Pipeline Stage was last updated."""
+
+    @property
+    def additional_properties(self):
+        return self.__pydantic_extra__
+
+    @additional_properties.setter
+    def additional_properties(self, value):
+        self.__pydantic_extra__ = value  # pyright: ignore[reportIncompatibleVariableOverride]
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
@@ -109,14 +123,17 @@ class Stages(BaseModel):
             ):
                 m[k] = val
 
+        for k, v in serialized.items():
+            m[k] = v
+
         return m
 
 
 class PipelineTypedDict(TypedDict):
-    name: str
-    r"""The name of the Pipeline."""
     id: NotRequired[str]
     r"""The unique identifier of the Pipeline."""
+    name: NotRequired[str]
+    r"""The name of the Pipeline."""
     currency: NotRequired[Nullable[Currency]]
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
     archived: NotRequired[bool]
@@ -138,11 +155,16 @@ class PipelineTypedDict(TypedDict):
 
 
 class Pipeline(BaseModel):
-    name: str
-    r"""The name of the Pipeline."""
+    model_config = ConfigDict(
+        populate_by_name=True, arbitrary_types_allowed=True, extra="allow"
+    )
+    __pydantic_extra__: Dict[str, Any] = pydantic.Field(init=False)
 
     id: Optional[str] = None
     r"""The unique identifier of the Pipeline."""
+
+    name: Optional[str] = None
+    r"""The name of the Pipeline."""
 
     currency: Annotated[
         OptionalNullable[Currency], PlainValidator(validate_open_enum(False))
@@ -173,6 +195,14 @@ class Pipeline(BaseModel):
     pass_through: Optional[List[PassThroughBody]] = None
     r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
 
+    @property
+    def additional_properties(self):
+        return self.__pydantic_extra__
+
+    @additional_properties.setter
+    def additional_properties(self, value):
+        self.__pydantic_extra__ = value  # pyright: ignore[reportIncompatibleVariableOverride]
+
     @field_serializer("currency")
     def serialize_currency(self, value):
         if isinstance(value, str):
@@ -186,6 +216,7 @@ class Pipeline(BaseModel):
     def serialize_model(self, handler):
         optional_fields = [
             "id",
+            "name",
             "currency",
             "archived",
             "active",
@@ -220,5 +251,8 @@ class Pipeline(BaseModel):
                 not k in optional_fields or (optional_nullable and is_set)
             ):
                 m[k] = val
+
+        for k, v in serialized.items():
+            m[k] = v
 
         return m

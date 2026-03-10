@@ -23,7 +23,8 @@ from apideck_unify.types import (
 from apideck_unify.utils import validate_open_enum
 from datetime import datetime
 from enum import Enum
-from pydantic import field_serializer, model_serializer
+import pydantic
+from pydantic import ConfigDict, field_serializer, model_serializer
 from pydantic.functional_validators import PlainValidator
 from typing import Any, Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
@@ -120,18 +121,16 @@ class Allocations(BaseModel):
 
 
 class BillPaymentTypedDict(TypedDict):
-    id: str
+    id: NotRequired[str]
     r"""A unique identifier for an object."""
-    total_amount: Nullable[float]
-    r"""The total amount of the transaction or record"""
-    transaction_date: Nullable[datetime]
-    r"""The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD"""
     downstream_id: NotRequired[Nullable[str]]
     r"""The third-party API ID of original entity"""
     currency: NotRequired[Nullable[Currency]]
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
     currency_rate: NotRequired[Nullable[float]]
     r"""Currency Exchange Rate at the time entity was recorded/generated."""
+    total_amount: NotRequired[Nullable[float]]
+    r"""The total amount of the transaction or record"""
     reference: NotRequired[Nullable[str]]
     r"""Optional transaction reference message ie: Debit remittance detail."""
     payment_method: NotRequired[Nullable[str]]
@@ -141,6 +140,8 @@ class BillPaymentTypedDict(TypedDict):
     payment_method_id: NotRequired[Nullable[str]]
     r"""A unique identifier for an object."""
     account: NotRequired[Nullable[LinkedLedgerAccountTypedDict]]
+    transaction_date: NotRequired[Nullable[datetime]]
+    r"""The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD"""
     supplier: NotRequired[Nullable[LinkedSupplierTypedDict]]
     r"""The supplier this entity is linked to."""
     company_id: NotRequired[Nullable[str]]
@@ -180,14 +181,13 @@ class BillPaymentTypedDict(TypedDict):
 
 
 class BillPayment(BaseModel):
-    id: str
+    model_config = ConfigDict(
+        populate_by_name=True, arbitrary_types_allowed=True, extra="allow"
+    )
+    __pydantic_extra__: Dict[str, Any] = pydantic.Field(init=False)
+
+    id: Optional[str] = None
     r"""A unique identifier for an object."""
-
-    total_amount: Nullable[float]
-    r"""The total amount of the transaction or record"""
-
-    transaction_date: Nullable[datetime]
-    r"""The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD"""
 
     downstream_id: OptionalNullable[str] = UNSET
     r"""The third-party API ID of original entity"""
@@ -199,6 +199,9 @@ class BillPayment(BaseModel):
 
     currency_rate: OptionalNullable[float] = UNSET
     r"""Currency Exchange Rate at the time entity was recorded/generated."""
+
+    total_amount: OptionalNullable[float] = UNSET
+    r"""The total amount of the transaction or record"""
 
     reference: OptionalNullable[str] = UNSET
     r"""Optional transaction reference message ie: Debit remittance detail."""
@@ -213,6 +216,9 @@ class BillPayment(BaseModel):
     r"""A unique identifier for an object."""
 
     account: OptionalNullable[LinkedLedgerAccount] = UNSET
+
+    transaction_date: OptionalNullable[datetime] = UNSET
+    r"""The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD"""
 
     supplier: OptionalNullable[LinkedSupplier] = UNSET
     r"""The supplier this entity is linked to."""
@@ -272,6 +278,14 @@ class BillPayment(BaseModel):
     pass_through: Optional[List[PassThroughBody]] = None
     r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
 
+    @property
+    def additional_properties(self):
+        return self.__pydantic_extra__
+
+    @additional_properties.setter
+    def additional_properties(self, value):
+        self.__pydantic_extra__ = value  # pyright: ignore[reportIncompatibleVariableOverride]
+
     @field_serializer("currency")
     def serialize_currency(self, value):
         if isinstance(value, str):
@@ -302,14 +316,17 @@ class BillPayment(BaseModel):
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
         optional_fields = [
+            "id",
             "downstream_id",
             "currency",
             "currency_rate",
+            "total_amount",
             "reference",
             "payment_method",
             "payment_method_reference",
             "payment_method_id",
             "account",
+            "transaction_date",
             "supplier",
             "company_id",
             "reconciled",
@@ -377,6 +394,9 @@ class BillPayment(BaseModel):
                 not k in optional_fields or (optional_nullable and is_set)
             ):
                 m[k] = val
+
+        for k, v in serialized.items():
+            m[k] = v
 
         return m
 
@@ -448,14 +468,12 @@ class BillPaymentAllocations(BaseModel):
 
 
 class BillPaymentInputTypedDict(TypedDict):
-    total_amount: Nullable[float]
-    r"""The total amount of the transaction or record"""
-    transaction_date: Nullable[datetime]
-    r"""The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD"""
     currency: NotRequired[Nullable[Currency]]
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
     currency_rate: NotRequired[Nullable[float]]
     r"""Currency Exchange Rate at the time entity was recorded/generated."""
+    total_amount: NotRequired[Nullable[float]]
+    r"""The total amount of the transaction or record"""
     reference: NotRequired[Nullable[str]]
     r"""Optional transaction reference message ie: Debit remittance detail."""
     payment_method: NotRequired[Nullable[str]]
@@ -465,6 +483,8 @@ class BillPaymentInputTypedDict(TypedDict):
     payment_method_id: NotRequired[Nullable[str]]
     r"""A unique identifier for an object."""
     account: NotRequired[Nullable[LinkedLedgerAccountTypedDict]]
+    transaction_date: NotRequired[Nullable[datetime]]
+    r"""The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD"""
     supplier: NotRequired[Nullable[LinkedSupplierInputTypedDict]]
     r"""The supplier this entity is linked to."""
     company_id: NotRequired[Nullable[str]]
@@ -494,11 +514,10 @@ class BillPaymentInputTypedDict(TypedDict):
 
 
 class BillPaymentInput(BaseModel):
-    total_amount: Nullable[float]
-    r"""The total amount of the transaction or record"""
-
-    transaction_date: Nullable[datetime]
-    r"""The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD"""
+    model_config = ConfigDict(
+        populate_by_name=True, arbitrary_types_allowed=True, extra="allow"
+    )
+    __pydantic_extra__: Dict[str, Any] = pydantic.Field(init=False)
 
     currency: Annotated[
         OptionalNullable[Currency], PlainValidator(validate_open_enum(False))
@@ -507,6 +526,9 @@ class BillPaymentInput(BaseModel):
 
     currency_rate: OptionalNullable[float] = UNSET
     r"""Currency Exchange Rate at the time entity was recorded/generated."""
+
+    total_amount: OptionalNullable[float] = UNSET
+    r"""The total amount of the transaction or record"""
 
     reference: OptionalNullable[str] = UNSET
     r"""Optional transaction reference message ie: Debit remittance detail."""
@@ -521,6 +543,9 @@ class BillPaymentInput(BaseModel):
     r"""A unique identifier for an object."""
 
     account: OptionalNullable[LinkedLedgerAccount] = UNSET
+
+    transaction_date: OptionalNullable[datetime] = UNSET
+    r"""The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD"""
 
     supplier: OptionalNullable[LinkedSupplierInput] = UNSET
     r"""The supplier this entity is linked to."""
@@ -565,6 +590,14 @@ class BillPaymentInput(BaseModel):
     pass_through: Optional[List[PassThroughBody]] = None
     r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
 
+    @property
+    def additional_properties(self):
+        return self.__pydantic_extra__
+
+    @additional_properties.setter
+    def additional_properties(self, value):
+        self.__pydantic_extra__ = value  # pyright: ignore[reportIncompatibleVariableOverride]
+
     @field_serializer("currency")
     def serialize_currency(self, value):
         if isinstance(value, str):
@@ -597,11 +630,13 @@ class BillPaymentInput(BaseModel):
         optional_fields = [
             "currency",
             "currency_rate",
+            "total_amount",
             "reference",
             "payment_method",
             "payment_method_reference",
             "payment_method_id",
             "account",
+            "transaction_date",
             "supplier",
             "company_id",
             "reconciled",
@@ -658,5 +693,8 @@ class BillPaymentInput(BaseModel):
                 not k in optional_fields or (optional_nullable and is_set)
             ):
                 m[k] = val
+
+        for k, v in serialized.items():
+            m[k] = v
 
         return m

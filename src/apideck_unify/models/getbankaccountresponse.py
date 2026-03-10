@@ -3,7 +3,9 @@
 from __future__ import annotations
 from .accountingbankaccount import AccountingBankAccount, AccountingBankAccountTypedDict
 from apideck_unify.types import BaseModel
-from typing import Optional
+import pydantic
+from pydantic import ConfigDict
+from typing import Any, Dict, Optional
 from typing_extensions import NotRequired, TypedDict
 
 
@@ -26,6 +28,11 @@ class GetBankAccountResponseTypedDict(TypedDict):
 class GetBankAccountResponse(BaseModel):
     r"""Bank Account"""
 
+    model_config = ConfigDict(
+        populate_by_name=True, arbitrary_types_allowed=True, extra="allow"
+    )
+    __pydantic_extra__: Dict[str, Any] = pydantic.Field(init=False)
+
     status_code: int
     r"""HTTP Response Status Code"""
 
@@ -42,3 +49,11 @@ class GetBankAccountResponse(BaseModel):
 
     operation: Optional[str] = None
     r"""Operation performed"""
+
+    @property
+    def additional_properties(self):
+        return self.__pydantic_extra__
+
+    @additional_properties.setter
+    def additional_properties(self, value):
+        self.__pydantic_extra__ = value  # pyright: ignore[reportIncompatibleVariableOverride]

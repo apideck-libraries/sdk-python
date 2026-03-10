@@ -18,17 +18,18 @@ from apideck_unify.types import (
     UNSET_SENTINEL,
 )
 from apideck_unify.utils import validate_open_enum
-from pydantic import field_serializer, model_serializer
+import pydantic
+from pydantic import ConfigDict, field_serializer, model_serializer
 from pydantic.functional_validators import PlainValidator
 from typing import Any, Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class LeadTypedDict(TypedDict):
-    name: str
-    r"""Full name of the lead."""
     id: NotRequired[str]
     r"""Unique identifier for the contact."""
+    name: NotRequired[str]
+    r"""Full name of the lead."""
     company_name: NotRequired[Nullable[str]]
     r"""The name of the company the lead is associated with."""
     owner_id: NotRequired[Nullable[str]]
@@ -80,11 +81,16 @@ class LeadTypedDict(TypedDict):
 
 
 class Lead(BaseModel):
-    name: str
-    r"""Full name of the lead."""
+    model_config = ConfigDict(
+        populate_by_name=True, arbitrary_types_allowed=True, extra="allow"
+    )
+    __pydantic_extra__: Dict[str, Any] = pydantic.Field(init=False)
 
     id: Optional[str] = None
     r"""Unique identifier for the contact."""
+
+    name: Optional[str] = None
+    r"""Full name of the lead."""
 
     company_name: OptionalNullable[str] = UNSET
     r"""The name of the company the lead is associated with."""
@@ -164,6 +170,14 @@ class Lead(BaseModel):
     pass_through: Optional[List[PassThroughBody]] = None
     r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
 
+    @property
+    def additional_properties(self):
+        return self.__pydantic_extra__
+
+    @additional_properties.setter
+    def additional_properties(self, value):
+        self.__pydantic_extra__ = value  # pyright: ignore[reportIncompatibleVariableOverride]
+
     @field_serializer("currency")
     def serialize_currency(self, value):
         if isinstance(value, str):
@@ -177,6 +191,7 @@ class Lead(BaseModel):
     def serialize_model(self, handler):
         optional_fields = [
             "id",
+            "name",
             "company_name",
             "owner_id",
             "owner_name",
@@ -253,5 +268,8 @@ class Lead(BaseModel):
                 not k in optional_fields or (optional_nullable and is_set)
             ):
                 m[k] = val
+
+        for k, v in serialized.items():
+            m[k] = v
 
         return m

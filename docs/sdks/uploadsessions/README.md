@@ -19,6 +19,7 @@ Start an Upload Session. Upload sessions are used to upload large files, use the
 
 <!-- UsageSnippet language="python" operationID="fileStorage.uploadSessionsAdd" method="post" path="/file-storage/upload-sessions" -->
 ```python
+import apideck_unify
 from apideck_unify import Apideck
 import os
 
@@ -30,94 +31,96 @@ with Apideck(
 ) as apideck:
 
     res = apideck.file_storage.upload_sessions.create(name="Documents", parent_folder_id="1234", size=1810673, raw=False, service_id="salesforce", drive_id="1234", pass_through=[
-        {
-            "service_id": "<id>",
-            "extend_paths": [
-                {
-                    "path": "$.nested.property",
-                    "value": {
+        apideck_unify.PassThroughBody(
+            service_id="<id>",
+            extend_paths=[
+                apideck_unify.ExtendPaths(
+                    path="$.nested.property",
+                    value={
                         "TaxClassificationRef": {
                             "value": "EUC-99990201-V1-00020000",
                         },
                     },
-                },
-                {
-                    "path": "$.nested.property",
-                    "value": {
+                ),
+                apideck_unify.ExtendPaths(
+                    path="$.nested.property",
+                    value={
                         "TaxClassificationRef": {
                             "value": "EUC-99990201-V1-00020000",
                         },
                     },
-                },
-                {
-                    "path": "$.nested.property",
-                    "value": {
+                ),
+                apideck_unify.ExtendPaths(
+                    path="$.nested.property",
+                    value={
                         "TaxClassificationRef": {
                             "value": "EUC-99990201-V1-00020000",
                         },
                     },
-                },
+                ),
             ],
-        },
-        {
-            "service_id": "<id>",
-            "extend_paths": [
-                {
-                    "path": "$.nested.property",
-                    "value": {
+        ),
+        apideck_unify.PassThroughBody(
+            service_id="<id>",
+            extend_paths=[
+                apideck_unify.ExtendPaths(
+                    path="$.nested.property",
+                    value={
                         "TaxClassificationRef": {
                             "value": "EUC-99990201-V1-00020000",
                         },
                     },
-                },
-                {
-                    "path": "$.nested.property",
-                    "value": {
+                ),
+                apideck_unify.ExtendPaths(
+                    path="$.nested.property",
+                    value={
                         "TaxClassificationRef": {
                             "value": "EUC-99990201-V1-00020000",
                         },
                     },
-                },
-                {
-                    "path": "$.nested.property",
-                    "value": {
+                ),
+                apideck_unify.ExtendPaths(
+                    path="$.nested.property",
+                    value={
                         "TaxClassificationRef": {
                             "value": "EUC-99990201-V1-00020000",
                         },
                     },
-                },
+                ),
             ],
-        },
-        {
-            "service_id": "<id>",
-            "extend_paths": [
-                {
-                    "path": "$.nested.property",
-                    "value": {
+        ),
+        apideck_unify.PassThroughBody(
+            service_id="<id>",
+            extend_paths=[
+                apideck_unify.ExtendPaths(
+                    path="$.nested.property",
+                    value={
                         "TaxClassificationRef": {
                             "value": "EUC-99990201-V1-00020000",
                         },
                     },
-                },
-                {
-                    "path": "$.nested.property",
-                    "value": {
+                ),
+                apideck_unify.ExtendPaths(
+                    path="$.nested.property",
+                    value={
                         "TaxClassificationRef": {
                             "value": "EUC-99990201-V1-00020000",
                         },
                     },
-                },
-                {
-                    "path": "$.nested.property",
-                    "value": {
+                ),
+                apideck_unify.ExtendPaths(
+                    path="$.nested.property",
+                    value={
                         "TaxClassificationRef": {
                             "value": "EUC-99990201-V1-00020000",
                         },
                     },
-                },
+                ),
             ],
-        },
-    ])
+        ),
+    ], additional_properties={
+
+    })
 
     assert res.create_upload_session_response is not None
 
@@ -139,6 +142,7 @@ with Apideck(
 | `service_id`                                                                                                                                                                                | *Optional[str]*                                                                                                                                                                             | :heavy_minus_sign:                                                                                                                                                                          | Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.                                               | salesforce                                                                                                                                                                                  |
 | `drive_id`                                                                                                                                                                                  | *Optional[str]*                                                                                                                                                                             | :heavy_minus_sign:                                                                                                                                                                          | ID of the drive to upload to.                                                                                                                                                               | 1234                                                                                                                                                                                        |
 | `pass_through`                                                                                                                                                                              | List[[models.PassThroughBody](../../models/passthroughbody.md)]                                                                                                                             | :heavy_minus_sign:                                                                                                                                                                          | The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.                                     |                                                                                                                                                                                             |
+| `additional_properties`                                                                                                                                                                     | Dict[str, *Any*]                                                                                                                                                                            | :heavy_minus_sign:                                                                                                                                                                          | N/A                                                                                                                                                                                         |                                                                                                                                                                                             |
 | `retries`                                                                                                                                                                                   | [Optional[utils.RetryConfig]](../../models/utils/retryconfig.md)                                                                                                                            | :heavy_minus_sign:                                                                                                                                                                          | Configuration to override the default retry behavior of the client.                                                                                                                         |                                                                                                                                                                                             |
 | `server_url`                                                                                                                                                                                | *Optional[str]*                                                                                                                                                                             | :heavy_minus_sign:                                                                                                                                                                          | An optional server URL to use.                                                                                                                                                              | http://localhost:8080                                                                                                                                                                       |
 

@@ -11,7 +11,7 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.accounting.tax_rates.list(raw=False, service_id="salesforce", limit=20, filter_={
+    res = apideck.accounting.tax_rates.list(raw=False, service_id="salesforce", company_id="12345", limit=20, filter_={
         "assets": True,
         "equity": True,
         "expenses": True,
@@ -45,7 +45,7 @@ async def main():
         api_key=os.getenv("APIDECK_API_KEY", ""),
     ) as apideck:
 
-        res = await apideck.accounting.tax_rates.list_async(raw=False, service_id="salesforce", limit=20, filter_={
+        res = await apideck.accounting.tax_rates.list_async(raw=False, service_id="salesforce", company_id="12345", limit=20, filter_={
             "assets": True,
             "equity": True,
             "expenses": True,

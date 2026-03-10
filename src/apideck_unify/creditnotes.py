@@ -19,6 +19,7 @@ class CreditNotes(BaseSDK):
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
+        company_id: Optional[str] = None,
         cursor: OptionalNullable[str] = UNSET,
         limit: Optional[int] = 20,
         filter_: Optional[
@@ -42,6 +43,7 @@ class CreditNotes(BaseSDK):
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param company_id: The ID of the company to scope requests to. For connectors that support multi-company, this overrides the default company configured in connection settings.
         :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
         :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
         :param filter_: Apply filters
@@ -68,6 +70,7 @@ class CreditNotes(BaseSDK):
             consumer_id=consumer_id,
             app_id=app_id,
             service_id=service_id,
+            company_id=company_id,
             cursor=cursor,
             limit=limit,
             filter_=utils.get_pydantic_model(
@@ -141,6 +144,7 @@ class CreditNotes(BaseSDK):
                 consumer_id=consumer_id,
                 app_id=app_id,
                 service_id=service_id,
+                company_id=company_id,
                 cursor=next_cursor,
                 limit=limit,
                 filter_=filter_,
@@ -208,6 +212,7 @@ class CreditNotes(BaseSDK):
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
+        company_id: Optional[str] = None,
         cursor: OptionalNullable[str] = UNSET,
         limit: Optional[int] = 20,
         filter_: Optional[
@@ -231,6 +236,7 @@ class CreditNotes(BaseSDK):
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param company_id: The ID of the company to scope requests to. For connectors that support multi-company, this overrides the default company configured in connection settings.
         :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
         :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
         :param filter_: Apply filters
@@ -257,6 +263,7 @@ class CreditNotes(BaseSDK):
             consumer_id=consumer_id,
             app_id=app_id,
             service_id=service_id,
+            company_id=company_id,
             cursor=cursor,
             limit=limit,
             filter_=utils.get_pydantic_model(
@@ -330,6 +337,7 @@ class CreditNotes(BaseSDK):
                 consumer_id=consumer_id,
                 app_id=app_id,
                 service_id=service_id,
+                company_id=company_id,
                 cursor=next_cursor,
                 limit=limit,
                 filter_=filter_,
@@ -393,11 +401,11 @@ class CreditNotes(BaseSDK):
     def create(
         self,
         *,
-        total_amount: float,
         raw: Optional[bool] = False,
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
+        company_id_param: Optional[str] = None,
         number: OptionalNullable[str] = UNSET,
         customer: OptionalNullable[
             Union[models.LinkedCustomerInput, models.LinkedCustomerInputTypedDict]
@@ -409,6 +417,7 @@ class CreditNotes(BaseSDK):
         currency_rate: OptionalNullable[float] = UNSET,
         tax_inclusive: OptionalNullable[bool] = UNSET,
         sub_total: OptionalNullable[float] = UNSET,
+        total_amount: Optional[float] = None,
         total_tax: OptionalNullable[float] = UNSET,
         tax_code: OptionalNullable[str] = UNSET,
         balance: OptionalNullable[float] = UNSET,
@@ -432,6 +441,7 @@ class CreditNotes(BaseSDK):
         ] = None,
         note: OptionalNullable[str] = UNSET,
         terms: OptionalNullable[str] = UNSET,
+        terms_id: OptionalNullable[str] = UNSET,
         billing_address: Optional[
             Union[models.Address, models.AddressTypedDict]
         ] = None,
@@ -451,6 +461,7 @@ class CreditNotes(BaseSDK):
         pass_through: Optional[
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
         ] = None,
+        additional_properties: Optional[Dict[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -460,11 +471,11 @@ class CreditNotes(BaseSDK):
 
         Create Credit Note
 
-        :param total_amount: Amount of transaction
         :param raw: Include raw response. Mostly used for debugging purposes
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param company_id_param: The ID of the company to scope requests to. For connectors that support multi-company, this overrides the default company configured in connection settings.
         :param number: Credit note number.
         :param customer: The customer this entity is linked to.
         :param company_id: The company ID the transaction belongs to
@@ -474,6 +485,7 @@ class CreditNotes(BaseSDK):
         :param currency_rate: Currency Exchange Rate at the time entity was recorded/generated.
         :param tax_inclusive: Amounts are including tax
         :param sub_total: Sub-total amount, normally before tax.
+        :param total_amount: Amount of transaction
         :param total_tax: Total tax amount applied to this invoice.
         :param tax_code: Applicable tax id/code override if tax is not supplied on a line item basis.
         :param balance: The balance reflecting any payments made against the transaction.
@@ -488,12 +500,14 @@ class CreditNotes(BaseSDK):
         :param allocations:
         :param note: Optional note to be associated with the credit note.
         :param terms: Optional terms to be associated with the credit note.
+        :param terms_id: The ID of the payment terms
         :param billing_address:
         :param shipping_address:
         :param tracking_categories: A list of linked tracking categories.
         :param custom_fields:
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
+        :param additional_properties:
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -514,6 +528,7 @@ class CreditNotes(BaseSDK):
             consumer_id=consumer_id,
             app_id=app_id,
             service_id=service_id,
+            company_id_param=company_id_param,
             credit_note=models.CreditNoteInput(
                 number=number,
                 customer=utils.get_pydantic_model(
@@ -547,6 +562,7 @@ class CreditNotes(BaseSDK):
                 ),
                 note=note,
                 terms=terms,
+                terms_id=terms_id,
                 billing_address=utils.get_pydantic_model(
                     billing_address, Optional[models.Address]
                 ),
@@ -564,6 +580,7 @@ class CreditNotes(BaseSDK):
                 pass_through=utils.get_pydantic_model(
                     pass_through, Optional[List[models.PassThroughBody]]
                 ),
+                **(additional_properties or {}),
             ),
         )
 
@@ -669,11 +686,11 @@ class CreditNotes(BaseSDK):
     async def create_async(
         self,
         *,
-        total_amount: float,
         raw: Optional[bool] = False,
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
+        company_id_param: Optional[str] = None,
         number: OptionalNullable[str] = UNSET,
         customer: OptionalNullable[
             Union[models.LinkedCustomerInput, models.LinkedCustomerInputTypedDict]
@@ -685,6 +702,7 @@ class CreditNotes(BaseSDK):
         currency_rate: OptionalNullable[float] = UNSET,
         tax_inclusive: OptionalNullable[bool] = UNSET,
         sub_total: OptionalNullable[float] = UNSET,
+        total_amount: Optional[float] = None,
         total_tax: OptionalNullable[float] = UNSET,
         tax_code: OptionalNullable[str] = UNSET,
         balance: OptionalNullable[float] = UNSET,
@@ -708,6 +726,7 @@ class CreditNotes(BaseSDK):
         ] = None,
         note: OptionalNullable[str] = UNSET,
         terms: OptionalNullable[str] = UNSET,
+        terms_id: OptionalNullable[str] = UNSET,
         billing_address: Optional[
             Union[models.Address, models.AddressTypedDict]
         ] = None,
@@ -727,6 +746,7 @@ class CreditNotes(BaseSDK):
         pass_through: Optional[
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
         ] = None,
+        additional_properties: Optional[Dict[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -736,11 +756,11 @@ class CreditNotes(BaseSDK):
 
         Create Credit Note
 
-        :param total_amount: Amount of transaction
         :param raw: Include raw response. Mostly used for debugging purposes
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param company_id_param: The ID of the company to scope requests to. For connectors that support multi-company, this overrides the default company configured in connection settings.
         :param number: Credit note number.
         :param customer: The customer this entity is linked to.
         :param company_id: The company ID the transaction belongs to
@@ -750,6 +770,7 @@ class CreditNotes(BaseSDK):
         :param currency_rate: Currency Exchange Rate at the time entity was recorded/generated.
         :param tax_inclusive: Amounts are including tax
         :param sub_total: Sub-total amount, normally before tax.
+        :param total_amount: Amount of transaction
         :param total_tax: Total tax amount applied to this invoice.
         :param tax_code: Applicable tax id/code override if tax is not supplied on a line item basis.
         :param balance: The balance reflecting any payments made against the transaction.
@@ -764,12 +785,14 @@ class CreditNotes(BaseSDK):
         :param allocations:
         :param note: Optional note to be associated with the credit note.
         :param terms: Optional terms to be associated with the credit note.
+        :param terms_id: The ID of the payment terms
         :param billing_address:
         :param shipping_address:
         :param tracking_categories: A list of linked tracking categories.
         :param custom_fields:
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
+        :param additional_properties:
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -790,6 +813,7 @@ class CreditNotes(BaseSDK):
             consumer_id=consumer_id,
             app_id=app_id,
             service_id=service_id,
+            company_id_param=company_id_param,
             credit_note=models.CreditNoteInput(
                 number=number,
                 customer=utils.get_pydantic_model(
@@ -823,6 +847,7 @@ class CreditNotes(BaseSDK):
                 ),
                 note=note,
                 terms=terms,
+                terms_id=terms_id,
                 billing_address=utils.get_pydantic_model(
                     billing_address, Optional[models.Address]
                 ),
@@ -840,6 +865,7 @@ class CreditNotes(BaseSDK):
                 pass_through=utils.get_pydantic_model(
                     pass_through, Optional[List[models.PassThroughBody]]
                 ),
+                **(additional_properties or {}),
             ),
         )
 
@@ -949,6 +975,7 @@ class CreditNotes(BaseSDK):
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
+        company_id: Optional[str] = None,
         raw: Optional[bool] = False,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
@@ -964,6 +991,7 @@ class CreditNotes(BaseSDK):
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param company_id: The ID of the company to scope requests to. For connectors that support multi-company, this overrides the default company configured in connection settings.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param fields: The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded.
         :param retries: Override the default retry configuration for this method
@@ -986,6 +1014,7 @@ class CreditNotes(BaseSDK):
             consumer_id=consumer_id,
             app_id=app_id,
             service_id=service_id,
+            company_id=company_id,
             raw=raw,
             fields=fields,
         )
@@ -1093,6 +1122,7 @@ class CreditNotes(BaseSDK):
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
+        company_id: Optional[str] = None,
         raw: Optional[bool] = False,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
@@ -1108,6 +1138,7 @@ class CreditNotes(BaseSDK):
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param company_id: The ID of the company to scope requests to. For connectors that support multi-company, this overrides the default company configured in connection settings.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param fields: The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded.
         :param retries: Override the default retry configuration for this method
@@ -1130,6 +1161,7 @@ class CreditNotes(BaseSDK):
             consumer_id=consumer_id,
             app_id=app_id,
             service_id=service_id,
+            company_id=company_id,
             raw=raw,
             fields=fields,
         )
@@ -1234,7 +1266,6 @@ class CreditNotes(BaseSDK):
         self,
         *,
         id: str,
-        total_amount: float,
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
@@ -1250,6 +1281,7 @@ class CreditNotes(BaseSDK):
         currency_rate: OptionalNullable[float] = UNSET,
         tax_inclusive: OptionalNullable[bool] = UNSET,
         sub_total: OptionalNullable[float] = UNSET,
+        total_amount: Optional[float] = None,
         total_tax: OptionalNullable[float] = UNSET,
         tax_code: OptionalNullable[str] = UNSET,
         balance: OptionalNullable[float] = UNSET,
@@ -1273,6 +1305,7 @@ class CreditNotes(BaseSDK):
         ] = None,
         note: OptionalNullable[str] = UNSET,
         terms: OptionalNullable[str] = UNSET,
+        terms_id: OptionalNullable[str] = UNSET,
         billing_address: Optional[
             Union[models.Address, models.AddressTypedDict]
         ] = None,
@@ -1292,6 +1325,7 @@ class CreditNotes(BaseSDK):
         pass_through: Optional[
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
         ] = None,
+        additional_properties: Optional[Dict[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -1302,7 +1336,6 @@ class CreditNotes(BaseSDK):
         Update Credit Note
 
         :param id: ID of the record you are acting upon.
-        :param total_amount: Amount of transaction
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
@@ -1316,6 +1349,7 @@ class CreditNotes(BaseSDK):
         :param currency_rate: Currency Exchange Rate at the time entity was recorded/generated.
         :param tax_inclusive: Amounts are including tax
         :param sub_total: Sub-total amount, normally before tax.
+        :param total_amount: Amount of transaction
         :param total_tax: Total tax amount applied to this invoice.
         :param tax_code: Applicable tax id/code override if tax is not supplied on a line item basis.
         :param balance: The balance reflecting any payments made against the transaction.
@@ -1330,12 +1364,14 @@ class CreditNotes(BaseSDK):
         :param allocations:
         :param note: Optional note to be associated with the credit note.
         :param terms: Optional terms to be associated with the credit note.
+        :param terms_id: The ID of the payment terms
         :param billing_address:
         :param shipping_address:
         :param tracking_categories: A list of linked tracking categories.
         :param custom_fields:
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
+        :param additional_properties:
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -1390,6 +1426,7 @@ class CreditNotes(BaseSDK):
                 ),
                 note=note,
                 terms=terms,
+                terms_id=terms_id,
                 billing_address=utils.get_pydantic_model(
                     billing_address, Optional[models.Address]
                 ),
@@ -1407,6 +1444,7 @@ class CreditNotes(BaseSDK):
                 pass_through=utils.get_pydantic_model(
                     pass_through, Optional[List[models.PassThroughBody]]
                 ),
+                **(additional_properties or {}),
             ),
         )
 
@@ -1513,7 +1551,6 @@ class CreditNotes(BaseSDK):
         self,
         *,
         id: str,
-        total_amount: float,
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
@@ -1529,6 +1566,7 @@ class CreditNotes(BaseSDK):
         currency_rate: OptionalNullable[float] = UNSET,
         tax_inclusive: OptionalNullable[bool] = UNSET,
         sub_total: OptionalNullable[float] = UNSET,
+        total_amount: Optional[float] = None,
         total_tax: OptionalNullable[float] = UNSET,
         tax_code: OptionalNullable[str] = UNSET,
         balance: OptionalNullable[float] = UNSET,
@@ -1552,6 +1590,7 @@ class CreditNotes(BaseSDK):
         ] = None,
         note: OptionalNullable[str] = UNSET,
         terms: OptionalNullable[str] = UNSET,
+        terms_id: OptionalNullable[str] = UNSET,
         billing_address: Optional[
             Union[models.Address, models.AddressTypedDict]
         ] = None,
@@ -1571,6 +1610,7 @@ class CreditNotes(BaseSDK):
         pass_through: Optional[
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
         ] = None,
+        additional_properties: Optional[Dict[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -1581,7 +1621,6 @@ class CreditNotes(BaseSDK):
         Update Credit Note
 
         :param id: ID of the record you are acting upon.
-        :param total_amount: Amount of transaction
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
@@ -1595,6 +1634,7 @@ class CreditNotes(BaseSDK):
         :param currency_rate: Currency Exchange Rate at the time entity was recorded/generated.
         :param tax_inclusive: Amounts are including tax
         :param sub_total: Sub-total amount, normally before tax.
+        :param total_amount: Amount of transaction
         :param total_tax: Total tax amount applied to this invoice.
         :param tax_code: Applicable tax id/code override if tax is not supplied on a line item basis.
         :param balance: The balance reflecting any payments made against the transaction.
@@ -1609,12 +1649,14 @@ class CreditNotes(BaseSDK):
         :param allocations:
         :param note: Optional note to be associated with the credit note.
         :param terms: Optional terms to be associated with the credit note.
+        :param terms_id: The ID of the payment terms
         :param billing_address:
         :param shipping_address:
         :param tracking_categories: A list of linked tracking categories.
         :param custom_fields:
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
+        :param additional_properties:
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -1669,6 +1711,7 @@ class CreditNotes(BaseSDK):
                 ),
                 note=note,
                 terms=terms,
+                terms_id=terms_id,
                 billing_address=utils.get_pydantic_model(
                     billing_address, Optional[models.Address]
                 ),
@@ -1686,6 +1729,7 @@ class CreditNotes(BaseSDK):
                 pass_through=utils.get_pydantic_model(
                     pass_through, Optional[List[models.PassThroughBody]]
                 ),
+                **(additional_properties or {}),
             ),
         )
 

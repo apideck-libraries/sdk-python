@@ -6,7 +6,9 @@ from .outstandingbalancebycurrency import (
     OutstandingBalanceByCurrencyTypedDict,
 )
 from apideck_unify.types import BaseModel
-from typing import List, Optional
+import pydantic
+from pydantic import ConfigDict
+from typing import Any, Dict, List, Optional
 from typing_extensions import NotRequired, TypedDict
 
 
@@ -21,6 +23,11 @@ class OutstandingBalanceBySupplierTypedDict(TypedDict):
 
 
 class OutstandingBalanceBySupplier(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True, arbitrary_types_allowed=True, extra="allow"
+    )
+    __pydantic_extra__: Dict[str, Any] = pydantic.Field(init=False)
+
     supplier_id: Optional[str] = None
     r"""Unique identifier for the supplier."""
 
@@ -30,3 +37,11 @@ class OutstandingBalanceBySupplier(BaseModel):
     outstanding_balances_by_currency: Optional[List[OutstandingBalanceByCurrency]] = (
         None
     )
+
+    @property
+    def additional_properties(self):
+        return self.__pydantic_extra__
+
+    @additional_properties.setter
+    def additional_properties(self, value):
+        self.__pydantic_extra__ = value  # pyright: ignore[reportIncompatibleVariableOverride]

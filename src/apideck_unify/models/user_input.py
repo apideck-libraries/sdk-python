@@ -19,7 +19,6 @@ from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class UserInputTypedDict(TypedDict):
-    emails: List[EmailTypedDict]
     parent_id: NotRequired[Nullable[str]]
     r"""The parent user id"""
     username: NotRequired[Nullable[str]]
@@ -50,13 +49,12 @@ class UserInputTypedDict(TypedDict):
     r"""The password of the user"""
     addresses: NotRequired[List[AddressTypedDict]]
     phone_numbers: NotRequired[List[PhoneNumberTypedDict]]
+    emails: NotRequired[List[EmailTypedDict]]
     pass_through: NotRequired[List[PassThroughBodyTypedDict]]
     r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
 
 
 class UserInput(BaseModel):
-    emails: List[Email]
-
     parent_id: OptionalNullable[str] = UNSET
     r"""The parent user id"""
 
@@ -108,6 +106,8 @@ class UserInput(BaseModel):
 
     phone_numbers: Optional[List[PhoneNumber]] = None
 
+    emails: Optional[List[Email]] = None
+
     pass_through: Optional[List[PassThroughBody]] = None
     r"""The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources."""
 
@@ -130,6 +130,7 @@ class UserInput(BaseModel):
             "password",
             "addresses",
             "phone_numbers",
+            "emails",
             "pass_through",
         ]
         nullable_fields = [

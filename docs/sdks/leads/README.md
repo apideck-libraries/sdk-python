@@ -99,248 +99,250 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.crm.leads.create(name="Elon Musk", raw=False, service_id="salesforce", company_name="Spacex", owner_id="54321", owner_name="John Doe", company_id="2", contact_id="3", lead_id="2", lead_source="Cold Call", first_name="Elon", last_name="Musk", description="A thinker", prefix="Sir", title="CEO", language="EN", status="New", monetary_amount=75000, currency=apideck_unify.Currency.USD, fax="+12129876543", websites=[
-        {
-            "id": "12345",
-            "url": "http://example.com",
-            "type": apideck_unify.WebsiteType.PRIMARY,
-        },
-        {
-            "id": "12345",
-            "url": "http://example.com",
-            "type": apideck_unify.WebsiteType.PRIMARY,
-        },
+    res = apideck.crm.leads.create(raw=False, service_id="salesforce", name="Elon Musk", company_name="Spacex", owner_id="54321", owner_name="John Doe", company_id="2", contact_id="3", lead_id="2", lead_source="Cold Call", first_name="Elon", last_name="Musk", description="A thinker", prefix="Sir", title="CEO", language="EN", status="New", monetary_amount=75000, currency=apideck_unify.Currency.USD, fax="+12129876543", websites=[
+        apideck_unify.Website(
+            id="12345",
+            url="http://example.com",
+            type=apideck_unify.WebsiteType.PRIMARY,
+        ),
+        apideck_unify.Website(
+            id="12345",
+            url="http://example.com",
+            type=apideck_unify.WebsiteType.PRIMARY,
+        ),
     ], addresses=[
-        {
-            "id": "123",
-            "type": apideck_unify.Type.PRIMARY,
-            "string": "25 Spring Street, Blackburn, VIC 3130",
-            "name": "HQ US",
-            "line1": "Main street",
-            "line2": "apt #",
-            "line3": "Suite #",
-            "line4": "delivery instructions",
-            "street_number": "25",
-            "city": "San Francisco",
-            "state": "CA",
-            "postal_code": "94104",
-            "country": "US",
-            "latitude": "40.759211",
-            "longitude": "-73.984638",
-            "county": "Santa Clara",
-            "contact_name": "Elon Musk",
-            "salutation": "Mr",
-            "phone_number": "111-111-1111",
-            "fax": "122-111-1111",
-            "email": "elon@musk.com",
-            "website": "https://elonmusk.com",
-            "notes": "Address notes or delivery instructions.",
-            "row_version": "1-12345",
-        },
-        {
-            "id": "123",
-            "type": apideck_unify.Type.PRIMARY,
-            "string": "25 Spring Street, Blackburn, VIC 3130",
-            "name": "HQ US",
-            "line1": "Main street",
-            "line2": "apt #",
-            "line3": "Suite #",
-            "line4": "delivery instructions",
-            "street_number": "25",
-            "city": "San Francisco",
-            "state": "CA",
-            "postal_code": "94104",
-            "country": "US",
-            "latitude": "40.759211",
-            "longitude": "-73.984638",
-            "county": "Santa Clara",
-            "contact_name": "Elon Musk",
-            "salutation": "Mr",
-            "phone_number": "111-111-1111",
-            "fax": "122-111-1111",
-            "email": "elon@musk.com",
-            "website": "https://elonmusk.com",
-            "notes": "Address notes or delivery instructions.",
-            "row_version": "1-12345",
-        },
-        {
-            "id": "123",
-            "type": apideck_unify.Type.PRIMARY,
-            "string": "25 Spring Street, Blackburn, VIC 3130",
-            "name": "HQ US",
-            "line1": "Main street",
-            "line2": "apt #",
-            "line3": "Suite #",
-            "line4": "delivery instructions",
-            "street_number": "25",
-            "city": "San Francisco",
-            "state": "CA",
-            "postal_code": "94104",
-            "country": "US",
-            "latitude": "40.759211",
-            "longitude": "-73.984638",
-            "county": "Santa Clara",
-            "contact_name": "Elon Musk",
-            "salutation": "Mr",
-            "phone_number": "111-111-1111",
-            "fax": "122-111-1111",
-            "email": "elon@musk.com",
-            "website": "https://elonmusk.com",
-            "notes": "Address notes or delivery instructions.",
-            "row_version": "1-12345",
-        },
+        apideck_unify.Address(
+            id="123",
+            type=apideck_unify.Type.PRIMARY,
+            string="25 Spring Street, Blackburn, VIC 3130",
+            name="HQ US",
+            line1="Main street",
+            line2="apt #",
+            line3="Suite #",
+            line4="delivery instructions",
+            street_number="25",
+            city="San Francisco",
+            state="CA",
+            postal_code="94104",
+            country="US",
+            latitude="40.759211",
+            longitude="-73.984638",
+            county="Santa Clara",
+            contact_name="Elon Musk",
+            salutation="Mr",
+            phone_number="111-111-1111",
+            fax="122-111-1111",
+            email="elon@musk.com",
+            website="https://elonmusk.com",
+            notes="Address notes or delivery instructions.",
+            row_version="1-12345",
+        ),
+        apideck_unify.Address(
+            id="123",
+            type=apideck_unify.Type.PRIMARY,
+            string="25 Spring Street, Blackburn, VIC 3130",
+            name="HQ US",
+            line1="Main street",
+            line2="apt #",
+            line3="Suite #",
+            line4="delivery instructions",
+            street_number="25",
+            city="San Francisco",
+            state="CA",
+            postal_code="94104",
+            country="US",
+            latitude="40.759211",
+            longitude="-73.984638",
+            county="Santa Clara",
+            contact_name="Elon Musk",
+            salutation="Mr",
+            phone_number="111-111-1111",
+            fax="122-111-1111",
+            email="elon@musk.com",
+            website="https://elonmusk.com",
+            notes="Address notes or delivery instructions.",
+            row_version="1-12345",
+        ),
+        apideck_unify.Address(
+            id="123",
+            type=apideck_unify.Type.PRIMARY,
+            string="25 Spring Street, Blackburn, VIC 3130",
+            name="HQ US",
+            line1="Main street",
+            line2="apt #",
+            line3="Suite #",
+            line4="delivery instructions",
+            street_number="25",
+            city="San Francisco",
+            state="CA",
+            postal_code="94104",
+            country="US",
+            latitude="40.759211",
+            longitude="-73.984638",
+            county="Santa Clara",
+            contact_name="Elon Musk",
+            salutation="Mr",
+            phone_number="111-111-1111",
+            fax="122-111-1111",
+            email="elon@musk.com",
+            website="https://elonmusk.com",
+            notes="Address notes or delivery instructions.",
+            row_version="1-12345",
+        ),
     ], social_links=[
-        {
-            "id": "12345",
-            "url": "https://www.twitter.com/apideck",
-            "type": "twitter",
-        },
-        {
-            "id": "12345",
-            "url": "https://www.twitter.com/apideck",
-            "type": "twitter",
-        },
-        {
-            "id": "12345",
-            "url": "https://www.twitter.com/apideck",
-            "type": "twitter",
-        },
+        apideck_unify.SocialLink(
+            id="12345",
+            url="https://www.twitter.com/apideck",
+            type="twitter",
+        ),
+        apideck_unify.SocialLink(
+            id="12345",
+            url="https://www.twitter.com/apideck",
+            type="twitter",
+        ),
+        apideck_unify.SocialLink(
+            id="12345",
+            url="https://www.twitter.com/apideck",
+            type="twitter",
+        ),
     ], phone_numbers=[
-        {
-            "id": "12345",
-            "country_code": "1",
-            "area_code": "323",
-            "number": "111-111-1111",
-            "extension": "105",
-            "type": apideck_unify.PhoneNumberType.PRIMARY,
-        },
+        apideck_unify.PhoneNumber(
+            id="12345",
+            country_code="1",
+            area_code="323",
+            number="111-111-1111",
+            extension="105",
+            type=apideck_unify.PhoneNumberType.PRIMARY,
+        ),
     ], emails=[
-        {
-            "id": "123",
-            "email": "elon@musk.com",
-            "type": apideck_unify.EmailType.PRIMARY,
-        },
-        {
-            "id": "123",
-            "email": "elon@musk.com",
-            "type": apideck_unify.EmailType.PRIMARY,
-        },
+        apideck_unify.Email(
+            id="123",
+            email="elon@musk.com",
+            type=apideck_unify.EmailType.PRIMARY,
+        ),
+        apideck_unify.Email(
+            id="123",
+            email="elon@musk.com",
+            type=apideck_unify.EmailType.PRIMARY,
+        ),
     ], custom_fields=[
-        {
-            "id": "2389328923893298",
-            "name": "employee_level",
-            "description": "Employee Level",
-            "value": {
+        apideck_unify.CustomField(
+            id="2389328923893298",
+            name="employee_level",
+            description="Employee Level",
+            value={
 
             },
-        },
-        {
-            "id": "2389328923893298",
-            "name": "employee_level",
-            "description": "Employee Level",
-            "value": {
+        ),
+        apideck_unify.CustomField(
+            id="2389328923893298",
+            name="employee_level",
+            description="Employee Level",
+            value={
 
             },
-        },
-        {
-            "id": "2389328923893298",
-            "name": "employee_level",
-            "description": "Employee Level",
-            "value": {
+        ),
+        apideck_unify.CustomField(
+            id="2389328923893298",
+            name="employee_level",
+            description="Employee Level",
+            value={
 
             },
-        },
+        ),
     ], tags=[
         "New",
     ], pass_through=[
-        {
-            "service_id": "<id>",
-            "extend_paths": [
-                {
-                    "path": "$.nested.property",
-                    "value": {
+        apideck_unify.PassThroughBody(
+            service_id="<id>",
+            extend_paths=[
+                apideck_unify.ExtendPaths(
+                    path="$.nested.property",
+                    value={
                         "TaxClassificationRef": {
                             "value": "EUC-99990201-V1-00020000",
                         },
                     },
-                },
-                {
-                    "path": "$.nested.property",
-                    "value": {
+                ),
+                apideck_unify.ExtendPaths(
+                    path="$.nested.property",
+                    value={
                         "TaxClassificationRef": {
                             "value": "EUC-99990201-V1-00020000",
                         },
                     },
-                },
-                {
-                    "path": "$.nested.property",
-                    "value": {
+                ),
+                apideck_unify.ExtendPaths(
+                    path="$.nested.property",
+                    value={
                         "TaxClassificationRef": {
                             "value": "EUC-99990201-V1-00020000",
                         },
                     },
-                },
+                ),
             ],
-        },
-        {
-            "service_id": "<id>",
-            "extend_paths": [
-                {
-                    "path": "$.nested.property",
-                    "value": {
+        ),
+        apideck_unify.PassThroughBody(
+            service_id="<id>",
+            extend_paths=[
+                apideck_unify.ExtendPaths(
+                    path="$.nested.property",
+                    value={
                         "TaxClassificationRef": {
                             "value": "EUC-99990201-V1-00020000",
                         },
                     },
-                },
-                {
-                    "path": "$.nested.property",
-                    "value": {
+                ),
+                apideck_unify.ExtendPaths(
+                    path="$.nested.property",
+                    value={
                         "TaxClassificationRef": {
                             "value": "EUC-99990201-V1-00020000",
                         },
                     },
-                },
-                {
-                    "path": "$.nested.property",
-                    "value": {
+                ),
+                apideck_unify.ExtendPaths(
+                    path="$.nested.property",
+                    value={
                         "TaxClassificationRef": {
                             "value": "EUC-99990201-V1-00020000",
                         },
                     },
-                },
+                ),
             ],
-        },
-        {
-            "service_id": "<id>",
-            "extend_paths": [
-                {
-                    "path": "$.nested.property",
-                    "value": {
+        ),
+        apideck_unify.PassThroughBody(
+            service_id="<id>",
+            extend_paths=[
+                apideck_unify.ExtendPaths(
+                    path="$.nested.property",
+                    value={
                         "TaxClassificationRef": {
                             "value": "EUC-99990201-V1-00020000",
                         },
                     },
-                },
-                {
-                    "path": "$.nested.property",
-                    "value": {
+                ),
+                apideck_unify.ExtendPaths(
+                    path="$.nested.property",
+                    value={
                         "TaxClassificationRef": {
                             "value": "EUC-99990201-V1-00020000",
                         },
                     },
-                },
-                {
-                    "path": "$.nested.property",
-                    "value": {
+                ),
+                apideck_unify.ExtendPaths(
+                    path="$.nested.property",
+                    value={
                         "TaxClassificationRef": {
                             "value": "EUC-99990201-V1-00020000",
                         },
                     },
-                },
+                ),
             ],
-        },
-    ])
+        ),
+    ], additional_properties={
+
+    })
 
     assert res.create_lead_response is not None
 
@@ -353,11 +355,11 @@ with Apideck(
 
 | Parameter                                                                                                                                               | Type                                                                                                                                                    | Required                                                                                                                                                | Description                                                                                                                                             | Example                                                                                                                                                 |
 | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `name`                                                                                                                                                  | *str*                                                                                                                                                   | :heavy_check_mark:                                                                                                                                      | Full name of the lead.                                                                                                                                  | Elon Musk                                                                                                                                               |
 | `raw`                                                                                                                                                   | *Optional[bool]*                                                                                                                                        | :heavy_minus_sign:                                                                                                                                      | Include raw response. Mostly used for debugging purposes                                                                                                |                                                                                                                                                         |
 | `consumer_id`                                                                                                                                           | *Optional[str]*                                                                                                                                         | :heavy_minus_sign:                                                                                                                                      | ID of the consumer which you want to get or push data from                                                                                              | test-consumer                                                                                                                                           |
 | `app_id`                                                                                                                                                | *Optional[str]*                                                                                                                                         | :heavy_minus_sign:                                                                                                                                      | The ID of your Unify application                                                                                                                        | dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX                                                                                                                 |
 | `service_id`                                                                                                                                            | *Optional[str]*                                                                                                                                         | :heavy_minus_sign:                                                                                                                                      | Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.           | salesforce                                                                                                                                              |
+| `name`                                                                                                                                                  | *Optional[str]*                                                                                                                                         | :heavy_minus_sign:                                                                                                                                      | Full name of the lead.                                                                                                                                  | Elon Musk                                                                                                                                               |
 | `company_name`                                                                                                                                          | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | The name of the company the lead is associated with.                                                                                                    | Spacex                                                                                                                                                  |
 | `owner_id`                                                                                                                                              | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | The owner of the lead.                                                                                                                                  | 54321                                                                                                                                                   |
 | `owner_name`                                                                                                                                            | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | The name of the owner of the lead.                                                                                                                      | John Doe                                                                                                                                                |
@@ -383,6 +385,7 @@ with Apideck(
 | `custom_fields`                                                                                                                                         | List[[models.CustomField](../../models/customfield.md)]                                                                                                 | :heavy_minus_sign:                                                                                                                                      | N/A                                                                                                                                                     |                                                                                                                                                         |
 | `tags`                                                                                                                                                  | List[*str*]                                                                                                                                             | :heavy_minus_sign:                                                                                                                                      | N/A                                                                                                                                                     | [<br/>"New"<br/>]                                                                                                                                       |
 | `pass_through`                                                                                                                                          | List[[models.PassThroughBody](../../models/passthroughbody.md)]                                                                                         | :heavy_minus_sign:                                                                                                                                      | The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources. |                                                                                                                                                         |
+| `additional_properties`                                                                                                                                 | Dict[str, *Any*]                                                                                                                                        | :heavy_minus_sign:                                                                                                                                      | N/A                                                                                                                                                     |                                                                                                                                                         |
 | `retries`                                                                                                                                               | [Optional[utils.RetryConfig]](../../models/utils/retryconfig.md)                                                                                        | :heavy_minus_sign:                                                                                                                                      | Configuration to override the default retry behavior of the client.                                                                                     |                                                                                                                                                         |
 
 ### Response
@@ -473,182 +476,184 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.crm.leads.update(id="<id>", name="Elon Musk", service_id="salesforce", raw=False, company_name="Spacex", owner_id="54321", owner_name="John Doe", company_id="2", contact_id="3", lead_id="2", lead_source="Cold Call", first_name="Elon", last_name="Musk", description="A thinker", prefix="Sir", title="CEO", language="EN", status="New", monetary_amount=75000, currency=apideck_unify.Currency.USD, fax="+12129876543", websites=[
-        {
-            "id": "12345",
-            "url": "http://example.com",
-            "type": apideck_unify.WebsiteType.PRIMARY,
-        },
-        {
-            "id": "12345",
-            "url": "http://example.com",
-            "type": apideck_unify.WebsiteType.PRIMARY,
-        },
-        {
-            "id": "12345",
-            "url": "http://example.com",
-            "type": apideck_unify.WebsiteType.PRIMARY,
-        },
+    res = apideck.crm.leads.update(id="<id>", service_id="salesforce", raw=False, name="Elon Musk", company_name="Spacex", owner_id="54321", owner_name="John Doe", company_id="2", contact_id="3", lead_id="2", lead_source="Cold Call", first_name="Elon", last_name="Musk", description="A thinker", prefix="Sir", title="CEO", language="EN", status="New", monetary_amount=75000, currency=apideck_unify.Currency.USD, fax="+12129876543", websites=[
+        apideck_unify.Website(
+            id="12345",
+            url="http://example.com",
+            type=apideck_unify.WebsiteType.PRIMARY,
+        ),
+        apideck_unify.Website(
+            id="12345",
+            url="http://example.com",
+            type=apideck_unify.WebsiteType.PRIMARY,
+        ),
+        apideck_unify.Website(
+            id="12345",
+            url="http://example.com",
+            type=apideck_unify.WebsiteType.PRIMARY,
+        ),
     ], addresses=[
-        {
-            "id": "123",
-            "type": apideck_unify.Type.PRIMARY,
-            "string": "25 Spring Street, Blackburn, VIC 3130",
-            "name": "HQ US",
-            "line1": "Main street",
-            "line2": "apt #",
-            "line3": "Suite #",
-            "line4": "delivery instructions",
-            "street_number": "25",
-            "city": "San Francisco",
-            "state": "CA",
-            "postal_code": "94104",
-            "country": "US",
-            "latitude": "40.759211",
-            "longitude": "-73.984638",
-            "county": "Santa Clara",
-            "contact_name": "Elon Musk",
-            "salutation": "Mr",
-            "phone_number": "111-111-1111",
-            "fax": "122-111-1111",
-            "email": "elon@musk.com",
-            "website": "https://elonmusk.com",
-            "notes": "Address notes or delivery instructions.",
-            "row_version": "1-12345",
-        },
-        {
-            "id": "123",
-            "type": apideck_unify.Type.PRIMARY,
-            "string": "25 Spring Street, Blackburn, VIC 3130",
-            "name": "HQ US",
-            "line1": "Main street",
-            "line2": "apt #",
-            "line3": "Suite #",
-            "line4": "delivery instructions",
-            "street_number": "25",
-            "city": "San Francisco",
-            "state": "CA",
-            "postal_code": "94104",
-            "country": "US",
-            "latitude": "40.759211",
-            "longitude": "-73.984638",
-            "county": "Santa Clara",
-            "contact_name": "Elon Musk",
-            "salutation": "Mr",
-            "phone_number": "111-111-1111",
-            "fax": "122-111-1111",
-            "email": "elon@musk.com",
-            "website": "https://elonmusk.com",
-            "notes": "Address notes or delivery instructions.",
-            "row_version": "1-12345",
-        },
-        {
-            "id": "123",
-            "type": apideck_unify.Type.PRIMARY,
-            "string": "25 Spring Street, Blackburn, VIC 3130",
-            "name": "HQ US",
-            "line1": "Main street",
-            "line2": "apt #",
-            "line3": "Suite #",
-            "line4": "delivery instructions",
-            "street_number": "25",
-            "city": "San Francisco",
-            "state": "CA",
-            "postal_code": "94104",
-            "country": "US",
-            "latitude": "40.759211",
-            "longitude": "-73.984638",
-            "county": "Santa Clara",
-            "contact_name": "Elon Musk",
-            "salutation": "Mr",
-            "phone_number": "111-111-1111",
-            "fax": "122-111-1111",
-            "email": "elon@musk.com",
-            "website": "https://elonmusk.com",
-            "notes": "Address notes or delivery instructions.",
-            "row_version": "1-12345",
-        },
+        apideck_unify.Address(
+            id="123",
+            type=apideck_unify.Type.PRIMARY,
+            string="25 Spring Street, Blackburn, VIC 3130",
+            name="HQ US",
+            line1="Main street",
+            line2="apt #",
+            line3="Suite #",
+            line4="delivery instructions",
+            street_number="25",
+            city="San Francisco",
+            state="CA",
+            postal_code="94104",
+            country="US",
+            latitude="40.759211",
+            longitude="-73.984638",
+            county="Santa Clara",
+            contact_name="Elon Musk",
+            salutation="Mr",
+            phone_number="111-111-1111",
+            fax="122-111-1111",
+            email="elon@musk.com",
+            website="https://elonmusk.com",
+            notes="Address notes or delivery instructions.",
+            row_version="1-12345",
+        ),
+        apideck_unify.Address(
+            id="123",
+            type=apideck_unify.Type.PRIMARY,
+            string="25 Spring Street, Blackburn, VIC 3130",
+            name="HQ US",
+            line1="Main street",
+            line2="apt #",
+            line3="Suite #",
+            line4="delivery instructions",
+            street_number="25",
+            city="San Francisco",
+            state="CA",
+            postal_code="94104",
+            country="US",
+            latitude="40.759211",
+            longitude="-73.984638",
+            county="Santa Clara",
+            contact_name="Elon Musk",
+            salutation="Mr",
+            phone_number="111-111-1111",
+            fax="122-111-1111",
+            email="elon@musk.com",
+            website="https://elonmusk.com",
+            notes="Address notes or delivery instructions.",
+            row_version="1-12345",
+        ),
+        apideck_unify.Address(
+            id="123",
+            type=apideck_unify.Type.PRIMARY,
+            string="25 Spring Street, Blackburn, VIC 3130",
+            name="HQ US",
+            line1="Main street",
+            line2="apt #",
+            line3="Suite #",
+            line4="delivery instructions",
+            street_number="25",
+            city="San Francisco",
+            state="CA",
+            postal_code="94104",
+            country="US",
+            latitude="40.759211",
+            longitude="-73.984638",
+            county="Santa Clara",
+            contact_name="Elon Musk",
+            salutation="Mr",
+            phone_number="111-111-1111",
+            fax="122-111-1111",
+            email="elon@musk.com",
+            website="https://elonmusk.com",
+            notes="Address notes or delivery instructions.",
+            row_version="1-12345",
+        ),
     ], social_links=[
-        {
-            "id": "12345",
-            "url": "https://www.twitter.com/apideck",
-            "type": "twitter",
-        },
-        {
-            "id": "12345",
-            "url": "https://www.twitter.com/apideck",
-            "type": "twitter",
-        },
+        apideck_unify.SocialLink(
+            id="12345",
+            url="https://www.twitter.com/apideck",
+            type="twitter",
+        ),
+        apideck_unify.SocialLink(
+            id="12345",
+            url="https://www.twitter.com/apideck",
+            type="twitter",
+        ),
     ], phone_numbers=[
-        {
-            "id": "12345",
-            "country_code": "1",
-            "area_code": "323",
-            "number": "111-111-1111",
-            "extension": "105",
-            "type": apideck_unify.PhoneNumberType.PRIMARY,
-        },
+        apideck_unify.PhoneNumber(
+            id="12345",
+            country_code="1",
+            area_code="323",
+            number="111-111-1111",
+            extension="105",
+            type=apideck_unify.PhoneNumberType.PRIMARY,
+        ),
     ], emails=[
-        {
-            "id": "123",
-            "email": "elon@musk.com",
-            "type": apideck_unify.EmailType.PRIMARY,
-        },
+        apideck_unify.Email(
+            id="123",
+            email="elon@musk.com",
+            type=apideck_unify.EmailType.PRIMARY,
+        ),
     ], custom_fields=[
-        {
-            "id": "2389328923893298",
-            "name": "employee_level",
-            "description": "Employee Level",
-            "value": {
+        apideck_unify.CustomField(
+            id="2389328923893298",
+            name="employee_level",
+            description="Employee Level",
+            value={
                 "0": "<value 1>",
             },
-        },
+        ),
     ], tags=[
         "New",
     ], pass_through=[
-        {
-            "service_id": "<id>",
-            "extend_paths": [
-                {
-                    "path": "$.nested.property",
-                    "value": {
+        apideck_unify.PassThroughBody(
+            service_id="<id>",
+            extend_paths=[
+                apideck_unify.ExtendPaths(
+                    path="$.nested.property",
+                    value={
                         "TaxClassificationRef": {
                             "value": "EUC-99990201-V1-00020000",
                         },
                     },
-                },
-                {
-                    "path": "$.nested.property",
-                    "value": {
+                ),
+                apideck_unify.ExtendPaths(
+                    path="$.nested.property",
+                    value={
                         "TaxClassificationRef": {
                             "value": "EUC-99990201-V1-00020000",
                         },
                     },
-                },
+                ),
             ],
-        },
-        {
-            "service_id": "<id>",
-            "extend_paths": [
-                {
-                    "path": "$.nested.property",
-                    "value": {
+        ),
+        apideck_unify.PassThroughBody(
+            service_id="<id>",
+            extend_paths=[
+                apideck_unify.ExtendPaths(
+                    path="$.nested.property",
+                    value={
                         "TaxClassificationRef": {
                             "value": "EUC-99990201-V1-00020000",
                         },
                     },
-                },
-                {
-                    "path": "$.nested.property",
-                    "value": {
+                ),
+                apideck_unify.ExtendPaths(
+                    path="$.nested.property",
+                    value={
                         "TaxClassificationRef": {
                             "value": "EUC-99990201-V1-00020000",
                         },
                     },
-                },
+                ),
             ],
-        },
-    ])
+        ),
+    ], additional_properties={
+
+    })
 
     assert res.update_lead_response is not None
 
@@ -662,11 +667,11 @@ with Apideck(
 | Parameter                                                                                                                                               | Type                                                                                                                                                    | Required                                                                                                                                                | Description                                                                                                                                             | Example                                                                                                                                                 |
 | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `id`                                                                                                                                                    | *str*                                                                                                                                                   | :heavy_check_mark:                                                                                                                                      | ID of the record you are acting upon.                                                                                                                   |                                                                                                                                                         |
-| `name`                                                                                                                                                  | *str*                                                                                                                                                   | :heavy_check_mark:                                                                                                                                      | Full name of the lead.                                                                                                                                  | Elon Musk                                                                                                                                               |
 | `consumer_id`                                                                                                                                           | *Optional[str]*                                                                                                                                         | :heavy_minus_sign:                                                                                                                                      | ID of the consumer which you want to get or push data from                                                                                              | test-consumer                                                                                                                                           |
 | `app_id`                                                                                                                                                | *Optional[str]*                                                                                                                                         | :heavy_minus_sign:                                                                                                                                      | The ID of your Unify application                                                                                                                        | dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX                                                                                                                 |
 | `service_id`                                                                                                                                            | *Optional[str]*                                                                                                                                         | :heavy_minus_sign:                                                                                                                                      | Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.           | salesforce                                                                                                                                              |
 | `raw`                                                                                                                                                   | *Optional[bool]*                                                                                                                                        | :heavy_minus_sign:                                                                                                                                      | Include raw response. Mostly used for debugging purposes                                                                                                |                                                                                                                                                         |
+| `name`                                                                                                                                                  | *Optional[str]*                                                                                                                                         | :heavy_minus_sign:                                                                                                                                      | Full name of the lead.                                                                                                                                  | Elon Musk                                                                                                                                               |
 | `company_name`                                                                                                                                          | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | The name of the company the lead is associated with.                                                                                                    | Spacex                                                                                                                                                  |
 | `owner_id`                                                                                                                                              | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | The owner of the lead.                                                                                                                                  | 54321                                                                                                                                                   |
 | `owner_name`                                                                                                                                            | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | The name of the owner of the lead.                                                                                                                      | John Doe                                                                                                                                                |
@@ -692,6 +697,7 @@ with Apideck(
 | `custom_fields`                                                                                                                                         | List[[models.CustomField](../../models/customfield.md)]                                                                                                 | :heavy_minus_sign:                                                                                                                                      | N/A                                                                                                                                                     |                                                                                                                                                         |
 | `tags`                                                                                                                                                  | List[*str*]                                                                                                                                             | :heavy_minus_sign:                                                                                                                                      | N/A                                                                                                                                                     | [<br/>"New"<br/>]                                                                                                                                       |
 | `pass_through`                                                                                                                                          | List[[models.PassThroughBody](../../models/passthroughbody.md)]                                                                                         | :heavy_minus_sign:                                                                                                                                      | The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources. |                                                                                                                                                         |
+| `additional_properties`                                                                                                                                 | Dict[str, *Any*]                                                                                                                                        | :heavy_minus_sign:                                                                                                                                      | N/A                                                                                                                                                     |                                                                                                                                                         |
 | `retries`                                                                                                                                               | [Optional[utils.RetryConfig]](../../models/utils/retryconfig.md)                                                                                        | :heavy_minus_sign:                                                                                                                                      | Configuration to override the default retry behavior of the client.                                                                                     |                                                                                                                                                         |
 
 ### Response

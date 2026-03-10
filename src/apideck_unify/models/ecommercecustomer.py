@@ -16,7 +16,8 @@ from apideck_unify.types import (
 from apideck_unify.utils import validate_open_enum
 from datetime import datetime
 from enum import Enum
-from pydantic import field_serializer, model_serializer
+import pydantic
+from pydantic import ConfigDict, field_serializer, model_serializer
 from pydantic.functional_validators import PlainValidator
 from typing import Any, Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
@@ -54,6 +55,11 @@ class AddressesTypedDict(TypedDict):
 
 
 class Addresses(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True, arbitrary_types_allowed=True, extra="allow"
+    )
+    __pydantic_extra__: Dict[str, Any] = pydantic.Field(init=False)
+
     type: Annotated[
         Optional[EcommerceCustomerType], PlainValidator(validate_open_enum(False))
     ] = None
@@ -78,6 +84,14 @@ class Addresses(BaseModel):
 
     country: OptionalNullable[str] = UNSET
     r"""Country of the customer"""
+
+    @property
+    def additional_properties(self):
+        return self.__pydantic_extra__
+
+    @additional_properties.setter
+    def additional_properties(self, value):
+        self.__pydantic_extra__ = value  # pyright: ignore[reportIncompatibleVariableOverride]
 
     @field_serializer("type")
     def serialize_type(self, value):
@@ -133,11 +147,14 @@ class Addresses(BaseModel):
             ):
                 m[k] = val
 
+        for k, v in serialized.items():
+            m[k] = v
+
         return m
 
 
 class EcommerceCustomerTypedDict(TypedDict):
-    id: str
+    id: NotRequired[str]
     r"""A unique identifier for an object."""
     name: NotRequired[Nullable[str]]
     r"""Full name of the customer"""
@@ -167,7 +184,12 @@ class EcommerceCustomerTypedDict(TypedDict):
 
 
 class EcommerceCustomer(BaseModel):
-    id: str
+    model_config = ConfigDict(
+        populate_by_name=True, arbitrary_types_allowed=True, extra="allow"
+    )
+    __pydantic_extra__: Dict[str, Any] = pydantic.Field(init=False)
+
+    id: Optional[str] = None
     r"""A unique identifier for an object."""
 
     name: OptionalNullable[str] = UNSET
@@ -212,6 +234,14 @@ class EcommerceCustomer(BaseModel):
     updated_at: OptionalNullable[datetime] = UNSET
     r"""The date and time when the object was last updated."""
 
+    @property
+    def additional_properties(self):
+        return self.__pydantic_extra__
+
+    @additional_properties.setter
+    def additional_properties(self, value):
+        self.__pydantic_extra__ = value  # pyright: ignore[reportIncompatibleVariableOverride]
+
     @field_serializer("status")
     def serialize_status(self, value):
         if isinstance(value, str):
@@ -233,6 +263,7 @@ class EcommerceCustomer(BaseModel):
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
         optional_fields = [
+            "id",
             "name",
             "first_name",
             "last_name",
@@ -283,5 +314,8 @@ class EcommerceCustomer(BaseModel):
                 not k in optional_fields or (optional_nullable and is_set)
             ):
                 m[k] = val
+
+        for k, v in serialized.items():
+            m[k] = v
 
         return m

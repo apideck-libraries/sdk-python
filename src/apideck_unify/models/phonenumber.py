@@ -11,8 +11,10 @@ from apideck_unify.types import (
 )
 from apideck_unify.utils import validate_open_enum
 from enum import Enum
-from pydantic import field_serializer, model_serializer
+import pydantic
+from pydantic import ConfigDict, field_serializer, model_serializer
 from pydantic.functional_validators import PlainValidator
+from typing import Any, Dict, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
@@ -34,14 +36,14 @@ class PhoneNumberType(str, Enum, metaclass=utils.OpenEnumMeta):
 
 
 class PhoneNumberTypedDict(TypedDict):
-    number: str
-    r"""The phone number"""
     id: NotRequired[Nullable[str]]
     r"""Unique identifier of the phone number"""
     country_code: NotRequired[Nullable[str]]
     r"""The country code of the phone number, e.g. +1"""
     area_code: NotRequired[Nullable[str]]
     r"""The area code of the phone number, e.g. 323"""
+    number: NotRequired[str]
+    r"""The phone number"""
     extension: NotRequired[Nullable[str]]
     r"""The extension of the phone number"""
     type: NotRequired[Nullable[PhoneNumberType]]
@@ -49,8 +51,10 @@ class PhoneNumberTypedDict(TypedDict):
 
 
 class PhoneNumber(BaseModel):
-    number: str
-    r"""The phone number"""
+    model_config = ConfigDict(
+        populate_by_name=True, arbitrary_types_allowed=True, extra="allow"
+    )
+    __pydantic_extra__: Dict[str, Any] = pydantic.Field(init=False)
 
     id: OptionalNullable[str] = UNSET
     r"""Unique identifier of the phone number"""
@@ -61,6 +65,9 @@ class PhoneNumber(BaseModel):
     area_code: OptionalNullable[str] = UNSET
     r"""The area code of the phone number, e.g. 323"""
 
+    number: Optional[str] = None
+    r"""The phone number"""
+
     extension: OptionalNullable[str] = UNSET
     r"""The extension of the phone number"""
 
@@ -68,6 +75,14 @@ class PhoneNumber(BaseModel):
         OptionalNullable[PhoneNumberType], PlainValidator(validate_open_enum(False))
     ] = UNSET
     r"""The type of phone number"""
+
+    @property
+    def additional_properties(self):
+        return self.__pydantic_extra__
+
+    @additional_properties.setter
+    def additional_properties(self, value):
+        self.__pydantic_extra__ = value  # pyright: ignore[reportIncompatibleVariableOverride]
 
     @field_serializer("type")
     def serialize_type(self, value):
@@ -80,7 +95,14 @@ class PhoneNumber(BaseModel):
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
-        optional_fields = ["id", "country_code", "area_code", "extension", "type"]
+        optional_fields = [
+            "id",
+            "country_code",
+            "area_code",
+            "number",
+            "extension",
+            "type",
+        ]
         nullable_fields = ["id", "country_code", "area_code", "extension", "type"]
         null_default_fields = []
 
@@ -105,5 +127,8 @@ class PhoneNumber(BaseModel):
                 not k in optional_fields or (optional_nullable and is_set)
             ):
                 m[k] = val
+
+        for k, v in serialized.items():
+            m[k] = v
 
         return m

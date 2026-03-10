@@ -6,7 +6,7 @@ from apideck_unify._hooks import HookContext
 from apideck_unify.types import OptionalNullable, UNSET
 from apideck_unify.utils import get_security_from_env
 from apideck_unify.utils.unmarshal_json_response import unmarshal_json_response
-from typing import Any, Mapping, Optional, Union
+from typing import Any, Dict, Mapping, Optional, Union
 
 
 class ConnectionConsent(BaseSDK):
@@ -22,6 +22,7 @@ class ConnectionConsent(BaseSDK):
         granted: bool,
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
+        additional_properties: Optional[Dict[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -37,6 +38,7 @@ class ConnectionConsent(BaseSDK):
         :param granted: Whether consent is being granted (true) or denied/revoked (false)
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
+        :param additional_properties:
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -62,6 +64,7 @@ class ConnectionConsent(BaseSDK):
                     resources, models.UpdateConsentRequestResources
                 ),
                 granted=granted,
+                **(additional_properties or {}),
             ),
         )
 
@@ -180,6 +183,7 @@ class ConnectionConsent(BaseSDK):
         granted: bool,
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
+        additional_properties: Optional[Dict[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -195,6 +199,7 @@ class ConnectionConsent(BaseSDK):
         :param granted: Whether consent is being granted (true) or denied/revoked (false)
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
+        :param additional_properties:
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -220,6 +225,7 @@ class ConnectionConsent(BaseSDK):
                     resources, models.UpdateConsentRequestResources
                 ),
                 granted=granted,
+                **(additional_properties or {}),
             ),
         )
 

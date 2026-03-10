@@ -87,7 +87,9 @@ with Apideck(
     res = apideck.webhook.webhooks.create(unified_api=apideck_unify.UnifiedAPIID.CRM, status=apideck_unify.Status.ENABLED, delivery_url="https://example.com/my/webhook/endpoint", events=[
         apideck_unify.WebhookEventType.VAULT_CONNECTION_CREATED,
         apideck_unify.WebhookEventType.VAULT_CONNECTION_UPDATED,
-    ], description="A description")
+    ], description="A description", additional_properties={
+
+    })
 
     assert res.create_webhook_response is not None
 
@@ -106,6 +108,7 @@ with Apideck(
 | `events`                                                                                     | List[[models.WebhookEventType](../../models/webhookeventtype.md)]                            | :heavy_check_mark:                                                                           | The list of subscribed events for this webhook. [`*`] indicates that all events are enabled. | [<br/>"vault.connection.created",<br/>"vault.connection.updated"<br/>]                       |
 | `app_id`                                                                                     | *Optional[str]*                                                                              | :heavy_minus_sign:                                                                           | The ID of your Unify application                                                             | dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX                                                      |
 | `description`                                                                                | *OptionalNullable[str]*                                                                      | :heavy_minus_sign:                                                                           | A description of the object.                                                                 | A description                                                                                |
+| `additional_properties`                                                                      | Dict[str, *Any*]                                                                             | :heavy_minus_sign:                                                                           | N/A                                                                                          |                                                                                              |
 | `retries`                                                                                    | [Optional[utils.RetryConfig]](../../models/utils/retryconfig.md)                             | :heavy_minus_sign:                                                                           | Configuration to override the default retry behavior of the client.                          |                                                                                              |
 
 ### Response
@@ -198,7 +201,9 @@ with Apideck(
     res = apideck.webhook.webhooks.update(id="<id>", description="A description", status=apideck_unify.Status.ENABLED, delivery_url="https://example.com/my/webhook/endpoint", events=[
         apideck_unify.WebhookEventType.VAULT_CONNECTION_CREATED,
         apideck_unify.WebhookEventType.VAULT_CONNECTION_UPDATED,
-    ])
+    ], additional_properties={
+
+    })
 
     assert res.update_webhook_response is not None
 
@@ -217,6 +222,7 @@ with Apideck(
 | `status`                                                                                           | [Optional[models.Status]](../../models/status.md)                                                  | :heavy_minus_sign:                                                                                 | The status of the webhook.                                                                         | enabled                                                                                            |
 | `delivery_url`                                                                                     | *Optional[str]*                                                                                    | :heavy_minus_sign:                                                                                 | The delivery url of the webhook endpoint.                                                          | https://example.com/my/webhook/endpoint                                                            |
 | `events`                                                                                           | List[[models.WebhookEventType](../../models/webhookeventtype.md)]                                  | :heavy_minus_sign:                                                                                 | The list of subscribed events for this webhook. [`*`] indicates that all events are enabled.       | [<br/>"vault.connection.created",<br/>"vault.connection.updated"<br/>]                             |
+| `additional_properties`                                                                            | Dict[str, *Any*]                                                                                   | :heavy_minus_sign:                                                                                 | N/A                                                                                                |                                                                                                    |
 | `retries`                                                                                          | [Optional[utils.RetryConfig]](../../models/utils/retryconfig.md)                                   | :heavy_minus_sign:                                                                                 | Configuration to override the default retry behavior of the client.                                |                                                                                                    |
 
 ### Response

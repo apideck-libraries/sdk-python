@@ -239,9 +239,9 @@ with Apideck(
             ],
         },
     ], custom_mappings=[
-        {
-            "value": "$.root.training.first_aid",
-        },
+        apideck_unify.CustomMappingInput(
+            value="$.root.training.first_aid",
+        ),
     ], consent_state=apideck_unify.ConsentState.GRANTED, latest_consent={
         "granted": True,
         "resources": {
@@ -449,6 +449,7 @@ Import an authorized connection.
 
 <!-- UsageSnippet language="python" operationID="vault.connectionsImport" method="post" path="/vault/connections/{unified_api}/{service_id}/import" -->
 ```python
+import apideck_unify
 from apideck_unify import Apideck
 import os
 
@@ -459,10 +460,10 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.vault.connections.imports(service_id="pipedrive", unified_api="crm", credentials={
-        "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.cThIIoDvwdueQB468K5xDc5633seEFoqwxjF_xSJyQQ",
-        "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c",
-    }, settings={
+    res = apideck.vault.connections.imports(service_id="pipedrive", unified_api="crm", credentials=apideck_unify.Credentials(
+        refresh_token="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.cThIIoDvwdueQB468K5xDc5633seEFoqwxjF_xSJyQQ",
+        access_token="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c",
+    ), settings={
         "instance_url": "https://eu28.salesforce.com",
     }, metadata={
         "account": {

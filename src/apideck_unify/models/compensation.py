@@ -11,13 +11,14 @@ from apideck_unify.types import (
     UNSET,
     UNSET_SENTINEL,
 )
-from pydantic import model_serializer
-from typing import List
+import pydantic
+from pydantic import ConfigDict, model_serializer
+from typing import Any, Dict, List
 from typing_extensions import NotRequired, TypedDict
 
 
 class CompensationTypedDict(TypedDict):
-    employee_id: Nullable[str]
+    employee_id: NotRequired[Nullable[str]]
     r"""A unique identifier for an object."""
     net_pay: NotRequired[Nullable[float]]
     r"""The employee's net pay. Only available when payroll has been processed"""
@@ -32,7 +33,12 @@ class CompensationTypedDict(TypedDict):
 
 
 class Compensation(BaseModel):
-    employee_id: Nullable[str]
+    model_config = ConfigDict(
+        populate_by_name=True, arbitrary_types_allowed=True, extra="allow"
+    )
+    __pydantic_extra__: Dict[str, Any] = pydantic.Field(init=False)
+
+    employee_id: OptionalNullable[str] = UNSET
     r"""A unique identifier for an object."""
 
     net_pay: OptionalNullable[float] = UNSET
@@ -50,9 +56,24 @@ class Compensation(BaseModel):
     benefits: OptionalNullable[List[Benefit]] = UNSET
     r"""An array of employee benefits for the pay period."""
 
+    @property
+    def additional_properties(self):
+        return self.__pydantic_extra__
+
+    @additional_properties.setter
+    def additional_properties(self, value):
+        self.__pydantic_extra__ = value  # pyright: ignore[reportIncompatibleVariableOverride]
+
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
-        optional_fields = ["net_pay", "gross_pay", "taxes", "deductions", "benefits"]
+        optional_fields = [
+            "employee_id",
+            "net_pay",
+            "gross_pay",
+            "taxes",
+            "deductions",
+            "benefits",
+        ]
         nullable_fields = [
             "employee_id",
             "net_pay",
@@ -84,5 +105,8 @@ class Compensation(BaseModel):
                 not k in optional_fields or (optional_nullable and is_set)
             ):
                 m[k] = val
+
+        for k, v in serialized.items():
+            m[k] = v
 
         return m

@@ -22,15 +22,14 @@ from apideck_unify.types import (
 )
 from apideck_unify.utils import validate_open_enum
 from datetime import date, datetime
-from pydantic import field_serializer, model_serializer
+import pydantic
+from pydantic import ConfigDict, field_serializer, model_serializer
 from pydantic.functional_validators import PlainValidator
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class ExpenseReportLineItemTypedDict(TypedDict):
-    amount: float
-    r"""The amount of the expense line item."""
     id: NotRequired[str]
     r"""A unique identifier for an object."""
     line_number: NotRequired[Nullable[int]]
@@ -42,6 +41,8 @@ class ExpenseReportLineItemTypedDict(TypedDict):
     r"""The description of the expense line item."""
     quantity: NotRequired[Nullable[float]]
     unit_price: NotRequired[Nullable[float]]
+    amount: NotRequired[float]
+    r"""The amount of the expense line item."""
     tax_rate: NotRequired[LinkedTaxRateTypedDict]
     tax_amount: NotRequired[Nullable[float]]
     r"""Tax amount"""
@@ -76,8 +77,10 @@ class ExpenseReportLineItemTypedDict(TypedDict):
 
 
 class ExpenseReportLineItem(BaseModel):
-    amount: float
-    r"""The amount of the expense line item."""
+    model_config = ConfigDict(
+        populate_by_name=True, arbitrary_types_allowed=True, extra="allow"
+    )
+    __pydantic_extra__: Dict[str, Any] = pydantic.Field(init=False)
 
     id: Optional[str] = None
     r"""A unique identifier for an object."""
@@ -96,6 +99,9 @@ class ExpenseReportLineItem(BaseModel):
     quantity: OptionalNullable[float] = UNSET
 
     unit_price: OptionalNullable[float] = UNSET
+
+    amount: Optional[float] = None
+    r"""The amount of the expense line item."""
 
     tax_rate: Optional[LinkedTaxRate] = None
 
@@ -146,6 +152,14 @@ class ExpenseReportLineItem(BaseModel):
     created_at: OptionalNullable[datetime] = UNSET
     r"""The date and time when the object was created."""
 
+    @property
+    def additional_properties(self):
+        return self.__pydantic_extra__
+
+    @additional_properties.setter
+    def additional_properties(self, value):
+        self.__pydantic_extra__ = value  # pyright: ignore[reportIncompatibleVariableOverride]
+
     @field_serializer("currency")
     def serialize_currency(self, value):
         if isinstance(value, str):
@@ -165,6 +179,7 @@ class ExpenseReportLineItem(BaseModel):
             "description",
             "quantity",
             "unit_price",
+            "amount",
             "tax_rate",
             "tax_amount",
             "total_amount",
@@ -227,5 +242,8 @@ class ExpenseReportLineItem(BaseModel):
                 not k in optional_fields or (optional_nullable and is_set)
             ):
                 m[k] = val
+
+        for k, v in serialized.items():
+            m[k] = v
 
         return m

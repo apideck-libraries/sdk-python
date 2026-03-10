@@ -2,18 +2,19 @@
 
 from __future__ import annotations
 from apideck_unify.types import BaseModel
-from typing_extensions import TypedDict
+from typing import Optional
+from typing_extensions import NotRequired, TypedDict
 
 
 class UnifiedIDTypedDict(TypedDict):
     r"""A object containing a unique identifier for the resource that was created, updated, or deleted."""
 
-    id: str
+    id: NotRequired[str]
     r"""The unique identifier of the resource"""
 
 
 class UnifiedID(BaseModel):
     r"""A object containing a unique identifier for the resource that was created, updated, or deleted."""
 
-    id: str
+    id: Optional[str] = None
     r"""The unique identifier of the resource"""

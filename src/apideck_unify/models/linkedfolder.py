@@ -9,18 +9,19 @@ from apideck_unify.types import (
     UNSET_SENTINEL,
 )
 from pydantic import model_serializer
+from typing import Optional
 from typing_extensions import NotRequired, TypedDict
 
 
 class LinkedFolderTypedDict(TypedDict):
-    id: str
+    id: NotRequired[str]
     r"""A unique identifier for an object."""
     name: NotRequired[Nullable[str]]
     r"""The name of the folder"""
 
 
 class LinkedFolder(BaseModel):
-    id: str
+    id: Optional[str] = None
     r"""A unique identifier for an object."""
 
     name: OptionalNullable[str] = UNSET
@@ -28,7 +29,7 @@ class LinkedFolder(BaseModel):
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
-        optional_fields = ["name"]
+        optional_fields = ["id", "name"]
         nullable_fields = ["name"]
         null_default_fields = []
 

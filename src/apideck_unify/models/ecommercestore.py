@@ -9,13 +9,14 @@ from apideck_unify.types import (
     UNSET_SENTINEL,
 )
 from datetime import datetime
-from pydantic import model_serializer
-from typing import Any, Dict
+import pydantic
+from pydantic import ConfigDict, model_serializer
+from typing import Any, Dict, Optional
 from typing_extensions import NotRequired, TypedDict
 
 
 class EcommerceStoreTypedDict(TypedDict):
-    id: str
+    id: NotRequired[str]
     r"""A unique identifier for an object."""
     name: NotRequired[Nullable[str]]
     r"""The store's name"""
@@ -32,7 +33,12 @@ class EcommerceStoreTypedDict(TypedDict):
 
 
 class EcommerceStore(BaseModel):
-    id: str
+    model_config = ConfigDict(
+        populate_by_name=True, arbitrary_types_allowed=True, extra="allow"
+    )
+    __pydantic_extra__: Dict[str, Any] = pydantic.Field(init=False)
+
+    id: Optional[str] = None
     r"""A unique identifier for an object."""
 
     name: OptionalNullable[str] = UNSET
@@ -53,9 +59,18 @@ class EcommerceStore(BaseModel):
     updated_at: OptionalNullable[datetime] = UNSET
     r"""The date and time when the object was last updated."""
 
+    @property
+    def additional_properties(self):
+        return self.__pydantic_extra__
+
+    @additional_properties.setter
+    def additional_properties(self, value):
+        self.__pydantic_extra__ = value  # pyright: ignore[reportIncompatibleVariableOverride]
+
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
         optional_fields = [
+            "id",
             "name",
             "store_url",
             "admin_url",
@@ -94,5 +109,8 @@ class EcommerceStore(BaseModel):
                 not k in optional_fields or (optional_nullable and is_set)
             ):
                 m[k] = val
+
+        for k, v in serialized.items():
+            m[k] = v
 
         return m

@@ -393,11 +393,11 @@ class Opportunities(BaseSDK):
     def create(
         self,
         *,
-        title: str,
         raw: Optional[bool] = False,
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
+        title: Optional[str] = None,
         primary_contact_id: OptionalNullable[str] = UNSET,
         description: OptionalNullable[str] = UNSET,
         type_: OptionalNullable[str] = UNSET,
@@ -430,6 +430,7 @@ class Opportunities(BaseSDK):
         pass_through: Optional[
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
         ] = None,
+        additional_properties: Optional[Dict[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -439,11 +440,11 @@ class Opportunities(BaseSDK):
 
         Create opportunity
 
-        :param title: The title or name of the opportunity.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param title: The title or name of the opportunity.
         :param primary_contact_id: The unique identifier of the primary contact associated with the opportunity.
         :param description: A description of the opportunity.
         :param type: The type of the opportunity
@@ -472,6 +473,7 @@ class Opportunities(BaseSDK):
         :param custom_fields:
         :param stage_last_changed_at: The date and time when the stage of the opportunity was last changed.
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
+        :param additional_properties:
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -526,6 +528,7 @@ class Opportunities(BaseSDK):
                 pass_through=utils.get_pydantic_model(
                     pass_through, Optional[List[models.PassThroughBody]]
                 ),
+                **(additional_properties or {}),
             ),
         )
 
@@ -631,11 +634,11 @@ class Opportunities(BaseSDK):
     async def create_async(
         self,
         *,
-        title: str,
         raw: Optional[bool] = False,
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
+        title: Optional[str] = None,
         primary_contact_id: OptionalNullable[str] = UNSET,
         description: OptionalNullable[str] = UNSET,
         type_: OptionalNullable[str] = UNSET,
@@ -668,6 +671,7 @@ class Opportunities(BaseSDK):
         pass_through: Optional[
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
         ] = None,
+        additional_properties: Optional[Dict[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -677,11 +681,11 @@ class Opportunities(BaseSDK):
 
         Create opportunity
 
-        :param title: The title or name of the opportunity.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param title: The title or name of the opportunity.
         :param primary_contact_id: The unique identifier of the primary contact associated with the opportunity.
         :param description: A description of the opportunity.
         :param type: The type of the opportunity
@@ -710,6 +714,7 @@ class Opportunities(BaseSDK):
         :param custom_fields:
         :param stage_last_changed_at: The date and time when the stage of the opportunity was last changed.
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
+        :param additional_properties:
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -764,6 +769,7 @@ class Opportunities(BaseSDK):
                 pass_through=utils.get_pydantic_model(
                     pass_through, Optional[List[models.PassThroughBody]]
                 ),
+                **(additional_properties or {}),
             ),
         )
 
@@ -1158,11 +1164,11 @@ class Opportunities(BaseSDK):
         self,
         *,
         id: str,
-        title: str,
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
+        title: Optional[str] = None,
         primary_contact_id: OptionalNullable[str] = UNSET,
         description: OptionalNullable[str] = UNSET,
         type_: OptionalNullable[str] = UNSET,
@@ -1195,6 +1201,7 @@ class Opportunities(BaseSDK):
         pass_through: Optional[
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
         ] = None,
+        additional_properties: Optional[Dict[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -1205,11 +1212,11 @@ class Opportunities(BaseSDK):
         Update opportunity
 
         :param id: ID of the record you are acting upon.
-        :param title: The title or name of the opportunity.
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param title: The title or name of the opportunity.
         :param primary_contact_id: The unique identifier of the primary contact associated with the opportunity.
         :param description: A description of the opportunity.
         :param type: The type of the opportunity
@@ -1238,6 +1245,7 @@ class Opportunities(BaseSDK):
         :param custom_fields:
         :param stage_last_changed_at: The date and time when the stage of the opportunity was last changed.
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
+        :param additional_properties:
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -1293,6 +1301,7 @@ class Opportunities(BaseSDK):
                 pass_through=utils.get_pydantic_model(
                     pass_through, Optional[List[models.PassThroughBody]]
                 ),
+                **(additional_properties or {}),
             ),
         )
 
@@ -1399,11 +1408,11 @@ class Opportunities(BaseSDK):
         self,
         *,
         id: str,
-        title: str,
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
+        title: Optional[str] = None,
         primary_contact_id: OptionalNullable[str] = UNSET,
         description: OptionalNullable[str] = UNSET,
         type_: OptionalNullable[str] = UNSET,
@@ -1436,6 +1445,7 @@ class Opportunities(BaseSDK):
         pass_through: Optional[
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
         ] = None,
+        additional_properties: Optional[Dict[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -1446,11 +1456,11 @@ class Opportunities(BaseSDK):
         Update opportunity
 
         :param id: ID of the record you are acting upon.
-        :param title: The title or name of the opportunity.
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param title: The title or name of the opportunity.
         :param primary_contact_id: The unique identifier of the primary contact associated with the opportunity.
         :param description: A description of the opportunity.
         :param type: The type of the opportunity
@@ -1479,6 +1489,7 @@ class Opportunities(BaseSDK):
         :param custom_fields:
         :param stage_last_changed_at: The date and time when the stage of the opportunity was last changed.
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
+        :param additional_properties:
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -1534,6 +1545,7 @@ class Opportunities(BaseSDK):
                 pass_through=utils.get_pydantic_model(
                     pass_through, Optional[List[models.PassThroughBody]]
                 ),
+                **(additional_properties or {}),
             ),
         )
 

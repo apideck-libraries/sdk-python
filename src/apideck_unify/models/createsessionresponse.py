@@ -9,7 +9,7 @@ from apideck_unify.types import (
     UNSET_SENTINEL,
 )
 import pydantic
-from pydantic import model_serializer
+from pydantic import ConfigDict, model_serializer
 from typing import Any, Dict
 from typing_extensions import Annotated, NotRequired, TypedDict
 
@@ -20,9 +20,22 @@ class CreateSessionResponseDataTypedDict(TypedDict):
 
 
 class CreateSessionResponseData(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True, arbitrary_types_allowed=True, extra="allow"
+    )
+    __pydantic_extra__: Dict[str, Any] = pydantic.Field(init=False)
+
     session_uri: str
 
     session_token: str
+
+    @property
+    def additional_properties(self):
+        return self.__pydantic_extra__
+
+    @additional_properties.setter
+    def additional_properties(self, value):
+        self.__pydantic_extra__ = value  # pyright: ignore[reportIncompatibleVariableOverride]
 
 
 class CreateSessionResponseTypedDict(TypedDict):
@@ -40,6 +53,11 @@ class CreateSessionResponseTypedDict(TypedDict):
 class CreateSessionResponse(BaseModel):
     r"""Session created"""
 
+    model_config = ConfigDict(
+        populate_by_name=True, arbitrary_types_allowed=True, extra="allow"
+    )
+    __pydantic_extra__: Dict[str, Any] = pydantic.Field(init=False)
+
     status_code: int
     r"""HTTP Response Status Code"""
 
@@ -52,6 +70,14 @@ class CreateSessionResponse(BaseModel):
         UNSET
     )
     r"""Raw response from the integration when raw=true query param is provided"""
+
+    @property
+    def additional_properties(self):
+        return self.__pydantic_extra__
+
+    @additional_properties.setter
+    def additional_properties(self, value):
+        self.__pydantic_extra__ = value  # pyright: ignore[reportIncompatibleVariableOverride]
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
@@ -80,5 +106,8 @@ class CreateSessionResponse(BaseModel):
                 not k in optional_fields or (optional_nullable and is_set)
             ):
                 m[k] = val
+
+        for k, v in serialized.items():
+            m[k] = v
 
         return m

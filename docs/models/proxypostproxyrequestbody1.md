@@ -1,4 +1,4 @@
-# ProxyPutProxyRequestBody1
+# ProxyPostProxyRequestBody1
 
 
 ## Fields

@@ -42,11 +42,11 @@ class RequestBody3(BaseModel):
     pass
 
 
-class ProxyPutProxyRequestBody1TypedDict(TypedDict):
+class RequestBody1TypedDict(TypedDict):
     pass
 
 
-class ProxyPutProxyRequestBody1(BaseModel):
+class RequestBody1(BaseModel):
     pass
 
 

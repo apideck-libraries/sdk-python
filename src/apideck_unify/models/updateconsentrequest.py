@@ -5,8 +5,10 @@ from apideck_unify import utils
 from apideck_unify.types import BaseModel
 from apideck_unify.utils import validate_open_enum
 from enum import Enum
+import pydantic
+from pydantic import ConfigDict
 from pydantic.functional_validators import PlainValidator
-from typing import Dict, Optional, Union
+from typing import Any, Dict, Optional, Union
 from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
 
 
@@ -53,7 +55,20 @@ class UpdateConsentRequestTypedDict(TypedDict):
 
 
 class UpdateConsentRequest(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True, arbitrary_types_allowed=True, extra="allow"
+    )
+    __pydantic_extra__: Dict[str, Any] = pydantic.Field(init=False)
+
     resources: UpdateConsentRequestResources
 
     granted: bool
     r"""Whether consent is being granted (true) or denied/revoked (false)"""
+
+    @property
+    def additional_properties(self):
+        return self.__pydantic_extra__
+
+    @additional_properties.setter
+    def additional_properties(self, value):
+        self.__pydantic_extra__ = value  # pyright: ignore[reportIncompatibleVariableOverride]

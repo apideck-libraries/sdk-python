@@ -7,6 +7,8 @@ from apideck_unify import utils
 from apideck_unify.types import BaseModel
 from apideck_unify.utils import validate_open_enum
 from enum import Enum
+import pydantic
+from pydantic import ConfigDict
 from pydantic.functional_validators import PlainValidator
 from typing import Any, Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
@@ -52,6 +54,11 @@ class SettingsTypedDict(TypedDict):
 class Settings(BaseModel):
     r"""Settings to change the way the Vault is displayed."""
 
+    model_config = ConfigDict(
+        populate_by_name=True, arbitrary_types_allowed=True, extra="allow"
+    )
+    __pydantic_extra__: Dict[str, Any] = pydantic.Field(init=False)
+
     unified_apis: Optional[
         List[Annotated[UnifiedAPIID, PlainValidator(validate_open_enum(False))]]
     ] = None
@@ -91,6 +98,14 @@ class Settings(BaseModel):
     Available actions are: `delete`, `disconnect`, `reauthorize` and `disable`.
     Empty array will hide all actions. By default all actions are visible.
     """
+
+    @property
+    def additional_properties(self):
+        return self.__pydantic_extra__
+
+    @additional_properties.setter
+    def additional_properties(self, value):
+        self.__pydantic_extra__ = value  # pyright: ignore[reportIncompatibleVariableOverride]
 
 
 class ThemeTypedDict(TypedDict):
@@ -156,6 +171,11 @@ class SessionTypedDict(TypedDict):
 
 
 class Session(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True, arbitrary_types_allowed=True, extra="allow"
+    )
+    __pydantic_extra__: Dict[str, Any] = pydantic.Field(init=False)
+
     consumer_metadata: Optional[ConsumerMetadata] = None
     r"""The metadata of the consumer. This is used to display the consumer in the sidebar. This is optional, but recommended."""
 
@@ -170,3 +190,11 @@ class Session(BaseModel):
 
     custom_consumer_settings: Optional[Dict[str, Any]] = None
     r"""Custom consumer settings that are passed as part of the session."""
+
+    @property
+    def additional_properties(self):
+        return self.__pydantic_extra__
+
+    @additional_properties.setter
+    def additional_properties(self, value):
+        self.__pydantic_extra__ = value  # pyright: ignore[reportIncompatibleVariableOverride]

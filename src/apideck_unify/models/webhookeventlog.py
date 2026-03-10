@@ -5,9 +5,10 @@ from .unifiedapiid import UnifiedAPIID
 from apideck_unify import models
 from apideck_unify.types import BaseModel
 from apideck_unify.utils import validate_open_enum
-from pydantic import field_serializer
+import pydantic
+from pydantic import ConfigDict, field_serializer
 from pydantic.functional_validators import PlainValidator
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
@@ -23,11 +24,24 @@ class WebhookEventLogServiceTypedDict(TypedDict):
 class WebhookEventLogService(BaseModel):
     r"""Apideck service provider associated with event."""
 
+    model_config = ConfigDict(
+        populate_by_name=True, arbitrary_types_allowed=True, extra="allow"
+    )
+    __pydantic_extra__: Dict[str, Any] = pydantic.Field(init=False)
+
     id: str
     r"""Apideck service provider id."""
 
     name: str
     r"""Apideck service provider name."""
+
+    @property
+    def additional_properties(self):
+        return self.__pydantic_extra__
+
+    @additional_properties.setter
+    def additional_properties(self, value):
+        self.__pydantic_extra__ = value  # pyright: ignore[reportIncompatibleVariableOverride]
 
 
 class AttemptsTypedDict(TypedDict):
@@ -92,6 +106,11 @@ class WebhookEventLogTypedDict(TypedDict):
 
 
 class WebhookEventLog(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True, arbitrary_types_allowed=True, extra="allow"
+    )
+    __pydantic_extra__: Dict[str, Any] = pydantic.Field(init=False)
+
     id: Optional[str] = None
 
     status_code: Optional[int] = None
@@ -143,6 +162,14 @@ class WebhookEventLog(BaseModel):
 
     attempts: Optional[List[Attempts]] = None
     r"""record of each attempt to call webhook endpoint"""
+
+    @property
+    def additional_properties(self):
+        return self.__pydantic_extra__
+
+    @additional_properties.setter
+    def additional_properties(self, value):
+        self.__pydantic_extra__ = value  # pyright: ignore[reportIncompatibleVariableOverride]
 
     @field_serializer("unified_api")
     def serialize_unified_api(self, value):

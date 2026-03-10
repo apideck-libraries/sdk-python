@@ -16,7 +16,8 @@ from apideck_unify.types import (
     UNSET_SENTINEL,
 )
 from apideck_unify.utils import validate_open_enum
-from pydantic import field_serializer, model_serializer
+import pydantic
+from pydantic import ConfigDict, field_serializer, model_serializer
 from pydantic.functional_validators import PlainValidator
 from typing import Any, Dict, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
@@ -491,22 +492,22 @@ class UncategorizedAccounts(BaseModel):
 
 
 class ProfitAndLossTypedDict(TypedDict):
-    report_name: str
-    r"""The name of the report"""
-    income: IncomeTypedDict
-    r"""The operating income accounts"""
-    expenses: ExpensesModelTypedDict
-    r"""The operating expenses accounts"""
     id: NotRequired[str]
     r"""A unique identifier for an object."""
+    report_name: NotRequired[str]
+    r"""The name of the report"""
     start_date: NotRequired[str]
     r"""The start date of the report"""
     end_date: NotRequired[str]
     r"""The end date of the report"""
     currency: NotRequired[Nullable[Currency]]
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
+    income: NotRequired[IncomeTypedDict]
+    r"""The operating income accounts"""
     cost_of_goods_sold: NotRequired[CostOfGoodsSoldTypedDict]
     r"""The cost of goods sold accounts"""
+    expenses: NotRequired[ExpensesModelTypedDict]
+    r"""The operating expenses accounts"""
     other_income: NotRequired[OtherIncomeTypedDict]
     r"""The other income accounts"""
     other_expenses: NotRequired[OtherExpensesTypedDict]
@@ -523,17 +524,16 @@ class ProfitAndLossTypedDict(TypedDict):
 
 
 class ProfitAndLoss(BaseModel):
-    report_name: str
-    r"""The name of the report"""
-
-    income: Income
-    r"""The operating income accounts"""
-
-    expenses: ExpensesModel
-    r"""The operating expenses accounts"""
+    model_config = ConfigDict(
+        populate_by_name=True, arbitrary_types_allowed=True, extra="allow"
+    )
+    __pydantic_extra__: Dict[str, Any] = pydantic.Field(init=False)
 
     id: Optional[str] = None
     r"""A unique identifier for an object."""
+
+    report_name: Optional[str] = None
+    r"""The name of the report"""
 
     start_date: Optional[str] = None
     r"""The start date of the report"""
@@ -546,8 +546,14 @@ class ProfitAndLoss(BaseModel):
     ] = UNSET
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
 
+    income: Optional[Income] = None
+    r"""The operating income accounts"""
+
     cost_of_goods_sold: Optional[CostOfGoodsSold] = None
     r"""The cost of goods sold accounts"""
+
+    expenses: Optional[ExpensesModel] = None
+    r"""The operating expenses accounts"""
 
     other_income: Optional[OtherIncome] = None
     r"""The other income accounts"""
@@ -570,6 +576,14 @@ class ProfitAndLoss(BaseModel):
     customer: Optional[str] = None
     r"""The customer id"""
 
+    @property
+    def additional_properties(self):
+        return self.__pydantic_extra__
+
+    @additional_properties.setter
+    def additional_properties(self, value):
+        self.__pydantic_extra__ = value  # pyright: ignore[reportIncompatibleVariableOverride]
+
     @field_serializer("currency")
     def serialize_currency(self, value):
         if isinstance(value, str):
@@ -583,10 +597,13 @@ class ProfitAndLoss(BaseModel):
     def serialize_model(self, handler):
         optional_fields = [
             "id",
+            "report_name",
             "start_date",
             "end_date",
             "currency",
+            "income",
             "cost_of_goods_sold",
+            "expenses",
             "other_income",
             "other_expenses",
             "uncategorized_accounts",
@@ -620,5 +637,8 @@ class ProfitAndLoss(BaseModel):
                 not k in optional_fields or (optional_nullable and is_set)
             ):
                 m[k] = val
+
+        for k, v in serialized.items():
+            m[k] = v
 
         return m

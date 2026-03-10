@@ -6,9 +6,10 @@ from apideck_unify.types import BaseModel
 from apideck_unify.utils import validate_open_enum
 from datetime import date
 from enum import Enum
-from pydantic import field_serializer
+import pydantic
+from pydantic import ConfigDict, field_serializer
 from pydantic.functional_validators import PlainValidator
-from typing import Optional
+from typing import Any, Dict, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
@@ -40,6 +41,11 @@ class BalanceByTransactionTypedDict(TypedDict):
 
 
 class BalanceByTransaction(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True, arbitrary_types_allowed=True, extra="allow"
+    )
+    __pydantic_extra__: Dict[str, Any] = pydantic.Field(init=False)
+
     transaction_id: Optional[str] = None
     r"""Unique identifier for the transaction."""
 
@@ -63,6 +69,14 @@ class BalanceByTransaction(BaseModel):
 
     transaction_number: Optional[str] = None
     r"""Transaction number of the transaction."""
+
+    @property
+    def additional_properties(self):
+        return self.__pydantic_extra__
+
+    @additional_properties.setter
+    def additional_properties(self, value):
+        self.__pydantic_extra__ = value  # pyright: ignore[reportIncompatibleVariableOverride]
 
     @field_serializer("transaction_type")
     def serialize_transaction_type(self, value):

@@ -3,7 +3,7 @@
 from .basesdk import BaseSDK
 from apideck_unify import models, utils
 from apideck_unify._hooks import HookContext
-from apideck_unify.types import Nullable, OptionalNullable, UNSET
+from apideck_unify.types import OptionalNullable, UNSET
 from apideck_unify.utils import get_security_from_env
 from apideck_unify.utils.unmarshal_json_response import unmarshal_json_response
 from jsonpath import JSONPath
@@ -364,17 +364,18 @@ class SharedLinks(BaseSDK):
     def create(
         self,
         *,
-        target_id: Nullable[str],
         raw: Optional[bool] = False,
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         download_url: OptionalNullable[str] = UNSET,
+        target_id: OptionalNullable[str] = UNSET,
         scope: OptionalNullable[models.Scope] = UNSET,
         password: OptionalNullable[str] = UNSET,
         pass_through: Optional[
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
         ] = None,
+        additional_properties: Optional[Dict[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -384,15 +385,16 @@ class SharedLinks(BaseSDK):
 
         Create Shared Link
 
-        :param target_id: The ID of the file or folder to link.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param download_url: The URL that can be used to download the file.
+        :param target_id: The ID of the file or folder to link.
         :param scope: The scope of the shared link.
         :param password: Optional password for the shared link.
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
+        :param additional_properties:
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -421,6 +423,7 @@ class SharedLinks(BaseSDK):
                 pass_through=utils.get_pydantic_model(
                     pass_through, Optional[List[models.PassThroughBody]]
                 ),
+                **(additional_properties or {}),
             ),
         )
 
@@ -526,17 +529,18 @@ class SharedLinks(BaseSDK):
     async def create_async(
         self,
         *,
-        target_id: Nullable[str],
         raw: Optional[bool] = False,
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         download_url: OptionalNullable[str] = UNSET,
+        target_id: OptionalNullable[str] = UNSET,
         scope: OptionalNullable[models.Scope] = UNSET,
         password: OptionalNullable[str] = UNSET,
         pass_through: Optional[
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
         ] = None,
+        additional_properties: Optional[Dict[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -546,15 +550,16 @@ class SharedLinks(BaseSDK):
 
         Create Shared Link
 
-        :param target_id: The ID of the file or folder to link.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param download_url: The URL that can be used to download the file.
+        :param target_id: The ID of the file or folder to link.
         :param scope: The scope of the shared link.
         :param password: Optional password for the shared link.
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
+        :param additional_properties:
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -583,6 +588,7 @@ class SharedLinks(BaseSDK):
                 pass_through=utils.get_pydantic_model(
                     pass_through, Optional[List[models.PassThroughBody]]
                 ),
+                **(additional_properties or {}),
             ),
         )
 
@@ -977,17 +983,18 @@ class SharedLinks(BaseSDK):
         self,
         *,
         id: str,
-        target_id: Nullable[str],
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
         download_url: OptionalNullable[str] = UNSET,
+        target_id: OptionalNullable[str] = UNSET,
         scope: OptionalNullable[models.Scope] = UNSET,
         password: OptionalNullable[str] = UNSET,
         pass_through: Optional[
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
         ] = None,
+        additional_properties: Optional[Dict[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -998,15 +1005,16 @@ class SharedLinks(BaseSDK):
         Update Shared Link
 
         :param id: ID of the record you are acting upon.
-        :param target_id: The ID of the file or folder to link.
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param download_url: The URL that can be used to download the file.
+        :param target_id: The ID of the file or folder to link.
         :param scope: The scope of the shared link.
         :param password: Optional password for the shared link.
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
+        :param additional_properties:
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -1036,6 +1044,7 @@ class SharedLinks(BaseSDK):
                 pass_through=utils.get_pydantic_model(
                     pass_through, Optional[List[models.PassThroughBody]]
                 ),
+                **(additional_properties or {}),
             ),
         )
 
@@ -1142,17 +1151,18 @@ class SharedLinks(BaseSDK):
         self,
         *,
         id: str,
-        target_id: Nullable[str],
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
         download_url: OptionalNullable[str] = UNSET,
+        target_id: OptionalNullable[str] = UNSET,
         scope: OptionalNullable[models.Scope] = UNSET,
         password: OptionalNullable[str] = UNSET,
         pass_through: Optional[
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
         ] = None,
+        additional_properties: Optional[Dict[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -1163,15 +1173,16 @@ class SharedLinks(BaseSDK):
         Update Shared Link
 
         :param id: ID of the record you are acting upon.
-        :param target_id: The ID of the file or folder to link.
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param download_url: The URL that can be used to download the file.
+        :param target_id: The ID of the file or folder to link.
         :param scope: The scope of the shared link.
         :param password: Optional password for the shared link.
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
+        :param additional_properties:
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -1201,6 +1212,7 @@ class SharedLinks(BaseSDK):
                 pass_through=utils.get_pydantic_model(
                     pass_through, Optional[List[models.PassThroughBody]]
                 ),
+                **(additional_properties or {}),
             ),
         )
 
