@@ -91,6 +91,8 @@ class BillTypedDict(TypedDict):
     line_items: NotRequired[List[BillLineItemTypedDict]]
     terms: NotRequired[Nullable[str]]
     r"""Terms of payment."""
+    terms_id: NotRequired[Nullable[str]]
+    r"""The ID of the payment terms"""
     balance: NotRequired[Nullable[float]]
     r"""Balance of bill due."""
     deposit: NotRequired[Nullable[float]]
@@ -209,6 +211,9 @@ class Bill(BaseModel):
 
     terms: OptionalNullable[str] = UNSET
     r"""Terms of payment."""
+
+    terms_id: OptionalNullable[str] = UNSET
+    r"""The ID of the payment terms"""
 
     balance: OptionalNullable[float] = UNSET
     r"""Balance of bill due."""
@@ -355,6 +360,7 @@ class Bill(BaseModel):
             "reference",
             "line_items",
             "terms",
+            "terms_id",
             "balance",
             "deposit",
             "sub_total",
@@ -405,6 +411,7 @@ class Bill(BaseModel):
             "po_number",
             "reference",
             "terms",
+            "terms_id",
             "balance",
             "deposit",
             "sub_total",
@@ -493,6 +500,8 @@ class BillInputTypedDict(TypedDict):
     line_items: NotRequired[List[BillLineItemInputTypedDict]]
     terms: NotRequired[Nullable[str]]
     r"""Terms of payment."""
+    terms_id: NotRequired[Nullable[str]]
+    r"""The ID of the payment terms"""
     balance: NotRequired[Nullable[float]]
     r"""Balance of bill due."""
     deposit: NotRequired[Nullable[float]]
@@ -595,6 +604,9 @@ class BillInput(BaseModel):
 
     terms: OptionalNullable[str] = UNSET
     r"""Terms of payment."""
+
+    terms_id: OptionalNullable[str] = UNSET
+    r"""The ID of the payment terms"""
 
     balance: OptionalNullable[float] = UNSET
     r"""Balance of bill due."""
@@ -724,6 +736,7 @@ class BillInput(BaseModel):
             "reference",
             "line_items",
             "terms",
+            "terms_id",
             "balance",
             "deposit",
             "sub_total",
@@ -768,6 +781,7 @@ class BillInput(BaseModel):
             "po_number",
             "reference",
             "terms",
+            "terms_id",
             "balance",
             "deposit",
             "sub_total",

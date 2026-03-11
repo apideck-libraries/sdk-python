@@ -108,6 +108,8 @@ class CreditNoteTypedDict(TypedDict):
     r"""Optional note to be associated with the credit note."""
     terms: NotRequired[Nullable[str]]
     r"""Optional terms to be associated with the credit note."""
+    terms_id: NotRequired[Nullable[str]]
+    r"""The ID of the payment terms"""
     billing_address: NotRequired[AddressTypedDict]
     shipping_address: NotRequired[AddressTypedDict]
     tracking_categories: NotRequired[
@@ -210,6 +212,9 @@ class CreditNote(BaseModel):
     terms: OptionalNullable[str] = UNSET
     r"""Optional terms to be associated with the credit note."""
 
+    terms_id: OptionalNullable[str] = UNSET
+    r"""The ID of the payment terms"""
+
     billing_address: Optional[Address] = None
 
     shipping_address: Optional[Address] = None
@@ -295,6 +300,7 @@ class CreditNote(BaseModel):
             "allocations",
             "note",
             "terms",
+            "terms_id",
             "billing_address",
             "shipping_address",
             "tracking_categories",
@@ -326,6 +332,7 @@ class CreditNote(BaseModel):
             "account",
             "note",
             "terms",
+            "terms_id",
             "tracking_categories",
             "custom_mappings",
             "row_version",
@@ -407,6 +414,8 @@ class CreditNoteInputTypedDict(TypedDict):
     r"""Optional note to be associated with the credit note."""
     terms: NotRequired[Nullable[str]]
     r"""Optional terms to be associated with the credit note."""
+    terms_id: NotRequired[Nullable[str]]
+    r"""The ID of the payment terms"""
     billing_address: NotRequired[AddressTypedDict]
     shipping_address: NotRequired[AddressTypedDict]
     tracking_categories: NotRequired[
@@ -496,6 +505,9 @@ class CreditNoteInput(BaseModel):
     terms: OptionalNullable[str] = UNSET
     r"""Optional terms to be associated with the credit note."""
 
+    terms_id: OptionalNullable[str] = UNSET
+    r"""The ID of the payment terms"""
+
     billing_address: Optional[Address] = None
 
     shipping_address: Optional[Address] = None
@@ -566,6 +578,7 @@ class CreditNoteInput(BaseModel):
             "allocations",
             "note",
             "terms",
+            "terms_id",
             "billing_address",
             "shipping_address",
             "tracking_categories",
@@ -592,6 +605,7 @@ class CreditNoteInput(BaseModel):
             "account",
             "note",
             "terms",
+            "terms_id",
             "tracking_categories",
             "row_version",
         ]

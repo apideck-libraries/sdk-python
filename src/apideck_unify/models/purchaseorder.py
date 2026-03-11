@@ -111,6 +111,8 @@ class PurchaseOrderTypedDict(TypedDict):
     r"""Payment method used for the transaction, such as cash, credit card, bank transfer, or check"""
     terms: NotRequired[Nullable[str]]
     r"""Terms of payment."""
+    terms_id: NotRequired[Nullable[str]]
+    r"""The ID of the payment terms"""
     amortization_type: NotRequired[Nullable[PurchaseOrderAmortizationType]]
     r"""Type of amortization"""
     tax_code: NotRequired[Nullable[str]]
@@ -240,6 +242,9 @@ class PurchaseOrder(BaseModel):
     terms: OptionalNullable[str] = UNSET
     r"""Terms of payment."""
 
+    terms_id: OptionalNullable[str] = UNSET
+    r"""The ID of the payment terms"""
+
     amortization_type: Annotated[
         OptionalNullable[PurchaseOrderAmortizationType],
         PlainValidator(validate_open_enum(False)),
@@ -356,6 +361,7 @@ class PurchaseOrder(BaseModel):
             "due_date",
             "payment_method",
             "terms",
+            "terms_id",
             "amortization_type",
             "tax_code",
             "tax_method",
@@ -401,6 +407,7 @@ class PurchaseOrder(BaseModel):
             "due_date",
             "payment_method",
             "terms",
+            "terms_id",
             "amortization_type",
             "tax_code",
             "tax_method",
@@ -497,6 +504,8 @@ class PurchaseOrderInputTypedDict(TypedDict):
     r"""Payment method used for the transaction, such as cash, credit card, bank transfer, or check"""
     terms: NotRequired[Nullable[str]]
     r"""Terms of payment."""
+    terms_id: NotRequired[Nullable[str]]
+    r"""The ID of the payment terms"""
     amortization_type: NotRequired[Nullable[PurchaseOrderAmortizationType]]
     r"""Type of amortization"""
     tax_code: NotRequired[Nullable[str]]
@@ -610,6 +619,9 @@ class PurchaseOrderInput(BaseModel):
     terms: OptionalNullable[str] = UNSET
     r"""Terms of payment."""
 
+    terms_id: OptionalNullable[str] = UNSET
+    r"""The ID of the payment terms"""
+
     amortization_type: Annotated[
         OptionalNullable[PurchaseOrderAmortizationType],
         PlainValidator(validate_open_enum(False)),
@@ -709,6 +721,7 @@ class PurchaseOrderInput(BaseModel):
             "due_date",
             "payment_method",
             "terms",
+            "terms_id",
             "amortization_type",
             "tax_code",
             "tax_method",
@@ -748,6 +761,7 @@ class PurchaseOrderInput(BaseModel):
             "due_date",
             "payment_method",
             "terms",
+            "terms_id",
             "amortization_type",
             "tax_code",
             "tax_method",

@@ -142,6 +142,8 @@ class InvoiceTypedDict(TypedDict):
     r"""The invoice due date is the date on which a payment or invoice is scheduled to be received by the seller - YYYY-MM-DD."""
     terms: NotRequired[Nullable[str]]
     r"""Terms of payment."""
+    terms_id: NotRequired[Nullable[str]]
+    r"""The ID of the payment terms"""
     po_number: NotRequired[Nullable[str]]
     r"""A PO Number uniquely identifies a purchase order and is generally defined by the buyer. The buyer will match the PO number in the invoice to the Purchase Order."""
     reference: NotRequired[Nullable[str]]
@@ -253,6 +255,9 @@ class Invoice(BaseModel):
 
     terms: OptionalNullable[str] = UNSET
     r"""Terms of payment."""
+
+    terms_id: OptionalNullable[str] = UNSET
+    r"""The ID of the payment terms"""
 
     po_number: OptionalNullable[str] = UNSET
     r"""A PO Number uniquely identifies a purchase order and is generally defined by the buyer. The buyer will match the PO number in the invoice to the Purchase Order."""
@@ -414,6 +419,7 @@ class Invoice(BaseModel):
             "invoice_date",
             "due_date",
             "terms",
+            "terms_id",
             "po_number",
             "reference",
             "status",
@@ -465,6 +471,7 @@ class Invoice(BaseModel):
             "invoice_date",
             "due_date",
             "terms",
+            "terms_id",
             "po_number",
             "reference",
             "status",
@@ -545,6 +552,8 @@ class InvoiceInputTypedDict(TypedDict):
     r"""The invoice due date is the date on which a payment or invoice is scheduled to be received by the seller - YYYY-MM-DD."""
     terms: NotRequired[Nullable[str]]
     r"""Terms of payment."""
+    terms_id: NotRequired[Nullable[str]]
+    r"""The ID of the payment terms"""
     po_number: NotRequired[Nullable[str]]
     r"""A PO Number uniquely identifies a purchase order and is generally defined by the buyer. The buyer will match the PO number in the invoice to the Purchase Order."""
     reference: NotRequired[Nullable[str]]
@@ -640,6 +649,9 @@ class InvoiceInput(BaseModel):
 
     terms: OptionalNullable[str] = UNSET
     r"""Terms of payment."""
+
+    terms_id: OptionalNullable[str] = UNSET
+    r"""The ID of the payment terms"""
 
     po_number: OptionalNullable[str] = UNSET
     r"""A PO Number uniquely identifies a purchase order and is generally defined by the buyer. The buyer will match the PO number in the invoice to the Purchase Order."""
@@ -784,6 +796,7 @@ class InvoiceInput(BaseModel):
             "invoice_date",
             "due_date",
             "terms",
+            "terms_id",
             "po_number",
             "reference",
             "status",
@@ -829,6 +842,7 @@ class InvoiceInput(BaseModel):
             "invoice_date",
             "due_date",
             "terms",
+            "terms_id",
             "po_number",
             "reference",
             "status",

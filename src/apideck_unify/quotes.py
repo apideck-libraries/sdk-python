@@ -19,6 +19,7 @@ class Quotes(BaseSDK):
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
+        company_id: Optional[str] = None,
         cursor: OptionalNullable[str] = UNSET,
         limit: Optional[int] = 20,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
@@ -34,6 +35,7 @@ class Quotes(BaseSDK):
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param company_id: The ID of the company to scope requests to. For connectors that support multi-company, this overrides the default company configured in connection settings.
         :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
         :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
         :param retries: Override the default retry configuration for this method
@@ -56,6 +58,7 @@ class Quotes(BaseSDK):
             consumer_id=consumer_id,
             app_id=app_id,
             service_id=service_id,
+            company_id=company_id,
             cursor=cursor,
             limit=limit,
         )
@@ -123,6 +126,7 @@ class Quotes(BaseSDK):
                 consumer_id=consumer_id,
                 app_id=app_id,
                 service_id=service_id,
+                company_id=company_id,
                 cursor=next_cursor,
                 limit=limit,
                 retries=retries,
@@ -186,6 +190,7 @@ class Quotes(BaseSDK):
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
+        company_id: Optional[str] = None,
         cursor: OptionalNullable[str] = UNSET,
         limit: Optional[int] = 20,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
@@ -201,6 +206,7 @@ class Quotes(BaseSDK):
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param company_id: The ID of the company to scope requests to. For connectors that support multi-company, this overrides the default company configured in connection settings.
         :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
         :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
         :param retries: Override the default retry configuration for this method
@@ -223,6 +229,7 @@ class Quotes(BaseSDK):
             consumer_id=consumer_id,
             app_id=app_id,
             service_id=service_id,
+            company_id=company_id,
             cursor=cursor,
             limit=limit,
         )
@@ -290,6 +297,7 @@ class Quotes(BaseSDK):
                 consumer_id=consumer_id,
                 app_id=app_id,
                 service_id=service_id,
+                company_id=company_id,
                 cursor=next_cursor,
                 limit=limit,
                 retries=retries,
@@ -353,6 +361,7 @@ class Quotes(BaseSDK):
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
+        company_id_param: Optional[str] = None,
         number: OptionalNullable[str] = UNSET,
         customer: OptionalNullable[
             Union[models.LinkedCustomerInput, models.LinkedCustomerInputTypedDict]
@@ -364,6 +373,7 @@ class Quotes(BaseSDK):
         quote_date: OptionalNullable[date] = UNSET,
         expiry_date: OptionalNullable[date] = UNSET,
         terms: OptionalNullable[str] = UNSET,
+        terms_id: OptionalNullable[str] = UNSET,
         reference: OptionalNullable[str] = UNSET,
         status: OptionalNullable[models.QuoteStatus] = UNSET,
         currency: OptionalNullable[models.Currency] = UNSET,
@@ -416,6 +426,7 @@ class Quotes(BaseSDK):
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param company_id_param: The ID of the company to scope requests to. For connectors that support multi-company, this overrides the default company configured in connection settings.
         :param number: Quote number.
         :param customer: The customer this entity is linked to.
         :param sales_order_id: The unique identifier for the sales order.
@@ -425,6 +436,7 @@ class Quotes(BaseSDK):
         :param quote_date: Date quote was issued - YYYY-MM-DD.
         :param expiry_date: The date until which the quote is valid - YYYY-MM-DD.
         :param terms: Terms of the quote.
+        :param terms_id: The ID of the payment terms
         :param reference: Optional reference identifier for the transaction.
         :param status: Quote status
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
@@ -466,6 +478,7 @@ class Quotes(BaseSDK):
             consumer_id=consumer_id,
             app_id=app_id,
             service_id=service_id,
+            company_id_param=company_id_param,
             quote=models.QuoteInput(
                 number=number,
                 customer=utils.get_pydantic_model(
@@ -478,6 +491,7 @@ class Quotes(BaseSDK):
                 quote_date=quote_date,
                 expiry_date=expiry_date,
                 terms=terms,
+                terms_id=terms_id,
                 reference=reference,
                 status=status,
                 currency=currency,
@@ -621,6 +635,7 @@ class Quotes(BaseSDK):
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
+        company_id_param: Optional[str] = None,
         number: OptionalNullable[str] = UNSET,
         customer: OptionalNullable[
             Union[models.LinkedCustomerInput, models.LinkedCustomerInputTypedDict]
@@ -632,6 +647,7 @@ class Quotes(BaseSDK):
         quote_date: OptionalNullable[date] = UNSET,
         expiry_date: OptionalNullable[date] = UNSET,
         terms: OptionalNullable[str] = UNSET,
+        terms_id: OptionalNullable[str] = UNSET,
         reference: OptionalNullable[str] = UNSET,
         status: OptionalNullable[models.QuoteStatus] = UNSET,
         currency: OptionalNullable[models.Currency] = UNSET,
@@ -684,6 +700,7 @@ class Quotes(BaseSDK):
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param company_id_param: The ID of the company to scope requests to. For connectors that support multi-company, this overrides the default company configured in connection settings.
         :param number: Quote number.
         :param customer: The customer this entity is linked to.
         :param sales_order_id: The unique identifier for the sales order.
@@ -693,6 +710,7 @@ class Quotes(BaseSDK):
         :param quote_date: Date quote was issued - YYYY-MM-DD.
         :param expiry_date: The date until which the quote is valid - YYYY-MM-DD.
         :param terms: Terms of the quote.
+        :param terms_id: The ID of the payment terms
         :param reference: Optional reference identifier for the transaction.
         :param status: Quote status
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
@@ -734,6 +752,7 @@ class Quotes(BaseSDK):
             consumer_id=consumer_id,
             app_id=app_id,
             service_id=service_id,
+            company_id_param=company_id_param,
             quote=models.QuoteInput(
                 number=number,
                 customer=utils.get_pydantic_model(
@@ -746,6 +765,7 @@ class Quotes(BaseSDK):
                 quote_date=quote_date,
                 expiry_date=expiry_date,
                 terms=terms,
+                terms_id=terms_id,
                 reference=reference,
                 status=status,
                 currency=currency,
@@ -889,6 +909,7 @@ class Quotes(BaseSDK):
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
+        company_id: Optional[str] = None,
         raw: Optional[bool] = False,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -903,6 +924,7 @@ class Quotes(BaseSDK):
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param company_id: The ID of the company to scope requests to. For connectors that support multi-company, this overrides the default company configured in connection settings.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
@@ -924,6 +946,7 @@ class Quotes(BaseSDK):
             consumer_id=consumer_id,
             app_id=app_id,
             service_id=service_id,
+            company_id=company_id,
             raw=raw,
         )
 
@@ -1030,6 +1053,7 @@ class Quotes(BaseSDK):
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
+        company_id: Optional[str] = None,
         raw: Optional[bool] = False,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -1044,6 +1068,7 @@ class Quotes(BaseSDK):
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param company_id: The ID of the company to scope requests to. For connectors that support multi-company, this overrides the default company configured in connection settings.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
@@ -1065,6 +1090,7 @@ class Quotes(BaseSDK):
             consumer_id=consumer_id,
             app_id=app_id,
             service_id=service_id,
+            company_id=company_id,
             raw=raw,
         )
 
@@ -1171,6 +1197,7 @@ class Quotes(BaseSDK):
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
+        company_id_param: Optional[str] = None,
         raw: Optional[bool] = False,
         number: OptionalNullable[str] = UNSET,
         customer: OptionalNullable[
@@ -1183,6 +1210,7 @@ class Quotes(BaseSDK):
         quote_date: OptionalNullable[date] = UNSET,
         expiry_date: OptionalNullable[date] = UNSET,
         terms: OptionalNullable[str] = UNSET,
+        terms_id: OptionalNullable[str] = UNSET,
         reference: OptionalNullable[str] = UNSET,
         status: OptionalNullable[models.QuoteStatus] = UNSET,
         currency: OptionalNullable[models.Currency] = UNSET,
@@ -1235,6 +1263,7 @@ class Quotes(BaseSDK):
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param company_id_param: The ID of the company to scope requests to. For connectors that support multi-company, this overrides the default company configured in connection settings.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param number: Quote number.
         :param customer: The customer this entity is linked to.
@@ -1245,6 +1274,7 @@ class Quotes(BaseSDK):
         :param quote_date: Date quote was issued - YYYY-MM-DD.
         :param expiry_date: The date until which the quote is valid - YYYY-MM-DD.
         :param terms: Terms of the quote.
+        :param terms_id: The ID of the payment terms
         :param reference: Optional reference identifier for the transaction.
         :param status: Quote status
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
@@ -1286,6 +1316,7 @@ class Quotes(BaseSDK):
             consumer_id=consumer_id,
             app_id=app_id,
             service_id=service_id,
+            company_id_param=company_id_param,
             raw=raw,
             quote=models.QuoteInput(
                 number=number,
@@ -1299,6 +1330,7 @@ class Quotes(BaseSDK):
                 quote_date=quote_date,
                 expiry_date=expiry_date,
                 terms=terms,
+                terms_id=terms_id,
                 reference=reference,
                 status=status,
                 currency=currency,
@@ -1442,6 +1474,7 @@ class Quotes(BaseSDK):
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
+        company_id_param: Optional[str] = None,
         raw: Optional[bool] = False,
         number: OptionalNullable[str] = UNSET,
         customer: OptionalNullable[
@@ -1454,6 +1487,7 @@ class Quotes(BaseSDK):
         quote_date: OptionalNullable[date] = UNSET,
         expiry_date: OptionalNullable[date] = UNSET,
         terms: OptionalNullable[str] = UNSET,
+        terms_id: OptionalNullable[str] = UNSET,
         reference: OptionalNullable[str] = UNSET,
         status: OptionalNullable[models.QuoteStatus] = UNSET,
         currency: OptionalNullable[models.Currency] = UNSET,
@@ -1506,6 +1540,7 @@ class Quotes(BaseSDK):
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param company_id_param: The ID of the company to scope requests to. For connectors that support multi-company, this overrides the default company configured in connection settings.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param number: Quote number.
         :param customer: The customer this entity is linked to.
@@ -1516,6 +1551,7 @@ class Quotes(BaseSDK):
         :param quote_date: Date quote was issued - YYYY-MM-DD.
         :param expiry_date: The date until which the quote is valid - YYYY-MM-DD.
         :param terms: Terms of the quote.
+        :param terms_id: The ID of the payment terms
         :param reference: Optional reference identifier for the transaction.
         :param status: Quote status
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
@@ -1557,6 +1593,7 @@ class Quotes(BaseSDK):
             consumer_id=consumer_id,
             app_id=app_id,
             service_id=service_id,
+            company_id_param=company_id_param,
             raw=raw,
             quote=models.QuoteInput(
                 number=number,
@@ -1570,6 +1607,7 @@ class Quotes(BaseSDK):
                 quote_date=quote_date,
                 expiry_date=expiry_date,
                 terms=terms,
+                terms_id=terms_id,
                 reference=reference,
                 status=status,
                 currency=currency,
@@ -1713,6 +1751,7 @@ class Quotes(BaseSDK):
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
+        company_id: Optional[str] = None,
         raw: Optional[bool] = False,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -1727,6 +1766,7 @@ class Quotes(BaseSDK):
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param company_id: The ID of the company to scope requests to. For connectors that support multi-company, this overrides the default company configured in connection settings.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
@@ -1748,6 +1788,7 @@ class Quotes(BaseSDK):
             consumer_id=consumer_id,
             app_id=app_id,
             service_id=service_id,
+            company_id=company_id,
             raw=raw,
         )
 
@@ -1854,6 +1895,7 @@ class Quotes(BaseSDK):
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
+        company_id: Optional[str] = None,
         raw: Optional[bool] = False,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -1868,6 +1910,7 @@ class Quotes(BaseSDK):
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param company_id: The ID of the company to scope requests to. For connectors that support multi-company, this overrides the default company configured in connection settings.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
@@ -1889,6 +1932,7 @@ class Quotes(BaseSDK):
             consumer_id=consumer_id,
             app_id=app_id,
             service_id=service_id,
+            company_id=company_id,
             raw=raw,
         )
 

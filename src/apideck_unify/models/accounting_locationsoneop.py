@@ -61,6 +61,8 @@ class AccountingLocationsOneRequestTypedDict(TypedDict):
     r"""The ID of your Unify application"""
     service_id: NotRequired[str]
     r"""Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API."""
+    company_id: NotRequired[str]
+    r"""The ID of the company to scope requests to. For connectors that support multi-company, this overrides the default company configured in connection settings."""
     raw: NotRequired[bool]
     r"""Include raw response. Mostly used for debugging purposes"""
     fields: NotRequired[Nullable[str]]
@@ -94,6 +96,13 @@ class AccountingLocationsOneRequest(BaseModel):
     ] = None
     r"""Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API."""
 
+    company_id: Annotated[
+        Optional[str],
+        pydantic.Field(alias="x-apideck-company-id"),
+        FieldMetadata(header=HeaderMetadata(style="simple", explode=False)),
+    ] = None
+    r"""The ID of the company to scope requests to. For connectors that support multi-company, this overrides the default company configured in connection settings."""
+
     raw: Annotated[
         Optional[bool],
         FieldMetadata(query=QueryParamMetadata(style="form", explode=True)),
@@ -108,7 +117,14 @@ class AccountingLocationsOneRequest(BaseModel):
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
-        optional_fields = ["consumerId", "appId", "serviceId", "raw", "fields"]
+        optional_fields = [
+            "consumerId",
+            "appId",
+            "serviceId",
+            "companyId",
+            "raw",
+            "fields",
+        ]
         nullable_fields = ["fields"]
         null_default_fields = []
 

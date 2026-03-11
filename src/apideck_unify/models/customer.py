@@ -90,6 +90,8 @@ class CustomerTypedDict(TypedDict):
     r"""Payment method used for the transaction, such as cash, credit card, bank transfer, or check"""
     terms: NotRequired[Nullable[str]]
     r"""Terms of payment."""
+    terms_id: NotRequired[Nullable[str]]
+    r"""The ID of the payment terms"""
     channel: NotRequired[Nullable[str]]
     r"""The channel through which the transaction is processed."""
     custom_fields: NotRequired[List[CustomFieldTypedDict]]
@@ -193,6 +195,9 @@ class Customer(BaseModel):
     terms: OptionalNullable[str] = UNSET
     r"""Terms of payment."""
 
+    terms_id: OptionalNullable[str] = UNSET
+    r"""The ID of the payment terms"""
+
     channel: OptionalNullable[str] = UNSET
     r"""The channel through which the transaction is processed."""
 
@@ -268,6 +273,7 @@ class Customer(BaseModel):
             "status",
             "payment_method",
             "terms",
+            "terms_id",
             "channel",
             "custom_fields",
             "custom_mappings",
@@ -301,6 +307,7 @@ class Customer(BaseModel):
             "status",
             "payment_method",
             "terms",
+            "terms_id",
             "channel",
             "custom_mappings",
             "updated_by",
@@ -382,6 +389,8 @@ class CustomerInputTypedDict(TypedDict):
     r"""Payment method used for the transaction, such as cash, credit card, bank transfer, or check"""
     terms: NotRequired[Nullable[str]]
     r"""Terms of payment."""
+    terms_id: NotRequired[Nullable[str]]
+    r"""The ID of the payment terms"""
     channel: NotRequired[Nullable[str]]
     r"""The channel through which the transaction is processed."""
     custom_fields: NotRequired[List[CustomFieldTypedDict]]
@@ -469,6 +478,9 @@ class CustomerInput(BaseModel):
     terms: OptionalNullable[str] = UNSET
     r"""Terms of payment."""
 
+    terms_id: OptionalNullable[str] = UNSET
+    r"""The ID of the payment terms"""
+
     channel: OptionalNullable[str] = UNSET
     r"""The channel through which the transaction is processed."""
 
@@ -528,6 +540,7 @@ class CustomerInput(BaseModel):
             "status",
             "payment_method",
             "terms",
+            "terms_id",
             "channel",
             "custom_fields",
             "row_version",
@@ -555,6 +568,7 @@ class CustomerInput(BaseModel):
             "status",
             "payment_method",
             "terms",
+            "terms_id",
             "channel",
             "row_version",
         ]
