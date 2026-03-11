@@ -72,6 +72,8 @@ class QuoteTypedDict(TypedDict):
     r"""The date until which the quote is valid - YYYY-MM-DD."""
     terms: NotRequired[Nullable[str]]
     r"""Terms of the quote."""
+    terms_id: NotRequired[Nullable[str]]
+    r"""The ID of the payment terms"""
     reference: NotRequired[Nullable[str]]
     r"""Optional reference identifier for the transaction."""
     status: NotRequired[Nullable[QuoteStatus]]
@@ -158,6 +160,9 @@ class Quote(BaseModel):
 
     terms: OptionalNullable[str] = UNSET
     r"""Terms of the quote."""
+
+    terms_id: OptionalNullable[str] = UNSET
+    r"""The ID of the payment terms"""
 
     reference: OptionalNullable[str] = UNSET
     r"""Optional reference identifier for the transaction."""
@@ -269,6 +274,7 @@ class Quote(BaseModel):
             "quote_date",
             "expiry_date",
             "terms",
+            "terms_id",
             "reference",
             "status",
             "currency",
@@ -305,6 +311,7 @@ class Quote(BaseModel):
             "quote_date",
             "expiry_date",
             "terms",
+            "terms_id",
             "reference",
             "status",
             "currency",
@@ -372,6 +379,8 @@ class QuoteInputTypedDict(TypedDict):
     r"""The date until which the quote is valid - YYYY-MM-DD."""
     terms: NotRequired[Nullable[str]]
     r"""Terms of the quote."""
+    terms_id: NotRequired[Nullable[str]]
+    r"""The ID of the payment terms"""
     reference: NotRequired[Nullable[str]]
     r"""Optional reference identifier for the transaction."""
     status: NotRequired[Nullable[QuoteStatus]]
@@ -441,6 +450,9 @@ class QuoteInput(BaseModel):
 
     terms: OptionalNullable[str] = UNSET
     r"""Terms of the quote."""
+
+    terms_id: OptionalNullable[str] = UNSET
+    r"""The ID of the payment terms"""
 
     reference: OptionalNullable[str] = UNSET
     r"""Optional reference identifier for the transaction."""
@@ -537,6 +549,7 @@ class QuoteInput(BaseModel):
             "quote_date",
             "expiry_date",
             "terms",
+            "terms_id",
             "reference",
             "status",
             "currency",
@@ -568,6 +581,7 @@ class QuoteInput(BaseModel):
             "quote_date",
             "expiry_date",
             "terms",
+            "terms_id",
             "reference",
             "status",
             "currency",

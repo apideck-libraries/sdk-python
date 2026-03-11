@@ -5,6 +5,7 @@ from .address import Address, AddressTypedDict
 from .currency import Currency
 from .customfield import CustomField, CustomFieldTypedDict
 from .department import Department, DepartmentTypedDict
+from .department_input import DepartmentInput, DepartmentInputTypedDict
 from .jobstatus import JobStatus
 from apideck_unify import models, utils
 from apideck_unify.types import (
@@ -494,6 +495,302 @@ class Job(BaseModel):
             "created_by",
             "updated_at",
             "created_at",
+        ]
+        null_default_fields = []
+
+        serialized = handler(self)
+
+        m = {}
+
+        for n, f in type(self).model_fields.items():
+            k = f.alias or n
+            val = serialized.get(k)
+            serialized.pop(k, None)
+
+            optional_nullable = k in optional_fields and k in nullable_fields
+            is_set = (
+                self.__pydantic_fields_set__.intersection({n})
+                or k in null_default_fields
+            )  # pylint: disable=no-member
+
+            if val is not None and val != UNSET_SENTINEL:
+                m[k] = val
+            elif val != UNSET_SENTINEL and (
+                not k in optional_fields or (optional_nullable and is_set)
+            ):
+                m[k] = val
+
+        return m
+
+
+class JobBranchTypedDict(TypedDict):
+    r"""Details of the branch for which the job is created."""
+
+    name: NotRequired[str]
+    r"""Name of the branch."""
+
+
+class JobBranch(BaseModel):
+    r"""Details of the branch for which the job is created."""
+
+    name: Optional[str] = None
+    r"""Name of the branch."""
+
+
+class JobInputTypedDict(TypedDict):
+    slug: NotRequired[Nullable[str]]
+    title: NotRequired[Nullable[str]]
+    r"""The job title of the person."""
+    sequence: NotRequired[int]
+    r"""Sequence in relation to other jobs."""
+    visibility: NotRequired[Visibility]
+    r"""The visibility of the job"""
+    status: NotRequired[JobStatus]
+    r"""The status of the job."""
+    code: NotRequired[str]
+    r"""The code of the job."""
+    language: NotRequired[Nullable[str]]
+    r"""language code according to ISO 639-1. For the United States - EN"""
+    employment_terms: NotRequired[Nullable[EmploymentTerms]]
+    experience: NotRequired[str]
+    r"""Level of experience required for the job role."""
+    location: NotRequired[Nullable[str]]
+    r"""Specifies the location for the job posting."""
+    remote: NotRequired[Nullable[bool]]
+    r"""Specifies whether the posting is for a remote job."""
+    requisition_id: NotRequired[str]
+    r"""A job's Requisition ID (Req ID) allows your organization to identify and track a job based on alphanumeric naming conventions unique to your company's internal processes."""
+    department: NotRequired[DepartmentInputTypedDict]
+    branch: NotRequired[JobBranchTypedDict]
+    r"""Details of the branch for which the job is created."""
+    recruiters: NotRequired[Nullable[List[str]]]
+    r"""The recruiter is generally someone who is tasked to help the hiring manager find and screen qualified applicant"""
+    hiring_managers: NotRequired[List[str]]
+    followers: NotRequired[Nullable[List[str]]]
+    description: NotRequired[Nullable[str]]
+    r"""A description of the object."""
+    description_html: NotRequired[Nullable[str]]
+    r"""The job description in HTML format"""
+    blocks: NotRequired[List[BlocksTypedDict]]
+    closing: NotRequired[Nullable[str]]
+    closing_html: NotRequired[Nullable[str]]
+    r"""The closing section of the job description in HTML format"""
+    closing_date: NotRequired[Nullable[date]]
+    salary: NotRequired[SalaryTypedDict]
+    url: NotRequired[Nullable[str]]
+    r"""URL of the job description"""
+    job_portal_url: NotRequired[Nullable[str]]
+    r"""URL of the job portal"""
+    record_url: NotRequired[Nullable[str]]
+    links: NotRequired[List[JobLinksTypedDict]]
+    confidential: NotRequired[bool]
+    available_to_employees: NotRequired[bool]
+    r"""Specifies whether an employee of the organization can apply for the job."""
+    tags: NotRequired[Nullable[List[str]]]
+    addresses: NotRequired[List[AddressTypedDict]]
+    custom_fields: NotRequired[List[CustomFieldTypedDict]]
+    deleted: NotRequired[Nullable[bool]]
+    r"""Flag to indicate if the object is deleted."""
+    owner_id: NotRequired[Nullable[str]]
+
+
+class JobInput(BaseModel):
+    slug: OptionalNullable[str] = UNSET
+
+    title: OptionalNullable[str] = UNSET
+    r"""The job title of the person."""
+
+    sequence: Optional[int] = None
+    r"""Sequence in relation to other jobs."""
+
+    visibility: Annotated[
+        Optional[Visibility], PlainValidator(validate_open_enum(False))
+    ] = None
+    r"""The visibility of the job"""
+
+    status: Annotated[
+        Optional[JobStatus], PlainValidator(validate_open_enum(False))
+    ] = None
+    r"""The status of the job."""
+
+    code: Optional[str] = None
+    r"""The code of the job."""
+
+    language: OptionalNullable[str] = UNSET
+    r"""language code according to ISO 639-1. For the United States - EN"""
+
+    employment_terms: Annotated[
+        OptionalNullable[EmploymentTerms], PlainValidator(validate_open_enum(False))
+    ] = UNSET
+
+    experience: Optional[str] = None
+    r"""Level of experience required for the job role."""
+
+    location: OptionalNullable[str] = UNSET
+    r"""Specifies the location for the job posting."""
+
+    remote: OptionalNullable[bool] = UNSET
+    r"""Specifies whether the posting is for a remote job."""
+
+    requisition_id: Optional[str] = None
+    r"""A job's Requisition ID (Req ID) allows your organization to identify and track a job based on alphanumeric naming conventions unique to your company's internal processes."""
+
+    department: Optional[DepartmentInput] = None
+
+    branch: Optional[JobBranch] = None
+    r"""Details of the branch for which the job is created."""
+
+    recruiters: OptionalNullable[List[str]] = UNSET
+    r"""The recruiter is generally someone who is tasked to help the hiring manager find and screen qualified applicant"""
+
+    hiring_managers: Optional[List[str]] = None
+
+    followers: OptionalNullable[List[str]] = UNSET
+
+    description: OptionalNullable[str] = UNSET
+    r"""A description of the object."""
+
+    description_html: OptionalNullable[str] = UNSET
+    r"""The job description in HTML format"""
+
+    blocks: Optional[List[Blocks]] = None
+
+    closing: OptionalNullable[str] = UNSET
+
+    closing_html: OptionalNullable[str] = UNSET
+    r"""The closing section of the job description in HTML format"""
+
+    closing_date: OptionalNullable[date] = UNSET
+
+    salary: Optional[Salary] = None
+
+    url: Annotated[
+        OptionalNullable[str],
+        pydantic.Field(
+            deprecated="warning: ** DEPRECATED ** - This field is deprecated and may be removed in a future version.."
+        ),
+    ] = UNSET
+    r"""URL of the job description"""
+
+    job_portal_url: Annotated[
+        OptionalNullable[str],
+        pydantic.Field(
+            deprecated="warning: ** DEPRECATED ** - This field is deprecated and may be removed in a future version.."
+        ),
+    ] = UNSET
+    r"""URL of the job portal"""
+
+    record_url: Annotated[
+        OptionalNullable[str],
+        pydantic.Field(
+            deprecated="warning: ** DEPRECATED ** - This field is deprecated and may be removed in a future version.."
+        ),
+    ] = UNSET
+
+    links: Optional[List[JobLinks]] = None
+
+    confidential: Optional[bool] = None
+
+    available_to_employees: Optional[bool] = None
+    r"""Specifies whether an employee of the organization can apply for the job."""
+
+    tags: OptionalNullable[List[str]] = UNSET
+
+    addresses: Optional[List[Address]] = None
+
+    custom_fields: Optional[List[CustomField]] = None
+
+    deleted: OptionalNullable[bool] = UNSET
+    r"""Flag to indicate if the object is deleted."""
+
+    owner_id: OptionalNullable[str] = UNSET
+
+    @field_serializer("visibility")
+    def serialize_visibility(self, value):
+        if isinstance(value, str):
+            try:
+                return models.Visibility(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("status")
+    def serialize_status(self, value):
+        if isinstance(value, str):
+            try:
+                return models.JobStatus(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("employment_terms")
+    def serialize_employment_terms(self, value):
+        if isinstance(value, str):
+            try:
+                return models.EmploymentTerms(value)
+            except ValueError:
+                return value
+        return value
+
+    @model_serializer(mode="wrap")
+    def serialize_model(self, handler):
+        optional_fields = [
+            "slug",
+            "title",
+            "sequence",
+            "visibility",
+            "status",
+            "code",
+            "language",
+            "employment_terms",
+            "experience",
+            "location",
+            "remote",
+            "requisition_id",
+            "department",
+            "branch",
+            "recruiters",
+            "hiring_managers",
+            "followers",
+            "description",
+            "description_html",
+            "blocks",
+            "closing",
+            "closing_html",
+            "closing_date",
+            "salary",
+            "url",
+            "job_portal_url",
+            "record_url",
+            "links",
+            "confidential",
+            "available_to_employees",
+            "tags",
+            "addresses",
+            "custom_fields",
+            "deleted",
+            "owner_id",
+        ]
+        nullable_fields = [
+            "slug",
+            "title",
+            "language",
+            "employment_terms",
+            "location",
+            "remote",
+            "recruiters",
+            "followers",
+            "description",
+            "description_html",
+            "closing",
+            "closing_html",
+            "closing_date",
+            "url",
+            "job_portal_url",
+            "record_url",
+            "tags",
+            "deleted",
+            "owner_id",
         ]
         null_default_fields = []
 

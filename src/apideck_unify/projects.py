@@ -19,6 +19,7 @@ class Projects(BaseSDK):
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
+        company_id: Optional[str] = None,
         cursor: OptionalNullable[str] = UNSET,
         limit: Optional[int] = 20,
         filter_: Optional[
@@ -40,6 +41,7 @@ class Projects(BaseSDK):
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param company_id: The ID of the company to scope requests to. For connectors that support multi-company, this overrides the default company configured in connection settings.
         :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
         :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
         :param filter_: Apply filters
@@ -66,6 +68,7 @@ class Projects(BaseSDK):
             consumer_id=consumer_id,
             app_id=app_id,
             service_id=service_id,
+            company_id=company_id,
             cursor=cursor,
             limit=limit,
             filter_=utils.get_pydantic_model(filter_, Optional[models.ProjectsFilter]),
@@ -137,6 +140,7 @@ class Projects(BaseSDK):
                 consumer_id=consumer_id,
                 app_id=app_id,
                 service_id=service_id,
+                company_id=company_id,
                 cursor=next_cursor,
                 limit=limit,
                 filter_=filter_,
@@ -204,6 +208,7 @@ class Projects(BaseSDK):
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
+        company_id: Optional[str] = None,
         cursor: OptionalNullable[str] = UNSET,
         limit: Optional[int] = 20,
         filter_: Optional[
@@ -225,6 +230,7 @@ class Projects(BaseSDK):
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param company_id: The ID of the company to scope requests to. For connectors that support multi-company, this overrides the default company configured in connection settings.
         :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
         :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
         :param filter_: Apply filters
@@ -251,6 +257,7 @@ class Projects(BaseSDK):
             consumer_id=consumer_id,
             app_id=app_id,
             service_id=service_id,
+            company_id=company_id,
             cursor=cursor,
             limit=limit,
             filter_=utils.get_pydantic_model(filter_, Optional[models.ProjectsFilter]),
@@ -322,6 +329,7 @@ class Projects(BaseSDK):
                 consumer_id=consumer_id,
                 app_id=app_id,
                 service_id=service_id,
+                company_id=company_id,
                 cursor=next_cursor,
                 limit=limit,
                 filter_=filter_,
@@ -390,6 +398,7 @@ class Projects(BaseSDK):
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
+        company_id_param: Optional[str] = None,
         display_id: OptionalNullable[str] = UNSET,
         reference_id: OptionalNullable[str] = UNSET,
         description: OptionalNullable[str] = UNSET,
@@ -456,6 +465,7 @@ class Projects(BaseSDK):
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param company_id_param: The ID of the company to scope requests to. For connectors that support multi-company, this overrides the default company configured in connection settings.
         :param display_id: User-friendly project identifier
         :param reference_id: External reference identifier for the project
         :param description: Detailed description of the project
@@ -511,6 +521,7 @@ class Projects(BaseSDK):
             consumer_id=consumer_id,
             app_id=app_id,
             service_id=service_id,
+            company_id_param=company_id_param,
             project=models.ProjectInput(
                 name=name,
                 display_id=display_id,
@@ -673,6 +684,7 @@ class Projects(BaseSDK):
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
+        company_id_param: Optional[str] = None,
         display_id: OptionalNullable[str] = UNSET,
         reference_id: OptionalNullable[str] = UNSET,
         description: OptionalNullable[str] = UNSET,
@@ -739,6 +751,7 @@ class Projects(BaseSDK):
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param company_id_param: The ID of the company to scope requests to. For connectors that support multi-company, this overrides the default company configured in connection settings.
         :param display_id: User-friendly project identifier
         :param reference_id: External reference identifier for the project
         :param description: Detailed description of the project
@@ -794,6 +807,7 @@ class Projects(BaseSDK):
             consumer_id=consumer_id,
             app_id=app_id,
             service_id=service_id,
+            company_id_param=company_id_param,
             project=models.ProjectInput(
                 name=name,
                 display_id=display_id,
@@ -955,6 +969,7 @@ class Projects(BaseSDK):
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
+        company_id: Optional[str] = None,
         raw: Optional[bool] = False,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -969,6 +984,7 @@ class Projects(BaseSDK):
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param company_id: The ID of the company to scope requests to. For connectors that support multi-company, this overrides the default company configured in connection settings.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
@@ -990,6 +1006,7 @@ class Projects(BaseSDK):
             consumer_id=consumer_id,
             app_id=app_id,
             service_id=service_id,
+            company_id=company_id,
             raw=raw,
         )
 
@@ -1096,6 +1113,7 @@ class Projects(BaseSDK):
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
+        company_id: Optional[str] = None,
         raw: Optional[bool] = False,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -1110,6 +1128,7 @@ class Projects(BaseSDK):
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param company_id: The ID of the company to scope requests to. For connectors that support multi-company, this overrides the default company configured in connection settings.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
@@ -1131,6 +1150,7 @@ class Projects(BaseSDK):
             consumer_id=consumer_id,
             app_id=app_id,
             service_id=service_id,
+            company_id=company_id,
             raw=raw,
         )
 
@@ -1238,6 +1258,7 @@ class Projects(BaseSDK):
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
+        company_id_param: Optional[str] = None,
         raw: Optional[bool] = False,
         display_id: OptionalNullable[str] = UNSET,
         reference_id: OptionalNullable[str] = UNSET,
@@ -1305,6 +1326,7 @@ class Projects(BaseSDK):
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param company_id_param: The ID of the company to scope requests to. For connectors that support multi-company, this overrides the default company configured in connection settings.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param display_id: User-friendly project identifier
         :param reference_id: External reference identifier for the project
@@ -1361,6 +1383,7 @@ class Projects(BaseSDK):
             consumer_id=consumer_id,
             app_id=app_id,
             service_id=service_id,
+            company_id_param=company_id_param,
             raw=raw,
             project=models.ProjectInput(
                 name=name,
@@ -1524,6 +1547,7 @@ class Projects(BaseSDK):
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
+        company_id_param: Optional[str] = None,
         raw: Optional[bool] = False,
         display_id: OptionalNullable[str] = UNSET,
         reference_id: OptionalNullable[str] = UNSET,
@@ -1591,6 +1615,7 @@ class Projects(BaseSDK):
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param company_id_param: The ID of the company to scope requests to. For connectors that support multi-company, this overrides the default company configured in connection settings.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param display_id: User-friendly project identifier
         :param reference_id: External reference identifier for the project
@@ -1647,6 +1672,7 @@ class Projects(BaseSDK):
             consumer_id=consumer_id,
             app_id=app_id,
             service_id=service_id,
+            company_id_param=company_id_param,
             raw=raw,
             project=models.ProjectInput(
                 name=name,
@@ -1809,6 +1835,7 @@ class Projects(BaseSDK):
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
+        company_id: Optional[str] = None,
         raw: Optional[bool] = False,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -1823,6 +1850,7 @@ class Projects(BaseSDK):
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param company_id: The ID of the company to scope requests to. For connectors that support multi-company, this overrides the default company configured in connection settings.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
@@ -1844,6 +1872,7 @@ class Projects(BaseSDK):
             consumer_id=consumer_id,
             app_id=app_id,
             service_id=service_id,
+            company_id=company_id,
             raw=raw,
         )
 
@@ -1950,6 +1979,7 @@ class Projects(BaseSDK):
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
+        company_id: Optional[str] = None,
         raw: Optional[bool] = False,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -1964,6 +1994,7 @@ class Projects(BaseSDK):
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param company_id: The ID of the company to scope requests to. For connectors that support multi-company, this overrides the default company configured in connection settings.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
@@ -1985,6 +2016,7 @@ class Projects(BaseSDK):
             consumer_id=consumer_id,
             app_id=app_id,
             service_id=service_id,
+            company_id=company_id,
             raw=raw,
         )
 

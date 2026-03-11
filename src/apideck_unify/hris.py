@@ -2,9 +2,9 @@
 
 from .basesdk import BaseSDK
 from .sdkconfiguration import SDKConfiguration
-from apideck_unify.apideck_companies import ApideckCompanies
 from apideck_unify.apideck_departments import ApideckDepartments
 from apideck_unify.apideck_employees import ApideckEmployees
+from apideck_unify.apideck_hris_companies import ApideckHrisCompanies
 from apideck_unify.employeepayrolls import EmployeePayrolls
 from apideck_unify.employeeschedules_sdk import EmployeeSchedulesSDK
 from apideck_unify.payrolls import Payrolls
@@ -14,7 +14,7 @@ from typing import Optional
 
 class Hris(BaseSDK):
     employees: ApideckEmployees
-    companies: ApideckCompanies
+    companies: ApideckHrisCompanies
     departments: ApideckDepartments
     payrolls: Payrolls
     employee_payrolls: EmployeePayrolls
@@ -32,7 +32,7 @@ class Hris(BaseSDK):
         self.employees = ApideckEmployees(
             self.sdk_configuration, parent_ref=self.parent_ref
         )
-        self.companies = ApideckCompanies(
+        self.companies = ApideckHrisCompanies(
             self.sdk_configuration, parent_ref=self.parent_ref
         )
         self.departments = ApideckDepartments(

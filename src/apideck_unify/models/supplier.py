@@ -87,6 +87,8 @@ class SupplierTypedDict(TypedDict):
     r"""Payment method used for the transaction, such as cash, credit card, bank transfer, or check"""
     terms: NotRequired[Nullable[str]]
     r"""Terms of payment."""
+    terms_id: NotRequired[Nullable[str]]
+    r"""The ID of the payment terms"""
     channel: NotRequired[Nullable[str]]
     r"""The channel through which the transaction is processed."""
     issued_method: NotRequired[Nullable[str]]
@@ -193,6 +195,9 @@ class Supplier(BaseModel):
     terms: OptionalNullable[str] = UNSET
     r"""Terms of payment."""
 
+    terms_id: OptionalNullable[str] = UNSET
+    r"""The ID of the payment terms"""
+
     channel: OptionalNullable[str] = UNSET
     r"""The channel through which the transaction is processed."""
 
@@ -282,6 +287,7 @@ class Supplier(BaseModel):
             "status",
             "payment_method",
             "terms",
+            "terms_id",
             "channel",
             "issued_method",
             "issued_email",
@@ -319,6 +325,7 @@ class Supplier(BaseModel):
             "status",
             "payment_method",
             "terms",
+            "terms_id",
             "channel",
             "issued_method",
             "issued_email",
@@ -398,6 +405,8 @@ class SupplierInputTypedDict(TypedDict):
     r"""Payment method used for the transaction, such as cash, credit card, bank transfer, or check"""
     terms: NotRequired[Nullable[str]]
     r"""Terms of payment."""
+    terms_id: NotRequired[Nullable[str]]
+    r"""The ID of the payment terms"""
     channel: NotRequired[Nullable[str]]
     r"""The channel through which the transaction is processed."""
     issued_method: NotRequired[Nullable[str]]
@@ -488,6 +497,9 @@ class SupplierInput(BaseModel):
     terms: OptionalNullable[str] = UNSET
     r"""Terms of payment."""
 
+    terms_id: OptionalNullable[str] = UNSET
+    r"""The ID of the payment terms"""
+
     channel: OptionalNullable[str] = UNSET
     r"""The channel through which the transaction is processed."""
 
@@ -561,6 +573,7 @@ class SupplierInput(BaseModel):
             "status",
             "payment_method",
             "terms",
+            "terms_id",
             "channel",
             "issued_method",
             "issued_email",
@@ -592,6 +605,7 @@ class SupplierInput(BaseModel):
             "status",
             "payment_method",
             "terms",
+            "terms_id",
             "channel",
             "issued_method",
             "issued_email",

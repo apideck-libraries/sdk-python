@@ -309,6 +309,9 @@ class Consumers(BaseSDK):
         self,
         *,
         app_id: Optional[str] = None,
+        filter_: Optional[
+            Union[models.ConsumersFilter, models.ConsumersFilterTypedDict]
+        ] = None,
         cursor: OptionalNullable[str] = UNSET,
         limit: Optional[int] = 20,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
@@ -322,6 +325,7 @@ class Consumers(BaseSDK):
 
 
         :param app_id: The ID of your Unify application
+        :param filter_: Filter results
         :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
         :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
         :param retries: Override the default retry configuration for this method
@@ -341,6 +345,7 @@ class Consumers(BaseSDK):
 
         request = models.VaultConsumersAllRequest(
             app_id=app_id,
+            filter_=utils.get_pydantic_model(filter_, Optional[models.ConsumersFilter]),
             cursor=cursor,
             limit=limit,
         )
@@ -404,6 +409,7 @@ class Consumers(BaseSDK):
 
             return self.list(
                 app_id=app_id,
+                filter_=filter_,
                 cursor=next_cursor,
                 limit=limit,
                 retries=retries,
@@ -464,6 +470,9 @@ class Consumers(BaseSDK):
         self,
         *,
         app_id: Optional[str] = None,
+        filter_: Optional[
+            Union[models.ConsumersFilter, models.ConsumersFilterTypedDict]
+        ] = None,
         cursor: OptionalNullable[str] = UNSET,
         limit: Optional[int] = 20,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
@@ -477,6 +486,7 @@ class Consumers(BaseSDK):
 
 
         :param app_id: The ID of your Unify application
+        :param filter_: Filter results
         :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
         :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
         :param retries: Override the default retry configuration for this method
@@ -496,6 +506,7 @@ class Consumers(BaseSDK):
 
         request = models.VaultConsumersAllRequest(
             app_id=app_id,
+            filter_=utils.get_pydantic_model(filter_, Optional[models.ConsumersFilter]),
             cursor=cursor,
             limit=limit,
         )
@@ -559,6 +570,7 @@ class Consumers(BaseSDK):
 
             return self.list(
                 app_id=app_id,
+                filter_=filter_,
                 cursor=next_cursor,
                 limit=limit,
                 retries=retries,

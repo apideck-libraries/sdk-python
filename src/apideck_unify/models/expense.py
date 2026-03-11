@@ -66,6 +66,7 @@ class ExpenseStatus(str, Enum, metaclass=utils.OpenEnumMeta):
 
     DRAFT = "draft"
     POSTED = "posted"
+    VOIDED = "voided"
 
 
 class ExpenseTypedDict(TypedDict):

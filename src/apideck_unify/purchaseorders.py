@@ -19,6 +19,7 @@ class PurchaseOrders(BaseSDK):
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
+        company_id: Optional[str] = None,
         cursor: OptionalNullable[str] = UNSET,
         pass_through: Optional[Dict[str, Any]] = None,
         limit: Optional[int] = 20,
@@ -41,6 +42,7 @@ class PurchaseOrders(BaseSDK):
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param company_id: The ID of the company to scope requests to. For connectors that support multi-company, this overrides the default company configured in connection settings.
         :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
         :param pass_through: Optional unmapped key/values that will be passed through to downstream as query parameters. Ie: ?pass_through[search]=leads becomes ?search=leads
         :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
@@ -66,6 +68,7 @@ class PurchaseOrders(BaseSDK):
             consumer_id=consumer_id,
             app_id=app_id,
             service_id=service_id,
+            company_id=company_id,
             cursor=cursor,
             pass_through=pass_through,
             limit=limit,
@@ -138,6 +141,7 @@ class PurchaseOrders(BaseSDK):
                 consumer_id=consumer_id,
                 app_id=app_id,
                 service_id=service_id,
+                company_id=company_id,
                 cursor=next_cursor,
                 pass_through=pass_through,
                 limit=limit,
@@ -204,6 +208,7 @@ class PurchaseOrders(BaseSDK):
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
+        company_id: Optional[str] = None,
         cursor: OptionalNullable[str] = UNSET,
         pass_through: Optional[Dict[str, Any]] = None,
         limit: Optional[int] = 20,
@@ -226,6 +231,7 @@ class PurchaseOrders(BaseSDK):
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param company_id: The ID of the company to scope requests to. For connectors that support multi-company, this overrides the default company configured in connection settings.
         :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
         :param pass_through: Optional unmapped key/values that will be passed through to downstream as query parameters. Ie: ?pass_through[search]=leads becomes ?search=leads
         :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
@@ -251,6 +257,7 @@ class PurchaseOrders(BaseSDK):
             consumer_id=consumer_id,
             app_id=app_id,
             service_id=service_id,
+            company_id=company_id,
             cursor=cursor,
             pass_through=pass_through,
             limit=limit,
@@ -323,6 +330,7 @@ class PurchaseOrders(BaseSDK):
                 consumer_id=consumer_id,
                 app_id=app_id,
                 service_id=service_id,
+                company_id=company_id,
                 cursor=next_cursor,
                 pass_through=pass_through,
                 limit=limit,
@@ -389,6 +397,7 @@ class PurchaseOrders(BaseSDK):
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
+        company_id_param: Optional[str] = None,
         display_id: OptionalNullable[str] = UNSET,
         po_number: OptionalNullable[str] = UNSET,
         reference: OptionalNullable[str] = UNSET,
@@ -433,6 +442,7 @@ class PurchaseOrders(BaseSDK):
         due_date: OptionalNullable[date] = UNSET,
         payment_method: OptionalNullable[str] = UNSET,
         terms: OptionalNullable[str] = UNSET,
+        terms_id: OptionalNullable[str] = UNSET,
         amortization_type: OptionalNullable[
             models.PurchaseOrderAmortizationType
         ] = UNSET,
@@ -469,6 +479,7 @@ class PurchaseOrders(BaseSDK):
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param company_id_param: The ID of the company to scope requests to. For connectors that support multi-company, this overrides the default company configured in connection settings.
         :param display_id: Display ID of the purchase order
         :param po_number: A PO Number uniquely identifies a purchase order and is generally defined by the buyer.
         :param reference: Optional purchase order reference.
@@ -498,6 +509,7 @@ class PurchaseOrders(BaseSDK):
         :param due_date: The due date is the date on which a payment is scheduled to be received - YYYY-MM-DD.
         :param payment_method: Payment method used for the transaction, such as cash, credit card, bank transfer, or check
         :param terms: Terms of payment.
+        :param terms_id: The ID of the payment terms
         :param amortization_type: Type of amortization
         :param tax_code: Applicable tax id/code override if tax is not supplied on a line item basis.
         :param tax_method: Method of tax calculation
@@ -530,6 +542,7 @@ class PurchaseOrders(BaseSDK):
             consumer_id=consumer_id,
             app_id=app_id,
             service_id=service_id,
+            company_id_param=company_id_param,
             purchase_order=models.PurchaseOrderInput(
                 display_id=display_id,
                 po_number=po_number,
@@ -572,6 +585,7 @@ class PurchaseOrders(BaseSDK):
                 due_date=due_date,
                 payment_method=payment_method,
                 terms=terms,
+                terms_id=terms_id,
                 amortization_type=amortization_type,
                 tax_code=tax_code,
                 tax_method=tax_method,
@@ -700,6 +714,7 @@ class PurchaseOrders(BaseSDK):
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
+        company_id_param: Optional[str] = None,
         display_id: OptionalNullable[str] = UNSET,
         po_number: OptionalNullable[str] = UNSET,
         reference: OptionalNullable[str] = UNSET,
@@ -744,6 +759,7 @@ class PurchaseOrders(BaseSDK):
         due_date: OptionalNullable[date] = UNSET,
         payment_method: OptionalNullable[str] = UNSET,
         terms: OptionalNullable[str] = UNSET,
+        terms_id: OptionalNullable[str] = UNSET,
         amortization_type: OptionalNullable[
             models.PurchaseOrderAmortizationType
         ] = UNSET,
@@ -780,6 +796,7 @@ class PurchaseOrders(BaseSDK):
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param company_id_param: The ID of the company to scope requests to. For connectors that support multi-company, this overrides the default company configured in connection settings.
         :param display_id: Display ID of the purchase order
         :param po_number: A PO Number uniquely identifies a purchase order and is generally defined by the buyer.
         :param reference: Optional purchase order reference.
@@ -809,6 +826,7 @@ class PurchaseOrders(BaseSDK):
         :param due_date: The due date is the date on which a payment is scheduled to be received - YYYY-MM-DD.
         :param payment_method: Payment method used for the transaction, such as cash, credit card, bank transfer, or check
         :param terms: Terms of payment.
+        :param terms_id: The ID of the payment terms
         :param amortization_type: Type of amortization
         :param tax_code: Applicable tax id/code override if tax is not supplied on a line item basis.
         :param tax_method: Method of tax calculation
@@ -841,6 +859,7 @@ class PurchaseOrders(BaseSDK):
             consumer_id=consumer_id,
             app_id=app_id,
             service_id=service_id,
+            company_id_param=company_id_param,
             purchase_order=models.PurchaseOrderInput(
                 display_id=display_id,
                 po_number=po_number,
@@ -883,6 +902,7 @@ class PurchaseOrders(BaseSDK):
                 due_date=due_date,
                 payment_method=payment_method,
                 terms=terms,
+                terms_id=terms_id,
                 amortization_type=amortization_type,
                 tax_code=tax_code,
                 tax_method=tax_method,
@@ -1011,6 +1031,7 @@ class PurchaseOrders(BaseSDK):
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
+        company_id: Optional[str] = None,
         raw: Optional[bool] = False,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -1025,6 +1046,7 @@ class PurchaseOrders(BaseSDK):
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param company_id: The ID of the company to scope requests to. For connectors that support multi-company, this overrides the default company configured in connection settings.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
@@ -1046,6 +1068,7 @@ class PurchaseOrders(BaseSDK):
             consumer_id=consumer_id,
             app_id=app_id,
             service_id=service_id,
+            company_id=company_id,
             raw=raw,
         )
 
@@ -1152,6 +1175,7 @@ class PurchaseOrders(BaseSDK):
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
+        company_id: Optional[str] = None,
         raw: Optional[bool] = False,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -1166,6 +1190,7 @@ class PurchaseOrders(BaseSDK):
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param company_id: The ID of the company to scope requests to. For connectors that support multi-company, this overrides the default company configured in connection settings.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
@@ -1187,6 +1212,7 @@ class PurchaseOrders(BaseSDK):
             consumer_id=consumer_id,
             app_id=app_id,
             service_id=service_id,
+            company_id=company_id,
             raw=raw,
         )
 
@@ -1293,6 +1319,7 @@ class PurchaseOrders(BaseSDK):
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
+        company_id_param: Optional[str] = None,
         raw: Optional[bool] = False,
         display_id: OptionalNullable[str] = UNSET,
         po_number: OptionalNullable[str] = UNSET,
@@ -1338,6 +1365,7 @@ class PurchaseOrders(BaseSDK):
         due_date: OptionalNullable[date] = UNSET,
         payment_method: OptionalNullable[str] = UNSET,
         terms: OptionalNullable[str] = UNSET,
+        terms_id: OptionalNullable[str] = UNSET,
         amortization_type: OptionalNullable[
             models.PurchaseOrderAmortizationType
         ] = UNSET,
@@ -1374,6 +1402,7 @@ class PurchaseOrders(BaseSDK):
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param company_id_param: The ID of the company to scope requests to. For connectors that support multi-company, this overrides the default company configured in connection settings.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param display_id: Display ID of the purchase order
         :param po_number: A PO Number uniquely identifies a purchase order and is generally defined by the buyer.
@@ -1404,6 +1433,7 @@ class PurchaseOrders(BaseSDK):
         :param due_date: The due date is the date on which a payment is scheduled to be received - YYYY-MM-DD.
         :param payment_method: Payment method used for the transaction, such as cash, credit card, bank transfer, or check
         :param terms: Terms of payment.
+        :param terms_id: The ID of the payment terms
         :param amortization_type: Type of amortization
         :param tax_code: Applicable tax id/code override if tax is not supplied on a line item basis.
         :param tax_method: Method of tax calculation
@@ -1436,6 +1466,7 @@ class PurchaseOrders(BaseSDK):
             consumer_id=consumer_id,
             app_id=app_id,
             service_id=service_id,
+            company_id_param=company_id_param,
             raw=raw,
             purchase_order=models.PurchaseOrderInput(
                 display_id=display_id,
@@ -1479,6 +1510,7 @@ class PurchaseOrders(BaseSDK):
                 due_date=due_date,
                 payment_method=payment_method,
                 terms=terms,
+                terms_id=terms_id,
                 amortization_type=amortization_type,
                 tax_code=tax_code,
                 tax_method=tax_method,
@@ -1607,6 +1639,7 @@ class PurchaseOrders(BaseSDK):
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
+        company_id_param: Optional[str] = None,
         raw: Optional[bool] = False,
         display_id: OptionalNullable[str] = UNSET,
         po_number: OptionalNullable[str] = UNSET,
@@ -1652,6 +1685,7 @@ class PurchaseOrders(BaseSDK):
         due_date: OptionalNullable[date] = UNSET,
         payment_method: OptionalNullable[str] = UNSET,
         terms: OptionalNullable[str] = UNSET,
+        terms_id: OptionalNullable[str] = UNSET,
         amortization_type: OptionalNullable[
             models.PurchaseOrderAmortizationType
         ] = UNSET,
@@ -1688,6 +1722,7 @@ class PurchaseOrders(BaseSDK):
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param company_id_param: The ID of the company to scope requests to. For connectors that support multi-company, this overrides the default company configured in connection settings.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param display_id: Display ID of the purchase order
         :param po_number: A PO Number uniquely identifies a purchase order and is generally defined by the buyer.
@@ -1718,6 +1753,7 @@ class PurchaseOrders(BaseSDK):
         :param due_date: The due date is the date on which a payment is scheduled to be received - YYYY-MM-DD.
         :param payment_method: Payment method used for the transaction, such as cash, credit card, bank transfer, or check
         :param terms: Terms of payment.
+        :param terms_id: The ID of the payment terms
         :param amortization_type: Type of amortization
         :param tax_code: Applicable tax id/code override if tax is not supplied on a line item basis.
         :param tax_method: Method of tax calculation
@@ -1750,6 +1786,7 @@ class PurchaseOrders(BaseSDK):
             consumer_id=consumer_id,
             app_id=app_id,
             service_id=service_id,
+            company_id_param=company_id_param,
             raw=raw,
             purchase_order=models.PurchaseOrderInput(
                 display_id=display_id,
@@ -1793,6 +1830,7 @@ class PurchaseOrders(BaseSDK):
                 due_date=due_date,
                 payment_method=payment_method,
                 terms=terms,
+                terms_id=terms_id,
                 amortization_type=amortization_type,
                 tax_code=tax_code,
                 tax_method=tax_method,
@@ -1921,6 +1959,7 @@ class PurchaseOrders(BaseSDK):
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
+        company_id: Optional[str] = None,
         raw: Optional[bool] = False,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -1935,6 +1974,7 @@ class PurchaseOrders(BaseSDK):
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param company_id: The ID of the company to scope requests to. For connectors that support multi-company, this overrides the default company configured in connection settings.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
@@ -1956,6 +1996,7 @@ class PurchaseOrders(BaseSDK):
             consumer_id=consumer_id,
             app_id=app_id,
             service_id=service_id,
+            company_id=company_id,
             raw=raw,
         )
 
@@ -2062,6 +2103,7 @@ class PurchaseOrders(BaseSDK):
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
+        company_id: Optional[str] = None,
         raw: Optional[bool] = False,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -2076,6 +2118,7 @@ class PurchaseOrders(BaseSDK):
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param company_id: The ID of the company to scope requests to. For connectors that support multi-company, this overrides the default company configured in connection settings.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
@@ -2097,6 +2140,7 @@ class PurchaseOrders(BaseSDK):
             consumer_id=consumer_id,
             app_id=app_id,
             service_id=service_id,
+            company_id=company_id,
             raw=raw,
         )
 

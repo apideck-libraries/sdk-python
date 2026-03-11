@@ -6,6 +6,7 @@ from apideck_unify._hooks import HookContext
 from apideck_unify.types import OptionalNullable, UNSET
 from apideck_unify.utils import get_security_from_env
 from apideck_unify.utils.unmarshal_json_response import unmarshal_json_response
+from datetime import date
 from jsonpath import JSONPath
 from typing import Any, Dict, List, Mapping, Optional, Union
 
@@ -361,6 +362,534 @@ class Jobs(BaseSDK):
 
         raise models.APIError("Unexpected response received", http_res)
 
+    def create(
+        self,
+        *,
+        raw: Optional[bool] = False,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
+        service_id: Optional[str] = None,
+        slug: OptionalNullable[str] = UNSET,
+        title: OptionalNullable[str] = UNSET,
+        sequence: Optional[int] = None,
+        visibility: Optional[models.Visibility] = None,
+        status: Optional[models.JobStatus] = None,
+        code: Optional[str] = None,
+        language: OptionalNullable[str] = UNSET,
+        employment_terms: OptionalNullable[models.EmploymentTerms] = UNSET,
+        experience: Optional[str] = None,
+        location: OptionalNullable[str] = UNSET,
+        remote: OptionalNullable[bool] = UNSET,
+        requisition_id: Optional[str] = None,
+        department: Optional[
+            Union[models.DepartmentInput, models.DepartmentInputTypedDict]
+        ] = None,
+        branch: Optional[Union[models.JobBranch, models.JobBranchTypedDict]] = None,
+        recruiters: OptionalNullable[List[str]] = UNSET,
+        hiring_managers: Optional[List[str]] = None,
+        followers: OptionalNullable[List[str]] = UNSET,
+        description: OptionalNullable[str] = UNSET,
+        description_html: OptionalNullable[str] = UNSET,
+        blocks: Optional[
+            Union[List[models.Blocks], List[models.BlocksTypedDict]]
+        ] = None,
+        closing: OptionalNullable[str] = UNSET,
+        closing_html: OptionalNullable[str] = UNSET,
+        closing_date: OptionalNullable[date] = UNSET,
+        salary: Optional[Union[models.Salary, models.SalaryTypedDict]] = None,
+        url: OptionalNullable[str] = UNSET,
+        job_portal_url: OptionalNullable[str] = UNSET,
+        record_url: OptionalNullable[str] = UNSET,
+        links: Optional[
+            Union[List[models.JobLinks], List[models.JobLinksTypedDict]]
+        ] = None,
+        confidential: Optional[bool] = None,
+        available_to_employees: Optional[bool] = None,
+        tags: OptionalNullable[List[str]] = UNSET,
+        addresses: Optional[
+            Union[List[models.Address], List[models.AddressTypedDict]]
+        ] = None,
+        custom_fields: Optional[
+            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+        ] = None,
+        deleted: OptionalNullable[bool] = UNSET,
+        owner_id: OptionalNullable[str] = UNSET,
+        retries: OptionalNullable[utils.RetryConfig] = UNSET,
+        server_url: Optional[str] = None,
+        timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
+    ) -> models.AtsJobsAddResponse:
+        r"""Create Job
+
+        Create Job
+
+        :param raw: Include raw response. Mostly used for debugging purposes
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
+        :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param slug:
+        :param title: The job title of the person.
+        :param sequence: Sequence in relation to other jobs.
+        :param visibility: The visibility of the job
+        :param status: The status of the job.
+        :param code: The code of the job.
+        :param language: language code according to ISO 639-1. For the United States - EN
+        :param employment_terms:
+        :param experience: Level of experience required for the job role.
+        :param location: Specifies the location for the job posting.
+        :param remote: Specifies whether the posting is for a remote job.
+        :param requisition_id: A job's Requisition ID (Req ID) allows your organization to identify and track a job based on alphanumeric naming conventions unique to your company's internal processes.
+        :param department:
+        :param branch: Details of the branch for which the job is created.
+        :param recruiters: The recruiter is generally someone who is tasked to help the hiring manager find and screen qualified applicant
+        :param hiring_managers:
+        :param followers:
+        :param description: A description of the object.
+        :param description_html: The job description in HTML format
+        :param blocks:
+        :param closing:
+        :param closing_html: The closing section of the job description in HTML format
+        :param closing_date:
+        :param salary:
+        :param url: URL of the job description
+        :param job_portal_url: URL of the job portal
+        :param record_url:
+        :param links:
+        :param confidential:
+        :param available_to_employees: Specifies whether an employee of the organization can apply for the job.
+        :param tags:
+        :param addresses:
+        :param custom_fields:
+        :param deleted: Flag to indicate if the object is deleted.
+        :param owner_id:
+        :param retries: Override the default retry configuration for this method
+        :param server_url: Override the default server URL for this method
+        :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
+        """
+        base_url = None
+        url_variables = None
+        if timeout_ms is None:
+            timeout_ms = self.sdk_configuration.timeout_ms
+
+        if server_url is not None:
+            base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
+
+        request = models.AtsJobsAddRequest(
+            raw=raw,
+            consumer_id=consumer_id,
+            app_id=app_id,
+            service_id=service_id,
+            job=models.JobInput(
+                slug=slug,
+                title=title,
+                sequence=sequence,
+                visibility=visibility,
+                status=status,
+                code=code,
+                language=language,
+                employment_terms=employment_terms,
+                experience=experience,
+                location=location,
+                remote=remote,
+                requisition_id=requisition_id,
+                department=utils.get_pydantic_model(
+                    department, Optional[models.DepartmentInput]
+                ),
+                branch=utils.get_pydantic_model(branch, Optional[models.JobBranch]),
+                recruiters=recruiters,
+                hiring_managers=hiring_managers,
+                followers=followers,
+                description=description,
+                description_html=description_html,
+                blocks=utils.get_pydantic_model(blocks, Optional[List[models.Blocks]]),
+                closing=closing,
+                closing_html=closing_html,
+                closing_date=closing_date,
+                salary=utils.get_pydantic_model(salary, Optional[models.Salary]),
+                url=url,
+                job_portal_url=job_portal_url,
+                record_url=record_url,
+                links=utils.get_pydantic_model(links, Optional[List[models.JobLinks]]),
+                confidential=confidential,
+                available_to_employees=available_to_employees,
+                tags=tags,
+                addresses=utils.get_pydantic_model(
+                    addresses, Optional[List[models.Address]]
+                ),
+                custom_fields=utils.get_pydantic_model(
+                    custom_fields, Optional[List[models.CustomField]]
+                ),
+                deleted=deleted,
+                owner_id=owner_id,
+            ),
+        )
+
+        req = self._build_request(
+            method="POST",
+            path="/ats/jobs",
+            base_url=base_url,
+            url_variables=url_variables,
+            request=request,
+            request_body_required=True,
+            request_has_path_params=False,
+            request_has_query_params=True,
+            user_agent_header="user-agent",
+            accept_header_value="application/json",
+            http_headers=http_headers,
+            _globals=models.AtsJobsAddGlobals(
+                consumer_id=self.sdk_configuration.globals.consumer_id,
+                app_id=self.sdk_configuration.globals.app_id,
+            ),
+            security=self.sdk_configuration.security,
+            get_serialized_body=lambda: utils.serialize_request_body(
+                request.job, False, False, "json", models.JobInput
+            ),
+            timeout_ms=timeout_ms,
+        )
+
+        if retries == UNSET:
+            if self.sdk_configuration.retry_config is not UNSET:
+                retries = self.sdk_configuration.retry_config
+            else:
+                retries = utils.RetryConfig(
+                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 900000), True
+                )
+
+        retry_config = None
+        if isinstance(retries, utils.RetryConfig):
+            retry_config = (retries, ["408", "500", "502", "503", "504"])
+
+        http_res = self.do_request(
+            hook_ctx=HookContext(
+                config=self.sdk_configuration,
+                base_url=base_url or "",
+                operation_id="ats.jobsAdd",
+                oauth2_scopes=None,
+                security_source=get_security_from_env(
+                    self.sdk_configuration.security, models.Security
+                ),
+            ),
+            request=req,
+            error_status_codes=["400", "401", "402", "404", "422", "4XX", "5XX"],
+            retry_config=retry_config,
+        )
+
+        response_data: Any = None
+        if utils.match_response(http_res, "201", "application/json"):
+            return models.AtsJobsAddResponse(
+                create_job_response=unmarshal_json_response(
+                    Optional[models.CreateJobResponse], http_res
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
+        if utils.match_response(http_res, "400", "application/json"):
+            response_data = unmarshal_json_response(
+                models.BadRequestResponseData, http_res
+            )
+            raise models.BadRequestResponse(response_data, http_res)
+        if utils.match_response(http_res, "401", "application/json"):
+            response_data = unmarshal_json_response(
+                models.UnauthorizedResponseData, http_res
+            )
+            raise models.UnauthorizedResponse(response_data, http_res)
+        if utils.match_response(http_res, "402", "application/json"):
+            response_data = unmarshal_json_response(
+                models.PaymentRequiredResponseData, http_res
+            )
+            raise models.PaymentRequiredResponse(response_data, http_res)
+        if utils.match_response(http_res, "404", "application/json"):
+            response_data = unmarshal_json_response(
+                models.NotFoundResponseData, http_res
+            )
+            raise models.NotFoundResponse(response_data, http_res)
+        if utils.match_response(http_res, "422", "application/json"):
+            response_data = unmarshal_json_response(
+                models.UnprocessableResponseData, http_res
+            )
+            raise models.UnprocessableResponse(response_data, http_res)
+        if utils.match_response(http_res, "4XX", "*"):
+            http_res_text = utils.stream_to_text(http_res)
+            raise models.APIError("API error occurred", http_res, http_res_text)
+        if utils.match_response(http_res, "5XX", "*"):
+            http_res_text = utils.stream_to_text(http_res)
+            raise models.APIError("API error occurred", http_res, http_res_text)
+        if utils.match_response(http_res, "default", "application/json"):
+            return models.AtsJobsAddResponse(
+                unexpected_error_response=unmarshal_json_response(
+                    Optional[models.UnexpectedErrorResponse], http_res
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
+
+        raise models.APIError("Unexpected response received", http_res)
+
+    async def create_async(
+        self,
+        *,
+        raw: Optional[bool] = False,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
+        service_id: Optional[str] = None,
+        slug: OptionalNullable[str] = UNSET,
+        title: OptionalNullable[str] = UNSET,
+        sequence: Optional[int] = None,
+        visibility: Optional[models.Visibility] = None,
+        status: Optional[models.JobStatus] = None,
+        code: Optional[str] = None,
+        language: OptionalNullable[str] = UNSET,
+        employment_terms: OptionalNullable[models.EmploymentTerms] = UNSET,
+        experience: Optional[str] = None,
+        location: OptionalNullable[str] = UNSET,
+        remote: OptionalNullable[bool] = UNSET,
+        requisition_id: Optional[str] = None,
+        department: Optional[
+            Union[models.DepartmentInput, models.DepartmentInputTypedDict]
+        ] = None,
+        branch: Optional[Union[models.JobBranch, models.JobBranchTypedDict]] = None,
+        recruiters: OptionalNullable[List[str]] = UNSET,
+        hiring_managers: Optional[List[str]] = None,
+        followers: OptionalNullable[List[str]] = UNSET,
+        description: OptionalNullable[str] = UNSET,
+        description_html: OptionalNullable[str] = UNSET,
+        blocks: Optional[
+            Union[List[models.Blocks], List[models.BlocksTypedDict]]
+        ] = None,
+        closing: OptionalNullable[str] = UNSET,
+        closing_html: OptionalNullable[str] = UNSET,
+        closing_date: OptionalNullable[date] = UNSET,
+        salary: Optional[Union[models.Salary, models.SalaryTypedDict]] = None,
+        url: OptionalNullable[str] = UNSET,
+        job_portal_url: OptionalNullable[str] = UNSET,
+        record_url: OptionalNullable[str] = UNSET,
+        links: Optional[
+            Union[List[models.JobLinks], List[models.JobLinksTypedDict]]
+        ] = None,
+        confidential: Optional[bool] = None,
+        available_to_employees: Optional[bool] = None,
+        tags: OptionalNullable[List[str]] = UNSET,
+        addresses: Optional[
+            Union[List[models.Address], List[models.AddressTypedDict]]
+        ] = None,
+        custom_fields: Optional[
+            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+        ] = None,
+        deleted: OptionalNullable[bool] = UNSET,
+        owner_id: OptionalNullable[str] = UNSET,
+        retries: OptionalNullable[utils.RetryConfig] = UNSET,
+        server_url: Optional[str] = None,
+        timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
+    ) -> models.AtsJobsAddResponse:
+        r"""Create Job
+
+        Create Job
+
+        :param raw: Include raw response. Mostly used for debugging purposes
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
+        :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param slug:
+        :param title: The job title of the person.
+        :param sequence: Sequence in relation to other jobs.
+        :param visibility: The visibility of the job
+        :param status: The status of the job.
+        :param code: The code of the job.
+        :param language: language code according to ISO 639-1. For the United States - EN
+        :param employment_terms:
+        :param experience: Level of experience required for the job role.
+        :param location: Specifies the location for the job posting.
+        :param remote: Specifies whether the posting is for a remote job.
+        :param requisition_id: A job's Requisition ID (Req ID) allows your organization to identify and track a job based on alphanumeric naming conventions unique to your company's internal processes.
+        :param department:
+        :param branch: Details of the branch for which the job is created.
+        :param recruiters: The recruiter is generally someone who is tasked to help the hiring manager find and screen qualified applicant
+        :param hiring_managers:
+        :param followers:
+        :param description: A description of the object.
+        :param description_html: The job description in HTML format
+        :param blocks:
+        :param closing:
+        :param closing_html: The closing section of the job description in HTML format
+        :param closing_date:
+        :param salary:
+        :param url: URL of the job description
+        :param job_portal_url: URL of the job portal
+        :param record_url:
+        :param links:
+        :param confidential:
+        :param available_to_employees: Specifies whether an employee of the organization can apply for the job.
+        :param tags:
+        :param addresses:
+        :param custom_fields:
+        :param deleted: Flag to indicate if the object is deleted.
+        :param owner_id:
+        :param retries: Override the default retry configuration for this method
+        :param server_url: Override the default server URL for this method
+        :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
+        """
+        base_url = None
+        url_variables = None
+        if timeout_ms is None:
+            timeout_ms = self.sdk_configuration.timeout_ms
+
+        if server_url is not None:
+            base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
+
+        request = models.AtsJobsAddRequest(
+            raw=raw,
+            consumer_id=consumer_id,
+            app_id=app_id,
+            service_id=service_id,
+            job=models.JobInput(
+                slug=slug,
+                title=title,
+                sequence=sequence,
+                visibility=visibility,
+                status=status,
+                code=code,
+                language=language,
+                employment_terms=employment_terms,
+                experience=experience,
+                location=location,
+                remote=remote,
+                requisition_id=requisition_id,
+                department=utils.get_pydantic_model(
+                    department, Optional[models.DepartmentInput]
+                ),
+                branch=utils.get_pydantic_model(branch, Optional[models.JobBranch]),
+                recruiters=recruiters,
+                hiring_managers=hiring_managers,
+                followers=followers,
+                description=description,
+                description_html=description_html,
+                blocks=utils.get_pydantic_model(blocks, Optional[List[models.Blocks]]),
+                closing=closing,
+                closing_html=closing_html,
+                closing_date=closing_date,
+                salary=utils.get_pydantic_model(salary, Optional[models.Salary]),
+                url=url,
+                job_portal_url=job_portal_url,
+                record_url=record_url,
+                links=utils.get_pydantic_model(links, Optional[List[models.JobLinks]]),
+                confidential=confidential,
+                available_to_employees=available_to_employees,
+                tags=tags,
+                addresses=utils.get_pydantic_model(
+                    addresses, Optional[List[models.Address]]
+                ),
+                custom_fields=utils.get_pydantic_model(
+                    custom_fields, Optional[List[models.CustomField]]
+                ),
+                deleted=deleted,
+                owner_id=owner_id,
+            ),
+        )
+
+        req = self._build_request_async(
+            method="POST",
+            path="/ats/jobs",
+            base_url=base_url,
+            url_variables=url_variables,
+            request=request,
+            request_body_required=True,
+            request_has_path_params=False,
+            request_has_query_params=True,
+            user_agent_header="user-agent",
+            accept_header_value="application/json",
+            http_headers=http_headers,
+            _globals=models.AtsJobsAddGlobals(
+                consumer_id=self.sdk_configuration.globals.consumer_id,
+                app_id=self.sdk_configuration.globals.app_id,
+            ),
+            security=self.sdk_configuration.security,
+            get_serialized_body=lambda: utils.serialize_request_body(
+                request.job, False, False, "json", models.JobInput
+            ),
+            timeout_ms=timeout_ms,
+        )
+
+        if retries == UNSET:
+            if self.sdk_configuration.retry_config is not UNSET:
+                retries = self.sdk_configuration.retry_config
+            else:
+                retries = utils.RetryConfig(
+                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 900000), True
+                )
+
+        retry_config = None
+        if isinstance(retries, utils.RetryConfig):
+            retry_config = (retries, ["408", "500", "502", "503", "504"])
+
+        http_res = await self.do_request_async(
+            hook_ctx=HookContext(
+                config=self.sdk_configuration,
+                base_url=base_url or "",
+                operation_id="ats.jobsAdd",
+                oauth2_scopes=None,
+                security_source=get_security_from_env(
+                    self.sdk_configuration.security, models.Security
+                ),
+            ),
+            request=req,
+            error_status_codes=["400", "401", "402", "404", "422", "4XX", "5XX"],
+            retry_config=retry_config,
+        )
+
+        response_data: Any = None
+        if utils.match_response(http_res, "201", "application/json"):
+            return models.AtsJobsAddResponse(
+                create_job_response=unmarshal_json_response(
+                    Optional[models.CreateJobResponse], http_res
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
+        if utils.match_response(http_res, "400", "application/json"):
+            response_data = unmarshal_json_response(
+                models.BadRequestResponseData, http_res
+            )
+            raise models.BadRequestResponse(response_data, http_res)
+        if utils.match_response(http_res, "401", "application/json"):
+            response_data = unmarshal_json_response(
+                models.UnauthorizedResponseData, http_res
+            )
+            raise models.UnauthorizedResponse(response_data, http_res)
+        if utils.match_response(http_res, "402", "application/json"):
+            response_data = unmarshal_json_response(
+                models.PaymentRequiredResponseData, http_res
+            )
+            raise models.PaymentRequiredResponse(response_data, http_res)
+        if utils.match_response(http_res, "404", "application/json"):
+            response_data = unmarshal_json_response(
+                models.NotFoundResponseData, http_res
+            )
+            raise models.NotFoundResponse(response_data, http_res)
+        if utils.match_response(http_res, "422", "application/json"):
+            response_data = unmarshal_json_response(
+                models.UnprocessableResponseData, http_res
+            )
+            raise models.UnprocessableResponse(response_data, http_res)
+        if utils.match_response(http_res, "4XX", "*"):
+            http_res_text = await utils.stream_to_text_async(http_res)
+            raise models.APIError("API error occurred", http_res, http_res_text)
+        if utils.match_response(http_res, "5XX", "*"):
+            http_res_text = await utils.stream_to_text_async(http_res)
+            raise models.APIError("API error occurred", http_res, http_res_text)
+        if utils.match_response(http_res, "default", "application/json"):
+            return models.AtsJobsAddResponse(
+                unexpected_error_response=unmarshal_json_response(
+                    Optional[models.UnexpectedErrorResponse], http_res
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
+
+        raise models.APIError("Unexpected response received", http_res)
+
     def get(
         self,
         *,
@@ -641,6 +1170,822 @@ class Jobs(BaseSDK):
             raise models.APIError("API error occurred", http_res, http_res_text)
         if utils.match_response(http_res, "default", "application/json"):
             return models.AtsJobsOneResponse(
+                unexpected_error_response=unmarshal_json_response(
+                    Optional[models.UnexpectedErrorResponse], http_res
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
+
+        raise models.APIError("Unexpected response received", http_res)
+
+    def update(
+        self,
+        *,
+        id: str,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
+        service_id: Optional[str] = None,
+        raw: Optional[bool] = False,
+        slug: OptionalNullable[str] = UNSET,
+        title: OptionalNullable[str] = UNSET,
+        sequence: Optional[int] = None,
+        visibility: Optional[models.Visibility] = None,
+        status: Optional[models.JobStatus] = None,
+        code: Optional[str] = None,
+        language: OptionalNullable[str] = UNSET,
+        employment_terms: OptionalNullable[models.EmploymentTerms] = UNSET,
+        experience: Optional[str] = None,
+        location: OptionalNullable[str] = UNSET,
+        remote: OptionalNullable[bool] = UNSET,
+        requisition_id: Optional[str] = None,
+        department: Optional[
+            Union[models.DepartmentInput, models.DepartmentInputTypedDict]
+        ] = None,
+        branch: Optional[Union[models.JobBranch, models.JobBranchTypedDict]] = None,
+        recruiters: OptionalNullable[List[str]] = UNSET,
+        hiring_managers: Optional[List[str]] = None,
+        followers: OptionalNullable[List[str]] = UNSET,
+        description: OptionalNullable[str] = UNSET,
+        description_html: OptionalNullable[str] = UNSET,
+        blocks: Optional[
+            Union[List[models.Blocks], List[models.BlocksTypedDict]]
+        ] = None,
+        closing: OptionalNullable[str] = UNSET,
+        closing_html: OptionalNullable[str] = UNSET,
+        closing_date: OptionalNullable[date] = UNSET,
+        salary: Optional[Union[models.Salary, models.SalaryTypedDict]] = None,
+        url: OptionalNullable[str] = UNSET,
+        job_portal_url: OptionalNullable[str] = UNSET,
+        record_url: OptionalNullable[str] = UNSET,
+        links: Optional[
+            Union[List[models.JobLinks], List[models.JobLinksTypedDict]]
+        ] = None,
+        confidential: Optional[bool] = None,
+        available_to_employees: Optional[bool] = None,
+        tags: OptionalNullable[List[str]] = UNSET,
+        addresses: Optional[
+            Union[List[models.Address], List[models.AddressTypedDict]]
+        ] = None,
+        custom_fields: Optional[
+            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+        ] = None,
+        deleted: OptionalNullable[bool] = UNSET,
+        owner_id: OptionalNullable[str] = UNSET,
+        retries: OptionalNullable[utils.RetryConfig] = UNSET,
+        server_url: Optional[str] = None,
+        timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
+    ) -> models.AtsJobsUpdateResponse:
+        r"""Update Job
+
+        Update Job
+
+        :param id: ID of the record you are acting upon.
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
+        :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param raw: Include raw response. Mostly used for debugging purposes
+        :param slug:
+        :param title: The job title of the person.
+        :param sequence: Sequence in relation to other jobs.
+        :param visibility: The visibility of the job
+        :param status: The status of the job.
+        :param code: The code of the job.
+        :param language: language code according to ISO 639-1. For the United States - EN
+        :param employment_terms:
+        :param experience: Level of experience required for the job role.
+        :param location: Specifies the location for the job posting.
+        :param remote: Specifies whether the posting is for a remote job.
+        :param requisition_id: A job's Requisition ID (Req ID) allows your organization to identify and track a job based on alphanumeric naming conventions unique to your company's internal processes.
+        :param department:
+        :param branch: Details of the branch for which the job is created.
+        :param recruiters: The recruiter is generally someone who is tasked to help the hiring manager find and screen qualified applicant
+        :param hiring_managers:
+        :param followers:
+        :param description: A description of the object.
+        :param description_html: The job description in HTML format
+        :param blocks:
+        :param closing:
+        :param closing_html: The closing section of the job description in HTML format
+        :param closing_date:
+        :param salary:
+        :param url: URL of the job description
+        :param job_portal_url: URL of the job portal
+        :param record_url:
+        :param links:
+        :param confidential:
+        :param available_to_employees: Specifies whether an employee of the organization can apply for the job.
+        :param tags:
+        :param addresses:
+        :param custom_fields:
+        :param deleted: Flag to indicate if the object is deleted.
+        :param owner_id:
+        :param retries: Override the default retry configuration for this method
+        :param server_url: Override the default server URL for this method
+        :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
+        """
+        base_url = None
+        url_variables = None
+        if timeout_ms is None:
+            timeout_ms = self.sdk_configuration.timeout_ms
+
+        if server_url is not None:
+            base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
+
+        request = models.AtsJobsUpdateRequest(
+            id=id,
+            consumer_id=consumer_id,
+            app_id=app_id,
+            service_id=service_id,
+            raw=raw,
+            job=models.JobInput(
+                slug=slug,
+                title=title,
+                sequence=sequence,
+                visibility=visibility,
+                status=status,
+                code=code,
+                language=language,
+                employment_terms=employment_terms,
+                experience=experience,
+                location=location,
+                remote=remote,
+                requisition_id=requisition_id,
+                department=utils.get_pydantic_model(
+                    department, Optional[models.DepartmentInput]
+                ),
+                branch=utils.get_pydantic_model(branch, Optional[models.JobBranch]),
+                recruiters=recruiters,
+                hiring_managers=hiring_managers,
+                followers=followers,
+                description=description,
+                description_html=description_html,
+                blocks=utils.get_pydantic_model(blocks, Optional[List[models.Blocks]]),
+                closing=closing,
+                closing_html=closing_html,
+                closing_date=closing_date,
+                salary=utils.get_pydantic_model(salary, Optional[models.Salary]),
+                url=url,
+                job_portal_url=job_portal_url,
+                record_url=record_url,
+                links=utils.get_pydantic_model(links, Optional[List[models.JobLinks]]),
+                confidential=confidential,
+                available_to_employees=available_to_employees,
+                tags=tags,
+                addresses=utils.get_pydantic_model(
+                    addresses, Optional[List[models.Address]]
+                ),
+                custom_fields=utils.get_pydantic_model(
+                    custom_fields, Optional[List[models.CustomField]]
+                ),
+                deleted=deleted,
+                owner_id=owner_id,
+            ),
+        )
+
+        req = self._build_request(
+            method="PATCH",
+            path="/ats/jobs/{id}",
+            base_url=base_url,
+            url_variables=url_variables,
+            request=request,
+            request_body_required=True,
+            request_has_path_params=True,
+            request_has_query_params=True,
+            user_agent_header="user-agent",
+            accept_header_value="application/json",
+            http_headers=http_headers,
+            _globals=models.AtsJobsUpdateGlobals(
+                consumer_id=self.sdk_configuration.globals.consumer_id,
+                app_id=self.sdk_configuration.globals.app_id,
+            ),
+            security=self.sdk_configuration.security,
+            get_serialized_body=lambda: utils.serialize_request_body(
+                request.job, False, False, "json", models.JobInput
+            ),
+            timeout_ms=timeout_ms,
+        )
+
+        if retries == UNSET:
+            if self.sdk_configuration.retry_config is not UNSET:
+                retries = self.sdk_configuration.retry_config
+            else:
+                retries = utils.RetryConfig(
+                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 900000), True
+                )
+
+        retry_config = None
+        if isinstance(retries, utils.RetryConfig):
+            retry_config = (retries, ["408", "500", "502", "503", "504"])
+
+        http_res = self.do_request(
+            hook_ctx=HookContext(
+                config=self.sdk_configuration,
+                base_url=base_url or "",
+                operation_id="ats.jobsUpdate",
+                oauth2_scopes=None,
+                security_source=get_security_from_env(
+                    self.sdk_configuration.security, models.Security
+                ),
+            ),
+            request=req,
+            error_status_codes=["400", "401", "402", "404", "422", "4XX", "5XX"],
+            retry_config=retry_config,
+        )
+
+        response_data: Any = None
+        if utils.match_response(http_res, "200", "application/json"):
+            return models.AtsJobsUpdateResponse(
+                update_job_response=unmarshal_json_response(
+                    Optional[models.UpdateJobResponse], http_res
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
+        if utils.match_response(http_res, "400", "application/json"):
+            response_data = unmarshal_json_response(
+                models.BadRequestResponseData, http_res
+            )
+            raise models.BadRequestResponse(response_data, http_res)
+        if utils.match_response(http_res, "401", "application/json"):
+            response_data = unmarshal_json_response(
+                models.UnauthorizedResponseData, http_res
+            )
+            raise models.UnauthorizedResponse(response_data, http_res)
+        if utils.match_response(http_res, "402", "application/json"):
+            response_data = unmarshal_json_response(
+                models.PaymentRequiredResponseData, http_res
+            )
+            raise models.PaymentRequiredResponse(response_data, http_res)
+        if utils.match_response(http_res, "404", "application/json"):
+            response_data = unmarshal_json_response(
+                models.NotFoundResponseData, http_res
+            )
+            raise models.NotFoundResponse(response_data, http_res)
+        if utils.match_response(http_res, "422", "application/json"):
+            response_data = unmarshal_json_response(
+                models.UnprocessableResponseData, http_res
+            )
+            raise models.UnprocessableResponse(response_data, http_res)
+        if utils.match_response(http_res, "4XX", "*"):
+            http_res_text = utils.stream_to_text(http_res)
+            raise models.APIError("API error occurred", http_res, http_res_text)
+        if utils.match_response(http_res, "5XX", "*"):
+            http_res_text = utils.stream_to_text(http_res)
+            raise models.APIError("API error occurred", http_res, http_res_text)
+        if utils.match_response(http_res, "default", "application/json"):
+            return models.AtsJobsUpdateResponse(
+                unexpected_error_response=unmarshal_json_response(
+                    Optional[models.UnexpectedErrorResponse], http_res
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
+
+        raise models.APIError("Unexpected response received", http_res)
+
+    async def update_async(
+        self,
+        *,
+        id: str,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
+        service_id: Optional[str] = None,
+        raw: Optional[bool] = False,
+        slug: OptionalNullable[str] = UNSET,
+        title: OptionalNullable[str] = UNSET,
+        sequence: Optional[int] = None,
+        visibility: Optional[models.Visibility] = None,
+        status: Optional[models.JobStatus] = None,
+        code: Optional[str] = None,
+        language: OptionalNullable[str] = UNSET,
+        employment_terms: OptionalNullable[models.EmploymentTerms] = UNSET,
+        experience: Optional[str] = None,
+        location: OptionalNullable[str] = UNSET,
+        remote: OptionalNullable[bool] = UNSET,
+        requisition_id: Optional[str] = None,
+        department: Optional[
+            Union[models.DepartmentInput, models.DepartmentInputTypedDict]
+        ] = None,
+        branch: Optional[Union[models.JobBranch, models.JobBranchTypedDict]] = None,
+        recruiters: OptionalNullable[List[str]] = UNSET,
+        hiring_managers: Optional[List[str]] = None,
+        followers: OptionalNullable[List[str]] = UNSET,
+        description: OptionalNullable[str] = UNSET,
+        description_html: OptionalNullable[str] = UNSET,
+        blocks: Optional[
+            Union[List[models.Blocks], List[models.BlocksTypedDict]]
+        ] = None,
+        closing: OptionalNullable[str] = UNSET,
+        closing_html: OptionalNullable[str] = UNSET,
+        closing_date: OptionalNullable[date] = UNSET,
+        salary: Optional[Union[models.Salary, models.SalaryTypedDict]] = None,
+        url: OptionalNullable[str] = UNSET,
+        job_portal_url: OptionalNullable[str] = UNSET,
+        record_url: OptionalNullable[str] = UNSET,
+        links: Optional[
+            Union[List[models.JobLinks], List[models.JobLinksTypedDict]]
+        ] = None,
+        confidential: Optional[bool] = None,
+        available_to_employees: Optional[bool] = None,
+        tags: OptionalNullable[List[str]] = UNSET,
+        addresses: Optional[
+            Union[List[models.Address], List[models.AddressTypedDict]]
+        ] = None,
+        custom_fields: Optional[
+            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
+        ] = None,
+        deleted: OptionalNullable[bool] = UNSET,
+        owner_id: OptionalNullable[str] = UNSET,
+        retries: OptionalNullable[utils.RetryConfig] = UNSET,
+        server_url: Optional[str] = None,
+        timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
+    ) -> models.AtsJobsUpdateResponse:
+        r"""Update Job
+
+        Update Job
+
+        :param id: ID of the record you are acting upon.
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
+        :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param raw: Include raw response. Mostly used for debugging purposes
+        :param slug:
+        :param title: The job title of the person.
+        :param sequence: Sequence in relation to other jobs.
+        :param visibility: The visibility of the job
+        :param status: The status of the job.
+        :param code: The code of the job.
+        :param language: language code according to ISO 639-1. For the United States - EN
+        :param employment_terms:
+        :param experience: Level of experience required for the job role.
+        :param location: Specifies the location for the job posting.
+        :param remote: Specifies whether the posting is for a remote job.
+        :param requisition_id: A job's Requisition ID (Req ID) allows your organization to identify and track a job based on alphanumeric naming conventions unique to your company's internal processes.
+        :param department:
+        :param branch: Details of the branch for which the job is created.
+        :param recruiters: The recruiter is generally someone who is tasked to help the hiring manager find and screen qualified applicant
+        :param hiring_managers:
+        :param followers:
+        :param description: A description of the object.
+        :param description_html: The job description in HTML format
+        :param blocks:
+        :param closing:
+        :param closing_html: The closing section of the job description in HTML format
+        :param closing_date:
+        :param salary:
+        :param url: URL of the job description
+        :param job_portal_url: URL of the job portal
+        :param record_url:
+        :param links:
+        :param confidential:
+        :param available_to_employees: Specifies whether an employee of the organization can apply for the job.
+        :param tags:
+        :param addresses:
+        :param custom_fields:
+        :param deleted: Flag to indicate if the object is deleted.
+        :param owner_id:
+        :param retries: Override the default retry configuration for this method
+        :param server_url: Override the default server URL for this method
+        :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
+        """
+        base_url = None
+        url_variables = None
+        if timeout_ms is None:
+            timeout_ms = self.sdk_configuration.timeout_ms
+
+        if server_url is not None:
+            base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
+
+        request = models.AtsJobsUpdateRequest(
+            id=id,
+            consumer_id=consumer_id,
+            app_id=app_id,
+            service_id=service_id,
+            raw=raw,
+            job=models.JobInput(
+                slug=slug,
+                title=title,
+                sequence=sequence,
+                visibility=visibility,
+                status=status,
+                code=code,
+                language=language,
+                employment_terms=employment_terms,
+                experience=experience,
+                location=location,
+                remote=remote,
+                requisition_id=requisition_id,
+                department=utils.get_pydantic_model(
+                    department, Optional[models.DepartmentInput]
+                ),
+                branch=utils.get_pydantic_model(branch, Optional[models.JobBranch]),
+                recruiters=recruiters,
+                hiring_managers=hiring_managers,
+                followers=followers,
+                description=description,
+                description_html=description_html,
+                blocks=utils.get_pydantic_model(blocks, Optional[List[models.Blocks]]),
+                closing=closing,
+                closing_html=closing_html,
+                closing_date=closing_date,
+                salary=utils.get_pydantic_model(salary, Optional[models.Salary]),
+                url=url,
+                job_portal_url=job_portal_url,
+                record_url=record_url,
+                links=utils.get_pydantic_model(links, Optional[List[models.JobLinks]]),
+                confidential=confidential,
+                available_to_employees=available_to_employees,
+                tags=tags,
+                addresses=utils.get_pydantic_model(
+                    addresses, Optional[List[models.Address]]
+                ),
+                custom_fields=utils.get_pydantic_model(
+                    custom_fields, Optional[List[models.CustomField]]
+                ),
+                deleted=deleted,
+                owner_id=owner_id,
+            ),
+        )
+
+        req = self._build_request_async(
+            method="PATCH",
+            path="/ats/jobs/{id}",
+            base_url=base_url,
+            url_variables=url_variables,
+            request=request,
+            request_body_required=True,
+            request_has_path_params=True,
+            request_has_query_params=True,
+            user_agent_header="user-agent",
+            accept_header_value="application/json",
+            http_headers=http_headers,
+            _globals=models.AtsJobsUpdateGlobals(
+                consumer_id=self.sdk_configuration.globals.consumer_id,
+                app_id=self.sdk_configuration.globals.app_id,
+            ),
+            security=self.sdk_configuration.security,
+            get_serialized_body=lambda: utils.serialize_request_body(
+                request.job, False, False, "json", models.JobInput
+            ),
+            timeout_ms=timeout_ms,
+        )
+
+        if retries == UNSET:
+            if self.sdk_configuration.retry_config is not UNSET:
+                retries = self.sdk_configuration.retry_config
+            else:
+                retries = utils.RetryConfig(
+                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 900000), True
+                )
+
+        retry_config = None
+        if isinstance(retries, utils.RetryConfig):
+            retry_config = (retries, ["408", "500", "502", "503", "504"])
+
+        http_res = await self.do_request_async(
+            hook_ctx=HookContext(
+                config=self.sdk_configuration,
+                base_url=base_url or "",
+                operation_id="ats.jobsUpdate",
+                oauth2_scopes=None,
+                security_source=get_security_from_env(
+                    self.sdk_configuration.security, models.Security
+                ),
+            ),
+            request=req,
+            error_status_codes=["400", "401", "402", "404", "422", "4XX", "5XX"],
+            retry_config=retry_config,
+        )
+
+        response_data: Any = None
+        if utils.match_response(http_res, "200", "application/json"):
+            return models.AtsJobsUpdateResponse(
+                update_job_response=unmarshal_json_response(
+                    Optional[models.UpdateJobResponse], http_res
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
+        if utils.match_response(http_res, "400", "application/json"):
+            response_data = unmarshal_json_response(
+                models.BadRequestResponseData, http_res
+            )
+            raise models.BadRequestResponse(response_data, http_res)
+        if utils.match_response(http_res, "401", "application/json"):
+            response_data = unmarshal_json_response(
+                models.UnauthorizedResponseData, http_res
+            )
+            raise models.UnauthorizedResponse(response_data, http_res)
+        if utils.match_response(http_res, "402", "application/json"):
+            response_data = unmarshal_json_response(
+                models.PaymentRequiredResponseData, http_res
+            )
+            raise models.PaymentRequiredResponse(response_data, http_res)
+        if utils.match_response(http_res, "404", "application/json"):
+            response_data = unmarshal_json_response(
+                models.NotFoundResponseData, http_res
+            )
+            raise models.NotFoundResponse(response_data, http_res)
+        if utils.match_response(http_res, "422", "application/json"):
+            response_data = unmarshal_json_response(
+                models.UnprocessableResponseData, http_res
+            )
+            raise models.UnprocessableResponse(response_data, http_res)
+        if utils.match_response(http_res, "4XX", "*"):
+            http_res_text = await utils.stream_to_text_async(http_res)
+            raise models.APIError("API error occurred", http_res, http_res_text)
+        if utils.match_response(http_res, "5XX", "*"):
+            http_res_text = await utils.stream_to_text_async(http_res)
+            raise models.APIError("API error occurred", http_res, http_res_text)
+        if utils.match_response(http_res, "default", "application/json"):
+            return models.AtsJobsUpdateResponse(
+                unexpected_error_response=unmarshal_json_response(
+                    Optional[models.UnexpectedErrorResponse], http_res
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
+
+        raise models.APIError("Unexpected response received", http_res)
+
+    def delete(
+        self,
+        *,
+        id: str,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
+        service_id: Optional[str] = None,
+        raw: Optional[bool] = False,
+        retries: OptionalNullable[utils.RetryConfig] = UNSET,
+        server_url: Optional[str] = None,
+        timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
+    ) -> models.AtsJobsDeleteResponse:
+        r"""Delete Job
+
+        Delete Job
+
+        :param id: ID of the record you are acting upon.
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
+        :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param raw: Include raw response. Mostly used for debugging purposes
+        :param retries: Override the default retry configuration for this method
+        :param server_url: Override the default server URL for this method
+        :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
+        """
+        base_url = None
+        url_variables = None
+        if timeout_ms is None:
+            timeout_ms = self.sdk_configuration.timeout_ms
+
+        if server_url is not None:
+            base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
+
+        request = models.AtsJobsDeleteRequest(
+            id=id,
+            consumer_id=consumer_id,
+            app_id=app_id,
+            service_id=service_id,
+            raw=raw,
+        )
+
+        req = self._build_request(
+            method="DELETE",
+            path="/ats/jobs/{id}",
+            base_url=base_url,
+            url_variables=url_variables,
+            request=request,
+            request_body_required=False,
+            request_has_path_params=True,
+            request_has_query_params=True,
+            user_agent_header="user-agent",
+            accept_header_value="application/json",
+            http_headers=http_headers,
+            _globals=models.AtsJobsDeleteGlobals(
+                consumer_id=self.sdk_configuration.globals.consumer_id,
+                app_id=self.sdk_configuration.globals.app_id,
+            ),
+            security=self.sdk_configuration.security,
+            timeout_ms=timeout_ms,
+        )
+
+        if retries == UNSET:
+            if self.sdk_configuration.retry_config is not UNSET:
+                retries = self.sdk_configuration.retry_config
+            else:
+                retries = utils.RetryConfig(
+                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 900000), True
+                )
+
+        retry_config = None
+        if isinstance(retries, utils.RetryConfig):
+            retry_config = (retries, ["408", "500", "502", "503", "504"])
+
+        http_res = self.do_request(
+            hook_ctx=HookContext(
+                config=self.sdk_configuration,
+                base_url=base_url or "",
+                operation_id="ats.jobsDelete",
+                oauth2_scopes=None,
+                security_source=get_security_from_env(
+                    self.sdk_configuration.security, models.Security
+                ),
+            ),
+            request=req,
+            error_status_codes=["400", "401", "402", "404", "422", "4XX", "5XX"],
+            retry_config=retry_config,
+        )
+
+        response_data: Any = None
+        if utils.match_response(http_res, "200", "application/json"):
+            return models.AtsJobsDeleteResponse(
+                delete_job_response=unmarshal_json_response(
+                    Optional[models.DeleteJobResponse], http_res
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
+        if utils.match_response(http_res, "400", "application/json"):
+            response_data = unmarshal_json_response(
+                models.BadRequestResponseData, http_res
+            )
+            raise models.BadRequestResponse(response_data, http_res)
+        if utils.match_response(http_res, "401", "application/json"):
+            response_data = unmarshal_json_response(
+                models.UnauthorizedResponseData, http_res
+            )
+            raise models.UnauthorizedResponse(response_data, http_res)
+        if utils.match_response(http_res, "402", "application/json"):
+            response_data = unmarshal_json_response(
+                models.PaymentRequiredResponseData, http_res
+            )
+            raise models.PaymentRequiredResponse(response_data, http_res)
+        if utils.match_response(http_res, "404", "application/json"):
+            response_data = unmarshal_json_response(
+                models.NotFoundResponseData, http_res
+            )
+            raise models.NotFoundResponse(response_data, http_res)
+        if utils.match_response(http_res, "422", "application/json"):
+            response_data = unmarshal_json_response(
+                models.UnprocessableResponseData, http_res
+            )
+            raise models.UnprocessableResponse(response_data, http_res)
+        if utils.match_response(http_res, "4XX", "*"):
+            http_res_text = utils.stream_to_text(http_res)
+            raise models.APIError("API error occurred", http_res, http_res_text)
+        if utils.match_response(http_res, "5XX", "*"):
+            http_res_text = utils.stream_to_text(http_res)
+            raise models.APIError("API error occurred", http_res, http_res_text)
+        if utils.match_response(http_res, "default", "application/json"):
+            return models.AtsJobsDeleteResponse(
+                unexpected_error_response=unmarshal_json_response(
+                    Optional[models.UnexpectedErrorResponse], http_res
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
+
+        raise models.APIError("Unexpected response received", http_res)
+
+    async def delete_async(
+        self,
+        *,
+        id: str,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
+        service_id: Optional[str] = None,
+        raw: Optional[bool] = False,
+        retries: OptionalNullable[utils.RetryConfig] = UNSET,
+        server_url: Optional[str] = None,
+        timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
+    ) -> models.AtsJobsDeleteResponse:
+        r"""Delete Job
+
+        Delete Job
+
+        :param id: ID of the record you are acting upon.
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
+        :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param raw: Include raw response. Mostly used for debugging purposes
+        :param retries: Override the default retry configuration for this method
+        :param server_url: Override the default server URL for this method
+        :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
+        """
+        base_url = None
+        url_variables = None
+        if timeout_ms is None:
+            timeout_ms = self.sdk_configuration.timeout_ms
+
+        if server_url is not None:
+            base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
+
+        request = models.AtsJobsDeleteRequest(
+            id=id,
+            consumer_id=consumer_id,
+            app_id=app_id,
+            service_id=service_id,
+            raw=raw,
+        )
+
+        req = self._build_request_async(
+            method="DELETE",
+            path="/ats/jobs/{id}",
+            base_url=base_url,
+            url_variables=url_variables,
+            request=request,
+            request_body_required=False,
+            request_has_path_params=True,
+            request_has_query_params=True,
+            user_agent_header="user-agent",
+            accept_header_value="application/json",
+            http_headers=http_headers,
+            _globals=models.AtsJobsDeleteGlobals(
+                consumer_id=self.sdk_configuration.globals.consumer_id,
+                app_id=self.sdk_configuration.globals.app_id,
+            ),
+            security=self.sdk_configuration.security,
+            timeout_ms=timeout_ms,
+        )
+
+        if retries == UNSET:
+            if self.sdk_configuration.retry_config is not UNSET:
+                retries = self.sdk_configuration.retry_config
+            else:
+                retries = utils.RetryConfig(
+                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 900000), True
+                )
+
+        retry_config = None
+        if isinstance(retries, utils.RetryConfig):
+            retry_config = (retries, ["408", "500", "502", "503", "504"])
+
+        http_res = await self.do_request_async(
+            hook_ctx=HookContext(
+                config=self.sdk_configuration,
+                base_url=base_url or "",
+                operation_id="ats.jobsDelete",
+                oauth2_scopes=None,
+                security_source=get_security_from_env(
+                    self.sdk_configuration.security, models.Security
+                ),
+            ),
+            request=req,
+            error_status_codes=["400", "401", "402", "404", "422", "4XX", "5XX"],
+            retry_config=retry_config,
+        )
+
+        response_data: Any = None
+        if utils.match_response(http_res, "200", "application/json"):
+            return models.AtsJobsDeleteResponse(
+                delete_job_response=unmarshal_json_response(
+                    Optional[models.DeleteJobResponse], http_res
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
+        if utils.match_response(http_res, "400", "application/json"):
+            response_data = unmarshal_json_response(
+                models.BadRequestResponseData, http_res
+            )
+            raise models.BadRequestResponse(response_data, http_res)
+        if utils.match_response(http_res, "401", "application/json"):
+            response_data = unmarshal_json_response(
+                models.UnauthorizedResponseData, http_res
+            )
+            raise models.UnauthorizedResponse(response_data, http_res)
+        if utils.match_response(http_res, "402", "application/json"):
+            response_data = unmarshal_json_response(
+                models.PaymentRequiredResponseData, http_res
+            )
+            raise models.PaymentRequiredResponse(response_data, http_res)
+        if utils.match_response(http_res, "404", "application/json"):
+            response_data = unmarshal_json_response(
+                models.NotFoundResponseData, http_res
+            )
+            raise models.NotFoundResponse(response_data, http_res)
+        if utils.match_response(http_res, "422", "application/json"):
+            response_data = unmarshal_json_response(
+                models.UnprocessableResponseData, http_res
+            )
+            raise models.UnprocessableResponse(response_data, http_res)
+        if utils.match_response(http_res, "4XX", "*"):
+            http_res_text = await utils.stream_to_text_async(http_res)
+            raise models.APIError("API error occurred", http_res, http_res_text)
+        if utils.match_response(http_res, "5XX", "*"):
+            http_res_text = await utils.stream_to_text_async(http_res)
+            raise models.APIError("API error occurred", http_res, http_res_text)
+        if utils.match_response(http_res, "default", "application/json"):
+            return models.AtsJobsDeleteResponse(
                 unexpected_error_response=unmarshal_json_response(
                     Optional[models.UnexpectedErrorResponse], http_res
                 ),
