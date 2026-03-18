@@ -42,7 +42,7 @@ class JournalEntryLineItemType(str, Enum, metaclass=utils.OpenEnumMeta):
 
 
 class JournalEntryLineItemTypedDict(TypedDict):
-    type: JournalEntryLineItemType
+    type: Nullable[JournalEntryLineItemType]
     r"""Debit entries are considered positive, and credit entries are considered negative."""
     ledger_account: Nullable[LinkedLedgerAccountTypedDict]
     id: NotRequired[str]
@@ -76,7 +76,9 @@ class JournalEntryLineItemTypedDict(TypedDict):
 
 
 class JournalEntryLineItem(BaseModel):
-    type: Annotated[JournalEntryLineItemType, PlainValidator(validate_open_enum(False))]
+    type: Annotated[
+        Nullable[JournalEntryLineItemType], PlainValidator(validate_open_enum(False))
+    ]
     r"""Debit entries are considered positive, and credit entries are considered negative."""
 
     ledger_account: Nullable[LinkedLedgerAccount]
@@ -160,6 +162,7 @@ class JournalEntryLineItem(BaseModel):
             "tax_amount",
             "sub_total",
             "total_amount",
+            "type",
             "tracking_category",
             "tracking_categories",
             "ledger_account",
@@ -197,7 +200,7 @@ class JournalEntryLineItem(BaseModel):
 
 
 class JournalEntryLineItemInputTypedDict(TypedDict):
-    type: JournalEntryLineItemType
+    type: Nullable[JournalEntryLineItemType]
     r"""Debit entries are considered positive, and credit entries are considered negative."""
     ledger_account: Nullable[LinkedLedgerAccountTypedDict]
     description: NotRequired[Nullable[str]]
@@ -229,7 +232,9 @@ class JournalEntryLineItemInputTypedDict(TypedDict):
 
 
 class JournalEntryLineItemInput(BaseModel):
-    type: Annotated[JournalEntryLineItemType, PlainValidator(validate_open_enum(False))]
+    type: Annotated[
+        Nullable[JournalEntryLineItemType], PlainValidator(validate_open_enum(False))
+    ]
     r"""Debit entries are considered positive, and credit entries are considered negative."""
 
     ledger_account: Nullable[LinkedLedgerAccount]
@@ -309,6 +314,7 @@ class JournalEntryLineItemInput(BaseModel):
             "tax_amount",
             "sub_total",
             "total_amount",
+            "type",
             "tracking_category",
             "tracking_categories",
             "ledger_account",

@@ -425,6 +425,9 @@ class Employees(BaseSDK):
         phone_numbers: Optional[
             Union[List[models.PhoneNumber], List[models.PhoneNumberTypedDict]]
         ] = None,
+        bank_account: Optional[
+            Union[models.BankAccount, models.BankAccountTypedDict]
+        ] = None,
         custom_fields: Optional[
             Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
         ] = None,
@@ -467,6 +470,7 @@ class Employees(BaseSDK):
         :param notes: Notes about the employee.
         :param addresses: Addresses of the employee.
         :param phone_numbers: Phone numbers of the employee.
+        :param bank_account:
         :param custom_fields:
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
@@ -527,6 +531,9 @@ class Employees(BaseSDK):
                 ),
                 phone_numbers=utils.get_pydantic_model(
                     phone_numbers, Optional[List[models.PhoneNumber]]
+                ),
+                bank_account=utils.get_pydantic_model(
+                    bank_account, Optional[models.BankAccount]
                 ),
                 custom_fields=utils.get_pydantic_model(
                     custom_fields, Optional[List[models.CustomField]]
@@ -690,6 +697,9 @@ class Employees(BaseSDK):
         phone_numbers: Optional[
             Union[List[models.PhoneNumber], List[models.PhoneNumberTypedDict]]
         ] = None,
+        bank_account: Optional[
+            Union[models.BankAccount, models.BankAccountTypedDict]
+        ] = None,
         custom_fields: Optional[
             Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
         ] = None,
@@ -732,6 +742,7 @@ class Employees(BaseSDK):
         :param notes: Notes about the employee.
         :param addresses: Addresses of the employee.
         :param phone_numbers: Phone numbers of the employee.
+        :param bank_account:
         :param custom_fields:
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
@@ -792,6 +803,9 @@ class Employees(BaseSDK):
                 ),
                 phone_numbers=utils.get_pydantic_model(
                     phone_numbers, Optional[List[models.PhoneNumber]]
+                ),
+                bank_account=utils.get_pydantic_model(
+                    bank_account, Optional[models.BankAccount]
                 ),
                 custom_fields=utils.get_pydantic_model(
                     custom_fields, Optional[List[models.CustomField]]
@@ -1244,6 +1258,9 @@ class Employees(BaseSDK):
         phone_numbers: Optional[
             Union[List[models.PhoneNumber], List[models.PhoneNumberTypedDict]]
         ] = None,
+        bank_account: Optional[
+            Union[models.BankAccount, models.BankAccountTypedDict]
+        ] = None,
         custom_fields: Optional[
             Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
         ] = None,
@@ -1287,6 +1304,7 @@ class Employees(BaseSDK):
         :param notes: Notes about the employee.
         :param addresses: Addresses of the employee.
         :param phone_numbers: Phone numbers of the employee.
+        :param bank_account:
         :param custom_fields:
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
@@ -1348,6 +1366,9 @@ class Employees(BaseSDK):
                 ),
                 phone_numbers=utils.get_pydantic_model(
                     phone_numbers, Optional[List[models.PhoneNumber]]
+                ),
+                bank_account=utils.get_pydantic_model(
+                    bank_account, Optional[models.BankAccount]
                 ),
                 custom_fields=utils.get_pydantic_model(
                     custom_fields, Optional[List[models.CustomField]]
@@ -1512,6 +1533,9 @@ class Employees(BaseSDK):
         phone_numbers: Optional[
             Union[List[models.PhoneNumber], List[models.PhoneNumberTypedDict]]
         ] = None,
+        bank_account: Optional[
+            Union[models.BankAccount, models.BankAccountTypedDict]
+        ] = None,
         custom_fields: Optional[
             Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
         ] = None,
@@ -1555,6 +1579,7 @@ class Employees(BaseSDK):
         :param notes: Notes about the employee.
         :param addresses: Addresses of the employee.
         :param phone_numbers: Phone numbers of the employee.
+        :param bank_account:
         :param custom_fields:
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
         :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
@@ -1616,6 +1641,9 @@ class Employees(BaseSDK):
                 ),
                 phone_numbers=utils.get_pydantic_model(
                     phone_numbers, Optional[List[models.PhoneNumber]]
+                ),
+                bank_account=utils.get_pydantic_model(
+                    bank_account, Optional[models.BankAccount]
                 ),
                 custom_fields=utils.get_pydantic_model(
                     custom_fields, Optional[List[models.CustomField]]
