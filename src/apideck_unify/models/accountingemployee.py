@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 from .address import Address, AddressTypedDict
+from .bankaccount import BankAccount, BankAccountTypedDict
 from .currency import Currency
 from .customfield import CustomField, CustomFieldTypedDict
 from .email import Email, EmailTypedDict
@@ -146,6 +147,7 @@ class AccountingEmployeeTypedDict(TypedDict):
     r"""Addresses of the employee."""
     phone_numbers: NotRequired[List[PhoneNumberTypedDict]]
     r"""Phone numbers of the employee."""
+    bank_account: NotRequired[BankAccountTypedDict]
     custom_fields: NotRequired[List[CustomFieldTypedDict]]
     custom_mappings: NotRequired[Nullable[Dict[str, Any]]]
     r"""When custom mappings are configured on the resource, the result is included here."""
@@ -237,6 +239,8 @@ class AccountingEmployee(BaseModel):
     phone_numbers: Optional[List[PhoneNumber]] = None
     r"""Phone numbers of the employee."""
 
+    bank_account: Optional[BankAccount] = None
+
     custom_fields: Optional[List[CustomField]] = None
 
     custom_mappings: OptionalNullable[Dict[str, Any]] = UNSET
@@ -308,6 +312,7 @@ class AccountingEmployee(BaseModel):
             "notes",
             "addresses",
             "phone_numbers",
+            "bank_account",
             "custom_fields",
             "custom_mappings",
             "row_version",
@@ -411,6 +416,7 @@ class AccountingEmployeeInputTypedDict(TypedDict):
     r"""Addresses of the employee."""
     phone_numbers: NotRequired[List[PhoneNumberTypedDict]]
     r"""Phone numbers of the employee."""
+    bank_account: NotRequired[BankAccountTypedDict]
     custom_fields: NotRequired[List[CustomFieldTypedDict]]
     row_version: NotRequired[Nullable[str]]
     r"""A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object."""
@@ -490,6 +496,8 @@ class AccountingEmployeeInput(BaseModel):
     phone_numbers: Optional[List[PhoneNumber]] = None
     r"""Phone numbers of the employee."""
 
+    bank_account: Optional[BankAccount] = None
+
     custom_fields: Optional[List[CustomField]] = None
 
     row_version: OptionalNullable[str] = UNSET
@@ -550,6 +558,7 @@ class AccountingEmployeeInput(BaseModel):
             "notes",
             "addresses",
             "phone_numbers",
+            "bank_account",
             "custom_fields",
             "row_version",
             "pass_through",
