@@ -465,7 +465,7 @@ class JournalEntries(BaseSDK):
         :param memo: Reference for the journal entry.
         :param posted_at: This is the date on which the journal entry was added. This can be different from the creation date and can also be backdated.
         :param journal_symbol: Journal symbol of the entry. For example IND for indirect costs
-        :param tax_type: The specific category of tax associated with a transaction like sales or purchase
+        :param tax_type: Deprecated — use line_items[].tax_type for per-line tax applicability. Kept as fallback: applies to all lines that do not set their own tax_type.
         :param tax_code: Applicable tax id/code override if tax is not supplied on a line item basis.
         :param number: Journal entry number.
         :param tracking_categories: A list of linked tracking categories.
@@ -697,7 +697,7 @@ class JournalEntries(BaseSDK):
         :param memo: Reference for the journal entry.
         :param posted_at: This is the date on which the journal entry was added. This can be different from the creation date and can also be backdated.
         :param journal_symbol: Journal symbol of the entry. For example IND for indirect costs
-        :param tax_type: The specific category of tax associated with a transaction like sales or purchase
+        :param tax_type: Deprecated — use line_items[].tax_type for per-line tax applicability. Kept as fallback: applies to all lines that do not set their own tax_type.
         :param tax_code: Applicable tax id/code override if tax is not supplied on a line item basis.
         :param number: Journal entry number.
         :param tracking_categories: A list of linked tracking categories.
@@ -1225,7 +1225,7 @@ class JournalEntries(BaseSDK):
         :param memo: Reference for the journal entry.
         :param posted_at: This is the date on which the journal entry was added. This can be different from the creation date and can also be backdated.
         :param journal_symbol: Journal symbol of the entry. For example IND for indirect costs
-        :param tax_type: The specific category of tax associated with a transaction like sales or purchase
+        :param tax_type: Deprecated — use line_items[].tax_type for per-line tax applicability. Kept as fallback: applies to all lines that do not set their own tax_type.
         :param tax_code: Applicable tax id/code override if tax is not supplied on a line item basis.
         :param number: Journal entry number.
         :param tracking_categories: A list of linked tracking categories.
@@ -1460,7 +1460,7 @@ class JournalEntries(BaseSDK):
         :param memo: Reference for the journal entry.
         :param posted_at: This is the date on which the journal entry was added. This can be different from the creation date and can also be backdated.
         :param journal_symbol: Journal symbol of the entry. For example IND for indirect costs
-        :param tax_type: The specific category of tax associated with a transaction like sales or purchase
+        :param tax_type: Deprecated — use line_items[].tax_type for per-line tax applicability. Kept as fallback: applies to all lines that do not set their own tax_type.
         :param tax_code: Applicable tax id/code override if tax is not supplied on a line item basis.
         :param number: Journal entry number.
         :param tracking_categories: A list of linked tracking categories.

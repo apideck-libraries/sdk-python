@@ -25,6 +25,7 @@ from apideck_unify.types import (
 from apideck_unify.utils import validate_open_enum
 from datetime import datetime
 from enum import Enum
+import pydantic
 from pydantic import field_serializer, model_serializer
 from pydantic.functional_validators import PlainValidator
 from typing import Any, Dict, List, Optional
@@ -70,7 +71,7 @@ class JournalEntryTypedDict(TypedDict):
     journal_symbol: NotRequired[Nullable[str]]
     r"""Journal symbol of the entry. For example IND for indirect costs"""
     tax_type: NotRequired[Nullable[str]]
-    r"""The specific category of tax associated with a transaction like sales or purchase"""
+    r"""Deprecated — use line_items[].tax_type for per-line tax applicability. Kept as fallback: applies to all lines that do not set their own tax_type."""
     tax_code: NotRequired[Nullable[str]]
     r"""Applicable tax id/code override if tax is not supplied on a line item basis."""
     number: NotRequired[Nullable[str]]
@@ -145,8 +146,13 @@ class JournalEntry(BaseModel):
     journal_symbol: OptionalNullable[str] = UNSET
     r"""Journal symbol of the entry. For example IND for indirect costs"""
 
-    tax_type: OptionalNullable[str] = UNSET
-    r"""The specific category of tax associated with a transaction like sales or purchase"""
+    tax_type: Annotated[
+        OptionalNullable[str],
+        pydantic.Field(
+            deprecated="warning: ** DEPRECATED ** - Deprecated — use line_items[].."
+        ),
+    ] = UNSET
+    r"""Deprecated — use line_items[].tax_type for per-line tax applicability. Kept as fallback: applies to all lines that do not set their own tax_type."""
 
     tax_code: OptionalNullable[str] = UNSET
     r"""Applicable tax id/code override if tax is not supplied on a line item basis."""
@@ -318,7 +324,7 @@ class JournalEntryInputTypedDict(TypedDict):
     journal_symbol: NotRequired[Nullable[str]]
     r"""Journal symbol of the entry. For example IND for indirect costs"""
     tax_type: NotRequired[Nullable[str]]
-    r"""The specific category of tax associated with a transaction like sales or purchase"""
+    r"""Deprecated — use line_items[].tax_type for per-line tax applicability. Kept as fallback: applies to all lines that do not set their own tax_type."""
     tax_code: NotRequired[Nullable[str]]
     r"""Applicable tax id/code override if tax is not supplied on a line item basis."""
     number: NotRequired[Nullable[str]]
@@ -377,8 +383,13 @@ class JournalEntryInput(BaseModel):
     journal_symbol: OptionalNullable[str] = UNSET
     r"""Journal symbol of the entry. For example IND for indirect costs"""
 
-    tax_type: OptionalNullable[str] = UNSET
-    r"""The specific category of tax associated with a transaction like sales or purchase"""
+    tax_type: Annotated[
+        OptionalNullable[str],
+        pydantic.Field(
+            deprecated="warning: ** DEPRECATED ** - Deprecated — use line_items[].."
+        ),
+    ] = UNSET
+    r"""Deprecated — use line_items[].tax_type for per-line tax applicability. Kept as fallback: applies to all lines that do not set their own tax_type."""
 
     tax_code: OptionalNullable[str] = UNSET
     r"""Applicable tax id/code override if tax is not supplied on a line item basis."""

@@ -22,10 +22,11 @@ class LinkedFinancialAccountAccountType(str, Enum, metaclass=utils.OpenEnumMeta)
 
     LEDGER_ACCOUNT = "ledger_account"
     BANK_ACCOUNT = "bank_account"
+    EMPLOYEE = "employee"
 
 
 class LinkedFinancialAccountTypedDict(TypedDict):
-    r"""A flexible account reference that can represent either a ledger account (GL account) or a bank account, depending on the connector's requirements."""
+    r"""A flexible account reference that can represent a ledger account (GL account), a bank account, or an employee payable account, depending on the connector's requirements."""
 
     id: NotRequired[str]
     r"""The unique identifier for the account. This can be a ledger account ID or bank account ID depending on the `type` field."""
@@ -44,7 +45,7 @@ class LinkedFinancialAccountTypedDict(TypedDict):
 
 
 class LinkedFinancialAccount(BaseModel):
-    r"""A flexible account reference that can represent either a ledger account (GL account) or a bank account, depending on the connector's requirements."""
+    r"""A flexible account reference that can represent a ledger account (GL account), a bank account, or an employee payable account, depending on the connector's requirements."""
 
     id: Optional[str] = None
     r"""The unique identifier for the account. This can be a ledger account ID or bank account ID depending on the `type` field."""
@@ -119,7 +120,7 @@ class LinkedFinancialAccount(BaseModel):
 
 
 class LinkedFinancialAccountInputTypedDict(TypedDict):
-    r"""A flexible account reference that can represent either a ledger account (GL account) or a bank account, depending on the connector's requirements."""
+    r"""A flexible account reference that can represent a ledger account (GL account), a bank account, or an employee payable account, depending on the connector's requirements."""
 
     id: NotRequired[str]
     r"""The unique identifier for the account. This can be a ledger account ID or bank account ID depending on the `type` field."""
@@ -134,7 +135,7 @@ class LinkedFinancialAccountInputTypedDict(TypedDict):
 
 
 class LinkedFinancialAccountInput(BaseModel):
-    r"""A flexible account reference that can represent either a ledger account (GL account) or a bank account, depending on the connector's requirements."""
+    r"""A flexible account reference that can represent a ledger account (GL account), a bank account, or an employee payable account, depending on the connector's requirements."""
 
     id: Optional[str] = None
     r"""The unique identifier for the account. This can be a ledger account ID or bank account ID depending on the `type` field."""

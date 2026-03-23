@@ -447,7 +447,7 @@ class Expenses(BaseSDK):
         :param display_id: Id to be displayed.
         :param number: Number.
         :param account_id: The unique identifier for the ledger account that this expense should be credited to. Deprecated, use account instead.
-        :param account: A flexible account reference that can represent either a ledger account (GL account) or a bank account, depending on the connector's requirements.
+        :param account: A flexible account reference that can represent a ledger account (GL account), a bank account, or an employee payable account, depending on the connector's requirements.
         :param supplier_id: The ID of the supplier this entity is linked to. Deprecated, use supplier instead.
         :param supplier: The supplier this entity is linked to.
         :param company_id: The company ID the transaction belongs to
@@ -724,7 +724,7 @@ class Expenses(BaseSDK):
         :param display_id: Id to be displayed.
         :param number: Number.
         :param account_id: The unique identifier for the ledger account that this expense should be credited to. Deprecated, use account instead.
-        :param account: A flexible account reference that can represent either a ledger account (GL account) or a bank account, depending on the connector's requirements.
+        :param account: A flexible account reference that can represent a ledger account (GL account), a bank account, or an employee payable account, depending on the connector's requirements.
         :param supplier_id: The ID of the supplier this entity is linked to. Deprecated, use supplier instead.
         :param supplier: The supplier this entity is linked to.
         :param company_id: The company ID the transaction belongs to
@@ -1289,7 +1289,7 @@ class Expenses(BaseSDK):
         :param display_id: Id to be displayed.
         :param number: Number.
         :param account_id: The unique identifier for the ledger account that this expense should be credited to. Deprecated, use account instead.
-        :param account: A flexible account reference that can represent either a ledger account (GL account) or a bank account, depending on the connector's requirements.
+        :param account: A flexible account reference that can represent a ledger account (GL account), a bank account, or an employee payable account, depending on the connector's requirements.
         :param supplier_id: The ID of the supplier this entity is linked to. Deprecated, use supplier instead.
         :param supplier: The supplier this entity is linked to.
         :param company_id: The company ID the transaction belongs to
@@ -1566,7 +1566,7 @@ class Expenses(BaseSDK):
         :param display_id: Id to be displayed.
         :param number: Number.
         :param account_id: The unique identifier for the ledger account that this expense should be credited to. Deprecated, use account instead.
-        :param account: A flexible account reference that can represent either a ledger account (GL account) or a bank account, depending on the connector's requirements.
+        :param account: A flexible account reference that can represent a ledger account (GL account), a bank account, or an employee payable account, depending on the connector's requirements.
         :param supplier_id: The ID of the supplier this entity is linked to. Deprecated, use supplier instead.
         :param supplier: The supplier this entity is linked to.
         :param company_id: The company ID the transaction belongs to
