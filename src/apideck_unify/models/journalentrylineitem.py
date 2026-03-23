@@ -7,6 +7,7 @@ from .deprecatedlinkedtrackingcategory import (
 )
 from .linkedcustomer import LinkedCustomer, LinkedCustomerTypedDict
 from .linkedcustomer_input import LinkedCustomerInput, LinkedCustomerInputTypedDict
+from .linkedemployee import LinkedEmployee, LinkedEmployeeTypedDict
 from .linkedledgeraccount import LinkedLedgerAccount, LinkedLedgerAccountTypedDict
 from .linkedsupplier import LinkedSupplier, LinkedSupplierTypedDict
 from .linkedsupplier_input import LinkedSupplierInput, LinkedSupplierInputTypedDict
@@ -41,6 +42,13 @@ class JournalEntryLineItemType(str, Enum, metaclass=utils.OpenEnumMeta):
     CREDIT = "credit"
 
 
+class TaxType(str, Enum, metaclass=utils.OpenEnumMeta):
+    r"""The tax applicability of this line item. Overrides the root-level tax_type for this line."""
+
+    SALES = "sales"
+    PURCHASE = "purchase"
+
+
 class JournalEntryLineItemTypedDict(TypedDict):
     type: Nullable[JournalEntryLineItemType]
     r"""Debit entries are considered positive, and credit entries are considered negative."""
@@ -56,6 +64,8 @@ class JournalEntryLineItemTypedDict(TypedDict):
     total_amount: NotRequired[Nullable[float]]
     r"""Debit entries are considered positive, and credit entries are considered negative."""
     tax_rate: NotRequired[LinkedTaxRateTypedDict]
+    tax_type: NotRequired[Nullable[TaxType]]
+    r"""The tax applicability of this line item. Overrides the root-level tax_type for this line."""
     tracking_category: NotRequired[Nullable[DeprecatedLinkedTrackingCategoryTypedDict]]
     tracking_categories: NotRequired[
         Nullable[List[Nullable[LinkedTrackingCategoryTypedDict]]]
@@ -65,6 +75,8 @@ class JournalEntryLineItemTypedDict(TypedDict):
     r"""The customer this entity is linked to."""
     supplier: NotRequired[Nullable[LinkedSupplierTypedDict]]
     r"""The supplier this entity is linked to."""
+    employee: NotRequired[Nullable[LinkedEmployeeTypedDict]]
+    r"""The employee this entity is linked to."""
     department_id: NotRequired[Nullable[str]]
     r"""The ID of the department"""
     location_id: NotRequired[Nullable[str]]
@@ -100,6 +112,11 @@ class JournalEntryLineItem(BaseModel):
 
     tax_rate: Optional[LinkedTaxRate] = None
 
+    tax_type: Annotated[
+        OptionalNullable[TaxType], PlainValidator(validate_open_enum(False))
+    ] = UNSET
+    r"""The tax applicability of this line item. Overrides the root-level tax_type for this line."""
+
     tracking_category: Annotated[
         OptionalNullable[DeprecatedLinkedTrackingCategory],
         pydantic.Field(
@@ -117,6 +134,9 @@ class JournalEntryLineItem(BaseModel):
 
     supplier: OptionalNullable[LinkedSupplier] = UNSET
     r"""The supplier this entity is linked to."""
+
+    employee: OptionalNullable[LinkedEmployee] = UNSET
+    r"""The employee this entity is linked to."""
 
     department_id: OptionalNullable[str] = UNSET
     r"""The ID of the department"""
@@ -139,6 +159,15 @@ class JournalEntryLineItem(BaseModel):
                 return value
         return value
 
+    @field_serializer("tax_type")
+    def serialize_tax_type(self, value):
+        if isinstance(value, str):
+            try:
+                return models.TaxType(value)
+            except ValueError:
+                return value
+        return value
+
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
         optional_fields = [
@@ -148,10 +177,12 @@ class JournalEntryLineItem(BaseModel):
             "sub_total",
             "total_amount",
             "tax_rate",
+            "tax_type",
             "tracking_category",
             "tracking_categories",
             "customer",
             "supplier",
+            "employee",
             "department_id",
             "location_id",
             "line_number",
@@ -163,11 +194,13 @@ class JournalEntryLineItem(BaseModel):
             "sub_total",
             "total_amount",
             "type",
+            "tax_type",
             "tracking_category",
             "tracking_categories",
             "ledger_account",
             "customer",
             "supplier",
+            "employee",
             "department_id",
             "location_id",
             "line_number",
@@ -212,6 +245,8 @@ class JournalEntryLineItemInputTypedDict(TypedDict):
     total_amount: NotRequired[Nullable[float]]
     r"""Debit entries are considered positive, and credit entries are considered negative."""
     tax_rate: NotRequired[LinkedTaxRateInputTypedDict]
+    tax_type: NotRequired[Nullable[TaxType]]
+    r"""The tax applicability of this line item. Overrides the root-level tax_type for this line."""
     tracking_category: NotRequired[Nullable[DeprecatedLinkedTrackingCategoryTypedDict]]
     tracking_categories: NotRequired[
         Nullable[List[Nullable[LinkedTrackingCategoryTypedDict]]]
@@ -221,6 +256,8 @@ class JournalEntryLineItemInputTypedDict(TypedDict):
     r"""The customer this entity is linked to."""
     supplier: NotRequired[Nullable[LinkedSupplierInputTypedDict]]
     r"""The supplier this entity is linked to."""
+    employee: NotRequired[Nullable[LinkedEmployeeTypedDict]]
+    r"""The employee this entity is linked to."""
     department_id: NotRequired[Nullable[str]]
     r"""The ID of the department"""
     location_id: NotRequired[Nullable[str]]
@@ -253,6 +290,11 @@ class JournalEntryLineItemInput(BaseModel):
 
     tax_rate: Optional[LinkedTaxRateInput] = None
 
+    tax_type: Annotated[
+        OptionalNullable[TaxType], PlainValidator(validate_open_enum(False))
+    ] = UNSET
+    r"""The tax applicability of this line item. Overrides the root-level tax_type for this line."""
+
     tracking_category: Annotated[
         OptionalNullable[DeprecatedLinkedTrackingCategory],
         pydantic.Field(
@@ -270,6 +312,9 @@ class JournalEntryLineItemInput(BaseModel):
 
     supplier: OptionalNullable[LinkedSupplierInput] = UNSET
     r"""The supplier this entity is linked to."""
+
+    employee: OptionalNullable[LinkedEmployee] = UNSET
+    r"""The employee this entity is linked to."""
 
     department_id: OptionalNullable[str] = UNSET
     r"""The ID of the department"""
@@ -292,6 +337,15 @@ class JournalEntryLineItemInput(BaseModel):
                 return value
         return value
 
+    @field_serializer("tax_type")
+    def serialize_tax_type(self, value):
+        if isinstance(value, str):
+            try:
+                return models.TaxType(value)
+            except ValueError:
+                return value
+        return value
+
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
         optional_fields = [
@@ -300,10 +354,12 @@ class JournalEntryLineItemInput(BaseModel):
             "sub_total",
             "total_amount",
             "tax_rate",
+            "tax_type",
             "tracking_category",
             "tracking_categories",
             "customer",
             "supplier",
+            "employee",
             "department_id",
             "location_id",
             "line_number",
@@ -315,11 +371,13 @@ class JournalEntryLineItemInput(BaseModel):
             "sub_total",
             "total_amount",
             "type",
+            "tax_type",
             "tracking_category",
             "tracking_categories",
             "ledger_account",
             "customer",
             "supplier",
+            "employee",
             "department_id",
             "location_id",
             "line_number",
