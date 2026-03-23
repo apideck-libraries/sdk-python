@@ -9,3 +9,4 @@ The type of account being referenced. Use `ledger_account` for GL accounts from 
 | ---------------- | ---------------- |
 | `LEDGER_ACCOUNT` | ledger_account   |
 | `BANK_ACCOUNT`   | bank_account     |
+| `EMPLOYEE`       | employee         |
