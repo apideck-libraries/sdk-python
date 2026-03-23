@@ -3932,6 +3932,7 @@ if TYPE_CHECKING:
         JournalEntryLineItemInputTypedDict,
         JournalEntryLineItemType,
         JournalEntryLineItemTypedDict,
+        TaxType,
     )
     from .lead import Lead, LeadTypedDict
     from .lead_input import LeadInput, LeadInputTypedDict
@@ -3985,6 +3986,7 @@ if TYPE_CHECKING:
         LinkedEcommerceOrder,
         LinkedEcommerceOrderTypedDict,
     )
+    from .linkedemployee import LinkedEmployee, LinkedEmployeeTypedDict
     from .linkedexpensecategory import (
         LinkedExpenseCategory,
         LinkedExpenseCategoryTypedDict,
@@ -7948,6 +7950,8 @@ __all__ = [
     "LinkedEcommerceCustomerTypedDict",
     "LinkedEcommerceOrder",
     "LinkedEcommerceOrderTypedDict",
+    "LinkedEmployee",
+    "LinkedEmployeeTypedDict",
     "LinkedExpenseCategory",
     "LinkedExpenseCategoryTypedDict",
     "LinkedFinancialAccount",
@@ -8341,6 +8345,7 @@ __all__ = [
     "TaxRateTypedDict",
     "TaxRatesFilter",
     "TaxRatesFilterTypedDict",
+    "TaxType",
     "TaxTypedDict",
     "Team",
     "TeamTypedDict",
@@ -11707,6 +11712,7 @@ _dynamic_imports: dict[str, str] = {
     "JournalEntryLineItemInputTypedDict": ".journalentrylineitem",
     "JournalEntryLineItemType": ".journalentrylineitem",
     "JournalEntryLineItemTypedDict": ".journalentrylineitem",
+    "TaxType": ".journalentrylineitem",
     "Lead": ".lead",
     "LeadTypedDict": ".lead",
     "LeadInput": ".lead_input",
@@ -11754,6 +11760,8 @@ _dynamic_imports: dict[str, str] = {
     "LinkedEcommerceCustomerTypedDict": ".linkedecommercecustomer",
     "LinkedEcommerceOrder": ".linkedecommerceorder",
     "LinkedEcommerceOrderTypedDict": ".linkedecommerceorder",
+    "LinkedEmployee": ".linkedemployee",
+    "LinkedEmployeeTypedDict": ".linkedemployee",
     "LinkedExpenseCategory": ".linkedexpensecategory",
     "LinkedExpenseCategoryTypedDict": ".linkedexpensecategory",
     "LinkedFinancialAccount": ".linkedfinancialaccount",

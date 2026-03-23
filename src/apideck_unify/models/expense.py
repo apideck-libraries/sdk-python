@@ -83,7 +83,7 @@ class ExpenseTypedDict(TypedDict):
     account_id: NotRequired[str]
     r"""The unique identifier for the ledger account that this expense should be credited to. Deprecated, use account instead."""
     account: NotRequired[Nullable[LinkedFinancialAccountTypedDict]]
-    r"""A flexible account reference that can represent either a ledger account (GL account) or a bank account, depending on the connector's requirements."""
+    r"""A flexible account reference that can represent a ledger account (GL account), a bank account, or an employee payable account, depending on the connector's requirements."""
     supplier_id: NotRequired[str]
     r"""The ID of the supplier this entity is linked to. Deprecated, use supplier instead."""
     supplier: NotRequired[Nullable[LinkedSupplierTypedDict]]
@@ -165,7 +165,7 @@ class Expense(BaseModel):
     r"""The unique identifier for the ledger account that this expense should be credited to. Deprecated, use account instead."""
 
     account: OptionalNullable[LinkedFinancialAccount] = UNSET
-    r"""A flexible account reference that can represent either a ledger account (GL account) or a bank account, depending on the connector's requirements."""
+    r"""A flexible account reference that can represent a ledger account (GL account), a bank account, or an employee payable account, depending on the connector's requirements."""
 
     supplier_id: Annotated[
         Optional[str],
@@ -404,7 +404,7 @@ class ExpenseInputTypedDict(TypedDict):
     account_id: NotRequired[str]
     r"""The unique identifier for the ledger account that this expense should be credited to. Deprecated, use account instead."""
     account: NotRequired[Nullable[LinkedFinancialAccountInputTypedDict]]
-    r"""A flexible account reference that can represent either a ledger account (GL account) or a bank account, depending on the connector's requirements."""
+    r"""A flexible account reference that can represent a ledger account (GL account), a bank account, or an employee payable account, depending on the connector's requirements."""
     supplier_id: NotRequired[str]
     r"""The ID of the supplier this entity is linked to. Deprecated, use supplier instead."""
     supplier: NotRequired[Nullable[LinkedSupplierInputTypedDict]]
@@ -473,7 +473,7 @@ class ExpenseInput(BaseModel):
     r"""The unique identifier for the ledger account that this expense should be credited to. Deprecated, use account instead."""
 
     account: OptionalNullable[LinkedFinancialAccountInput] = UNSET
-    r"""A flexible account reference that can represent either a ledger account (GL account) or a bank account, depending on the connector's requirements."""
+    r"""A flexible account reference that can represent a ledger account (GL account), a bank account, or an employee payable account, depending on the connector's requirements."""
 
     supplier_id: Annotated[
         Optional[str],
