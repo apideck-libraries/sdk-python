@@ -1560,6 +1560,7 @@ if TYPE_CHECKING:
         Value5,
         Value5TypedDict,
     )
+    from .connectionhealth import ConnectionHealth
     from .connectionimportdata import (
         ConnectionImportData,
         ConnectionImportDataTypedDict,
@@ -6152,6 +6153,7 @@ __all__ = [
     "ConnectionConfigurationTypedDict",
     "ConnectionDefaults",
     "ConnectionDefaultsTypedDict",
+    "ConnectionHealth",
     "ConnectionImportData",
     "ConnectionImportDataTypedDict",
     "ConnectionInput",
@@ -9964,6 +9966,7 @@ _dynamic_imports: dict[str, str] = {
     "Target": ".connection",
     "Value5": ".connection",
     "Value5TypedDict": ".connection",
+    "ConnectionHealth": ".connectionhealth",
     "ConnectionImportData": ".connectionimportdata",
     "ConnectionImportDataTypedDict": ".connectionimportdata",
     "Credentials": ".connectionimportdata",

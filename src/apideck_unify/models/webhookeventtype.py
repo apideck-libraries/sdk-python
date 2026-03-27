@@ -35,6 +35,10 @@ class WebhookEventType(str, Enum, metaclass=utils.OpenEnumMeta):
     VAULT_CONNECTION_CALLABLE = "vault.connection.callable"
     VAULT_CONNECTION_REVOKED = "vault.connection.revoked"
     VAULT_CONNECTION_TOKEN_REFRESH_FAILED = "vault.connection.token_refresh.failed"
+    VAULT_CONNECTION_TOKEN_REFRESH_PENDING = "vault.connection.token_refresh.pending"
+    VAULT_CONNECTION_TOKEN_REFRESH_RECOVERED = (
+        "vault.connection.token_refresh.recovered"
+    )
     ATS_JOB_CREATED = "ats.job.created"
     ATS_JOB_UPDATED = "ats.job.updated"
     ATS_JOB_DELETED = "ats.job.deleted"
