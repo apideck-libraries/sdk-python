@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 from .authtype import AuthType
+from .connectionhealth import ConnectionHealth
 from .connectionstate import ConnectionState
 from apideck_unify import models
 from apideck_unify.types import (
@@ -39,6 +40,12 @@ class ConsumerConnectionTypedDict(TypedDict):
     updated_at: NotRequired[Nullable[str]]
     state: NotRequired[ConnectionState]
     r"""[Connection state flow](#section/Connection-state)"""
+    health: NotRequired[ConnectionHealth]
+    r"""The operational health status of the connection"""
+    credentials_expire_at: NotRequired[Nullable[str]]
+    r"""ISO 8601 timestamp indicating when credentials will be cleared if token refresh continues to fail. Only present when connection health is pending_refresh and a retention window is active."""
+    last_refresh_failed_at: NotRequired[Nullable[str]]
+    r"""ISO 8601 timestamp of the most recent token refresh failure. Only present when connection has experienced refresh failures."""
 
 
 class ConsumerConnection(BaseModel):
@@ -82,6 +89,17 @@ class ConsumerConnection(BaseModel):
     ] = None
     r"""[Connection state flow](#section/Connection-state)"""
 
+    health: Annotated[
+        Optional[ConnectionHealth], PlainValidator(validate_open_enum(False))
+    ] = None
+    r"""The operational health status of the connection"""
+
+    credentials_expire_at: OptionalNullable[str] = UNSET
+    r"""ISO 8601 timestamp indicating when credentials will be cleared if token refresh continues to fail. Only present when connection health is pending_refresh and a retention window is active."""
+
+    last_refresh_failed_at: OptionalNullable[str] = UNSET
+    r"""ISO 8601 timestamp of the most recent token refresh failure. Only present when connection has experienced refresh failures."""
+
     @field_serializer("auth_type")
     def serialize_auth_type(self, value):
         if isinstance(value, str):
@@ -96,6 +114,15 @@ class ConsumerConnection(BaseModel):
         if isinstance(value, str):
             try:
                 return models.ConnectionState(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("health")
+    def serialize_health(self, value):
+        if isinstance(value, str):
+            try:
+                return models.ConnectionHealth(value)
             except ValueError:
                 return value
         return value
@@ -119,8 +146,17 @@ class ConsumerConnection(BaseModel):
             "created_at",
             "updated_at",
             "state",
+            "health",
+            "credentials_expire_at",
+            "last_refresh_failed_at",
         ]
-        nullable_fields = ["settings", "metadata", "updated_at"]
+        nullable_fields = [
+            "settings",
+            "metadata",
+            "updated_at",
+            "credentials_expire_at",
+            "last_refresh_failed_at",
+        ]
         null_default_fields = []
 
         serialized = handler(self)

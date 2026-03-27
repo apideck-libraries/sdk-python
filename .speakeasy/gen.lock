@@ -1,12 +1,12 @@
 lockVersion: 2.0.0
 id: fca0ac3a-5f4e-452c-bbc7-2311afa8da40
 management:
-  docChecksum: 31da3f43f8caa9d043fe7794246c5d46
-  docVersion: 10.24.9
+  docChecksum: eb7e61f2644aa51bdd4db5b79151bb79
+  docVersion: 10.24.10
   speakeasyVersion: 1.656.1
   generationVersion: 2.753.1
-  releaseVersion: 0.31.4
-  configChecksum: de34ff112f1b46c716ae672332b210a7
+  releaseVersion: 0.31.5
+  configChecksum: 89f6c67b1aefa677a2507e99b840469b
   repoURL: https://github.com/apideck-libraries/sdk-python.git
   installationURL: https://github.com/apideck-libraries/sdk-python.git
   published: true
@@ -667,6 +667,7 @@ generatedFiles:
   - docs/models/connection.md
   - docs/models/connectionconfiguration.md
   - docs/models/connectiondefaults.md
+  - docs/models/connectionhealth.md
   - docs/models/connectionimportdata.md
   - docs/models/connectioninput.md
   - docs/models/connectionstate.md
@@ -2451,6 +2452,7 @@ generatedFiles:
   - src/apideck_unify/models/companyinfo.py
   - src/apideck_unify/models/compensation.py
   - src/apideck_unify/models/connection.py
+  - src/apideck_unify/models/connectionhealth.py
   - src/apideck_unify/models/connectionimportdata.py
   - src/apideck_unify/models/connectionstate.py
   - src/apideck_unify/models/connector.py
@@ -19640,6 +19642,11 @@ examples:
           application/json: {"status_code": 400, "error": "Bad Request", "type_name": "RequestHeadersValidationError", "message": "Invalid Params", "detail": "Missing Header: x-apideck-consumer-id", "ref": "https://developers.apideck.com/errors#unauthorizederror"}
 examplesVersion: 1.0.2
 generatedTests: {}
+releaseNotes: |
+  ## Python SDK Changes Detected:
+  * `apideck.vault.consumers.create()`:  `response.data.connections.[]` **Changed**
+  * `apideck.vault.consumers.get()`:  `response.data.connections.[]` **Changed**
+  * `apideck.vault.consumers.update()`:  `response.data.connections.[]` **Changed**
 trackedFiles:
   .devcontainer/README.md:
     last_write_checksum: sha1:07adb0c0c051a9be4d479ea06461f3a9b3bbeb2f
@@ -20881,6 +20888,8 @@ trackedFiles:
     last_write_checksum: sha1:b8373ebad4674b14991c53b0b805d1d82739022f
   docs/models/connectiondefaults.md:
     last_write_checksum: sha1:ffafdb7580a2a9f1fc663fad634a8ee852bb8770
+  docs/models/connectionhealth.md:
+    last_write_checksum: sha1:32742d68ab22cf7c784aa4a80d86bee0341bf948
   docs/models/connectionimportdata.md:
     last_write_checksum: sha1:0b06e09351ee734a771f4816621486ce38d65f56
   docs/models/connectioninput.md:
@@ -20970,7 +20979,7 @@ trackedFiles:
   docs/models/consumer.md:
     last_write_checksum: sha1:f5edfa319764fdf28f036696938f868e7df2ca52
   docs/models/consumerconnection.md:
-    last_write_checksum: sha1:d6510aca6132524055c89706372de087c2f7f6cf
+    last_write_checksum: sha1:ea5241d780fd0da922834f75efe32216c3aa3f30
   docs/models/consumermetadata.md:
     last_write_checksum: sha1:4860b4b5c0e4db4aece222faae0586fecaaa1309
   docs/models/consumerrequestcountsindaterangeresponse.md:
@@ -23588,7 +23597,7 @@ trackedFiles:
   docs/models/webhookeventlogsfilterservice.md:
     last_write_checksum: sha1:91879316d2b412d23cf082cca77d946dda736357
   docs/models/webhookeventtype.md:
-    last_write_checksum: sha1:19cd23ab958245392cf8c94b0a88e407c37e7e05
+    last_write_checksum: sha1:8a56f9a602a729f8594a7461923fd009e22910d1
   docs/models/webhooksubscription.md:
     last_write_checksum: sha1:a698dbef407f125cd3e724b8a0920760f88182cb
   docs/models/webhooksupport.md:
@@ -23838,7 +23847,7 @@ trackedFiles:
   src/apideck_unify/_hooks/types.py:
     last_write_checksum: sha1:4b923d3d84d979af6169a9db6b81bfc373079a25
   src/apideck_unify/_version.py:
-    last_write_checksum: sha1:29ff36d89bb7d19e377e2bb9e4f2c6db8a50e76f
+    last_write_checksum: sha1:3ed0b00b7385dbe611dd9402e2e7befc1b5d6774
   src/apideck_unify/accounting.py:
     last_write_checksum: sha1:afb8958c0092d6bbc935597b72e8a96d2b82b4aa
   src/apideck_unify/activities.py:
@@ -23994,7 +24003,7 @@ trackedFiles:
   src/apideck_unify/messages.py:
     last_write_checksum: sha1:81505e18f3146769dce4b7366e3ab69d2330a80a
   src/apideck_unify/models/__init__.py:
-    last_write_checksum: sha1:91423e452740fac2b74ed7bd799ad85545a6576a
+    last_write_checksum: sha1:0dcb3415559e418ba55ca1febc16979da389b03c
   src/apideck_unify/models/accounting_agedcreditorsoneop.py:
     last_write_checksum: sha1:7346d1ab1c21db21995aae34c5ba01549c2786c2
   src/apideck_unify/models/accounting_ageddebtorsoneop.py:
@@ -24449,6 +24458,8 @@ trackedFiles:
     last_write_checksum: sha1:e7ca2fd1d1315919bf40046de212790ec14de531
   src/apideck_unify/models/connection.py:
     last_write_checksum: sha1:e60f16e63e87200a1cc744716778f2ef4594dfc0
+  src/apideck_unify/models/connectionhealth.py:
+    last_write_checksum: sha1:ba9f8c1c25f027562913a4cfda38bd374ad87ded
   src/apideck_unify/models/connectionimportdata.py:
     last_write_checksum: sha1:78b328cd244958ce60632ba080e4fc515b53864f
   src/apideck_unify/models/connectionstate.py:
@@ -24492,7 +24503,7 @@ trackedFiles:
   src/apideck_unify/models/consumer.py:
     last_write_checksum: sha1:e340aa10d082c1f9c40fdd81fe7489bc2e32e2bd
   src/apideck_unify/models/consumerconnection.py:
-    last_write_checksum: sha1:3f79192bd2ea088269ac9e1543cc33100a751659
+    last_write_checksum: sha1:2697eb7cad6377d899b0ea79b7d34136cb71f17d
   src/apideck_unify/models/consumermetadata.py:
     last_write_checksum: sha1:761111554161f4fd52e52847401de90d491d0694
   src/apideck_unify/models/consumerrequestcountsindaterangeresponse.py:
@@ -25950,7 +25961,7 @@ trackedFiles:
   src/apideck_unify/models/webhookeventlogsfilter.py:
     last_write_checksum: sha1:a570f7ec34d2196d91b32b1f9c59bca2099f39fa
   src/apideck_unify/models/webhookeventtype.py:
-    last_write_checksum: sha1:5bb30ac74fa7258402ff8e7cf716e5437663dd31
+    last_write_checksum: sha1:d308d4912da877a784b6ff1036d22c8e1975b354
   src/apideck_unify/models/webhooksubscription.py:
     last_write_checksum: sha1:12537b4b59e1cdb5798ddf08ad98dfb50f809a83
   src/apideck_unify/models/webhooksupport.py:
