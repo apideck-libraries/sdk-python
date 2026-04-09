@@ -63,6 +63,8 @@ class ProxyPutProxyRequestTypedDict(TypedDict):
     r"""Specify which unified API to use for the connection lookup. Required for multi-API connectors (e.g., Workday) to ensure the correct credentials are used."""
     downstream_authorization: NotRequired[str]
     r"""Downstream authorization header. This will skip the Vault token injection."""
+    timeout: NotRequired[int]
+    r"""Override the default downstream request timeout in milliseconds. The default is 28000 (28 seconds)."""
     request_body: NotRequired[Union[bytes, IO[bytes], io.BufferedReader]]
     r"""Depending on the verb/method of the request this will contain the request body you want to POST/PATCH/PUT."""
 
@@ -109,6 +111,13 @@ class ProxyPutProxyRequest(BaseModel):
         FieldMetadata(header=HeaderMetadata(style="simple", explode=False)),
     ] = None
     r"""Downstream authorization header. This will skip the Vault token injection."""
+
+    timeout: Annotated[
+        Optional[int],
+        pydantic.Field(alias="x-apideck-timeout"),
+        FieldMetadata(header=HeaderMetadata(style="simple", explode=False)),
+    ] = 28000
+    r"""Override the default downstream request timeout in milliseconds. The default is 28000 (28 seconds)."""
 
     request_body: Annotated[
         Optional[Union[bytes, IO[bytes], io.BufferedReader]],
