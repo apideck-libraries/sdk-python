@@ -1,12 +1,12 @@
 lockVersion: 2.0.0
 id: fca0ac3a-5f4e-452c-bbc7-2311afa8da40
 management:
-  docChecksum: 6b3cae6c7555da97a0f6f5cf9c5e5083
-  docVersion: 10.24.14
+  docChecksum: 0290cf435ecfdc360a7a22c19b992236
+  docVersion: 10.24.19
   speakeasyVersion: 1.656.1
   generationVersion: 2.753.1
-  releaseVersion: 0.31.7
-  configChecksum: 44a1c514d9e926e5d26fb245d4fa3dfa
+  releaseVersion: 0.31.8
+  configChecksum: b169310e00a9868917f920ed56199a75
   repoURL: https://github.com/apideck-libraries/sdk-python.git
   installationURL: https://github.com/apideck-libraries/sdk-python.git
   published: true
@@ -1827,6 +1827,7 @@ generatedFiles:
   - docs/models/taxrate.md
   - docs/models/taxrateinput.md
   - docs/models/taxratesfilter.md
+  - docs/models/taxratesfilterstatus.md
   - docs/models/taxratestatus.md
   - docs/models/taxtype.md
   - docs/models/team.md
@@ -3291,7 +3292,7 @@ examples:
         query:
           raw: false
           limit: 20
-          filter: {"assets": true, "equity": true, "expenses": true, "liabilities": true, "revenue": true}
+          filter: {"assets": true, "equity": true, "expenses": true, "liabilities": true, "revenue": true, "status": "active"}
           pass_through: {"search": "San Francisco"}
           fields: "id,updated_at"
         header:
@@ -18855,6 +18856,7 @@ examples:
           x-apideck-unified-api: "hris"
           x-apideck-downstream-url: "https://api.close.com/api/v1/lead"
           x-apideck-downstream-authorization: "Bearer <token>"
+          x-apideck-timeout: 30000
       responses:
         "200":
           application/json: {"key": "<value>", "key1": "<value>", "key2": "<value>"}
@@ -18880,6 +18882,7 @@ examples:
           x-apideck-unified-api: "hris"
           x-apideck-downstream-url: "https://api.close.com/api/v1/lead"
           x-apideck-downstream-authorization: "Bearer <token>"
+          x-apideck-timeout: 30000
       responses:
         "200":
           application/json: {"key": "<value>", "key1": "<value>"}
@@ -18905,6 +18908,7 @@ examples:
           x-apideck-unified-api: "hris"
           x-apideck-downstream-url: "https://api.close.com/api/v1/lead"
           x-apideck-downstream-authorization: "Bearer <token>"
+          x-apideck-timeout: 30000
       responses:
         "200":
           application/json: {"key": "<value>"}
@@ -18930,6 +18934,7 @@ examples:
           x-apideck-unified-api: "hris"
           x-apideck-downstream-url: "https://api.close.com/api/v1/lead"
           x-apideck-downstream-authorization: "Bearer <token>"
+          x-apideck-timeout: 30000
       responses:
         "200":
           application/json: {"key": "<value>"}
@@ -18955,6 +18960,7 @@ examples:
           x-apideck-unified-api: "hris"
           x-apideck-downstream-url: "https://api.close.com/api/v1/lead"
           x-apideck-downstream-authorization: "Bearer <token>"
+          x-apideck-timeout: 30000
       responses:
         "200":
           application/json: {"key": "<value>", "key1": "<value>"}
@@ -18980,6 +18986,7 @@ examples:
           x-apideck-unified-api: "hris"
           x-apideck-downstream-url: "https://api.close.com/api/v1/lead"
           x-apideck-downstream-authorization: "Bearer <token>"
+          x-apideck-timeout: 30000
       responses:
         "200":
           application/json: {"key": "<value>", "key1": "<value>"}
@@ -19642,6 +19649,15 @@ examples:
           application/json: {"status_code": 400, "error": "Bad Request", "type_name": "RequestHeadersValidationError", "message": "Invalid Params", "detail": "Missing Header: x-apideck-consumer-id", "ref": "https://developers.apideck.com/errors#unauthorizederror"}
 examplesVersion: 1.0.2
 generatedTests: {}
+releaseNotes: |
+  ## Python SDK Changes Detected:
+  * `apideck.accounting.tax_rates.list()`:  `request.filter` **Changed**
+  * `apideck.proxy.get()`:  `request.timeout` **Added**
+  * `apideck.proxy.options()`:  `request.timeout` **Added**
+  * `apideck.proxy.post()`:  `request.timeout` **Added**
+  * `apideck.proxy.put()`:  `request.timeout` **Added**
+  * `apideck.proxy.patch()`:  `request.timeout` **Added**
+  * `apideck.proxy.delete()`:  `request.timeout` **Added**
 trackedFiles:
   .devcontainer/README.md:
     last_write_checksum: sha1:07adb0c0c051a9be4d479ea06461f3a9b3bbeb2f
@@ -20498,7 +20514,7 @@ trackedFiles:
   docs/models/accountingtaxratesallglobals.md:
     last_write_checksum: sha1:07f444a3697c2119a3c8f7067fc3188141f7b42d
   docs/models/accountingtaxratesallrequest.md:
-    last_write_checksum: sha1:2f5ae753405d8b12ac3fef99ca111c9e3546ad1b
+    last_write_checksum: sha1:f69e959ea39ebc184f4f995fe15e4536533fcf59
   docs/models/accountingtaxratesallresponse.md:
     last_write_checksum: sha1:233b13562399d76e896ca59c18c0c1e7e9bf3c15
   docs/models/accountingtaxratesdeleteglobals.md:
@@ -22980,25 +22996,25 @@ trackedFiles:
   docs/models/proxydeleteproxyglobals.md:
     last_write_checksum: sha1:c16f7d91cb601bda587c2de8d7d9977d2c34ffb7
   docs/models/proxydeleteproxyrequest.md:
-    last_write_checksum: sha1:007546afadfc3d5ab81181c2a09b6f98d80dd398
+    last_write_checksum: sha1:f3246d3ee382d88aff21a6b002674af60e24c873
   docs/models/proxydeleteproxyresponse.md:
     last_write_checksum: sha1:c85fe51f772a0acc912f2bb547dc6b4749bd566c
   docs/models/proxygetproxyglobals.md:
     last_write_checksum: sha1:61c8f5876078eaaa314435082e1752e0e77144d3
   docs/models/proxygetproxyrequest.md:
-    last_write_checksum: sha1:dbd907951ba675e4f1be6d0e0283034a8dbb9fa2
+    last_write_checksum: sha1:e699753055b99d3dc1c9213b29980995588edd5e
   docs/models/proxygetproxyresponse.md:
     last_write_checksum: sha1:c7987d214a6e56fd82a7f9ec0e6100c56f7fb44e
   docs/models/proxyoptionsproxyglobals.md:
     last_write_checksum: sha1:0477e45ae5344eda3728f1803ffa3f5de9bce4f3
   docs/models/proxyoptionsproxyrequest.md:
-    last_write_checksum: sha1:4515d902f74285d8ebaf540d8383bdefd5cfc477
+    last_write_checksum: sha1:47a0b2711600fc471800fdc76be57686a738fcc8
   docs/models/proxyoptionsproxyresponse.md:
     last_write_checksum: sha1:d5822a6230461dd0a40ca5371b0458c1db2f135a
   docs/models/proxypatchproxyglobals.md:
     last_write_checksum: sha1:073afd34d739d9466ce6683e1f613fad77c779b0
   docs/models/proxypatchproxyrequest.md:
-    last_write_checksum: sha1:86ab0e789d5d9dfa4283af7af8f9216e1b84de30
+    last_write_checksum: sha1:de805ea663dd528c6828323ca7fec5d037ba5fd3
   docs/models/proxypatchproxyrequestbody1.md:
     last_write_checksum: sha1:e7e8bbb12c000abebef2594ac8da50e8a7f74560
   docs/models/proxypatchproxyrequestbody3.md:
@@ -23008,13 +23024,13 @@ trackedFiles:
   docs/models/proxypostproxyglobals.md:
     last_write_checksum: sha1:5b023a35a7f26e74d138b6aa9a9339734f3c4b0b
   docs/models/proxypostproxyrequest.md:
-    last_write_checksum: sha1:e196a7c90435af81a8ed97a03adc4e049f91bf1c
+    last_write_checksum: sha1:0ecae252fb087574c8cd22d073fc7084f01b8610
   docs/models/proxypostproxyresponse.md:
     last_write_checksum: sha1:efd5286040540fba8736515e09f4acc9daa66fb9
   docs/models/proxyputproxyglobals.md:
     last_write_checksum: sha1:cf2f5a4fb62f46d95fe7ca111aa2c7223dfc0ac0
   docs/models/proxyputproxyrequest.md:
-    last_write_checksum: sha1:d64e151390f3f4349582e4e1707692466233df48
+    last_write_checksum: sha1:ca2888d628639af36d919c5d197ca845da5dbf2f
   docs/models/proxyputproxyrequestbody1.md:
     last_write_checksum: sha1:c4945cce68426332675be1972315dddc4c95deca
   docs/models/proxyputproxyresponse.md:
@@ -23202,7 +23218,9 @@ trackedFiles:
   docs/models/taxrateinput.md:
     last_write_checksum: sha1:3daf4db832c28ee2a06ee98b514197cd1e1e51c2
   docs/models/taxratesfilter.md:
-    last_write_checksum: sha1:48f62655599f4789a0ee169e3142109c2e819b31
+    last_write_checksum: sha1:d576312b417719543a9459d16afda219914871a7
+  docs/models/taxratesfilterstatus.md:
+    last_write_checksum: sha1:c8eb214e70bc459cda6cd7b53d00346479a191e8
   docs/models/taxratestatus.md:
     last_write_checksum: sha1:a2ac923a5c6e20f00ec500e505c75995838f5e35
   docs/models/taxtype.md:
@@ -23790,7 +23808,7 @@ trackedFiles:
   docs/sdks/projects/README.md:
     last_write_checksum: sha1:f267cb7704f6dcd0b1cab8e48babb1ca8f065bea
   docs/sdks/proxy/README.md:
-    last_write_checksum: sha1:f9e68f56dcca3036f96048c66d73dd55dea9a2ca
+    last_write_checksum: sha1:feb8cd372e25ca322e48fed603942c02af4beb43
   docs/sdks/purchaseorders/README.md:
     last_write_checksum: sha1:fb84ad40ffac3213e8249afbb310b4c4d5b4dfed
   docs/sdks/quotes/README.md:
@@ -23808,7 +23826,7 @@ trackedFiles:
   docs/sdks/suppliers/README.md:
     last_write_checksum: sha1:17180ae89b34ae8cb340b81bbb6c7ed17938e26c
   docs/sdks/taxrates/README.md:
-    last_write_checksum: sha1:adc1499d7bb216b31fc48aa414997e288e125e5a
+    last_write_checksum: sha1:1dfeae2a38de761e10a2409339e50d90bceea87a
   docs/sdks/timeoffrequests/README.md:
     last_write_checksum: sha1:6c2bb0978896d1ea64e809868203853ba8e57255
   docs/sdks/trackingcategories/README.md:
@@ -23842,7 +23860,7 @@ trackedFiles:
   src/apideck_unify/_hooks/types.py:
     last_write_checksum: sha1:4b923d3d84d979af6169a9db6b81bfc373079a25
   src/apideck_unify/_version.py:
-    last_write_checksum: sha1:5288642d495042624b6b1d2a1a73be989b855abc
+    last_write_checksum: sha1:e60a946eb0152555eda853914d83e6810cc98341
   src/apideck_unify/accounting.py:
     last_write_checksum: sha1:afb8958c0092d6bbc935597b72e8a96d2b82b4aa
   src/apideck_unify/activities.py:
@@ -23998,7 +24016,7 @@ trackedFiles:
   src/apideck_unify/messages.py:
     last_write_checksum: sha1:881a149b1d5cb7c48a2f8ec04f1d9806eb95faac
   src/apideck_unify/models/__init__.py:
-    last_write_checksum: sha1:0dcb3415559e418ba55ca1febc16979da389b03c
+    last_write_checksum: sha1:7623a769caed5da3523b5f99288d46d0f27ededf
   src/apideck_unify/models/accounting_agedcreditorsoneop.py:
     last_write_checksum: sha1:7346d1ab1c21db21995aae34c5ba01549c2786c2
   src/apideck_unify/models/accounting_ageddebtorsoneop.py:
@@ -25642,17 +25660,17 @@ trackedFiles:
   src/apideck_unify/models/projectssort.py:
     last_write_checksum: sha1:9d0d1dd7a8480ffe52d267112db83cb0423fc3aa
   src/apideck_unify/models/proxy_deleteproxyop.py:
-    last_write_checksum: sha1:32d83d732c7e3606e08c6586746438c91c2fb965
+    last_write_checksum: sha1:e8da144bc463ba2d447504c0e81bc543c7bfb23c
   src/apideck_unify/models/proxy_getproxyop.py:
-    last_write_checksum: sha1:6191bd3bb8df4ff9a0c337ea10e2b51a2b52e3fa
+    last_write_checksum: sha1:4b116fb6466007dbb1db35d38d8d2cda48bdb792
   src/apideck_unify/models/proxy_optionsproxyop.py:
-    last_write_checksum: sha1:ebf348d50c0d30f3b5d25023abc021154d93babb
+    last_write_checksum: sha1:5b97523e4c4e6ae2772d219bed54e8c925448e16
   src/apideck_unify/models/proxy_patchproxyop.py:
-    last_write_checksum: sha1:880e9ff373bef40c105ad7b9448d78736f16d45c
+    last_write_checksum: sha1:7e1c2e864a90cd0e49924774afb57cbaa24233f5
   src/apideck_unify/models/proxy_postproxyop.py:
-    last_write_checksum: sha1:7adafb00f33305f14e1dc710ca52d73eb7cbfdc0
+    last_write_checksum: sha1:691d50366651f70a21fffd20471cc164e698c256
   src/apideck_unify/models/proxy_putproxyop.py:
-    last_write_checksum: sha1:d9701e2f02a275c1626fb0d7d27e3489df186d62
+    last_write_checksum: sha1:1dd5491268843123339e27a94af479aa0f56413b
   src/apideck_unify/models/purchaseorder.py:
     last_write_checksum: sha1:9db492fdb96faee51447d63714d1181de9f95714
   src/apideck_unify/models/purchaseordersfilter.py:
@@ -25732,7 +25750,7 @@ trackedFiles:
   src/apideck_unify/models/taxrate.py:
     last_write_checksum: sha1:20db0d45794bcd1dc6cd4d09554b7a47321e7951
   src/apideck_unify/models/taxratesfilter.py:
-    last_write_checksum: sha1:89bf35e108527f6ca16810305d05b9a5ba47794f
+    last_write_checksum: sha1:cbdfbb2880704512599af839376e254a6e9be946
   src/apideck_unify/models/team.py:
     last_write_checksum: sha1:ec00a0d22e6e38ebc6bb76e447475b8397f64ebd
   src/apideck_unify/models/ticket.py:
@@ -25982,7 +26000,7 @@ trackedFiles:
   src/apideck_unify/projects.py:
     last_write_checksum: sha1:b461e1616e9a7c647804611e07375026fa2f63d6
   src/apideck_unify/proxy.py:
-    last_write_checksum: sha1:972a4e45c6330f2f130a33b49729cba2351e90e4
+    last_write_checksum: sha1:2f62ce2f2b97c3d7fc1de01108aae19ea8b6b8c9
   src/apideck_unify/purchaseorders.py:
     last_write_checksum: sha1:ca745ebfd7fbc533a7b0004c7c0b774caec39813
   src/apideck_unify/py.typed:

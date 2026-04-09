@@ -4387,7 +4387,11 @@ if TYPE_CHECKING:
         TaxRateStatus,
         TaxRateTypedDict,
     )
-    from .taxratesfilter import TaxRatesFilter, TaxRatesFilterTypedDict
+    from .taxratesfilter import (
+        TaxRatesFilter,
+        TaxRatesFilterStatus,
+        TaxRatesFilterTypedDict,
+    )
     from .team import Team, TeamTypedDict
     from .ticket import (
         Ticket,
@@ -8346,6 +8350,7 @@ __all__ = [
     "TaxRateStatus",
     "TaxRateTypedDict",
     "TaxRatesFilter",
+    "TaxRatesFilterStatus",
     "TaxRatesFilterTypedDict",
     "TaxType",
     "TaxTypedDict",
@@ -12132,6 +12137,7 @@ _dynamic_imports: dict[str, str] = {
     "TaxRateStatus": ".taxrate",
     "TaxRateTypedDict": ".taxrate",
     "TaxRatesFilter": ".taxratesfilter",
+    "TaxRatesFilterStatus": ".taxratesfilter",
     "TaxRatesFilterTypedDict": ".taxratesfilter",
     "Team": ".team",
     "TeamTypedDict": ".team",
