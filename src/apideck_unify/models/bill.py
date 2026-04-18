@@ -8,6 +8,10 @@ from .currency import Currency
 from .customfield import CustomField, CustomFieldTypedDict
 from .linkedattachment import LinkedAttachment, LinkedAttachmentTypedDict
 from .linkedledgeraccount import LinkedLedgerAccount, LinkedLedgerAccountTypedDict
+from .linkedpaymentallocations import (
+    LinkedPaymentAllocations,
+    LinkedPaymentAllocationsTypedDict,
+)
 from .linkedsupplier import LinkedSupplier, LinkedSupplierTypedDict
 from .linkedsupplier_input import LinkedSupplierInput, LinkedSupplierInputTypedDict
 from .linkedtrackingcategory import (
@@ -132,6 +136,10 @@ class BillTypedDict(TypedDict):
     r"""Whether the document has been received"""
     source_document_url: NotRequired[Nullable[str]]
     r"""URL link to a source document - shown as 'Go to [appName]' in the downstream app. Currently only supported for Xero."""
+    payment_allocations: NotRequired[
+        Nullable[List[Nullable[LinkedPaymentAllocationsTypedDict]]]
+    ]
+    r"""A list of linked payment allocations."""
     tracking_categories: NotRequired[
         Nullable[List[Nullable[LinkedTrackingCategoryTypedDict]]]
     ]
@@ -279,6 +287,11 @@ class Bill(BaseModel):
     source_document_url: OptionalNullable[str] = UNSET
     r"""URL link to a source document - shown as 'Go to [appName]' in the downstream app. Currently only supported for Xero."""
 
+    payment_allocations: OptionalNullable[List[Nullable[LinkedPaymentAllocations]]] = (
+        UNSET
+    )
+    r"""A list of linked payment allocations."""
+
     tracking_categories: OptionalNullable[List[Nullable[LinkedTrackingCategory]]] = (
         UNSET
     )
@@ -382,6 +395,7 @@ class Bill(BaseModel):
             "tax_method",
             "document_received",
             "source_document_url",
+            "payment_allocations",
             "tracking_categories",
             "updated_by",
             "created_by",
@@ -432,6 +446,7 @@ class Bill(BaseModel):
             "tax_method",
             "document_received",
             "source_document_url",
+            "payment_allocations",
             "tracking_categories",
             "updated_by",
             "created_by",
@@ -541,6 +556,10 @@ class BillInputTypedDict(TypedDict):
     r"""Whether the document has been received"""
     source_document_url: NotRequired[Nullable[str]]
     r"""URL link to a source document - shown as 'Go to [appName]' in the downstream app. Currently only supported for Xero."""
+    payment_allocations: NotRequired[
+        Nullable[List[Nullable[LinkedPaymentAllocationsTypedDict]]]
+    ]
+    r"""A list of linked payment allocations."""
     tracking_categories: NotRequired[
         Nullable[List[Nullable[LinkedTrackingCategoryTypedDict]]]
     ]
@@ -672,6 +691,11 @@ class BillInput(BaseModel):
     source_document_url: OptionalNullable[str] = UNSET
     r"""URL link to a source document - shown as 'Go to [appName]' in the downstream app. Currently only supported for Xero."""
 
+    payment_allocations: OptionalNullable[List[Nullable[LinkedPaymentAllocations]]] = (
+        UNSET
+    )
+    r"""A list of linked payment allocations."""
+
     tracking_categories: OptionalNullable[List[Nullable[LinkedTrackingCategory]]] = (
         UNSET
     )
@@ -758,6 +782,7 @@ class BillInput(BaseModel):
             "tax_method",
             "document_received",
             "source_document_url",
+            "payment_allocations",
             "tracking_categories",
             "row_version",
             "custom_fields",
@@ -802,6 +827,7 @@ class BillInput(BaseModel):
             "tax_method",
             "document_received",
             "source_document_url",
+            "payment_allocations",
             "tracking_categories",
             "row_version",
             "accounting_period",

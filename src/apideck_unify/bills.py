@@ -445,6 +445,12 @@ class Bills(BaseSDK):
         tax_method: OptionalNullable[str] = UNSET,
         document_received: OptionalNullable[bool] = UNSET,
         source_document_url: OptionalNullable[str] = UNSET,
+        payment_allocations: OptionalNullable[
+            Union[
+                List[Nullable[models.LinkedPaymentAllocations]],
+                List[Nullable[models.LinkedPaymentAllocationsTypedDict]],
+            ]
+        ] = UNSET,
         tracking_categories: OptionalNullable[
             Union[
                 List[Nullable[models.LinkedTrackingCategory]],
@@ -516,6 +522,7 @@ class Bills(BaseSDK):
         :param tax_method: Method of tax calculation
         :param document_received: Whether the document has been received
         :param source_document_url: URL link to a source document - shown as 'Go to [appName]' in the downstream app. Currently only supported for Xero.
+        :param payment_allocations: A list of linked payment allocations.
         :param tracking_categories: A list of linked tracking categories.
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
         :param custom_fields:
@@ -589,6 +596,10 @@ class Bills(BaseSDK):
                 tax_method=tax_method,
                 document_received=document_received,
                 source_document_url=source_document_url,
+                payment_allocations=utils.get_pydantic_model(
+                    payment_allocations,
+                    OptionalNullable[List[Nullable[models.LinkedPaymentAllocations]]],
+                ),
                 tracking_categories=utils.get_pydantic_model(
                     tracking_categories,
                     OptionalNullable[List[Nullable[models.LinkedTrackingCategory]]],
@@ -761,6 +772,12 @@ class Bills(BaseSDK):
         tax_method: OptionalNullable[str] = UNSET,
         document_received: OptionalNullable[bool] = UNSET,
         source_document_url: OptionalNullable[str] = UNSET,
+        payment_allocations: OptionalNullable[
+            Union[
+                List[Nullable[models.LinkedPaymentAllocations]],
+                List[Nullable[models.LinkedPaymentAllocationsTypedDict]],
+            ]
+        ] = UNSET,
         tracking_categories: OptionalNullable[
             Union[
                 List[Nullable[models.LinkedTrackingCategory]],
@@ -832,6 +849,7 @@ class Bills(BaseSDK):
         :param tax_method: Method of tax calculation
         :param document_received: Whether the document has been received
         :param source_document_url: URL link to a source document - shown as 'Go to [appName]' in the downstream app. Currently only supported for Xero.
+        :param payment_allocations: A list of linked payment allocations.
         :param tracking_categories: A list of linked tracking categories.
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
         :param custom_fields:
@@ -905,6 +923,10 @@ class Bills(BaseSDK):
                 tax_method=tax_method,
                 document_received=document_received,
                 source_document_url=source_document_url,
+                payment_allocations=utils.get_pydantic_model(
+                    payment_allocations,
+                    OptionalNullable[List[Nullable[models.LinkedPaymentAllocations]]],
+                ),
                 tracking_categories=utils.get_pydantic_model(
                     tracking_categories,
                     OptionalNullable[List[Nullable[models.LinkedTrackingCategory]]],
@@ -1372,6 +1394,12 @@ class Bills(BaseSDK):
         tax_method: OptionalNullable[str] = UNSET,
         document_received: OptionalNullable[bool] = UNSET,
         source_document_url: OptionalNullable[str] = UNSET,
+        payment_allocations: OptionalNullable[
+            Union[
+                List[Nullable[models.LinkedPaymentAllocations]],
+                List[Nullable[models.LinkedPaymentAllocationsTypedDict]],
+            ]
+        ] = UNSET,
         tracking_categories: OptionalNullable[
             Union[
                 List[Nullable[models.LinkedTrackingCategory]],
@@ -1444,6 +1472,7 @@ class Bills(BaseSDK):
         :param tax_method: Method of tax calculation
         :param document_received: Whether the document has been received
         :param source_document_url: URL link to a source document - shown as 'Go to [appName]' in the downstream app. Currently only supported for Xero.
+        :param payment_allocations: A list of linked payment allocations.
         :param tracking_categories: A list of linked tracking categories.
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
         :param custom_fields:
@@ -1518,6 +1547,10 @@ class Bills(BaseSDK):
                 tax_method=tax_method,
                 document_received=document_received,
                 source_document_url=source_document_url,
+                payment_allocations=utils.get_pydantic_model(
+                    payment_allocations,
+                    OptionalNullable[List[Nullable[models.LinkedPaymentAllocations]]],
+                ),
                 tracking_categories=utils.get_pydantic_model(
                     tracking_categories,
                     OptionalNullable[List[Nullable[models.LinkedTrackingCategory]]],
@@ -1691,6 +1724,12 @@ class Bills(BaseSDK):
         tax_method: OptionalNullable[str] = UNSET,
         document_received: OptionalNullable[bool] = UNSET,
         source_document_url: OptionalNullable[str] = UNSET,
+        payment_allocations: OptionalNullable[
+            Union[
+                List[Nullable[models.LinkedPaymentAllocations]],
+                List[Nullable[models.LinkedPaymentAllocationsTypedDict]],
+            ]
+        ] = UNSET,
         tracking_categories: OptionalNullable[
             Union[
                 List[Nullable[models.LinkedTrackingCategory]],
@@ -1763,6 +1802,7 @@ class Bills(BaseSDK):
         :param tax_method: Method of tax calculation
         :param document_received: Whether the document has been received
         :param source_document_url: URL link to a source document - shown as 'Go to [appName]' in the downstream app. Currently only supported for Xero.
+        :param payment_allocations: A list of linked payment allocations.
         :param tracking_categories: A list of linked tracking categories.
         :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
         :param custom_fields:
@@ -1837,6 +1877,10 @@ class Bills(BaseSDK):
                 tax_method=tax_method,
                 document_received=document_received,
                 source_document_url=source_document_url,
+                payment_allocations=utils.get_pydantic_model(
+                    payment_allocations,
+                    OptionalNullable[List[Nullable[models.LinkedPaymentAllocations]]],
+                ),
                 tracking_categories=utils.get_pydantic_model(
                     tracking_categories,
                     OptionalNullable[List[Nullable[models.LinkedTrackingCategory]]],

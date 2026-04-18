@@ -26,6 +26,7 @@ class PaymentsFilterType(str, Enum, metaclass=utils.OpenEnumMeta):
 class PaymentsFilterTypedDict(TypedDict):
     updated_since: NotRequired[datetime]
     invoice_id: NotRequired[str]
+    bill_id: NotRequired[str]
     supplier_id: NotRequired[str]
     customer_id: NotRequired[str]
     r"""Filter by customer id"""
@@ -36,6 +37,8 @@ class PaymentsFilter(BaseModel):
     updated_since: Annotated[Optional[datetime], FieldMetadata(query=True)] = None
 
     invoice_id: Annotated[Optional[str], FieldMetadata(query=True)] = None
+
+    bill_id: Annotated[Optional[str], FieldMetadata(query=True)] = None
 
     supplier_id: Annotated[Optional[str], FieldMetadata(query=True)] = None
 
