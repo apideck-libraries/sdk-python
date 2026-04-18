@@ -4008,6 +4008,10 @@ if TYPE_CHECKING:
         LinkedParentCustomer,
         LinkedParentCustomerTypedDict,
     )
+    from .linkedpaymentallocations import (
+        LinkedPaymentAllocations,
+        LinkedPaymentAllocationsTypedDict,
+    )
     from .linkedpurchaseorder import LinkedPurchaseOrder, LinkedPurchaseOrderTypedDict
     from .linkedsubsidiary import LinkedSubsidiary, LinkedSubsidiaryTypedDict
     from .linkedsubsidiary_input import (
@@ -7977,6 +7981,8 @@ __all__ = [
     "LinkedLocationTypedDict",
     "LinkedParentCustomer",
     "LinkedParentCustomerTypedDict",
+    "LinkedPaymentAllocations",
+    "LinkedPaymentAllocationsTypedDict",
     "LinkedPurchaseOrder",
     "LinkedPurchaseOrderTypedDict",
     "LinkedResources",
@@ -11789,6 +11795,8 @@ _dynamic_imports: dict[str, str] = {
     "LinkedLocationInputTypedDict": ".linkedlocation_input",
     "LinkedParentCustomer": ".linkedparentcustomer",
     "LinkedParentCustomerTypedDict": ".linkedparentcustomer",
+    "LinkedPaymentAllocations": ".linkedpaymentallocations",
+    "LinkedPaymentAllocationsTypedDict": ".linkedpaymentallocations",
     "LinkedPurchaseOrder": ".linkedpurchaseorder",
     "LinkedPurchaseOrderTypedDict": ".linkedpurchaseorder",
     "LinkedSubsidiary": ".linkedsubsidiary",
