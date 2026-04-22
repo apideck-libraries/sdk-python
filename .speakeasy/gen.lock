@@ -1,12 +1,12 @@
 lockVersion: 2.0.0
 id: fca0ac3a-5f4e-452c-bbc7-2311afa8da40
 management:
-  docChecksum: 44c73b9b60e49f2412888ef90e262745
-  docVersion: 10.24.24
+  docChecksum: 5db45958ae11c768a5d273971a7bde06
+  docVersion: 10.24.25
   speakeasyVersion: 1.656.1
   generationVersion: 2.753.1
-  releaseVersion: 0.31.10
-  configChecksum: 18d7dd7f7ffee823ce7e970ffc23850c
+  releaseVersion: 0.31.11
+  configChecksum: 9683894f1e404e6f55aba00245388628
   repoURL: https://github.com/apideck-libraries/sdk-python.git
   installationURL: https://github.com/apideck-libraries/sdk-python.git
   published: true
@@ -19651,14 +19651,6 @@ examples:
           application/json: {"status_code": 400, "error": "Bad Request", "type_name": "RequestHeadersValidationError", "message": "Invalid Params", "detail": "Missing Header: x-apideck-consumer-id", "ref": "https://developers.apideck.com/errors#unauthorizederror"}
 examplesVersion: 1.0.2
 generatedTests: {}
-releaseNotes: |
-  ## Python SDK Changes Detected:
-  * `apideck.accounting.bills.list()`:  `response.data.[].payment_allocations` **Added**
-  * `apideck.accounting.bills.create()`:  `request.payment_allocations` **Added**
-  * `apideck.accounting.bills.get()`:  `response.data.payment_allocations` **Added**
-  * `apideck.accounting.bills.update()`:  `request.payment_allocations` **Added**
-  * `apideck.accounting.payments.list()`:  `request.filter` **Changed**
-  * `apideck.accounting.bill_payments.list()`:  `request.filter` **Changed**
 trackedFiles:
   .devcontainer/README.md:
     last_write_checksum: sha1:07adb0c0c051a9be4d479ea06461f3a9b3bbeb2f
@@ -23863,7 +23855,7 @@ trackedFiles:
   src/apideck_unify/_hooks/types.py:
     last_write_checksum: sha1:4b923d3d84d979af6169a9db6b81bfc373079a25
   src/apideck_unify/_version.py:
-    last_write_checksum: sha1:229698a9f29045c915d7755b26bb072b8676e390
+    last_write_checksum: sha1:24b16de675e56cab0fb2666da363950bd1ce8be3
   src/apideck_unify/accounting.py:
     last_write_checksum: sha1:afb8958c0092d6bbc935597b72e8a96d2b82b4aa
   src/apideck_unify/activities.py:
