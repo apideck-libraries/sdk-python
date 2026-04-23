@@ -10,3 +10,4 @@ Status of the rebilling process for this line item.
 | `PENDING` | pending   |
 | `BILLED`  | billed    |
 | `VOIDED`  | voided    |
+| `OTHER`   | other     |

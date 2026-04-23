@@ -23,6 +23,7 @@ class RebillStatus(str, Enum, metaclass=utils.OpenEnumMeta):
     PENDING = "pending"
     BILLED = "billed"
     VOIDED = "voided"
+    OTHER = "other"
 
 
 class RebillingTypedDict(TypedDict):
