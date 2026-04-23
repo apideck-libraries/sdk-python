@@ -23,6 +23,17 @@ class PaymentsFilterType(str, Enum, metaclass=utils.OpenEnumMeta):
     ACCOUNTS_PAYABLE_PREPAYMENT = "accounts_payable_prepayment"
 
 
+class PaymentsFilterPaymentStatus(str, Enum, metaclass=utils.OpenEnumMeta):
+    r"""Filter by payment status"""
+
+    DRAFT = "draft"
+    AUTHORISED = "authorised"
+    REJECTED = "rejected"
+    PAID = "paid"
+    VOIDED = "voided"
+    DELETED = "deleted"
+
+
 class PaymentsFilterTypedDict(TypedDict):
     updated_since: NotRequired[datetime]
     invoice_id: NotRequired[str]
@@ -31,6 +42,8 @@ class PaymentsFilterTypedDict(TypedDict):
     customer_id: NotRequired[str]
     r"""Filter by customer id"""
     type: NotRequired[PaymentsFilterType]
+    status: NotRequired[PaymentsFilterPaymentStatus]
+    r"""Filter by payment status"""
 
 
 class PaymentsFilter(BaseModel):
@@ -52,11 +65,29 @@ class PaymentsFilter(BaseModel):
         FieldMetadata(query=True),
     ] = None
 
+    status: Annotated[
+        Annotated[
+            Optional[PaymentsFilterPaymentStatus],
+            PlainValidator(validate_open_enum(False)),
+        ],
+        FieldMetadata(query=True),
+    ] = None
+    r"""Filter by payment status"""
+
     @field_serializer("type")
     def serialize_type(self, value):
         if isinstance(value, str):
             try:
                 return models.PaymentsFilterType(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("status")
+    def serialize_status(self, value):
+        if isinstance(value, str):
+            try:
+                return models.PaymentsFilterPaymentStatus(value)
             except ValueError:
                 return value
         return value

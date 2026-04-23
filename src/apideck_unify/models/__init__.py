@@ -4108,6 +4108,7 @@ if TYPE_CHECKING:
     )
     from .paymentsfilter import (
         PaymentsFilter,
+        PaymentsFilterPaymentStatus,
         PaymentsFilterType,
         PaymentsFilterTypedDict,
     )
@@ -8095,6 +8096,7 @@ __all__ = [
     "PaymentTypedDict",
     "PaymentUnit",
     "PaymentsFilter",
+    "PaymentsFilterPaymentStatus",
     "PaymentsFilterType",
     "PaymentsFilterTypedDict",
     "PaymentsSort",
@@ -11889,6 +11891,7 @@ _dynamic_imports: dict[str, str] = {
     "PaymentRequiredResponse": ".paymentrequiredresponse",
     "PaymentRequiredResponseData": ".paymentrequiredresponse",
     "PaymentsFilter": ".paymentsfilter",
+    "PaymentsFilterPaymentStatus": ".paymentsfilter",
     "PaymentsFilterType": ".paymentsfilter",
     "PaymentsFilterTypedDict": ".paymentsfilter",
     "PaymentsSort": ".paymentssort",

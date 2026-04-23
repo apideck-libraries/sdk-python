@@ -1,12 +1,12 @@
 lockVersion: 2.0.0
 id: fca0ac3a-5f4e-452c-bbc7-2311afa8da40
 management:
-  docChecksum: 5db45958ae11c768a5d273971a7bde06
-  docVersion: 10.24.25
+  docChecksum: e85e9e1fc71d355b24b46ee1d3875ed3
+  docVersion: 10.24.27
   speakeasyVersion: 1.656.1
   generationVersion: 2.753.1
-  releaseVersion: 0.31.11
-  configChecksum: 9683894f1e404e6f55aba00245388628
+  releaseVersion: 0.31.12
+  configChecksum: b397925dbc153d4cea06027b09383d46
   repoURL: https://github.com/apideck-libraries/sdk-python.git
   installationURL: https://github.com/apideck-libraries/sdk-python.git
   published: true
@@ -1678,6 +1678,7 @@ generatedFiles:
   - docs/models/paymentinput.md
   - docs/models/paymentrequiredresponse.md
   - docs/models/paymentsfilter.md
+  - docs/models/paymentsfilterpaymentstatus.md
   - docs/models/paymentsfiltertype.md
   - docs/models/paymentssort.md
   - docs/models/paymentssortby.md
@@ -5460,7 +5461,7 @@ examples:
         query:
           raw: false
           limit: 20
-          filter: {"updated_since": "2020-09-30T07:43:32.000Z", "invoice_id": "123", "bill_id": "123", "supplier_id": "123", "customer_id": "123abc", "type": "accounts_receivable"}
+          filter: {"updated_since": "2020-09-30T07:43:32.000Z", "invoice_id": "123", "bill_id": "123", "supplier_id": "123", "customer_id": "123abc", "type": "accounts_receivable", "status": "authorised"}
           sort: {"by": "updated_at", "direction": "desc"}
           pass_through: {"search": "San Francisco"}
           fields: "id,updated_at"
@@ -7809,7 +7810,7 @@ examples:
         query:
           raw: false
           limit: 20
-          filter: {"updated_since": "2020-09-30T07:43:32.000Z", "invoice_id": "123", "bill_id": "123", "supplier_id": "123", "customer_id": "123abc", "type": "accounts_receivable"}
+          filter: {"updated_since": "2020-09-30T07:43:32.000Z", "invoice_id": "123", "bill_id": "123", "supplier_id": "123", "customer_id": "123abc", "type": "accounts_receivable", "status": "authorised"}
           sort: {"by": "updated_at", "direction": "desc"}
           pass_through: {"search": "San Francisco"}
           fields: "id,updated_at"
@@ -19651,6 +19652,10 @@ examples:
           application/json: {"status_code": 400, "error": "Bad Request", "type_name": "RequestHeadersValidationError", "message": "Invalid Params", "detail": "Missing Header: x-apideck-consumer-id", "ref": "https://developers.apideck.com/errors#unauthorizederror"}
 examplesVersion: 1.0.2
 generatedTests: {}
+releaseNotes: |
+  ## Python SDK Changes Detected:
+  * `apideck.accounting.payments.list()`:  `request.filter` **Changed**
+  * `apideck.accounting.bill_payments.list()`:  `request.filter` **Changed**
 trackedFiles:
   .devcontainer/README.md:
     last_write_checksum: sha1:07adb0c0c051a9be4d479ea06461f3a9b3bbeb2f
@@ -19819,7 +19824,7 @@ trackedFiles:
   docs/models/accountingbillpaymentsallglobals.md:
     last_write_checksum: sha1:5be2bf553d2f07fa43fa47ba1ef5e92eb18a78b9
   docs/models/accountingbillpaymentsallrequest.md:
-    last_write_checksum: sha1:618dab5e25e20067a2227c48f062ea5b731b22fc
+    last_write_checksum: sha1:c7d2b4bb9018399137b16889ba6d46ae0fa549a7
   docs/models/accountingbillpaymentsallresponse.md:
     last_write_checksum: sha1:0cfd8cc7811e4f63ce22210643372de42d47cbfd
   docs/models/accountingbillpaymentsdeleteglobals.md:
@@ -20289,7 +20294,7 @@ trackedFiles:
   docs/models/accountingpaymentsallglobals.md:
     last_write_checksum: sha1:04d2fc2e254081c43037f4848b2d40384660183c
   docs/models/accountingpaymentsallrequest.md:
-    last_write_checksum: sha1:318e2e1ad124086ff96a9e2038e328a0399d324c
+    last_write_checksum: sha1:2550acf4978565701d423726f480abfff4160baa
   docs/models/accountingpaymentsallresponse.md:
     last_write_checksum: sha1:925d90629b866c54f3b5a9eaf39b4027651f603b
   docs/models/accountingpaymentsdeleteglobals.md:
@@ -22913,7 +22918,9 @@ trackedFiles:
   docs/models/paymentrequiredresponse.md:
     last_write_checksum: sha1:45bb76a00672508387db28b9dce96d3661491594
   docs/models/paymentsfilter.md:
-    last_write_checksum: sha1:47121e95e082c66e6427a7007ae2f62b6d9944c6
+    last_write_checksum: sha1:44a022e442059c6750eecf94ea2376e2ee12374f
+  docs/models/paymentsfilterpaymentstatus.md:
+    last_write_checksum: sha1:0003ab41802651f55fc9e7456f6f4d94e364b1a7
   docs/models/paymentsfiltertype.md:
     last_write_checksum: sha1:7e7d68630c4be65f58a215d1ccf80bb9857a4efe
   docs/models/paymentssort.md:
@@ -23061,7 +23068,7 @@ trackedFiles:
   docs/models/rebilling.md:
     last_write_checksum: sha1:fe49c840d3e18694762ebd43c327c835af20aa61
   docs/models/rebillstatus.md:
-    last_write_checksum: sha1:7ad87bf8b3538c8a534b5e04ac65d9c3947bd0f1
+    last_write_checksum: sha1:7ccd91cacc378a85197eda141f27d45c65d00dd6
   docs/models/refund.md:
     last_write_checksum: sha1:2dad60e011c8a47b424bab2eb362188a199e4aad
   docs/models/refundinput.md:
@@ -23687,7 +23694,7 @@ trackedFiles:
   docs/sdks/bankfeedstatements/README.md:
     last_write_checksum: sha1:dc4e86b81dc7c23d30dba5ebb12fba03d4be8850
   docs/sdks/billpayments/README.md:
-    last_write_checksum: sha1:caf8fbe6b77642665ea96796c9911bc8a5a895ef
+    last_write_checksum: sha1:d2b191f283403be1bdb3dafaaabb53b9a2136906
   docs/sdks/bills/README.md:
     last_write_checksum: sha1:fba81e371632c66e45f7b9287b006b551d2a2916
   docs/sdks/categories/README.md:
@@ -23791,7 +23798,7 @@ trackedFiles:
   docs/sdks/orders/README.md:
     last_write_checksum: sha1:dcb1b40d536f93c51a86aba423dbf130425ee888
   docs/sdks/payments/README.md:
-    last_write_checksum: sha1:b7d7aee34b86982fc944289d12552d406b5fc053
+    last_write_checksum: sha1:7b5cedd6c95b79bf7fe1f7ee7ca705199a364c8b
   docs/sdks/payrolls/README.md:
     last_write_checksum: sha1:3b19b8c40ca21754ad55d083e19e97a6d7e20a4d
   docs/sdks/pipelines/README.md:
@@ -23855,7 +23862,7 @@ trackedFiles:
   src/apideck_unify/_hooks/types.py:
     last_write_checksum: sha1:4b923d3d84d979af6169a9db6b81bfc373079a25
   src/apideck_unify/_version.py:
-    last_write_checksum: sha1:24b16de675e56cab0fb2666da363950bd1ce8be3
+    last_write_checksum: sha1:009eb575ae54fde2b0966cc431a8fd69d141b93f
   src/apideck_unify/accounting.py:
     last_write_checksum: sha1:afb8958c0092d6bbc935597b72e8a96d2b82b4aa
   src/apideck_unify/activities.py:
@@ -24011,7 +24018,7 @@ trackedFiles:
   src/apideck_unify/messages.py:
     last_write_checksum: sha1:158b4c1fb137ee3ac806cc6a59c8d906b01233d6
   src/apideck_unify/models/__init__.py:
-    last_write_checksum: sha1:3d6a507dfa2d95138e1630960adc6ce66988d931
+    last_write_checksum: sha1:0df620cd3572d2348591ab47b60c45c150295907
   src/apideck_unify/models/accounting_agedcreditorsoneop.py:
     last_write_checksum: sha1:7346d1ab1c21db21995aae34c5ba01549c2786c2
   src/apideck_unify/models/accounting_ageddebtorsoneop.py:
@@ -25617,7 +25624,7 @@ trackedFiles:
   src/apideck_unify/models/paymentrequiredresponse.py:
     last_write_checksum: sha1:e31a1e7837134fcdab40d81d32da12d59ab651ba
   src/apideck_unify/models/paymentsfilter.py:
-    last_write_checksum: sha1:49428ea3990aedeedfcc6d6e8b73d4afd3d2515f
+    last_write_checksum: sha1:dd2e5d3b8ec586b6d33a4152a2b83bd14ae460f4
   src/apideck_unify/models/paymentssort.py:
     last_write_checksum: sha1:d58183eb6ba2aec67bb57c0705b425aef1e0b464
   src/apideck_unify/models/paymentstatus.py:
@@ -25679,7 +25686,7 @@ trackedFiles:
   src/apideck_unify/models/quotelineitem.py:
     last_write_checksum: sha1:ec6e349592938366215654e8f7ac369ea28dfc73
   src/apideck_unify/models/rebilling.py:
-    last_write_checksum: sha1:3482fda2bcc55ca48f204ec49208776c87c19b74
+    last_write_checksum: sha1:335956b996339dc4b07c60468e34408b9f9fff3f
   src/apideck_unify/models/refund.py:
     last_write_checksum: sha1:5d71c491cdcff3f45fc0b1d312626622adf7fad5
   src/apideck_unify/models/refund_input.py:
