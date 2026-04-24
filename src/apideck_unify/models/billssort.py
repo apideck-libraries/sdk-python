@@ -17,6 +17,7 @@ class By(str, Enum, metaclass=utils.OpenEnumMeta):
 
     UPDATED_AT = "updated_at"
     CREATED_AT = "created_at"
+    ID = "id"
 
 
 class BillsSortTypedDict(TypedDict):

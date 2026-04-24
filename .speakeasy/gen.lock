@@ -1,12 +1,12 @@
 lockVersion: 2.0.0
 id: fca0ac3a-5f4e-452c-bbc7-2311afa8da40
 management:
-  docChecksum: e85e9e1fc71d355b24b46ee1d3875ed3
-  docVersion: 10.24.27
+  docChecksum: e0dc5f7b2f9e201f8468a93aaac40c90
+  docVersion: 10.24.29
   speakeasyVersion: 1.656.1
   generationVersion: 2.753.1
-  releaseVersion: 0.31.12
-  configChecksum: b397925dbc153d4cea06027b09383d46
+  releaseVersion: 0.31.13
+  configChecksum: 827b0a34d9ad2ded091cd0c038485c76
   repoURL: https://github.com/apideck-libraries/sdk-python.git
   installationURL: https://github.com/apideck-libraries/sdk-python.git
   published: true
@@ -3566,7 +3566,7 @@ examples:
         query:
           raw: false
           limit: 20
-          filter: {"updated_since": "2020-09-30T07:43:32.000Z", "status": "paid"}
+          filter: {"id_since": "1", "updated_since": "2020-09-30T07:43:32.000Z", "status": "paid"}
           sort: {"by": "updated_at", "direction": "desc"}
           pass_through: {"search": "San Francisco"}
           fields: "id,updated_at"
@@ -3835,7 +3835,7 @@ examples:
         query:
           raw: false
           limit: 20
-          filter: {"updated_since": "2020-09-30T07:43:32.000Z", "created_since": "2020-09-30T07:43:32.000Z", "number": "OIT00546", "supplier_id": "123"}
+          filter: {"id_since": "1", "updated_since": "2020-09-30T07:43:32.000Z", "created_since": "2020-09-30T07:43:32.000Z", "number": "OIT00546", "supplier_id": "123"}
           sort: {"by": "updated_at", "direction": "desc"}
           pass_through: {"search": "San Francisco"}
           fields: "id,updated_at"
@@ -4649,7 +4649,7 @@ examples:
         query:
           raw: false
           limit: 20
-          filter: {"updated_since": "2020-09-30T07:43:32.000Z"}
+          filter: {"id_since": "1", "updated_since": "2020-09-30T07:43:32.000Z"}
           sort: {"by": "updated_at", "direction": "desc"}
           pass_through: {"search": "San Francisco"}
           fields: "id,updated_at"
@@ -19654,8 +19654,9 @@ examplesVersion: 1.0.2
 generatedTests: {}
 releaseNotes: |
   ## Python SDK Changes Detected:
-  * `apideck.accounting.payments.list()`:  `request.filter` **Changed**
-  * `apideck.accounting.bill_payments.list()`:  `request.filter` **Changed**
+  * `apideck.accounting.bills.list()`:  `request` **Changed**
+  * `apideck.accounting.invoices.list()`:  `request` **Changed**
+  * `apideck.accounting.credit_notes.list()`:  `request` **Changed**
 trackedFiles:
   .devcontainer/README.md:
     last_write_checksum: sha1:07adb0c0c051a9be4d479ea06461f3a9b3bbeb2f
@@ -19854,7 +19855,7 @@ trackedFiles:
   docs/models/accountingbillsallglobals.md:
     last_write_checksum: sha1:47e89d6dd87b191733b6a025f1b1eb46f343de1f
   docs/models/accountingbillsallrequest.md:
-    last_write_checksum: sha1:8fee84136cdbdbcbcd1290419d4ada62fa6c0d8c
+    last_write_checksum: sha1:8675c544827f0ba4eac64e7184697dcf8b245831
   docs/models/accountingbillsallresponse.md:
     last_write_checksum: sha1:1ab58ea4d9b5bcc4a453fa928e7623ec57145d90
   docs/models/accountingbillsdeleteglobals.md:
@@ -19910,7 +19911,7 @@ trackedFiles:
   docs/models/accountingcreditnotesallglobals.md:
     last_write_checksum: sha1:6affe934dd7a3832d96d3d60e51ea03a02a31d57
   docs/models/accountingcreditnotesallrequest.md:
-    last_write_checksum: sha1:d842f3bc2ba34fe43d38acb241622e67be1e2997
+    last_write_checksum: sha1:9746267a6f7e89c8408f4d141e5b581f72c6e9ff
   docs/models/accountingcreditnotesallresponse.md:
     last_write_checksum: sha1:83e512a7ab79ed3270fc44a04655ade3d47c73f1
   docs/models/accountingcreditnotesdeleteglobals.md:
@@ -20166,7 +20167,7 @@ trackedFiles:
   docs/models/accountinginvoicesallglobals.md:
     last_write_checksum: sha1:f6a2622baadf2627d9b04eae13e49533f66e5b0f
   docs/models/accountinginvoicesallrequest.md:
-    last_write_checksum: sha1:20e1738fc7c2f5501257a225dc03bb330c1ddef9
+    last_write_checksum: sha1:2871da22c35029fdfa07d062a1f45db764a822c2
   docs/models/accountinginvoicesallresponse.md:
     last_write_checksum: sha1:28be251ab5404d91f259683afee1407dc5bcc6bf
   docs/models/accountinginvoicesdeleteglobals.md:
@@ -20822,7 +20823,7 @@ trackedFiles:
   docs/models/billpaymenttype.md:
     last_write_checksum: sha1:f13abce9e8c13c55e827b79f5d569b5423c101f5
   docs/models/billsfilter.md:
-    last_write_checksum: sha1:e02e5cbe4b43714a05415a98b4f373933611e9ab
+    last_write_checksum: sha1:3436207c64eb79ed2bcd15ba8ba7d615fa2fed96
   docs/models/billsfilterstatus.md:
     last_write_checksum: sha1:f106a07ba83fc3ca7599e71354b27c0fefaa7309
   docs/models/billssort.md:
@@ -20834,7 +20835,7 @@ trackedFiles:
   docs/models/branch.md:
     last_write_checksum: sha1:357a1df6509d09f936e36070b1e7c871ef83c4dd
   docs/models/by.md:
-    last_write_checksum: sha1:2a3cceb772fe5f7f002a34c38542d09d0e26b92b
+    last_write_checksum: sha1:c698883b6d830121d757fce43de5278fd8043059
   docs/models/categoriesfilter.md:
     last_write_checksum: sha1:b66b75bbf47199ab32356bd91476af9faa83bcf9
   docs/models/categoriesfiltertype.md:
@@ -21152,11 +21153,11 @@ trackedFiles:
   docs/models/creditnoteinput.md:
     last_write_checksum: sha1:adb4bacd8a72dd3caf3019465080e39bcef470d6
   docs/models/creditnotesfilter.md:
-    last_write_checksum: sha1:4a08d3d06051cb2cb9ae9378a9dded58bd7662a0
+    last_write_checksum: sha1:1eb59a0a17a6530bd9e4de006bed865ed2e940aa
   docs/models/creditnotessort.md:
     last_write_checksum: sha1:fd155892f6ca3800b5e3b8f6ba93ccee75ba2255
   docs/models/creditnotessortby.md:
-    last_write_checksum: sha1:960957960bd34bf784efe40458b179cb1178c95c
+    last_write_checksum: sha1:342ef3aa8266c2803c8beeceb38d591e6e109033
   docs/models/creditnotestatus.md:
     last_write_checksum: sha1:1faec31112350d09bbb7ba52eb68c7c64d1c48c0
   docs/models/creditnotetype.md:
@@ -22594,11 +22595,11 @@ trackedFiles:
   docs/models/invoiceresponse.md:
     last_write_checksum: sha1:bc0577dbf4ceec23ec16db3034fd6199ef550dc7
   docs/models/invoicesfilter.md:
-    last_write_checksum: sha1:d9cd9facfe43f84cf6748ac2763c24d82aeb1b3d
+    last_write_checksum: sha1:367404f32d1018079f0339e3c83cd277f9f8f6b1
   docs/models/invoicessort.md:
     last_write_checksum: sha1:1eba528d38a368e93a9d28100a5d7c566bad30a1
   docs/models/invoicessortby.md:
-    last_write_checksum: sha1:a16825561db5d4fbba33c69761620589641c7c54
+    last_write_checksum: sha1:5bda99acb982cff78668dcc19439b6c54d84dc99
   docs/models/invoicestatus.md:
     last_write_checksum: sha1:c8e7df645bfc75753ad110338fe13b61cba7a2e6
   docs/models/invoicetype.md:
@@ -23696,7 +23697,7 @@ trackedFiles:
   docs/sdks/billpayments/README.md:
     last_write_checksum: sha1:d2b191f283403be1bdb3dafaaabb53b9a2136906
   docs/sdks/bills/README.md:
-    last_write_checksum: sha1:fba81e371632c66e45f7b9287b006b551d2a2916
+    last_write_checksum: sha1:66618233071c52506425123cf7aaeb909a84000b
   docs/sdks/categories/README.md:
     last_write_checksum: sha1:b6fb489fc07ff21a7b0b77c7c362e970e8991950
   docs/sdks/collections/README.md:
@@ -23738,7 +23739,7 @@ trackedFiles:
   docs/sdks/createcallback/README.md:
     last_write_checksum: sha1:fe7ad7d4efe54f8b2daa4b8d623e67f8b0a4dd6c
   docs/sdks/creditnotes/README.md:
-    last_write_checksum: sha1:4062b3ccab11c7fbb2ab6090256f59e7d934fe2a
+    last_write_checksum: sha1:df00bbed29173dd853a55972042d0022dd17dc9d
   docs/sdks/customers/README.md:
     last_write_checksum: sha1:9ab384bd3eab6ed33074d1670d9657e0dc9f5d56
   docs/sdks/customfields/README.md:
@@ -23776,7 +23777,7 @@ trackedFiles:
   docs/sdks/invoiceitems/README.md:
     last_write_checksum: sha1:227e98fc3cdb093935058a6e191b97299dab86ae
   docs/sdks/invoices/README.md:
-    last_write_checksum: sha1:b80df131a360e1c63a706e9ad965ff96dd704c20
+    last_write_checksum: sha1:7cbcdc7a1d31852425b6651cd60a82c1e2cc3cbf
   docs/sdks/jobs/README.md:
     last_write_checksum: sha1:27ca05b0e4c859e5e36418df5c1b1463d060a58f
   docs/sdks/journalentries/README.md:
@@ -23862,7 +23863,7 @@ trackedFiles:
   src/apideck_unify/_hooks/types.py:
     last_write_checksum: sha1:4b923d3d84d979af6169a9db6b81bfc373079a25
   src/apideck_unify/_version.py:
-    last_write_checksum: sha1:009eb575ae54fde2b0966cc431a8fd69d141b93f
+    last_write_checksum: sha1:d69aba94df5bcb03d7d77ee5fd935a218c21a714
   src/apideck_unify/accounting.py:
     last_write_checksum: sha1:afb8958c0092d6bbc935597b72e8a96d2b82b4aa
   src/apideck_unify/activities.py:
@@ -24438,9 +24439,9 @@ trackedFiles:
   src/apideck_unify/models/billpayment.py:
     last_write_checksum: sha1:76e42bfd6dbeb8733ea888b60d9368245cd86e7b
   src/apideck_unify/models/billsfilter.py:
-    last_write_checksum: sha1:8443cd3b5700f883bddb05f52bf3d8d6435bd075
+    last_write_checksum: sha1:067203ed1b437a9e4ac0684d716bac1341827d4e
   src/apideck_unify/models/billssort.py:
-    last_write_checksum: sha1:3388b5dfe77f12b9c341c2241d3f59a4d3cb58b4
+    last_write_checksum: sha1:57d5ec03ae0bce79ca6aa09ac74139098fa67ccd
   src/apideck_unify/models/categoriesfilter.py:
     last_write_checksum: sha1:2b00bfc040460a4bc127df78c79075e710852762
   src/apideck_unify/models/category.py:
@@ -24660,9 +24661,9 @@ trackedFiles:
   src/apideck_unify/models/creditnote.py:
     last_write_checksum: sha1:4cecd26d475090d4f7aea840b9b312efc296a443
   src/apideck_unify/models/creditnotesfilter.py:
-    last_write_checksum: sha1:e08988189a2f1ad73394d96046d5f37d69f2787c
+    last_write_checksum: sha1:6606c5023b7dfbab955e910b45b7e5092078dcd2
   src/apideck_unify/models/creditnotessort.py:
-    last_write_checksum: sha1:28020b33a8b71ee9253fd69f22be1d6e0d6481df
+    last_write_checksum: sha1:8dfe580975c11a8e44f8e2df6416781f831d0ae6
   src/apideck_unify/models/creditordebit.py:
     last_write_checksum: sha1:edd5178093d2a4b5e97b17266d75c2598b5c090d
   src/apideck_unify/models/crm_activitiesaddop.py:
@@ -25452,9 +25453,9 @@ trackedFiles:
   src/apideck_unify/models/invoiceresponse.py:
     last_write_checksum: sha1:f8f75f00763047726a6e2798859f10a9c8c29850
   src/apideck_unify/models/invoicesfilter.py:
-    last_write_checksum: sha1:c7ec10e91b60cf0610cb5f79b6a251536873f66a
+    last_write_checksum: sha1:f999347f77ff69f63fdf1b997d3b25999d9676f0
   src/apideck_unify/models/invoicessort.py:
-    last_write_checksum: sha1:2f1c82a42b6bbfbe6ad61749dee654a52f01301c
+    last_write_checksum: sha1:36801ee2f678352f726e270ceb3465ef0fe5390c
   src/apideck_unify/models/issuesfilter.py:
     last_write_checksum: sha1:a0c9185927392c521e9a3727d9dc9130150cb900
   src/apideck_unify/models/issuetracking_collectionsallop.py:
