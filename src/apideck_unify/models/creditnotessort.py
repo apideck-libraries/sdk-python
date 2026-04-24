@@ -17,6 +17,7 @@ class CreditNotesSortBy(str, Enum, metaclass=utils.OpenEnumMeta):
 
     CREATED_AT = "created_at"
     UPDATED_AT = "updated_at"
+    ID = "id"
 
 
 class CreditNotesSortTypedDict(TypedDict):

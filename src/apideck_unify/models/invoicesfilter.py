@@ -9,6 +9,8 @@ from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class InvoicesFilterTypedDict(TypedDict):
+    id_since: NotRequired[str]
+    r"""Return records with a row ID greater than or equal to the given value"""
     updated_since: NotRequired[datetime]
     created_since: NotRequired[datetime]
     number: NotRequired[str]
@@ -18,6 +20,9 @@ class InvoicesFilterTypedDict(TypedDict):
 
 
 class InvoicesFilter(BaseModel):
+    id_since: Annotated[Optional[str], FieldMetadata(query=True)] = None
+    r"""Return records with a row ID greater than or equal to the given value"""
+
     updated_since: Annotated[Optional[datetime], FieldMetadata(query=True)] = None
 
     created_since: Annotated[Optional[datetime], FieldMetadata(query=True)] = None
