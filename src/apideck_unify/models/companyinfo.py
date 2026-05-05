@@ -56,6 +56,13 @@ class TrackingCategoriesMode(str, Enum, metaclass=utils.OpenEnumMeta):
     DISABLED = "disabled"
 
 
+class AccountingMethod(str, Enum, metaclass=utils.OpenEnumMeta):
+    r"""The accounting basis used by the company for financial reports."""
+
+    CASH = "cash"
+    ACCRUAL = "accrual"
+
+
 class CompanyInfoTypedDict(TypedDict):
     id: NotRequired[str]
     r"""A unique identifier for an object."""
@@ -90,6 +97,8 @@ class CompanyInfoTypedDict(TypedDict):
     r"""Whether tracking categories are enabled for the company on transactions"""
     tracking_categories_mode: NotRequired[TrackingCategoriesMode]
     r"""The mode of tracking categories for the company on transactions"""
+    accounting_method: NotRequired[Nullable[AccountingMethod]]
+    r"""The accounting basis used by the company for financial reports."""
     row_version: NotRequired[Nullable[str]]
     r"""A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object."""
     updated_by: NotRequired[Nullable[str]]
@@ -163,6 +172,11 @@ class CompanyInfo(BaseModel):
     ] = None
     r"""The mode of tracking categories for the company on transactions"""
 
+    accounting_method: Annotated[
+        OptionalNullable[AccountingMethod], PlainValidator(validate_open_enum(False))
+    ] = UNSET
+    r"""The accounting basis used by the company for financial reports."""
+
     row_version: OptionalNullable[str] = UNSET
     r"""A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object."""
 
@@ -214,6 +228,15 @@ class CompanyInfo(BaseModel):
                 return value
         return value
 
+    @field_serializer("accounting_method")
+    def serialize_accounting_method(self, value):
+        if isinstance(value, str):
+            try:
+                return models.AccountingMethod(value)
+            except ValueError:
+                return value
+        return value
+
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
         optional_fields = [
@@ -236,6 +259,7 @@ class CompanyInfo(BaseModel):
             "custom_mappings",
             "tracking_categories_enabled",
             "tracking_categories_mode",
+            "accounting_method",
             "row_version",
             "updated_by",
             "created_by",
@@ -249,6 +273,7 @@ class CompanyInfo(BaseModel):
             "currency",
             "language",
             "custom_mappings",
+            "accounting_method",
             "row_version",
             "updated_by",
             "created_by",

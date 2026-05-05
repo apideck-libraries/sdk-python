@@ -1,12 +1,12 @@
 lockVersion: 2.0.0
 id: fca0ac3a-5f4e-452c-bbc7-2311afa8da40
 management:
-  docChecksum: e0dc5f7b2f9e201f8468a93aaac40c90
-  docVersion: 10.24.29
+  docChecksum: 62b7b57d81cd98935a6b788d00f4d6b4
+  docVersion: 10.24.30
   speakeasyVersion: 1.656.1
   generationVersion: 2.753.1
-  releaseVersion: 0.31.13
-  configChecksum: 827b0a34d9ad2ded091cd0c038485c76
+  releaseVersion: 0.31.14
+  configChecksum: 2b8e1b08bd09916fbcba40afff5fd917
   repoURL: https://github.com/apideck-libraries/sdk-python.git
   installationURL: https://github.com/apideck-libraries/sdk-python.git
   published: true
@@ -599,6 +599,7 @@ generatedFiles:
   - docs/models/balancesheetassetsaccount.md
   - docs/models/balancesheetequityaccount.md
   - docs/models/balancesheetfilter.md
+  - docs/models/balancesheetfilteraccountingmethod.md
   - docs/models/balancesheetliabilitiesaccount.md
   - docs/models/balancesheetuncategorizeditemsaccount.md
   - docs/models/bankaccount.md
@@ -5736,7 +5737,7 @@ examples:
           x-apideck-company-id: "12345"
       responses:
         "200":
-          application/json: {"status_code": 200, "status": "OK", "service": "xero", "resource": "company-info", "operation": "one", "data": {"id": "12345", "company_name": "SpaceX", "status": "active", "legal_name": "SpaceX Inc.", "country": "US", "sales_tax_number": "111.222.333", "default_sales_tax": {"id": "1234", "display_id": "12345", "name": "GST on Purchases", "code": "ABN", "description": "Reduced rate GST Purchases", "effective_tax_rate": 10, "country": "US", "total_tax_rate": 10, "tax_payable_account_id": "123456", "tax_remitted_account_id": "123456", "components": [{"id": "10", "name": "GST", "rate": 10, "compound": true}], "type": "NONE", "report_tax_type": "NONE", "original_tax_rate_id": "12345", "status": "active", "row_version": "1-12345", "updated_by": "12345", "created_by": "12345", "updated_at": "2020-09-30T07:43:32.000Z", "created_at": "2020-09-30T07:43:32.000Z", "pass_through": [{"service_id": "<id>", "extend_paths": [{"path": "$.nested.property", "value": {"TaxClassificationRef": {"value": "EUC-99990201-V1-00020000"}}}]}], "custom_fields": [{"id": "2389328923893298", "name": "employee_level", "description": "Employee Level", "value": "Uses Salesforce and Marketo"}]}, "currency": "USD", "language": "EN", "fiscal_year_start_month": "January", "company_start_date": "2015-06-05", "addresses": [{"id": "123", "type": "primary", "string": "25 Spring Street, Blackburn, VIC 3130", "name": "HQ US", "line1": "Main street", "line2": "apt #", "line3": "Suite #", "line4": "delivery instructions", "street_number": "25", "city": "San Francisco", "state": "CA", "postal_code": "94104", "country": "US", "latitude": "40.759211", "longitude": "-73.984638", "county": "Santa Clara", "contact_name": "Elon Musk", "salutation": "Mr", "phone_number": "111-111-1111", "fax": "122-111-1111", "email": "elon@musk.com", "website": "https://elonmusk.com", "notes": "Address notes or delivery instructions.", "row_version": "1-12345"}], "phone_numbers": [{"id": "12345", "country_code": "1", "area_code": "323", "number": "111-111-1111", "extension": "105", "type": "primary"}], "emails": [{"id": "123", "email": "elon@musk.com", "type": "primary"}], "tracking_categories_mode": "disabled", "row_version": "1-12345", "updated_by": "12345", "created_by": "12345", "updated_at": "2020-09-30T07:43:32.000Z", "created_at": "2020-09-30T07:43:32.000Z"}}
+          application/json: {"status_code": 200, "status": "OK", "service": "xero", "resource": "company-info", "operation": "one", "data": {"id": "12345", "company_name": "SpaceX", "status": "active", "legal_name": "SpaceX Inc.", "country": "US", "sales_tax_number": "111.222.333", "default_sales_tax": {"id": "1234", "display_id": "12345", "name": "GST on Purchases", "code": "ABN", "description": "Reduced rate GST Purchases", "effective_tax_rate": 10, "country": "US", "total_tax_rate": 10, "tax_payable_account_id": "123456", "tax_remitted_account_id": "123456", "components": [{"id": "10", "name": "GST", "rate": 10, "compound": true}], "type": "NONE", "report_tax_type": "NONE", "original_tax_rate_id": "12345", "status": "active", "row_version": "1-12345", "updated_by": "12345", "created_by": "12345", "updated_at": "2020-09-30T07:43:32.000Z", "created_at": "2020-09-30T07:43:32.000Z", "pass_through": [{"service_id": "<id>", "extend_paths": [{"path": "$.nested.property", "value": {"TaxClassificationRef": {"value": "EUC-99990201-V1-00020000"}}}]}], "custom_fields": [{"id": "2389328923893298", "name": "employee_level", "description": "Employee Level", "value": "Uses Salesforce and Marketo"}]}, "currency": "USD", "language": "EN", "fiscal_year_start_month": "January", "company_start_date": "2015-06-05", "addresses": [{"id": "123", "type": "primary", "string": "25 Spring Street, Blackburn, VIC 3130", "name": "HQ US", "line1": "Main street", "line2": "apt #", "line3": "Suite #", "line4": "delivery instructions", "street_number": "25", "city": "San Francisco", "state": "CA", "postal_code": "94104", "country": "US", "latitude": "40.759211", "longitude": "-73.984638", "county": "Santa Clara", "contact_name": "Elon Musk", "salutation": "Mr", "phone_number": "111-111-1111", "fax": "122-111-1111", "email": "elon@musk.com", "website": "https://elonmusk.com", "notes": "Address notes or delivery instructions.", "row_version": "1-12345"}], "phone_numbers": [{"id": "12345", "country_code": "1", "area_code": "323", "number": "111-111-1111", "extension": "105", "type": "primary"}], "emails": [{"id": "123", "email": "elon@musk.com", "type": "primary"}], "tracking_categories_mode": "disabled", "accounting_method": "accrual", "row_version": "1-12345", "updated_by": "12345", "created_by": "12345", "updated_at": "2020-09-30T07:43:32.000Z", "created_at": "2020-09-30T07:43:32.000Z"}}
         "400":
           application/json: {"status_code": 400, "error": "Bad Request", "type_name": "RequestValidationError", "message": "Invalid Params", "detail": "Missing property foobar", "ref": "https://developers.apideck.com/errors#requestvalidationerror", "downstream_errors": [{"message": "Account code '100' has been archived or deleted", "detail": "Each line item must reference a valid account", "code": "VALIDATION_ERROR"}]}
         "401":
@@ -19654,9 +19655,7 @@ examplesVersion: 1.0.2
 generatedTests: {}
 releaseNotes: |
   ## Python SDK Changes Detected:
-  * `apideck.accounting.bills.list()`:  `request` **Changed**
-  * `apideck.accounting.invoices.list()`:  `request` **Changed**
-  * `apideck.accounting.credit_notes.list()`:  `request` **Changed**
+  * `apideck.accounting.company_info.get()`:  `response.data.accounting_method` **Added**
 trackedFiles:
   .devcontainer/README.md:
     last_write_checksum: sha1:07adb0c0c051a9be4d479ea06461f3a9b3bbeb2f
@@ -20285,7 +20284,7 @@ trackedFiles:
   docs/models/accountinglocationsupdateresponse.md:
     last_write_checksum: sha1:4cd02162cbd609359ee1fc548f247bfecd6cbba2
   docs/models/accountingmethod.md:
-    last_write_checksum: sha1:fac4974ca27b978c65aac709a7bb9e0061758d7f
+    last_write_checksum: sha1:d3df43a44022000aca2587b3d6692cdf048ddb32
   docs/models/accountingpaymentsaddglobals.md:
     last_write_checksum: sha1:d5968c6f81d95414ccef7ae3c9511bb15ac65ba9
   docs/models/accountingpaymentsaddrequest.md:
@@ -20761,7 +20760,9 @@ trackedFiles:
   docs/models/balancesheetequityaccount.md:
     last_write_checksum: sha1:02285cab042b320d0d5c1e595b2d54f9adf2aa62
   docs/models/balancesheetfilter.md:
-    last_write_checksum: sha1:0484dfc12080addef14047053194c206a549ddf5
+    last_write_checksum: sha1:df7ee8eb1759a8626cb74e626c4c3f7c20f4fbd7
+  docs/models/balancesheetfilteraccountingmethod.md:
+    last_write_checksum: sha1:9c02234410fb789fdbaca0b081a57352bb854a94
   docs/models/balancesheetliabilitiesaccount.md:
     last_write_checksum: sha1:ad9f4a98d191e2a180b3b07120b2402b0e1077a4
   docs/models/balancesheetuncategorizeditemsaccount.md:
@@ -20881,7 +20882,7 @@ trackedFiles:
   docs/models/company1.md:
     last_write_checksum: sha1:d42d87e22c5381feda9dbfe530a3a771bd0f3b88
   docs/models/companyinfo.md:
-    last_write_checksum: sha1:b005dc86ace08e5cf53d5030353bddf5ec9f87ec
+    last_write_checksum: sha1:7c78e9866e56b9e6f51cfed84c8d6314bb442f7e
   docs/models/companyrowtype.md:
     last_write_checksum: sha1:2dc3bcab4c801c314de6d209077dfd1165e873eb
   docs/models/companystatus.md:
@@ -20899,7 +20900,7 @@ trackedFiles:
   docs/models/connectiondefaults.md:
     last_write_checksum: sha1:ffafdb7580a2a9f1fc663fad634a8ee852bb8770
   docs/models/connectionhealth.md:
-    last_write_checksum: sha1:32742d68ab22cf7c784aa4a80d86bee0341bf948
+    last_write_checksum: sha1:6c75ceb6707fc0f40dd639476448a274b865d703
   docs/models/connectionimportdata.md:
     last_write_checksum: sha1:0b06e09351ee734a771f4816621486ce38d65f56
   docs/models/connectioninput.md:
@@ -22391,7 +22392,7 @@ trackedFiles:
   docs/models/getwebhooksresponse.md:
     last_write_checksum: sha1:a495ba205e48edc2ea5609c71348cead73fca625
   docs/models/health.md:
-    last_write_checksum: sha1:be4abeb630eed6882b2d01c14b05e84129bdd1f5
+    last_write_checksum: sha1:c396b9969efd06365e58881d180d8e545decb933
   docs/models/hriscompaniesaddglobals.md:
     last_write_checksum: sha1:689667f84b5a3b85a7d09270aab30d7f243f43ea
   docs/models/hriscompaniesaddrequest.md:
@@ -23863,7 +23864,7 @@ trackedFiles:
   src/apideck_unify/_hooks/types.py:
     last_write_checksum: sha1:4b923d3d84d979af6169a9db6b81bfc373079a25
   src/apideck_unify/_version.py:
-    last_write_checksum: sha1:d69aba94df5bcb03d7d77ee5fd935a218c21a714
+    last_write_checksum: sha1:7b505364447af4d535133e2fec691288a3f1cb6f
   src/apideck_unify/accounting.py:
     last_write_checksum: sha1:afb8958c0092d6bbc935597b72e8a96d2b82b4aa
   src/apideck_unify/activities.py:
@@ -24019,7 +24020,7 @@ trackedFiles:
   src/apideck_unify/messages.py:
     last_write_checksum: sha1:158b4c1fb137ee3ac806cc6a59c8d906b01233d6
   src/apideck_unify/models/__init__.py:
-    last_write_checksum: sha1:0df620cd3572d2348591ab47b60c45c150295907
+    last_write_checksum: sha1:587ce7ac7854d3287bb1fb38278aaa37921299c8
   src/apideck_unify/models/accounting_agedcreditorsoneop.py:
     last_write_checksum: sha1:7346d1ab1c21db21995aae34c5ba01549c2786c2
   src/apideck_unify/models/accounting_ageddebtorsoneop.py:
@@ -24411,7 +24412,7 @@ trackedFiles:
   src/apideck_unify/models/balancesheet.py:
     last_write_checksum: sha1:dac8a46ea026380c9b42163d12e2690ba03d16a8
   src/apideck_unify/models/balancesheetfilter.py:
-    last_write_checksum: sha1:0c1504dc4143c3b775dbc68ad5405e45a959dfd9
+    last_write_checksum: sha1:6d6642dee5c67502d42a2f3593c145310af87edb
   src/apideck_unify/models/bankaccount.py:
     last_write_checksum: sha1:bdf73801fc6884cdd34e2cb94feb8a3a9f80c712
   src/apideck_unify/models/bankaccount1.py:
@@ -24469,13 +24470,13 @@ trackedFiles:
   src/apideck_unify/models/company1.py:
     last_write_checksum: sha1:0d1580aac782edd6592dedd7c3b84e4897b451cf
   src/apideck_unify/models/companyinfo.py:
-    last_write_checksum: sha1:29607a946a03572f32a8592708496af0bf071515
+    last_write_checksum: sha1:c1da6e5045978977c7f57ab2567fba25f2fb794f
   src/apideck_unify/models/compensation.py:
     last_write_checksum: sha1:e7ca2fd1d1315919bf40046de212790ec14de531
   src/apideck_unify/models/connection.py:
-    last_write_checksum: sha1:e60f16e63e87200a1cc744716778f2ef4594dfc0
+    last_write_checksum: sha1:2dc21c9751675bc942ca24588542701416195ef4
   src/apideck_unify/models/connectionhealth.py:
-    last_write_checksum: sha1:ba9f8c1c25f027562913a4cfda38bd374ad87ded
+    last_write_checksum: sha1:8e83303c32bfe100c32f2f4a593f0e532f2376e4
   src/apideck_unify/models/connectionimportdata.py:
     last_write_checksum: sha1:78b328cd244958ce60632ba080e4fc515b53864f
   src/apideck_unify/models/connectionstate.py:
