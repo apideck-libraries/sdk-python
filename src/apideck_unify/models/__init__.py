@@ -1426,8 +1426,8 @@ if TYPE_CHECKING:
         ReportsTypedDict,
     )
     from .balancesheetfilter import (
-        AccountingMethod,
         BalanceSheetFilter,
+        BalanceSheetFilterAccountingMethod,
         BalanceSheetFilterTypedDict,
         PeriodType,
     )
@@ -1532,6 +1532,7 @@ if TYPE_CHECKING:
         CompanyRowTypeTypedDict,
     )
     from .companyinfo import (
+        AccountingMethod,
         CompanyInfo,
         CompanyInfoTypedDict,
         CompanyStatus,
@@ -6046,6 +6047,7 @@ __all__ = [
     "BalanceSheetEquityAccount",
     "BalanceSheetEquityAccountTypedDict",
     "BalanceSheetFilter",
+    "BalanceSheetFilterAccountingMethod",
     "BalanceSheetFilterTypedDict",
     "BalanceSheetLiabilitiesAccount",
     "BalanceSheetLiabilitiesAccountTypedDict",
@@ -9852,8 +9854,8 @@ _dynamic_imports: dict[str, str] = {
     "BalanceSheetUncategorizedItemsAccountTypedDict": ".balancesheet",
     "Reports": ".balancesheet",
     "ReportsTypedDict": ".balancesheet",
-    "AccountingMethod": ".balancesheetfilter",
     "BalanceSheetFilter": ".balancesheetfilter",
+    "BalanceSheetFilterAccountingMethod": ".balancesheetfilter",
     "BalanceSheetFilterTypedDict": ".balancesheetfilter",
     "PeriodType": ".balancesheetfilter",
     "AccountType": ".bankaccount",
@@ -9953,6 +9955,7 @@ _dynamic_imports: dict[str, str] = {
     "Company1TypedDict": ".company1",
     "CompanyRowType": ".company1",
     "CompanyRowTypeTypedDict": ".company1",
+    "AccountingMethod": ".companyinfo",
     "CompanyInfo": ".companyinfo",
     "CompanyInfoTypedDict": ".companyinfo",
     "CompanyStatus": ".companyinfo",

@@ -20,7 +20,7 @@ class PeriodType(str, Enum, metaclass=utils.OpenEnumMeta):
     YEAR = "year"
 
 
-class AccountingMethod(str, Enum, metaclass=utils.OpenEnumMeta):
+class BalanceSheetFilterAccountingMethod(str, Enum, metaclass=utils.OpenEnumMeta):
     r"""The accounting method used for the report: cash or accrual."""
 
     CASH = "cash"
@@ -38,7 +38,7 @@ class BalanceSheetFilterTypedDict(TypedDict):
     r"""The type of period to include in the resource: month, quarter, year."""
     location_id: NotRequired[str]
     r"""The ID of the location to include in the resource."""
-    accounting_method: NotRequired[AccountingMethod]
+    accounting_method: NotRequired[BalanceSheetFilterAccountingMethod]
     r"""The accounting method used for the report: cash or accrual."""
 
 
@@ -69,7 +69,8 @@ class BalanceSheetFilter(BaseModel):
 
     accounting_method: Annotated[
         Annotated[
-            Optional[AccountingMethod], PlainValidator(validate_open_enum(False))
+            Optional[BalanceSheetFilterAccountingMethod],
+            PlainValidator(validate_open_enum(False)),
         ],
         FieldMetadata(query=True),
     ] = None
@@ -88,7 +89,7 @@ class BalanceSheetFilter(BaseModel):
     def serialize_accounting_method(self, value):
         if isinstance(value, str):
             try:
-                return models.AccountingMethod(value)
+                return models.BalanceSheetFilterAccountingMethod(value)
             except ValueError:
                 return value
         return value
