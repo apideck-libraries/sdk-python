@@ -1,6 +1,6 @@
-# AccountingMethod
+# BalanceSheetFilterAccountingMethod
 
-The accounting basis used by the company for financial reports.
+The accounting method used for the report: cash or accrual.
 
 
 ## Values
