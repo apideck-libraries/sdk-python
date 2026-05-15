@@ -12,6 +12,9 @@ class CreditNotesFilterTypedDict(TypedDict):
     id_since: NotRequired[str]
     r"""Return records with a row ID greater than or equal to the given value"""
     updated_since: NotRequired[datetime]
+    created_since: NotRequired[datetime]
+    number: NotRequired[str]
+    r"""Credit note number to search for"""
 
 
 class CreditNotesFilter(BaseModel):
@@ -19,3 +22,8 @@ class CreditNotesFilter(BaseModel):
     r"""Return records with a row ID greater than or equal to the given value"""
 
     updated_since: Annotated[Optional[datetime], FieldMetadata(query=True)] = None
+
+    created_since: Annotated[Optional[datetime], FieldMetadata(query=True)] = None
+
+    number: Annotated[Optional[str], FieldMetadata(query=True)] = None
+    r"""Credit note number to search for"""
