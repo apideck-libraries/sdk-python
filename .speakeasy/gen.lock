@@ -1,12 +1,12 @@
 lockVersion: 2.0.0
 id: fca0ac3a-5f4e-452c-bbc7-2311afa8da40
 management:
-  docChecksum: 7ca48791072b6fb661867b92634dc316
+  docChecksum: a5c46419c74167675cc97e7e7941d983
   docVersion: 10.24.33
   speakeasyVersion: 1.656.1
   generationVersion: 2.753.1
-  releaseVersion: 0.31.14
-  configChecksum: 2b8e1b08bd09916fbcba40afff5fd917
+  releaseVersion: 0.31.15
+  configChecksum: 63a374b46c5ab4f8cff1742e150139dc
   repoURL: https://github.com/apideck-libraries/sdk-python.git
   installationURL: https://github.com/apideck-libraries/sdk-python.git
   published: true
@@ -19653,10 +19653,6 @@ examples:
           application/json: {"status_code": 400, "error": "Bad Request", "type_name": "RequestHeadersValidationError", "message": "Invalid Params", "detail": "Missing Header: x-apideck-consumer-id", "ref": "https://developers.apideck.com/errors#unauthorizederror"}
 examplesVersion: 1.0.2
 generatedTests: {}
-releaseNotes: |
-  ## Python SDK Changes Detected:
-  * `apideck.accounting.credit_notes.list()`:  `request.filter` **Changed**
-  * `apideck.accounting.company_info.get()`:  `response.data.accounting_method` **Added**
 trackedFiles:
   .devcontainer/README.md:
     last_write_checksum: sha1:07adb0c0c051a9be4d479ea06461f3a9b3bbeb2f
@@ -23865,7 +23861,7 @@ trackedFiles:
   src/apideck_unify/_hooks/types.py:
     last_write_checksum: sha1:4b923d3d84d979af6169a9db6b81bfc373079a25
   src/apideck_unify/_version.py:
-    last_write_checksum: sha1:32f513e1ef42ffefa8c2b744be7632a61bb34868
+    last_write_checksum: sha1:6d09677a3be312e7421b5195cf07c08dfb82f490
   src/apideck_unify/accounting.py:
     last_write_checksum: sha1:afb8958c0092d6bbc935597b72e8a96d2b82b4aa
   src/apideck_unify/activities.py:
