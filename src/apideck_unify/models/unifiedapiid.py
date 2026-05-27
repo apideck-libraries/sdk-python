@@ -29,6 +29,7 @@ class UnifiedAPIID(str, Enum, metaclass=utils.OpenEnumMeta):
     SCRIPT = "script"
     SMS = "sms"
     SPREADSHEET = "spreadsheet"
+    SUBSCRIPTION_ANALYTICS = "subscription-analytics"
     TEAM_MESSAGING = "team-messaging"
     ISSUE_TRACKING = "issue-tracking"
     TIME_REGISTRATION = "time-registration"

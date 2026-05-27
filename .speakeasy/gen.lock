@@ -1,12 +1,12 @@
 lockVersion: 2.0.0
 id: fca0ac3a-5f4e-452c-bbc7-2311afa8da40
 management:
-  docChecksum: a5c46419c74167675cc97e7e7941d983
-  docVersion: 10.24.33
+  docChecksum: dc89fbbb5b7b1400a2ec8d1adf1b4b39
+  docVersion: 10.24.36
   speakeasyVersion: 1.656.1
   generationVersion: 2.753.1
-  releaseVersion: 0.31.15
-  configChecksum: 63a374b46c5ab4f8cff1742e150139dc
+  releaseVersion: 0.31.16
+  configChecksum: 6ebe80ba411de71d0b68103f5759373b
   repoURL: https://github.com/apideck-libraries/sdk-python.git
   installationURL: https://github.com/apideck-libraries/sdk-python.git
   published: true
@@ -1593,6 +1593,7 @@ generatedFiles:
   - docs/models/ledgeraccountclassification.md
   - docs/models/ledgeraccountinput.md
   - docs/models/ledgeraccountsfilter.md
+  - docs/models/ledgeraccountsfilterstatus.md
   - docs/models/ledgeraccountssort.md
   - docs/models/ledgeraccountssortby.md
   - docs/models/ledgeraccountsubsidiaries.md
@@ -4378,7 +4379,7 @@ examples:
         query:
           raw: false
           limit: 20
-          filter: {"updated_since": "2020-09-30T07:43:32.000Z", "name": "Widgets Large", "type": "service", "transaction_type": "sale"}
+          filter: {"updated_since": "2020-09-30T07:43:32.000Z", "ids": "12345,67890", "name": "Widgets Large", "type": "service", "transaction_type": "sale"}
           sort: {"by": "updated_at", "direction": "desc"}
           pass_through: {"search": "San Francisco"}
           fields: "id,updated_at"
@@ -19653,6 +19654,12 @@ examples:
           application/json: {"status_code": 400, "error": "Bad Request", "type_name": "RequestHeadersValidationError", "message": "Invalid Params", "detail": "Missing Header: x-apideck-consumer-id", "ref": "https://developers.apideck.com/errors#unauthorizederror"}
 examplesVersion: 1.0.2
 generatedTests: {}
+releaseNotes: |
+  ## Python SDK Changes Detected:
+  * `apideck.accounting.ledger_accounts.list()`:  `request.filter` **Changed**
+  * `apideck.accounting.invoice_items.list()`:  `request.filter` **Changed**
+  * `apideck.connector.connectors.list()`:  `request.filter` **Changed**
+  * `apideck.connector.connector_resources.get()`:  `request.unified_api` **Changed**
 trackedFiles:
   .devcontainer/README.md:
     last_write_checksum: sha1:07adb0c0c051a9be4d479ea06461f3a9b3bbeb2f
@@ -20133,7 +20140,7 @@ trackedFiles:
   docs/models/accountinginvoiceitemsallglobals.md:
     last_write_checksum: sha1:47d8c4f738a819cd59486d5f9d84559042227171
   docs/models/accountinginvoiceitemsallrequest.md:
-    last_write_checksum: sha1:dbe5e1b97e6d245740f5af0fbf70cb07bf67a61e
+    last_write_checksum: sha1:b34a20f408db59270a5c5f79c7e716e1343b2fc8
   docs/models/accountinginvoiceitemsallresponse.md:
     last_write_checksum: sha1:2720cf0d042f6c63a05002d36ec1da9415e3c363
   docs/models/accountinginvoiceitemsdeleteglobals.md:
@@ -22575,7 +22582,7 @@ trackedFiles:
   docs/models/invoiceitemsalesdetails.md:
     last_write_checksum: sha1:e86574bd1508f782013ad3e72c31f87971524cf1
   docs/models/invoiceitemsfilter.md:
-    last_write_checksum: sha1:64bace0fb7460af74e711d3ece5bbf3224e2b093
+    last_write_checksum: sha1:7c0aefca2a8b00117842860327829391fd865427
   docs/models/invoiceitemssort.md:
     last_write_checksum: sha1:69616d3404cad41715adbbeec8fa9bf292faae30
   docs/models/invoiceitemssortby.md:
@@ -22745,7 +22752,9 @@ trackedFiles:
   docs/models/ledgeraccountinput.md:
     last_write_checksum: sha1:4ac3c9d202db5f43f07936ebcc53c16f2cbde2ba
   docs/models/ledgeraccountsfilter.md:
-    last_write_checksum: sha1:8b320f3ffad8f6dde8aa1ee746b8d1d16ec7c30f
+    last_write_checksum: sha1:aa41ec441db68d4235157bf37b17c9ee47a4d22b
+  docs/models/ledgeraccountsfilterstatus.md:
+    last_write_checksum: sha1:a14b96feb7ea68ab27a33069477d678f2068badb
   docs/models/ledgeraccountssort.md:
     last_write_checksum: sha1:0e5ec030881ee091760439c4dd6497da0698dc0c
   docs/models/ledgeraccountssortby.md:
@@ -23291,7 +23300,7 @@ trackedFiles:
   docs/models/unifiedapi.md:
     last_write_checksum: sha1:1bdfe723449d04a350d28c3c941fa8335de22631
   docs/models/unifiedapiid.md:
-    last_write_checksum: sha1:3588538555cf556d50792bd594ef13dbb1eface3
+    last_write_checksum: sha1:daa11a2da1d1261849b494fa3285a1d5cb7f24e2
   docs/models/unifiedapis.md:
     last_write_checksum: sha1:726956c8c68ea94e2e8204b9dc80affa3387115b
   docs/models/unifiedfile.md:
@@ -23773,7 +23782,7 @@ trackedFiles:
   docs/sdks/folders/README.md:
     last_write_checksum: sha1:2997e8070c3ac42b86e6a3b8e611ab6a468c54ab
   docs/sdks/invoiceitems/README.md:
-    last_write_checksum: sha1:227e98fc3cdb093935058a6e191b97299dab86ae
+    last_write_checksum: sha1:d2426572c3480a9b6d0befefb7256a11051b7d76
   docs/sdks/invoices/README.md:
     last_write_checksum: sha1:7cbcdc7a1d31852425b6651cd60a82c1e2cc3cbf
   docs/sdks/jobs/README.md:
@@ -23861,7 +23870,7 @@ trackedFiles:
   src/apideck_unify/_hooks/types.py:
     last_write_checksum: sha1:4b923d3d84d979af6169a9db6b81bfc373079a25
   src/apideck_unify/_version.py:
-    last_write_checksum: sha1:6d09677a3be312e7421b5195cf07c08dfb82f490
+    last_write_checksum: sha1:c46c2bcf8a859f7996a1f21dbdef4cc27de068b0
   src/apideck_unify/accounting.py:
     last_write_checksum: sha1:afb8958c0092d6bbc935597b72e8a96d2b82b4aa
   src/apideck_unify/activities.py:
@@ -24017,7 +24026,7 @@ trackedFiles:
   src/apideck_unify/messages.py:
     last_write_checksum: sha1:158b4c1fb137ee3ac806cc6a59c8d906b01233d6
   src/apideck_unify/models/__init__.py:
-    last_write_checksum: sha1:587ce7ac7854d3287bb1fb38278aaa37921299c8
+    last_write_checksum: sha1:445a459a69075c85a8fa6c0266fc0fa32d5001e1
   src/apideck_unify/models/accounting_agedcreditorsoneop.py:
     last_write_checksum: sha1:7346d1ab1c21db21995aae34c5ba01549c2786c2
   src/apideck_unify/models/accounting_ageddebtorsoneop.py:
@@ -25443,7 +25452,7 @@ trackedFiles:
   src/apideck_unify/models/invoiceitemfilter.py:
     last_write_checksum: sha1:bf9fe557898e15320cd93dcc5f64f9b5d1586fc7
   src/apideck_unify/models/invoiceitemsfilter.py:
-    last_write_checksum: sha1:1698ac1da3e7e3de2478069883220225118dd78a
+    last_write_checksum: sha1:12dbbd45537a445ad1d71bb21f2a74fdd507e74f
   src/apideck_unify/models/invoiceitemssort.py:
     last_write_checksum: sha1:c82ca03f6566821fa66c901052a93654feb62da2
   src/apideck_unify/models/invoicelineitem.py:
@@ -25509,7 +25518,7 @@ trackedFiles:
   src/apideck_unify/models/ledgeraccount.py:
     last_write_checksum: sha1:955a153c9bc9bb0401d41ff11a7eef61981df5cf
   src/apideck_unify/models/ledgeraccountsfilter.py:
-    last_write_checksum: sha1:e4c4df55cc600bbf701f6d0d6d4818ee23c12f1e
+    last_write_checksum: sha1:dd7c1cc04bc8ccfad7f2dd3be9d15515befa6854
   src/apideck_unify/models/ledgeraccountssort.py:
     last_write_checksum: sha1:50e3c719cae78fd57ea86ef3ebe9be76c7a1e01d
   src/apideck_unify/models/lineitemtype.py:
@@ -25775,7 +25784,7 @@ trackedFiles:
   src/apideck_unify/models/unexpectederrorresponse.py:
     last_write_checksum: sha1:3dc0c7f7c1f3429aa4fe7369e859d2fad6436202
   src/apideck_unify/models/unifiedapiid.py:
-    last_write_checksum: sha1:95651dbea794a72a9e6e2f7677d8bee59f5c33f2
+    last_write_checksum: sha1:4646a9086cd0a057603708951ed55c54e38c1fcf
   src/apideck_unify/models/unifiedfile.py:
     last_write_checksum: sha1:8e399cb391e3f185da27247420846849e0b8cc23
   src/apideck_unify/models/unifiedid.py:
@@ -26013,7 +26022,7 @@ trackedFiles:
   src/apideck_unify/refunds.py:
     last_write_checksum: sha1:c51716769333075b09e46c1df729980b1dfa4552
   src/apideck_unify/sdk.py:
-    last_write_checksum: sha1:feae857f6d254bc9bb156767d2a72f6380cc607a
+    last_write_checksum: sha1:c36fd87d8a9d1b51c46deeb198cc84a9761aedfb
   src/apideck_unify/sdkconfiguration.py:
     last_write_checksum: sha1:41dc7958d7c9ad55f49a781091bea6d6d4c8d7ab
   src/apideck_unify/sessions.py:
@@ -26035,7 +26044,9 @@ trackedFiles:
   src/apideck_unify/trackingcategories.py:
     last_write_checksum: sha1:ad072b9a593e640663693950e9a1e534c0b11165
   src/apideck_unify/types/__init__.py:
-    last_write_checksum: sha1:140ebdd01a46f92ffc710c52c958c4eba3cf68ed
+    last_write_checksum: sha1:f9ad14217f832e74f594285960125add50324be9
+  src/apideck_unify/types/base64fileinput.py:
+    last_write_checksum: sha1:4780e893d3853b5a6e28d9a6ca3ee102ce0f502d
   src/apideck_unify/types/basemodel.py:
     last_write_checksum: sha1:10d84aedeb9d35edfdadf2c3020caa1d24d8b584
   src/apideck_unify/uploadsessions.py:
