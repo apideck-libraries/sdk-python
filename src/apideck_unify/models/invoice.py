@@ -18,6 +18,11 @@ from .invoicelineitem import (
 from .linkedcustomer import LinkedCustomer, LinkedCustomerTypedDict
 from .linkedcustomer_input import LinkedCustomerInput, LinkedCustomerInputTypedDict
 from .linkedledgeraccount import LinkedLedgerAccount, LinkedLedgerAccountTypedDict
+from .linkedsubsidiary import LinkedSubsidiary, LinkedSubsidiaryTypedDict
+from .linkedsubsidiary_input import (
+    LinkedSubsidiaryInput,
+    LinkedSubsidiaryInputTypedDict,
+)
 from .linkedtrackingcategory import (
     LinkedTrackingCategory,
     LinkedTrackingCategoryTypedDict,
@@ -132,6 +137,7 @@ class InvoiceTypedDict(TypedDict):
     r"""The customer this entity is linked to."""
     company_id: NotRequired[Nullable[str]]
     r"""The company ID the transaction belongs to"""
+    subsidiary: NotRequired[Nullable[LinkedSubsidiaryTypedDict]]
     location_id: NotRequired[Nullable[str]]
     r"""The ID of the location"""
     department_id: NotRequired[Nullable[str]]
@@ -240,6 +246,8 @@ class Invoice(BaseModel):
 
     company_id: OptionalNullable[str] = UNSET
     r"""The company ID the transaction belongs to"""
+
+    subsidiary: OptionalNullable[LinkedSubsidiary] = UNSET
 
     location_id: OptionalNullable[str] = UNSET
     r"""The ID of the location"""
@@ -414,6 +422,7 @@ class Invoice(BaseModel):
             "number",
             "customer",
             "company_id",
+            "subsidiary",
             "location_id",
             "department_id",
             "invoice_date",
@@ -466,6 +475,7 @@ class Invoice(BaseModel):
             "number",
             "customer",
             "company_id",
+            "subsidiary",
             "location_id",
             "department_id",
             "invoice_date",
@@ -542,6 +552,7 @@ class InvoiceInputTypedDict(TypedDict):
     r"""The customer this entity is linked to."""
     company_id: NotRequired[Nullable[str]]
     r"""The company ID the transaction belongs to"""
+    subsidiary: NotRequired[Nullable[LinkedSubsidiaryInputTypedDict]]
     location_id: NotRequired[Nullable[str]]
     r"""The ID of the location"""
     department_id: NotRequired[Nullable[str]]
@@ -634,6 +645,8 @@ class InvoiceInput(BaseModel):
 
     company_id: OptionalNullable[str] = UNSET
     r"""The company ID the transaction belongs to"""
+
+    subsidiary: OptionalNullable[LinkedSubsidiaryInput] = UNSET
 
     location_id: OptionalNullable[str] = UNSET
     r"""The ID of the location"""
@@ -791,6 +804,7 @@ class InvoiceInput(BaseModel):
             "number",
             "customer",
             "company_id",
+            "subsidiary",
             "location_id",
             "department_id",
             "invoice_date",
@@ -837,6 +851,7 @@ class InvoiceInput(BaseModel):
             "number",
             "customer",
             "company_id",
+            "subsidiary",
             "location_id",
             "department_id",
             "invoice_date",

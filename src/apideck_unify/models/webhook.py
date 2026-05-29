@@ -36,7 +36,7 @@ class WebhookTypedDict(TypedDict):
     status: Status
     r"""The status of the webhook."""
     delivery_url: str
-    r"""The delivery url of the webhook endpoint."""
+    r"""The delivery url of the webhook endpoint. The endpoint must respond within 60 seconds or the delivery is recorded as failed."""
     execute_base_url: str
     r"""The Unify Base URL events from connectors will be sent to after service id is appended."""
     events: List[WebhookEventType]
@@ -60,7 +60,7 @@ class Webhook(BaseModel):
     r"""The status of the webhook."""
 
     delivery_url: str
-    r"""The delivery url of the webhook endpoint."""
+    r"""The delivery url of the webhook endpoint. The endpoint must respond within 60 seconds or the delivery is recorded as failed."""
 
     execute_base_url: str
     r"""The Unify Base URL events from connectors will be sent to after service id is appended."""

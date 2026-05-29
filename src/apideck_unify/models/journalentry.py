@@ -9,6 +9,11 @@ from .journalentrylineitem import (
     JournalEntryLineItemInputTypedDict,
     JournalEntryLineItemTypedDict,
 )
+from .linkedsubsidiary import LinkedSubsidiary, LinkedSubsidiaryTypedDict
+from .linkedsubsidiary_input import (
+    LinkedSubsidiaryInput,
+    LinkedSubsidiaryInputTypedDict,
+)
 from .linkedtrackingcategory import (
     LinkedTrackingCategory,
     LinkedTrackingCategoryTypedDict,
@@ -60,6 +65,7 @@ class JournalEntryTypedDict(TypedDict):
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
     company_id: NotRequired[Nullable[str]]
     r"""The company ID the transaction belongs to"""
+    subsidiary: NotRequired[Nullable[LinkedSubsidiaryTypedDict]]
     line_items: NotRequired[List[JournalEntryLineItemTypedDict]]
     r"""Requires a minimum of 2 line items that sum to 0"""
     status: NotRequired[Nullable[JournalEntryStatus]]
@@ -128,6 +134,8 @@ class JournalEntry(BaseModel):
 
     company_id: OptionalNullable[str] = UNSET
     r"""The company ID the transaction belongs to"""
+
+    subsidiary: OptionalNullable[LinkedSubsidiary] = UNSET
 
     line_items: Optional[List[JournalEntryLineItem]] = None
     r"""Requires a minimum of 2 line items that sum to 0"""
@@ -228,6 +236,7 @@ class JournalEntry(BaseModel):
             "currency_rate",
             "currency",
             "company_id",
+            "subsidiary",
             "line_items",
             "status",
             "memo",
@@ -257,6 +266,7 @@ class JournalEntry(BaseModel):
             "currency_rate",
             "currency",
             "company_id",
+            "subsidiary",
             "status",
             "memo",
             "journal_symbol",
@@ -313,6 +323,7 @@ class JournalEntryInputTypedDict(TypedDict):
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
     company_id: NotRequired[Nullable[str]]
     r"""The company ID the transaction belongs to"""
+    subsidiary: NotRequired[Nullable[LinkedSubsidiaryInputTypedDict]]
     line_items: NotRequired[List[JournalEntryLineItemInputTypedDict]]
     r"""Requires a minimum of 2 line items that sum to 0"""
     status: NotRequired[Nullable[JournalEntryStatus]]
@@ -365,6 +376,8 @@ class JournalEntryInput(BaseModel):
 
     company_id: OptionalNullable[str] = UNSET
     r"""The company ID the transaction belongs to"""
+
+    subsidiary: OptionalNullable[LinkedSubsidiaryInput] = UNSET
 
     line_items: Optional[List[JournalEntryLineItemInput]] = None
     r"""Requires a minimum of 2 line items that sum to 0"""
@@ -448,6 +461,7 @@ class JournalEntryInput(BaseModel):
             "currency_rate",
             "currency",
             "company_id",
+            "subsidiary",
             "line_items",
             "status",
             "memo",
@@ -471,6 +485,7 @@ class JournalEntryInput(BaseModel):
             "currency_rate",
             "currency",
             "company_id",
+            "subsidiary",
             "status",
             "memo",
             "journal_symbol",

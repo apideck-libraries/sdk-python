@@ -12,6 +12,11 @@ from .linkedpaymentallocations import (
     LinkedPaymentAllocations,
     LinkedPaymentAllocationsTypedDict,
 )
+from .linkedsubsidiary import LinkedSubsidiary, LinkedSubsidiaryTypedDict
+from .linkedsubsidiary_input import (
+    LinkedSubsidiaryInput,
+    LinkedSubsidiaryInputTypedDict,
+)
 from .linkedsupplier import LinkedSupplier, LinkedSupplierTypedDict
 from .linkedsupplier_input import LinkedSupplierInput, LinkedSupplierInputTypedDict
 from .linkedtrackingcategory import (
@@ -72,6 +77,7 @@ class BillTypedDict(TypedDict):
     r"""The supplier this entity is linked to."""
     company_id: NotRequired[Nullable[str]]
     r"""The company ID the transaction belongs to"""
+    subsidiary: NotRequired[Nullable[LinkedSubsidiaryTypedDict]]
     location_id: NotRequired[Nullable[str]]
     r"""The ID of the location"""
     department_id: NotRequired[Nullable[str]]
@@ -182,6 +188,8 @@ class Bill(BaseModel):
 
     company_id: OptionalNullable[str] = UNSET
     r"""The company ID the transaction belongs to"""
+
+    subsidiary: OptionalNullable[LinkedSubsidiary] = UNSET
 
     location_id: OptionalNullable[str] = UNSET
     r"""The ID of the location"""
@@ -361,6 +369,7 @@ class Bill(BaseModel):
             "bill_number",
             "supplier",
             "company_id",
+            "subsidiary",
             "location_id",
             "department_id",
             "currency",
@@ -414,6 +423,7 @@ class Bill(BaseModel):
             "bill_number",
             "supplier",
             "company_id",
+            "subsidiary",
             "location_id",
             "department_id",
             "currency",
@@ -492,6 +502,7 @@ class BillInputTypedDict(TypedDict):
     r"""The supplier this entity is linked to."""
     company_id: NotRequired[Nullable[str]]
     r"""The company ID the transaction belongs to"""
+    subsidiary: NotRequired[Nullable[LinkedSubsidiaryInputTypedDict]]
     location_id: NotRequired[Nullable[str]]
     r"""The ID of the location"""
     department_id: NotRequired[Nullable[str]]
@@ -586,6 +597,8 @@ class BillInput(BaseModel):
 
     company_id: OptionalNullable[str] = UNSET
     r"""The company ID the transaction belongs to"""
+
+    subsidiary: OptionalNullable[LinkedSubsidiaryInput] = UNSET
 
     location_id: OptionalNullable[str] = UNSET
     r"""The ID of the location"""
@@ -748,6 +761,7 @@ class BillInput(BaseModel):
             "bill_number",
             "supplier",
             "company_id",
+            "subsidiary",
             "location_id",
             "department_id",
             "currency",
@@ -795,6 +809,7 @@ class BillInput(BaseModel):
             "bill_number",
             "supplier",
             "company_id",
+            "subsidiary",
             "location_id",
             "department_id",
             "currency",

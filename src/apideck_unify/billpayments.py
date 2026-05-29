@@ -413,6 +413,9 @@ class BillPayments(BaseSDK):
             Union[models.LinkedSupplierInput, models.LinkedSupplierInputTypedDict]
         ] = UNSET,
         company_id: OptionalNullable[str] = UNSET,
+        subsidiary: OptionalNullable[
+            Union[models.LinkedSubsidiaryInput, models.LinkedSubsidiaryInputTypedDict]
+        ] = UNSET,
         reconciled: OptionalNullable[bool] = UNSET,
         status: Optional[models.PaymentStatus] = None,
         type_: Optional[models.BillPaymentType] = None,
@@ -463,6 +466,7 @@ class BillPayments(BaseSDK):
         :param account:
         :param supplier: The supplier this entity is linked to.
         :param company_id: The company ID the transaction belongs to
+        :param subsidiary:
         :param reconciled: Indicates if the transaction has been reconciled.
         :param status: Status of payment
         :param type: Type of payment
@@ -511,6 +515,9 @@ class BillPayments(BaseSDK):
                     supplier, OptionalNullable[models.LinkedSupplierInput]
                 ),
                 company_id=company_id,
+                subsidiary=utils.get_pydantic_model(
+                    subsidiary, OptionalNullable[models.LinkedSubsidiaryInput]
+                ),
                 reconciled=reconciled,
                 status=status,
                 type=type_,
@@ -656,6 +663,9 @@ class BillPayments(BaseSDK):
             Union[models.LinkedSupplierInput, models.LinkedSupplierInputTypedDict]
         ] = UNSET,
         company_id: OptionalNullable[str] = UNSET,
+        subsidiary: OptionalNullable[
+            Union[models.LinkedSubsidiaryInput, models.LinkedSubsidiaryInputTypedDict]
+        ] = UNSET,
         reconciled: OptionalNullable[bool] = UNSET,
         status: Optional[models.PaymentStatus] = None,
         type_: Optional[models.BillPaymentType] = None,
@@ -706,6 +716,7 @@ class BillPayments(BaseSDK):
         :param account:
         :param supplier: The supplier this entity is linked to.
         :param company_id: The company ID the transaction belongs to
+        :param subsidiary:
         :param reconciled: Indicates if the transaction has been reconciled.
         :param status: Status of payment
         :param type: Type of payment
@@ -754,6 +765,9 @@ class BillPayments(BaseSDK):
                     supplier, OptionalNullable[models.LinkedSupplierInput]
                 ),
                 company_id=company_id,
+                subsidiary=utils.get_pydantic_model(
+                    subsidiary, OptionalNullable[models.LinkedSubsidiaryInput]
+                ),
                 reconciled=reconciled,
                 status=status,
                 type=type_,
@@ -1193,6 +1207,9 @@ class BillPayments(BaseSDK):
             Union[models.LinkedSupplierInput, models.LinkedSupplierInputTypedDict]
         ] = UNSET,
         company_id: OptionalNullable[str] = UNSET,
+        subsidiary: OptionalNullable[
+            Union[models.LinkedSubsidiaryInput, models.LinkedSubsidiaryInputTypedDict]
+        ] = UNSET,
         reconciled: OptionalNullable[bool] = UNSET,
         status: Optional[models.PaymentStatus] = None,
         type_: Optional[models.BillPaymentType] = None,
@@ -1243,6 +1260,7 @@ class BillPayments(BaseSDK):
         :param account:
         :param supplier: The supplier this entity is linked to.
         :param company_id: The company ID the transaction belongs to
+        :param subsidiary:
         :param reconciled: Indicates if the transaction has been reconciled.
         :param status: Status of payment
         :param type: Type of payment
@@ -1291,6 +1309,9 @@ class BillPayments(BaseSDK):
                     supplier, OptionalNullable[models.LinkedSupplierInput]
                 ),
                 company_id=company_id,
+                subsidiary=utils.get_pydantic_model(
+                    subsidiary, OptionalNullable[models.LinkedSubsidiaryInput]
+                ),
                 reconciled=reconciled,
                 status=status,
                 type=type_,
@@ -1436,6 +1457,9 @@ class BillPayments(BaseSDK):
             Union[models.LinkedSupplierInput, models.LinkedSupplierInputTypedDict]
         ] = UNSET,
         company_id: OptionalNullable[str] = UNSET,
+        subsidiary: OptionalNullable[
+            Union[models.LinkedSubsidiaryInput, models.LinkedSubsidiaryInputTypedDict]
+        ] = UNSET,
         reconciled: OptionalNullable[bool] = UNSET,
         status: Optional[models.PaymentStatus] = None,
         type_: Optional[models.BillPaymentType] = None,
@@ -1486,6 +1510,7 @@ class BillPayments(BaseSDK):
         :param account:
         :param supplier: The supplier this entity is linked to.
         :param company_id: The company ID the transaction belongs to
+        :param subsidiary:
         :param reconciled: Indicates if the transaction has been reconciled.
         :param status: Status of payment
         :param type: Type of payment
@@ -1534,6 +1559,9 @@ class BillPayments(BaseSDK):
                     supplier, OptionalNullable[models.LinkedSupplierInput]
                 ),
                 company_id=company_id,
+                subsidiary=utils.get_pydantic_model(
+                    subsidiary, OptionalNullable[models.LinkedSubsidiaryInput]
+                ),
                 reconciled=reconciled,
                 status=status,
                 type=type_,

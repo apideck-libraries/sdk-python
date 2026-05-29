@@ -3960,6 +3960,7 @@ if TYPE_CHECKING:
     from .ledgeraccountsfilter import (
         Classification,
         LedgerAccountsFilter,
+        LedgerAccountsFilterStatus,
         LedgerAccountsFilterTypedDict,
     )
     from .ledgeraccountssort import (
@@ -7942,6 +7943,7 @@ __all__ = [
     "LedgerAccountType",
     "LedgerAccountTypedDict",
     "LedgerAccountsFilter",
+    "LedgerAccountsFilterStatus",
     "LedgerAccountsFilterTypedDict",
     "LedgerAccountsSort",
     "LedgerAccountsSortBy",
@@ -11758,6 +11760,7 @@ _dynamic_imports: dict[str, str] = {
     "SubAccountsTypedDict": ".ledgeraccount",
     "Classification": ".ledgeraccountsfilter",
     "LedgerAccountsFilter": ".ledgeraccountsfilter",
+    "LedgerAccountsFilterStatus": ".ledgeraccountsfilter",
     "LedgerAccountsFilterTypedDict": ".ledgeraccountsfilter",
     "LedgerAccountsSort": ".ledgeraccountssort",
     "LedgerAccountsSortBy": ".ledgeraccountssort",

@@ -405,6 +405,9 @@ class Invoices(BaseSDK):
             Union[models.LinkedCustomerInput, models.LinkedCustomerInputTypedDict]
         ] = UNSET,
         company_id: OptionalNullable[str] = UNSET,
+        subsidiary: OptionalNullable[
+            Union[models.LinkedSubsidiaryInput, models.LinkedSubsidiaryInputTypedDict]
+        ] = UNSET,
         location_id: OptionalNullable[str] = UNSET,
         department_id: OptionalNullable[str] = UNSET,
         invoice_date: OptionalNullable[date] = UNSET,
@@ -495,6 +498,7 @@ class Invoices(BaseSDK):
         :param number: Invoice number.
         :param customer: The customer this entity is linked to.
         :param company_id: The company ID the transaction belongs to
+        :param subsidiary:
         :param location_id: The ID of the location
         :param department_id: The ID of the department
         :param invoice_date: Date invoice was issued - YYYY-MM-DD.
@@ -563,6 +567,9 @@ class Invoices(BaseSDK):
                     customer, OptionalNullable[models.LinkedCustomerInput]
                 ),
                 company_id=company_id,
+                subsidiary=utils.get_pydantic_model(
+                    subsidiary, OptionalNullable[models.LinkedSubsidiaryInput]
+                ),
                 location_id=location_id,
                 department_id=department_id,
                 invoice_date=invoice_date,
@@ -742,6 +749,9 @@ class Invoices(BaseSDK):
             Union[models.LinkedCustomerInput, models.LinkedCustomerInputTypedDict]
         ] = UNSET,
         company_id: OptionalNullable[str] = UNSET,
+        subsidiary: OptionalNullable[
+            Union[models.LinkedSubsidiaryInput, models.LinkedSubsidiaryInputTypedDict]
+        ] = UNSET,
         location_id: OptionalNullable[str] = UNSET,
         department_id: OptionalNullable[str] = UNSET,
         invoice_date: OptionalNullable[date] = UNSET,
@@ -832,6 +842,7 @@ class Invoices(BaseSDK):
         :param number: Invoice number.
         :param customer: The customer this entity is linked to.
         :param company_id: The company ID the transaction belongs to
+        :param subsidiary:
         :param location_id: The ID of the location
         :param department_id: The ID of the department
         :param invoice_date: Date invoice was issued - YYYY-MM-DD.
@@ -900,6 +911,9 @@ class Invoices(BaseSDK):
                     customer, OptionalNullable[models.LinkedCustomerInput]
                 ),
                 company_id=company_id,
+                subsidiary=utils.get_pydantic_model(
+                    subsidiary, OptionalNullable[models.LinkedSubsidiaryInput]
+                ),
                 location_id=location_id,
                 department_id=department_id,
                 invoice_date=invoice_date,
@@ -1373,6 +1387,9 @@ class Invoices(BaseSDK):
             Union[models.LinkedCustomerInput, models.LinkedCustomerInputTypedDict]
         ] = UNSET,
         company_id: OptionalNullable[str] = UNSET,
+        subsidiary: OptionalNullable[
+            Union[models.LinkedSubsidiaryInput, models.LinkedSubsidiaryInputTypedDict]
+        ] = UNSET,
         location_id: OptionalNullable[str] = UNSET,
         department_id: OptionalNullable[str] = UNSET,
         invoice_date: OptionalNullable[date] = UNSET,
@@ -1463,6 +1480,7 @@ class Invoices(BaseSDK):
         :param number: Invoice number.
         :param customer: The customer this entity is linked to.
         :param company_id: The company ID the transaction belongs to
+        :param subsidiary:
         :param location_id: The ID of the location
         :param department_id: The ID of the department
         :param invoice_date: Date invoice was issued - YYYY-MM-DD.
@@ -1531,6 +1549,9 @@ class Invoices(BaseSDK):
                     customer, OptionalNullable[models.LinkedCustomerInput]
                 ),
                 company_id=company_id,
+                subsidiary=utils.get_pydantic_model(
+                    subsidiary, OptionalNullable[models.LinkedSubsidiaryInput]
+                ),
                 location_id=location_id,
                 department_id=department_id,
                 invoice_date=invoice_date,
@@ -1710,6 +1731,9 @@ class Invoices(BaseSDK):
             Union[models.LinkedCustomerInput, models.LinkedCustomerInputTypedDict]
         ] = UNSET,
         company_id: OptionalNullable[str] = UNSET,
+        subsidiary: OptionalNullable[
+            Union[models.LinkedSubsidiaryInput, models.LinkedSubsidiaryInputTypedDict]
+        ] = UNSET,
         location_id: OptionalNullable[str] = UNSET,
         department_id: OptionalNullable[str] = UNSET,
         invoice_date: OptionalNullable[date] = UNSET,
@@ -1800,6 +1824,7 @@ class Invoices(BaseSDK):
         :param number: Invoice number.
         :param customer: The customer this entity is linked to.
         :param company_id: The company ID the transaction belongs to
+        :param subsidiary:
         :param location_id: The ID of the location
         :param department_id: The ID of the department
         :param invoice_date: Date invoice was issued - YYYY-MM-DD.
@@ -1868,6 +1893,9 @@ class Invoices(BaseSDK):
                     customer, OptionalNullable[models.LinkedCustomerInput]
                 ),
                 company_id=company_id,
+                subsidiary=utils.get_pydantic_model(
+                    subsidiary, OptionalNullable[models.LinkedSubsidiaryInput]
+                ),
                 location_id=location_id,
                 department_id=department_id,
                 invoice_date=invoice_date,
