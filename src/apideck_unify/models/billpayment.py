@@ -4,6 +4,11 @@ from __future__ import annotations
 from .currency import Currency
 from .customfield import CustomField, CustomFieldTypedDict
 from .linkedledgeraccount import LinkedLedgerAccount, LinkedLedgerAccountTypedDict
+from .linkedsubsidiary import LinkedSubsidiary, LinkedSubsidiaryTypedDict
+from .linkedsubsidiary_input import (
+    LinkedSubsidiaryInput,
+    LinkedSubsidiaryInputTypedDict,
+)
 from .linkedsupplier import LinkedSupplier, LinkedSupplierTypedDict
 from .linkedsupplier_input import LinkedSupplierInput, LinkedSupplierInputTypedDict
 from .linkedtrackingcategory import (
@@ -145,6 +150,7 @@ class BillPaymentTypedDict(TypedDict):
     r"""The supplier this entity is linked to."""
     company_id: NotRequired[Nullable[str]]
     r"""The company ID the transaction belongs to"""
+    subsidiary: NotRequired[Nullable[LinkedSubsidiaryTypedDict]]
     reconciled: NotRequired[Nullable[bool]]
     r"""Indicates if the transaction has been reconciled."""
     status: NotRequired[PaymentStatus]
@@ -219,6 +225,8 @@ class BillPayment(BaseModel):
 
     company_id: OptionalNullable[str] = UNSET
     r"""The company ID the transaction belongs to"""
+
+    subsidiary: OptionalNullable[LinkedSubsidiary] = UNSET
 
     reconciled: OptionalNullable[bool] = UNSET
     r"""Indicates if the transaction has been reconciled."""
@@ -312,6 +320,7 @@ class BillPayment(BaseModel):
             "account",
             "supplier",
             "company_id",
+            "subsidiary",
             "reconciled",
             "status",
             "type",
@@ -342,6 +351,7 @@ class BillPayment(BaseModel):
             "transaction_date",
             "supplier",
             "company_id",
+            "subsidiary",
             "reconciled",
             "note",
             "number",
@@ -469,6 +479,7 @@ class BillPaymentInputTypedDict(TypedDict):
     r"""The supplier this entity is linked to."""
     company_id: NotRequired[Nullable[str]]
     r"""The company ID the transaction belongs to"""
+    subsidiary: NotRequired[Nullable[LinkedSubsidiaryInputTypedDict]]
     reconciled: NotRequired[Nullable[bool]]
     r"""Indicates if the transaction has been reconciled."""
     status: NotRequired[PaymentStatus]
@@ -527,6 +538,8 @@ class BillPaymentInput(BaseModel):
 
     company_id: OptionalNullable[str] = UNSET
     r"""The company ID the transaction belongs to"""
+
+    subsidiary: OptionalNullable[LinkedSubsidiaryInput] = UNSET
 
     reconciled: OptionalNullable[bool] = UNSET
     r"""Indicates if the transaction has been reconciled."""
@@ -604,6 +617,7 @@ class BillPaymentInput(BaseModel):
             "account",
             "supplier",
             "company_id",
+            "subsidiary",
             "reconciled",
             "status",
             "type",
@@ -628,6 +642,7 @@ class BillPaymentInput(BaseModel):
             "transaction_date",
             "supplier",
             "company_id",
+            "subsidiary",
             "reconciled",
             "note",
             "number",

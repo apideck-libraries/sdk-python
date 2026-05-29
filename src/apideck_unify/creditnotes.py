@@ -412,6 +412,9 @@ class CreditNotes(BaseSDK):
             Union[models.LinkedCustomerInput, models.LinkedCustomerInputTypedDict]
         ] = UNSET,
         company_id: OptionalNullable[str] = UNSET,
+        subsidiary: OptionalNullable[
+            Union[models.LinkedSubsidiaryInput, models.LinkedSubsidiaryInputTypedDict]
+        ] = UNSET,
         location_id: OptionalNullable[str] = UNSET,
         department_id: OptionalNullable[str] = UNSET,
         currency: OptionalNullable[models.Currency] = UNSET,
@@ -479,6 +482,7 @@ class CreditNotes(BaseSDK):
         :param number: Credit note number.
         :param customer: The customer this entity is linked to.
         :param company_id: The company ID the transaction belongs to
+        :param subsidiary:
         :param location_id: The ID of the location
         :param department_id: The ID of the department
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
@@ -533,6 +537,9 @@ class CreditNotes(BaseSDK):
                     customer, OptionalNullable[models.LinkedCustomerInput]
                 ),
                 company_id=company_id,
+                subsidiary=utils.get_pydantic_model(
+                    subsidiary, OptionalNullable[models.LinkedSubsidiaryInput]
+                ),
                 location_id=location_id,
                 department_id=department_id,
                 currency=currency,
@@ -694,6 +701,9 @@ class CreditNotes(BaseSDK):
             Union[models.LinkedCustomerInput, models.LinkedCustomerInputTypedDict]
         ] = UNSET,
         company_id: OptionalNullable[str] = UNSET,
+        subsidiary: OptionalNullable[
+            Union[models.LinkedSubsidiaryInput, models.LinkedSubsidiaryInputTypedDict]
+        ] = UNSET,
         location_id: OptionalNullable[str] = UNSET,
         department_id: OptionalNullable[str] = UNSET,
         currency: OptionalNullable[models.Currency] = UNSET,
@@ -761,6 +771,7 @@ class CreditNotes(BaseSDK):
         :param number: Credit note number.
         :param customer: The customer this entity is linked to.
         :param company_id: The company ID the transaction belongs to
+        :param subsidiary:
         :param location_id: The ID of the location
         :param department_id: The ID of the department
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
@@ -815,6 +826,9 @@ class CreditNotes(BaseSDK):
                     customer, OptionalNullable[models.LinkedCustomerInput]
                 ),
                 company_id=company_id,
+                subsidiary=utils.get_pydantic_model(
+                    subsidiary, OptionalNullable[models.LinkedSubsidiaryInput]
+                ),
                 location_id=location_id,
                 department_id=department_id,
                 currency=currency,
@@ -1270,6 +1284,9 @@ class CreditNotes(BaseSDK):
             Union[models.LinkedCustomerInput, models.LinkedCustomerInputTypedDict]
         ] = UNSET,
         company_id: OptionalNullable[str] = UNSET,
+        subsidiary: OptionalNullable[
+            Union[models.LinkedSubsidiaryInput, models.LinkedSubsidiaryInputTypedDict]
+        ] = UNSET,
         location_id: OptionalNullable[str] = UNSET,
         department_id: OptionalNullable[str] = UNSET,
         currency: OptionalNullable[models.Currency] = UNSET,
@@ -1337,6 +1354,7 @@ class CreditNotes(BaseSDK):
         :param number: Credit note number.
         :param customer: The customer this entity is linked to.
         :param company_id: The company ID the transaction belongs to
+        :param subsidiary:
         :param location_id: The ID of the location
         :param department_id: The ID of the department
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
@@ -1391,6 +1409,9 @@ class CreditNotes(BaseSDK):
                     customer, OptionalNullable[models.LinkedCustomerInput]
                 ),
                 company_id=company_id,
+                subsidiary=utils.get_pydantic_model(
+                    subsidiary, OptionalNullable[models.LinkedSubsidiaryInput]
+                ),
                 location_id=location_id,
                 department_id=department_id,
                 currency=currency,
@@ -1552,6 +1573,9 @@ class CreditNotes(BaseSDK):
             Union[models.LinkedCustomerInput, models.LinkedCustomerInputTypedDict]
         ] = UNSET,
         company_id: OptionalNullable[str] = UNSET,
+        subsidiary: OptionalNullable[
+            Union[models.LinkedSubsidiaryInput, models.LinkedSubsidiaryInputTypedDict]
+        ] = UNSET,
         location_id: OptionalNullable[str] = UNSET,
         department_id: OptionalNullable[str] = UNSET,
         currency: OptionalNullable[models.Currency] = UNSET,
@@ -1619,6 +1643,7 @@ class CreditNotes(BaseSDK):
         :param number: Credit note number.
         :param customer: The customer this entity is linked to.
         :param company_id: The company ID the transaction belongs to
+        :param subsidiary:
         :param location_id: The ID of the location
         :param department_id: The ID of the department
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
@@ -1673,6 +1698,9 @@ class CreditNotes(BaseSDK):
                     customer, OptionalNullable[models.LinkedCustomerInput]
                 ),
                 company_id=company_id,
+                subsidiary=utils.get_pydantic_model(
+                    subsidiary, OptionalNullable[models.LinkedSubsidiaryInput]
+                ),
                 location_id=location_id,
                 department_id=department_id,
                 currency=currency,

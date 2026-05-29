@@ -411,6 +411,9 @@ class JournalEntries(BaseSDK):
         currency_rate: OptionalNullable[float] = UNSET,
         currency: OptionalNullable[models.Currency] = UNSET,
         company_id: OptionalNullable[str] = UNSET,
+        subsidiary: OptionalNullable[
+            Union[models.LinkedSubsidiaryInput, models.LinkedSubsidiaryInputTypedDict]
+        ] = UNSET,
         line_items: Optional[
             Union[
                 List[models.JournalEntryLineItemInput],
@@ -460,6 +463,7 @@ class JournalEntries(BaseSDK):
         :param currency_rate: Currency Exchange Rate at the time entity was recorded/generated.
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
         :param company_id: The company ID the transaction belongs to
+        :param subsidiary:
         :param line_items: Requires a minimum of 2 line items that sum to 0
         :param status: Journal entry status
         :param memo: Reference for the journal entry.
@@ -503,6 +507,9 @@ class JournalEntries(BaseSDK):
                 currency_rate=currency_rate,
                 currency=currency,
                 company_id=company_id,
+                subsidiary=utils.get_pydantic_model(
+                    subsidiary, OptionalNullable[models.LinkedSubsidiaryInput]
+                ),
                 line_items=utils.get_pydantic_model(
                     line_items, Optional[List[models.JournalEntryLineItemInput]]
                 ),
@@ -643,6 +650,9 @@ class JournalEntries(BaseSDK):
         currency_rate: OptionalNullable[float] = UNSET,
         currency: OptionalNullable[models.Currency] = UNSET,
         company_id: OptionalNullable[str] = UNSET,
+        subsidiary: OptionalNullable[
+            Union[models.LinkedSubsidiaryInput, models.LinkedSubsidiaryInputTypedDict]
+        ] = UNSET,
         line_items: Optional[
             Union[
                 List[models.JournalEntryLineItemInput],
@@ -692,6 +702,7 @@ class JournalEntries(BaseSDK):
         :param currency_rate: Currency Exchange Rate at the time entity was recorded/generated.
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
         :param company_id: The company ID the transaction belongs to
+        :param subsidiary:
         :param line_items: Requires a minimum of 2 line items that sum to 0
         :param status: Journal entry status
         :param memo: Reference for the journal entry.
@@ -735,6 +746,9 @@ class JournalEntries(BaseSDK):
                 currency_rate=currency_rate,
                 currency=currency,
                 company_id=company_id,
+                subsidiary=utils.get_pydantic_model(
+                    subsidiary, OptionalNullable[models.LinkedSubsidiaryInput]
+                ),
                 line_items=utils.get_pydantic_model(
                     line_items, Optional[List[models.JournalEntryLineItemInput]]
                 ),
@@ -1170,6 +1184,9 @@ class JournalEntries(BaseSDK):
         currency_rate: OptionalNullable[float] = UNSET,
         currency: OptionalNullable[models.Currency] = UNSET,
         company_id: OptionalNullable[str] = UNSET,
+        subsidiary: OptionalNullable[
+            Union[models.LinkedSubsidiaryInput, models.LinkedSubsidiaryInputTypedDict]
+        ] = UNSET,
         line_items: Optional[
             Union[
                 List[models.JournalEntryLineItemInput],
@@ -1220,6 +1237,7 @@ class JournalEntries(BaseSDK):
         :param currency_rate: Currency Exchange Rate at the time entity was recorded/generated.
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
         :param company_id: The company ID the transaction belongs to
+        :param subsidiary:
         :param line_items: Requires a minimum of 2 line items that sum to 0
         :param status: Journal entry status
         :param memo: Reference for the journal entry.
@@ -1264,6 +1282,9 @@ class JournalEntries(BaseSDK):
                 currency_rate=currency_rate,
                 currency=currency,
                 company_id=company_id,
+                subsidiary=utils.get_pydantic_model(
+                    subsidiary, OptionalNullable[models.LinkedSubsidiaryInput]
+                ),
                 line_items=utils.get_pydantic_model(
                     line_items, Optional[List[models.JournalEntryLineItemInput]]
                 ),
@@ -1405,6 +1426,9 @@ class JournalEntries(BaseSDK):
         currency_rate: OptionalNullable[float] = UNSET,
         currency: OptionalNullable[models.Currency] = UNSET,
         company_id: OptionalNullable[str] = UNSET,
+        subsidiary: OptionalNullable[
+            Union[models.LinkedSubsidiaryInput, models.LinkedSubsidiaryInputTypedDict]
+        ] = UNSET,
         line_items: Optional[
             Union[
                 List[models.JournalEntryLineItemInput],
@@ -1455,6 +1479,7 @@ class JournalEntries(BaseSDK):
         :param currency_rate: Currency Exchange Rate at the time entity was recorded/generated.
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
         :param company_id: The company ID the transaction belongs to
+        :param subsidiary:
         :param line_items: Requires a minimum of 2 line items that sum to 0
         :param status: Journal entry status
         :param memo: Reference for the journal entry.
@@ -1499,6 +1524,9 @@ class JournalEntries(BaseSDK):
                 currency_rate=currency_rate,
                 currency=currency,
                 company_id=company_id,
+                subsidiary=utils.get_pydantic_model(
+                    subsidiary, OptionalNullable[models.LinkedSubsidiaryInput]
+                ),
                 line_items=utils.get_pydantic_model(
                     line_items, Optional[List[models.JournalEntryLineItemInput]]
                 ),

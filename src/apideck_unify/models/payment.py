@@ -10,6 +10,7 @@ from .deprecatedlinkedsupplier import (
 )
 from .linkedcustomer import LinkedCustomer, LinkedCustomerTypedDict
 from .linkedledgeraccount import LinkedLedgerAccount, LinkedLedgerAccountTypedDict
+from .linkedsubsidiary import LinkedSubsidiary, LinkedSubsidiaryTypedDict
 from .linkedtrackingcategory import (
     LinkedTrackingCategory,
     LinkedTrackingCategoryTypedDict,
@@ -66,6 +67,7 @@ class PaymentTypedDict(TypedDict):
     r"""The supplier this entity is linked to."""
     company_id: NotRequired[Nullable[str]]
     r"""The company ID the transaction belongs to"""
+    subsidiary: NotRequired[Nullable[LinkedSubsidiaryTypedDict]]
     reconciled: NotRequired[Nullable[bool]]
     r"""Indicates if the transaction has been reconciled."""
     status: NotRequired[PaymentStatus]
@@ -165,6 +167,8 @@ class Payment(BaseModel):
     company_id: OptionalNullable[str] = UNSET
     r"""The company ID the transaction belongs to"""
 
+    subsidiary: OptionalNullable[LinkedSubsidiary] = UNSET
+
     reconciled: OptionalNullable[bool] = UNSET
     r"""Indicates if the transaction has been reconciled."""
 
@@ -260,6 +264,7 @@ class Payment(BaseModel):
             "customer",
             "supplier",
             "company_id",
+            "subsidiary",
             "reconciled",
             "status",
             "type",
@@ -293,6 +298,7 @@ class Payment(BaseModel):
             "customer",
             "supplier",
             "company_id",
+            "subsidiary",
             "reconciled",
             "note",
             "number",

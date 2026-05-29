@@ -24,7 +24,7 @@ class UpdateWebhookRequestTypedDict(TypedDict):
     status: NotRequired[Status]
     r"""The status of the webhook."""
     delivery_url: NotRequired[str]
-    r"""The delivery url of the webhook endpoint."""
+    r"""The delivery url of the webhook endpoint. The endpoint must respond within 60 seconds or the delivery is recorded as failed."""
     events: NotRequired[List[WebhookEventType]]
     r"""The list of subscribed events for this webhook. [`*`] indicates that all events are enabled."""
 
@@ -39,7 +39,7 @@ class UpdateWebhookRequest(BaseModel):
     r"""The status of the webhook."""
 
     delivery_url: Optional[str] = None
-    r"""The delivery url of the webhook endpoint."""
+    r"""The delivery url of the webhook endpoint. The endpoint must respond within 60 seconds or the delivery is recorded as failed."""
 
     events: Optional[
         List[Annotated[WebhookEventType, PlainValidator(validate_open_enum(False))]]

@@ -35,6 +35,8 @@ class TransactionType(str, Enum, metaclass=utils.OpenEnumMeta):
 
 class InvoiceItemsFilterTypedDict(TypedDict):
     updated_since: NotRequired[datetime]
+    ids: NotRequired[str]
+    r"""Comma-separated list of invoice item IDs to filter by (e.g. `12345,67890`)."""
     name: NotRequired[str]
     r"""Name of Invoice Items to search for"""
     type: NotRequired[Nullable[InvoiceItemType]]
@@ -45,6 +47,9 @@ class InvoiceItemsFilterTypedDict(TypedDict):
 
 class InvoiceItemsFilter(BaseModel):
     updated_since: Annotated[Optional[datetime], FieldMetadata(query=True)] = None
+
+    ids: Annotated[Optional[str], FieldMetadata(query=True)] = None
+    r"""Comma-separated list of invoice item IDs to filter by (e.g. `12345,67890`)."""
 
     name: Annotated[Optional[str], FieldMetadata(query=True)] = None
     r"""Name of Invoice Items to search for"""
@@ -85,7 +90,7 @@ class InvoiceItemsFilter(BaseModel):
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
-        optional_fields = ["updated_since", "name", "type", "transaction_type"]
+        optional_fields = ["updated_since", "ids", "name", "type", "transaction_type"]
         nullable_fields = ["type", "transaction_type"]
         null_default_fields = []
 

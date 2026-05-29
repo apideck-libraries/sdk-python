@@ -27,12 +27,21 @@ class Classification(str, Enum, metaclass=utils.OpenEnumMeta):
     OTHER = "other"
 
 
+class LedgerAccountsFilterStatus(str, Enum, metaclass=utils.OpenEnumMeta):
+    r"""Filter by account status."""
+
+    ACTIVE = "active"
+    INACTIVE = "inactive"
+
+
 class LedgerAccountsFilterTypedDict(TypedDict):
     name: NotRequired[str]
     r"""Filter by ledger account name"""
     updated_since: NotRequired[datetime]
     classification: NotRequired[Classification]
     r"""Filter by account classification."""
+    status: NotRequired[LedgerAccountsFilterStatus]
+    r"""Filter by account status."""
 
 
 class LedgerAccountsFilter(BaseModel):
@@ -47,11 +56,29 @@ class LedgerAccountsFilter(BaseModel):
     ] = None
     r"""Filter by account classification."""
 
+    status: Annotated[
+        Annotated[
+            Optional[LedgerAccountsFilterStatus],
+            PlainValidator(validate_open_enum(False)),
+        ],
+        FieldMetadata(query=True),
+    ] = None
+    r"""Filter by account status."""
+
     @field_serializer("classification")
     def serialize_classification(self, value):
         if isinstance(value, str):
             try:
                 return models.Classification(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("status")
+    def serialize_status(self, value):
+        if isinstance(value, str):
+            try:
+                return models.LedgerAccountsFilterStatus(value)
             except ValueError:
                 return value
         return value
