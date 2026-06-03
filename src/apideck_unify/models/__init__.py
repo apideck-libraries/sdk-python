@@ -4044,7 +4044,7 @@ if TYPE_CHECKING:
         ServiceTypedDict,
         UnifiedAPI,
     )
-    from .logsfilter import LogsFilter, LogsFilterTypedDict
+    from .logsfilter import LogsFilter, LogsFilterTypedDict, PathMatchMode
     from .message import (
         Direction,
         Error,
@@ -8087,6 +8087,7 @@ __all__ = [
     "ParentProjectTypedDict",
     "PassThroughBody",
     "PassThroughBodyTypedDict",
+    "PathMatchMode",
     "Payment",
     "PaymentAllocations",
     "PaymentAllocationsTypedDict",
@@ -11838,6 +11839,7 @@ _dynamic_imports: dict[str, str] = {
     "UnifiedAPI": ".log",
     "LogsFilter": ".logsfilter",
     "LogsFilterTypedDict": ".logsfilter",
+    "PathMatchMode": ".logsfilter",
     "Direction": ".message",
     "Error": ".message",
     "ErrorTypedDict": ".message",
