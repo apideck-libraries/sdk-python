@@ -1,12 +1,12 @@
 lockVersion: 2.0.0
 id: fca0ac3a-5f4e-452c-bbc7-2311afa8da40
 management:
-  docChecksum: 9c0defffd49e92a344992db1f7bff0b1
-  docVersion: 10.24.39
+  docChecksum: 0b751af49a20956c0cb7e4baa53246b1
+  docVersion: 10.24.40
   speakeasyVersion: 1.656.1
   generationVersion: 2.753.1
-  releaseVersion: 0.31.18
-  configChecksum: 537a7c6cb6b6a7911482fa5048926e22
+  releaseVersion: 0.31.19
+  configChecksum: 8b7e87669f4d31bafde68f64508cf937
   repoURL: https://github.com/apideck-libraries/sdk-python.git
   installationURL: https://github.com/apideck-libraries/sdk-python.git
   published: true
@@ -1645,6 +1645,7 @@ generatedFiles:
   - docs/models/mode.md
   - docs/models/note.md
   - docs/models/noteinput.md
+  - docs/models/notesfilter.md
   - docs/models/notesmodel.md
   - docs/models/notfoundresponse.md
   - docs/models/notfoundresponsedetail.md
@@ -1940,6 +1941,7 @@ generatedFiles:
   - docs/models/uploadsession.md
   - docs/models/user.md
   - docs/models/userinput.md
+  - docs/models/usersfilter.md
   - docs/models/utils/retryconfig.md
   - docs/models/validateconnectionstateresponse.md
   - docs/models/validateconnectionstateresponsedata.md
@@ -3016,6 +3018,7 @@ generatedFiles:
   - src/apideck_unify/models/no_response_error.py
   - src/apideck_unify/models/note.py
   - src/apideck_unify/models/note_input.py
+  - src/apideck_unify/models/notesfilter.py
   - src/apideck_unify/models/notfoundresponse.py
   - src/apideck_unify/models/oauthgranttype.py
   - src/apideck_unify/models/opportunitiesfilter.py
@@ -3177,6 +3180,7 @@ generatedFiles:
   - src/apideck_unify/models/uploadsession.py
   - src/apideck_unify/models/user.py
   - src/apideck_unify/models/user_input.py
+  - src/apideck_unify/models/usersfilter.py
   - src/apideck_unify/models/validateconnectionstateresponse.py
   - src/apideck_unify/models/vault_connectionconsentsallop.py
   - src/apideck_unify/models/vault_connectionconsentupdateop.py
@@ -10946,6 +10950,7 @@ examples:
           limit: 20
           pass_through: {"search": "San Francisco"}
           fields: "id,updated_at"
+          filter: {"title": "Follow up call"}
         header:
           x-apideck-consumer-id: "test-consumer"
           x-apideck-app-id: "dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX"
@@ -11209,6 +11214,7 @@ examples:
           limit: 20
           pass_through: {"search": "San Francisco"}
           fields: "id,updated_at"
+          filter: {"email": "elon@apideck.com"}
         header:
           x-apideck-consumer-id: "test-consumer"
           x-apideck-app-id: "dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX"
@@ -11263,7 +11269,7 @@ examples:
           x-apideck-app-id: "dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX"
           x-apideck-service-id: "salesforce"
       requestBody:
-        application/json: {"parent_id": "54321", "username": "masterofcoin", "first_name": "Elon", "last_name": "Musk", "title": "CEO", "division": "Europe", "company_name": "SpaceX", "employee_number": "123456-AB", "description": "A description", "image": "https://logo.clearbit.com/spacex.com?s=128", "language": "EN", "status": "active", "password": "supersecretpassword", "addresses": [{"id": "123", "type": "primary", "string": "25 Spring Street, Blackburn, VIC 3130", "name": "HQ US", "line1": "Main street", "line2": "apt #", "line3": "Suite #", "line4": "delivery instructions", "street_number": "25", "city": "San Francisco", "state": "CA", "postal_code": "94104", "country": "US", "latitude": "40.759211", "longitude": "-73.984638", "county": "Santa Clara", "contact_name": "Elon Musk", "salutation": "Mr", "phone_number": "111-111-1111", "fax": "122-111-1111", "email": "elon@musk.com", "website": "https://elonmusk.com", "notes": "Address notes or delivery instructions.", "row_version": "1-12345"}], "phone_numbers": [{"id": "12345", "country_code": "1", "area_code": "323", "number": "111-111-1111", "extension": "105", "type": "primary"}], "emails": [{"id": "123", "email": "elon@musk.com", "type": "primary"}], "pass_through": [{"service_id": "<id>", "extend_paths": [{"path": "$.nested.property", "value": {"TaxClassificationRef": {"value": "EUC-99990201-V1-00020000"}}}]}]}
+        application/json: {"parent_id": "54321", "username": "masterofcoin", "name": "Acme Inc.", "first_name": "Elon", "last_name": "Musk", "title": "CEO", "division": "Europe", "company_name": "SpaceX", "employee_number": "123456-AB", "description": "A description", "image": "https://logo.clearbit.com/spacex.com?s=128", "language": "EN", "status": "active", "password": "supersecretpassword", "addresses": [{"id": "123", "type": "primary", "string": "25 Spring Street, Blackburn, VIC 3130", "name": "HQ US", "line1": "Main street", "line2": "apt #", "line3": "Suite #", "line4": "delivery instructions", "street_number": "25", "city": "San Francisco", "state": "CA", "postal_code": "94104", "country": "US", "latitude": "40.759211", "longitude": "-73.984638", "county": "Santa Clara", "contact_name": "Elon Musk", "salutation": "Mr", "phone_number": "111-111-1111", "fax": "122-111-1111", "email": "elon@musk.com", "website": "https://elonmusk.com", "notes": "Address notes or delivery instructions.", "row_version": "1-12345"}], "phone_numbers": [{"id": "12345", "country_code": "1", "area_code": "323", "number": "111-111-1111", "extension": "105", "type": "primary"}], "emails": [{"id": "123", "email": "elon@musk.com", "type": "primary"}], "pass_through": [{"service_id": "<id>", "extend_paths": [{"path": "$.nested.property", "value": {"TaxClassificationRef": {"value": "EUC-99990201-V1-00020000"}}}]}]}
       responses:
         "201":
           application/json: {"status_code": 200, "status": "OK", "service": "zoho-crm", "resource": "users", "operation": "add", "data": {"id": "12345"}}
@@ -11319,7 +11325,7 @@ examples:
           x-apideck-service-id: "salesforce"
       responses:
         "200":
-          application/json: {"status_code": 200, "status": "OK", "service": "zoho-crm", "resource": "companies", "operation": "one", "data": {"id": "12345", "parent_id": "54321", "username": "masterofcoin", "first_name": "Elon", "last_name": "Musk", "title": "CEO", "division": "Europe", "company_name": "SpaceX", "employee_number": "123456-AB", "description": "A description", "image": "https://logo.clearbit.com/spacex.com?s=128", "language": "EN", "status": "active", "addresses": [{"id": "123", "type": "primary", "string": "25 Spring Street, Blackburn, VIC 3130", "name": "HQ US", "line1": "Main street", "line2": "apt #", "line3": "Suite #", "line4": "delivery instructions", "street_number": "25", "city": "San Francisco", "state": "CA", "postal_code": "94104", "country": "US", "latitude": "40.759211", "longitude": "-73.984638", "county": "Santa Clara", "contact_name": "Elon Musk", "salutation": "Mr", "phone_number": "111-111-1111", "fax": "122-111-1111", "email": "elon@musk.com", "website": "https://elonmusk.com", "notes": "Address notes or delivery instructions.", "row_version": "1-12345"}], "phone_numbers": [{"id": "12345", "country_code": "1", "area_code": "323", "number": "111-111-1111", "extension": "105", "type": "primary"}], "emails": [], "updated_at": "2017-08-12T20:43:21.291Z", "created_at": "2017-08-12T20:43:21.291Z", "pass_through": [{"service_id": "<id>", "extend_paths": [{"path": "$.nested.property", "value": {"TaxClassificationRef": {"value": "EUC-99990201-V1-00020000"}}}]}]}}
+          application/json: {"status_code": 200, "status": "OK", "service": "zoho-crm", "resource": "companies", "operation": "one", "data": {"id": "12345", "parent_id": "54321", "username": "masterofcoin", "name": "Acme Inc.", "first_name": "Elon", "last_name": "Musk", "title": "CEO", "division": "Europe", "company_name": "SpaceX", "employee_number": "123456-AB", "description": "A description", "image": "https://logo.clearbit.com/spacex.com?s=128", "language": "EN", "status": "active", "addresses": [{"id": "123", "type": "primary", "string": "25 Spring Street, Blackburn, VIC 3130", "name": "HQ US", "line1": "Main street", "line2": "apt #", "line3": "Suite #", "line4": "delivery instructions", "street_number": "25", "city": "San Francisco", "state": "CA", "postal_code": "94104", "country": "US", "latitude": "40.759211", "longitude": "-73.984638", "county": "Santa Clara", "contact_name": "Elon Musk", "salutation": "Mr", "phone_number": "111-111-1111", "fax": "122-111-1111", "email": "elon@musk.com", "website": "https://elonmusk.com", "notes": "Address notes or delivery instructions.", "row_version": "1-12345"}], "phone_numbers": [{"id": "12345", "country_code": "1", "area_code": "323", "number": "111-111-1111", "extension": "105", "type": "primary"}], "emails": [], "updated_at": "2017-08-12T20:43:21.291Z", "created_at": "2017-08-12T20:43:21.291Z", "pass_through": [{"service_id": "<id>", "extend_paths": [{"path": "$.nested.property", "value": {"TaxClassificationRef": {"value": "EUC-99990201-V1-00020000"}}}]}]}}
         "400":
           application/json: {"status_code": 400, "error": "Bad Request", "type_name": "RequestValidationError", "message": "Invalid Params", "detail": "Missing property foobar", "ref": "https://developers.apideck.com/errors#requestvalidationerror", "downstream_errors": [{"message": "Account code '100' has been archived or deleted", "detail": "Each line item must reference a valid account", "code": "VALIDATION_ERROR"}]}
         "401":
@@ -11371,7 +11377,7 @@ examples:
           x-apideck-app-id: "dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX"
           x-apideck-service-id: "salesforce"
       requestBody:
-        application/json: {"parent_id": "54321", "username": "masterofcoin", "first_name": "Elon", "last_name": "Musk", "title": "CEO", "division": "Europe", "company_name": "SpaceX", "employee_number": "123456-AB", "description": "A description", "image": "https://logo.clearbit.com/spacex.com?s=128", "language": "EN", "status": "active", "password": "supersecretpassword", "addresses": [{"id": "123", "type": "primary", "string": "25 Spring Street, Blackburn, VIC 3130", "name": "HQ US", "line1": "Main street", "line2": "apt #", "line3": "Suite #", "line4": "delivery instructions", "street_number": "25", "city": "San Francisco", "state": "CA", "postal_code": "94104", "country": "US", "latitude": "40.759211", "longitude": "-73.984638", "county": "Santa Clara", "contact_name": "Elon Musk", "salutation": "Mr", "phone_number": "111-111-1111", "fax": "122-111-1111", "email": "elon@musk.com", "website": "https://elonmusk.com", "notes": "Address notes or delivery instructions.", "row_version": "1-12345"}], "phone_numbers": [{"id": "12345", "country_code": "1", "area_code": "323", "number": "111-111-1111", "extension": "105", "type": "primary"}], "emails": [], "pass_through": [{"service_id": "<id>", "extend_paths": [{"path": "$.nested.property", "value": {"TaxClassificationRef": {"value": "EUC-99990201-V1-00020000"}}}]}]}
+        application/json: {"parent_id": "54321", "username": "masterofcoin", "name": "Acme Inc.", "first_name": "Elon", "last_name": "Musk", "title": "CEO", "division": "Europe", "company_name": "SpaceX", "employee_number": "123456-AB", "description": "A description", "image": "https://logo.clearbit.com/spacex.com?s=128", "language": "EN", "status": "active", "password": "supersecretpassword", "addresses": [{"id": "123", "type": "primary", "string": "25 Spring Street, Blackburn, VIC 3130", "name": "HQ US", "line1": "Main street", "line2": "apt #", "line3": "Suite #", "line4": "delivery instructions", "street_number": "25", "city": "San Francisco", "state": "CA", "postal_code": "94104", "country": "US", "latitude": "40.759211", "longitude": "-73.984638", "county": "Santa Clara", "contact_name": "Elon Musk", "salutation": "Mr", "phone_number": "111-111-1111", "fax": "122-111-1111", "email": "elon@musk.com", "website": "https://elonmusk.com", "notes": "Address notes or delivery instructions.", "row_version": "1-12345"}], "phone_numbers": [{"id": "12345", "country_code": "1", "area_code": "323", "number": "111-111-1111", "extension": "105", "type": "primary"}], "emails": [], "pass_through": [{"service_id": "<id>", "extend_paths": [{"path": "$.nested.property", "value": {"TaxClassificationRef": {"value": "EUC-99990201-V1-00020000"}}}]}]}
       responses:
         "200":
           application/json: {"status_code": 200, "status": "OK", "service": "zoho-crm", "resource": "companies", "operation": "update", "data": {"id": "12345"}}
@@ -19655,6 +19661,7 @@ examples:
           application/json: {"status_code": 400, "error": "Bad Request", "type_name": "RequestHeadersValidationError", "message": "Invalid Params", "detail": "Missing Header: x-apideck-consumer-id", "ref": "https://developers.apideck.com/errors#unauthorizederror"}
 examplesVersion: 1.0.2
 generatedTests: {}
+releaseNotes: "## Python SDK Changes Detected:\n* `apideck.crm.notes.list()`:  `request.filter` **Added**\n* `apideck.crm.users.list()`: \n  *  `request.filter` **Added**\n  *  `response.data.[].name` **Added**\n* `apideck.crm.users.create()`:  `request.name` **Added**\n* `apideck.crm.users.get()`:  `response.data.name` **Added**\n* `apideck.crm.users.update()`:  `request.name` **Added**\n"
 trackedFiles:
   .devcontainer/README.md:
     last_write_checksum: sha1:07adb0c0c051a9be4d479ea06461f3a9b3bbeb2f
@@ -21353,7 +21360,7 @@ trackedFiles:
   docs/models/crmnotesallglobals.md:
     last_write_checksum: sha1:9822cc24a307c9c21bbe133016b167677f9bff81
   docs/models/crmnotesallrequest.md:
-    last_write_checksum: sha1:770f671550f2c6cc8a5ed9c2f36d142b72d259c0
+    last_write_checksum: sha1:cde1bd0be4e32ffaf1a4827d052b23e8694bf294
   docs/models/crmnotesallresponse.md:
     last_write_checksum: sha1:9962ac27c0f12ba2bb78dffb357fb800982a8e62
   docs/models/crmnotesdeleteglobals.md:
@@ -21443,7 +21450,7 @@ trackedFiles:
   docs/models/crmusersallglobals.md:
     last_write_checksum: sha1:e8fc705795e57456a3bc3156c7c8034a163a4a1b
   docs/models/crmusersallrequest.md:
-    last_write_checksum: sha1:c58ec64cac29f48c5dabbc08ab24cd82f95789c8
+    last_write_checksum: sha1:2d5138c148ac2b9753bae2db77920b7433cead14
   docs/models/crmusersallresponse.md:
     last_write_checksum: sha1:95cae3ae16cf2ead06973715c6aa4e27d5ed6d71
   docs/models/crmusersdeleteglobals.md:
@@ -22852,6 +22859,8 @@ trackedFiles:
     last_write_checksum: sha1:20f2052c5a7c057a750aa49e538524caf930f844
   docs/models/noteinput.md:
     last_write_checksum: sha1:9316048e335fb1cd5406658a5a7a0d64d73ce736
+  docs/models/notesfilter.md:
+    last_write_checksum: sha1:68957689cd77b13170a0673456ae4aee2f80114d
   docs/models/notesmodel.md:
     last_write_checksum: sha1:088f1a6dba54ce44f94d23fa45fb6831180351a4
   docs/models/notfoundresponse.md:
@@ -23439,9 +23448,11 @@ trackedFiles:
   docs/models/uploadsession.md:
     last_write_checksum: sha1:66587dc1354a73ad3a29cda79bf5471d35555be8
   docs/models/user.md:
-    last_write_checksum: sha1:16ae82c678f65794b23d31ceab913143c4aa6feb
+    last_write_checksum: sha1:86635f3d87cb69000aee6d504b15545e254ccc96
   docs/models/userinput.md:
-    last_write_checksum: sha1:117fbed81248ae146705c66a0f889a8753441512
+    last_write_checksum: sha1:bfdaa87921a514acef14f750d421d09e719bb825
+  docs/models/usersfilter.md:
+    last_write_checksum: sha1:b446c4280b6eb7203387ca88494bd410fb42e922
   docs/models/utils/retryconfig.md:
     last_write_checksum: sha1:562c0f21e308ad10c27f85f75704c15592c6929d
   docs/models/validateconnectionstateresponse.md:
@@ -23797,7 +23808,7 @@ trackedFiles:
   docs/sdks/messages/README.md:
     last_write_checksum: sha1:8750f2c90b2b1a0a87c1bc9a91cae70557f28299
   docs/sdks/notes/README.md:
-    last_write_checksum: sha1:5bc0ba8c3a4015b8edb9c6b93e899e3ace7872ec
+    last_write_checksum: sha1:e8cad99d8dbc8870c5409271c29b9097bb228b24
   docs/sdks/opportunities/README.md:
     last_write_checksum: sha1:d90f239920b2833dc8dc548aa9c88c3efc5f4f67
   docs/sdks/orders/README.md:
@@ -23841,7 +23852,7 @@ trackedFiles:
   docs/sdks/uploadsessions/README.md:
     last_write_checksum: sha1:839054e372ec33daebf92dd49ee1aee9ffc4c049
   docs/sdks/users/README.md:
-    last_write_checksum: sha1:83111447f84ef0986b18be99e3b90778789a0f80
+    last_write_checksum: sha1:e9a893fa1d34355f7001a76687f27d9da35c5e0c
   docs/sdks/validateconnection/README.md:
     last_write_checksum: sha1:405a41f7d2473f616e8a4b75b10b5563880c0074
   docs/sdks/webhooks/README.md:
@@ -23867,7 +23878,7 @@ trackedFiles:
   src/apideck_unify/_hooks/types.py:
     last_write_checksum: sha1:4b923d3d84d979af6169a9db6b81bfc373079a25
   src/apideck_unify/_version.py:
-    last_write_checksum: sha1:996ead9f26fd3fc9117135ff44dafd1505767745
+    last_write_checksum: sha1:be6ae553b3103cd4961604d2a39332c7a0038e23
   src/apideck_unify/accounting.py:
     last_write_checksum: sha1:afb8958c0092d6bbc935597b72e8a96d2b82b4aa
   src/apideck_unify/activities.py:
@@ -24023,7 +24034,7 @@ trackedFiles:
   src/apideck_unify/messages.py:
     last_write_checksum: sha1:158b4c1fb137ee3ac806cc6a59c8d906b01233d6
   src/apideck_unify/models/__init__.py:
-    last_write_checksum: sha1:6025a6af092e96088f7d44f3af5bc65a92c47d46
+    last_write_checksum: sha1:3b454e577c6f1b192756fc68fc872071e75659a9
   src/apideck_unify/models/accounting_agedcreditorsoneop.py:
     last_write_checksum: sha1:7346d1ab1c21db21995aae34c5ba01549c2786c2
   src/apideck_unify/models/accounting_ageddebtorsoneop.py:
@@ -24733,7 +24744,7 @@ trackedFiles:
   src/apideck_unify/models/crm_notesaddop.py:
     last_write_checksum: sha1:5e8af99642f3dcafd36442b125d03996c6550357
   src/apideck_unify/models/crm_notesallop.py:
-    last_write_checksum: sha1:5c1ba1a444d7e65e6cce6b9edee4a4ff80612e42
+    last_write_checksum: sha1:8b5d403672ef0ca9206e17a8662ffc7c180ba4e4
   src/apideck_unify/models/crm_notesdeleteop.py:
     last_write_checksum: sha1:487cef7485dcd5f13fec6106ccecaaf799cad6a0
   src/apideck_unify/models/crm_notesoneop.py:
@@ -24763,7 +24774,7 @@ trackedFiles:
   src/apideck_unify/models/crm_usersaddop.py:
     last_write_checksum: sha1:a2e549c59ad58d29f8fa015d1eddd7044b7bf838
   src/apideck_unify/models/crm_usersallop.py:
-    last_write_checksum: sha1:33a1c5d207282f3440978d9c48dde149d5b799d3
+    last_write_checksum: sha1:cfa8ee868f3415b6d888dd82e3d5ae4454fa0783
   src/apideck_unify/models/crm_usersdeleteop.py:
     last_write_checksum: sha1:ea205132be464422e3caefe1b11583338a85ee18
   src/apideck_unify/models/crm_usersoneop.py:
@@ -25594,6 +25605,8 @@ trackedFiles:
     last_write_checksum: sha1:9857f77bebab3b93530d1c968c59523075be2610
   src/apideck_unify/models/note_input.py:
     last_write_checksum: sha1:f4402b1c9dbc0c9c2d4acb966d2145ca883c21e9
+  src/apideck_unify/models/notesfilter.py:
+    last_write_checksum: sha1:3aeb577a1016ef7ac50ab05d762cab733a14f206
   src/apideck_unify/models/notfoundresponse.py:
     last_write_checksum: sha1:52ed4f8aa3a73fb1218847916a67bdabd29568be
   src/apideck_unify/models/oauthgranttype.py:
@@ -25913,9 +25926,11 @@ trackedFiles:
   src/apideck_unify/models/uploadsession.py:
     last_write_checksum: sha1:8aeb02472908094d2288f571f69ee16907d8d181
   src/apideck_unify/models/user.py:
-    last_write_checksum: sha1:c5b24762f95cdfac03c0fba394f327b57ef3732f
+    last_write_checksum: sha1:239ea25c5180b82a8a95418b7e990905f7a4208f
   src/apideck_unify/models/user_input.py:
-    last_write_checksum: sha1:e8c6559ac3bdeb8ad6ea5e03de1b1e727a5cd03f
+    last_write_checksum: sha1:764c2fc72c3c5f757fac5cc88642bf302925fa14
+  src/apideck_unify/models/usersfilter.py:
+    last_write_checksum: sha1:82c1f67728c6000aa498968d5bb3d288e9d73e28
   src/apideck_unify/models/validateconnectionstateresponse.py:
     last_write_checksum: sha1:362fb00104b815654f0a87e7c11fe61a65bf46e6
   src/apideck_unify/models/vault_connectionconsentsallop.py:
@@ -25991,7 +26006,7 @@ trackedFiles:
   src/apideck_unify/models/website.py:
     last_write_checksum: sha1:deb21698b9dec32eca6c3c22114c0c678a3c7ef8
   src/apideck_unify/notes.py:
-    last_write_checksum: sha1:703d0517c3ce4025fce8b7d825b961f70947e36b
+    last_write_checksum: sha1:02868bd9687ec4dd8d3c79bce114209ecce31a61
   src/apideck_unify/opportunities.py:
     last_write_checksum: sha1:401b8873c3d3cd9477e16a02b73cf55a1f0709cb
   src/apideck_unify/orders.py:
@@ -26049,7 +26064,7 @@ trackedFiles:
   src/apideck_unify/uploadsessions.py:
     last_write_checksum: sha1:da54654d7ec7decd3c74b6ecc5d1b301e9d95b0e
   src/apideck_unify/users.py:
-    last_write_checksum: sha1:dc9ffcd38dbc6541c19575bb4003aefa71d0d7fd
+    last_write_checksum: sha1:802803bee29fac0be6fcc2423d2a1d7d62aa54cd
   src/apideck_unify/utils/__init__.py:
     last_write_checksum: sha1:0f93d821f9cb3e061ea125d881bb6f61166738dd
   src/apideck_unify/utils/annotations.py:

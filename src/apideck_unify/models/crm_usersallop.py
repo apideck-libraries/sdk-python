@@ -7,6 +7,7 @@ from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
 )
+from .usersfilter import UsersFilter, UsersFilterTypedDict
 from apideck_unify.types import (
     BaseModel,
     Nullable,
@@ -57,6 +58,8 @@ class CrmUsersAllRequestTypedDict(TypedDict):
     r"""Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response."""
     limit: NotRequired[int]
     r"""Number of results to return. Minimum 1, Maximum 200, Default 20"""
+    filter_: NotRequired[UsersFilterTypedDict]
+    r"""Apply filters"""
     pass_through: NotRequired[Dict[str, Any]]
     r"""Optional unmapped key/values that will be passed through to downstream as query parameters. Ie: ?pass_through[search]=leads becomes ?search=leads"""
     fields: NotRequired[Nullable[str]]
@@ -103,6 +106,13 @@ class CrmUsersAllRequest(BaseModel):
     ] = 20
     r"""Number of results to return. Minimum 1, Maximum 200, Default 20"""
 
+    filter_: Annotated[
+        Optional[UsersFilter],
+        pydantic.Field(alias="filter"),
+        FieldMetadata(query=QueryParamMetadata(style="deepObject", explode=True)),
+    ] = None
+    r"""Apply filters"""
+
     pass_through: Annotated[
         Optional[Dict[str, Any]],
         FieldMetadata(query=QueryParamMetadata(style="deepObject", explode=True)),
@@ -124,6 +134,7 @@ class CrmUsersAllRequest(BaseModel):
             "serviceId",
             "cursor",
             "limit",
+            "filter",
             "pass_through",
             "fields",
         ]
