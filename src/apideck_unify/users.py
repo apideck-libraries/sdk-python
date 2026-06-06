@@ -20,6 +20,9 @@ class Users(BaseSDK):
         service_id: Optional[str] = None,
         cursor: OptionalNullable[str] = UNSET,
         limit: Optional[int] = 20,
+        filter_: Optional[
+            Union[models.UsersFilter, models.UsersFilterTypedDict]
+        ] = None,
         pass_through: Optional[Dict[str, Any]] = None,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
@@ -37,6 +40,7 @@ class Users(BaseSDK):
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
         :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
+        :param filter_: Apply filters
         :param pass_through: Optional unmapped key/values that will be passed through to downstream as query parameters. Ie: ?pass_through[search]=leads becomes ?search=leads
         :param fields: The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded.
         :param retries: Override the default retry configuration for this method
@@ -61,6 +65,7 @@ class Users(BaseSDK):
             service_id=service_id,
             cursor=cursor,
             limit=limit,
+            filter_=utils.get_pydantic_model(filter_, Optional[models.UsersFilter]),
             pass_through=pass_through,
             fields=fields,
         )
@@ -130,6 +135,7 @@ class Users(BaseSDK):
                 service_id=service_id,
                 cursor=next_cursor,
                 limit=limit,
+                filter_=filter_,
                 pass_through=pass_through,
                 fields=fields,
                 retries=retries,
@@ -195,6 +201,9 @@ class Users(BaseSDK):
         service_id: Optional[str] = None,
         cursor: OptionalNullable[str] = UNSET,
         limit: Optional[int] = 20,
+        filter_: Optional[
+            Union[models.UsersFilter, models.UsersFilterTypedDict]
+        ] = None,
         pass_through: Optional[Dict[str, Any]] = None,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
@@ -212,6 +221,7 @@ class Users(BaseSDK):
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
         :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
+        :param filter_: Apply filters
         :param pass_through: Optional unmapped key/values that will be passed through to downstream as query parameters. Ie: ?pass_through[search]=leads becomes ?search=leads
         :param fields: The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded.
         :param retries: Override the default retry configuration for this method
@@ -236,6 +246,7 @@ class Users(BaseSDK):
             service_id=service_id,
             cursor=cursor,
             limit=limit,
+            filter_=utils.get_pydantic_model(filter_, Optional[models.UsersFilter]),
             pass_through=pass_through,
             fields=fields,
         )
@@ -305,6 +316,7 @@ class Users(BaseSDK):
                 service_id=service_id,
                 cursor=next_cursor,
                 limit=limit,
+                filter_=filter_,
                 pass_through=pass_through,
                 fields=fields,
                 retries=retries,
@@ -371,6 +383,7 @@ class Users(BaseSDK):
         service_id: Optional[str] = None,
         parent_id: OptionalNullable[str] = UNSET,
         username: OptionalNullable[str] = UNSET,
+        name: OptionalNullable[str] = UNSET,
         first_name: OptionalNullable[str] = UNSET,
         last_name: OptionalNullable[str] = UNSET,
         title: OptionalNullable[str] = UNSET,
@@ -408,6 +421,7 @@ class Users(BaseSDK):
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param parent_id: The parent user id
         :param username: The username of the user
+        :param name: The name of the resource.
         :param first_name: The first name of the person.
         :param last_name: The last name of the person.
         :param title: The job title of the person.
@@ -446,6 +460,7 @@ class Users(BaseSDK):
             user=models.UserInput(
                 parent_id=parent_id,
                 username=username,
+                name=name,
                 first_name=first_name,
                 last_name=last_name,
                 title=title,
@@ -580,6 +595,7 @@ class Users(BaseSDK):
         service_id: Optional[str] = None,
         parent_id: OptionalNullable[str] = UNSET,
         username: OptionalNullable[str] = UNSET,
+        name: OptionalNullable[str] = UNSET,
         first_name: OptionalNullable[str] = UNSET,
         last_name: OptionalNullable[str] = UNSET,
         title: OptionalNullable[str] = UNSET,
@@ -617,6 +633,7 @@ class Users(BaseSDK):
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param parent_id: The parent user id
         :param username: The username of the user
+        :param name: The name of the resource.
         :param first_name: The first name of the person.
         :param last_name: The last name of the person.
         :param title: The job title of the person.
@@ -655,6 +672,7 @@ class Users(BaseSDK):
             user=models.UserInput(
                 parent_id=parent_id,
                 username=username,
+                name=name,
                 first_name=first_name,
                 last_name=last_name,
                 title=title,
@@ -1078,6 +1096,7 @@ class Users(BaseSDK):
         raw: Optional[bool] = False,
         parent_id: OptionalNullable[str] = UNSET,
         username: OptionalNullable[str] = UNSET,
+        name: OptionalNullable[str] = UNSET,
         first_name: OptionalNullable[str] = UNSET,
         last_name: OptionalNullable[str] = UNSET,
         title: OptionalNullable[str] = UNSET,
@@ -1116,6 +1135,7 @@ class Users(BaseSDK):
         :param raw: Include raw response. Mostly used for debugging purposes
         :param parent_id: The parent user id
         :param username: The username of the user
+        :param name: The name of the resource.
         :param first_name: The first name of the person.
         :param last_name: The last name of the person.
         :param title: The job title of the person.
@@ -1155,6 +1175,7 @@ class Users(BaseSDK):
             user=models.UserInput(
                 parent_id=parent_id,
                 username=username,
+                name=name,
                 first_name=first_name,
                 last_name=last_name,
                 title=title,
@@ -1290,6 +1311,7 @@ class Users(BaseSDK):
         raw: Optional[bool] = False,
         parent_id: OptionalNullable[str] = UNSET,
         username: OptionalNullable[str] = UNSET,
+        name: OptionalNullable[str] = UNSET,
         first_name: OptionalNullable[str] = UNSET,
         last_name: OptionalNullable[str] = UNSET,
         title: OptionalNullable[str] = UNSET,
@@ -1328,6 +1350,7 @@ class Users(BaseSDK):
         :param raw: Include raw response. Mostly used for debugging purposes
         :param parent_id: The parent user id
         :param username: The username of the user
+        :param name: The name of the resource.
         :param first_name: The first name of the person.
         :param last_name: The last name of the person.
         :param title: The job title of the person.
@@ -1367,6 +1390,7 @@ class Users(BaseSDK):
             user=models.UserInput(
                 parent_id=parent_id,
                 username=username,
+                name=name,
                 first_name=first_name,
                 last_name=last_name,
                 title=title,

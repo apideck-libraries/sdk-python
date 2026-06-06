@@ -24,6 +24,8 @@ class UserInputTypedDict(TypedDict):
     r"""The parent user id"""
     username: NotRequired[Nullable[str]]
     r"""The username of the user"""
+    name: NotRequired[Nullable[str]]
+    r"""The name of the resource."""
     first_name: NotRequired[Nullable[str]]
     r"""The first name of the person."""
     last_name: NotRequired[Nullable[str]]
@@ -62,6 +64,9 @@ class UserInput(BaseModel):
 
     username: OptionalNullable[str] = UNSET
     r"""The username of the user"""
+
+    name: OptionalNullable[str] = UNSET
+    r"""The name of the resource."""
 
     first_name: OptionalNullable[str] = UNSET
     r"""The first name of the person."""
@@ -116,6 +121,7 @@ class UserInput(BaseModel):
         optional_fields = [
             "parent_id",
             "username",
+            "name",
             "first_name",
             "last_name",
             "title",
@@ -135,6 +141,7 @@ class UserInput(BaseModel):
         nullable_fields = [
             "parent_id",
             "username",
+            "name",
             "first_name",
             "last_name",
             "title",

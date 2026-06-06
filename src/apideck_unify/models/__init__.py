@@ -4062,6 +4062,7 @@ if TYPE_CHECKING:
     from .no_response_error import NoResponseError
     from .note import Note, NoteTypedDict
     from .note_input import NoteInput, NoteInputTypedDict
+    from .notesfilter import NotesFilter, NotesFilterTypedDict
     from .notfoundresponse import (
         NotFoundResponse,
         NotFoundResponseData,
@@ -4701,6 +4702,7 @@ if TYPE_CHECKING:
     from .uploadsession import UploadSession, UploadSessionTypedDict
     from .user import User, UserTypedDict
     from .user_input import UserInput, UserInputTypedDict
+    from .usersfilter import UsersFilter, UsersFilterTypedDict
     from .validateconnectionstateresponse import (
         ValidateConnectionStateResponse,
         ValidateConnectionStateResponseData,
@@ -8039,6 +8041,8 @@ __all__ = [
     "NoteInput",
     "NoteInputTypedDict",
     "NoteTypedDict",
+    "NotesFilter",
+    "NotesFilterTypedDict",
     "NotesModel",
     "NotesModelTypedDict",
     "OAuthGrantType",
@@ -8558,6 +8562,8 @@ __all__ = [
     "UserInput",
     "UserInputTypedDict",
     "UserTypedDict",
+    "UsersFilter",
+    "UsersFilterTypedDict",
     "ValidateConnectionStateResponse",
     "ValidateConnectionStateResponseData",
     "ValidateConnectionStateResponseDataTypedDict",
@@ -11860,6 +11866,8 @@ _dynamic_imports: dict[str, str] = {
     "NoteTypedDict": ".note",
     "NoteInput": ".note_input",
     "NoteInputTypedDict": ".note_input",
+    "NotesFilter": ".notesfilter",
+    "NotesFilterTypedDict": ".notesfilter",
     "NotFoundResponse": ".notfoundresponse",
     "NotFoundResponseData": ".notfoundresponse",
     "NotFoundResponseDetail": ".notfoundresponse",
@@ -12358,6 +12366,8 @@ _dynamic_imports: dict[str, str] = {
     "UserTypedDict": ".user",
     "UserInput": ".user_input",
     "UserInputTypedDict": ".user_input",
+    "UsersFilter": ".usersfilter",
+    "UsersFilterTypedDict": ".usersfilter",
     "ValidateConnectionStateResponse": ".validateconnectionstateresponse",
     "ValidateConnectionStateResponseData": ".validateconnectionstateresponse",
     "ValidateConnectionStateResponseDataTypedDict": ".validateconnectionstateresponse",
