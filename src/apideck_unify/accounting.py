@@ -21,6 +21,7 @@ from apideck_unify.employees import Employees
 from apideck_unify.expensecategories import ExpenseCategories
 from apideck_unify.expensereports import ExpenseReports
 from apideck_unify.expenses import Expenses
+from apideck_unify.generalledgertransactions import GeneralLedgerTransactions
 from apideck_unify.invoiceitems import InvoiceItems
 from apideck_unify.invoices import Invoices
 from apideck_unify.journalentries import JournalEntries
@@ -55,6 +56,7 @@ class Accounting(BaseSDK):
     balance_sheet: BalanceSheetSDK
     profit_and_loss: ProfitAndLossSDK
     journal_entries: JournalEntries
+    general_ledger_transactions: GeneralLedgerTransactions
     purchase_orders: PurchaseOrders
     subsidiaries: Subsidiaries
     locations: Locations
@@ -110,6 +112,9 @@ class Accounting(BaseSDK):
             self.sdk_configuration, parent_ref=self.parent_ref
         )
         self.journal_entries = JournalEntries(
+            self.sdk_configuration, parent_ref=self.parent_ref
+        )
+        self.general_ledger_transactions = GeneralLedgerTransactions(
             self.sdk_configuration, parent_ref=self.parent_ref
         )
         self.purchase_orders = PurchaseOrders(

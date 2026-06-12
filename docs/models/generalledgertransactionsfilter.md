@@ -1,0 +1,10 @@
+# GeneralLedgerTransactionsFilter
+
+
+## Fields
+
+| Field                                                                  | Type                                                                   | Required                                                               | Description                                                            | Example                                                                |
+| ---------------------------------------------------------------------- | ---------------------------------------------------------------------- | ---------------------------------------------------------------------- | ---------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| `source_type`                                                          | [Optional[models.SourceType]](../models/sourcetype.md)                 | :heavy_minus_sign:                                                     | Filter by the originating transaction type.                            |                                                                        |
+| `source_id`                                                            | *Optional[str]*                                                        | :heavy_minus_sign:                                                     | Return only transactions originated from the given source document id. | 12345                                                                  |
+| `updated_since`                                                        | [date](https://docs.python.org/3/library/datetime.html#date-objects)   | :heavy_minus_sign:                                                     | Return transactions updated on or after this timestamp.                | 2024-09-30T07:43:32.000Z                                               |

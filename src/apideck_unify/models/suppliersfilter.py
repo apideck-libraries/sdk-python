@@ -20,6 +20,8 @@ class SuppliersFilterTypedDict(TypedDict):
     email: NotRequired[str]
     r"""Email of supplier to search for"""
     updated_since: NotRequired[datetime]
+    subsidiary_id: NotRequired[str]
+    r"""Filter by the subsidiary (legal entity) the supplier's primary subsidiary belongs to. Only honored on connectors that support multi-entity scoping (e.g. NetSuite OneWorld); ignored elsewhere."""
 
 
 class SuppliersFilter(BaseModel):
@@ -39,3 +41,6 @@ class SuppliersFilter(BaseModel):
     r"""Email of supplier to search for"""
 
     updated_since: Annotated[Optional[datetime], FieldMetadata(query=True)] = None
+
+    subsidiary_id: Annotated[Optional[str], FieldMetadata(query=True)] = None
+    r"""Filter by the subsidiary (legal entity) the supplier's primary subsidiary belongs to. Only honored on connectors that support multi-entity scoping (e.g. NetSuite OneWorld); ignored elsewhere."""

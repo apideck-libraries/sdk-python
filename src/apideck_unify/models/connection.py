@@ -109,6 +109,7 @@ class Health(str, Enum, metaclass=utils.OpenEnumMeta):
     NEEDS_AUTH = "needs_auth"
     PENDING_REFRESH = "pending_refresh"
     OK = "ok"
+    DEGRADED = "degraded"
 
 
 class ConnectionTypedDict(TypedDict):
@@ -174,6 +175,8 @@ class ConnectionTypedDict(TypedDict):
     r"""Unix timestamp in milliseconds when credentials will be deleted if token refresh continues to fail. A value of 0 indicates no active retention window (connection is healthy or not using OAuth token refresh)."""
     last_refresh_failed_at: NotRequired[float]
     r"""Unix timestamp in milliseconds of the last failed token refresh attempt. A value of 0 indicates no recent failures. This field is used internally to enforce cooldown periods between retry attempts."""
+    last_downstream_error_at: NotRequired[float]
+    r"""Unix timestamp in milliseconds of the last downstream unreachable error (502/504 network class). A value of 0 indicates no active error. Connection remains callable while this is set; health surfaces as 'degraded'."""
     created_at: NotRequired[float]
     updated_at: NotRequired[Nullable[float]]
 
@@ -291,6 +294,9 @@ class Connection(BaseModel):
     last_refresh_failed_at: Optional[float] = None
     r"""Unix timestamp in milliseconds of the last failed token refresh attempt. A value of 0 indicates no recent failures. This field is used internally to enforce cooldown periods between retry attempts."""
 
+    last_downstream_error_at: Optional[float] = None
+    r"""Unix timestamp in milliseconds of the last downstream unreachable error (502/504 network class). A value of 0 indicates no active error. Connection remains callable while this is set; health surfaces as 'degraded'."""
+
     created_at: Optional[float] = None
 
     updated_at: OptionalNullable[float] = UNSET
@@ -397,6 +403,7 @@ class Connection(BaseModel):
             "health",
             "credentials_expire_at",
             "last_refresh_failed_at",
+            "last_downstream_error_at",
             "created_at",
             "updated_at",
         ]

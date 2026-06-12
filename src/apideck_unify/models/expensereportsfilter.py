@@ -27,6 +27,8 @@ class ExpenseReportsFilterTypedDict(TypedDict):
     status: NotRequired[ExpenseReportsFilterStatus]
     employee_id: NotRequired[str]
     r"""Filter by employee ID"""
+    subsidiary_id: NotRequired[str]
+    r"""Filter by the subsidiary (legal entity) the record belongs to. Only honored on connectors that support multi-entity scoping (e.g. NetSuite OneWorld); ignored elsewhere."""
 
 
 class ExpenseReportsFilter(BaseModel):
@@ -42,6 +44,9 @@ class ExpenseReportsFilter(BaseModel):
 
     employee_id: Annotated[Optional[str], FieldMetadata(query=True)] = None
     r"""Filter by employee ID"""
+
+    subsidiary_id: Annotated[Optional[str], FieldMetadata(query=True)] = None
+    r"""Filter by the subsidiary (legal entity) the record belongs to. Only honored on connectors that support multi-entity scoping (e.g. NetSuite OneWorld); ignored elsewhere."""
 
     @field_serializer("status")
     def serialize_status(self, value):

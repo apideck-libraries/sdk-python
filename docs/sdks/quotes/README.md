@@ -20,6 +20,7 @@ List Quotes
 <!-- UsageSnippet language="python" operationID="accounting.quotesAll" method="get" path="/accounting/quotes" -->
 ```python
 from apideck_unify import Apideck
+from apideck_unify.utils import parse_datetime
 import os
 
 
@@ -29,7 +30,11 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.accounting.quotes.list(raw=False, service_id="salesforce", company_id="12345", limit=20)
+    res = apideck.accounting.quotes.list(raw=False, service_id="salesforce", company_id="12345", limit=20, filter_={
+        "updated_since": parse_datetime("2020-09-30T07:43:32.000Z"),
+        "created_since": parse_datetime("2020-09-30T07:43:32.000Z"),
+        "number": "OIT00546",
+    })
 
     while res is not None:
         # Handle items
@@ -49,6 +54,7 @@ with Apideck(
 | `company_id`                                                                                                                                                 | *Optional[str]*                                                                                                                                              | :heavy_minus_sign:                                                                                                                                           | The ID of the company to scope requests to. For connectors that support multi-company, this overrides the default company configured in connection settings. | 12345                                                                                                                                                        |
 | `cursor`                                                                                                                                                     | *OptionalNullable[str]*                                                                                                                                      | :heavy_minus_sign:                                                                                                                                           | Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.                                             |                                                                                                                                                              |
 | `limit`                                                                                                                                                      | *Optional[int]*                                                                                                                                              | :heavy_minus_sign:                                                                                                                                           | Number of results to return. Minimum 1, Maximum 200, Default 20                                                                                              |                                                                                                                                                              |
+| `filter_`                                                                                                                                                    | [Optional[models.QuotesFilter]](../../models/quotesfilter.md)                                                                                                | :heavy_minus_sign:                                                                                                                                           | Apply filters                                                                                                                                                | {<br/>"updated_since": "2020-09-30T07:43:32.000Z",<br/>"created_since": "2020-09-30T07:43:32.000Z",<br/>"number": "OIT00546"<br/>}                           |
 | `retries`                                                                                                                                                    | [Optional[utils.RetryConfig]](../../models/utils/retryconfig.md)                                                                                             | :heavy_minus_sign:                                                                                                                                           | Configuration to override the default retry behavior of the client.                                                                                          |                                                                                                                                                              |
 
 ### Response

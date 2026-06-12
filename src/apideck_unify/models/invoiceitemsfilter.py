@@ -43,6 +43,8 @@ class InvoiceItemsFilterTypedDict(TypedDict):
     r"""The type of invoice item, indicating whether it is an inventory item, a service, or another type."""
     transaction_type: NotRequired[Nullable[TransactionType]]
     r"""The kind of transaction, indicating whether it is a sales transaction or a purchase transaction."""
+    subsidiary_id: NotRequired[str]
+    r"""Filter by the subsidiary (legal entity) the record belongs to. Only honored on connectors that support multi-entity scoping (e.g. NetSuite OneWorld); ignored elsewhere."""
 
 
 class InvoiceItemsFilter(BaseModel):
@@ -70,6 +72,9 @@ class InvoiceItemsFilter(BaseModel):
     ] = UNSET
     r"""The kind of transaction, indicating whether it is a sales transaction or a purchase transaction."""
 
+    subsidiary_id: Annotated[Optional[str], FieldMetadata(query=True)] = None
+    r"""Filter by the subsidiary (legal entity) the record belongs to. Only honored on connectors that support multi-entity scoping (e.g. NetSuite OneWorld); ignored elsewhere."""
+
     @field_serializer("type")
     def serialize_type(self, value):
         if isinstance(value, str):
@@ -90,7 +95,14 @@ class InvoiceItemsFilter(BaseModel):
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
-        optional_fields = ["updated_since", "ids", "name", "type", "transaction_type"]
+        optional_fields = [
+            "updated_since",
+            "ids",
+            "name",
+            "type",
+            "transaction_type",
+            "subsidiary_id",
+        ]
         nullable_fields = ["type", "transaction_type"]
         null_default_fields = []
 

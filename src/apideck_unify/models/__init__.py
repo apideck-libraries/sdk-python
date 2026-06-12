@@ -584,6 +584,22 @@ if TYPE_CHECKING:
         AccountingExpensesUpdateResponse,
         AccountingExpensesUpdateResponseTypedDict,
     )
+    from .accounting_generalledgertransactionsallop import (
+        AccountingGeneralLedgerTransactionsAllGlobals,
+        AccountingGeneralLedgerTransactionsAllGlobalsTypedDict,
+        AccountingGeneralLedgerTransactionsAllRequest,
+        AccountingGeneralLedgerTransactionsAllRequestTypedDict,
+        AccountingGeneralLedgerTransactionsAllResponse,
+        AccountingGeneralLedgerTransactionsAllResponseTypedDict,
+    )
+    from .accounting_generalledgertransactionsoneop import (
+        AccountingGeneralLedgerTransactionsOneGlobals,
+        AccountingGeneralLedgerTransactionsOneGlobalsTypedDict,
+        AccountingGeneralLedgerTransactionsOneRequest,
+        AccountingGeneralLedgerTransactionsOneRequestTypedDict,
+        AccountingGeneralLedgerTransactionsOneResponse,
+        AccountingGeneralLedgerTransactionsOneResponseTypedDict,
+    )
     from .accounting_invoiceitemsaddop import (
         AccountingInvoiceItemsAddGlobals,
         AccountingInvoiceItemsAddGlobalsTypedDict,
@@ -3084,6 +3100,26 @@ if TYPE_CHECKING:
         FormFieldOptionGroupTypedDict,
     )
     from .gender import Gender
+    from .generalledgertransaction import (
+        GeneralLedgerTransaction,
+        GeneralLedgerTransactionSourceType,
+        GeneralLedgerTransactionTypedDict,
+    )
+    from .generalledgertransactionlineitem import (
+        GeneralLedgerTransactionLineItem,
+        GeneralLedgerTransactionLineItemType,
+        GeneralLedgerTransactionLineItemTypedDict,
+    )
+    from .generalledgertransactionsfilter import (
+        GeneralLedgerTransactionsFilter,
+        GeneralLedgerTransactionsFilterTypedDict,
+        SourceType,
+    )
+    from .generalledgertransactionssort import (
+        GeneralLedgerTransactionsSort,
+        GeneralLedgerTransactionsSortBy,
+        GeneralLedgerTransactionsSortTypedDict,
+    )
     from .getaccountingdepartmentresponse import (
         GetAccountingDepartmentResponse,
         GetAccountingDepartmentResponseTypedDict,
@@ -3375,6 +3411,14 @@ if TYPE_CHECKING:
     from .getfileresponse import GetFileResponse, GetFileResponseTypedDict
     from .getfilesresponse import GetFilesResponse, GetFilesResponseTypedDict
     from .getfolderresponse import GetFolderResponse, GetFolderResponseTypedDict
+    from .getgeneralledgertransactionresponse import (
+        GetGeneralLedgerTransactionResponse,
+        GetGeneralLedgerTransactionResponseTypedDict,
+    )
+    from .getgeneralledgertransactionsresponse import (
+        GetGeneralLedgerTransactionsResponse,
+        GetGeneralLedgerTransactionsResponseTypedDict,
+    )
     from .gethriscompaniesresponse import (
         GetHrisCompaniesResponse,
         GetHrisCompaniesResponseTypedDict,
@@ -3913,6 +3957,7 @@ if TYPE_CHECKING:
     from .jobstatus import JobStatus
     from .journalentriesfilter import (
         JournalEntriesFilter,
+        JournalEntriesFilterScope,
         JournalEntriesFilterStatus,
         JournalEntriesFilterTypedDict,
     )
@@ -4267,6 +4312,7 @@ if TYPE_CHECKING:
         QuoteLineItemType,
         QuoteLineItemTypedDict,
     )
+    from .quotesfilter import QuotesFilter, QuotesFilterTypedDict
     from .rebilling import RebillStatus, Rebilling, RebillingTypedDict
     from .refund import Refund, RefundTypedDict
     from .refund_input import RefundInput, RefundInputTypedDict
@@ -5446,6 +5492,18 @@ __all__ = [
     "AccountingExpensesUpdateRequestTypedDict",
     "AccountingExpensesUpdateResponse",
     "AccountingExpensesUpdateResponseTypedDict",
+    "AccountingGeneralLedgerTransactionsAllGlobals",
+    "AccountingGeneralLedgerTransactionsAllGlobalsTypedDict",
+    "AccountingGeneralLedgerTransactionsAllRequest",
+    "AccountingGeneralLedgerTransactionsAllRequestTypedDict",
+    "AccountingGeneralLedgerTransactionsAllResponse",
+    "AccountingGeneralLedgerTransactionsAllResponseTypedDict",
+    "AccountingGeneralLedgerTransactionsOneGlobals",
+    "AccountingGeneralLedgerTransactionsOneGlobalsTypedDict",
+    "AccountingGeneralLedgerTransactionsOneRequest",
+    "AccountingGeneralLedgerTransactionsOneRequestTypedDict",
+    "AccountingGeneralLedgerTransactionsOneResponse",
+    "AccountingGeneralLedgerTransactionsOneResponseTypedDict",
     "AccountingInvoiceItemsAddGlobals",
     "AccountingInvoiceItemsAddGlobalsTypedDict",
     "AccountingInvoiceItemsAddRequest",
@@ -7314,6 +7372,17 @@ __all__ = [
     "Format",
     "FulfillmentStatus",
     "Gender",
+    "GeneralLedgerTransaction",
+    "GeneralLedgerTransactionLineItem",
+    "GeneralLedgerTransactionLineItemType",
+    "GeneralLedgerTransactionLineItemTypedDict",
+    "GeneralLedgerTransactionSourceType",
+    "GeneralLedgerTransactionTypedDict",
+    "GeneralLedgerTransactionsFilter",
+    "GeneralLedgerTransactionsFilterTypedDict",
+    "GeneralLedgerTransactionsSort",
+    "GeneralLedgerTransactionsSortBy",
+    "GeneralLedgerTransactionsSortTypedDict",
     "GetAPIResourceCoverageResponse",
     "GetAPIResourceCoverageResponseTypedDict",
     "GetAPIResourceResponse",
@@ -7490,6 +7559,10 @@ __all__ = [
     "GetFilesResponseTypedDict",
     "GetFolderResponse",
     "GetFolderResponseTypedDict",
+    "GetGeneralLedgerTransactionResponse",
+    "GetGeneralLedgerTransactionResponseTypedDict",
+    "GetGeneralLedgerTransactionsResponse",
+    "GetGeneralLedgerTransactionsResponseTypedDict",
     "GetHrisCompaniesResponse",
     "GetHrisCompaniesResponseTypedDict",
     "GetHrisCompanyResponse",
@@ -7911,6 +7984,7 @@ __all__ = [
     "JobType",
     "JobTypedDict",
     "JournalEntriesFilter",
+    "JournalEntriesFilterScope",
     "JournalEntriesFilterStatus",
     "JournalEntriesFilterTypedDict",
     "JournalEntriesSort",
@@ -8227,6 +8301,8 @@ __all__ = [
     "QuoteLineItemTypedDict",
     "QuoteStatus",
     "QuoteTypedDict",
+    "QuotesFilter",
+    "QuotesFilterTypedDict",
     "RebillStatus",
     "Rebilling",
     "RebillingTypedDict",
@@ -8325,6 +8401,7 @@ __all__ = [
     "SocialLinksTypedDict",
     "SortBy",
     "SortDirection",
+    "SourceType",
     "Stage",
     "StageTypedDict",
     "Stages",
@@ -9215,6 +9292,18 @@ _dynamic_imports: dict[str, str] = {
     "AccountingExpensesUpdateRequestTypedDict": ".accounting_expensesupdateop",
     "AccountingExpensesUpdateResponse": ".accounting_expensesupdateop",
     "AccountingExpensesUpdateResponseTypedDict": ".accounting_expensesupdateop",
+    "AccountingGeneralLedgerTransactionsAllGlobals": ".accounting_generalledgertransactionsallop",
+    "AccountingGeneralLedgerTransactionsAllGlobalsTypedDict": ".accounting_generalledgertransactionsallop",
+    "AccountingGeneralLedgerTransactionsAllRequest": ".accounting_generalledgertransactionsallop",
+    "AccountingGeneralLedgerTransactionsAllRequestTypedDict": ".accounting_generalledgertransactionsallop",
+    "AccountingGeneralLedgerTransactionsAllResponse": ".accounting_generalledgertransactionsallop",
+    "AccountingGeneralLedgerTransactionsAllResponseTypedDict": ".accounting_generalledgertransactionsallop",
+    "AccountingGeneralLedgerTransactionsOneGlobals": ".accounting_generalledgertransactionsoneop",
+    "AccountingGeneralLedgerTransactionsOneGlobalsTypedDict": ".accounting_generalledgertransactionsoneop",
+    "AccountingGeneralLedgerTransactionsOneRequest": ".accounting_generalledgertransactionsoneop",
+    "AccountingGeneralLedgerTransactionsOneRequestTypedDict": ".accounting_generalledgertransactionsoneop",
+    "AccountingGeneralLedgerTransactionsOneResponse": ".accounting_generalledgertransactionsoneop",
+    "AccountingGeneralLedgerTransactionsOneResponseTypedDict": ".accounting_generalledgertransactionsoneop",
     "AccountingInvoiceItemsAddGlobals": ".accounting_invoiceitemsaddop",
     "AccountingInvoiceItemsAddGlobalsTypedDict": ".accounting_invoiceitemsaddop",
     "AccountingInvoiceItemsAddRequest": ".accounting_invoiceitemsaddop",
@@ -11116,6 +11205,18 @@ _dynamic_imports: dict[str, str] = {
     "FormFieldOptionGroupOptionType": ".formfieldoptiongroup",
     "FormFieldOptionGroupTypedDict": ".formfieldoptiongroup",
     "Gender": ".gender",
+    "GeneralLedgerTransaction": ".generalledgertransaction",
+    "GeneralLedgerTransactionSourceType": ".generalledgertransaction",
+    "GeneralLedgerTransactionTypedDict": ".generalledgertransaction",
+    "GeneralLedgerTransactionLineItem": ".generalledgertransactionlineitem",
+    "GeneralLedgerTransactionLineItemType": ".generalledgertransactionlineitem",
+    "GeneralLedgerTransactionLineItemTypedDict": ".generalledgertransactionlineitem",
+    "GeneralLedgerTransactionsFilter": ".generalledgertransactionsfilter",
+    "GeneralLedgerTransactionsFilterTypedDict": ".generalledgertransactionsfilter",
+    "SourceType": ".generalledgertransactionsfilter",
+    "GeneralLedgerTransactionsSort": ".generalledgertransactionssort",
+    "GeneralLedgerTransactionsSortBy": ".generalledgertransactionssort",
+    "GeneralLedgerTransactionsSortTypedDict": ".generalledgertransactionssort",
     "GetAccountingDepartmentResponse": ".getaccountingdepartmentresponse",
     "GetAccountingDepartmentResponseTypedDict": ".getaccountingdepartmentresponse",
     "GetAccountingDepartmentsResponse": ".getaccountingdepartmentsresponse",
@@ -11294,6 +11395,10 @@ _dynamic_imports: dict[str, str] = {
     "GetFilesResponseTypedDict": ".getfilesresponse",
     "GetFolderResponse": ".getfolderresponse",
     "GetFolderResponseTypedDict": ".getfolderresponse",
+    "GetGeneralLedgerTransactionResponse": ".getgeneralledgertransactionresponse",
+    "GetGeneralLedgerTransactionResponseTypedDict": ".getgeneralledgertransactionresponse",
+    "GetGeneralLedgerTransactionsResponse": ".getgeneralledgertransactionsresponse",
+    "GetGeneralLedgerTransactionsResponseTypedDict": ".getgeneralledgertransactionsresponse",
     "GetHrisCompaniesResponse": ".gethriscompaniesresponse",
     "GetHrisCompaniesResponseTypedDict": ".gethriscompaniesresponse",
     "GetHrisCompanyResponse": ".gethriscompanyresponse",
@@ -11725,6 +11830,7 @@ _dynamic_imports: dict[str, str] = {
     "Visibility": ".job",
     "JobStatus": ".jobstatus",
     "JournalEntriesFilter": ".journalentriesfilter",
+    "JournalEntriesFilterScope": ".journalentriesfilter",
     "JournalEntriesFilterStatus": ".journalentriesfilter",
     "JournalEntriesFilterTypedDict": ".journalentriesfilter",
     "JournalEntriesSort": ".journalentriessort",
@@ -12046,6 +12152,8 @@ _dynamic_imports: dict[str, str] = {
     "QuoteLineItemInputTypedDict": ".quotelineitem",
     "QuoteLineItemType": ".quotelineitem",
     "QuoteLineItemTypedDict": ".quotelineitem",
+    "QuotesFilter": ".quotesfilter",
+    "QuotesFilterTypedDict": ".quotesfilter",
     "RebillStatus": ".rebilling",
     "Rebilling": ".rebilling",
     "RebillingTypedDict": ".rebilling",

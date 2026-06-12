@@ -43,6 +43,8 @@ class CustomersFilterTypedDict(TypedDict):
     updated_since: NotRequired[datetime]
     supplier_id: NotRequired[str]
     r"""Supplier ID of customer to search for"""
+    subsidiary_id: NotRequired[str]
+    r"""Filter by the subsidiary (legal entity) the customer's primary subsidiary belongs to. Only honored on connectors that support multi-entity scoping (e.g. NetSuite OneWorld); ignored elsewhere."""
 
 
 class CustomersFilter(BaseModel):
@@ -75,6 +77,9 @@ class CustomersFilter(BaseModel):
     supplier_id: Annotated[Optional[str], FieldMetadata(query=True)] = None
     r"""Supplier ID of customer to search for"""
 
+    subsidiary_id: Annotated[Optional[str], FieldMetadata(query=True)] = None
+    r"""Filter by the subsidiary (legal entity) the customer's primary subsidiary belongs to. Only honored on connectors that support multi-entity scoping (e.g. NetSuite OneWorld); ignored elsewhere."""
+
     @field_serializer("status")
     def serialize_status(self, value):
         if isinstance(value, str):
@@ -95,6 +100,7 @@ class CustomersFilter(BaseModel):
             "status",
             "updated_since",
             "supplier_id",
+            "subsidiary_id",
         ]
         nullable_fields = ["status"]
         null_default_fields = []

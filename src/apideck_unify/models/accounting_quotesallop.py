@@ -3,6 +3,7 @@
 from __future__ import annotations
 from .getquotesresponse import GetQuotesResponse, GetQuotesResponseTypedDict
 from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
+from .quotesfilter import QuotesFilter, QuotesFilterTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -59,6 +60,8 @@ class AccountingQuotesAllRequestTypedDict(TypedDict):
     r"""Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response."""
     limit: NotRequired[int]
     r"""Number of results to return. Minimum 1, Maximum 200, Default 20"""
+    filter_: NotRequired[QuotesFilterTypedDict]
+    r"""Apply filters"""
 
 
 class AccountingQuotesAllRequest(BaseModel):
@@ -108,6 +111,13 @@ class AccountingQuotesAllRequest(BaseModel):
     ] = 20
     r"""Number of results to return. Minimum 1, Maximum 200, Default 20"""
 
+    filter_: Annotated[
+        Optional[QuotesFilter],
+        pydantic.Field(alias="filter"),
+        FieldMetadata(query=QueryParamMetadata(style="deepObject", explode=True)),
+    ] = None
+    r"""Apply filters"""
+
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
         optional_fields = [
@@ -118,6 +128,7 @@ class AccountingQuotesAllRequest(BaseModel):
             "companyId",
             "cursor",
             "limit",
+            "filter",
         ]
         nullable_fields = ["cursor"]
         null_default_fields = []

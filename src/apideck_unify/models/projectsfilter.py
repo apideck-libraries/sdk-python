@@ -34,6 +34,8 @@ class ProjectsFilterTypedDict(TypedDict):
     r"""Filter projects by customer ID"""
     updated_since: NotRequired[datetime]
     r"""Return projects modified after this date"""
+    subsidiary_id: NotRequired[str]
+    r"""Filter by the subsidiary (legal entity) the record belongs to. Only honored on connectors that support multi-entity scoping (e.g. NetSuite OneWorld); ignored elsewhere."""
 
 
 class ProjectsFilter(BaseModel):
@@ -51,6 +53,9 @@ class ProjectsFilter(BaseModel):
 
     updated_since: Annotated[Optional[datetime], FieldMetadata(query=True)] = None
     r"""Return projects modified after this date"""
+
+    subsidiary_id: Annotated[Optional[str], FieldMetadata(query=True)] = None
+    r"""Filter by the subsidiary (legal entity) the record belongs to. Only honored on connectors that support multi-entity scoping (e.g. NetSuite OneWorld); ignored elsewhere."""
 
     @field_serializer("status")
     def serialize_status(self, value):

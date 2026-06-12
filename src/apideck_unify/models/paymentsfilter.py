@@ -44,6 +44,8 @@ class PaymentsFilterTypedDict(TypedDict):
     type: NotRequired[PaymentsFilterType]
     status: NotRequired[PaymentsFilterPaymentStatus]
     r"""Filter by payment status"""
+    subsidiary_id: NotRequired[str]
+    r"""Filter by the subsidiary (legal entity) the record belongs to. Only honored on connectors that support multi-entity scoping (e.g. NetSuite OneWorld); ignored elsewhere."""
 
 
 class PaymentsFilter(BaseModel):
@@ -73,6 +75,9 @@ class PaymentsFilter(BaseModel):
         FieldMetadata(query=True),
     ] = None
     r"""Filter by payment status"""
+
+    subsidiary_id: Annotated[Optional[str], FieldMetadata(query=True)] = None
+    r"""Filter by the subsidiary (legal entity) the record belongs to. Only honored on connectors that support multi-entity scoping (e.g. NetSuite OneWorld); ignored elsewhere."""
 
     @field_serializer("type")
     def serialize_type(self, value):

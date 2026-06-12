@@ -14,3 +14,4 @@ The operational health status of the connection
 | `NEEDS_CONSENT`        | needs_consent          |
 | `REVOKED`              | revoked                |
 | `MISSING_SETTINGS`     | missing_settings       |
+| `DEGRADED`             | degraded               |

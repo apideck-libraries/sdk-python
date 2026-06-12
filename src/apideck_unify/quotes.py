@@ -22,6 +22,9 @@ class Quotes(BaseSDK):
         company_id: Optional[str] = None,
         cursor: OptionalNullable[str] = UNSET,
         limit: Optional[int] = 20,
+        filter_: Optional[
+            Union[models.QuotesFilter, models.QuotesFilterTypedDict]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -38,6 +41,7 @@ class Quotes(BaseSDK):
         :param company_id: The ID of the company to scope requests to. For connectors that support multi-company, this overrides the default company configured in connection settings.
         :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
         :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
+        :param filter_: Apply filters
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -61,6 +65,7 @@ class Quotes(BaseSDK):
             company_id=company_id,
             cursor=cursor,
             limit=limit,
+            filter_=utils.get_pydantic_model(filter_, Optional[models.QuotesFilter]),
         )
 
         req = self._build_request(
@@ -129,6 +134,7 @@ class Quotes(BaseSDK):
                 company_id=company_id,
                 cursor=next_cursor,
                 limit=limit,
+                filter_=filter_,
                 retries=retries,
             )
 
@@ -193,6 +199,9 @@ class Quotes(BaseSDK):
         company_id: Optional[str] = None,
         cursor: OptionalNullable[str] = UNSET,
         limit: Optional[int] = 20,
+        filter_: Optional[
+            Union[models.QuotesFilter, models.QuotesFilterTypedDict]
+        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -209,6 +218,7 @@ class Quotes(BaseSDK):
         :param company_id: The ID of the company to scope requests to. For connectors that support multi-company, this overrides the default company configured in connection settings.
         :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
         :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
+        :param filter_: Apply filters
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -232,6 +242,7 @@ class Quotes(BaseSDK):
             company_id=company_id,
             cursor=cursor,
             limit=limit,
+            filter_=utils.get_pydantic_model(filter_, Optional[models.QuotesFilter]),
         )
 
         req = self._build_request_async(
@@ -300,6 +311,7 @@ class Quotes(BaseSDK):
                 company_id=company_id,
                 cursor=next_cursor,
                 limit=limit,
+                filter_=filter_,
                 retries=retries,
             )
 
