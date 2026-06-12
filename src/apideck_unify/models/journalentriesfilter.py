@@ -23,9 +23,20 @@ class JournalEntriesFilterStatus(str, Enum, metaclass=utils.OpenEnumMeta):
     OTHER = "other"
 
 
+class JournalEntriesFilterScope(str, Enum, metaclass=utils.OpenEnumMeta):
+    r"""Connector-specific scope hint that controls which downstream source backs the read. On Xero, `manual` reads from `ManualJournals` (free in every tier), while `system` reads from `Journals` (the full general ledger view including manual journal postings, paid post 2026-03-02). Omitting the filter is equivalent to `system` and preserves the legacy default. Only honored on connectors where the distinction is exposed; ignored elsewhere."""
+
+    MANUAL = "manual"
+    SYSTEM = "system"
+
+
 class JournalEntriesFilterTypedDict(TypedDict):
     updated_since: NotRequired[datetime]
     status: NotRequired[JournalEntriesFilterStatus]
+    scope: NotRequired[JournalEntriesFilterScope]
+    r"""Connector-specific scope hint that controls which downstream source backs the read. On Xero, `manual` reads from `ManualJournals` (free in every tier), while `system` reads from `Journals` (the full general ledger view including manual journal postings, paid post 2026-03-02). Omitting the filter is equivalent to `system` and preserves the legacy default. Only honored on connectors where the distinction is exposed; ignored elsewhere."""
+    subsidiary_id: NotRequired[str]
+    r"""Filter by the subsidiary (legal entity) the record belongs to. Only honored on connectors that support multi-entity scoping (e.g. NetSuite OneWorld); ignored elsewhere."""
 
 
 class JournalEntriesFilter(BaseModel):
@@ -39,11 +50,32 @@ class JournalEntriesFilter(BaseModel):
         FieldMetadata(query=True),
     ] = None
 
+    scope: Annotated[
+        Annotated[
+            Optional[JournalEntriesFilterScope],
+            PlainValidator(validate_open_enum(False)),
+        ],
+        FieldMetadata(query=True),
+    ] = None
+    r"""Connector-specific scope hint that controls which downstream source backs the read. On Xero, `manual` reads from `ManualJournals` (free in every tier), while `system` reads from `Journals` (the full general ledger view including manual journal postings, paid post 2026-03-02). Omitting the filter is equivalent to `system` and preserves the legacy default. Only honored on connectors where the distinction is exposed; ignored elsewhere."""
+
+    subsidiary_id: Annotated[Optional[str], FieldMetadata(query=True)] = None
+    r"""Filter by the subsidiary (legal entity) the record belongs to. Only honored on connectors that support multi-entity scoping (e.g. NetSuite OneWorld); ignored elsewhere."""
+
     @field_serializer("status")
     def serialize_status(self, value):
         if isinstance(value, str):
             try:
                 return models.JournalEntriesFilterStatus(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("scope")
+    def serialize_scope(self, value):
+        if isinstance(value, str):
+            try:
+                return models.JournalEntriesFilterScope(value)
             except ValueError:
                 return value
         return value

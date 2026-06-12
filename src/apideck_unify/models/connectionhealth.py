@@ -15,3 +15,4 @@ class ConnectionHealth(str, Enum, metaclass=utils.OpenEnumMeta):
     NEEDS_CONSENT = "needs_consent"
     REVOKED = "revoked"
     MISSING_SETTINGS = "missing_settings"
+    DEGRADED = "degraded"

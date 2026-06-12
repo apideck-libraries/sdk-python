@@ -15,6 +15,8 @@ class CreditNotesFilterTypedDict(TypedDict):
     created_since: NotRequired[datetime]
     number: NotRequired[str]
     r"""Credit note number to search for"""
+    subsidiary_id: NotRequired[str]
+    r"""Filter by the subsidiary (legal entity) the record belongs to. Only honored on connectors that support multi-entity scoping (e.g. NetSuite OneWorld); ignored elsewhere."""
 
 
 class CreditNotesFilter(BaseModel):
@@ -27,3 +29,6 @@ class CreditNotesFilter(BaseModel):
 
     number: Annotated[Optional[str], FieldMetadata(query=True)] = None
     r"""Credit note number to search for"""
+
+    subsidiary_id: Annotated[Optional[str], FieldMetadata(query=True)] = None
+    r"""Filter by the subsidiary (legal entity) the record belongs to. Only honored on connectors that support multi-entity scoping (e.g. NetSuite OneWorld); ignored elsewhere."""

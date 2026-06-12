@@ -36,6 +36,8 @@
 | `VAULT_CONNECTION_TOKEN_REFRESH_FAILED`    | vault.connection.token_refresh.failed      |
 | `VAULT_CONNECTION_TOKEN_REFRESH_PENDING`   | vault.connection.token_refresh.pending     |
 | `VAULT_CONNECTION_TOKEN_REFRESH_RECOVERED` | vault.connection.token_refresh.recovered   |
+| `VAULT_CONNECTION_DOWNSTREAM_DEGRADED`     | vault.connection.downstream.degraded       |
+| `VAULT_CONNECTION_DOWNSTREAM_RECOVERED`    | vault.connection.downstream.recovered      |
 | `ATS_JOB_CREATED`                          | ats.job.created                            |
 | `ATS_JOB_UPDATED`                          | ats.job.updated                            |
 | `ATS_JOB_DELETED`                          | ats.job.deleted                            |

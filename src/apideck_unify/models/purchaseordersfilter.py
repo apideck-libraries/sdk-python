@@ -11,9 +11,14 @@ from typing_extensions import Annotated, NotRequired, TypedDict
 class PurchaseOrdersFilterTypedDict(TypedDict):
     updated_since: NotRequired[datetime]
     supplier_id: NotRequired[str]
+    subsidiary_id: NotRequired[str]
+    r"""Filter by the subsidiary (legal entity) the record belongs to. Only honored on connectors that support multi-entity scoping (e.g. NetSuite OneWorld); ignored elsewhere."""
 
 
 class PurchaseOrdersFilter(BaseModel):
     updated_since: Annotated[Optional[datetime], FieldMetadata(query=True)] = None
 
     supplier_id: Annotated[Optional[str], FieldMetadata(query=True)] = None
+
+    subsidiary_id: Annotated[Optional[str], FieldMetadata(query=True)] = None
+    r"""Filter by the subsidiary (legal entity) the record belongs to. Only honored on connectors that support multi-entity scoping (e.g. NetSuite OneWorld); ignored elsewhere."""

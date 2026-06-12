@@ -363,6 +363,11 @@ with Apideck(
 * [update](docs/sdks/expenses/README.md#update) - Update Expense
 * [delete](docs/sdks/expenses/README.md#delete) - Delete Expense
 
+#### [accounting.general_ledger_transactions](docs/sdks/generalledgertransactions/README.md)
+
+* [list](docs/sdks/generalledgertransactions/README.md#list) - List General Ledger Transactions
+* [get](docs/sdks/generalledgertransactions/README.md#get) - Get General Ledger Transaction
+
 #### [accounting.invoice_items](docs/sdks/invoiceitems/README.md)
 
 * [list](docs/sdks/invoiceitems/README.md#list) - List Invoice Items
@@ -1067,7 +1072,7 @@ with Apideck(
 
 
 **Inherit from [`ApideckError`](./src/apideck_unify/models/apideckerror.py)**:
-* [`Unauthorized`](./src/apideck_unify/models/unauthorized.py): Unauthorized. Status code `401`. Applicable to 6 of 335 methods.*
+* [`Unauthorized`](./src/apideck_unify/models/unauthorized.py): Unauthorized. Status code `401`. Applicable to 6 of 337 methods.*
 * [`ResponseValidationError`](./src/apideck_unify/models/responsevalidationerror.py): Type mismatch between the response data and the expected Pydantic model. Provides access to the Pydantic validation error via the `cause` attribute.
 
 </details>

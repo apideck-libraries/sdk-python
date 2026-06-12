@@ -42,6 +42,8 @@ class LedgerAccountsFilterTypedDict(TypedDict):
     r"""Filter by account classification."""
     status: NotRequired[LedgerAccountsFilterStatus]
     r"""Filter by account status."""
+    subsidiary_id: NotRequired[str]
+    r"""Filter by the subsidiary (legal entity) the record belongs to. Only honored on connectors that support multi-entity scoping (e.g. NetSuite OneWorld); ignored elsewhere."""
 
 
 class LedgerAccountsFilter(BaseModel):
@@ -64,6 +66,9 @@ class LedgerAccountsFilter(BaseModel):
         FieldMetadata(query=True),
     ] = None
     r"""Filter by account status."""
+
+    subsidiary_id: Annotated[Optional[str], FieldMetadata(query=True)] = None
+    r"""Filter by the subsidiary (legal entity) the record belongs to. Only honored on connectors that support multi-entity scoping (e.g. NetSuite OneWorld); ignored elsewhere."""
 
     @field_serializer("classification")
     def serialize_classification(self, value):

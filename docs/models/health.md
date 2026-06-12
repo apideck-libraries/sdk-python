@@ -14,3 +14,4 @@ Operational health status of the connection
 | `NEEDS_AUTH`           | needs_auth             |
 | `PENDING_REFRESH`      | pending_refresh        |
 | `OK`                   | ok                     |
+| `DEGRADED`             | degraded               |

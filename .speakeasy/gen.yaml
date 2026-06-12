@@ -32,7 +32,7 @@ generation:
   persistentEdits: {}
   versioningStrategy: automatic
 python:
-  version: 0.31.19
+  version: 0.31.20
   additionalDependencies:
     dev: {}
     main: {}
@@ -51,6 +51,9 @@ python:
   enableCustomCodeRegions: false
   enumFormat: enum
   envVarPrefix: APIDECK
+  eventStreamClassNames:
+    async: EventStreamAsync
+    sync: EventStream
   fixFlags:
     responseRequiredSep2024: true
   flattenGlobalSecurity: true
@@ -68,6 +71,7 @@ python:
       webhooks: ""
   inferUnionDiscriminators: true
   inputModelSuffix: input
+  inputTypedDictSuffix: TypedDict
   legacyPyright: true
   license: ""
   maxMethodParams: 999

@@ -26,6 +26,8 @@ class BillsFilterTypedDict(TypedDict):
     updated_since: NotRequired[datetime]
     status: NotRequired[BillsFilterStatus]
     r"""Filter by bill status"""
+    subsidiary_id: NotRequired[str]
+    r"""Filter by the subsidiary (legal entity) the record belongs to. Only honored on connectors that support multi-entity scoping (e.g. NetSuite OneWorld); ignored elsewhere."""
 
 
 class BillsFilter(BaseModel):
@@ -41,6 +43,9 @@ class BillsFilter(BaseModel):
         FieldMetadata(query=True),
     ] = None
     r"""Filter by bill status"""
+
+    subsidiary_id: Annotated[Optional[str], FieldMetadata(query=True)] = None
+    r"""Filter by the subsidiary (legal entity) the record belongs to. Only honored on connectors that support multi-entity scoping (e.g. NetSuite OneWorld); ignored elsewhere."""
 
     @field_serializer("status")
     def serialize_status(self, value):

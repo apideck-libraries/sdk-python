@@ -1,12 +1,12 @@
 lockVersion: 2.0.0
 id: fca0ac3a-5f4e-452c-bbc7-2311afa8da40
 management:
-  docChecksum: 0b751af49a20956c0cb7e4baa53246b1
-  docVersion: 10.24.40
+  docChecksum: b4586cba77228efcd83588a9e10d018b
+  docVersion: 10.24.43
   speakeasyVersion: 1.656.1
   generationVersion: 2.753.1
-  releaseVersion: 0.31.19
-  configChecksum: 8b7e87669f4d31bafde68f64508cf937
+  releaseVersion: 0.31.20
+  configChecksum: 6f6bc8011bad8f1580833ca1d35fe647
   repoURL: https://github.com/apideck-libraries/sdk-python.git
   installationURL: https://github.com/apideck-libraries/sdk-python.git
   published: true
@@ -282,6 +282,12 @@ generatedFiles:
   - docs/models/accountingexpensesupdateglobals.md
   - docs/models/accountingexpensesupdaterequest.md
   - docs/models/accountingexpensesupdateresponse.md
+  - docs/models/accountinggeneralledgertransactionsallglobals.md
+  - docs/models/accountinggeneralledgertransactionsallrequest.md
+  - docs/models/accountinggeneralledgertransactionsallresponse.md
+  - docs/models/accountinggeneralledgertransactionsoneglobals.md
+  - docs/models/accountinggeneralledgertransactionsonerequest.md
+  - docs/models/accountinggeneralledgertransactionsoneresponse.md
   - docs/models/accountinginvoiceitemsaddglobals.md
   - docs/models/accountinginvoiceitemsaddrequest.md
   - docs/models/accountinginvoiceitemsaddresponse.md
@@ -1267,6 +1273,13 @@ generatedFiles:
   - docs/models/formfieldtype.md
   - docs/models/fulfillmentstatus.md
   - docs/models/gender.md
+  - docs/models/generalledgertransaction.md
+  - docs/models/generalledgertransactionlineitem.md
+  - docs/models/generalledgertransactionlineitemtype.md
+  - docs/models/generalledgertransactionsfilter.md
+  - docs/models/generalledgertransactionsourcetype.md
+  - docs/models/generalledgertransactionssort.md
+  - docs/models/generalledgertransactionssortby.md
   - docs/models/getaccountingdepartmentresponse.md
   - docs/models/getaccountingdepartmentsresponse.md
   - docs/models/getaccountingemployeeresponse.md
@@ -1355,6 +1368,8 @@ generatedFiles:
   - docs/models/getfileresponse.md
   - docs/models/getfilesresponse.md
   - docs/models/getfolderresponse.md
+  - docs/models/getgeneralledgertransactionresponse.md
+  - docs/models/getgeneralledgertransactionsresponse.md
   - docs/models/gethriscompaniesresponse.md
   - docs/models/gethriscompanyresponse.md
   - docs/models/getinvoiceitemresponse.md
@@ -1574,6 +1589,7 @@ generatedFiles:
   - docs/models/jobstatus.md
   - docs/models/jobtype.md
   - docs/models/journalentriesfilter.md
+  - docs/models/journalentriesfilterscope.md
   - docs/models/journalentriesfilterstatus.md
   - docs/models/journalentriessort.md
   - docs/models/journalentriessortby.md
@@ -1754,6 +1770,7 @@ generatedFiles:
   - docs/models/quotelineitem.md
   - docs/models/quotelineiteminput.md
   - docs/models/quotelineitemtype.md
+  - docs/models/quotesfilter.md
   - docs/models/quotestatus.md
   - docs/models/rebilling.md
   - docs/models/rebillstatus.md
@@ -1809,6 +1826,7 @@ generatedFiles:
   - docs/models/sociallinks.md
   - docs/models/sortby.md
   - docs/models/sortdirection.md
+  - docs/models/sourcetype.md
   - docs/models/stage.md
   - docs/models/stages.md
   - docs/models/statementstatus.md
@@ -2110,6 +2128,7 @@ generatedFiles:
   - docs/sdks/expenses/README.md
   - docs/sdks/files/README.md
   - docs/sdks/folders/README.md
+  - docs/sdks/generalledgertransactions/README.md
   - docs/sdks/invoiceitems/README.md
   - docs/sdks/invoices/README.md
   - docs/sdks/jobs/README.md
@@ -2220,6 +2239,7 @@ generatedFiles:
   - src/apideck_unify/files.py
   - src/apideck_unify/filestorage.py
   - src/apideck_unify/folders.py
+  - src/apideck_unify/generalledgertransactions.py
   - src/apideck_unify/hris.py
   - src/apideck_unify/httpclient.py
   - src/apideck_unify/invoiceitems.py
@@ -2305,6 +2325,8 @@ generatedFiles:
   - src/apideck_unify/models/accounting_expensesdeleteop.py
   - src/apideck_unify/models/accounting_expensesoneop.py
   - src/apideck_unify/models/accounting_expensesupdateop.py
+  - src/apideck_unify/models/accounting_generalledgertransactionsallop.py
+  - src/apideck_unify/models/accounting_generalledgertransactionsoneop.py
   - src/apideck_unify/models/accounting_invoiceitemsaddop.py
   - src/apideck_unify/models/accounting_invoiceitemsallop.py
   - src/apideck_unify/models/accounting_invoiceitemsdeleteop.py
@@ -2765,6 +2787,10 @@ generatedFiles:
   - src/apideck_unify/models/formfieldoption.py
   - src/apideck_unify/models/formfieldoptiongroup.py
   - src/apideck_unify/models/gender.py
+  - src/apideck_unify/models/generalledgertransaction.py
+  - src/apideck_unify/models/generalledgertransactionlineitem.py
+  - src/apideck_unify/models/generalledgertransactionsfilter.py
+  - src/apideck_unify/models/generalledgertransactionssort.py
   - src/apideck_unify/models/getaccountingdepartmentresponse.py
   - src/apideck_unify/models/getaccountingdepartmentsresponse.py
   - src/apideck_unify/models/getaccountingemployeeresponse.py
@@ -2853,6 +2879,8 @@ generatedFiles:
   - src/apideck_unify/models/getfileresponse.py
   - src/apideck_unify/models/getfilesresponse.py
   - src/apideck_unify/models/getfolderresponse.py
+  - src/apideck_unify/models/getgeneralledgertransactionresponse.py
+  - src/apideck_unify/models/getgeneralledgertransactionsresponse.py
   - src/apideck_unify/models/gethriscompaniesresponse.py
   - src/apideck_unify/models/gethriscompanyresponse.py
   - src/apideck_unify/models/getinvoiceitemresponse.py
@@ -3067,6 +3095,7 @@ generatedFiles:
   - src/apideck_unify/models/purchaseorderssort.py
   - src/apideck_unify/models/quote.py
   - src/apideck_unify/models/quotelineitem.py
+  - src/apideck_unify/models/quotesfilter.py
   - src/apideck_unify/models/rebilling.py
   - src/apideck_unify/models/refund.py
   - src/apideck_unify/models/refund_input.py
@@ -16888,7 +16917,7 @@ examples:
           x-apideck-app-id: "dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX"
       responses:
         "200":
-          application/json: {"status_code": 200, "status": "OK", "data": {"id": "crm+salesforce", "service_id": "salesforce", "name": "Salesforce", "tag_line": "CRM software solutions and enterprise cloud computing from Salesforce, the leader in customer relationship management (CRM) and PaaS. Free 30 day trial.", "unified_api": "crm", "state": "authorized", "integration_state": "configured", "auth_type": "oauth2", "oauth_grant_type": "authorization_code", "enabled": true, "website": "https://www.salesforce.com", "icon": "https://res.cloudinary.com/apideck/image/upload/v1529456047/catalog/salesforce/icon128x128.png", "logo": "https://c1.sfdcstatic.com/content/dam/web/en_us/www/images/home/logo-salesforce-m.svg", "authorize_url": "https://unify.apideck.com/vault/authorize/salesforce/<application-id>?state=<state>", "revoke_url": "https://unify.apideck.com/vault/revoke/salesforce/<application-id>?state=<state>", "settings": {"instance_url": "https://eu28.salesforce.com", "api_key": "12345xxxxxx"}, "metadata": {"account": {"name": "My Company", "id": "c01458a5-7276-41ce-bc19-639906b0450a"}, "plan": "enterprise"}, "form_fields": [{"id": "instance_url", "label": "Instance url", "placeholder": "", "type": "text", "required": true, "custom_field": false, "allow_custom_values": false, "disabled": false, "sensitive": false}, {"id": "api_key", "label": "API Key", "placeholder": "", "type": "text", "required": true, "custom_field": false, "allow_custom_values": false, "disabled": false, "sensitive": true}], "configuration": [{"resource": "leads", "defaults": [{"target": "custom_fields", "id": "ProductInterest", "options": [{"label": "General Channel", "options": [], "option_type": "group"}], "value": "GC5000 series"}]}], "configurable_resources": ["opportunities", "companies", "contacts", "leads"], "resource_schema_support": ["leads"], "resource_settings_support": ["leads"], "settings_required_for_authorization": ["client_id", "client_secret"], "subscriptions": [{"downstream_id": "5f5f5f5f5f5f5f5f5f5f5f5f", "unify_event_types": ["crm.contact.created"], "downstream_event_types": ["contacts.CREATED"], "execute_url": "https://unify.apideck.com/webhook/w/{lookupIdToken}/{serviceId}?e={downstreamEventType}", "created_at": "2020-10-01T12:00:00.000Z"}], "has_guide": true, "custom_mappings": [{"id": "hris+employees+first_aid_training", "label": "First Aid Training", "description": "First Aid Training completed after 2019-01-01", "value": "$.root.training.first_aid", "key": "first_aid_training", "required": false, "custom_field": true, "consumer_id": "test_user_id", "example": "Some value"}], "consent_state": "granted", "consents": [{"id": "con_1234567890", "created_at": "2025-04-15T14:30:00Z", "granted": true, "resources": {"hris.employees": {"id": {"read": true, "write": false}, "first_name": {"read": true, "write": true}, "last_name": {"read": true, "write": true}, "email": {"read": true, "write": true}, "addresses[].street": {"read": true, "write": false}, "addresses[].city": {"read": true, "write": false}, "employment.job_title": {"read": true, "write": true}, "custom_fields[].employee_number": {"read": true, "write": false}}, "hris.departments": {"id": {"read": true, "write": false}, "name": {"read": true, "write": true}, "code": {"read": true, "write": false}}}}], "latest_consent": {"id": "con_1234567890", "created_at": "2025-04-15T14:30:00Z", "granted": true, "resources": {"hris.employees": {"id": {"read": true, "write": false}, "first_name": {"read": true, "write": true}, "last_name": {"read": true, "write": true}, "email": {"read": true, "write": true}, "addresses[].street": {"read": true, "write": false}, "addresses[].city": {"read": true, "write": false}, "employment.job_title": {"read": true, "write": true}, "custom_fields[].employee_number": {"read": true, "write": false}}, "hris.departments": {"id": {"read": true, "write": false}, "name": {"read": true, "write": true}, "code": {"read": true, "write": false}}}}, "application_data_scopes": {"enabled": true, "updated_at": "2025-04-15T14:30:00Z", "resources": {"hris.employees": {"id": {"read": true, "write": false}, "first_name": {"read": true, "write": true}, "last_name": {"read": true, "write": true}, "email": {"read": true, "write": true}, "addresses[].street": {"read": true, "write": false}, "addresses[].city": {"read": true, "write": false}, "employment.job_title": {"read": true, "write": true}, "custom_fields[].employee_number": {"read": true, "write": false}}, "hris.departments": {"id": {"read": true, "write": false}, "name": {"read": true, "write": true}, "code": {"read": true, "write": false}}}}, "health": "ok", "credentials_expire_at": 1730172800000, "last_refresh_failed_at": 1730000000000, "created_at": 1615563533390, "updated_at": 1616662325753}}
+          application/json: {"status_code": 200, "status": "OK", "data": {"id": "crm+salesforce", "service_id": "salesforce", "name": "Salesforce", "tag_line": "CRM software solutions and enterprise cloud computing from Salesforce, the leader in customer relationship management (CRM) and PaaS. Free 30 day trial.", "unified_api": "crm", "state": "authorized", "integration_state": "configured", "auth_type": "oauth2", "oauth_grant_type": "authorization_code", "enabled": true, "website": "https://www.salesforce.com", "icon": "https://res.cloudinary.com/apideck/image/upload/v1529456047/catalog/salesforce/icon128x128.png", "logo": "https://c1.sfdcstatic.com/content/dam/web/en_us/www/images/home/logo-salesforce-m.svg", "authorize_url": "https://unify.apideck.com/vault/authorize/salesforce/<application-id>?state=<state>", "revoke_url": "https://unify.apideck.com/vault/revoke/salesforce/<application-id>?state=<state>", "settings": {"instance_url": "https://eu28.salesforce.com", "api_key": "12345xxxxxx"}, "metadata": {"account": {"name": "My Company", "id": "c01458a5-7276-41ce-bc19-639906b0450a"}, "plan": "enterprise"}, "form_fields": [{"id": "instance_url", "label": "Instance url", "placeholder": "", "type": "text", "required": true, "custom_field": false, "allow_custom_values": false, "disabled": false, "sensitive": false}, {"id": "api_key", "label": "API Key", "placeholder": "", "type": "text", "required": true, "custom_field": false, "allow_custom_values": false, "disabled": false, "sensitive": true}], "configuration": [{"resource": "leads", "defaults": [{"target": "custom_fields", "id": "ProductInterest", "options": [{"label": "General Channel", "options": [], "option_type": "group"}], "value": "GC5000 series"}]}], "configurable_resources": ["opportunities", "companies", "contacts", "leads"], "resource_schema_support": ["leads"], "resource_settings_support": ["leads"], "settings_required_for_authorization": ["client_id", "client_secret"], "subscriptions": [{"downstream_id": "5f5f5f5f5f5f5f5f5f5f5f5f", "unify_event_types": ["crm.contact.created"], "downstream_event_types": ["contacts.CREATED"], "execute_url": "https://unify.apideck.com/webhook/w/{lookupIdToken}/{serviceId}?e={downstreamEventType}", "created_at": "2020-10-01T12:00:00.000Z"}], "has_guide": true, "custom_mappings": [{"id": "hris+employees+first_aid_training", "label": "First Aid Training", "description": "First Aid Training completed after 2019-01-01", "value": "$.root.training.first_aid", "key": "first_aid_training", "required": false, "custom_field": true, "consumer_id": "test_user_id", "example": "Some value"}], "consent_state": "granted", "consents": [{"id": "con_1234567890", "created_at": "2025-04-15T14:30:00Z", "granted": true, "resources": {"hris.employees": {"id": {"read": true, "write": false}, "first_name": {"read": true, "write": true}, "last_name": {"read": true, "write": true}, "email": {"read": true, "write": true}, "addresses[].street": {"read": true, "write": false}, "addresses[].city": {"read": true, "write": false}, "employment.job_title": {"read": true, "write": true}, "custom_fields[].employee_number": {"read": true, "write": false}}, "hris.departments": {"id": {"read": true, "write": false}, "name": {"read": true, "write": true}, "code": {"read": true, "write": false}}}}], "latest_consent": {"id": "con_1234567890", "created_at": "2025-04-15T14:30:00Z", "granted": true, "resources": {"hris.employees": {"id": {"read": true, "write": false}, "first_name": {"read": true, "write": true}, "last_name": {"read": true, "write": true}, "email": {"read": true, "write": true}, "addresses[].street": {"read": true, "write": false}, "addresses[].city": {"read": true, "write": false}, "employment.job_title": {"read": true, "write": true}, "custom_fields[].employee_number": {"read": true, "write": false}}, "hris.departments": {"id": {"read": true, "write": false}, "name": {"read": true, "write": true}, "code": {"read": true, "write": false}}}}, "application_data_scopes": {"enabled": true, "updated_at": "2025-04-15T14:30:00Z", "resources": {"hris.employees": {"id": {"read": true, "write": false}, "first_name": {"read": true, "write": true}, "last_name": {"read": true, "write": true}, "email": {"read": true, "write": true}, "addresses[].street": {"read": true, "write": false}, "addresses[].city": {"read": true, "write": false}, "employment.job_title": {"read": true, "write": true}, "custom_fields[].employee_number": {"read": true, "write": false}}, "hris.departments": {"id": {"read": true, "write": false}, "name": {"read": true, "write": true}, "code": {"read": true, "write": false}}}}, "health": "ok", "credentials_expire_at": 1730172800000, "last_refresh_failed_at": 1730000000000, "last_downstream_error_at": 1730000000000, "created_at": 1615563533390, "updated_at": 1616662325753}}
         "400":
           application/json: {"status_code": 400, "error": "Bad Request", "type_name": "RequestValidationError", "message": "Invalid Params", "detail": "Missing property foobar", "ref": "https://developers.apideck.com/errors#requestvalidationerror", "downstream_errors": [{"message": "Account code '100' has been archived or deleted", "detail": "Each line item must reference a valid account", "code": "VALIDATION_ERROR"}]}
         "401":
@@ -16939,7 +16968,7 @@ examples:
         application/json: {"enabled": true, "settings": {"instance_url": "https://eu28.salesforce.com", "api_key": "12345xxxxxx"}, "metadata": {"account": {"name": "My Company", "id": "c01458a5-7276-41ce-bc19-639906b0450a"}, "plan": "enterprise"}, "configuration": [{"resource": "leads", "defaults": [{"id": "ProductInterest", "options": [{"label": "General Channel", "option_type": "simple"}], "value": "GC5000 series"}]}], "custom_mappings": [{"value": "$.root.training.first_aid"}], "consent_state": "granted", "latest_consent": {"granted": true, "resources": {"hris.employees": {"id": {"read": true, "write": false}, "first_name": {"read": true, "write": true}, "last_name": {"read": true, "write": true}, "email": {"read": true, "write": true}, "addresses[].street": {"read": true, "write": false}, "addresses[].city": {"read": true, "write": false}, "employment.job_title": {"read": true, "write": true}, "custom_fields[].employee_number": {"read": true, "write": false}}, "hris.departments": {"id": {"read": true, "write": false}, "name": {"read": true, "write": true}, "code": {"read": true, "write": false}}}}, "application_data_scopes": {"enabled": true, "resources": {"hris.employees": {"id": {"read": true, "write": false}, "first_name": {"read": true, "write": true}, "last_name": {"read": true, "write": true}, "email": {"read": true, "write": true}, "addresses[].street": {"read": true, "write": false}, "addresses[].city": {"read": true, "write": false}, "employment.job_title": {"read": true, "write": true}, "custom_fields[].employee_number": {"read": true, "write": false}}, "hris.departments": {"id": {"read": true, "write": false}, "name": {"read": true, "write": true}, "code": {"read": true, "write": false}}}}}
       responses:
         "200":
-          application/json: {"status_code": 200, "status": "OK", "data": {"id": "crm+salesforce", "service_id": "salesforce", "name": "Salesforce", "tag_line": "CRM software solutions and enterprise cloud computing from Salesforce, the leader in customer relationship management (CRM) and PaaS. Free 30 day trial.", "unified_api": "crm", "state": "authorized", "integration_state": "configured", "auth_type": "oauth2", "oauth_grant_type": "authorization_code", "enabled": true, "website": "https://www.salesforce.com", "icon": "https://res.cloudinary.com/apideck/image/upload/v1529456047/catalog/salesforce/icon128x128.png", "logo": "https://c1.sfdcstatic.com/content/dam/web/en_us/www/images/home/logo-salesforce-m.svg", "authorize_url": "https://unify.apideck.com/vault/authorize/salesforce/<application-id>?state=<state>", "revoke_url": "https://unify.apideck.com/vault/revoke/salesforce/<application-id>?state=<state>", "settings": {"instance_url": "https://eu28.salesforce.com", "api_key": "12345xxxxxx"}, "metadata": {"account": {"name": "My Company", "id": "c01458a5-7276-41ce-bc19-639906b0450a"}, "plan": "enterprise"}, "form_fields": [{"id": "instance_url", "label": "Instance url", "placeholder": "", "type": "text", "required": true, "custom_field": false, "allow_custom_values": false, "disabled": false, "sensitive": false}, {"id": "api_key", "label": "API Key", "placeholder": "", "type": "text", "required": true, "custom_field": false, "allow_custom_values": false, "disabled": false, "sensitive": true}], "configuration": [{"resource": "leads", "defaults": [{"target": "custom_fields", "id": "ProductInterest", "options": [{"label": "General Channel", "option_type": "simple"}], "value": "GC5000 series"}]}], "configurable_resources": ["opportunities", "companies", "contacts", "leads"], "resource_schema_support": ["leads"], "resource_settings_support": ["leads"], "settings_required_for_authorization": ["client_id", "client_secret"], "subscriptions": [{"downstream_id": "5f5f5f5f5f5f5f5f5f5f5f5f", "unify_event_types": ["crm.contact.created"], "downstream_event_types": ["contacts.CREATED"], "execute_url": "https://unify.apideck.com/webhook/w/{lookupIdToken}/{serviceId}?e={downstreamEventType}", "created_at": "2020-10-01T12:00:00.000Z"}], "has_guide": true, "custom_mappings": [{"id": "hris+employees+first_aid_training", "label": "First Aid Training", "description": "First Aid Training completed after 2019-01-01", "value": "$.root.training.first_aid", "key": "first_aid_training", "required": false, "custom_field": true, "consumer_id": "test_user_id", "example": "Some value"}], "consent_state": "granted", "consents": [{"id": "con_1234567890", "created_at": "2025-04-15T14:30:00Z", "granted": true, "resources": {"hris.employees": {"id": {"read": true, "write": false}, "first_name": {"read": true, "write": true}, "last_name": {"read": true, "write": true}, "email": {"read": true, "write": true}, "addresses[].street": {"read": true, "write": false}, "addresses[].city": {"read": true, "write": false}, "employment.job_title": {"read": true, "write": true}, "custom_fields[].employee_number": {"read": true, "write": false}}, "hris.departments": {"id": {"read": true, "write": false}, "name": {"read": true, "write": true}, "code": {"read": true, "write": false}}}}], "latest_consent": {"id": "con_1234567890", "created_at": "2025-04-15T14:30:00Z", "granted": true, "resources": {"hris.employees": {"id": {"read": true, "write": false}, "first_name": {"read": true, "write": true}, "last_name": {"read": true, "write": true}, "email": {"read": true, "write": true}, "addresses[].street": {"read": true, "write": false}, "addresses[].city": {"read": true, "write": false}, "employment.job_title": {"read": true, "write": true}, "custom_fields[].employee_number": {"read": true, "write": false}}, "hris.departments": {"id": {"read": true, "write": false}, "name": {"read": true, "write": true}, "code": {"read": true, "write": false}}}}, "application_data_scopes": {"enabled": true, "updated_at": "2025-04-15T14:30:00Z", "resources": {"hris.employees": {"id": {"read": true, "write": false}, "first_name": {"read": true, "write": true}, "last_name": {"read": true, "write": true}, "email": {"read": true, "write": true}, "addresses[].street": {"read": true, "write": false}, "addresses[].city": {"read": true, "write": false}, "employment.job_title": {"read": true, "write": true}, "custom_fields[].employee_number": {"read": true, "write": false}}, "hris.departments": {"id": {"read": true, "write": false}, "name": {"read": true, "write": true}, "code": {"read": true, "write": false}}}}, "health": "ok", "credentials_expire_at": 1730172800000, "last_refresh_failed_at": 1730000000000, "created_at": 1615563533390, "updated_at": 1616662325753}}
+          application/json: {"status_code": 200, "status": "OK", "data": {"id": "crm+salesforce", "service_id": "salesforce", "name": "Salesforce", "tag_line": "CRM software solutions and enterprise cloud computing from Salesforce, the leader in customer relationship management (CRM) and PaaS. Free 30 day trial.", "unified_api": "crm", "state": "authorized", "integration_state": "configured", "auth_type": "oauth2", "oauth_grant_type": "authorization_code", "enabled": true, "website": "https://www.salesforce.com", "icon": "https://res.cloudinary.com/apideck/image/upload/v1529456047/catalog/salesforce/icon128x128.png", "logo": "https://c1.sfdcstatic.com/content/dam/web/en_us/www/images/home/logo-salesforce-m.svg", "authorize_url": "https://unify.apideck.com/vault/authorize/salesforce/<application-id>?state=<state>", "revoke_url": "https://unify.apideck.com/vault/revoke/salesforce/<application-id>?state=<state>", "settings": {"instance_url": "https://eu28.salesforce.com", "api_key": "12345xxxxxx"}, "metadata": {"account": {"name": "My Company", "id": "c01458a5-7276-41ce-bc19-639906b0450a"}, "plan": "enterprise"}, "form_fields": [{"id": "instance_url", "label": "Instance url", "placeholder": "", "type": "text", "required": true, "custom_field": false, "allow_custom_values": false, "disabled": false, "sensitive": false}, {"id": "api_key", "label": "API Key", "placeholder": "", "type": "text", "required": true, "custom_field": false, "allow_custom_values": false, "disabled": false, "sensitive": true}], "configuration": [{"resource": "leads", "defaults": [{"target": "custom_fields", "id": "ProductInterest", "options": [{"label": "General Channel", "option_type": "simple"}], "value": "GC5000 series"}]}], "configurable_resources": ["opportunities", "companies", "contacts", "leads"], "resource_schema_support": ["leads"], "resource_settings_support": ["leads"], "settings_required_for_authorization": ["client_id", "client_secret"], "subscriptions": [{"downstream_id": "5f5f5f5f5f5f5f5f5f5f5f5f", "unify_event_types": ["crm.contact.created"], "downstream_event_types": ["contacts.CREATED"], "execute_url": "https://unify.apideck.com/webhook/w/{lookupIdToken}/{serviceId}?e={downstreamEventType}", "created_at": "2020-10-01T12:00:00.000Z"}], "has_guide": true, "custom_mappings": [{"id": "hris+employees+first_aid_training", "label": "First Aid Training", "description": "First Aid Training completed after 2019-01-01", "value": "$.root.training.first_aid", "key": "first_aid_training", "required": false, "custom_field": true, "consumer_id": "test_user_id", "example": "Some value"}], "consent_state": "granted", "consents": [{"id": "con_1234567890", "created_at": "2025-04-15T14:30:00Z", "granted": true, "resources": {"hris.employees": {"id": {"read": true, "write": false}, "first_name": {"read": true, "write": true}, "last_name": {"read": true, "write": true}, "email": {"read": true, "write": true}, "addresses[].street": {"read": true, "write": false}, "addresses[].city": {"read": true, "write": false}, "employment.job_title": {"read": true, "write": true}, "custom_fields[].employee_number": {"read": true, "write": false}}, "hris.departments": {"id": {"read": true, "write": false}, "name": {"read": true, "write": true}, "code": {"read": true, "write": false}}}}], "latest_consent": {"id": "con_1234567890", "created_at": "2025-04-15T14:30:00Z", "granted": true, "resources": {"hris.employees": {"id": {"read": true, "write": false}, "first_name": {"read": true, "write": true}, "last_name": {"read": true, "write": true}, "email": {"read": true, "write": true}, "addresses[].street": {"read": true, "write": false}, "addresses[].city": {"read": true, "write": false}, "employment.job_title": {"read": true, "write": true}, "custom_fields[].employee_number": {"read": true, "write": false}}, "hris.departments": {"id": {"read": true, "write": false}, "name": {"read": true, "write": true}, "code": {"read": true, "write": false}}}}, "application_data_scopes": {"enabled": true, "updated_at": "2025-04-15T14:30:00Z", "resources": {"hris.employees": {"id": {"read": true, "write": false}, "first_name": {"read": true, "write": true}, "last_name": {"read": true, "write": true}, "email": {"read": true, "write": true}, "addresses[].street": {"read": true, "write": false}, "addresses[].city": {"read": true, "write": false}, "employment.job_title": {"read": true, "write": true}, "custom_fields[].employee_number": {"read": true, "write": false}}, "hris.departments": {"id": {"read": true, "write": false}, "name": {"read": true, "write": true}, "code": {"read": true, "write": false}}}}, "health": "ok", "credentials_expire_at": 1730172800000, "last_refresh_failed_at": 1730000000000, "last_downstream_error_at": 1730000000000, "created_at": 1615563533390, "updated_at": 1616662325753}}
         "400":
           application/json: {"status_code": 400, "error": "Bad Request", "type_name": "RequestValidationError", "message": "Invalid Params", "detail": "Missing property foobar", "ref": "https://developers.apideck.com/errors#requestvalidationerror", "downstream_errors": [{"message": "Account code '100' has been archived or deleted", "detail": "Each line item must reference a valid account", "code": "VALIDATION_ERROR"}]}
         "401":
@@ -17033,7 +17062,7 @@ examples:
         application/json: {"credentials": {"refresh_token": "<refresh_token>", "access_token": "<access_token>"}, "settings": {"instance_url": "https://eu28.salesforce.com"}, "metadata": {"account": {"name": "My Company", "id": "c01458a5-7276-41ce-bc19-639906b0450a"}, "plan": "enterprise"}}
       responses:
         "200":
-          application/json: {"status_code": 201, "status": "OK", "data": {"id": "crm+salesforce", "service_id": "salesforce", "name": "Salesforce", "tag_line": "CRM software solutions and enterprise cloud computing from Salesforce, the leader in customer relationship management (CRM) and PaaS. Free 30 day trial.", "unified_api": "crm", "state": "authorized", "integration_state": "configured", "auth_type": "oauth2", "oauth_grant_type": "authorization_code", "enabled": true, "website": "https://www.salesforce.com", "icon": "https://res.cloudinary.com/apideck/image/upload/v1529456047/catalog/salesforce/icon128x128.png", "logo": "https://c1.sfdcstatic.com/content/dam/web/en_us/www/images/home/logo-salesforce-m.svg", "authorize_url": "https://unify.apideck.com/vault/authorize/salesforce/<application-id>?state=<state>", "revoke_url": "https://unify.apideck.com/vault/revoke/salesforce/<application-id>?state=<state>", "settings": {"instance_url": "https://eu28.salesforce.com", "api_key": "12345xxxxxx"}, "metadata": {"account": {"name": "My Company", "id": "c01458a5-7276-41ce-bc19-639906b0450a"}, "plan": "enterprise"}, "form_fields": [{"id": "instance_url", "label": "Instance url", "placeholder": "", "type": "text", "required": true, "custom_field": false, "allow_custom_values": false, "disabled": false, "sensitive": false}, {"id": "api_key", "label": "API Key", "placeholder": "", "type": "text", "required": true, "custom_field": false, "allow_custom_values": false, "disabled": false, "sensitive": true}], "configuration": [{"resource": "leads", "defaults": [{"target": "custom_fields", "id": "ProductInterest", "options": [{"label": "General Channel", "option_type": "simple"}], "value": "GC5000 series"}]}], "configurable_resources": ["opportunities", "companies", "contacts", "leads"], "resource_schema_support": ["leads"], "resource_settings_support": ["leads"], "settings_required_for_authorization": ["client_id", "client_secret"], "subscriptions": [{"downstream_id": "5f5f5f5f5f5f5f5f5f5f5f5f", "unify_event_types": ["crm.contact.created"], "downstream_event_types": ["contacts.CREATED"], "execute_url": "https://unify.apideck.com/webhook/w/{lookupIdToken}/{serviceId}?e={downstreamEventType}", "created_at": "2020-10-01T12:00:00.000Z"}], "has_guide": true, "custom_mappings": [{"id": "hris+employees+first_aid_training", "label": "First Aid Training", "description": "First Aid Training completed after 2019-01-01", "value": "$.root.training.first_aid", "key": "first_aid_training", "required": false, "custom_field": true, "consumer_id": "test_user_id", "example": "Some value"}], "consent_state": "granted", "consents": [{"id": "con_1234567890", "created_at": "2025-04-15T14:30:00Z", "granted": true, "resources": {"hris.employees": {"id": {"read": true, "write": false}, "first_name": {"read": true, "write": true}, "last_name": {"read": true, "write": true}, "email": {"read": true, "write": true}, "addresses[].street": {"read": true, "write": false}, "addresses[].city": {"read": true, "write": false}, "employment.job_title": {"read": true, "write": true}, "custom_fields[].employee_number": {"read": true, "write": false}}, "hris.departments": {"id": {"read": true, "write": false}, "name": {"read": true, "write": true}, "code": {"read": true, "write": false}}}}], "latest_consent": {"id": "con_1234567890", "created_at": "2025-04-15T14:30:00Z", "granted": true, "resources": {"hris.employees": {"id": {"read": true, "write": false}, "first_name": {"read": true, "write": true}, "last_name": {"read": true, "write": true}, "email": {"read": true, "write": true}, "addresses[].street": {"read": true, "write": false}, "addresses[].city": {"read": true, "write": false}, "employment.job_title": {"read": true, "write": true}, "custom_fields[].employee_number": {"read": true, "write": false}}, "hris.departments": {"id": {"read": true, "write": false}, "name": {"read": true, "write": true}, "code": {"read": true, "write": false}}}}, "application_data_scopes": {"enabled": true, "updated_at": "2025-04-15T14:30:00Z", "resources": {"hris.employees": {"id": {"read": true, "write": false}, "first_name": {"read": true, "write": true}, "last_name": {"read": true, "write": true}, "email": {"read": true, "write": true}, "addresses[].street": {"read": true, "write": false}, "addresses[].city": {"read": true, "write": false}, "employment.job_title": {"read": true, "write": true}, "custom_fields[].employee_number": {"read": true, "write": false}}, "hris.departments": {"id": {"read": true, "write": false}, "name": {"read": true, "write": true}, "code": {"read": true, "write": false}}}}, "health": "ok", "credentials_expire_at": 1730172800000, "last_refresh_failed_at": 1730000000000, "created_at": 1615563533390, "updated_at": 1616662325753}}
+          application/json: {"status_code": 201, "status": "OK", "data": {"id": "crm+salesforce", "service_id": "salesforce", "name": "Salesforce", "tag_line": "CRM software solutions and enterprise cloud computing from Salesforce, the leader in customer relationship management (CRM) and PaaS. Free 30 day trial.", "unified_api": "crm", "state": "authorized", "integration_state": "configured", "auth_type": "oauth2", "oauth_grant_type": "authorization_code", "enabled": true, "website": "https://www.salesforce.com", "icon": "https://res.cloudinary.com/apideck/image/upload/v1529456047/catalog/salesforce/icon128x128.png", "logo": "https://c1.sfdcstatic.com/content/dam/web/en_us/www/images/home/logo-salesforce-m.svg", "authorize_url": "https://unify.apideck.com/vault/authorize/salesforce/<application-id>?state=<state>", "revoke_url": "https://unify.apideck.com/vault/revoke/salesforce/<application-id>?state=<state>", "settings": {"instance_url": "https://eu28.salesforce.com", "api_key": "12345xxxxxx"}, "metadata": {"account": {"name": "My Company", "id": "c01458a5-7276-41ce-bc19-639906b0450a"}, "plan": "enterprise"}, "form_fields": [{"id": "instance_url", "label": "Instance url", "placeholder": "", "type": "text", "required": true, "custom_field": false, "allow_custom_values": false, "disabled": false, "sensitive": false}, {"id": "api_key", "label": "API Key", "placeholder": "", "type": "text", "required": true, "custom_field": false, "allow_custom_values": false, "disabled": false, "sensitive": true}], "configuration": [{"resource": "leads", "defaults": [{"target": "custom_fields", "id": "ProductInterest", "options": [{"label": "General Channel", "option_type": "simple"}], "value": "GC5000 series"}]}], "configurable_resources": ["opportunities", "companies", "contacts", "leads"], "resource_schema_support": ["leads"], "resource_settings_support": ["leads"], "settings_required_for_authorization": ["client_id", "client_secret"], "subscriptions": [{"downstream_id": "5f5f5f5f5f5f5f5f5f5f5f5f", "unify_event_types": ["crm.contact.created"], "downstream_event_types": ["contacts.CREATED"], "execute_url": "https://unify.apideck.com/webhook/w/{lookupIdToken}/{serviceId}?e={downstreamEventType}", "created_at": "2020-10-01T12:00:00.000Z"}], "has_guide": true, "custom_mappings": [{"id": "hris+employees+first_aid_training", "label": "First Aid Training", "description": "First Aid Training completed after 2019-01-01", "value": "$.root.training.first_aid", "key": "first_aid_training", "required": false, "custom_field": true, "consumer_id": "test_user_id", "example": "Some value"}], "consent_state": "granted", "consents": [{"id": "con_1234567890", "created_at": "2025-04-15T14:30:00Z", "granted": true, "resources": {"hris.employees": {"id": {"read": true, "write": false}, "first_name": {"read": true, "write": true}, "last_name": {"read": true, "write": true}, "email": {"read": true, "write": true}, "addresses[].street": {"read": true, "write": false}, "addresses[].city": {"read": true, "write": false}, "employment.job_title": {"read": true, "write": true}, "custom_fields[].employee_number": {"read": true, "write": false}}, "hris.departments": {"id": {"read": true, "write": false}, "name": {"read": true, "write": true}, "code": {"read": true, "write": false}}}}], "latest_consent": {"id": "con_1234567890", "created_at": "2025-04-15T14:30:00Z", "granted": true, "resources": {"hris.employees": {"id": {"read": true, "write": false}, "first_name": {"read": true, "write": true}, "last_name": {"read": true, "write": true}, "email": {"read": true, "write": true}, "addresses[].street": {"read": true, "write": false}, "addresses[].city": {"read": true, "write": false}, "employment.job_title": {"read": true, "write": true}, "custom_fields[].employee_number": {"read": true, "write": false}}, "hris.departments": {"id": {"read": true, "write": false}, "name": {"read": true, "write": true}, "code": {"read": true, "write": false}}}}, "application_data_scopes": {"enabled": true, "updated_at": "2025-04-15T14:30:00Z", "resources": {"hris.employees": {"id": {"read": true, "write": false}, "first_name": {"read": true, "write": true}, "last_name": {"read": true, "write": true}, "email": {"read": true, "write": true}, "addresses[].street": {"read": true, "write": false}, "addresses[].city": {"read": true, "write": false}, "employment.job_title": {"read": true, "write": true}, "custom_fields[].employee_number": {"read": true, "write": false}}, "hris.departments": {"id": {"read": true, "write": false}, "name": {"read": true, "write": true}, "code": {"read": true, "write": false}}}}, "health": "ok", "credentials_expire_at": 1730172800000, "last_refresh_failed_at": 1730000000000, "last_downstream_error_at": 1730000000000, "created_at": 1615563533390, "updated_at": 1616662325753}}
         "400":
           application/json: {"status_code": 400, "error": "Bad Request", "type_name": "RequestValidationError", "message": "Invalid Params", "detail": "Missing property foobar", "ref": "https://developers.apideck.com/errors#requestvalidationerror", "downstream_errors": [{"message": "Account code '100' has been archived or deleted", "detail": "Each line item must reference a valid account", "code": "VALIDATION_ERROR"}]}
         "401":
@@ -17080,7 +17109,7 @@ examples:
           x-apideck-app-id: "dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX"
       responses:
         "200":
-          application/json: {"status_code": 200, "status": "OK", "data": {"id": "crm+salesforce", "service_id": "salesforce", "name": "Salesforce", "tag_line": "CRM software solutions and enterprise cloud computing from Salesforce, the leader in customer relationship management (CRM) and PaaS. Free 30 day trial.", "unified_api": "crm", "state": "authorized", "integration_state": "configured", "auth_type": "oauth2", "oauth_grant_type": "authorization_code", "enabled": true, "website": "https://www.salesforce.com", "icon": "https://res.cloudinary.com/apideck/image/upload/v1529456047/catalog/salesforce/icon128x128.png", "logo": "https://c1.sfdcstatic.com/content/dam/web/en_us/www/images/home/logo-salesforce-m.svg", "authorize_url": "https://unify.apideck.com/vault/authorize/salesforce/<application-id>?state=<state>", "revoke_url": "https://unify.apideck.com/vault/revoke/salesforce/<application-id>?state=<state>", "settings": {"instance_url": "https://eu28.salesforce.com", "api_key": "12345xxxxxx"}, "metadata": {"account": {"name": "My Company", "id": "c01458a5-7276-41ce-bc19-639906b0450a"}, "plan": "enterprise"}, "form_fields": [{"id": "instance_url", "label": "Instance url", "placeholder": "", "type": "text", "required": true, "custom_field": false, "allow_custom_values": false, "disabled": false, "sensitive": false}, {"id": "api_key", "label": "API Key", "placeholder": "", "type": "text", "required": true, "custom_field": false, "allow_custom_values": false, "disabled": false, "sensitive": true}], "configuration": [{"resource": "leads", "defaults": [{"target": "custom_fields", "id": "ProductInterest", "options": [{"label": "General Channel", "options": [], "option_type": "group"}], "value": "GC5000 series"}]}], "configurable_resources": ["opportunities", "companies", "contacts", "leads"], "resource_schema_support": ["leads"], "resource_settings_support": ["leads"], "settings_required_for_authorization": ["client_id", "client_secret"], "subscriptions": [{"downstream_id": "5f5f5f5f5f5f5f5f5f5f5f5f", "unify_event_types": ["crm.contact.created"], "downstream_event_types": ["contacts.CREATED"], "execute_url": "https://unify.apideck.com/webhook/w/{lookupIdToken}/{serviceId}?e={downstreamEventType}", "created_at": "2020-10-01T12:00:00.000Z"}], "has_guide": true, "custom_mappings": [{"id": "hris+employees+first_aid_training", "label": "First Aid Training", "description": "First Aid Training completed after 2019-01-01", "value": "$.root.training.first_aid", "key": "first_aid_training", "required": false, "custom_field": true, "consumer_id": "test_user_id", "example": "Some value"}], "consent_state": "granted", "consents": [{"id": "con_1234567890", "created_at": "2025-04-15T14:30:00Z", "granted": true, "resources": {"hris.employees": {"id": {"read": true, "write": false}, "first_name": {"read": true, "write": true}, "last_name": {"read": true, "write": true}, "email": {"read": true, "write": true}, "addresses[].street": {"read": true, "write": false}, "addresses[].city": {"read": true, "write": false}, "employment.job_title": {"read": true, "write": true}, "custom_fields[].employee_number": {"read": true, "write": false}}, "hris.departments": {"id": {"read": true, "write": false}, "name": {"read": true, "write": true}, "code": {"read": true, "write": false}}}}], "latest_consent": {"id": "con_1234567890", "created_at": "2025-04-15T14:30:00Z", "granted": true, "resources": {"hris.employees": {"id": {"read": true, "write": false}, "first_name": {"read": true, "write": true}, "last_name": {"read": true, "write": true}, "email": {"read": true, "write": true}, "addresses[].street": {"read": true, "write": false}, "addresses[].city": {"read": true, "write": false}, "employment.job_title": {"read": true, "write": true}, "custom_fields[].employee_number": {"read": true, "write": false}}, "hris.departments": {"id": {"read": true, "write": false}, "name": {"read": true, "write": true}, "code": {"read": true, "write": false}}}}, "application_data_scopes": {"enabled": true, "updated_at": "2025-04-15T14:30:00Z", "resources": {"hris.employees": {"id": {"read": true, "write": false}, "first_name": {"read": true, "write": true}, "last_name": {"read": true, "write": true}, "email": {"read": true, "write": true}, "addresses[].street": {"read": true, "write": false}, "addresses[].city": {"read": true, "write": false}, "employment.job_title": {"read": true, "write": true}, "custom_fields[].employee_number": {"read": true, "write": false}}, "hris.departments": {"id": {"read": true, "write": false}, "name": {"read": true, "write": true}, "code": {"read": true, "write": false}}}}, "health": "ok", "credentials_expire_at": 1730172800000, "last_refresh_failed_at": 1730000000000, "created_at": 1615563533390, "updated_at": 1616662325753}}
+          application/json: {"status_code": 200, "status": "OK", "data": {"id": "crm+salesforce", "service_id": "salesforce", "name": "Salesforce", "tag_line": "CRM software solutions and enterprise cloud computing from Salesforce, the leader in customer relationship management (CRM) and PaaS. Free 30 day trial.", "unified_api": "crm", "state": "authorized", "integration_state": "configured", "auth_type": "oauth2", "oauth_grant_type": "authorization_code", "enabled": true, "website": "https://www.salesforce.com", "icon": "https://res.cloudinary.com/apideck/image/upload/v1529456047/catalog/salesforce/icon128x128.png", "logo": "https://c1.sfdcstatic.com/content/dam/web/en_us/www/images/home/logo-salesforce-m.svg", "authorize_url": "https://unify.apideck.com/vault/authorize/salesforce/<application-id>?state=<state>", "revoke_url": "https://unify.apideck.com/vault/revoke/salesforce/<application-id>?state=<state>", "settings": {"instance_url": "https://eu28.salesforce.com", "api_key": "12345xxxxxx"}, "metadata": {"account": {"name": "My Company", "id": "c01458a5-7276-41ce-bc19-639906b0450a"}, "plan": "enterprise"}, "form_fields": [{"id": "instance_url", "label": "Instance url", "placeholder": "", "type": "text", "required": true, "custom_field": false, "allow_custom_values": false, "disabled": false, "sensitive": false}, {"id": "api_key", "label": "API Key", "placeholder": "", "type": "text", "required": true, "custom_field": false, "allow_custom_values": false, "disabled": false, "sensitive": true}], "configuration": [{"resource": "leads", "defaults": [{"target": "custom_fields", "id": "ProductInterest", "options": [{"label": "General Channel", "options": [], "option_type": "group"}], "value": "GC5000 series"}]}], "configurable_resources": ["opportunities", "companies", "contacts", "leads"], "resource_schema_support": ["leads"], "resource_settings_support": ["leads"], "settings_required_for_authorization": ["client_id", "client_secret"], "subscriptions": [{"downstream_id": "5f5f5f5f5f5f5f5f5f5f5f5f", "unify_event_types": ["crm.contact.created"], "downstream_event_types": ["contacts.CREATED"], "execute_url": "https://unify.apideck.com/webhook/w/{lookupIdToken}/{serviceId}?e={downstreamEventType}", "created_at": "2020-10-01T12:00:00.000Z"}], "has_guide": true, "custom_mappings": [{"id": "hris+employees+first_aid_training", "label": "First Aid Training", "description": "First Aid Training completed after 2019-01-01", "value": "$.root.training.first_aid", "key": "first_aid_training", "required": false, "custom_field": true, "consumer_id": "test_user_id", "example": "Some value"}], "consent_state": "granted", "consents": [{"id": "con_1234567890", "created_at": "2025-04-15T14:30:00Z", "granted": true, "resources": {"hris.employees": {"id": {"read": true, "write": false}, "first_name": {"read": true, "write": true}, "last_name": {"read": true, "write": true}, "email": {"read": true, "write": true}, "addresses[].street": {"read": true, "write": false}, "addresses[].city": {"read": true, "write": false}, "employment.job_title": {"read": true, "write": true}, "custom_fields[].employee_number": {"read": true, "write": false}}, "hris.departments": {"id": {"read": true, "write": false}, "name": {"read": true, "write": true}, "code": {"read": true, "write": false}}}}], "latest_consent": {"id": "con_1234567890", "created_at": "2025-04-15T14:30:00Z", "granted": true, "resources": {"hris.employees": {"id": {"read": true, "write": false}, "first_name": {"read": true, "write": true}, "last_name": {"read": true, "write": true}, "email": {"read": true, "write": true}, "addresses[].street": {"read": true, "write": false}, "addresses[].city": {"read": true, "write": false}, "employment.job_title": {"read": true, "write": true}, "custom_fields[].employee_number": {"read": true, "write": false}}, "hris.departments": {"id": {"read": true, "write": false}, "name": {"read": true, "write": true}, "code": {"read": true, "write": false}}}}, "application_data_scopes": {"enabled": true, "updated_at": "2025-04-15T14:30:00Z", "resources": {"hris.employees": {"id": {"read": true, "write": false}, "first_name": {"read": true, "write": true}, "last_name": {"read": true, "write": true}, "email": {"read": true, "write": true}, "addresses[].street": {"read": true, "write": false}, "addresses[].city": {"read": true, "write": false}, "employment.job_title": {"read": true, "write": true}, "custom_fields[].employee_number": {"read": true, "write": false}}, "hris.departments": {"id": {"read": true, "write": false}, "name": {"read": true, "write": true}, "code": {"read": true, "write": false}}}}, "health": "ok", "credentials_expire_at": 1730172800000, "last_refresh_failed_at": 1730000000000, "last_downstream_error_at": 1730000000000, "created_at": 1615563533390, "updated_at": 1616662325753}}
         "400":
           application/json: {"status_code": 400, "error": "Bad Request", "type_name": "RequestValidationError", "message": "Invalid Params", "detail": "Missing property foobar", "ref": "https://developers.apideck.com/errors#requestvalidationerror", "downstream_errors": [{"message": "Account code '100' has been archived or deleted", "detail": "Each line item must reference a valid account", "code": "VALIDATION_ERROR"}]}
         "401":
@@ -17227,7 +17256,7 @@ examples:
           x-apideck-app-id: "dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX"
       responses:
         "200":
-          application/json: {"status_code": 200, "status": "OK", "data": {"id": "crm+salesforce", "service_id": "salesforce", "name": "Salesforce", "tag_line": "CRM software solutions and enterprise cloud computing from Salesforce, the leader in customer relationship management (CRM) and PaaS. Free 30 day trial.", "unified_api": "crm", "state": "authorized", "integration_state": "configured", "auth_type": "oauth2", "oauth_grant_type": "authorization_code", "enabled": true, "website": "https://www.salesforce.com", "icon": "https://res.cloudinary.com/apideck/image/upload/v1529456047/catalog/salesforce/icon128x128.png", "logo": "https://c1.sfdcstatic.com/content/dam/web/en_us/www/images/home/logo-salesforce-m.svg", "authorize_url": "https://unify.apideck.com/vault/authorize/salesforce/<application-id>?state=<state>", "revoke_url": "https://unify.apideck.com/vault/revoke/salesforce/<application-id>?state=<state>", "settings": {"instance_url": "https://eu28.salesforce.com", "api_key": "12345xxxxxx"}, "metadata": {"account": {"name": "My Company", "id": "c01458a5-7276-41ce-bc19-639906b0450a"}, "plan": "enterprise"}, "form_fields": [{"id": "instance_url", "label": "Instance url", "placeholder": "", "type": "text", "required": true, "custom_field": false, "allow_custom_values": false, "disabled": false, "sensitive": false}, {"id": "api_key", "label": "API Key", "placeholder": "", "type": "text", "required": true, "custom_field": false, "allow_custom_values": false, "disabled": false, "sensitive": true}], "configuration": [{"resource": "leads", "defaults": [{"target": "custom_fields", "id": "ProductInterest", "options": [{"label": "General Channel", "options": [], "option_type": "group"}], "value": "GC5000 series"}]}], "configurable_resources": ["opportunities", "companies", "contacts", "leads"], "resource_schema_support": ["leads"], "resource_settings_support": ["leads"], "settings_required_for_authorization": ["client_id", "client_secret"], "subscriptions": [{"downstream_id": "5f5f5f5f5f5f5f5f5f5f5f5f", "unify_event_types": ["crm.contact.created"], "downstream_event_types": ["contacts.CREATED"], "execute_url": "https://unify.apideck.com/webhook/w/{lookupIdToken}/{serviceId}?e={downstreamEventType}", "created_at": "2020-10-01T12:00:00.000Z"}], "has_guide": true, "custom_mappings": [{"id": "hris+employees+first_aid_training", "label": "First Aid Training", "description": "First Aid Training completed after 2019-01-01", "value": "$.root.training.first_aid", "key": "first_aid_training", "required": false, "custom_field": true, "consumer_id": "test_user_id", "example": "Some value"}], "consent_state": "granted", "consents": [{"id": "con_1234567890", "created_at": "2025-04-15T14:30:00Z", "granted": true, "resources": {"hris.employees": {"id": {"read": true, "write": false}, "first_name": {"read": true, "write": true}, "last_name": {"read": true, "write": true}, "email": {"read": true, "write": true}, "addresses[].street": {"read": true, "write": false}, "addresses[].city": {"read": true, "write": false}, "employment.job_title": {"read": true, "write": true}, "custom_fields[].employee_number": {"read": true, "write": false}}, "hris.departments": {"id": {"read": true, "write": false}, "name": {"read": true, "write": true}, "code": {"read": true, "write": false}}}}], "latest_consent": {"id": "con_1234567890", "created_at": "2025-04-15T14:30:00Z", "granted": true, "resources": {"hris.employees": {"id": {"read": true, "write": false}, "first_name": {"read": true, "write": true}, "last_name": {"read": true, "write": true}, "email": {"read": true, "write": true}, "addresses[].street": {"read": true, "write": false}, "addresses[].city": {"read": true, "write": false}, "employment.job_title": {"read": true, "write": true}, "custom_fields[].employee_number": {"read": true, "write": false}}, "hris.departments": {"id": {"read": true, "write": false}, "name": {"read": true, "write": true}, "code": {"read": true, "write": false}}}}, "application_data_scopes": {"enabled": true, "updated_at": "2025-04-15T14:30:00Z", "resources": {"hris.employees": {"id": {"read": true, "write": false}, "first_name": {"read": true, "write": true}, "last_name": {"read": true, "write": true}, "email": {"read": true, "write": true}, "addresses[].street": {"read": true, "write": false}, "addresses[].city": {"read": true, "write": false}, "employment.job_title": {"read": true, "write": true}, "custom_fields[].employee_number": {"read": true, "write": false}}, "hris.departments": {"id": {"read": true, "write": false}, "name": {"read": true, "write": true}, "code": {"read": true, "write": false}}}}, "health": "ok", "credentials_expire_at": 1730172800000, "last_refresh_failed_at": 1730000000000, "created_at": 1615563533390, "updated_at": 1616662325753}}
+          application/json: {"status_code": 200, "status": "OK", "data": {"id": "crm+salesforce", "service_id": "salesforce", "name": "Salesforce", "tag_line": "CRM software solutions and enterprise cloud computing from Salesforce, the leader in customer relationship management (CRM) and PaaS. Free 30 day trial.", "unified_api": "crm", "state": "authorized", "integration_state": "configured", "auth_type": "oauth2", "oauth_grant_type": "authorization_code", "enabled": true, "website": "https://www.salesforce.com", "icon": "https://res.cloudinary.com/apideck/image/upload/v1529456047/catalog/salesforce/icon128x128.png", "logo": "https://c1.sfdcstatic.com/content/dam/web/en_us/www/images/home/logo-salesforce-m.svg", "authorize_url": "https://unify.apideck.com/vault/authorize/salesforce/<application-id>?state=<state>", "revoke_url": "https://unify.apideck.com/vault/revoke/salesforce/<application-id>?state=<state>", "settings": {"instance_url": "https://eu28.salesforce.com", "api_key": "12345xxxxxx"}, "metadata": {"account": {"name": "My Company", "id": "c01458a5-7276-41ce-bc19-639906b0450a"}, "plan": "enterprise"}, "form_fields": [{"id": "instance_url", "label": "Instance url", "placeholder": "", "type": "text", "required": true, "custom_field": false, "allow_custom_values": false, "disabled": false, "sensitive": false}, {"id": "api_key", "label": "API Key", "placeholder": "", "type": "text", "required": true, "custom_field": false, "allow_custom_values": false, "disabled": false, "sensitive": true}], "configuration": [{"resource": "leads", "defaults": [{"target": "custom_fields", "id": "ProductInterest", "options": [{"label": "General Channel", "options": [], "option_type": "group"}], "value": "GC5000 series"}]}], "configurable_resources": ["opportunities", "companies", "contacts", "leads"], "resource_schema_support": ["leads"], "resource_settings_support": ["leads"], "settings_required_for_authorization": ["client_id", "client_secret"], "subscriptions": [{"downstream_id": "5f5f5f5f5f5f5f5f5f5f5f5f", "unify_event_types": ["crm.contact.created"], "downstream_event_types": ["contacts.CREATED"], "execute_url": "https://unify.apideck.com/webhook/w/{lookupIdToken}/{serviceId}?e={downstreamEventType}", "created_at": "2020-10-01T12:00:00.000Z"}], "has_guide": true, "custom_mappings": [{"id": "hris+employees+first_aid_training", "label": "First Aid Training", "description": "First Aid Training completed after 2019-01-01", "value": "$.root.training.first_aid", "key": "first_aid_training", "required": false, "custom_field": true, "consumer_id": "test_user_id", "example": "Some value"}], "consent_state": "granted", "consents": [{"id": "con_1234567890", "created_at": "2025-04-15T14:30:00Z", "granted": true, "resources": {"hris.employees": {"id": {"read": true, "write": false}, "first_name": {"read": true, "write": true}, "last_name": {"read": true, "write": true}, "email": {"read": true, "write": true}, "addresses[].street": {"read": true, "write": false}, "addresses[].city": {"read": true, "write": false}, "employment.job_title": {"read": true, "write": true}, "custom_fields[].employee_number": {"read": true, "write": false}}, "hris.departments": {"id": {"read": true, "write": false}, "name": {"read": true, "write": true}, "code": {"read": true, "write": false}}}}], "latest_consent": {"id": "con_1234567890", "created_at": "2025-04-15T14:30:00Z", "granted": true, "resources": {"hris.employees": {"id": {"read": true, "write": false}, "first_name": {"read": true, "write": true}, "last_name": {"read": true, "write": true}, "email": {"read": true, "write": true}, "addresses[].street": {"read": true, "write": false}, "addresses[].city": {"read": true, "write": false}, "employment.job_title": {"read": true, "write": true}, "custom_fields[].employee_number": {"read": true, "write": false}}, "hris.departments": {"id": {"read": true, "write": false}, "name": {"read": true, "write": true}, "code": {"read": true, "write": false}}}}, "application_data_scopes": {"enabled": true, "updated_at": "2025-04-15T14:30:00Z", "resources": {"hris.employees": {"id": {"read": true, "write": false}, "first_name": {"read": true, "write": true}, "last_name": {"read": true, "write": true}, "email": {"read": true, "write": true}, "addresses[].street": {"read": true, "write": false}, "addresses[].city": {"read": true, "write": false}, "employment.job_title": {"read": true, "write": true}, "custom_fields[].employee_number": {"read": true, "write": false}}, "hris.departments": {"id": {"read": true, "write": false}, "name": {"read": true, "write": true}, "code": {"read": true, "write": false}}}}, "health": "ok", "credentials_expire_at": 1730172800000, "last_refresh_failed_at": 1730000000000, "last_downstream_error_at": 1730000000000, "created_at": 1615563533390, "updated_at": 1616662325753}}
         "400":
           application/json: {"status_code": 400, "error": "Bad Request", "type_name": "RequestValidationError", "message": "Invalid Params", "detail": "Missing property foobar", "ref": "https://developers.apideck.com/errors#requestvalidationerror", "downstream_errors": [{"message": "Account code '100' has been archived or deleted", "detail": "Each line item must reference a valid account", "code": "VALIDATION_ERROR"}]}
         "401":
@@ -17280,7 +17309,7 @@ examples:
         application/json: {"enabled": true, "settings": {"instance_url": "https://eu28.salesforce.com", "api_key": "12345xxxxxx"}, "metadata": {"account": {"name": "My Company", "id": "c01458a5-7276-41ce-bc19-639906b0450a"}, "plan": "enterprise"}, "configuration": [{"resource": "leads", "defaults": [{"id": "ProductInterest", "options": [{"label": "General Channel", "options": [{"label": "General Channel", "value": "general", "option_type": "simple"}], "option_type": "group"}], "value": "GC5000 series"}]}], "custom_mappings": [{"value": "$.root.training.first_aid"}], "consent_state": "granted", "latest_consent": {"granted": true, "resources": {"hris.employees": {"id": {"read": true, "write": false}, "first_name": {"read": true, "write": true}, "last_name": {"read": true, "write": true}, "email": {"read": true, "write": true}, "addresses[].street": {"read": true, "write": false}, "addresses[].city": {"read": true, "write": false}, "employment.job_title": {"read": true, "write": true}, "custom_fields[].employee_number": {"read": true, "write": false}}, "hris.departments": {"id": {"read": true, "write": false}, "name": {"read": true, "write": true}, "code": {"read": true, "write": false}}}}, "application_data_scopes": {"enabled": true, "resources": {"hris.employees": {"id": {"read": true, "write": false}, "first_name": {"read": true, "write": true}, "last_name": {"read": true, "write": true}, "email": {"read": true, "write": true}, "addresses[].street": {"read": true, "write": false}, "addresses[].city": {"read": true, "write": false}, "employment.job_title": {"read": true, "write": true}, "custom_fields[].employee_number": {"read": true, "write": false}}, "hris.departments": {"id": {"read": true, "write": false}, "name": {"read": true, "write": true}, "code": {"read": true, "write": false}}}}}
       responses:
         "200":
-          application/json: {"status_code": 200, "status": "OK", "data": {"id": "crm+salesforce", "service_id": "salesforce", "name": "Salesforce", "tag_line": "CRM software solutions and enterprise cloud computing from Salesforce, the leader in customer relationship management (CRM) and PaaS. Free 30 day trial.", "unified_api": "crm", "state": "authorized", "integration_state": "configured", "auth_type": "oauth2", "oauth_grant_type": "authorization_code", "enabled": true, "website": "https://www.salesforce.com", "icon": "https://res.cloudinary.com/apideck/image/upload/v1529456047/catalog/salesforce/icon128x128.png", "logo": "https://c1.sfdcstatic.com/content/dam/web/en_us/www/images/home/logo-salesforce-m.svg", "authorize_url": "https://unify.apideck.com/vault/authorize/salesforce/<application-id>?state=<state>", "revoke_url": "https://unify.apideck.com/vault/revoke/salesforce/<application-id>?state=<state>", "settings": {"instance_url": "https://eu28.salesforce.com", "api_key": "12345xxxxxx"}, "metadata": {"account": {"name": "My Company", "id": "c01458a5-7276-41ce-bc19-639906b0450a"}, "plan": "enterprise"}, "form_fields": [{"id": "instance_url", "label": "Instance url", "placeholder": "", "type": "text", "required": true, "custom_field": false, "allow_custom_values": false, "disabled": false, "sensitive": false}, {"id": "api_key", "label": "API Key", "placeholder": "", "type": "text", "required": true, "custom_field": false, "allow_custom_values": false, "disabled": false, "sensitive": true}], "configuration": [{"resource": "leads", "defaults": [{"target": "custom_fields", "id": "ProductInterest", "options": [{"label": "General Channel", "option_type": "simple"}], "value": "GC5000 series"}]}], "configurable_resources": ["opportunities", "companies", "contacts", "leads"], "resource_schema_support": ["leads"], "resource_settings_support": ["leads"], "settings_required_for_authorization": ["client_id", "client_secret"], "subscriptions": [{"downstream_id": "5f5f5f5f5f5f5f5f5f5f5f5f", "unify_event_types": ["crm.contact.created"], "downstream_event_types": ["contacts.CREATED"], "execute_url": "https://unify.apideck.com/webhook/w/{lookupIdToken}/{serviceId}?e={downstreamEventType}", "created_at": "2020-10-01T12:00:00.000Z"}], "has_guide": true, "custom_mappings": [{"id": "hris+employees+first_aid_training", "label": "First Aid Training", "description": "First Aid Training completed after 2019-01-01", "value": "$.root.training.first_aid", "key": "first_aid_training", "required": false, "custom_field": true, "consumer_id": "test_user_id", "example": "Some value"}], "consent_state": "granted", "consents": [{"id": "con_1234567890", "created_at": "2025-04-15T14:30:00Z", "granted": true, "resources": {"hris.employees": {"id": {"read": true, "write": false}, "first_name": {"read": true, "write": true}, "last_name": {"read": true, "write": true}, "email": {"read": true, "write": true}, "addresses[].street": {"read": true, "write": false}, "addresses[].city": {"read": true, "write": false}, "employment.job_title": {"read": true, "write": true}, "custom_fields[].employee_number": {"read": true, "write": false}}, "hris.departments": {"id": {"read": true, "write": false}, "name": {"read": true, "write": true}, "code": {"read": true, "write": false}}}}], "latest_consent": {"id": "con_1234567890", "created_at": "2025-04-15T14:30:00Z", "granted": true, "resources": {"hris.employees": {"id": {"read": true, "write": false}, "first_name": {"read": true, "write": true}, "last_name": {"read": true, "write": true}, "email": {"read": true, "write": true}, "addresses[].street": {"read": true, "write": false}, "addresses[].city": {"read": true, "write": false}, "employment.job_title": {"read": true, "write": true}, "custom_fields[].employee_number": {"read": true, "write": false}}, "hris.departments": {"id": {"read": true, "write": false}, "name": {"read": true, "write": true}, "code": {"read": true, "write": false}}}}, "application_data_scopes": {"enabled": true, "updated_at": "2025-04-15T14:30:00Z", "resources": {"hris.employees": {"id": {"read": true, "write": false}, "first_name": {"read": true, "write": true}, "last_name": {"read": true, "write": true}, "email": {"read": true, "write": true}, "addresses[].street": {"read": true, "write": false}, "addresses[].city": {"read": true, "write": false}, "employment.job_title": {"read": true, "write": true}, "custom_fields[].employee_number": {"read": true, "write": false}}, "hris.departments": {"id": {"read": true, "write": false}, "name": {"read": true, "write": true}, "code": {"read": true, "write": false}}}}, "health": "ok", "credentials_expire_at": 1730172800000, "last_refresh_failed_at": 1730000000000, "created_at": 1615563533390, "updated_at": 1616662325753}}
+          application/json: {"status_code": 200, "status": "OK", "data": {"id": "crm+salesforce", "service_id": "salesforce", "name": "Salesforce", "tag_line": "CRM software solutions and enterprise cloud computing from Salesforce, the leader in customer relationship management (CRM) and PaaS. Free 30 day trial.", "unified_api": "crm", "state": "authorized", "integration_state": "configured", "auth_type": "oauth2", "oauth_grant_type": "authorization_code", "enabled": true, "website": "https://www.salesforce.com", "icon": "https://res.cloudinary.com/apideck/image/upload/v1529456047/catalog/salesforce/icon128x128.png", "logo": "https://c1.sfdcstatic.com/content/dam/web/en_us/www/images/home/logo-salesforce-m.svg", "authorize_url": "https://unify.apideck.com/vault/authorize/salesforce/<application-id>?state=<state>", "revoke_url": "https://unify.apideck.com/vault/revoke/salesforce/<application-id>?state=<state>", "settings": {"instance_url": "https://eu28.salesforce.com", "api_key": "12345xxxxxx"}, "metadata": {"account": {"name": "My Company", "id": "c01458a5-7276-41ce-bc19-639906b0450a"}, "plan": "enterprise"}, "form_fields": [{"id": "instance_url", "label": "Instance url", "placeholder": "", "type": "text", "required": true, "custom_field": false, "allow_custom_values": false, "disabled": false, "sensitive": false}, {"id": "api_key", "label": "API Key", "placeholder": "", "type": "text", "required": true, "custom_field": false, "allow_custom_values": false, "disabled": false, "sensitive": true}], "configuration": [{"resource": "leads", "defaults": [{"target": "custom_fields", "id": "ProductInterest", "options": [{"label": "General Channel", "option_type": "simple"}], "value": "GC5000 series"}]}], "configurable_resources": ["opportunities", "companies", "contacts", "leads"], "resource_schema_support": ["leads"], "resource_settings_support": ["leads"], "settings_required_for_authorization": ["client_id", "client_secret"], "subscriptions": [{"downstream_id": "5f5f5f5f5f5f5f5f5f5f5f5f", "unify_event_types": ["crm.contact.created"], "downstream_event_types": ["contacts.CREATED"], "execute_url": "https://unify.apideck.com/webhook/w/{lookupIdToken}/{serviceId}?e={downstreamEventType}", "created_at": "2020-10-01T12:00:00.000Z"}], "has_guide": true, "custom_mappings": [{"id": "hris+employees+first_aid_training", "label": "First Aid Training", "description": "First Aid Training completed after 2019-01-01", "value": "$.root.training.first_aid", "key": "first_aid_training", "required": false, "custom_field": true, "consumer_id": "test_user_id", "example": "Some value"}], "consent_state": "granted", "consents": [{"id": "con_1234567890", "created_at": "2025-04-15T14:30:00Z", "granted": true, "resources": {"hris.employees": {"id": {"read": true, "write": false}, "first_name": {"read": true, "write": true}, "last_name": {"read": true, "write": true}, "email": {"read": true, "write": true}, "addresses[].street": {"read": true, "write": false}, "addresses[].city": {"read": true, "write": false}, "employment.job_title": {"read": true, "write": true}, "custom_fields[].employee_number": {"read": true, "write": false}}, "hris.departments": {"id": {"read": true, "write": false}, "name": {"read": true, "write": true}, "code": {"read": true, "write": false}}}}], "latest_consent": {"id": "con_1234567890", "created_at": "2025-04-15T14:30:00Z", "granted": true, "resources": {"hris.employees": {"id": {"read": true, "write": false}, "first_name": {"read": true, "write": true}, "last_name": {"read": true, "write": true}, "email": {"read": true, "write": true}, "addresses[].street": {"read": true, "write": false}, "addresses[].city": {"read": true, "write": false}, "employment.job_title": {"read": true, "write": true}, "custom_fields[].employee_number": {"read": true, "write": false}}, "hris.departments": {"id": {"read": true, "write": false}, "name": {"read": true, "write": true}, "code": {"read": true, "write": false}}}}, "application_data_scopes": {"enabled": true, "updated_at": "2025-04-15T14:30:00Z", "resources": {"hris.employees": {"id": {"read": true, "write": false}, "first_name": {"read": true, "write": true}, "last_name": {"read": true, "write": true}, "email": {"read": true, "write": true}, "addresses[].street": {"read": true, "write": false}, "addresses[].city": {"read": true, "write": false}, "employment.job_title": {"read": true, "write": true}, "custom_fields[].employee_number": {"read": true, "write": false}}, "hris.departments": {"id": {"read": true, "write": false}, "name": {"read": true, "write": true}, "code": {"read": true, "write": false}}}}, "health": "ok", "credentials_expire_at": 1730172800000, "last_refresh_failed_at": 1730000000000, "last_downstream_error_at": 1730000000000, "created_at": 1615563533390, "updated_at": 1616662325753}}
         "400":
           application/json: {"status_code": 400, "error": "Bad Request", "type_name": "RequestValidationError", "message": "Invalid Params", "detail": "Missing property foobar", "ref": "https://developers.apideck.com/errors#requestvalidationerror", "downstream_errors": [{"message": "Account code '100' has been archived or deleted", "detail": "Each line item must reference a valid account", "code": "VALIDATION_ERROR"}]}
         "401":
@@ -18399,6 +18428,7 @@ examples:
         query:
           raw: false
           limit: 20
+          filter: {"updated_since": "2020-09-30T07:43:32.000Z", "created_since": "2020-09-30T07:43:32.000Z", "number": "OIT00546"}
         header:
           x-apideck-consumer-id: "test-consumer"
           x-apideck-app-id: "dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX"
@@ -19659,9 +19689,91 @@ examples:
           application/json: {"status_code": 422, "error": "Unprocessable Entity", "type_name": "InvalidStateError", "message": "Invalid State", "detail": "Unprocessable request, please verify your request headers and body.", "ref": "https://developers.apideck.com/errors#invalidstateerror"}
         default:
           application/json: {"status_code": 400, "error": "Bad Request", "type_name": "RequestHeadersValidationError", "message": "Invalid Params", "detail": "Missing Header: x-apideck-consumer-id", "ref": "https://developers.apideck.com/errors#unauthorizederror"}
+  accounting.generalLedgerTransactionsAll:
+    speakeasy-default-accounting-general-ledger-transactions-all:
+      parameters:
+        query:
+          raw: false
+          limit: 20
+          filter: {"source_type": "invoice", "updated_since": "2024-09-30T07:43:32.000Z"}
+          sort: {"by": "posted_at", "direction": "desc"}
+          pass_through: {"search": "San Francisco"}
+          fields: "id,updated_at"
+        header:
+          x-apideck-consumer-id: "test-consumer"
+          x-apideck-app-id: "dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX"
+          x-apideck-service-id: "salesforce"
+          x-apideck-company-id: "12345"
+      responses:
+        "200":
+          application/json: {"status_code": 200, "status": "OK", "service": "xero", "resource": "general-ledger-transactions", "operation": "all", "data": [], "meta": {"items_on_page": 50, "cursors": {"previous": "em9oby1jcm06OnBhZ2U6OjE=", "current": "em9oby1jcm06OnBhZ2U6OjI=", "next": "em9oby1jcm06OnBhZ2U6OjM="}}, "links": {"previous": "https://unify.apideck.com/crm/companies?cursor=em9oby1jcm06OnBhZ2U6OjE%3D", "current": "https://unify.apideck.com/crm/companies", "next": "https://unify.apideck.com/crm/companies?cursor=em9oby1jcm06OnBhZ2U6OjM"}}
+        "400":
+          application/json: {"status_code": 400, "error": "Bad Request", "type_name": "RequestValidationError", "message": "Invalid Params", "detail": "Missing property foobar", "ref": "https://developers.apideck.com/errors#requestvalidationerror", "downstream_errors": [{"message": "Account code '100' has been archived or deleted", "detail": "Each line item must reference a valid account", "code": "VALIDATION_ERROR"}]}
+        "401":
+          application/json: {"status_code": 401, "error": "Unauthorized", "type_name": "UnauthorizedError", "message": "Unauthorized Request", "detail": "Missing authentication", "ref": "https://developers.apideck.com/errors#unauthorizederror"}
+        "402":
+          application/json: {"status_code": 402, "error": "Payment Required", "type_name": "RequestLimitError", "message": "Request Limit Reached", "detail": "You have reached your limit of 2000", "ref": "https://developers.apideck.com/errors#requestlimiterror"}
+        "404":
+          application/json: {"status_code": 404, "error": "Not Found", "type_name": "EntityNotFoundError", "message": "Unknown Widget", "detail": "Could not find widget with id: '123'", "ref": "https://developers.apideck.com/errors#entitynotfounderror"}
+        "422":
+          application/json: {"status_code": 422, "error": "Unprocessable Entity", "type_name": "InvalidStateError", "message": "Invalid State", "detail": "Unprocessable request, please verify your request headers and body.", "ref": "https://developers.apideck.com/errors#invalidstateerror"}
+        default:
+          application/json: {"status_code": 400, "error": "Bad Request", "type_name": "RequestHeadersValidationError", "message": "Invalid Params", "detail": "Missing Header: x-apideck-consumer-id", "ref": "https://developers.apideck.com/errors#unauthorizederror"}
+  accounting.generalLedgerTransactionsOne:
+    speakeasy-default-accounting-general-ledger-transactions-one:
+      parameters:
+        path:
+          id: "<id>"
+        query:
+          raw: false
+          fields: "id,updated_at"
+        header:
+          x-apideck-consumer-id: "test-consumer"
+          x-apideck-app-id: "dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX"
+          x-apideck-service-id: "salesforce"
+          x-apideck-company-id: "12345"
+      responses:
+        "200":
+          application/json: {"status_code": 200, "status": "OK", "service": "xero", "resource": "general-ledger-transactions", "operation": "one", "data": {"id": "12345", "source_type": "invoice", "source_id": "12345", "posted_at": "2020-09-30T07:43:32.000Z", "reference": "INV-2024-001", "number": "JNL-001", "currency": "USD", "currency_rate": 0.69, "memo": "Year-end adjustment for inventory revaluation", "line_items": [{"id": "12345", "description": "Sales revenue from Q3 batch", "net_amount": 27500, "type": "debit", "tax_amount": 0, "tax_rate": {"id": "123456", "code": "N-T", "name": "GST on Purchases", "rate": 10}, "tracking_categories": [{"id": "123456", "code": "100", "name": "New York", "parent_id": "123456", "parent_name": "New York"}], "ledger_account": {"id": "123456", "name": "Bank account", "nominal_code": "N091", "code": "453", "parent_id": "123456", "display_id": "123456"}, "line_number": 1}], "custom_fields": [{"id": "2389328923893298", "name": "employee_level", "description": "Employee Level", "value": "Uses Salesforce and Marketo"}], "updated_by": "12345", "created_by": "12345", "updated_at": "2020-09-30T07:43:32.000Z", "created_at": "2020-09-30T07:43:32.000Z", "pass_through": [{"service_id": "<id>", "extend_paths": [{"path": "$.nested.property", "value": {"TaxClassificationRef": {"value": "EUC-99990201-V1-00020000"}}}]}]}}
+        "400":
+          application/json: {"status_code": 400, "error": "Bad Request", "type_name": "RequestValidationError", "message": "Invalid Params", "detail": "Missing property foobar", "ref": "https://developers.apideck.com/errors#requestvalidationerror", "downstream_errors": [{"message": "Account code '100' has been archived or deleted", "detail": "Each line item must reference a valid account", "code": "VALIDATION_ERROR"}]}
+        "401":
+          application/json: {"status_code": 401, "error": "Unauthorized", "type_name": "UnauthorizedError", "message": "Unauthorized Request", "detail": "Missing authentication", "ref": "https://developers.apideck.com/errors#unauthorizederror"}
+        "402":
+          application/json: {"status_code": 402, "error": "Payment Required", "type_name": "RequestLimitError", "message": "Request Limit Reached", "detail": "You have reached your limit of 2000", "ref": "https://developers.apideck.com/errors#requestlimiterror"}
+        "404":
+          application/json: {"status_code": 404, "error": "Not Found", "type_name": "EntityNotFoundError", "message": "Unknown Widget", "detail": "Could not find widget with id: '123'", "ref": "https://developers.apideck.com/errors#entitynotfounderror"}
+        "422":
+          application/json: {"status_code": 422, "error": "Unprocessable Entity", "type_name": "InvalidStateError", "message": "Invalid State", "detail": "Unprocessable request, please verify your request headers and body.", "ref": "https://developers.apideck.com/errors#invalidstateerror"}
+        default:
+          application/json: {"status_code": 400, "error": "Bad Request", "type_name": "RequestHeadersValidationError", "message": "Invalid Params", "detail": "Missing Header: x-apideck-consumer-id", "ref": "https://developers.apideck.com/errors#unauthorizederror"}
 examplesVersion: 1.0.2
 generatedTests: {}
-releaseNotes: "## Python SDK Changes Detected:\n* `apideck.crm.notes.list()`:  `request.filter` **Added**\n* `apideck.crm.users.list()`: \n  *  `request.filter` **Added**\n  *  `response.data.[].name` **Added**\n* `apideck.crm.users.create()`:  `request.name` **Added**\n* `apideck.crm.users.get()`:  `response.data.name` **Added**\n* `apideck.crm.users.update()`:  `request.name` **Added**\n"
+releaseNotes: |
+  ## Python SDK Changes Detected:
+  * `apideck.accounting.general_ledger_transactions.list()`: **Added**
+  * `apideck.accounting.general_ledger_transactions.get()`: **Added**
+  * `apideck.accounting.bills.list()`:  `request.filter` **Changed**
+  * `apideck.accounting.invoices.list()`:  `request.filter` **Changed**
+  * `apideck.accounting.ledger_accounts.list()`:  `request.filter` **Changed**
+  * `apideck.accounting.invoice_items.list()`:  `request.filter` **Changed**
+  * `apideck.accounting.credit_notes.list()`:  `request.filter` **Changed**
+  * `apideck.accounting.customers.list()`:  `request.filter` **Changed**
+  * `apideck.accounting.suppliers.list()`:  `request.filter` **Changed**
+  * `apideck.accounting.payments.list()`:  `request.filter` **Changed**
+  * `apideck.accounting.journal_entries.list()`:  `request.filter` **Changed**
+  * `apideck.accounting.purchase_orders.list()`:  `request.filter` **Changed**
+  * `apideck.accounting.bill_payments.list()`:  `request.filter` **Changed**
+  * `apideck.accounting.quotes.list()`:  `request.filter` **Added**
+  * `apideck.accounting.projects.list()`:  `request.filter` **Changed**
+  * `apideck.accounting.expense_reports.list()`:  `request.filter` **Changed**
+  * `apideck.vault.connections.list()`:  `response.data.[].last_downstream_error_at` **Added**
+  * `apideck.vault.connections.get()`:  `response.data.last_downstream_error_at` **Added**
+  * `apideck.vault.connections.update()`:  `response.data.last_downstream_error_at` **Added**
+  * `apideck.vault.connections.imports()`:  `response.data.last_downstream_error_at` **Added**
+  * `apideck.vault.connections.token()`:  `response.data.last_downstream_error_at` **Added**
+  * `apideck.vault.connection_settings.list()`:  `response.data.last_downstream_error_at` **Added**
+  * `apideck.vault.connection_settings.update()`:  `response.data.last_downstream_error_at` **Added**
 trackedFiles:
   .devcontainer/README.md:
     last_write_checksum: sha1:07adb0c0c051a9be4d479ea06461f3a9b3bbeb2f
@@ -20133,6 +20245,18 @@ trackedFiles:
     last_write_checksum: sha1:649afc75e803cce6376bbed159716fe8895b06f1
   docs/models/accountingexpensesupdateresponse.md:
     last_write_checksum: sha1:a0abf9ee705650d2635889c9e4290e4e62224020
+  docs/models/accountinggeneralledgertransactionsallglobals.md:
+    last_write_checksum: sha1:38519a695a79d26796b99ff10fbd41f421085eb1
+  docs/models/accountinggeneralledgertransactionsallrequest.md:
+    last_write_checksum: sha1:8772e92463f4ac8b8929ac44762b0d2d9ee84fc0
+  docs/models/accountinggeneralledgertransactionsallresponse.md:
+    last_write_checksum: sha1:2174048bb8496990be42a0305ab574e2b0722f4f
+  docs/models/accountinggeneralledgertransactionsoneglobals.md:
+    last_write_checksum: sha1:e3304e64f211bb5e10547c3119fd63655bac85e0
+  docs/models/accountinggeneralledgertransactionsonerequest.md:
+    last_write_checksum: sha1:0e78eea4c69dfca5a47ad05fc789c4d178fc6774
+  docs/models/accountinggeneralledgertransactionsoneresponse.md:
+    last_write_checksum: sha1:02cab03b73369a9338217cf585a87822c8976b03
   docs/models/accountinginvoiceitemsaddglobals.md:
     last_write_checksum: sha1:f8592854bba1844b0ead8ed5969c3cad022c1e19
   docs/models/accountinginvoiceitemsaddrequest.md:
@@ -20398,7 +20522,7 @@ trackedFiles:
   docs/models/accountingquotesallglobals.md:
     last_write_checksum: sha1:3dc0a08da96f7926e90a33a515d7389347c30220
   docs/models/accountingquotesallrequest.md:
-    last_write_checksum: sha1:feec1e795416178d6fbf3468c7418f4731e83e2b
+    last_write_checksum: sha1:f1d0f2f9f31e4fb3b8e05dcfd5618857e27c5851
   docs/models/accountingquotesallresponse.md:
     last_write_checksum: sha1:a7c9586c9cc2b2977614139a7f209f5beeab4ef5
   docs/models/accountingquotesdeleteglobals.md:
@@ -20830,7 +20954,7 @@ trackedFiles:
   docs/models/billpaymenttype.md:
     last_write_checksum: sha1:f13abce9e8c13c55e827b79f5d569b5423c101f5
   docs/models/billsfilter.md:
-    last_write_checksum: sha1:3436207c64eb79ed2bcd15ba8ba7d615fa2fed96
+    last_write_checksum: sha1:99e43ef0215557e2b046878f11c1e3569e247f60
   docs/models/billsfilterstatus.md:
     last_write_checksum: sha1:f106a07ba83fc3ca7599e71354b27c0fefaa7309
   docs/models/billssort.md:
@@ -20900,13 +21024,13 @@ trackedFiles:
   docs/models/configuration.md:
     last_write_checksum: sha1:d7316959670bb33007c8e75596a6b67e3e860b55
   docs/models/connection.md:
-    last_write_checksum: sha1:c5da6a92731a4a0dcbec102e263dc92f5f2bdc54
+    last_write_checksum: sha1:a1b907eb47674aaaaad8e861e070f8b9a388756d
   docs/models/connectionconfiguration.md:
     last_write_checksum: sha1:b8373ebad4674b14991c53b0b805d1d82739022f
   docs/models/connectiondefaults.md:
     last_write_checksum: sha1:ffafdb7580a2a9f1fc663fad634a8ee852bb8770
   docs/models/connectionhealth.md:
-    last_write_checksum: sha1:6c75ceb6707fc0f40dd639476448a274b865d703
+    last_write_checksum: sha1:aca35cf662bd5b1d85e58c1531458882fad42cc6
   docs/models/connectionimportdata.md:
     last_write_checksum: sha1:0b06e09351ee734a771f4816621486ce38d65f56
   docs/models/connectioninput.md:
@@ -21160,7 +21284,7 @@ trackedFiles:
   docs/models/creditnoteinput.md:
     last_write_checksum: sha1:5cd185371ea93e9f5d5de02ffc2e5894e0178e09
   docs/models/creditnotesfilter.md:
-    last_write_checksum: sha1:71cac54aa2294e88ec9d621d73aedcacf664b7bb
+    last_write_checksum: sha1:61dada164b221a0592e2e0a13a63e83b7604f47f
   docs/models/creditnotessort.md:
     last_write_checksum: sha1:fd155892f6ca3800b5e3b8f6ba93ccee75ba2255
   docs/models/creditnotessortby.md:
@@ -21480,7 +21604,7 @@ trackedFiles:
   docs/models/customerinput.md:
     last_write_checksum: sha1:173200099c92a00103cd196857a1245fe11c60e9
   docs/models/customersfilter.md:
-    last_write_checksum: sha1:f493d56c83782449d62cd747eb85e32b387f2020
+    last_write_checksum: sha1:b384cc609d09dd6c4fd360243dda59914bdcdcbb
   docs/models/customersfilterstatus.md:
     last_write_checksum: sha1:51104ca6ea38000fa961da1382d30d453e238940
   docs/models/customerssort.md:
@@ -21854,7 +21978,7 @@ trackedFiles:
   docs/models/expensereportlineiteminput.md:
     last_write_checksum: sha1:68abc0273747a483282ba884645248aea8a76cd0
   docs/models/expensereportsfilter.md:
-    last_write_checksum: sha1:533be8b993ddfd16144e9aaf1159c7568f40e745
+    last_write_checksum: sha1:2467326c979c62f76e4dbd7e1ccc823de8f30eac
   docs/models/expensereportsfilterstatus.md:
     last_write_checksum: sha1:8f2339fcb79d520c87ca3406153b2144542b9f2f
   docs/models/expensereportstatus.md:
@@ -22103,6 +22227,20 @@ trackedFiles:
     last_write_checksum: sha1:2d75cb4474b6c2343e4281383c19576a98eb3586
   docs/models/gender.md:
     last_write_checksum: sha1:3c95ab15d15027e740e4c2feef121f6330266de6
+  docs/models/generalledgertransaction.md:
+    last_write_checksum: sha1:96741147e9ddbe207f306773b1a1c3dd1fb79002
+  docs/models/generalledgertransactionlineitem.md:
+    last_write_checksum: sha1:20d54b1701e36f66f40c6352dcfcacd5811afdbd
+  docs/models/generalledgertransactionlineitemtype.md:
+    last_write_checksum: sha1:a86b1e8ca6aba7ddad5bee31ec36b8ed7071be3a
+  docs/models/generalledgertransactionsfilter.md:
+    last_write_checksum: sha1:34771ef56027c3701400aad862cbe8e983442fbc
+  docs/models/generalledgertransactionsourcetype.md:
+    last_write_checksum: sha1:f82ee546b8c3f752042b0a2bbe6e2fdbf5c30b19
+  docs/models/generalledgertransactionssort.md:
+    last_write_checksum: sha1:45bc6b8f55364f5bd51033cbcd7f6e3818efe2f2
+  docs/models/generalledgertransactionssortby.md:
+    last_write_checksum: sha1:7eee207c072c5dd529b07452d66cc93789f3ed15
   docs/models/getaccountingdepartmentresponse.md:
     last_write_checksum: sha1:d9869be1a8ab2046d52d13eea2ea153f9e5f9aa1
   docs/models/getaccountingdepartmentsresponse.md:
@@ -22279,6 +22417,10 @@ trackedFiles:
     last_write_checksum: sha1:b1fcde70e8d4eac16675a9c1b65478f6b5b43a26
   docs/models/getfolderresponse.md:
     last_write_checksum: sha1:9086812860b8388193aca5493de972854b0e3a83
+  docs/models/getgeneralledgertransactionresponse.md:
+    last_write_checksum: sha1:b33ebb6c16f3539acef4011dd992349745a6b9b5
+  docs/models/getgeneralledgertransactionsresponse.md:
+    last_write_checksum: sha1:df1538f189cbc1786ed4e66b703c00f0870095fc
   docs/models/gethriscompaniesresponse.md:
     last_write_checksum: sha1:d7c7a8d91c9249964b5a9e5a6616eeaa68c73d75
   docs/models/gethriscompanyresponse.md:
@@ -22398,7 +22540,7 @@ trackedFiles:
   docs/models/getwebhooksresponse.md:
     last_write_checksum: sha1:a495ba205e48edc2ea5609c71348cead73fca625
   docs/models/health.md:
-    last_write_checksum: sha1:c396b9969efd06365e58881d180d8e545decb933
+    last_write_checksum: sha1:2d0eccfa53bebb13ac169c08f392c76e1012630b
   docs/models/hriscompaniesaddglobals.md:
     last_write_checksum: sha1:689667f84b5a3b85a7d09270aab30d7f243f43ea
   docs/models/hriscompaniesaddrequest.md:
@@ -22584,7 +22726,7 @@ trackedFiles:
   docs/models/invoiceitemsalesdetails.md:
     last_write_checksum: sha1:e86574bd1508f782013ad3e72c31f87971524cf1
   docs/models/invoiceitemsfilter.md:
-    last_write_checksum: sha1:7c0aefca2a8b00117842860327829391fd865427
+    last_write_checksum: sha1:13e75aa8a676c70ad03d9df8f5ed27aecf9a44b8
   docs/models/invoiceitemssort.md:
     last_write_checksum: sha1:69616d3404cad41715adbbeec8fa9bf292faae30
   docs/models/invoiceitemssortby.md:
@@ -22602,7 +22744,7 @@ trackedFiles:
   docs/models/invoiceresponse.md:
     last_write_checksum: sha1:bc0577dbf4ceec23ec16db3034fd6199ef550dc7
   docs/models/invoicesfilter.md:
-    last_write_checksum: sha1:367404f32d1018079f0339e3c83cd277f9f8f6b1
+    last_write_checksum: sha1:684abb5ac6c9fb31e4cd331216b7f7b321f46660
   docs/models/invoicessort.md:
     last_write_checksum: sha1:1eba528d38a368e93a9d28100a5d7c566bad30a1
   docs/models/invoicessortby.md:
@@ -22716,7 +22858,9 @@ trackedFiles:
   docs/models/jobtype.md:
     last_write_checksum: sha1:e6ebaadba669092d88c14d3127d44a218002e927
   docs/models/journalentriesfilter.md:
-    last_write_checksum: sha1:142b451ee4315bb32a360e0cdfe9935b99d7aa2e
+    last_write_checksum: sha1:212e3b844e731cdb009cd314ae37695074179fa2
+  docs/models/journalentriesfilterscope.md:
+    last_write_checksum: sha1:df5230ed4aadb3058cabc89269c06fd6a5b24014
   docs/models/journalentriesfilterstatus.md:
     last_write_checksum: sha1:7d06dbfa7f479fd73b375e18fd1ca8fa2133b1ff
   docs/models/journalentriessort.md:
@@ -22754,7 +22898,7 @@ trackedFiles:
   docs/models/ledgeraccountinput.md:
     last_write_checksum: sha1:4ac3c9d202db5f43f07936ebcc53c16f2cbde2ba
   docs/models/ledgeraccountsfilter.md:
-    last_write_checksum: sha1:aa41ec441db68d4235157bf37b17c9ee47a4d22b
+    last_write_checksum: sha1:25127f7b5acabde9b88273016bacdfa9a01ba22d
   docs/models/ledgeraccountsfilterstatus.md:
     last_write_checksum: sha1:a14b96feb7ea68ab27a33069477d678f2068badb
   docs/models/ledgeraccountssort.md:
@@ -22932,7 +23076,7 @@ trackedFiles:
   docs/models/paymentrequiredresponse.md:
     last_write_checksum: sha1:45bb76a00672508387db28b9dce96d3661491594
   docs/models/paymentsfilter.md:
-    last_write_checksum: sha1:44a022e442059c6750eecf94ea2376e2ee12374f
+    last_write_checksum: sha1:a7a8f7a03eb136bdaf12972575672377922e946a
   docs/models/paymentsfilterpaymentstatus.md:
     last_write_checksum: sha1:0003ab41802651f55fc9e7456f6f4d94e364b1a7
   docs/models/paymentsfiltertype.md:
@@ -23000,7 +23144,7 @@ trackedFiles:
   docs/models/projectprojectstatus.md:
     last_write_checksum: sha1:4a72cf619b2e554e5164d508cc6ec7906c9e3a32
   docs/models/projectsfilter.md:
-    last_write_checksum: sha1:9ba860608648d646ca428c3ec32130cd56ec7bfb
+    last_write_checksum: sha1:4bd44ead48d937ef62f3ab294eeff295fc05d28a
   docs/models/projectssort.md:
     last_write_checksum: sha1:ce499db64992f0bd86dafbe1b7927d957398f89a
   docs/models/projectssortsortby.md:
@@ -23060,7 +23204,7 @@ trackedFiles:
   docs/models/purchaseorderinput.md:
     last_write_checksum: sha1:2d2fc413fe8df46a1bb377c918b5b901a7142407
   docs/models/purchaseordersfilter.md:
-    last_write_checksum: sha1:fc530b97a1741136edeb4fa6554a735ae0b1692e
+    last_write_checksum: sha1:167e3885fa2eb17b87ed9a2a8bd6c78fe08c3ebb
   docs/models/purchaseorderssort.md:
     last_write_checksum: sha1:40955661d0606c8c5b8dffc73fa10c5822d38ea3
   docs/models/purchaseorderssortby.md:
@@ -23077,6 +23221,8 @@ trackedFiles:
     last_write_checksum: sha1:a543acba9c52a4e16feb2581fff9cf04c6b24aed
   docs/models/quotelineitemtype.md:
     last_write_checksum: sha1:df59dbf0dd185da8a9aabd570399ebdb49dca86b
+  docs/models/quotesfilter.md:
+    last_write_checksum: sha1:c4897eb6ad552e74852c8bf72e9ab25bab0c10d2
   docs/models/quotestatus.md:
     last_write_checksum: sha1:f00b3209a9c7ebccedd03f94739a739ceb6fdc81
   docs/models/rebilling.md:
@@ -23187,6 +23333,8 @@ trackedFiles:
     last_write_checksum: sha1:a1067d89003e4adda3e2c1f467a1d771020ee472
   docs/models/sortdirection.md:
     last_write_checksum: sha1:53cc6d6adc98c85b2880671af1849b2234e07135
+  docs/models/sourcetype.md:
+    last_write_checksum: sha1:a185f8161b55b088ca98cb972e86e9cb09681572
   docs/models/stage.md:
     last_write_checksum: sha1:7d473faebd54bf8372b4015caf38490029ffc210
   docs/models/stages.md:
@@ -23216,7 +23364,7 @@ trackedFiles:
   docs/models/supplierinput.md:
     last_write_checksum: sha1:b8a5fb2144332342142bea917bbd30e552517552
   docs/models/suppliersfilter.md:
-    last_write_checksum: sha1:53ab8c13d14c5d30d9c1f4318a96c97bb5f51a9d
+    last_write_checksum: sha1:07287305682aea8b1ae48fb786bb882567c3585a
   docs/models/supplierssort.md:
     last_write_checksum: sha1:c7297fbfe8a2b172a4dd3c2bd3f90b95950bdd3f
   docs/models/supplierssortby.md:
@@ -23628,7 +23776,7 @@ trackedFiles:
   docs/models/webhookeventlogsfilterservice.md:
     last_write_checksum: sha1:91879316d2b412d23cf082cca77d946dda736357
   docs/models/webhookeventtype.md:
-    last_write_checksum: sha1:8a56f9a602a729f8594a7461923fd009e22910d1
+    last_write_checksum: sha1:92a500eb3b8bf4c8c885446090daaf87958dbcc9
   docs/models/webhooksubscription.md:
     last_write_checksum: sha1:a698dbef407f125cd3e724b8a0920760f88182cb
   docs/models/webhooksupport.md:
@@ -23789,6 +23937,8 @@ trackedFiles:
     last_write_checksum: sha1:6fafca167285487e1d60275037ff6cb4ac3978f3
   docs/sdks/folders/README.md:
     last_write_checksum: sha1:2997e8070c3ac42b86e6a3b8e611ab6a468c54ab
+  docs/sdks/generalledgertransactions/README.md:
+    last_write_checksum: sha1:a6f1e311d62ca308340a41b8e124abd30e6477c0
   docs/sdks/invoiceitems/README.md:
     last_write_checksum: sha1:d2426572c3480a9b6d0befefb7256a11051b7d76
   docs/sdks/invoices/README.md:
@@ -23830,7 +23980,7 @@ trackedFiles:
   docs/sdks/purchaseorders/README.md:
     last_write_checksum: sha1:fb84ad40ffac3213e8249afbb310b4c4d5b4dfed
   docs/sdks/quotes/README.md:
-    last_write_checksum: sha1:2179d175eb9e35bb1281a005b9047ae6424f641e
+    last_write_checksum: sha1:800c2973ae672f661ded08df85fb324484cb9b0a
   docs/sdks/refunds/README.md:
     last_write_checksum: sha1:f02f4f6ba8629d448e1708c0a82e505f526c7079
   docs/sdks/sessions/README.md:
@@ -23870,7 +24020,7 @@ trackedFiles:
   scripts/publish.sh:
     last_write_checksum: sha1:b31bafc19c15ab5ea925fdf8d5d4adce2b115a63
   src/apideck_unify/__init__.py:
-    last_write_checksum: sha1:36306d1d404b6aeb912d27f1d9c52f098ff7bf9b
+    last_write_checksum: sha1:eec86b555287a1f966479167defba81fe37be83f
   src/apideck_unify/_hooks/__init__.py:
     last_write_checksum: sha1:e3111289afd28ad557c21d9e2f918caabfb7037d
   src/apideck_unify/_hooks/sdkhooks.py:
@@ -23878,25 +24028,25 @@ trackedFiles:
   src/apideck_unify/_hooks/types.py:
     last_write_checksum: sha1:4b923d3d84d979af6169a9db6b81bfc373079a25
   src/apideck_unify/_version.py:
-    last_write_checksum: sha1:be6ae553b3103cd4961604d2a39332c7a0038e23
+    last_write_checksum: sha1:0729623603545401a6da7f4919bd6e8cbb8d80b5
   src/apideck_unify/accounting.py:
-    last_write_checksum: sha1:afb8958c0092d6bbc935597b72e8a96d2b82b4aa
+    last_write_checksum: sha1:63ea555e29266c0cbe993e2bddf21ffecd9b02b9
   src/apideck_unify/activities.py:
-    last_write_checksum: sha1:b5f87574cb7834aaeaa00d231d4437dbecade8ef
+    last_write_checksum: sha1:4f95960557847587b5b7953c12d400105b0659f6
   src/apideck_unify/agedcreditors_sdk.py:
-    last_write_checksum: sha1:38953203ce19205b65319658ee891fa2ebf63f97
+    last_write_checksum: sha1:0a752c0c5ceda6352dfbe6528fd0b2f8a89eeadb
   src/apideck_unify/ageddebtors_sdk.py:
-    last_write_checksum: sha1:b64ea0f0f42a72c6255bb8fc8f3d6553d09e2846
+    last_write_checksum: sha1:6d8203b91939a723354fe44406d8753a064c2928
   src/apideck_unify/apideck_companies.py:
-    last_write_checksum: sha1:604891f4649de6b9dcd5d16750b6d3b25a7a7bbf
+    last_write_checksum: sha1:d423fbe1666f70860f87a5b7c307d7e1a82a59c8
   src/apideck_unify/apideck_customers.py:
-    last_write_checksum: sha1:0614b08e78f64414d2f96463ff04d417ca08ff58
+    last_write_checksum: sha1:7da17c0207af9da318668d09ad79e539a351c833
   src/apideck_unify/apideck_departments.py:
-    last_write_checksum: sha1:19e41fbd66c3cd1854968bff75e28d13abc1cb6b
+    last_write_checksum: sha1:457a04dec86082a9ed1ed1472eaa8c6188c6eb3c
   src/apideck_unify/apideck_employees.py:
-    last_write_checksum: sha1:c4f35ec2caba6bc2a887e863053b24710bb15ae3
+    last_write_checksum: sha1:6d75fa6d2feb59e8f89e19b51be012efe6c31992
   src/apideck_unify/apideck_hris_companies.py:
-    last_write_checksum: sha1:33525b6f5c41b20f33a6497d6749f810826b0b12
+    last_write_checksum: sha1:cccc867973acf329bd2d749c5a716179417f1d21
   src/apideck_unify/apiresourcecoverage_sdk.py:
     last_write_checksum: sha1:19c0d90196f4d4f6a1a73f3af055d40986fc6b9f
   src/apideck_unify/apiresources.py:
@@ -23904,39 +24054,39 @@ trackedFiles:
   src/apideck_unify/apis.py:
     last_write_checksum: sha1:c5e1e3a2228cd77ab87593355842374efbd2617d
   src/apideck_unify/applicants.py:
-    last_write_checksum: sha1:d7877b481e381a5ec2da764474233384bd7727f3
+    last_write_checksum: sha1:227afe08d8e0ed5537bcbc0115dd33e6e35732e3
   src/apideck_unify/applications.py:
-    last_write_checksum: sha1:061fe8ae6b56cf50f2e633e851e53d7eacac57fc
+    last_write_checksum: sha1:d5bc1131f592ebcc13e0b3ca237555f6960b972b
   src/apideck_unify/ats.py:
     last_write_checksum: sha1:0d5c5cedbfeb231840eb69958e0240f2fbb630f8
   src/apideck_unify/attachments.py:
     last_write_checksum: sha1:74f16eb5a3b7a5c6f6982918bdc312d4ff221e7a
   src/apideck_unify/balancesheet_sdk.py:
-    last_write_checksum: sha1:adf1cc84105c5f2d7eb8057ab3293d7327b2d73a
+    last_write_checksum: sha1:e7a82b470a800602cd0a14a916e0814875d1587f
   src/apideck_unify/bankaccounts.py:
-    last_write_checksum: sha1:448618654628a9ace5cdbb1745bc7db135bdbc19
+    last_write_checksum: sha1:c98af75eca1171375ac930acc4d3b8d18c0bbe81
   src/apideck_unify/bankfeedaccounts.py:
-    last_write_checksum: sha1:38259fb36016d4e58dddc5e114444c124a2fcb32
+    last_write_checksum: sha1:7d472865921e62f6cb4818a902692d8cb5dc8ec7
   src/apideck_unify/bankfeedstatements.py:
-    last_write_checksum: sha1:51f40f939cd39999e7ab319f2ef0b8171a677b61
+    last_write_checksum: sha1:c06e8bc014771bcfd4825806a8006fc35a2e7838
   src/apideck_unify/basesdk.py:
     last_write_checksum: sha1:02f62bd40dfedb9697666050be333be287dd5a5b
   src/apideck_unify/billpayments.py:
-    last_write_checksum: sha1:43a6a58f8324cfff0b36b310a1c4f13a85e0c217
+    last_write_checksum: sha1:5e91bb6e9964ac8481cc5100bb667e45ee479a2b
   src/apideck_unify/bills.py:
-    last_write_checksum: sha1:32954f0d06c568fa81ad1cd3f656be8d0226e891
+    last_write_checksum: sha1:b65200199e7599a2e5782fd4c803624e96f8ba5e
   src/apideck_unify/categories.py:
     last_write_checksum: sha1:edac9587e5f795f65d1cb7741616b174cdba9695
   src/apideck_unify/collections.py:
-    last_write_checksum: sha1:46b9fb81de836bb82e25dfb9c9ec2a7504a56c15
+    last_write_checksum: sha1:5466f2ab674071c137ee017df0495ea724f2486e
   src/apideck_unify/collectiontags.py:
-    last_write_checksum: sha1:95299132dc9f72097c5a4e6fb63839ea28c2248f
+    last_write_checksum: sha1:93917b03c5dba10d20066c42917cbf981374e67a
   src/apideck_unify/collectionticketcomments.py:
-    last_write_checksum: sha1:31877bde20a4e8f4b2a1779aba87e006fe694f06
+    last_write_checksum: sha1:2b455756d12fd0ef24c77d71f5ba1bbdad0f5270
   src/apideck_unify/collectiontickets.py:
-    last_write_checksum: sha1:c56002fb39ae9be61c3c7be8ad7b1ef6a311a536
+    last_write_checksum: sha1:795c3a404e230eaa017bb2eee9110c1d1d475b27
   src/apideck_unify/collectionusers.py:
-    last_write_checksum: sha1:69963d919c40fe79f9c2e0beb70fdff1d5bf972b
+    last_write_checksum: sha1:c35ad0700ea90e8472098b43b7bbaea44abecee6
   src/apideck_unify/companies.py:
     last_write_checksum: sha1:1a6fe8f5abf4083a60203aea326c5f990268e927
   src/apideck_unify/companyinfo_sdk.py:
@@ -23948,9 +24098,9 @@ trackedFiles:
   src/apideck_unify/connectioncustommappings.py:
     last_write_checksum: sha1:db6e5bfe9810d17534e88e8225593e2ecb7b69ef
   src/apideck_unify/connections.py:
-    last_write_checksum: sha1:0f258d6cd02a40bdef1a047b510d616479b2790e
+    last_write_checksum: sha1:79bcc4662ebaf216dc0c0576a90c239e74ca3264
   src/apideck_unify/connectionsettings.py:
-    last_write_checksum: sha1:e9d1c4840f64b30904e9421d08c1ce96ff374899
+    last_write_checksum: sha1:b5cf19d1a1f988c4d31afe62a80f077ebc1c57f4
   src/apideck_unify/connector_sdk.py:
     last_write_checksum: sha1:2612a2326d4070d9551e7865993fee5a42931c89
   src/apideck_unify/connectordocs.py:
@@ -23964,77 +24114,79 @@ trackedFiles:
   src/apideck_unify/consumers.py:
     last_write_checksum: sha1:f0109518542457c9510782b0c271baa767d21735
   src/apideck_unify/contacts.py:
-    last_write_checksum: sha1:c327130102b95dfd7b759e8f1c90b26b10a1e206
+    last_write_checksum: sha1:dbe7cd26d01b7facd000940eb397d51a609c6685
   src/apideck_unify/createcallback.py:
     last_write_checksum: sha1:614dddeb026a1bbc6ea2739a6e3720d3e5b7ddc5
   src/apideck_unify/creditnotes.py:
-    last_write_checksum: sha1:bb579d096ac82a6e70312533b7a2978d06ef8bad
+    last_write_checksum: sha1:1bb028e358763a3ca91cc43ec06bcaddf28feeeb
   src/apideck_unify/crm.py:
     last_write_checksum: sha1:8bbf1c9e4f092b110c8f9b2cbaf5d4af099cd6a1
   src/apideck_unify/customers.py:
-    last_write_checksum: sha1:e276582e6b1cfb05ea12b1881dc75b3500142664
+    last_write_checksum: sha1:9509859e2f34134426889040fe25967ddc245048
   src/apideck_unify/customfields.py:
     last_write_checksum: sha1:6af82cb3c3c1fc24fb4755e4f40fbfaceee89372
   src/apideck_unify/custommappings.py:
     last_write_checksum: sha1:abb0be88368477c52b571379ba02a1af4ac2a3d9
   src/apideck_unify/customobjects.py:
-    last_write_checksum: sha1:f0b6cb940c1654a5ce466ccc1a20ef72abc79877
+    last_write_checksum: sha1:6c1fb68aaf7c309779fe93938878e80a0f9b1323
   src/apideck_unify/customobjectschemas.py:
-    last_write_checksum: sha1:977bc1bcdfbb7fcccb7912adaf6706c993e03e2a
+    last_write_checksum: sha1:c5a6e4ad3c24cddd7e91434fef48f979b175cba0
   src/apideck_unify/departments.py:
-    last_write_checksum: sha1:d2b58994ebc3ae5bb95fbaf6022b0c99bc051558
+    last_write_checksum: sha1:2cd6157c89f43c8e1e2cf1790b59e1d15167083d
   src/apideck_unify/drivegroups.py:
-    last_write_checksum: sha1:7c53707fa24d5fb69db68dcf3effc773062ed1e4
+    last_write_checksum: sha1:97e7214da96832b5fb9d5c53aea87a07c9c62bfa
   src/apideck_unify/drives.py:
-    last_write_checksum: sha1:6e61ac777a893ce703b439658a15cd2c7227fc77
+    last_write_checksum: sha1:236da840b0b30a278e80e7d59147cad777bd8955
   src/apideck_unify/ecommerce.py:
     last_write_checksum: sha1:d78cdad9d7181e3f4be809985221dab72f4c2eba
   src/apideck_unify/employeepayrolls.py:
-    last_write_checksum: sha1:b8de7dc79a642f00cd9b18c225819ac640e2bf35
+    last_write_checksum: sha1:737d91ed72e3eda32a6547b4c15cac40ad146706
   src/apideck_unify/employees.py:
-    last_write_checksum: sha1:862c97d8f673e1922bca461d50515a4a6410185c
+    last_write_checksum: sha1:9072625dcf82c88e8bfff499a16a478f718ad1a8
   src/apideck_unify/employeeschedules_sdk.py:
-    last_write_checksum: sha1:65b280ff70cf040b49c6b2d00b8117d7123a9708
+    last_write_checksum: sha1:fac57007e72b13bf68101d17f582cf8e6e1ef2b1
   src/apideck_unify/eventlogs.py:
     last_write_checksum: sha1:e4fd50d9b4507f379760219da15c1592a45686f4
   src/apideck_unify/expensecategories.py:
-    last_write_checksum: sha1:a752aa1d76a89ce49c292fcc559b0df38d751e4c
+    last_write_checksum: sha1:0a03c0bc7b3886749bdafd5a241a8130a88e8ff5
   src/apideck_unify/expensereports.py:
-    last_write_checksum: sha1:ed966127b077a237877715b86bff8e2f328335f4
+    last_write_checksum: sha1:3be6a3ce59df076360dcd21de101540e238e7a19
   src/apideck_unify/expenses.py:
-    last_write_checksum: sha1:01da294f2e153e0a005b6723bd9c60bb3c7a1160
+    last_write_checksum: sha1:b04244acb1a2c729923f299e0ffa106d302fd7f2
   src/apideck_unify/files.py:
-    last_write_checksum: sha1:e138da63eec56021e6026b89e487aa5e65b3a456
+    last_write_checksum: sha1:d8b0a528bb9f26eb68d2facd03c0cb5adc6c63fc
   src/apideck_unify/filestorage.py:
     last_write_checksum: sha1:cf935b847c21f965790ff3c0c664c0223aa0d78c
   src/apideck_unify/folders.py:
-    last_write_checksum: sha1:e43449d48fb4728f3972587855660d10f9d49403
+    last_write_checksum: sha1:033f1a5f9c54d074e2824ebd7927406a724a695c
+  src/apideck_unify/generalledgertransactions.py:
+    last_write_checksum: sha1:fdf8fef9788e8e264940d7762c118c93f5a93b33
   src/apideck_unify/hris.py:
     last_write_checksum: sha1:912ec8837c4f787eb3151a5184689536b586cc44
   src/apideck_unify/httpclient.py:
     last_write_checksum: sha1:5e55338d6ee9f01ab648cad4380201a8a3da7dd7
   src/apideck_unify/invoiceitems.py:
-    last_write_checksum: sha1:163a3a13b63d2ab04368f20d70513fc519f569ed
+    last_write_checksum: sha1:d13ad7cc1a01fba9e15f53a0adcba548dbc4540b
   src/apideck_unify/invoices.py:
-    last_write_checksum: sha1:9a2c0a4a7d76fbb2a810a871218ad99f5c5bca4f
+    last_write_checksum: sha1:12db1cd91896f142f94ac26a18791f3f06013863
   src/apideck_unify/issuetracking.py:
     last_write_checksum: sha1:a18420473c9ae884dcdc562042a52205924643c5
   src/apideck_unify/jobs.py:
-    last_write_checksum: sha1:c4b0890d5a1876b649dde1af2cd4386495c41f41
+    last_write_checksum: sha1:43bd01df02fa0fffde0f12cf2b917e06308a207d
   src/apideck_unify/journalentries.py:
-    last_write_checksum: sha1:aeb08b264fb0c3c3bfe8259405855576efa4ecd5
+    last_write_checksum: sha1:e7d00919012bcbc261bd101d7ed4400a1a8256c2
   src/apideck_unify/leads.py:
-    last_write_checksum: sha1:8420f045a6c74c7cbd3013cc9e3e9aba16e79512
+    last_write_checksum: sha1:734d846e136b53c80a8bb6e424e54a8a863c23e3
   src/apideck_unify/ledgeraccounts.py:
-    last_write_checksum: sha1:84feadb99ac4eb0c388912ff338a43263faa7b0c
+    last_write_checksum: sha1:738c7a65a915e2082d98b5821f4bbab6e813b4e2
   src/apideck_unify/locations.py:
-    last_write_checksum: sha1:c5da10bac88f31aa1f1e47f3f3cd65d4e4cd18d0
+    last_write_checksum: sha1:4bef9beff5aa7dd90f03399fa65c6f84782bc4d1
   src/apideck_unify/logs.py:
     last_write_checksum: sha1:070e37b5c12ad69e1645a93358457b9216757081
   src/apideck_unify/messages.py:
-    last_write_checksum: sha1:158b4c1fb137ee3ac806cc6a59c8d906b01233d6
+    last_write_checksum: sha1:1a89d6376a2a9e0f9700e086c3037e2cdd2e1c70
   src/apideck_unify/models/__init__.py:
-    last_write_checksum: sha1:3b454e577c6f1b192756fc68fc872071e75659a9
+    last_write_checksum: sha1:a5c166004dc39b6f883f3e074ea1617a2fcd5f93
   src/apideck_unify/models/accounting_agedcreditorsoneop.py:
     last_write_checksum: sha1:7346d1ab1c21db21995aae34c5ba01549c2786c2
   src/apideck_unify/models/accounting_ageddebtorsoneop.py:
@@ -24179,6 +24331,10 @@ trackedFiles:
     last_write_checksum: sha1:b4796ef89490adb1677449ca1a68d2e308d5a2bb
   src/apideck_unify/models/accounting_expensesupdateop.py:
     last_write_checksum: sha1:f5c6839e4b7a981dc189d96ced74070e72585ea4
+  src/apideck_unify/models/accounting_generalledgertransactionsallop.py:
+    last_write_checksum: sha1:4b64132d172734df96eb48bfd05c068ae3d0a941
+  src/apideck_unify/models/accounting_generalledgertransactionsoneop.py:
+    last_write_checksum: sha1:463a36c21a458fde7a04eee9a69c58f2ea22a92f
   src/apideck_unify/models/accounting_invoiceitemsaddop.py:
     last_write_checksum: sha1:92daebb513cdcb6fde1ff09b91f5ac39c3789cdf
   src/apideck_unify/models/accounting_invoiceitemsallop.py:
@@ -24264,7 +24420,7 @@ trackedFiles:
   src/apideck_unify/models/accounting_quotesaddop.py:
     last_write_checksum: sha1:41f64d9665c852f7de0f51c52c1273539d4142a1
   src/apideck_unify/models/accounting_quotesallop.py:
-    last_write_checksum: sha1:afcb4857d89b2874598a4beefc3e7f2b3a7be634
+    last_write_checksum: sha1:07461c65dbdfe267f2aeb6f2e863bd93fcf35e56
   src/apideck_unify/models/accounting_quotesdeleteop.py:
     last_write_checksum: sha1:67139ec4241c37c5c5a6c224a296bed56a8134be
   src/apideck_unify/models/accounting_quotesoneop.py:
@@ -24454,7 +24610,7 @@ trackedFiles:
   src/apideck_unify/models/billpayment.py:
     last_write_checksum: sha1:c9c6131aa1dd24719072679781c1671451bb634a
   src/apideck_unify/models/billsfilter.py:
-    last_write_checksum: sha1:067203ed1b437a9e4ac0684d716bac1341827d4e
+    last_write_checksum: sha1:b40078b5bfe623f84df1597d54890eb98d7d5f10
   src/apideck_unify/models/billssort.py:
     last_write_checksum: sha1:57d5ec03ae0bce79ca6aa09ac74139098fa67ccd
   src/apideck_unify/models/categoriesfilter.py:
@@ -24488,9 +24644,9 @@ trackedFiles:
   src/apideck_unify/models/compensation.py:
     last_write_checksum: sha1:e7ca2fd1d1315919bf40046de212790ec14de531
   src/apideck_unify/models/connection.py:
-    last_write_checksum: sha1:2dc21c9751675bc942ca24588542701416195ef4
+    last_write_checksum: sha1:52fe4d05e2309532cad44335db076a24e12781e7
   src/apideck_unify/models/connectionhealth.py:
-    last_write_checksum: sha1:8e83303c32bfe100c32f2f4a593f0e532f2376e4
+    last_write_checksum: sha1:33626f53cabfa62de333f5646fd5b2e68a2a9c06
   src/apideck_unify/models/connectionimportdata.py:
     last_write_checksum: sha1:78b328cd244958ce60632ba080e4fc515b53864f
   src/apideck_unify/models/connectionstate.py:
@@ -24676,7 +24832,7 @@ trackedFiles:
   src/apideck_unify/models/creditnote.py:
     last_write_checksum: sha1:ba366de9071b72708dce6e538c2f0f4508a83eea
   src/apideck_unify/models/creditnotesfilter.py:
-    last_write_checksum: sha1:f8539e2e861ed0ca65bf7a0fa6fdb83e6851ba3f
+    last_write_checksum: sha1:820e73f5e564f64fdee7325c4304398b752207e8
   src/apideck_unify/models/creditnotessort.py:
     last_write_checksum: sha1:8dfe580975c11a8e44f8e2df6416781f831d0ae6
   src/apideck_unify/models/creditordebit.py:
@@ -24786,7 +24942,7 @@ trackedFiles:
   src/apideck_unify/models/customer.py:
     last_write_checksum: sha1:86eda684ddc0d53bd5cd2353560e12914d13de90
   src/apideck_unify/models/customersfilter.py:
-    last_write_checksum: sha1:cf2221ef26285a9f15b64bc53567d29a46184660
+    last_write_checksum: sha1:a23757bf9a2a26947f535b47a7f25eb24ac2b709
   src/apideck_unify/models/customerssort.py:
     last_write_checksum: sha1:1ae868c9919cd921fe7a4c953cede4a382bd804e
   src/apideck_unify/models/customfield.py:
@@ -25014,7 +25170,7 @@ trackedFiles:
   src/apideck_unify/models/expensereportlineitem_input.py:
     last_write_checksum: sha1:ab6dafe210c494b0109f8bce4b575dbce997ac28
   src/apideck_unify/models/expensereportsfilter.py:
-    last_write_checksum: sha1:be3a472bfbc5bf79986fcd6cea40dff7c27cd4a8
+    last_write_checksum: sha1:55b8df14f074ddbd0cb60461cfeeb87d3f74ef04
   src/apideck_unify/models/expensesfilter.py:
     last_write_checksum: sha1:1bc3d71038dfb83737b75c7095d5acb97e49b347
   src/apideck_unify/models/filesfilter.py:
@@ -25099,6 +25255,14 @@ trackedFiles:
     last_write_checksum: sha1:0ed95da662d8e4e9286619ff09f949b0e5d15b77
   src/apideck_unify/models/gender.py:
     last_write_checksum: sha1:32217f3aab2ebc045ba215883a02b6ee4d796a75
+  src/apideck_unify/models/generalledgertransaction.py:
+    last_write_checksum: sha1:428165ff97ca64f06240e0b98e6f1934cf9abb3b
+  src/apideck_unify/models/generalledgertransactionlineitem.py:
+    last_write_checksum: sha1:bd6d37b0df38e879fb99c70e479e08d33b5283e9
+  src/apideck_unify/models/generalledgertransactionsfilter.py:
+    last_write_checksum: sha1:2099d9ad1014319d31681a3d0bcafbf31aa94f30
+  src/apideck_unify/models/generalledgertransactionssort.py:
+    last_write_checksum: sha1:e7f7ba0b44e1fa30bac2434bdca62ddb5f9fa11a
   src/apideck_unify/models/getaccountingdepartmentresponse.py:
     last_write_checksum: sha1:42ec5ecb751ba5ec4f11969e1af89caa3b842caa
   src/apideck_unify/models/getaccountingdepartmentsresponse.py:
@@ -25275,6 +25439,10 @@ trackedFiles:
     last_write_checksum: sha1:a2cb75c3d4a06a6fe99536f0142efc9a6aadb464
   src/apideck_unify/models/getfolderresponse.py:
     last_write_checksum: sha1:7b5340f5039ab8f7ccc849269f96e9ed3f733356
+  src/apideck_unify/models/getgeneralledgertransactionresponse.py:
+    last_write_checksum: sha1:bcf3a1f5bf19b4cf49a44e2598a6af2162fb813a
+  src/apideck_unify/models/getgeneralledgertransactionsresponse.py:
+    last_write_checksum: sha1:5baf0fd7e19c9ab912d9d6063804d78033510699
   src/apideck_unify/models/gethriscompaniesresponse.py:
     last_write_checksum: sha1:3f9cae45b34ecb40d3d5f1c63a51fb614fcf5348
   src/apideck_unify/models/gethriscompanyresponse.py:
@@ -25460,7 +25628,7 @@ trackedFiles:
   src/apideck_unify/models/invoiceitemfilter.py:
     last_write_checksum: sha1:bf9fe557898e15320cd93dcc5f64f9b5d1586fc7
   src/apideck_unify/models/invoiceitemsfilter.py:
-    last_write_checksum: sha1:12dbbd45537a445ad1d71bb21f2a74fdd507e74f
+    last_write_checksum: sha1:48d3820a29954f23ee25aa56ab60f7a602256450
   src/apideck_unify/models/invoiceitemssort.py:
     last_write_checksum: sha1:c82ca03f6566821fa66c901052a93654feb62da2
   src/apideck_unify/models/invoicelineitem.py:
@@ -25468,7 +25636,7 @@ trackedFiles:
   src/apideck_unify/models/invoiceresponse.py:
     last_write_checksum: sha1:f8f75f00763047726a6e2798859f10a9c8c29850
   src/apideck_unify/models/invoicesfilter.py:
-    last_write_checksum: sha1:f999347f77ff69f63fdf1b997d3b25999d9676f0
+    last_write_checksum: sha1:ecf047712bcd955d772e9528d6a1dd64cf304698
   src/apideck_unify/models/invoicessort.py:
     last_write_checksum: sha1:36801ee2f678352f726e270ceb3465ef0fe5390c
   src/apideck_unify/models/issuesfilter.py:
@@ -25508,7 +25676,7 @@ trackedFiles:
   src/apideck_unify/models/jobstatus.py:
     last_write_checksum: sha1:832a677ab0a2c3adee9378579d34429372aab42b
   src/apideck_unify/models/journalentriesfilter.py:
-    last_write_checksum: sha1:77d361a96dc80e34f24249d421a6e438031830de
+    last_write_checksum: sha1:bd6243c77626a5cf5c17bf3f275d200c59fe215f
   src/apideck_unify/models/journalentriessort.py:
     last_write_checksum: sha1:3c089f317739a631b48f3de2486e6b3275af38b9
   src/apideck_unify/models/journalentry.py:
@@ -25526,7 +25694,7 @@ trackedFiles:
   src/apideck_unify/models/ledgeraccount.py:
     last_write_checksum: sha1:955a153c9bc9bb0401d41ff11a7eef61981df5cf
   src/apideck_unify/models/ledgeraccountsfilter.py:
-    last_write_checksum: sha1:dd7c1cc04bc8ccfad7f2dd3be9d15515befa6854
+    last_write_checksum: sha1:67fcff7c847c857ffb89f2a22ceff24c359742d1
   src/apideck_unify/models/ledgeraccountssort.py:
     last_write_checksum: sha1:50e3c719cae78fd57ea86ef3ebe9be76c7a1e01d
   src/apideck_unify/models/lineitemtype.py:
@@ -25642,7 +25810,7 @@ trackedFiles:
   src/apideck_unify/models/paymentrequiredresponse.py:
     last_write_checksum: sha1:e31a1e7837134fcdab40d81d32da12d59ab651ba
   src/apideck_unify/models/paymentsfilter.py:
-    last_write_checksum: sha1:dd2e5d3b8ec586b6d33a4152a2b83bd14ae460f4
+    last_write_checksum: sha1:bcf0bfcb2a106f09f63e4dd9a5a75c75b1a90f45
   src/apideck_unify/models/paymentssort.py:
     last_write_checksum: sha1:d58183eb6ba2aec67bb57c0705b425aef1e0b464
   src/apideck_unify/models/paymentstatus.py:
@@ -25678,7 +25846,7 @@ trackedFiles:
   src/apideck_unify/models/project.py:
     last_write_checksum: sha1:bad3ab7022a703730169e1487a79be62901249d9
   src/apideck_unify/models/projectsfilter.py:
-    last_write_checksum: sha1:8e33e32a2075f20925c36b2dba3fb2042ec793f1
+    last_write_checksum: sha1:abffbdec8c649196612556d48d00f5fbb44d32ab
   src/apideck_unify/models/projectssort.py:
     last_write_checksum: sha1:9d0d1dd7a8480ffe52d267112db83cb0423fc3aa
   src/apideck_unify/models/proxy_deleteproxyop.py:
@@ -25696,13 +25864,15 @@ trackedFiles:
   src/apideck_unify/models/purchaseorder.py:
     last_write_checksum: sha1:9db492fdb96faee51447d63714d1181de9f95714
   src/apideck_unify/models/purchaseordersfilter.py:
-    last_write_checksum: sha1:075c3fe499a97927d46a1016591d00a17857dafe
+    last_write_checksum: sha1:ba8c6e9b57ca3941e006d1f81e9efcfe55b53c72
   src/apideck_unify/models/purchaseorderssort.py:
     last_write_checksum: sha1:461e0d319a88c4c278fcfa48dac5838d7d0a1ba2
   src/apideck_unify/models/quote.py:
     last_write_checksum: sha1:baeb5f804ee69bd27ded573a06ec564b67d3a115
   src/apideck_unify/models/quotelineitem.py:
     last_write_checksum: sha1:ec6e349592938366215654e8f7ac369ea28dfc73
+  src/apideck_unify/models/quotesfilter.py:
+    last_write_checksum: sha1:a7479f988fdb9a996fe75f961339dcd9f27a078a
   src/apideck_unify/models/rebilling.py:
     last_write_checksum: sha1:335956b996339dc4b07c60468e34408b9f9fff3f
   src/apideck_unify/models/refund.py:
@@ -25762,7 +25932,7 @@ trackedFiles:
   src/apideck_unify/models/supplier.py:
     last_write_checksum: sha1:b4a5f88a9dd5105aefaa41389dc186b0bcfac698
   src/apideck_unify/models/suppliersfilter.py:
-    last_write_checksum: sha1:e185c33cb6d0e66b3a3590a7bf5120ed5f4f8487
+    last_write_checksum: sha1:909637addff06d9667234206e718437db66fe1bb
   src/apideck_unify/models/supplierssort.py:
     last_write_checksum: sha1:92974810c0c84cabe73f959684ff059fc5a9c99d
   src/apideck_unify/models/supportedproperty.py:
@@ -25998,7 +26168,7 @@ trackedFiles:
   src/apideck_unify/models/webhookeventlogsfilter.py:
     last_write_checksum: sha1:a570f7ec34d2196d91b32b1f9c59bca2099f39fa
   src/apideck_unify/models/webhookeventtype.py:
-    last_write_checksum: sha1:d308d4912da877a784b6ff1036d22c8e1975b354
+    last_write_checksum: sha1:c29a962957b6ae6b3749d3eefa8d7d3c90d91c8d
   src/apideck_unify/models/webhooksubscription.py:
     last_write_checksum: sha1:12537b4b59e1cdb5798ddf08ad98dfb50f809a83
   src/apideck_unify/models/webhooksupport.py:
@@ -26006,33 +26176,33 @@ trackedFiles:
   src/apideck_unify/models/website.py:
     last_write_checksum: sha1:deb21698b9dec32eca6c3c22114c0c678a3c7ef8
   src/apideck_unify/notes.py:
-    last_write_checksum: sha1:02868bd9687ec4dd8d3c79bce114209ecce31a61
+    last_write_checksum: sha1:8e7957797ddd63c66c44f9880812b04a356cc82b
   src/apideck_unify/opportunities.py:
-    last_write_checksum: sha1:401b8873c3d3cd9477e16a02b73cf55a1f0709cb
+    last_write_checksum: sha1:85efd4998079dac40d230c703254183a31355c33
   src/apideck_unify/orders.py:
-    last_write_checksum: sha1:1d32ce2f9e8935954d13725491f0f823fb14f7d2
+    last_write_checksum: sha1:d0b4b62d63d1107b0fd79797d69b90915524eeb7
   src/apideck_unify/payments.py:
-    last_write_checksum: sha1:5053b2474d641729ec53436784ff98a868eadcd8
+    last_write_checksum: sha1:a84164e40d848378e10d6f80e30e7637c02cbbfc
   src/apideck_unify/payrolls.py:
-    last_write_checksum: sha1:af569d909269b22911b5f968b8c86cc171d93049
+    last_write_checksum: sha1:d434883ca5a5b52e87227d116a9e2c450ee94271
   src/apideck_unify/pipelines.py:
-    last_write_checksum: sha1:1079756f380c8b449f95df0dc5c786b8602d73a0
+    last_write_checksum: sha1:e737f1fca6a99f5f29df2e234e1ab2e7c3315e46
   src/apideck_unify/products.py:
-    last_write_checksum: sha1:49dad006c0798fd433add4b1d4a7d3c942bbc57d
+    last_write_checksum: sha1:ebbbc6980faf6d692345c446d0f7baaf30459699
   src/apideck_unify/profitandloss_sdk.py:
-    last_write_checksum: sha1:8b10c69c4ca3fc9bf1a432e188474c54fc74662b
+    last_write_checksum: sha1:d41d8aaff95f1c70e42d2221d9cbba2729cc7ddd
   src/apideck_unify/projects.py:
-    last_write_checksum: sha1:ba4267f389491e385d6b81de386b6b7bbc16d299
+    last_write_checksum: sha1:666c54981990c1cc26609f65993479dc7ff95343
   src/apideck_unify/proxy.py:
     last_write_checksum: sha1:0ef5bf649fd851e02c97032dca3c140d976b9154
   src/apideck_unify/purchaseorders.py:
-    last_write_checksum: sha1:96da6a54b51454dc3399e6dae5ddb7d41e9a1881
+    last_write_checksum: sha1:df3664c0ab4c0a32d15cb4403b6baa2c866521dd
   src/apideck_unify/py.typed:
     last_write_checksum: sha1:8efc425ffe830805ffcc0f3055871bdcdc542c60
   src/apideck_unify/quotes.py:
-    last_write_checksum: sha1:47a4e94da44b6606279c4479c84b08fceca538e6
+    last_write_checksum: sha1:d9087d7686c0b4ca2f2675db0b7c44dba261e588
   src/apideck_unify/refunds.py:
-    last_write_checksum: sha1:c51716769333075b09e46c1df729980b1dfa4552
+    last_write_checksum: sha1:19b6b7d811f84057a72bfb10a6c5446485b502cf
   src/apideck_unify/sdk.py:
     last_write_checksum: sha1:c36fd87d8a9d1b51c46deeb198cc84a9761aedfb
   src/apideck_unify/sdkconfiguration.py:
@@ -26040,21 +26210,21 @@ trackedFiles:
   src/apideck_unify/sessions.py:
     last_write_checksum: sha1:47a388be85e3a3623e11665b5e241fa6dbe32781
   src/apideck_unify/sharedlinks.py:
-    last_write_checksum: sha1:32ebc5d9621a199fbd2f3a0e746b879dc187f235
+    last_write_checksum: sha1:59e18a6f5fbe90d7bc3853e0e6f29595500876f1
   src/apideck_unify/sms.py:
     last_write_checksum: sha1:444ede696d4742704204a55660fd82ef98a1820a
   src/apideck_unify/stores.py:
     last_write_checksum: sha1:a4fe27bd06c6bbf7fce0c039f46fda5beb008914
   src/apideck_unify/subsidiaries.py:
-    last_write_checksum: sha1:4eb4a9fa47e41bc7bf36fceddca36e4097454faa
+    last_write_checksum: sha1:7d15f9488219c2151827cccb4b9ddfb5e90f6547
   src/apideck_unify/suppliers.py:
-    last_write_checksum: sha1:9c89efe62f8bacdd3e8a099c80f2eae34ad21157
+    last_write_checksum: sha1:be528a70ffa8a577b90d092966257465e47c0a2c
   src/apideck_unify/taxrates.py:
-    last_write_checksum: sha1:e1c91952994afe2d0184f946b609c765727a2864
+    last_write_checksum: sha1:20b92ae0351644f3fa4ad7d236720672805be382
   src/apideck_unify/timeoffrequests.py:
-    last_write_checksum: sha1:405fdadfca97b8371da3bc3808b51a3e2df5f05f
+    last_write_checksum: sha1:8d85b81625d57750129bff1bff84ad220d6dcb9b
   src/apideck_unify/trackingcategories.py:
-    last_write_checksum: sha1:ad072b9a593e640663693950e9a1e534c0b11165
+    last_write_checksum: sha1:ea7dcc23cf797a8513b67f1fa913e9e86eb5d5af
   src/apideck_unify/types/__init__.py:
     last_write_checksum: sha1:f9ad14217f832e74f594285960125add50324be9
   src/apideck_unify/types/base64fileinput.py:
@@ -26062,9 +26232,9 @@ trackedFiles:
   src/apideck_unify/types/basemodel.py:
     last_write_checksum: sha1:10d84aedeb9d35edfdadf2c3020caa1d24d8b584
   src/apideck_unify/uploadsessions.py:
-    last_write_checksum: sha1:da54654d7ec7decd3c74b6ecc5d1b301e9d95b0e
+    last_write_checksum: sha1:ef0548d96f42ed1ca1a4362d01d46375dd638f9d
   src/apideck_unify/users.py:
-    last_write_checksum: sha1:802803bee29fac0be6fcc2423d2a1d7d62aa54cd
+    last_write_checksum: sha1:7ce86a15a071bf18047d862af7425ae3a8b7b880
   src/apideck_unify/utils/__init__.py:
     last_write_checksum: sha1:0f93d821f9cb3e061ea125d881bb6f61166738dd
   src/apideck_unify/utils/annotations.py:
@@ -26076,7 +26246,7 @@ trackedFiles:
   src/apideck_unify/utils/enums.py:
     last_write_checksum: sha1:bc8c3c1285ae09ba8a094ee5c3d9c7f41fa1284d
   src/apideck_unify/utils/eventstreaming.py:
-    last_write_checksum: sha1:620d78a8b4e3b854e08d136e02e40a01a786bd70
+    last_write_checksum: sha1:7d1dc68f8b48486ab646653aa05cc38752e1f912
   src/apideck_unify/utils/forms.py:
     last_write_checksum: sha1:15fa7e9ab1611e062a9984cf06cb20969713d295
   src/apideck_unify/utils/headers.py:
@@ -26094,7 +26264,7 @@ trackedFiles:
   src/apideck_unify/utils/security.py:
     last_write_checksum: sha1:8fa29426fabb7f0a04e5adf11966681ab88900f8
   src/apideck_unify/utils/serializers.py:
-    last_write_checksum: sha1:61009f2e4ef6613a1a5af813fe020373dae5a492
+    last_write_checksum: sha1:7485f1425b0661fd84836186570df90207eec6af
   src/apideck_unify/utils/unmarshal_json_response.py:
     last_write_checksum: sha1:01ae4a19a6e7d0163c14944e54bc80096dbfe341
   src/apideck_unify/utils/url.py:
@@ -26108,4 +26278,4 @@ trackedFiles:
   src/apideck_unify/webhook_sdk.py:
     last_write_checksum: sha1:56997393a069250fc63b046ad043604263dca61c
   src/apideck_unify/webhooks.py:
-    last_write_checksum: sha1:35e4887bef54b78ddf81317075aed19988396794
+    last_write_checksum: sha1:95994211c7fadc1ba4a395ccb0905a4164c87366
