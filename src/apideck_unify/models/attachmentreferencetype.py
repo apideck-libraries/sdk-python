@@ -9,4 +9,5 @@ class AttachmentReferenceType(str, Enum, metaclass=utils.OpenEnumMeta):
     INVOICE = "invoice"
     BILL = "bill"
     EXPENSE = "expense"
+    EXPENSE_REPORT = "expense-report"
     QUOTE = "quote"

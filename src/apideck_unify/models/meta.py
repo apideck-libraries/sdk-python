@@ -74,6 +74,8 @@ class MetaTypedDict(TypedDict):
     r"""Number of items returned in the data property of the response"""
     cursors: NotRequired[CursorsTypedDict]
     r"""Cursors to navigate to previous or next pages through the API"""
+    total_count: NotRequired[int]
+    r"""Number of records available in total for this resource"""
 
 
 class Meta(BaseModel):
@@ -84,3 +86,6 @@ class Meta(BaseModel):
 
     cursors: Optional[Cursors] = None
     r"""Cursors to navigate to previous or next pages through the API"""
+
+    total_count: Optional[int] = None
+    r"""Number of records available in total for this resource"""
