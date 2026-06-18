@@ -1,12 +1,12 @@
 lockVersion: 2.0.0
 id: fca0ac3a-5f4e-452c-bbc7-2311afa8da40
 management:
-  docChecksum: 88bcca733d56e1093033c5324bfa6dde
-  docVersion: 10.24.43
+  docChecksum: d111feee7a9d9653c4712b066d7078a5
+  docVersion: 10.24.44
   speakeasyVersion: 1.656.1
   generationVersion: 2.753.1
-  releaseVersion: 0.31.21
-  configChecksum: 1710ebfe117ceb5f13a55d0403e79891
+  releaseVersion: 0.31.22
+  configChecksum: 6339de90d574da6758cde8dbaa723194
   repoURL: https://github.com/apideck-libraries/sdk-python.git
   installationURL: https://github.com/apideck-libraries/sdk-python.git
   published: true
@@ -11837,7 +11837,7 @@ examples:
           x-apideck-service-id: "salesforce"
       responses:
         "200":
-          application/json: {"status_code": 200, "status": "OK", "service": "shopify", "resource": "orders", "operation": "one", "data": {"id": "12345", "order_number": "123456789", "currency": "USD", "discounts": [{"code": "SUMMER20", "amount": "5.99", "percentage": "0.1"}], "sub_total": "45.17", "shipping_cost": "5.17", "coupon_discount": "5.5", "total_discount": "5.5", "total_tax": "5.16", "total_amount": "50.17", "refunded_amount": "5.5", "status": "active", "payment_status": "paid", "fulfillment_status": "shipped", "payment_method": "credit_card", "customer": {"id": "12345", "name": "John Doe", "first_name": "John", "last_name": "Doe", "company_name": "Acme Inc.", "phone_numbers": [{"id": "12345", "country_code": "1", "area_code": "323", "number": "111-111-1111", "extension": "105", "type": "primary"}], "emails": [{"id": "123", "email": "elon@musk.com", "type": "primary"}]}, "billing_address": {"line1": "123 Main Street", "line2": "Apt 1", "company_name": "Acme Inc.", "city": "New York", "state": "NY", "postal_code": "10001", "country": "US"}, "shipping_address": {"line1": "123 Main Street", "line2": "Apt 1", "company_name": "Acme Inc.", "city": "New York", "state": "NY", "postal_code": "10001", "country": "US"}, "tracking": [{"provider": "UPS", "number": "1Z9999999999999999", "url": "https://www.ups.com/track?tracknum=1Z9999999999999999", "updated_at": "2020-09-30T07:43:32.000Z"}], "line_items": [{"id": "12345", "product_id": "def456", "variant_id": "ghi789", "sku": "MBP123-16GB-SILVER-13", "name": "Midnight 16inch MacBook Pro", "description": "Powerful and portable, the MacBook Pro is perfect for professionals and creatives.", "options": [{"id": "jkl012", "name": "Color", "value": "Silver"}], "quantity": "2", "unit_price": "19.99", "tax_rate": "0.08", "tax_amount": "1.6", "is_refunded": false, "refunded_amount": "0", "refunded_quantity": "0", "sub_total": "43.18", "total_amount": "43.18", "discounts": [{"code": "SUMMER20", "amount": "5.99", "percentage": "0.1"}]}], "note": "Special instructions for delivery", "refunds": [{"id": "12345", "amount": "100", "currency": "USD", "reason": "Customer requested a refund", "created_at": "2020-09-30T07:43:32.000Z"}], "created_at": "2020-09-30T07:43:32.000Z", "updated_at": "2020-09-30T07:43:32.000Z"}}
+          application/json: {"status_code": 200, "status": "OK", "service": "shopify", "resource": "orders", "operation": "one", "data": {"id": "12345", "order_number": "123456789", "currency": "USD", "discounts": [{"code": "SUMMER20", "amount": "5.99", "percentage": "0.1"}], "sub_total": "45.17", "shipping_cost": "5.17", "coupon_discount": "5.5", "total_discount": "5.5", "total_tax": "5.16", "total_amount": "50.17", "refunded_amount": "5.5", "tax_inclusive": true, "status": "active", "payment_status": "paid", "fulfillment_status": "shipped", "payment_method": "credit_card", "customer": {"id": "12345", "name": "John Doe", "first_name": "John", "last_name": "Doe", "company_name": "Acme Inc.", "phone_numbers": [{"id": "12345", "country_code": "1", "area_code": "323", "number": "111-111-1111", "extension": "105", "type": "primary"}], "emails": [{"id": "123", "email": "elon@musk.com", "type": "primary"}]}, "billing_address": {"line1": "123 Main Street", "line2": "Apt 1", "company_name": "Acme Inc.", "city": "New York", "state": "NY", "postal_code": "10001", "country": "US"}, "shipping_address": {"line1": "123 Main Street", "line2": "Apt 1", "company_name": "Acme Inc.", "city": "New York", "state": "NY", "postal_code": "10001", "country": "US"}, "tracking": [{"provider": "UPS", "number": "1Z9999999999999999", "url": "https://www.ups.com/track?tracknum=1Z9999999999999999", "updated_at": "2020-09-30T07:43:32.000Z"}], "line_items": [{"id": "12345", "product_id": "def456", "variant_id": "ghi789", "sku": "MBP123-16GB-SILVER-13", "name": "Midnight 16inch MacBook Pro", "description": "Powerful and portable, the MacBook Pro is perfect for professionals and creatives.", "options": [{"id": "jkl012", "name": "Color", "value": "Silver"}], "quantity": "2", "unit_price": "19.99", "tax_rate": "0.08", "tax_amount": "1.6", "is_refunded": false, "refunded_amount": "0", "refunded_quantity": "0", "sub_total": "43.18", "total_amount": "43.18", "discounts": [{"code": "SUMMER20", "amount": "5.99", "percentage": "0.1"}]}], "note": "Special instructions for delivery", "refunds": [{"id": "12345", "amount": "100", "currency": "USD", "reason": "Customer requested a refund", "created_at": "2020-09-30T07:43:32.000Z"}], "created_at": "2020-09-30T07:43:32.000Z", "updated_at": "2020-09-30T07:43:32.000Z"}}
         "400":
           application/json: {"status_code": 400, "error": "Bad Request", "type_name": "RequestValidationError", "message": "Invalid Params", "detail": "Missing property foobar", "ref": "https://developers.apideck.com/errors#requestvalidationerror", "downstream_errors": [{"message": "Account code '100' has been archived or deleted", "detail": "Each line item must reference a valid account", "code": "VALIDATION_ERROR"}]}
         "401":
@@ -19749,7 +19749,10 @@ examples:
           application/json: {"status_code": 400, "error": "Bad Request", "type_name": "RequestHeadersValidationError", "message": "Invalid Params", "detail": "Missing Header: x-apideck-consumer-id", "ref": "https://developers.apideck.com/errors#unauthorizederror"}
 examplesVersion: 1.0.2
 generatedTests: {}
-releaseNotes: "## Python SDK Changes Detected:\n* `apideck.accounting.tax_rates.list()`:  `response.meta.total_count` **Added**\n* `apideck.accounting.bills.list()`:  `response.meta.total_count` **Added**\n* `apideck.accounting.invoices.list()`:  `response.meta.total_count` **Added**\n* `apideck.accounting.ledger_accounts.list()`:  `response.meta.total_count` **Added**\n* `apideck.accounting.invoice_items.list()`:  `response.meta.total_count` **Added**\n* `apideck.accounting.credit_notes.list()`:  `response.meta.total_count` **Added**\n* `apideck.accounting.customers.list()`:  `response.meta.total_count` **Added**\n* `apideck.accounting.suppliers.list()`:  `response.meta.total_count` **Added**\n* `apideck.accounting.payments.list()`:  `response.meta.total_count` **Added**\n* `apideck.accounting.refunds.list()`:  `response.meta.total_count` **Added**\n* `apideck.accounting.companies.list()`:  `response.meta.total_count` **Added**\n* `apideck.accounting.journal_entries.list()`:  `response.meta.total_count` **Added**\n* `apideck.accounting.general_ledger_transactions.list()`:  `response.meta.total_count` **Added**\n* `apideck.accounting.purchase_orders.list()`:  `response.meta.total_count` **Added**\n* `apideck.accounting.subsidiaries.list()`:  `response.meta.total_count` **Added**\n* `apideck.accounting.locations.list()`:  `response.meta.total_count` **Added**\n* `apideck.accounting.departments.list()`:  `response.meta.total_count` **Added**\n* `apideck.accounting.attachments.list()`: \n  *  `request.reference_type` **Changed**\n  *  `response.meta.total_count` **Added**\n* `apideck.accounting.attachments.upload()`:  `request.reference_type` **Changed**\n* `apideck.accounting.attachments.get()`:  `request.reference_type` **Changed**\n* `apideck.accounting.attachments.delete()`:  `request.reference_type` **Changed**\n* `apideck.accounting.attachments.download()`:  `request.reference_type` **Changed**\n* `apideck.accounting.bank_accounts.list()`:  `response.meta.total_count` **Added**\n* `apideck.accounting.tracking_categories.list()`:  `response.meta.total_count` **Added**\n* `apideck.accounting.bill_payments.list()`:  `response.meta.total_count` **Added**\n* `apideck.accounting.expenses.list()`:  `response.meta.total_count` **Added**\n* `apideck.accounting.bank_feed_accounts.list()`:  `response.meta.total_count` **Added**\n* `apideck.accounting.bank_feed_statements.list()`:  `response.meta.total_count` **Added**\n* `apideck.accounting.categories.list()`:  `response.meta.total_count` **Added**\n* `apideck.accounting.quotes.list()`:  `response.meta.total_count` **Added**\n* `apideck.accounting.projects.list()`:  `response.meta.total_count` **Added**\n* `apideck.accounting.employees.list()`:  `response.meta.total_count` **Added**\n* `apideck.accounting.expense_categories.list()`:  `response.meta.total_count` **Added**\n* `apideck.accounting.expense_reports.list()`:  `response.meta.total_count` **Added**\n* `apideck.ats.jobs.list()`:  `response.meta.total_count` **Added**\n* `apideck.ats.applicants.list()`:  `response.meta.total_count` **Added**\n* `apideck.ats.applications.list()`:  `response.meta.total_count` **Added**\n* `apideck.crm.companies.list()`:  `response.meta.total_count` **Added**\n* `apideck.crm.contacts.list()`:  `response.meta.total_count` **Added**\n* `apideck.crm.opportunities.list()`:  `response.meta.total_count` **Added**\n* `apideck.crm.leads.list()`:  `response.meta.total_count` **Added**\n* `apideck.crm.pipelines.list()`:  `response.meta.total_count` **Added**\n* `apideck.crm.notes.list()`:  `response.meta.total_count` **Added**\n* `apideck.crm.users.list()`:  `response.meta.total_count` **Added**\n* `apideck.crm.activities.list()`:  `response.meta.total_count` **Added**\n* `apideck.crm.custom_object_schemas.list()`:  `response.meta.total_count` **Added**\n* `apideck.crm.custom_objects.list()`:  `response.meta.total_count` **Added**\n* `apideck.ecommerce.orders.list()`:  `response.meta.total_count` **Added**\n* `apideck.ecommerce.products.list()`:  `response.meta.total_count` **Added**\n* `apideck.ecommerce.customers.list()`:  `response.meta.total_count` **Added**\n* `apideck.file_storage.files.list()`:  `response.meta.total_count` **Added**\n* `apideck.file_storage.files.search()`:  `response.meta.total_count` **Added**\n* `apideck.file_storage.shared_links.list()`:  `response.meta.total_count` **Added**\n* `apideck.file_storage.drives.list()`:  `response.meta.total_count` **Added**\n* `apideck.file_storage.drive_groups.list()`:  `response.meta.total_count` **Added**\n* `apideck.hris.employees.list()`:  `response.meta.total_count` **Added**\n* `apideck.hris.companies.list()`:  `response.meta.total_count` **Added**\n* `apideck.hris.departments.list()`:  `response.meta.total_count` **Added**\n* `apideck.hris.time_off_requests.list()`:  `response.meta.total_count` **Added**\n* `apideck.sms.messages.list()`:  `response.meta.total_count` **Added**\n* `apideck.issue_tracking.collections.list()`:  `response.meta.total_count` **Added**\n* `apideck.issue_tracking.collection_tickets.list()`:  `response.meta.total_count` **Added**\n* `apideck.issue_tracking.collection_ticket_comments.list()`:  `response.meta.total_count` **Added**\n* `apideck.issue_tracking.collection_users.list()`:  `response.meta.total_count` **Added**\n* `apideck.issue_tracking.collection_tags.list()`:  `response.meta.total_count` **Added**\n* `apideck.connector.connectors.list()`:  `response.meta.total_count` **Added**\n* `apideck.connector.connectors.get()`:  `response.meta.total_count` **Added**\n* `apideck.connector.connector_resources.get()`:  `response.meta.total_count` **Added**\n* `apideck.connector.apis.list()`:  `response.meta.total_count` **Added**\n* `apideck.connector.apis.get()`:  `response.meta.total_count` **Added**\n* `apideck.connector.api_resources.get()`:  `response.meta.total_count` **Added**\n* `apideck.connector.api_resource_coverage.get()`:  `response.meta.total_count` **Added**\n* `apideck.vault.consumers.list()`:  `response.meta.total_count` **Added**\n* `apideck.vault.logs.list()`:  `response.meta.total_count` **Added**\n* `apideck.webhook.webhooks.list()`:  `response.meta.total_count` **Added**\n* `apideck.webhook.event_logs.list()`:  `response.meta.total_count` **Added**\n"
+releaseNotes: |
+  ## Python SDK Changes Detected:
+  * `apideck.ecommerce.orders.list()`:  `response.data.[].tax_inclusive` **Added**
+  * `apideck.ecommerce.orders.get()`:  `response.data.tax_inclusive` **Added**
 trackedFiles:
   .devcontainer/README.md:
     last_write_checksum: sha1:07adb0c0c051a9be4d479ea06461f3a9b3bbeb2f
@@ -21818,7 +21821,7 @@ trackedFiles:
   docs/models/ecommercediscount.md:
     last_write_checksum: sha1:90214858d852dd6f9a04d246315e3f91011846d7
   docs/models/ecommerceorder.md:
-    last_write_checksum: sha1:cda9ef060d8bf9f1bba9392da68e6b8ade057975
+    last_write_checksum: sha1:2f77223a98bcc7a49ccf23c5d94e6580451275be
   docs/models/ecommerceorderlineitem.md:
     last_write_checksum: sha1:8fed0b8db7fae5d0469cc590ce49a5db1302c02b
   docs/models/ecommerceorderpaymentstatus.md:
@@ -24004,7 +24007,7 @@ trackedFiles:
   src/apideck_unify/_hooks/types.py:
     last_write_checksum: sha1:4b923d3d84d979af6169a9db6b81bfc373079a25
   src/apideck_unify/_version.py:
-    last_write_checksum: sha1:262b29869988c2d22efa7fc2c79e09fafdd3720f
+    last_write_checksum: sha1:4a254a38c0e140dd61e6b892d46c88cedbb95c47
   src/apideck_unify/accounting.py:
     last_write_checksum: sha1:63ea555e29266c0cbe993e2bddf21ffecd9b02b9
   src/apideck_unify/activities.py:
@@ -25094,7 +25097,7 @@ trackedFiles:
   src/apideck_unify/models/ecommercediscount.py:
     last_write_checksum: sha1:031869169e100ad5d1f36e2865cee802fce3d1b9
   src/apideck_unify/models/ecommerceorder.py:
-    last_write_checksum: sha1:c79bdf04cce76dcca22d7219c0639a0412c42fee
+    last_write_checksum: sha1:0c89683d4b84e3de849c1cdeaf115136bb00ed65
   src/apideck_unify/models/ecommerceorderlineitem.py:
     last_write_checksum: sha1:0dbac612a03b29769519c7b41f308d35ca00478c
   src/apideck_unify/models/ecommerceorderrefund.py:
@@ -26236,7 +26239,7 @@ trackedFiles:
   src/apideck_unify/utils/requestbodies.py:
     last_write_checksum: sha1:e1fef575283b7fe7fe2ad392dbbb3fb105309124
   src/apideck_unify/utils/retries.py:
-    last_write_checksum: sha1:471372f5c5d1dd5583239c9cf3c75f1b636e5d87
+    last_write_checksum: sha1:3585b891142f30a597fbf7a2f0340700babef8e4
   src/apideck_unify/utils/security.py:
     last_write_checksum: sha1:8fa29426fabb7f0a04e5adf11966681ab88900f8
   src/apideck_unify/utils/serializers.py:

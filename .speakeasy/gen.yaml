@@ -32,7 +32,7 @@ generation:
   persistentEdits: {}
   versioningStrategy: automatic
 python:
-  version: 0.31.21
+  version: 0.31.22
   additionalDependencies:
     dev: {}
     main: {}
@@ -51,6 +51,7 @@ python:
   enableCustomCodeRegions: false
   enumFormat: enum
   envVarPrefix: APIDECK
+  errorSchemaValidation: true
   eventStreamClassNames:
     async: EventStreamAsync
     sync: EventStream
@@ -89,6 +90,7 @@ python:
   pytestTimeout: 0
   rawResponseHelpers: false
   responseFormat: envelope-http
+  responseSchemaValidation: true
   sseFlatResponse: false
   templateVersion: v2
   useAsyncHooks: false

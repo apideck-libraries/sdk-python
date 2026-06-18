@@ -79,6 +79,8 @@ class EcommerceOrderTypedDict(TypedDict):
     r"""Total amount due."""
     refunded_amount: NotRequired[Nullable[str]]
     r"""Refunded amount, if any."""
+    tax_inclusive: NotRequired[Nullable[bool]]
+    r"""Indicates whether the order's monetary amounts are inclusive of tax."""
     status: NotRequired[Nullable[EcommerceOrderStatus]]
     r"""Current status of the order."""
     payment_status: NotRequired[Nullable[EcommerceOrderPaymentStatus]]
@@ -140,6 +142,9 @@ class EcommerceOrder(BaseModel):
 
     refunded_amount: OptionalNullable[str] = UNSET
     r"""Refunded amount, if any."""
+
+    tax_inclusive: OptionalNullable[bool] = UNSET
+    r"""Indicates whether the order's monetary amounts are inclusive of tax."""
 
     status: Annotated[
         OptionalNullable[EcommerceOrderStatus],
@@ -237,6 +242,7 @@ class EcommerceOrder(BaseModel):
             "total_tax",
             "total_amount",
             "refunded_amount",
+            "tax_inclusive",
             "status",
             "payment_status",
             "fulfillment_status",
@@ -262,6 +268,7 @@ class EcommerceOrder(BaseModel):
             "total_tax",
             "total_amount",
             "refunded_amount",
+            "tax_inclusive",
             "status",
             "payment_status",
             "fulfillment_status",
