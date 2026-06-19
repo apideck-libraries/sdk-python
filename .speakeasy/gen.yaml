@@ -32,7 +32,7 @@ generation:
   persistentEdits: {}
   versioningStrategy: automatic
 python:
-  version: 0.31.22
+  version: 0.31.23
   additionalDependencies:
     dev: {}
     main: {}
