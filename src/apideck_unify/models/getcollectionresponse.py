@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 from .collection import Collection, CollectionTypedDict
+from .meta import Meta, MetaTypedDict
 from apideck_unify.types import (
     BaseModel,
     Nullable,
@@ -11,7 +12,7 @@ from apideck_unify.types import (
 )
 import pydantic
 from pydantic import model_serializer
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
@@ -29,6 +30,8 @@ class GetCollectionResponseTypedDict(TypedDict):
     operation: str
     r"""Operation performed"""
     data: CollectionTypedDict
+    meta: NotRequired[MetaTypedDict]
+    r"""Response metadata"""
     raw: NotRequired[Nullable[Dict[str, Any]]]
     r"""Raw response from the integration when raw=true query param is provided"""
 
@@ -53,6 +56,9 @@ class GetCollectionResponse(BaseModel):
 
     data: Collection
 
+    meta: Optional[Meta] = None
+    r"""Response metadata"""
+
     raw: Annotated[OptionalNullable[Dict[str, Any]], pydantic.Field(alias="_raw")] = (
         UNSET
     )
@@ -60,7 +66,7 @@ class GetCollectionResponse(BaseModel):
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
-        optional_fields = ["_raw"]
+        optional_fields = ["meta", "_raw"]
         nullable_fields = ["_raw"]
         null_default_fields = []
 

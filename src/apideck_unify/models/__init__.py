@@ -4103,7 +4103,14 @@ if TYPE_CHECKING:
         Price,
         PriceTypedDict,
     )
-    from .meta import Cursors, CursorsTypedDict, Meta, MetaTypedDict
+    from .meta import (
+        Cursors,
+        CursorsTypedDict,
+        Meta,
+        MetaTypedDict,
+        Warnings,
+        WarningsTypedDict,
+    )
     from .no_response_error import NoResponseError
     from .note import Note, NoteTypedDict
     from .note_input import NoteInput, NoteInputTypedDict
@@ -8796,6 +8803,8 @@ __all__ = [
     "VirtualWebhooks",
     "VirtualWebhooksTypedDict",
     "Visibility",
+    "Warnings",
+    "WarningsTypedDict",
     "Webhook",
     "WebhookEventLog",
     "WebhookEventLogService",
@@ -11967,6 +11976,8 @@ _dynamic_imports: dict[str, str] = {
     "CursorsTypedDict": ".meta",
     "Meta": ".meta",
     "MetaTypedDict": ".meta",
+    "Warnings": ".meta",
+    "WarningsTypedDict": ".meta",
     "NoResponseError": ".no_response_error",
     "Note": ".note",
     "NoteTypedDict": ".note",
