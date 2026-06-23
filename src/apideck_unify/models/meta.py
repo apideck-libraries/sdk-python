@@ -9,7 +9,7 @@ from apideck_unify.types import (
     UNSET_SENTINEL,
 )
 from pydantic import model_serializer
-from typing import Optional
+from typing import List, Optional
 from typing_extensions import NotRequired, TypedDict
 
 
@@ -67,6 +67,70 @@ class Cursors(BaseModel):
         return m
 
 
+class WarningsTypedDict(TypedDict):
+    r"""Advisory warning emitted when an optional workflow step fails non-fatally. The overall request still succeeds (HTTP 200); inspect this to detect partial or degraded data."""
+
+    type: NotRequired[str]
+    r"""Discriminator for the warning kind."""
+    status_code: NotRequired[Nullable[int]]
+    r"""HTTP status code returned by the failed downstream request, when available."""
+    error: NotRequired[Nullable[str]]
+    r"""Short error description from the downstream provider, when available."""
+    operation: NotRequired[Nullable[str]]
+    r"""Identifier of the workflow step that failed."""
+    message: NotRequired[Nullable[str]]
+    r"""Detailed message from the downstream provider, when available."""
+
+
+class Warnings(BaseModel):
+    r"""Advisory warning emitted when an optional workflow step fails non-fatally. The overall request still succeeds (HTTP 200); inspect this to detect partial or degraded data."""
+
+    type: Optional[str] = None
+    r"""Discriminator for the warning kind."""
+
+    status_code: OptionalNullable[int] = UNSET
+    r"""HTTP status code returned by the failed downstream request, when available."""
+
+    error: OptionalNullable[str] = UNSET
+    r"""Short error description from the downstream provider, when available."""
+
+    operation: OptionalNullable[str] = UNSET
+    r"""Identifier of the workflow step that failed."""
+
+    message: OptionalNullable[str] = UNSET
+    r"""Detailed message from the downstream provider, when available."""
+
+    @model_serializer(mode="wrap")
+    def serialize_model(self, handler):
+        optional_fields = ["type", "status_code", "error", "operation", "message"]
+        nullable_fields = ["status_code", "error", "operation", "message"]
+        null_default_fields = []
+
+        serialized = handler(self)
+
+        m = {}
+
+        for n, f in type(self).model_fields.items():
+            k = f.alias or n
+            val = serialized.get(k)
+            serialized.pop(k, None)
+
+            optional_nullable = k in optional_fields and k in nullable_fields
+            is_set = (
+                self.__pydantic_fields_set__.intersection({n})
+                or k in null_default_fields
+            )  # pylint: disable=no-member
+
+            if val is not None and val != UNSET_SENTINEL:
+                m[k] = val
+            elif val != UNSET_SENTINEL and (
+                not k in optional_fields or (optional_nullable and is_set)
+            ):
+                m[k] = val
+
+        return m
+
+
 class MetaTypedDict(TypedDict):
     r"""Response metadata"""
 
@@ -76,6 +140,8 @@ class MetaTypedDict(TypedDict):
     r"""Cursors to navigate to previous or next pages through the API"""
     total_count: NotRequired[int]
     r"""Number of records available in total for this resource"""
+    warnings: NotRequired[Nullable[List[WarningsTypedDict]]]
+    r"""Non-fatal warnings emitted when optional workflow steps failed. Present only when at least one step degraded; the response status remains 200."""
 
 
 class Meta(BaseModel):
@@ -89,3 +155,36 @@ class Meta(BaseModel):
 
     total_count: Optional[int] = None
     r"""Number of records available in total for this resource"""
+
+    warnings: OptionalNullable[List[Warnings]] = UNSET
+    r"""Non-fatal warnings emitted when optional workflow steps failed. Present only when at least one step degraded; the response status remains 200."""
+
+    @model_serializer(mode="wrap")
+    def serialize_model(self, handler):
+        optional_fields = ["items_on_page", "cursors", "total_count", "warnings"]
+        nullable_fields = ["warnings"]
+        null_default_fields = []
+
+        serialized = handler(self)
+
+        m = {}
+
+        for n, f in type(self).model_fields.items():
+            k = f.alias or n
+            val = serialized.get(k)
+            serialized.pop(k, None)
+
+            optional_nullable = k in optional_fields and k in nullable_fields
+            is_set = (
+                self.__pydantic_fields_set__.intersection({n})
+                or k in null_default_fields
+            )  # pylint: disable=no-member
+
+            if val is not None and val != UNSET_SENTINEL:
+                m[k] = val
+            elif val != UNSET_SENTINEL and (
+                not k in optional_fields or (optional_nullable and is_set)
+            ):
+                m[k] = val
+
+        return m

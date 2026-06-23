@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 from .accountingbankaccount import AccountingBankAccount, AccountingBankAccountTypedDict
+from .meta import Meta, MetaTypedDict
 from apideck_unify.types import BaseModel
 from typing import Optional
 from typing_extensions import NotRequired, TypedDict
@@ -21,6 +22,8 @@ class GetBankAccountResponseTypedDict(TypedDict):
     r"""Unified API resource name"""
     operation: NotRequired[str]
     r"""Operation performed"""
+    meta: NotRequired[MetaTypedDict]
+    r"""Response metadata"""
 
 
 class GetBankAccountResponse(BaseModel):
@@ -42,3 +45,6 @@ class GetBankAccountResponse(BaseModel):
 
     operation: Optional[str] = None
     r"""Operation performed"""
+
+    meta: Optional[Meta] = None
+    r"""Response metadata"""
