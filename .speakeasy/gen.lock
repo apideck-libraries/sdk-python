@@ -1,12 +1,12 @@
 lockVersion: 2.0.0
 id: fca0ac3a-5f4e-452c-bbc7-2311afa8da40
 management:
-  docChecksum: caa2d4225eeaec5e451e455ac90f5a70
+  docChecksum: 7e59e9d506e2c67a4863a7734cec1486
   docVersion: 10.24.45
   speakeasyVersion: 1.656.1
   generationVersion: 2.753.1
-  releaseVersion: 0.31.26
-  configChecksum: 1e816080260822438e217b530e821a00
+  releaseVersion: 0.31.27
+  configChecksum: 956a057bec1f743ad29d4546fbbf30eb
   repoURL: https://github.com/apideck-libraries/sdk-python.git
   installationURL: https://github.com/apideck-libraries/sdk-python.git
   published: true
@@ -23992,7 +23992,7 @@ trackedFiles:
   pylintrc:
     last_write_checksum: sha1:ec6665a4862060890cf4c6ba61438d11decf5c3c
   pyproject.toml:
-    last_write_checksum: sha1:85c55e0e39581c311dd0ea86076f4445a227dae7
+    last_write_checksum: sha1:7afc32e6b0210425121415c4b9c4666aeb146b39
   scripts/prepare_readme.py:
     last_write_checksum: sha1:798a05bafe4fbbfff5b67037866fa25efc52f11a
   scripts/publish.sh:
@@ -24004,165 +24004,165 @@ trackedFiles:
   src/apideck_unify/_hooks/sdkhooks.py:
     last_write_checksum: sha1:efe97e5f0103a394d4cd03b38912efd007d71408
   src/apideck_unify/_hooks/types.py:
-    last_write_checksum: sha1:4b923d3d84d979af6169a9db6b81bfc373079a25
+    last_write_checksum: sha1:d57be38e644de01983a9224b9733ae0add898d43
   src/apideck_unify/_version.py:
-    last_write_checksum: sha1:982430aaeee5a12911c68433213eb6779fe29ead
+    last_write_checksum: sha1:83ef964ea3a61a2d13135de7cf83ccc1ab31cac6
   src/apideck_unify/accounting.py:
     last_write_checksum: sha1:63ea555e29266c0cbe993e2bddf21ffecd9b02b9
   src/apideck_unify/activities.py:
-    last_write_checksum: sha1:4f95960557847587b5b7953c12d400105b0659f6
+    last_write_checksum: sha1:075c9e969d3e83be5f960509f947fe548975d02b
   src/apideck_unify/agedcreditors_sdk.py:
-    last_write_checksum: sha1:0a752c0c5ceda6352dfbe6528fd0b2f8a89eeadb
+    last_write_checksum: sha1:800f1152a51e1fe4535b7949c556cf634d27faeb
   src/apideck_unify/ageddebtors_sdk.py:
-    last_write_checksum: sha1:6d8203b91939a723354fe44406d8753a064c2928
+    last_write_checksum: sha1:3063d797eb56fa9d9c22f50b36bdb2c1cf3bac17
   src/apideck_unify/apideck_companies.py:
-    last_write_checksum: sha1:d423fbe1666f70860f87a5b7c307d7e1a82a59c8
+    last_write_checksum: sha1:c614caed2cf7ed3476ade790666f37826be5ef2e
   src/apideck_unify/apideck_customers.py:
-    last_write_checksum: sha1:7da17c0207af9da318668d09ad79e539a351c833
+    last_write_checksum: sha1:cf02c21c8bd013abfe15a3704ebb16f33094fa1f
   src/apideck_unify/apideck_departments.py:
-    last_write_checksum: sha1:457a04dec86082a9ed1ed1472eaa8c6188c6eb3c
+    last_write_checksum: sha1:9c6e4af55297ccb825e8bf5bb5c4089e53e344b5
   src/apideck_unify/apideck_employees.py:
-    last_write_checksum: sha1:6d75fa6d2feb59e8f89e19b51be012efe6c31992
+    last_write_checksum: sha1:68e57194df177327cbca44cd704dc550b2a9c3c8
   src/apideck_unify/apideck_hris_companies.py:
-    last_write_checksum: sha1:cccc867973acf329bd2d749c5a716179417f1d21
+    last_write_checksum: sha1:8b1eb48fe3ec7b1d4d84e283a19556d98160d3ca
   src/apideck_unify/apiresourcecoverage_sdk.py:
-    last_write_checksum: sha1:19c0d90196f4d4f6a1a73f3af055d40986fc6b9f
+    last_write_checksum: sha1:b9966ba43e09944888d401e67c1cc8c630337893
   src/apideck_unify/apiresources.py:
-    last_write_checksum: sha1:62b4660b57b354c655619bc9fd16f85e334ceb8e
+    last_write_checksum: sha1:5a3c9585f89f08ebe09941f23ef2d613f01e1ae1
   src/apideck_unify/apis.py:
-    last_write_checksum: sha1:c5e1e3a2228cd77ab87593355842374efbd2617d
+    last_write_checksum: sha1:45c93202d348c002b8bc4c116d40e4fa5213e48f
   src/apideck_unify/applicants.py:
-    last_write_checksum: sha1:227afe08d8e0ed5537bcbc0115dd33e6e35732e3
+    last_write_checksum: sha1:c7aecd13208497e278241cd12feb8ce4ea4cafa3
   src/apideck_unify/applications.py:
-    last_write_checksum: sha1:d5bc1131f592ebcc13e0b3ca237555f6960b972b
+    last_write_checksum: sha1:0c50ef26dc1986523ec038e5e22a04775ae76e70
   src/apideck_unify/ats.py:
     last_write_checksum: sha1:0d5c5cedbfeb231840eb69958e0240f2fbb630f8
   src/apideck_unify/attachments.py:
-    last_write_checksum: sha1:3ef2c3e94c01ae9dc666ac44b8ea219676e01fad
+    last_write_checksum: sha1:f04b1047969e6d005936c29be7e344d2e17ac8ba
   src/apideck_unify/balancesheet_sdk.py:
-    last_write_checksum: sha1:e7a82b470a800602cd0a14a916e0814875d1587f
+    last_write_checksum: sha1:31ef71c6f4e4d19f5bc4eb0b677516d43158d2ce
   src/apideck_unify/bankaccounts.py:
-    last_write_checksum: sha1:c98af75eca1171375ac930acc4d3b8d18c0bbe81
+    last_write_checksum: sha1:f109c57ee32ff795d37a97bc69f2f8d89f794501
   src/apideck_unify/bankfeedaccounts.py:
-    last_write_checksum: sha1:7d472865921e62f6cb4818a902692d8cb5dc8ec7
+    last_write_checksum: sha1:7e46a8fd6ffce018d76b8baed6dff6decc8480cd
   src/apideck_unify/bankfeedstatements.py:
-    last_write_checksum: sha1:c06e8bc014771bcfd4825806a8006fc35a2e7838
+    last_write_checksum: sha1:dd24d2291863c7d7fbbe72366b235ffc80b5f6dd
   src/apideck_unify/basesdk.py:
     last_write_checksum: sha1:02f62bd40dfedb9697666050be333be287dd5a5b
   src/apideck_unify/billpayments.py:
-    last_write_checksum: sha1:5e91bb6e9964ac8481cc5100bb667e45ee479a2b
+    last_write_checksum: sha1:dce7d7b1645cb0f11e0e2b03a1743bbca268df48
   src/apideck_unify/bills.py:
-    last_write_checksum: sha1:b65200199e7599a2e5782fd4c803624e96f8ba5e
+    last_write_checksum: sha1:859a2468354306f2b57beedae9943a8b0705c436
   src/apideck_unify/categories.py:
-    last_write_checksum: sha1:edac9587e5f795f65d1cb7741616b174cdba9695
+    last_write_checksum: sha1:6868f4ca8cb346baa2bf46c69f51fd76181f61e0
   src/apideck_unify/collections.py:
-    last_write_checksum: sha1:5466f2ab674071c137ee017df0495ea724f2486e
+    last_write_checksum: sha1:e9be5fb54f24427f714c38ee26da1345646dfe9b
   src/apideck_unify/collectiontags.py:
-    last_write_checksum: sha1:93917b03c5dba10d20066c42917cbf981374e67a
+    last_write_checksum: sha1:57392c766cade80b620ce3d439c503085a4d98dd
   src/apideck_unify/collectionticketcomments.py:
-    last_write_checksum: sha1:2b455756d12fd0ef24c77d71f5ba1bbdad0f5270
+    last_write_checksum: sha1:2aa0e6feed57783a8daf27716f93a40b29b9c685
   src/apideck_unify/collectiontickets.py:
-    last_write_checksum: sha1:795c3a404e230eaa017bb2eee9110c1d1d475b27
+    last_write_checksum: sha1:766be201349315acc28d21033cf8b5bd6cfb6e0b
   src/apideck_unify/collectionusers.py:
-    last_write_checksum: sha1:c35ad0700ea90e8472098b43b7bbaea44abecee6
+    last_write_checksum: sha1:1086a85c1d8c9d6b1ffa0e596689b21216b89b16
   src/apideck_unify/companies.py:
-    last_write_checksum: sha1:1a6fe8f5abf4083a60203aea326c5f990268e927
+    last_write_checksum: sha1:74f3409fc8f88bcc3ec321b9f8d7bfd44cbe091c
   src/apideck_unify/companyinfo_sdk.py:
-    last_write_checksum: sha1:ea334816ac6b3875c25a4dba65b1eb6423c66cfc
+    last_write_checksum: sha1:38bbe655d3dfbb4cdf1604241bb941905237e8d9
   src/apideck_unify/connectionconsent.py:
-    last_write_checksum: sha1:98dc56637481bc7e251f95abb579acde26d47191
+    last_write_checksum: sha1:993ea1c38b4b1bf47cdc1311e1f14820c0f26859
   src/apideck_unify/connectionconsents.py:
-    last_write_checksum: sha1:af781472526d9ad67ae8405e663f38f820107a31
+    last_write_checksum: sha1:76ca196bf765edf8551effb555385c7f2e0bf71f
   src/apideck_unify/connectioncustommappings.py:
-    last_write_checksum: sha1:db6e5bfe9810d17534e88e8225593e2ecb7b69ef
+    last_write_checksum: sha1:d2fd0a88db94b2c37465ffbb9b592143afc2b4ed
   src/apideck_unify/connections.py:
-    last_write_checksum: sha1:79bcc4662ebaf216dc0c0576a90c239e74ca3264
+    last_write_checksum: sha1:c71e744706e4e46bfc48c3e11d612b53505df02b
   src/apideck_unify/connectionsettings.py:
-    last_write_checksum: sha1:b5cf19d1a1f988c4d31afe62a80f077ebc1c57f4
+    last_write_checksum: sha1:e8596b3830a0cfd60d2b4140ac57f6691ff36e64
   src/apideck_unify/connector_sdk.py:
     last_write_checksum: sha1:2612a2326d4070d9551e7865993fee5a42931c89
   src/apideck_unify/connectordocs.py:
-    last_write_checksum: sha1:c8a898128450dc64112e86dd0ea54f040f9e71d4
+    last_write_checksum: sha1:7d695b83580ff9df58a3925c4a44d05ea9c0d75d
   src/apideck_unify/connectorresources.py:
-    last_write_checksum: sha1:3a8798bf26acc513a0642415038648d41817c9d4
+    last_write_checksum: sha1:ba1fc984eea6e027246479cd549c780c37d8e0c4
   src/apideck_unify/connectors.py:
-    last_write_checksum: sha1:944b1f19f2f29c5c7631328d0afb05316ba68fba
+    last_write_checksum: sha1:e4ff5f7a28d6f3f5dc2bf6e0d012c36dfa1a5264
   src/apideck_unify/consumerrequestcounts.py:
-    last_write_checksum: sha1:ac8397b7345e4c3e18883814cec29338424f3e91
+    last_write_checksum: sha1:99e2c78e436b258fddd9cf05100735fc4e7a2168
   src/apideck_unify/consumers.py:
-    last_write_checksum: sha1:f0109518542457c9510782b0c271baa767d21735
+    last_write_checksum: sha1:f53a2e10961bc23fec8d9122e33cbc42c5dce5b1
   src/apideck_unify/contacts.py:
-    last_write_checksum: sha1:dbe7cd26d01b7facd000940eb397d51a609c6685
+    last_write_checksum: sha1:9b6ecd0a5d6cd03a0e5173f451c0b42466fa0350
   src/apideck_unify/createcallback.py:
-    last_write_checksum: sha1:614dddeb026a1bbc6ea2739a6e3720d3e5b7ddc5
+    last_write_checksum: sha1:fa6cddb89b59b3890fbc0a06c4b7730e91e76f2e
   src/apideck_unify/creditnotes.py:
-    last_write_checksum: sha1:1bb028e358763a3ca91cc43ec06bcaddf28feeeb
+    last_write_checksum: sha1:50182cb4e1074e11a0eacaa0f22754734c57f4a7
   src/apideck_unify/crm.py:
     last_write_checksum: sha1:8bbf1c9e4f092b110c8f9b2cbaf5d4af099cd6a1
   src/apideck_unify/customers.py:
-    last_write_checksum: sha1:9509859e2f34134426889040fe25967ddc245048
+    last_write_checksum: sha1:4c57991f3f141ca7542171920e1d163c1ed81d56
   src/apideck_unify/customfields.py:
-    last_write_checksum: sha1:6af82cb3c3c1fc24fb4755e4f40fbfaceee89372
+    last_write_checksum: sha1:7666758135082e5efdc1c4b3f570cb2cc9a5c33c
   src/apideck_unify/custommappings.py:
-    last_write_checksum: sha1:abb0be88368477c52b571379ba02a1af4ac2a3d9
+    last_write_checksum: sha1:7a2ea15e47e0b3dba484af085cc84db51c8e0acf
   src/apideck_unify/customobjects.py:
-    last_write_checksum: sha1:6c1fb68aaf7c309779fe93938878e80a0f9b1323
+    last_write_checksum: sha1:68e95afb10f445c27740748c3731f9fa30e16b1f
   src/apideck_unify/customobjectschemas.py:
-    last_write_checksum: sha1:c5a6e4ad3c24cddd7e91434fef48f979b175cba0
+    last_write_checksum: sha1:79befec63cb3d5bdbc8b94bd28baa361d4e784e7
   src/apideck_unify/departments.py:
-    last_write_checksum: sha1:2cd6157c89f43c8e1e2cf1790b59e1d15167083d
+    last_write_checksum: sha1:d64d7d0b15ea8cdf64f032d15d678f750486ac83
   src/apideck_unify/drivegroups.py:
-    last_write_checksum: sha1:97e7214da96832b5fb9d5c53aea87a07c9c62bfa
+    last_write_checksum: sha1:171da83d1abba6a961388d876c506c9a284f016c
   src/apideck_unify/drives.py:
-    last_write_checksum: sha1:236da840b0b30a278e80e7d59147cad777bd8955
+    last_write_checksum: sha1:7c53cde241181d2ae86a66c3aa1fae7d460a2f1e
   src/apideck_unify/ecommerce.py:
     last_write_checksum: sha1:d78cdad9d7181e3f4be809985221dab72f4c2eba
   src/apideck_unify/employeepayrolls.py:
-    last_write_checksum: sha1:737d91ed72e3eda32a6547b4c15cac40ad146706
+    last_write_checksum: sha1:c84a061f34d666312600b49bf07abc88e56942a5
   src/apideck_unify/employees.py:
-    last_write_checksum: sha1:9072625dcf82c88e8bfff499a16a478f718ad1a8
+    last_write_checksum: sha1:66be814d3f14f3d9473228ab3450ef064c16262c
   src/apideck_unify/employeeschedules_sdk.py:
-    last_write_checksum: sha1:fac57007e72b13bf68101d17f582cf8e6e1ef2b1
+    last_write_checksum: sha1:a6be96924e77fe71013a32069043a73d29185028
   src/apideck_unify/eventlogs.py:
-    last_write_checksum: sha1:e4fd50d9b4507f379760219da15c1592a45686f4
+    last_write_checksum: sha1:d1729709f928d9c708ff4d4eb825cb98c5423f1f
   src/apideck_unify/expensecategories.py:
-    last_write_checksum: sha1:0a03c0bc7b3886749bdafd5a241a8130a88e8ff5
+    last_write_checksum: sha1:ee6b1f859e7682b614859e13b7a871dee904bc16
   src/apideck_unify/expensereports.py:
-    last_write_checksum: sha1:3be6a3ce59df076360dcd21de101540e238e7a19
+    last_write_checksum: sha1:b2d95353744f922d624c0fbb2fa3be356010212b
   src/apideck_unify/expenses.py:
-    last_write_checksum: sha1:b04244acb1a2c729923f299e0ffa106d302fd7f2
+    last_write_checksum: sha1:d8000cb14c4589a64a8f49c2a280844df5d7c705
   src/apideck_unify/files.py:
-    last_write_checksum: sha1:d8b0a528bb9f26eb68d2facd03c0cb5adc6c63fc
+    last_write_checksum: sha1:d2a613a636558499fec8b923c3aa0d46a7e7e9ad
   src/apideck_unify/filestorage.py:
     last_write_checksum: sha1:cf935b847c21f965790ff3c0c664c0223aa0d78c
   src/apideck_unify/folders.py:
-    last_write_checksum: sha1:033f1a5f9c54d074e2824ebd7927406a724a695c
+    last_write_checksum: sha1:ff18938d91f50a29e51654d421e1133310545000
   src/apideck_unify/generalledgertransactions.py:
-    last_write_checksum: sha1:fdf8fef9788e8e264940d7762c118c93f5a93b33
+    last_write_checksum: sha1:9b40fb65664f17f0c0c15a5a0686e09458abe442
   src/apideck_unify/hris.py:
     last_write_checksum: sha1:912ec8837c4f787eb3151a5184689536b586cc44
   src/apideck_unify/httpclient.py:
     last_write_checksum: sha1:5e55338d6ee9f01ab648cad4380201a8a3da7dd7
   src/apideck_unify/invoiceitems.py:
-    last_write_checksum: sha1:d13ad7cc1a01fba9e15f53a0adcba548dbc4540b
+    last_write_checksum: sha1:d1d420deeaa6c5115a785c603ab4be7d4db8edde
   src/apideck_unify/invoices.py:
-    last_write_checksum: sha1:12db1cd91896f142f94ac26a18791f3f06013863
+    last_write_checksum: sha1:6990d6972d8761eb95a942395ed47aafbddbadae
   src/apideck_unify/issuetracking.py:
     last_write_checksum: sha1:a18420473c9ae884dcdc562042a52205924643c5
   src/apideck_unify/jobs.py:
-    last_write_checksum: sha1:43bd01df02fa0fffde0f12cf2b917e06308a207d
+    last_write_checksum: sha1:68126ac4bf72cb0457e888f727138e29fa49c498
   src/apideck_unify/journalentries.py:
-    last_write_checksum: sha1:e7d00919012bcbc261bd101d7ed4400a1a8256c2
+    last_write_checksum: sha1:90438fb663bafece419b1dbb74d238bbc06c9ad5
   src/apideck_unify/leads.py:
-    last_write_checksum: sha1:734d846e136b53c80a8bb6e424e54a8a863c23e3
+    last_write_checksum: sha1:5d80324040a7a6053d78c7228735a80c40478d0a
   src/apideck_unify/ledgeraccounts.py:
-    last_write_checksum: sha1:738c7a65a915e2082d98b5821f4bbab6e813b4e2
+    last_write_checksum: sha1:2bac19bc954345e580c4e48366ddf0be6b5cf13c
   src/apideck_unify/locations.py:
-    last_write_checksum: sha1:4bef9beff5aa7dd90f03399fa65c6f84782bc4d1
+    last_write_checksum: sha1:21ce36295083fca77b0f3b6f84be16f2f1ab27fa
   src/apideck_unify/logs.py:
-    last_write_checksum: sha1:070e37b5c12ad69e1645a93358457b9216757081
+    last_write_checksum: sha1:e72432784f35bf5d801fcbb8f946c8ea9939d02d
   src/apideck_unify/messages.py:
-    last_write_checksum: sha1:1a89d6376a2a9e0f9700e086c3037e2cdd2e1c70
+    last_write_checksum: sha1:8b1e180d3c7d2ae9916b1f645460caebf5281d7b
   src/apideck_unify/models/__init__.py:
     last_write_checksum: sha1:d14c866d05cb5b5f1041f35944e98f95cd6d1288
   src/apideck_unify/models/accounting_agedcreditorsoneop.py:
@@ -26154,55 +26154,55 @@ trackedFiles:
   src/apideck_unify/models/website.py:
     last_write_checksum: sha1:deb21698b9dec32eca6c3c22114c0c678a3c7ef8
   src/apideck_unify/notes.py:
-    last_write_checksum: sha1:8e7957797ddd63c66c44f9880812b04a356cc82b
+    last_write_checksum: sha1:2835a9acd16ab47fdb69d556098865d91d2f1ef4
   src/apideck_unify/opportunities.py:
-    last_write_checksum: sha1:85efd4998079dac40d230c703254183a31355c33
+    last_write_checksum: sha1:d51415cfa4575ac908bda76d2121602628ed30a7
   src/apideck_unify/orders.py:
-    last_write_checksum: sha1:d0b4b62d63d1107b0fd79797d69b90915524eeb7
+    last_write_checksum: sha1:34b8d03b4501c0040bbf4b66decb28b5ef216002
   src/apideck_unify/payments.py:
-    last_write_checksum: sha1:a84164e40d848378e10d6f80e30e7637c02cbbfc
+    last_write_checksum: sha1:f821a3185cd1c914654f767f795b176defde958d
   src/apideck_unify/payrolls.py:
-    last_write_checksum: sha1:d434883ca5a5b52e87227d116a9e2c450ee94271
+    last_write_checksum: sha1:5ccd0b249a6acb7ec93202cf3e02d445138a66b0
   src/apideck_unify/pipelines.py:
-    last_write_checksum: sha1:e737f1fca6a99f5f29df2e234e1ab2e7c3315e46
+    last_write_checksum: sha1:e190d857987220810e9cb5f2a2ab3bdf3a9225d9
   src/apideck_unify/products.py:
-    last_write_checksum: sha1:ebbbc6980faf6d692345c446d0f7baaf30459699
+    last_write_checksum: sha1:516b2bf87267fdf7c8b41b8b6a9f5e96e98ddc00
   src/apideck_unify/profitandloss_sdk.py:
-    last_write_checksum: sha1:d41d8aaff95f1c70e42d2221d9cbba2729cc7ddd
+    last_write_checksum: sha1:20d3057d32cdb49e710aee22dfd67e0c52242a12
   src/apideck_unify/projects.py:
-    last_write_checksum: sha1:666c54981990c1cc26609f65993479dc7ff95343
+    last_write_checksum: sha1:3662264ea54000b0036d382b1431d355d4bdfcda
   src/apideck_unify/proxy.py:
-    last_write_checksum: sha1:420f36c2ea107ee92951149598fef5f2cb17a6e0
+    last_write_checksum: sha1:deaaafe32a577977cd7ee2a32315491d9caf6a73
   src/apideck_unify/purchaseorders.py:
-    last_write_checksum: sha1:df3664c0ab4c0a32d15cb4403b6baa2c866521dd
+    last_write_checksum: sha1:a01b351803034830b0b8b00a4e7df19a76d6c1f0
   src/apideck_unify/py.typed:
     last_write_checksum: sha1:8efc425ffe830805ffcc0f3055871bdcdc542c60
   src/apideck_unify/quotes.py:
-    last_write_checksum: sha1:d9087d7686c0b4ca2f2675db0b7c44dba261e588
+    last_write_checksum: sha1:4783408aaab734148112ee09d7605b49609d10f6
   src/apideck_unify/refunds.py:
-    last_write_checksum: sha1:19b6b7d811f84057a72bfb10a6c5446485b502cf
+    last_write_checksum: sha1:6d3ce2a30b81feaabe1a8cb9ae1a715349117dc4
   src/apideck_unify/sdk.py:
     last_write_checksum: sha1:c36fd87d8a9d1b51c46deeb198cc84a9761aedfb
   src/apideck_unify/sdkconfiguration.py:
     last_write_checksum: sha1:41dc7958d7c9ad55f49a781091bea6d6d4c8d7ab
   src/apideck_unify/sessions.py:
-    last_write_checksum: sha1:47a388be85e3a3623e11665b5e241fa6dbe32781
+    last_write_checksum: sha1:de267b5029cd71464f5a268cf40e6ed7311b56bc
   src/apideck_unify/sharedlinks.py:
-    last_write_checksum: sha1:59e18a6f5fbe90d7bc3853e0e6f29595500876f1
+    last_write_checksum: sha1:bfce6557002649c9d2c8e9c31b51fd65f9a6d57d
   src/apideck_unify/sms.py:
     last_write_checksum: sha1:444ede696d4742704204a55660fd82ef98a1820a
   src/apideck_unify/stores.py:
-    last_write_checksum: sha1:a4fe27bd06c6bbf7fce0c039f46fda5beb008914
+    last_write_checksum: sha1:9f5e5fc900c1254bb5ee0d45cd5e5c1bc0ec762d
   src/apideck_unify/subsidiaries.py:
-    last_write_checksum: sha1:7d15f9488219c2151827cccb4b9ddfb5e90f6547
+    last_write_checksum: sha1:01f35432179ecb2a3364024af7d5076423846cc1
   src/apideck_unify/suppliers.py:
-    last_write_checksum: sha1:be528a70ffa8a577b90d092966257465e47c0a2c
+    last_write_checksum: sha1:f0fc01e22187f920be5f7d7a58076092e2d03e47
   src/apideck_unify/taxrates.py:
-    last_write_checksum: sha1:20b92ae0351644f3fa4ad7d236720672805be382
+    last_write_checksum: sha1:c4a28fec0799b6c4976c98d5269021b63fe47b3e
   src/apideck_unify/timeoffrequests.py:
-    last_write_checksum: sha1:8d85b81625d57750129bff1bff84ad220d6dcb9b
+    last_write_checksum: sha1:6202cc9d837c45ad3398558e69849d1f6754c606
   src/apideck_unify/trackingcategories.py:
-    last_write_checksum: sha1:ea7dcc23cf797a8513b67f1fa913e9e86eb5d5af
+    last_write_checksum: sha1:342455b46551e9a43c5441581df9fc8c4ac0e9d0
   src/apideck_unify/types/__init__.py:
     last_write_checksum: sha1:f9ad14217f832e74f594285960125add50324be9
   src/apideck_unify/types/base64fileinput.py:
@@ -26210,9 +26210,9 @@ trackedFiles:
   src/apideck_unify/types/basemodel.py:
     last_write_checksum: sha1:10d84aedeb9d35edfdadf2c3020caa1d24d8b584
   src/apideck_unify/uploadsessions.py:
-    last_write_checksum: sha1:e1d5a782b02361692afeb5310555557bfa9b9911
+    last_write_checksum: sha1:335113ac8e20ddc99ff931cd148ee5de0d2f5a41
   src/apideck_unify/users.py:
-    last_write_checksum: sha1:7ce86a15a071bf18047d862af7425ae3a8b7b880
+    last_write_checksum: sha1:9a454f30a9ff330d06199f3b37734f271992b752
   src/apideck_unify/utils/__init__.py:
     last_write_checksum: sha1:0f93d821f9cb3e061ea125d881bb6f61166738dd
   src/apideck_unify/utils/annotations.py:
@@ -26250,10 +26250,10 @@ trackedFiles:
   src/apideck_unify/utils/values.py:
     last_write_checksum: sha1:acaa178a7c41ddd000f58cc691e4632d925b2553
   src/apideck_unify/validateconnection.py:
-    last_write_checksum: sha1:029377221f7b80823aaa56867bd261660ccd99b6
+    last_write_checksum: sha1:af967d801f7d2a9cef20618124e5c145c776f177
   src/apideck_unify/vault.py:
     last_write_checksum: sha1:3f0371863893f83e4286702b94c3802bb19efd42
   src/apideck_unify/webhook_sdk.py:
     last_write_checksum: sha1:56997393a069250fc63b046ad043604263dca61c
   src/apideck_unify/webhooks.py:
-    last_write_checksum: sha1:95994211c7fadc1ba4a395ccb0905a4164c87366
+    last_write_checksum: sha1:00eacd3619d91c8b64da8df9567e76dc0e69e750
