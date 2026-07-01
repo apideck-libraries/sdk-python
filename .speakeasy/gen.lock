@@ -1,12 +1,12 @@
 lockVersion: 2.0.0
 id: fca0ac3a-5f4e-452c-bbc7-2311afa8da40
 management:
-  docChecksum: 7e59e9d506e2c67a4863a7734cec1486
+  docChecksum: 0b80213522af7ea949a86bf587faafda
   docVersion: 10.24.45
   speakeasyVersion: 1.656.1
   generationVersion: 2.753.1
-  releaseVersion: 0.31.27
-  configChecksum: 956a057bec1f743ad29d4546fbbf30eb
+  releaseVersion: 0.31.28
+  configChecksum: c646e6df6be27ab5484ab46999ced9f7
   repoURL: https://github.com/apideck-libraries/sdk-python.git
   installationURL: https://github.com/apideck-libraries/sdk-python.git
   published: true
@@ -24006,11 +24006,11 @@ trackedFiles:
   src/apideck_unify/_hooks/types.py:
     last_write_checksum: sha1:d57be38e644de01983a9224b9733ae0add898d43
   src/apideck_unify/_version.py:
-    last_write_checksum: sha1:83ef964ea3a61a2d13135de7cf83ccc1ab31cac6
+    last_write_checksum: sha1:cbed04011d206d68e835ef73a24380db44279306
   src/apideck_unify/accounting.py:
     last_write_checksum: sha1:63ea555e29266c0cbe993e2bddf21ffecd9b02b9
   src/apideck_unify/activities.py:
-    last_write_checksum: sha1:075c9e969d3e83be5f960509f947fe548975d02b
+    last_write_checksum: sha1:cee3c4d873d3ba066c67bdb59287e0ef935b5380
   src/apideck_unify/agedcreditors_sdk.py:
     last_write_checksum: sha1:800f1152a51e1fe4535b7949c556cf634d27faeb
   src/apideck_unify/ageddebtors_sdk.py:
@@ -24052,7 +24052,7 @@ trackedFiles:
   src/apideck_unify/billpayments.py:
     last_write_checksum: sha1:dce7d7b1645cb0f11e0e2b03a1743bbca268df48
   src/apideck_unify/bills.py:
-    last_write_checksum: sha1:859a2468354306f2b57beedae9943a8b0705c436
+    last_write_checksum: sha1:5090c1a7ff913a11be8d17649519b6085ffe4382
   src/apideck_unify/categories.py:
     last_write_checksum: sha1:6868f4ca8cb346baa2bf46c69f51fd76181f61e0
   src/apideck_unify/collections.py:
