@@ -1,12 +1,12 @@
 lockVersion: 2.0.0
 id: fca0ac3a-5f4e-452c-bbc7-2311afa8da40
 management:
-  docChecksum: 0b80213522af7ea949a86bf587faafda
-  docVersion: 10.24.45
+  docChecksum: a6830a681cad2abb4827582763da406e
+  docVersion: 10.24.46
   speakeasyVersion: 1.656.1
   generationVersion: 2.753.1
-  releaseVersion: 0.31.28
-  configChecksum: c646e6df6be27ab5484ab46999ced9f7
+  releaseVersion: 0.31.29
+  configChecksum: 8458566913571ecb73a7271166d488df
   repoURL: https://github.com/apideck-libraries/sdk-python.git
   installationURL: https://github.com/apideck-libraries/sdk-python.git
   published: true
@@ -24006,11 +24006,11 @@ trackedFiles:
   src/apideck_unify/_hooks/types.py:
     last_write_checksum: sha1:d57be38e644de01983a9224b9733ae0add898d43
   src/apideck_unify/_version.py:
-    last_write_checksum: sha1:cbed04011d206d68e835ef73a24380db44279306
+    last_write_checksum: sha1:fefd69cd623eba69b6049f2cd5bdc2a9d261ffa7
   src/apideck_unify/accounting.py:
     last_write_checksum: sha1:63ea555e29266c0cbe993e2bddf21ffecd9b02b9
   src/apideck_unify/activities.py:
-    last_write_checksum: sha1:cee3c4d873d3ba066c67bdb59287e0ef935b5380
+    last_write_checksum: sha1:d0d893423acbd8366c1581b05f4f76efffc9ef23
   src/apideck_unify/agedcreditors_sdk.py:
     last_write_checksum: sha1:800f1152a51e1fe4535b7949c556cf634d27faeb
   src/apideck_unify/ageddebtors_sdk.py:
@@ -24022,7 +24022,7 @@ trackedFiles:
   src/apideck_unify/apideck_departments.py:
     last_write_checksum: sha1:9c6e4af55297ccb825e8bf5bb5c4089e53e344b5
   src/apideck_unify/apideck_employees.py:
-    last_write_checksum: sha1:68e57194df177327cbca44cd704dc550b2a9c3c8
+    last_write_checksum: sha1:ea816fad6fae3e31928f5c2510d041e8b6759fa5
   src/apideck_unify/apideck_hris_companies.py:
     last_write_checksum: sha1:8b1eb48fe3ec7b1d4d84e283a19556d98160d3ca
   src/apideck_unify/apiresourcecoverage_sdk.py:
@@ -24062,7 +24062,7 @@ trackedFiles:
   src/apideck_unify/collectionticketcomments.py:
     last_write_checksum: sha1:2aa0e6feed57783a8daf27716f93a40b29b9c685
   src/apideck_unify/collectiontickets.py:
-    last_write_checksum: sha1:766be201349315acc28d21033cf8b5bd6cfb6e0b
+    last_write_checksum: sha1:06510a5a8e766dee54d6f42f10bd81d9a39498af
   src/apideck_unify/collectionusers.py:
     last_write_checksum: sha1:1086a85c1d8c9d6b1ffa0e596689b21216b89b16
   src/apideck_unify/companies.py:
