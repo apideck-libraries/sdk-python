@@ -136,3 +136,6 @@
 | `ACCOUNTING_PROJECT_CREATED`               | accounting.project.created                 |
 | `ACCOUNTING_PROJECT_UPDATED`               | accounting.project.updated                 |
 | `ACCOUNTING_PROJECT_DELETED`               | accounting.project.deleted                 |
+| `ACCOUNTING_TRACKING_CATEGORY_CREATED`     | accounting.tracking_category.created       |
+| `ACCOUNTING_TRACKING_CATEGORY_UPDATED`     | accounting.tracking_category.updated       |
+| `ACCOUNTING_TRACKING_CATEGORY_DELETED`     | accounting.tracking_category.deleted       |

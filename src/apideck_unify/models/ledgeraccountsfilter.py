@@ -28,7 +28,7 @@ class Classification(str, Enum, metaclass=utils.OpenEnumMeta):
 
 
 class LedgerAccountsFilterStatus(str, Enum, metaclass=utils.OpenEnumMeta):
-    r"""Filter by account status."""
+    r"""Filter by account status. Supported only on a subset of connectors (e.g. NetSuite); connectors that do not support it reject `filter[status]` with a `400 UnsupportedFiltersError` — read the account's `status` field in the response and filter client-side instead. See the error's `supported_filters` or the connector's supported filters."""
 
     ACTIVE = "active"
     INACTIVE = "inactive"
@@ -41,7 +41,7 @@ class LedgerAccountsFilterTypedDict(TypedDict):
     classification: NotRequired[Classification]
     r"""Filter by account classification."""
     status: NotRequired[LedgerAccountsFilterStatus]
-    r"""Filter by account status."""
+    r"""Filter by account status. Supported only on a subset of connectors (e.g. NetSuite); connectors that do not support it reject `filter[status]` with a `400 UnsupportedFiltersError` — read the account's `status` field in the response and filter client-side instead. See the error's `supported_filters` or the connector's supported filters."""
     subsidiary_id: NotRequired[str]
     r"""Filter by the subsidiary (legal entity) the record belongs to. Only honored on connectors that support multi-entity scoping (e.g. NetSuite OneWorld); ignored elsewhere."""
 
@@ -65,7 +65,7 @@ class LedgerAccountsFilter(BaseModel):
         ],
         FieldMetadata(query=True),
     ] = None
-    r"""Filter by account status."""
+    r"""Filter by account status. Supported only on a subset of connectors (e.g. NetSuite); connectors that do not support it reject `filter[status]` with a `400 UnsupportedFiltersError` — read the account's `status` field in the response and filter client-side instead. See the error's `supported_filters` or the connector's supported filters."""
 
     subsidiary_id: Annotated[Optional[str], FieldMetadata(query=True)] = None
     r"""Filter by the subsidiary (legal entity) the record belongs to. Only honored on connectors that support multi-entity scoping (e.g. NetSuite OneWorld); ignored elsewhere."""
