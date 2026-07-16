@@ -18,7 +18,7 @@ from apideck_unify.types import (
 from apideck_unify.utils import FieldMetadata, HeaderMetadata, QueryParamMetadata
 import pydantic
 from pydantic import model_serializer
-from typing import Callable, Optional
+from typing import Any, Callable, Dict, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
@@ -62,6 +62,8 @@ class AccountingExpensesAllRequestTypedDict(TypedDict):
     r"""Number of results to return. Minimum 1, Maximum 200, Default 20"""
     filter_: NotRequired[ExpensesFilterTypedDict]
     r"""Apply filters"""
+    pass_through: NotRequired[Dict[str, Any]]
+    r"""Optional unmapped key/values that will be passed through to downstream as query parameters. Ie: ?pass_through[search]=leads becomes ?search=leads"""
 
 
 class AccountingExpensesAllRequest(BaseModel):
@@ -118,6 +120,12 @@ class AccountingExpensesAllRequest(BaseModel):
     ] = None
     r"""Apply filters"""
 
+    pass_through: Annotated[
+        Optional[Dict[str, Any]],
+        FieldMetadata(query=QueryParamMetadata(style="deepObject", explode=True)),
+    ] = None
+    r"""Optional unmapped key/values that will be passed through to downstream as query parameters. Ie: ?pass_through[search]=leads becomes ?search=leads"""
+
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
         optional_fields = [
@@ -129,6 +137,7 @@ class AccountingExpensesAllRequest(BaseModel):
             "cursor",
             "limit",
             "filter",
+            "pass_through",
         ]
         nullable_fields = ["cursor"]
         null_default_fields = []

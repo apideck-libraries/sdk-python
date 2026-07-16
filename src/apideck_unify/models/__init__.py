@@ -1566,6 +1566,10 @@ if TYPE_CHECKING:
         ConnectionDefaultsTypedDict,
         ConnectionInput,
         ConnectionInputTypedDict,
+        ConnectionMetadata,
+        ConnectionMetadataInput,
+        ConnectionMetadataInputTypedDict,
+        ConnectionMetadataTypedDict,
         ConnectionStatus,
         ConnectionTypedDict,
         ConnectionValue,
@@ -1678,7 +1682,12 @@ if TYPE_CHECKING:
     from .consentrecord_input import ConsentRecordInput, ConsentRecordInputTypedDict
     from .consentstate import ConsentState
     from .consumer import Consumer, ConsumerTypedDict
-    from .consumerconnection import ConsumerConnection, ConsumerConnectionTypedDict
+    from .consumerconnection import (
+        ConsumerConnection,
+        ConsumerConnectionTypedDict,
+        Metadata,
+        MetadataTypedDict,
+    )
     from .consumermetadata import ConsumerMetadata, ConsumerMetadataTypedDict
     from .consumerrequestcountsindaterangeresponse import (
         ConsumerRequestCountsInDateRangeResponse,
@@ -2177,6 +2186,22 @@ if TYPE_CHECKING:
         CrmLeadsUpdateRequestTypedDict,
         CrmLeadsUpdateResponse,
         CrmLeadsUpdateResponseTypedDict,
+    )
+    from .crm_listsallop import (
+        CrmListsAllGlobals,
+        CrmListsAllGlobalsTypedDict,
+        CrmListsAllRequest,
+        CrmListsAllRequestTypedDict,
+        CrmListsAllResponse,
+        CrmListsAllResponseTypedDict,
+    )
+    from .crm_listsoneop import (
+        CrmListsOneGlobals,
+        CrmListsOneGlobalsTypedDict,
+        CrmListsOneRequest,
+        CrmListsOneRequestTypedDict,
+        CrmListsOneResponse,
+        CrmListsOneResponseTypedDict,
     )
     from .crm_notesaddop import (
         CrmNotesAddGlobals,
@@ -3457,6 +3482,8 @@ if TYPE_CHECKING:
         GetLedgerAccountsResponse,
         GetLedgerAccountsResponseTypedDict,
     )
+    from .getlistresponse import GetListResponse, GetListResponseTypedDict
+    from .getlistsresponse import GetListsResponse, GetListsResponseTypedDict
     from .getlogsresponse import GetLogsResponse, GetLogsResponseTypedDict
     from .getmessageresponse import GetMessageResponse, GetMessageResponseTypedDict
     from .getmessagesresponse import GetMessagesResponse, GetMessagesResponseTypedDict
@@ -4080,6 +4107,7 @@ if TYPE_CHECKING:
     )
     from .linkedworktag import LinkedWorktag, LinkedWorktagTypedDict
     from .links import Links, LinksTypedDict
+    from .list import ListT, ListTTypedDict, ListType, ListVisibility
     from .log import (
         Log,
         LogTypedDict,
@@ -6237,6 +6265,10 @@ __all__ = [
     "ConnectionImportDataTypedDict",
     "ConnectionInput",
     "ConnectionInputTypedDict",
+    "ConnectionMetadata",
+    "ConnectionMetadataInput",
+    "ConnectionMetadataInputTypedDict",
+    "ConnectionMetadataTypedDict",
     "ConnectionState",
     "ConnectionStatus",
     "ConnectionTypedDict",
@@ -6664,6 +6696,18 @@ __all__ = [
     "CrmLeadsUpdateRequestTypedDict",
     "CrmLeadsUpdateResponse",
     "CrmLeadsUpdateResponseTypedDict",
+    "CrmListsAllGlobals",
+    "CrmListsAllGlobalsTypedDict",
+    "CrmListsAllRequest",
+    "CrmListsAllRequestTypedDict",
+    "CrmListsAllResponse",
+    "CrmListsAllResponseTypedDict",
+    "CrmListsOneGlobals",
+    "CrmListsOneGlobalsTypedDict",
+    "CrmListsOneRequest",
+    "CrmListsOneRequestTypedDict",
+    "CrmListsOneResponse",
+    "CrmListsOneResponseTypedDict",
     "CrmNotesAddGlobals",
     "CrmNotesAddGlobalsTypedDict",
     "CrmNotesAddRequest",
@@ -7598,6 +7642,10 @@ __all__ = [
     "GetLedgerAccountResponseTypedDict",
     "GetLedgerAccountsResponse",
     "GetLedgerAccountsResponseTypedDict",
+    "GetListResponse",
+    "GetListResponseTypedDict",
+    "GetListsResponse",
+    "GetListsResponseTypedDict",
     "GetLogsResponse",
     "GetLogsResponseTypedDict",
     "GetMessageResponse",
@@ -8097,6 +8145,10 @@ __all__ = [
     "LinkedWorktagTypedDict",
     "Links",
     "LinksTypedDict",
+    "ListT",
+    "ListTTypedDict",
+    "ListType",
+    "ListVisibility",
     "LocationStatus",
     "Log",
     "LogTypedDict",
@@ -8113,6 +8165,8 @@ __all__ = [
     "MessageTypedDict",
     "Meta",
     "MetaTypedDict",
+    "Metadata",
+    "MetadataTypedDict",
     "Mode",
     "NoResponseError",
     "NotFoundResponse",
@@ -10079,6 +10133,10 @@ _dynamic_imports: dict[str, str] = {
     "ConnectionDefaultsTypedDict": ".connection",
     "ConnectionInput": ".connection",
     "ConnectionInputTypedDict": ".connection",
+    "ConnectionMetadata": ".connection",
+    "ConnectionMetadataInput": ".connection",
+    "ConnectionMetadataInputTypedDict": ".connection",
+    "ConnectionMetadataTypedDict": ".connection",
     "ConnectionStatus": ".connection",
     "ConnectionTypedDict": ".connection",
     "ConnectionValue": ".connection",
@@ -10180,6 +10238,8 @@ _dynamic_imports: dict[str, str] = {
     "ConsumerTypedDict": ".consumer",
     "ConsumerConnection": ".consumerconnection",
     "ConsumerConnectionTypedDict": ".consumerconnection",
+    "Metadata": ".consumerconnection",
+    "MetadataTypedDict": ".consumerconnection",
     "ConsumerMetadata": ".consumermetadata",
     "ConsumerMetadataTypedDict": ".consumermetadata",
     "ConsumerRequestCountsInDateRangeResponse": ".consumerrequestcountsindaterangeresponse",
@@ -10521,6 +10581,18 @@ _dynamic_imports: dict[str, str] = {
     "CrmLeadsUpdateRequestTypedDict": ".crm_leadsupdateop",
     "CrmLeadsUpdateResponse": ".crm_leadsupdateop",
     "CrmLeadsUpdateResponseTypedDict": ".crm_leadsupdateop",
+    "CrmListsAllGlobals": ".crm_listsallop",
+    "CrmListsAllGlobalsTypedDict": ".crm_listsallop",
+    "CrmListsAllRequest": ".crm_listsallop",
+    "CrmListsAllRequestTypedDict": ".crm_listsallop",
+    "CrmListsAllResponse": ".crm_listsallop",
+    "CrmListsAllResponseTypedDict": ".crm_listsallop",
+    "CrmListsOneGlobals": ".crm_listsoneop",
+    "CrmListsOneGlobalsTypedDict": ".crm_listsoneop",
+    "CrmListsOneRequest": ".crm_listsoneop",
+    "CrmListsOneRequestTypedDict": ".crm_listsoneop",
+    "CrmListsOneResponse": ".crm_listsoneop",
+    "CrmListsOneResponseTypedDict": ".crm_listsoneop",
     "CrmNotesAddGlobals": ".crm_notesaddop",
     "CrmNotesAddGlobalsTypedDict": ".crm_notesaddop",
     "CrmNotesAddRequest": ".crm_notesaddop",
@@ -11436,6 +11508,10 @@ _dynamic_imports: dict[str, str] = {
     "GetLedgerAccountResponseTypedDict": ".getledgeraccountresponse",
     "GetLedgerAccountsResponse": ".getledgeraccountsresponse",
     "GetLedgerAccountsResponseTypedDict": ".getledgeraccountsresponse",
+    "GetListResponse": ".getlistresponse",
+    "GetListResponseTypedDict": ".getlistresponse",
+    "GetListsResponse": ".getlistsresponse",
+    "GetListsResponseTypedDict": ".getlistsresponse",
     "GetLogsResponse": ".getlogsresponse",
     "GetLogsResponseTypedDict": ".getlogsresponse",
     "GetMessageResponse": ".getmessageresponse",
@@ -11951,6 +12027,10 @@ _dynamic_imports: dict[str, str] = {
     "LinkedWorktagTypedDict": ".linkedworktag",
     "Links": ".links",
     "LinksTypedDict": ".links",
+    "ListT": ".list",
+    "ListTTypedDict": ".list",
+    "ListType": ".list",
+    "ListVisibility": ".list",
     "Log": ".log",
     "LogTypedDict": ".log",
     "Operation": ".log",

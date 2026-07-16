@@ -577,7 +577,11 @@ class Connections(BaseSDK):
         app_id: Optional[str] = None,
         enabled: Optional[bool] = None,
         settings: OptionalNullable[Dict[str, Any]] = UNSET,
-        metadata: OptionalNullable[Dict[str, Any]] = UNSET,
+        metadata: OptionalNullable[
+            Union[
+                models.ConnectionMetadataInput, models.ConnectionMetadataInputTypedDict
+            ]
+        ] = UNSET,
         configuration: Optional[
             Union[
                 List[models.ConnectionConfiguration],
@@ -641,7 +645,9 @@ class Connections(BaseSDK):
             connection=models.ConnectionInput(
                 enabled=enabled,
                 settings=settings,
-                metadata=metadata,
+                metadata=utils.get_pydantic_model(
+                    metadata, OptionalNullable[models.ConnectionMetadataInput]
+                ),
                 configuration=utils.get_pydantic_model(
                     configuration, Optional[List[models.ConnectionConfiguration]]
                 ),
@@ -766,7 +772,11 @@ class Connections(BaseSDK):
         app_id: Optional[str] = None,
         enabled: Optional[bool] = None,
         settings: OptionalNullable[Dict[str, Any]] = UNSET,
-        metadata: OptionalNullable[Dict[str, Any]] = UNSET,
+        metadata: OptionalNullable[
+            Union[
+                models.ConnectionMetadataInput, models.ConnectionMetadataInputTypedDict
+            ]
+        ] = UNSET,
         configuration: Optional[
             Union[
                 List[models.ConnectionConfiguration],
@@ -830,7 +840,9 @@ class Connections(BaseSDK):
             connection=models.ConnectionInput(
                 enabled=enabled,
                 settings=settings,
-                metadata=metadata,
+                metadata=utils.get_pydantic_model(
+                    metadata, OptionalNullable[models.ConnectionMetadataInput]
+                ),
                 configuration=utils.get_pydantic_model(
                     configuration, Optional[List[models.ConnectionConfiguration]]
                 ),

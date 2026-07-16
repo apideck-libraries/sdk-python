@@ -108,6 +108,9 @@
 | `HRIS_COMPANY_CREATED`                     | hris.company.created                       |
 | `HRIS_COMPANY_UPDATED`                     | hris.company.updated                       |
 | `HRIS_COMPANY_DELETED`                     | hris.company.deleted                       |
+| `HRIS_TIME_OFF_REQUEST_CREATED`            | hris.time-off-request.created              |
+| `HRIS_TIME_OFF_REQUEST_UPDATED`            | hris.time-off-request.updated              |
+| `HRIS_TIME_OFF_REQUEST_DELETED`            | hris.time-off-request.deleted              |
 | `FILE_STORAGE_FILE_CREATED`                | file-storage.file.created                  |
 | `FILE_STORAGE_FILE_UPDATED`                | file-storage.file.updated                  |
 | `FILE_STORAGE_FILE_DELETED`                | file-storage.file.deleted                  |

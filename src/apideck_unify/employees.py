@@ -28,6 +28,7 @@ class Employees(BaseSDK):
                 models.AccountingEmployeesFilterTypedDict,
             ]
         ] = None,
+        pass_through: Optional[Dict[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -45,6 +46,7 @@ class Employees(BaseSDK):
         :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
         :param fields: The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded.
         :param filter_: Apply filters
+        :param pass_through: Optional unmapped key/values that will be passed through to downstream as query parameters. Ie: ?pass_through[search]=leads becomes ?search=leads
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -71,6 +73,7 @@ class Employees(BaseSDK):
             filter_=utils.get_pydantic_model(
                 filter_, Optional[models.AccountingEmployeesFilter]
             ),
+            pass_through=pass_through,
         )
 
         req = self._build_request(
@@ -140,6 +143,7 @@ class Employees(BaseSDK):
                 limit=limit,
                 fields=fields,
                 filter_=filter_,
+                pass_through=pass_through,
                 retries=retries,
             )
 
@@ -210,6 +214,7 @@ class Employees(BaseSDK):
                 models.AccountingEmployeesFilterTypedDict,
             ]
         ] = None,
+        pass_through: Optional[Dict[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -227,6 +232,7 @@ class Employees(BaseSDK):
         :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
         :param fields: The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded.
         :param filter_: Apply filters
+        :param pass_through: Optional unmapped key/values that will be passed through to downstream as query parameters. Ie: ?pass_through[search]=leads becomes ?search=leads
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -253,6 +259,7 @@ class Employees(BaseSDK):
             filter_=utils.get_pydantic_model(
                 filter_, Optional[models.AccountingEmployeesFilter]
             ),
+            pass_through=pass_through,
         )
 
         req = self._build_request_async(
@@ -322,6 +329,7 @@ class Employees(BaseSDK):
                 limit=limit,
                 fields=fields,
                 filter_=filter_,
+                pass_through=pass_through,
                 retries=retries,
             )
 

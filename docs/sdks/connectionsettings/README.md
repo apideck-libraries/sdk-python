@@ -84,13 +84,15 @@ with Apideck(
     res = apideck.vault.connection_settings.update(service_id="pipedrive", unified_api="crm", resource="leads", enabled=True, settings={
         "instance_url": "https://eu28.salesforce.com",
         "api_key": "12345xxxxxx",
-    }, metadata={
-        "account": {
-            "name": "My Company",
-            "id": "c01458a5-7276-41ce-bc19-639906b0450a",
+    }, metadata=apideck_unify.ConnectionMetadataInput(
+        **{
+            "account": {
+                "name": "My Company",
+                "id": "c01458a5-7276-41ce-bc19-639906b0450a",
+            },
+            "plan": "enterprise",
         },
-        "plan": "enterprise",
-    }, configuration=[
+    ), configuration=[
         {
             "resource": "leads",
             "defaults": [
@@ -298,7 +300,7 @@ with Apideck(
 | `app_id`                                                                                                          | *Optional[str]*                                                                                                   | :heavy_minus_sign:                                                                                                | The ID of your Unify application                                                                                  | dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX                                                                           |
 | `enabled`                                                                                                         | *Optional[bool]*                                                                                                  | :heavy_minus_sign:                                                                                                | Whether the connection is enabled or not. You can enable or disable a connection using the Update Connection API. | true                                                                                                              |
 | `settings`                                                                                                        | Dict[str, *Any*]                                                                                                  | :heavy_minus_sign:                                                                                                | Connection settings. Values will persist to `form_fields` with corresponding id                                   | {<br/>"instance_url": "https://eu28.salesforce.com",<br/>"api_key": "12345xxxxxx"<br/>}                           |
-| `metadata`                                                                                                        | Dict[str, *Any*]                                                                                                  | :heavy_minus_sign:                                                                                                | Attach your own consumer specific metadata                                                                        | {<br/>"account": {<br/>"name": "My Company",<br/>"id": "c01458a5-7276-41ce-bc19-639906b0450a"<br/>},<br/>"plan": "enterprise"<br/>} |
+| `metadata`                                                                                                        | [OptionalNullable[models.ConnectionMetadataInput]](../../models/connectionmetadatainput.md)                       | :heavy_minus_sign:                                                                                                | Attach your own consumer specific metadata                                                                        | {<br/>"account": {<br/>"name": "My Company",<br/>"id": "c01458a5-7276-41ce-bc19-639906b0450a"<br/>},<br/>"plan": "enterprise"<br/>} |
 | `configuration`                                                                                                   | List[[models.ConnectionConfiguration](../../models/connectionconfiguration.md)]                                   | :heavy_minus_sign:                                                                                                | N/A                                                                                                               |                                                                                                                   |
 | `custom_mappings`                                                                                                 | List[[models.CustomMappingInput](../../models/custommappinginput.md)]                                             | :heavy_minus_sign:                                                                                                | List of custom mappings configured for this connection                                                            |                                                                                                                   |
 | `consent_state`                                                                                                   | [Optional[models.ConsentState]](../../models/consentstate.md)                                                     | :heavy_minus_sign:                                                                                                | The current consent state of the connection                                                                       | granted                                                                                                           |

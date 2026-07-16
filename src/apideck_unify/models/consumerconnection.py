@@ -13,10 +13,38 @@ from apideck_unify.types import (
     UNSET_SENTINEL,
 )
 from apideck_unify.utils import validate_open_enum
-from pydantic import field_serializer, model_serializer
+import pydantic
+from pydantic import ConfigDict, field_serializer, model_serializer
 from pydantic.functional_validators import PlainValidator
 from typing import Any, Dict, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
+
+
+class MetadataTypedDict(TypedDict):
+    r"""Attach your own consumer specific metadata"""
+
+    company_id: NotRequired[str]
+    r"""Normalized identifier of the authorized organization, copied from the connector-specific setting (e.g. Xero tenant_id, QuickBooks realm_id, NetSuite account_id)."""
+
+
+class Metadata(BaseModel):
+    r"""Attach your own consumer specific metadata"""
+
+    model_config = ConfigDict(
+        populate_by_name=True, arbitrary_types_allowed=True, extra="allow"
+    )
+    __pydantic_extra__: Dict[str, Any] = pydantic.Field(init=False)
+
+    company_id: Optional[str] = None
+    r"""Normalized identifier of the authorized organization, copied from the connector-specific setting (e.g. Xero tenant_id, QuickBooks realm_id, NetSuite account_id)."""
+
+    @property
+    def additional_properties(self):
+        return self.__pydantic_extra__
+
+    @additional_properties.setter
+    def additional_properties(self, value):
+        self.__pydantic_extra__ = value  # pyright: ignore[reportIncompatibleVariableOverride]
 
 
 class ConsumerConnectionTypedDict(TypedDict):
@@ -34,7 +62,7 @@ class ConsumerConnectionTypedDict(TypedDict):
     enabled: NotRequired[bool]
     settings: NotRequired[Nullable[Dict[str, Any]]]
     r"""Connection settings. Values will persist to `form_fields` with corresponding id"""
-    metadata: NotRequired[Nullable[Dict[str, Any]]]
+    metadata: NotRequired[Nullable[MetadataTypedDict]]
     r"""Attach your own consumer specific metadata"""
     created_at: NotRequired[str]
     updated_at: NotRequired[Nullable[str]]
@@ -77,7 +105,7 @@ class ConsumerConnection(BaseModel):
     settings: OptionalNullable[Dict[str, Any]] = UNSET
     r"""Connection settings. Values will persist to `form_fields` with corresponding id"""
 
-    metadata: OptionalNullable[Dict[str, Any]] = UNSET
+    metadata: OptionalNullable[Metadata] = UNSET
     r"""Attach your own consumer specific metadata"""
 
     created_at: Optional[str] = None
