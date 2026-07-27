@@ -242,6 +242,8 @@ class ExpenseReportTypedDict(TypedDict):
     account: NotRequired[Nullable[LinkedLedgerAccountTypedDict]]
     accounting_period: NotRequired[Nullable[AccountingPeriodTypedDict]]
     r"""The accounting period the expense report is posted to."""
+    reference: NotRequired[Nullable[str]]
+    r"""Optional reference identifier for the transaction."""
     subsidiary: NotRequired[Nullable[LinkedSubsidiaryTypedDict]]
     tracking_categories: NotRequired[
         Nullable[List[Nullable[LinkedTrackingCategoryTypedDict]]]
@@ -333,6 +335,9 @@ class ExpenseReport(BaseModel):
     accounting_period: OptionalNullable[AccountingPeriod] = UNSET
     r"""The accounting period the expense report is posted to."""
 
+    reference: OptionalNullable[str] = UNSET
+    r"""Optional reference identifier for the transaction."""
+
     subsidiary: OptionalNullable[LinkedSubsidiary] = UNSET
 
     tracking_categories: OptionalNullable[List[Nullable[LinkedTrackingCategory]]] = (
@@ -408,6 +413,7 @@ class ExpenseReport(BaseModel):
             "location",
             "account",
             "accounting_period",
+            "reference",
             "subsidiary",
             "tracking_categories",
             "tax_inclusive",
@@ -440,6 +446,7 @@ class ExpenseReport(BaseModel):
             "location",
             "account",
             "accounting_period",
+            "reference",
             "subsidiary",
             "tracking_categories",
             "tax_inclusive",
@@ -516,6 +523,8 @@ class ExpenseReportInputTypedDict(TypedDict):
     account: NotRequired[Nullable[LinkedLedgerAccountTypedDict]]
     accounting_period: NotRequired[Nullable[AccountingPeriodTypedDict]]
     r"""The accounting period the expense report is posted to."""
+    reference: NotRequired[Nullable[str]]
+    r"""Optional reference identifier for the transaction."""
     subsidiary: NotRequired[Nullable[LinkedSubsidiaryInputTypedDict]]
     tracking_categories: NotRequired[
         Nullable[List[Nullable[LinkedTrackingCategoryTypedDict]]]
@@ -594,6 +603,9 @@ class ExpenseReportInput(BaseModel):
     accounting_period: OptionalNullable[AccountingPeriod] = UNSET
     r"""The accounting period the expense report is posted to."""
 
+    reference: OptionalNullable[str] = UNSET
+    r"""Optional reference identifier for the transaction."""
+
     subsidiary: OptionalNullable[LinkedSubsidiaryInput] = UNSET
 
     tracking_categories: OptionalNullable[List[Nullable[LinkedTrackingCategory]]] = (
@@ -653,6 +665,7 @@ class ExpenseReportInput(BaseModel):
             "location",
             "account",
             "accounting_period",
+            "reference",
             "subsidiary",
             "tracking_categories",
             "tax_inclusive",
@@ -680,6 +693,7 @@ class ExpenseReportInput(BaseModel):
             "location",
             "account",
             "accounting_period",
+            "reference",
             "subsidiary",
             "tracking_categories",
             "tax_inclusive",

@@ -9,8 +9,9 @@ from apideck_unify.types import (
     UNSET_SENTINEL,
 )
 from apideck_unify.utils import FieldMetadata
+from datetime import datetime
 from pydantic import model_serializer
-from typing import Optional
+from typing import List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
@@ -28,6 +29,20 @@ class WebhookEventLogsFilterTypedDict(TypedDict):
     consumer_id: NotRequired[Nullable[str]]
     entity_type: NotRequired[Nullable[str]]
     event_type: NotRequired[Nullable[str]]
+    start_date: NotRequired[Nullable[datetime]]
+    r"""Filter logs at or after this ISO 8601 date-time (inclusive)."""
+    end_date: NotRequired[Nullable[datetime]]
+    r"""Filter logs at or before this ISO 8601 date-time (inclusive). Must be on or after start_date."""
+    success: NotRequired[Nullable[bool]]
+    r"""Filter by delivery success or failure."""
+    status_code: NotRequired[Nullable[float]]
+    r"""Filter by a single HTTP status code. For backward compatibility - use status_codes for multiple values."""
+    status_codes: NotRequired[Nullable[List[float]]]
+    r"""Filter by multiple HTTP status codes. Values must be between 100-599. Maximum 50 status codes allowed."""
+    event_id: NotRequired[Nullable[str]]
+    r"""Filter by webhook event ID."""
+    execution_attempt: NotRequired[Nullable[float]]
+    r"""Filter by the delivery attempt number."""
 
 
 class WebhookEventLogsFilter(BaseModel):
@@ -43,6 +58,31 @@ class WebhookEventLogsFilter(BaseModel):
 
     event_type: Annotated[OptionalNullable[str], FieldMetadata(query=True)] = UNSET
 
+    start_date: Annotated[OptionalNullable[datetime], FieldMetadata(query=True)] = UNSET
+    r"""Filter logs at or after this ISO 8601 date-time (inclusive)."""
+
+    end_date: Annotated[OptionalNullable[datetime], FieldMetadata(query=True)] = UNSET
+    r"""Filter logs at or before this ISO 8601 date-time (inclusive). Must be on or after start_date."""
+
+    success: Annotated[OptionalNullable[bool], FieldMetadata(query=True)] = UNSET
+    r"""Filter by delivery success or failure."""
+
+    status_code: Annotated[OptionalNullable[float], FieldMetadata(query=True)] = UNSET
+    r"""Filter by a single HTTP status code. For backward compatibility - use status_codes for multiple values."""
+
+    status_codes: Annotated[
+        OptionalNullable[List[float]], FieldMetadata(query=True)
+    ] = UNSET
+    r"""Filter by multiple HTTP status codes. Values must be between 100-599. Maximum 50 status codes allowed."""
+
+    event_id: Annotated[OptionalNullable[str], FieldMetadata(query=True)] = UNSET
+    r"""Filter by webhook event ID."""
+
+    execution_attempt: Annotated[OptionalNullable[float], FieldMetadata(query=True)] = (
+        UNSET
+    )
+    r"""Filter by the delivery attempt number."""
+
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
         optional_fields = [
@@ -51,6 +91,13 @@ class WebhookEventLogsFilter(BaseModel):
             "consumer_id",
             "entity_type",
             "event_type",
+            "start_date",
+            "end_date",
+            "success",
+            "status_code",
+            "status_codes",
+            "event_id",
+            "execution_attempt",
         ]
         nullable_fields = [
             "exclude_apis",
@@ -58,6 +105,13 @@ class WebhookEventLogsFilter(BaseModel):
             "consumer_id",
             "entity_type",
             "event_type",
+            "start_date",
+            "end_date",
+            "success",
+            "status_code",
+            "status_codes",
+            "event_id",
+            "execution_attempt",
         ]
         null_default_fields = []
 

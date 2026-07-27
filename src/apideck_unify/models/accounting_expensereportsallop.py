@@ -21,7 +21,7 @@ from apideck_unify.types import (
 from apideck_unify.utils import FieldMetadata, HeaderMetadata, QueryParamMetadata
 import pydantic
 from pydantic import model_serializer
-from typing import Callable, Optional
+from typing import Any, Callable, Dict, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
@@ -65,6 +65,8 @@ class AccountingExpenseReportsAllRequestTypedDict(TypedDict):
     r"""The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded."""
     filter_: NotRequired[ExpenseReportsFilterTypedDict]
     r"""Apply filters"""
+    pass_through: NotRequired[Dict[str, Any]]
+    r"""Optional unmapped key/values that will be passed through to downstream as query parameters. Ie: ?pass_through[search]=leads becomes ?search=leads"""
 
 
 class AccountingExpenseReportsAllRequest(BaseModel):
@@ -120,6 +122,12 @@ class AccountingExpenseReportsAllRequest(BaseModel):
     ] = None
     r"""Apply filters"""
 
+    pass_through: Annotated[
+        Optional[Dict[str, Any]],
+        FieldMetadata(query=QueryParamMetadata(style="deepObject", explode=True)),
+    ] = None
+    r"""Optional unmapped key/values that will be passed through to downstream as query parameters. Ie: ?pass_through[search]=leads becomes ?search=leads"""
+
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
         optional_fields = [
@@ -131,6 +139,7 @@ class AccountingExpenseReportsAllRequest(BaseModel):
             "limit",
             "fields",
             "filter",
+            "pass_through",
         ]
         nullable_fields = ["cursor", "fields"]
         null_default_fields = []

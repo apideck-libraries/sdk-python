@@ -22,6 +22,7 @@ class Companies(BaseSDK):
         cursor: OptionalNullable[str] = UNSET,
         limit: Optional[int] = 20,
         fields: OptionalNullable[str] = UNSET,
+        pass_through: Optional[Dict[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -39,6 +40,7 @@ class Companies(BaseSDK):
         :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
         :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
         :param fields: The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded.
+        :param pass_through: Optional unmapped key/values that will be passed through to downstream as query parameters. Ie: ?pass_through[search]=leads becomes ?search=leads
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -63,6 +65,7 @@ class Companies(BaseSDK):
             cursor=cursor,
             limit=limit,
             fields=fields,
+            pass_through=pass_through,
         )
 
         req = self._build_request(
@@ -132,6 +135,7 @@ class Companies(BaseSDK):
                 cursor=next_cursor,
                 limit=limit,
                 fields=fields,
+                pass_through=pass_through,
                 retries=retries,
             )
 
@@ -197,6 +201,7 @@ class Companies(BaseSDK):
         cursor: OptionalNullable[str] = UNSET,
         limit: Optional[int] = 20,
         fields: OptionalNullable[str] = UNSET,
+        pass_through: Optional[Dict[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -214,6 +219,7 @@ class Companies(BaseSDK):
         :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
         :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
         :param fields: The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded.
+        :param pass_through: Optional unmapped key/values that will be passed through to downstream as query parameters. Ie: ?pass_through[search]=leads becomes ?search=leads
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -238,6 +244,7 @@ class Companies(BaseSDK):
             cursor=cursor,
             limit=limit,
             fields=fields,
+            pass_through=pass_through,
         )
 
         req = self._build_request_async(
@@ -307,6 +314,7 @@ class Companies(BaseSDK):
                 cursor=next_cursor,
                 limit=limit,
                 fields=fields,
+                pass_through=pass_through,
                 retries=retries,
             )
 

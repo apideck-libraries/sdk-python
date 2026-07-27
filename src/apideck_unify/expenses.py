@@ -25,6 +25,7 @@ class Expenses(BaseSDK):
         filter_: Optional[
             Union[models.ExpensesFilter, models.ExpensesFilterTypedDict]
         ] = None,
+        pass_through: Optional[Dict[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -42,6 +43,7 @@ class Expenses(BaseSDK):
         :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
         :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
         :param filter_: Apply filters
+        :param pass_through: Optional unmapped key/values that will be passed through to downstream as query parameters. Ie: ?pass_through[search]=leads becomes ?search=leads
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -66,6 +68,7 @@ class Expenses(BaseSDK):
             cursor=cursor,
             limit=limit,
             filter_=utils.get_pydantic_model(filter_, Optional[models.ExpensesFilter]),
+            pass_through=pass_through,
         )
 
         req = self._build_request(
@@ -135,6 +138,7 @@ class Expenses(BaseSDK):
                 cursor=next_cursor,
                 limit=limit,
                 filter_=filter_,
+                pass_through=pass_through,
                 retries=retries,
             )
 
@@ -202,6 +206,7 @@ class Expenses(BaseSDK):
         filter_: Optional[
             Union[models.ExpensesFilter, models.ExpensesFilterTypedDict]
         ] = None,
+        pass_through: Optional[Dict[str, Any]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -219,6 +224,7 @@ class Expenses(BaseSDK):
         :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
         :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
         :param filter_: Apply filters
+        :param pass_through: Optional unmapped key/values that will be passed through to downstream as query parameters. Ie: ?pass_through[search]=leads becomes ?search=leads
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -243,6 +249,7 @@ class Expenses(BaseSDK):
             cursor=cursor,
             limit=limit,
             filter_=utils.get_pydantic_model(filter_, Optional[models.ExpensesFilter]),
+            pass_through=pass_through,
         )
 
         req = self._build_request_async(
@@ -312,6 +319,7 @@ class Expenses(BaseSDK):
                 cursor=next_cursor,
                 limit=limit,
                 filter_=filter_,
+                pass_through=pass_through,
                 retries=retries,
             )
 

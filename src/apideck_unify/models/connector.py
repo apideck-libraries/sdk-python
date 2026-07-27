@@ -3,6 +3,7 @@
 from __future__ import annotations
 from .connectordoc import ConnectorDoc, ConnectorDocTypedDict
 from .connectorevent import ConnectorEvent, ConnectorEventTypedDict
+from .connectoroverview import ConnectorOverview, ConnectorOverviewTypedDict
 from .connectorsetting import ConnectorSetting, ConnectorSettingTypedDict
 from .connectorstatus import ConnectorStatus
 from .linkedconnectorresource import (
@@ -207,6 +208,8 @@ class ConnectorTypedDict(TypedDict):
     schema_support: NotRequired[SchemaSupportTypedDict]
     r"""When a connector has schema_support, a call can be made to retrieve a json schema that describes a downstream resource."""
     docs: NotRequired[List[ConnectorDocTypedDict]]
+    overview: NotRequired[ConnectorOverviewTypedDict]
+    r"""Editorial overview metadata for the connector, used to render the connector's Overview documentation (implementation difficulty, partnership requirements, sandbox availability, and other at-a-glance facts)."""
     tls_support: NotRequired[TLSSupportTypedDict]
 
 
@@ -298,6 +301,9 @@ class Connector(BaseModel):
 
     docs: Optional[List[ConnectorDoc]] = None
 
+    overview: Optional[ConnectorOverview] = None
+    r"""Editorial overview metadata for the connector, used to render the connector's Overview documentation (implementation difficulty, partnership requirements, sandbox availability, and other at-a-glance facts)."""
+
     tls_support: Optional[TLSSupport] = None
 
     @field_serializer("status")
@@ -366,6 +372,7 @@ class Connector(BaseModel):
             "webhook_support",
             "schema_support",
             "docs",
+            "overview",
             "tls_support",
         ]
         nullable_fields = ["description"]
