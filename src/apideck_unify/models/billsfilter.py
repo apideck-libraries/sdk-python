@@ -4,7 +4,7 @@ from __future__ import annotations
 from apideck_unify import models, utils
 from apideck_unify.types import BaseModel
 from apideck_unify.utils import FieldMetadata, validate_open_enum
-from datetime import datetime
+from datetime import date, datetime
 from enum import Enum
 from pydantic import field_serializer
 from pydantic.functional_validators import PlainValidator
@@ -24,6 +24,10 @@ class BillsFilterTypedDict(TypedDict):
     id_since: NotRequired[str]
     r"""Return records with a row ID greater than or equal to the given value"""
     updated_since: NotRequired[datetime]
+    billed_since: NotRequired[date]
+    r"""Return bills with a document date (`bill_date`) on or after the given date (YYYY-MM-DD)."""
+    due_since: NotRequired[date]
+    r"""Return bills with a due date (`due_date`) on or after the given date (YYYY-MM-DD)."""
     status: NotRequired[BillsFilterStatus]
     r"""Filter by bill status"""
     subsidiary_id: NotRequired[str]
@@ -35,6 +39,12 @@ class BillsFilter(BaseModel):
     r"""Return records with a row ID greater than or equal to the given value"""
 
     updated_since: Annotated[Optional[datetime], FieldMetadata(query=True)] = None
+
+    billed_since: Annotated[Optional[date], FieldMetadata(query=True)] = None
+    r"""Return bills with a document date (`bill_date`) on or after the given date (YYYY-MM-DD)."""
+
+    due_since: Annotated[Optional[date], FieldMetadata(query=True)] = None
+    r"""Return bills with a due date (`due_date`) on or after the given date (YYYY-MM-DD)."""
 
     status: Annotated[
         Annotated[

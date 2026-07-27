@@ -29,7 +29,7 @@ from apideck_unify.utils import (
 import pydantic
 from pydantic import field_serializer, model_serializer
 from pydantic.functional_validators import PlainValidator
-from typing import Callable, Optional
+from typing import Any, Callable, Dict, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
@@ -77,6 +77,8 @@ class AccountingAttachmentsAllRequestTypedDict(TypedDict):
     r"""Number of results to return. Minimum 1, Maximum 200, Default 20"""
     fields: NotRequired[Nullable[str]]
     r"""The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded."""
+    pass_through: NotRequired[Dict[str, Any]]
+    r"""Optional unmapped key/values that will be passed through to downstream as query parameters. Ie: ?pass_through[search]=leads becomes ?search=leads"""
 
 
 class AccountingAttachmentsAllRequest(BaseModel):
@@ -143,6 +145,12 @@ class AccountingAttachmentsAllRequest(BaseModel):
     ] = UNSET
     r"""The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded."""
 
+    pass_through: Annotated[
+        Optional[Dict[str, Any]],
+        FieldMetadata(query=QueryParamMetadata(style="deepObject", explode=True)),
+    ] = None
+    r"""Optional unmapped key/values that will be passed through to downstream as query parameters. Ie: ?pass_through[search]=leads becomes ?search=leads"""
+
     @field_serializer("reference_type")
     def serialize_reference_type(self, value):
         if isinstance(value, str):
@@ -163,6 +171,7 @@ class AccountingAttachmentsAllRequest(BaseModel):
             "cursor",
             "limit",
             "fields",
+            "pass_through",
         ]
         nullable_fields = ["cursor", "fields"]
         null_default_fields = []

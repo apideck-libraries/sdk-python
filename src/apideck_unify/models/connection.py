@@ -25,7 +25,8 @@ from apideck_unify.types import (
 )
 from apideck_unify.utils import validate_open_enum
 from enum import Enum
-from pydantic import field_serializer, model_serializer
+import pydantic
+from pydantic import ConfigDict, field_serializer, model_serializer
 from pydantic.functional_validators import PlainValidator
 from typing import Any, Dict, List, Optional, Union
 from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
@@ -37,6 +38,33 @@ class ConnectionStatus(str, Enum, metaclass=utils.OpenEnumMeta):
     LIVE = "live"
     UPCOMING = "upcoming"
     REQUESTED = "requested"
+
+
+class ConnectionMetadataTypedDict(TypedDict):
+    r"""Attach your own consumer specific metadata"""
+
+    company_id: NotRequired[str]
+    r"""Normalized identifier of the authorized organization, copied from the connector-specific setting (e.g. Xero tenant_id, QuickBooks realm_id, NetSuite account_id)."""
+
+
+class ConnectionMetadata(BaseModel):
+    r"""Attach your own consumer specific metadata"""
+
+    model_config = ConfigDict(
+        populate_by_name=True, arbitrary_types_allowed=True, extra="allow"
+    )
+    __pydantic_extra__: Dict[str, Any] = pydantic.Field(init=False)
+
+    company_id: Optional[str] = None
+    r"""Normalized identifier of the authorized organization, copied from the connector-specific setting (e.g. Xero tenant_id, QuickBooks realm_id, NetSuite account_id)."""
+
+    @property
+    def additional_properties(self):
+        return self.__pydantic_extra__
+
+    @additional_properties.setter
+    def additional_properties(self, value):
+        self.__pydantic_extra__ = value  # pyright: ignore[reportIncompatibleVariableOverride]
 
 
 class Target(str, Enum, metaclass=utils.OpenEnumMeta):
@@ -146,7 +174,7 @@ class ConnectionTypedDict(TypedDict):
     r"""The OAuth revoke URI. Redirect your users to this URI to revoke this connection. Before you can use this URI, you must add `redirect_uri` as a query parameter. Your users will be redirected to this `redirect_uri` after they granted access to your app in the connector's UI."""
     settings: NotRequired[Nullable[Dict[str, Any]]]
     r"""Connection settings. Values will persist to `form_fields` with corresponding id"""
-    metadata: NotRequired[Nullable[Dict[str, Any]]]
+    metadata: NotRequired[Nullable[ConnectionMetadataTypedDict]]
     r"""Attach your own consumer specific metadata"""
     form_fields: NotRequired[List[FormFieldTypedDict]]
     r"""The settings that are wanted to create a connection."""
@@ -242,7 +270,7 @@ class Connection(BaseModel):
     settings: OptionalNullable[Dict[str, Any]] = UNSET
     r"""Connection settings. Values will persist to `form_fields` with corresponding id"""
 
-    metadata: OptionalNullable[Dict[str, Any]] = UNSET
+    metadata: OptionalNullable[ConnectionMetadata] = UNSET
     r"""Attach your own consumer specific metadata"""
 
     form_fields: Optional[List[FormField]] = None
@@ -441,6 +469,27 @@ class Connection(BaseModel):
         return m
 
 
+class ConnectionMetadataInputTypedDict(TypedDict):
+    r"""Attach your own consumer specific metadata"""
+
+
+class ConnectionMetadataInput(BaseModel):
+    r"""Attach your own consumer specific metadata"""
+
+    model_config = ConfigDict(
+        populate_by_name=True, arbitrary_types_allowed=True, extra="allow"
+    )
+    __pydantic_extra__: Dict[str, Any] = pydantic.Field(init=False)
+
+    @property
+    def additional_properties(self):
+        return self.__pydantic_extra__
+
+    @additional_properties.setter
+    def additional_properties(self, value):
+        self.__pydantic_extra__ = value  # pyright: ignore[reportIncompatibleVariableOverride]
+
+
 class ConnectionDefaultsTypedDict(TypedDict):
     id: NotRequired[str]
     options: NotRequired[List[FormFieldOptionTypedDict]]
@@ -471,7 +520,7 @@ class ConnectionInputTypedDict(TypedDict):
     r"""Whether the connection is enabled or not. You can enable or disable a connection using the Update Connection API."""
     settings: NotRequired[Nullable[Dict[str, Any]]]
     r"""Connection settings. Values will persist to `form_fields` with corresponding id"""
-    metadata: NotRequired[Nullable[Dict[str, Any]]]
+    metadata: NotRequired[Nullable[ConnectionMetadataInputTypedDict]]
     r"""Attach your own consumer specific metadata"""
     configuration: NotRequired[List[ConnectionConfigurationTypedDict]]
     custom_mappings: NotRequired[List[CustomMappingInputTypedDict]]
@@ -489,7 +538,7 @@ class ConnectionInput(BaseModel):
     settings: OptionalNullable[Dict[str, Any]] = UNSET
     r"""Connection settings. Values will persist to `form_fields` with corresponding id"""
 
-    metadata: OptionalNullable[Dict[str, Any]] = UNSET
+    metadata: OptionalNullable[ConnectionMetadataInput] = UNSET
     r"""Attach your own consumer specific metadata"""
 
     configuration: Optional[List[ConnectionConfiguration]] = None
