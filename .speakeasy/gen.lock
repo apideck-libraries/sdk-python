@@ -1,12 +1,12 @@
 lockVersion: 2.0.0
 id: fca0ac3a-5f4e-452c-bbc7-2311afa8da40
 management:
-  docChecksum: 9709d0258dccf5c2717e2986f1b151fa
-  docVersion: 10.28.1
+  docChecksum: c7e51fb63fe0c5b984e05b6c7d1c8560
+  docVersion: 10.28.2
   speakeasyVersion: 1.656.1
   generationVersion: 2.753.1
-  releaseVersion: 0.32.0
-  configChecksum: cd07201cf799bcc40cfc0480e97233d9
+  releaseVersion: 0.32.1
+  configChecksum: 556dfc96fdf21a1150fc14d233f6955f
   repoURL: https://github.com/apideck-libraries/sdk-python.git
   installationURL: https://github.com/apideck-libraries/sdk-python.git
   published: true
@@ -19843,7 +19843,6 @@ examples:
           application/json: {"status_code": 400, "error": "Bad Request", "type_name": "RequestHeadersValidationError", "message": "Invalid Params", "detail": "Missing Header: x-apideck-consumer-id", "ref": "https://developers.apideck.com/errors#unauthorizederror"}
 examplesVersion: 1.0.2
 generatedTests: {}
-releaseNotes: "## Python SDK Changes Detected:\n* `apideck.vault.consumers.create()`:  `response.data.connections.[].metadata` **Changed** **Breaking** :warning:\n* `apideck.vault.connection_settings.update()`: \n  *  `request.metadata` **Changed** **Breaking** :warning:\n  *  `response.data.metadata` **Changed** **Breaking** :warning:\n* `apideck.vault.connection_settings.list()`:  `response.data.metadata` **Changed** **Breaking** :warning:\n* `apideck.vault.connections.token()`:  `response.data.metadata` **Changed** **Breaking** :warning:\n* `apideck.vault.connections.imports()`:  `response.data.metadata` **Changed** **Breaking** :warning:\n* `apideck.vault.connections.update()`: \n  *  `request.metadata` **Changed** **Breaking** :warning:\n  *  `response.data.metadata` **Changed** **Breaking** :warning:\n* `apideck.vault.connections.get()`:  `response.data.metadata` **Changed** **Breaking** :warning:\n* `apideck.vault.connections.list()`:  `response.data.[].metadata` **Changed** **Breaking** :warning:\n* `apideck.vault.consumers.update()`:  `response.data.connections.[].metadata` **Changed** **Breaking** :warning:\n* `apideck.vault.consumers.get()`:  `response.data.connections.[].metadata` **Changed** **Breaking** :warning:\n* `apideck.accounting.attachments.list()`:  `request.pass_through` **Added**\n* `apideck.accounting.quotes.list()`:  `request.pass_through` **Added**\n* `apideck.accounting.expense_categories.list()`:  `request.pass_through` **Added**\n* `apideck.accounting.expense_reports.list()`: \n  *  `request.pass_through` **Added**\n  *  `response.data.[].reference` **Added**\n* `apideck.accounting.expense_reports.create()`:  `request.reference` **Added**\n* `apideck.accounting.expense_reports.get()`:  `response.data.reference` **Added**\n* `apideck.accounting.expense_reports.update()`:  `request.reference` **Added**\n* `apideck.connector.connectors.list()`:  `response.data.[].overview` **Added**\n* `apideck.connector.connectors.get()`:  `response.data.overview` **Added**\n* `apideck.accounting.employees.list()`:  `request.pass_through` **Added**\n* `apideck.accounting.categories.list()`:  `request.pass_through` **Added**\n* `apideck.accounting.expenses.list()`:  `request.pass_through` **Added**\n* `apideck.crm.lists.list()`: **Added**\n* `apideck.accounting.departments.list()`:  `request.pass_through` **Added**\n* `apideck.accounting.locations.list()`:  `request.pass_through` **Added**\n* `apideck.accounting.subsidiaries.list()`:  `request.pass_through` **Added**\n* `apideck.accounting.companies.list()`:  `request.pass_through` **Added**\n* `apideck.accounting.bills.list()`:  `request.filter` **Changed**\n* `apideck.crm.lists.get()`: **Added**\n* `apideck.webhook.event_logs.list()`:  `request.filter` **Changed**\n"
 trackedFiles:
   .devcontainer/README.md:
     last_write_checksum: sha1:07adb0c0c051a9be4d479ea06461f3a9b3bbeb2f
@@ -24128,7 +24127,7 @@ trackedFiles:
   pylintrc:
     last_write_checksum: sha1:ec6665a4862060890cf4c6ba61438d11decf5c3c
   pyproject.toml:
-    last_write_checksum: sha1:7afc32e6b0210425121415c4b9c4666aeb146b39
+    last_write_checksum: sha1:04882d6585bb981e797482ca89d965041927c046
   scripts/prepare_readme.py:
     last_write_checksum: sha1:798a05bafe4fbbfff5b67037866fa25efc52f11a
   scripts/publish.sh:
@@ -24142,7 +24141,7 @@ trackedFiles:
   src/apideck_unify/_hooks/types.py:
     last_write_checksum: sha1:d57be38e644de01983a9224b9733ae0add898d43
   src/apideck_unify/_version.py:
-    last_write_checksum: sha1:f6a90552be7deeb685cb26cb8f3a2422710a2edb
+    last_write_checksum: sha1:69095ca879bb56e92d89e9866b22f22c763097c6
   src/apideck_unify/accounting.py:
     last_write_checksum: sha1:63ea555e29266c0cbe993e2bddf21ffecd9b02b9
   src/apideck_unify/activities.py:
