@@ -1,12 +1,12 @@
 lockVersion: 2.0.0
 id: fca0ac3a-5f4e-452c-bbc7-2311afa8da40
 management:
-  docChecksum: c7e51fb63fe0c5b984e05b6c7d1c8560
+  docChecksum: cc68e96ce8f5e6f961de87370fc95f4e
   docVersion: 10.28.2
   speakeasyVersion: 1.656.1
   generationVersion: 2.753.1
-  releaseVersion: 0.32.1
-  configChecksum: 556dfc96fdf21a1150fc14d233f6955f
+  releaseVersion: 0.32.2
+  configChecksum: e982c2c91d8cd7f92544c8df0b320596
   repoURL: https://github.com/apideck-libraries/sdk-python.git
   installationURL: https://github.com/apideck-libraries/sdk-python.git
   published: true
@@ -24265,7 +24265,7 @@ trackedFiles:
   src/apideck_unify/expensereports.py:
     last_write_checksum: sha1:1f9eb71ffb486d1833c4892429ccc851e910a4ba
   src/apideck_unify/expenses.py:
-    last_write_checksum: sha1:b2c0493d869d72e8c323926f9a496a3c92b6203a
+    last_write_checksum: sha1:e21d021ea431d9e779650c8c8dc3888e107c39c6
   src/apideck_unify/files.py:
     last_write_checksum: sha1:d2a613a636558499fec8b923c3aa0d46a7e7e9ad
   src/apideck_unify/filestorage.py:
