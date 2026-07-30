@@ -1,12 +1,12 @@
 lockVersion: 2.0.0
 id: fca0ac3a-5f4e-452c-bbc7-2311afa8da40
 management:
-  docChecksum: cc68e96ce8f5e6f961de87370fc95f4e
-  docVersion: 10.28.2
+  docChecksum: 4e87572bfb3aa2897cbdd84b06723ebf
+  docVersion: 10.29.1
   speakeasyVersion: 1.656.1
   generationVersion: 2.753.1
-  releaseVersion: 0.32.2
-  configChecksum: e982c2c91d8cd7f92544c8df0b320596
+  releaseVersion: 0.33.0
+  configChecksum: 02acb9c911dd558afc39d769ddcf964a
   repoURL: https://github.com/apideck-libraries/sdk-python.git
   installationURL: https://github.com/apideck-libraries/sdk-python.git
   published: true
@@ -3900,7 +3900,7 @@ examples:
         query:
           raw: false
           limit: 20
-          filter: {"id_since": "1", "updated_since": "2020-09-30T07:43:32.000Z", "created_since": "2020-09-30T07:43:32.000Z", "number": "OIT00546", "supplier_id": "123"}
+          filter: {"id_since": "1", "updated_since": "2020-09-30T07:43:32.000Z", "created_since": "2020-09-30T07:43:32.000Z", "number": "OIT00546", "supplier_id": "123", "customer_id": "123abc"}
           sort: {"by": "updated_at", "direction": "desc"}
           pass_through: {"search": "San Francisco"}
           fields: "id,updated_at"
@@ -4714,7 +4714,7 @@ examples:
         query:
           raw: false
           limit: 20
-          filter: {"id_since": "1", "updated_since": "2020-09-30T07:43:32.000Z", "created_since": "2020-09-30T07:43:32.000Z", "number": "OIT00546"}
+          filter: {"id_since": "1", "updated_since": "2020-09-30T07:43:32.000Z", "created_since": "2020-09-30T07:43:32.000Z", "number": "OIT00546", "customer_id": "123abc"}
           sort: {"by": "updated_at", "direction": "desc"}
           pass_through: {"search": "San Francisco"}
           fields: "id,updated_at"
@@ -8526,7 +8526,7 @@ examples:
           x-apideck-company-id: "12345"
       responses:
         "200":
-          application/json: {"status_code": 200, "status": "OK", "service": "quickbooks", "resource": "bank-feed-accounts", "operation": "all", "data": [], "meta": {"items_on_page": 50, "cursors": {"previous": "em9oby1jcm06OnBhZ2U6OjE=", "current": "em9oby1jcm06OnBhZ2U6OjI=", "next": "em9oby1jcm06OnBhZ2U6OjM="}, "total_count": 1, "warnings": [{"type": "downstream_request_failed", "status_code": 429, "operation": "getManager"}]}, "links": {"previous": "https://unify.apideck.com/crm/companies?cursor=em9oby1jcm06OnBhZ2U6OjE%3D", "current": "https://unify.apideck.com/crm/companies", "next": "https://unify.apideck.com/crm/companies?cursor=em9oby1jcm06OnBhZ2U6OjM"}}
+          application/json: {"status_code": 200, "status": "OK", "service": "xero", "resource": "bank-feed-accounts", "operation": "all", "data": [], "meta": {"items_on_page": 50, "cursors": {"previous": "em9oby1jcm06OnBhZ2U6OjE=", "current": "em9oby1jcm06OnBhZ2U6OjI=", "next": "em9oby1jcm06OnBhZ2U6OjM="}, "total_count": 1, "warnings": [{"type": "downstream_request_failed", "status_code": 429, "operation": "getManager"}]}, "links": {"previous": "https://unify.apideck.com/crm/companies?cursor=em9oby1jcm06OnBhZ2U6OjE%3D", "current": "https://unify.apideck.com/crm/companies", "next": "https://unify.apideck.com/crm/companies?cursor=em9oby1jcm06OnBhZ2U6OjM"}}
         "400":
           application/json: {"status_code": 400, "error": "Bad Request", "type_name": "RequestValidationError", "message": "Invalid Params", "detail": "Missing property foobar", "ref": "https://developers.apideck.com/errors#requestvalidationerror", "downstream_errors": [{"message": "Account code '100' has been archived or deleted", "detail": "Each line item must reference a valid account", "code": "VALIDATION_ERROR"}]}
         "401":
@@ -8631,7 +8631,7 @@ examples:
           x-apideck-company-id: "12345"
       responses:
         "200":
-          application/json: {"status_code": 200, "status": "OK", "service": "quickbooks", "resource": "bank-feed-accounts", "operation": "one", "data": {"id": "12345", "bank_account_type": "bank", "source_account_id": "src_456", "target_account_id": "tgt_789", "target_account_name": "Main Company Checking", "target_account_number": "NL91ABNA0417164300", "currency": "USD", "feed_status": "pending", "country": "US", "custom_fields": [{"id": "2389328923893298", "name": "employee_level", "description": "Employee Level", "value": "Uses Salesforce and Marketo"}], "created_at": "2020-09-30T07:43:32.000Z", "updated_at": "2020-09-30T07:43:32.000Z", "updated_by": "12345", "created_by": "12345"}, "meta": {"items_on_page": 50, "cursors": {"previous": "em9oby1jcm06OnBhZ2U6OjE=", "current": "em9oby1jcm06OnBhZ2U6OjI=", "next": "em9oby1jcm06OnBhZ2U6OjM="}, "total_count": 1, "warnings": [{"type": "downstream_request_failed", "status_code": 429, "operation": "getManager"}]}}
+          application/json: {"status_code": 200, "status": "OK", "service": "xero", "resource": "bank-feed-accounts", "operation": "one", "data": {"id": "12345", "bank_account_type": "bank", "source_account_id": "src_456", "target_account_id": "tgt_789", "target_account_name": "Main Company Checking", "target_account_number": "NL91ABNA0417164300", "currency": "USD", "feed_status": "pending", "country": "US", "custom_fields": [{"id": "2389328923893298", "name": "employee_level", "description": "Employee Level", "value": "Uses Salesforce and Marketo"}], "created_at": "2020-09-30T07:43:32.000Z", "updated_at": "2020-09-30T07:43:32.000Z", "updated_by": "12345", "created_by": "12345"}, "meta": {"items_on_page": 50, "cursors": {"previous": "em9oby1jcm06OnBhZ2U6OjE=", "current": "em9oby1jcm06OnBhZ2U6OjI=", "next": "em9oby1jcm06OnBhZ2U6OjM="}, "total_count": 1, "warnings": [{"type": "downstream_request_failed", "status_code": 429, "operation": "getManager"}]}}
         "400":
           application/json: {"status_code": 400, "error": "Bad Request", "type_name": "RequestValidationError", "message": "Invalid Params", "detail": "Missing property foobar", "ref": "https://developers.apideck.com/errors#requestvalidationerror", "downstream_errors": [{"message": "Account code '100' has been archived or deleted", "detail": "Each line item must reference a valid account", "code": "VALIDATION_ERROR"}]}
         "401":
@@ -8686,7 +8686,7 @@ examples:
         application/json: {"bank_account_type": "bank", "source_account_id": "src_456", "target_account_id": "tgt_789", "target_account_name": "Main Company Checking", "target_account_number": "NL91ABNA0417164300", "currency": "USD", "feed_status": "pending", "country": "US", "custom_fields": [{"id": "2389328923893298", "name": "employee_level", "description": "Employee Level", "value": "Uses Salesforce and Marketo"}]}
       responses:
         "200":
-          application/json: {"status_code": 200, "status": "OK", "service": "quickbooks", "resource": "bank-feed-accounts", "operation": "update", "data": {"id": "12345"}}
+          application/json: {"status_code": 200, "status": "OK", "service": "xero", "resource": "bank-feed-accounts", "operation": "update", "data": {"id": "12345"}}
         "400":
           application/json: {"status_code": 400, "error": "Bad Request", "type_name": "RequestValidationError", "message": "Invalid Params", "detail": "Missing property foobar", "ref": "https://developers.apideck.com/errors#requestvalidationerror", "downstream_errors": [{"message": "Account code '100' has been archived or deleted", "detail": "Each line item must reference a valid account", "code": "VALIDATION_ERROR"}]}
         "401":
@@ -8737,7 +8737,7 @@ examples:
           x-apideck-service-id: "salesforce"
       responses:
         "200":
-          application/json: {"status_code": 200, "status": "OK", "service": "quickbooks", "resource": "bank-feed-accounts", "operation": "delete", "data": {"id": "12345"}}
+          application/json: {"status_code": 200, "status": "OK", "service": "xero", "resource": "bank-feed-accounts", "operation": "delete", "data": {"id": "12345"}}
         "400":
           application/json: {"status_code": 400, "error": "Bad Request", "type_name": "RequestValidationError", "message": "Invalid Params", "detail": "Missing property foobar", "ref": "https://developers.apideck.com/errors#requestvalidationerror", "downstream_errors": [{"message": "Account code '100' has been archived or deleted", "detail": "Each line item must reference a valid account", "code": "VALIDATION_ERROR"}]}
         "401":
@@ -8791,7 +8791,7 @@ examples:
           x-apideck-company-id: "12345"
       responses:
         "200":
-          application/json: {"status_code": 200, "status": "OK", "service": "quickbooks", "resource": "bank-feed-statements", "operation": "all", "data": [{"id": "12345", "bank_feed_account_id": "acc_456", "status": "pending", "start_date": "2021-05-01T12:00:00.000Z", "end_date": "2025-01-31T12:00:00.000Z", "start_balance": 10500.25, "start_balance_credit_or_debit": "debit", "end_balance": 9800.5, "end_balance_credit_or_debit": "debit", "transactions": [{"posted_date": "2025-01-15T12:00:00.000Z", "description": "Payment received from ACME Corp", "amount": 250, "credit_or_debit": "debit", "source_transaction_id": "txn_987", "counterparty": "ACME Corp", "reference": "INV-2025-01", "transaction_type": "payment"}], "created_at": "2020-09-30T07:43:32.000Z", "created_by": "12345", "updated_at": "2020-09-30T07:43:32.000Z", "updated_by": "12345"}], "meta": {"items_on_page": 50, "cursors": {"previous": "em9oby1jcm06OnBhZ2U6OjE=", "current": "em9oby1jcm06OnBhZ2U6OjI=", "next": "em9oby1jcm06OnBhZ2U6OjM="}, "total_count": 1, "warnings": [{"type": "downstream_request_failed", "status_code": 429, "operation": "getManager"}]}, "links": {"previous": "https://unify.apideck.com/crm/companies?cursor=em9oby1jcm06OnBhZ2U6OjE%3D", "current": "https://unify.apideck.com/crm/companies", "next": "https://unify.apideck.com/crm/companies?cursor=em9oby1jcm06OnBhZ2U6OjM"}}
+          application/json: {"status_code": 200, "status": "OK", "service": "xero", "resource": "bank-feed-statements", "operation": "all", "data": [{"id": "12345", "bank_feed_account_id": "acc_456", "status": "pending", "start_date": "2021-05-01T12:00:00.000Z", "end_date": "2025-01-31T12:00:00.000Z", "start_balance": 10500.25, "start_balance_credit_or_debit": "debit", "end_balance": 9800.5, "end_balance_credit_or_debit": "debit", "transactions": [{"posted_date": "2025-01-15T12:00:00.000Z", "description": "Payment received from ACME Corp", "amount": 250, "credit_or_debit": "debit", "source_transaction_id": "txn_987", "counterparty": "ACME Corp", "reference": "INV-2025-01", "transaction_type": "payment"}], "created_at": "2020-09-30T07:43:32.000Z", "created_by": "12345", "updated_at": "2020-09-30T07:43:32.000Z", "updated_by": "12345"}], "meta": {"items_on_page": 50, "cursors": {"previous": "em9oby1jcm06OnBhZ2U6OjE=", "current": "em9oby1jcm06OnBhZ2U6OjI=", "next": "em9oby1jcm06OnBhZ2U6OjM="}, "total_count": 1, "warnings": [{"type": "downstream_request_failed", "status_code": 429, "operation": "getManager"}]}, "links": {"previous": "https://unify.apideck.com/crm/companies?cursor=em9oby1jcm06OnBhZ2U6OjE%3D", "current": "https://unify.apideck.com/crm/companies", "next": "https://unify.apideck.com/crm/companies?cursor=em9oby1jcm06OnBhZ2U6OjM"}}
         "400":
           application/json: {"status_code": 400, "error": "Bad Request", "type_name": "RequestValidationError", "message": "Invalid Params", "detail": "Missing property foobar", "ref": "https://developers.apideck.com/errors#requestvalidationerror", "downstream_errors": [{"message": "Account code '100' has been archived or deleted", "detail": "Each line item must reference a valid account", "code": "VALIDATION_ERROR"}]}
         "401":
@@ -8897,7 +8897,7 @@ examples:
           x-apideck-company-id: "12345"
       responses:
         "200":
-          application/json: {"status_code": 200, "status": "OK", "service": "quickbooks", "resource": "bank-feed-statements", "operation": "one", "data": {"id": "12345", "bank_feed_account_id": "acc_456", "status": "pending", "start_date": "2021-05-01T12:00:00.000Z", "end_date": "2025-01-31T12:00:00.000Z", "start_balance": 10500.25, "start_balance_credit_or_debit": "debit", "end_balance": 9800.5, "end_balance_credit_or_debit": "debit", "transactions": [{"posted_date": "2025-01-15T12:00:00.000Z", "description": "Payment received from ACME Corp", "amount": 250, "credit_or_debit": "debit", "source_transaction_id": "txn_987", "counterparty": "ACME Corp", "reference": "INV-2025-01", "transaction_type": "payment"}], "created_at": "2020-09-30T07:43:32.000Z", "created_by": "12345", "updated_at": "2020-09-30T07:43:32.000Z", "updated_by": "12345"}, "meta": {"items_on_page": 50, "cursors": {"previous": "em9oby1jcm06OnBhZ2U6OjE=", "current": "em9oby1jcm06OnBhZ2U6OjI=", "next": "em9oby1jcm06OnBhZ2U6OjM="}, "total_count": 1, "warnings": [{"type": "downstream_request_failed", "status_code": 429, "operation": "getManager"}]}}
+          application/json: {"status_code": 200, "status": "OK", "service": "xero", "resource": "bank-feed-statements", "operation": "one", "data": {"id": "12345", "bank_feed_account_id": "acc_456", "status": "pending", "start_date": "2021-05-01T12:00:00.000Z", "end_date": "2025-01-31T12:00:00.000Z", "start_balance": 10500.25, "start_balance_credit_or_debit": "debit", "end_balance": 9800.5, "end_balance_credit_or_debit": "debit", "transactions": [{"posted_date": "2025-01-15T12:00:00.000Z", "description": "Payment received from ACME Corp", "amount": 250, "credit_or_debit": "debit", "source_transaction_id": "txn_987", "counterparty": "ACME Corp", "reference": "INV-2025-01", "transaction_type": "payment"}], "created_at": "2020-09-30T07:43:32.000Z", "created_by": "12345", "updated_at": "2020-09-30T07:43:32.000Z", "updated_by": "12345"}, "meta": {"items_on_page": 50, "cursors": {"previous": "em9oby1jcm06OnBhZ2U6OjE=", "current": "em9oby1jcm06OnBhZ2U6OjI=", "next": "em9oby1jcm06OnBhZ2U6OjM="}, "total_count": 1, "warnings": [{"type": "downstream_request_failed", "status_code": 429, "operation": "getManager"}]}}
         "400":
           application/json: {"status_code": 400, "error": "Bad Request", "type_name": "RequestValidationError", "message": "Invalid Params", "detail": "Missing property foobar", "ref": "https://developers.apideck.com/errors#requestvalidationerror", "downstream_errors": [{"message": "Account code '100' has been archived or deleted", "detail": "Each line item must reference a valid account", "code": "VALIDATION_ERROR"}]}
         "401":
@@ -8952,7 +8952,7 @@ examples:
         application/json: {"bank_feed_account_id": "acc_456", "status": "pending", "start_date": "2021-05-01T12:00:00.000Z", "end_date": "2025-01-31T12:00:00.000Z", "start_balance": 10500.25, "start_balance_credit_or_debit": "debit", "end_balance": 9800.5, "end_balance_credit_or_debit": "debit", "transactions": [{"posted_date": "2025-01-15T12:00:00.000Z", "description": "Payment received from ACME Corp", "amount": 250, "credit_or_debit": "debit", "source_transaction_id": "txn_987", "counterparty": "ACME Corp", "reference": "INV-2025-01", "transaction_type": "payment"}]}
       responses:
         "200":
-          application/json: {"status_code": 200, "status": "OK", "service": "quickbooks", "resource": "bank-feed-statements", "operation": "update", "data": {"id": "12345"}}
+          application/json: {"status_code": 200, "status": "OK", "service": "xero", "resource": "bank-feed-statements", "operation": "update", "data": {"id": "12345"}}
         "400":
           application/json: {"status_code": 400, "error": "Bad Request", "type_name": "RequestValidationError", "message": "Invalid Params", "detail": "Missing property foobar", "ref": "https://developers.apideck.com/errors#requestvalidationerror", "downstream_errors": [{"message": "Account code '100' has been archived or deleted", "detail": "Each line item must reference a valid account", "code": "VALIDATION_ERROR"}]}
         "401":
@@ -9003,7 +9003,7 @@ examples:
           x-apideck-service-id: "salesforce"
       responses:
         "200":
-          application/json: {"status_code": 200, "status": "OK", "service": "quickbooks", "resource": "bank-feed-statements", "operation": "delete", "data": {"id": "12345"}}
+          application/json: {"status_code": 200, "status": "OK", "service": "xero", "resource": "bank-feed-statements", "operation": "delete", "data": {"id": "12345"}}
         "400":
           application/json: {"status_code": 400, "error": "Bad Request", "type_name": "RequestValidationError", "message": "Invalid Params", "detail": "Missing property foobar", "ref": "https://developers.apideck.com/errors#requestvalidationerror", "downstream_errors": [{"message": "Account code '100' has been archived or deleted", "detail": "Each line item must reference a valid account", "code": "VALIDATION_ERROR"}]}
         "401":
@@ -18463,7 +18463,7 @@ examples:
         query:
           raw: false
           limit: 20
-          filter: {"updated_since": "2020-09-30T07:43:32.000Z", "created_since": "2020-09-30T07:43:32.000Z", "number": "OIT00546"}
+          filter: {"updated_since": "2020-09-30T07:43:32.000Z", "created_since": "2020-09-30T07:43:32.000Z", "number": "OIT00546", "customer_id": "123abc"}
           pass_through: {"search": "San Francisco"}
         header:
           x-apideck-consumer-id: "test-consumer"
@@ -19843,6 +19843,11 @@ examples:
           application/json: {"status_code": 400, "error": "Bad Request", "type_name": "RequestHeadersValidationError", "message": "Invalid Params", "detail": "Missing Header: x-apideck-consumer-id", "ref": "https://developers.apideck.com/errors#unauthorizederror"}
 examplesVersion: 1.0.2
 generatedTests: {}
+releaseNotes: |
+  ## Python SDK Changes Detected:
+  * `apideck.accounting.invoices.list()`:  `request.filter` **Changed**
+  * `apideck.accounting.credit_notes.list()`:  `request.filter` **Changed**
+  * `apideck.accounting.quotes.list()`:  `request.filter` **Changed**
 trackedFiles:
   .devcontainer/README.md:
     last_write_checksum: sha1:07adb0c0c051a9be4d479ea06461f3a9b3bbeb2f
@@ -20097,7 +20102,7 @@ trackedFiles:
   docs/models/accountingcreditnotesallglobals.md:
     last_write_checksum: sha1:6affe934dd7a3832d96d3d60e51ea03a02a31d57
   docs/models/accountingcreditnotesallrequest.md:
-    last_write_checksum: sha1:77f55ca9bff2ed251341404be3b52bd301f77c47
+    last_write_checksum: sha1:da239ccc36bda1145b27c188c15958c876e93131
   docs/models/accountingcreditnotesallresponse.md:
     last_write_checksum: sha1:83e512a7ab79ed3270fc44a04655ade3d47c73f1
   docs/models/accountingcreditnotesdeleteglobals.md:
@@ -20365,7 +20370,7 @@ trackedFiles:
   docs/models/accountinginvoicesallglobals.md:
     last_write_checksum: sha1:f6a2622baadf2627d9b04eae13e49533f66e5b0f
   docs/models/accountinginvoicesallrequest.md:
-    last_write_checksum: sha1:2871da22c35029fdfa07d062a1f45db764a822c2
+    last_write_checksum: sha1:9e0a928626d9b375ef096897cb855a7c7f03b6c7
   docs/models/accountinginvoicesallresponse.md:
     last_write_checksum: sha1:28be251ab5404d91f259683afee1407dc5bcc6bf
   docs/models/accountinginvoicesdeleteglobals.md:
@@ -20591,7 +20596,7 @@ trackedFiles:
   docs/models/accountingquotesallglobals.md:
     last_write_checksum: sha1:3dc0a08da96f7926e90a33a515d7389347c30220
   docs/models/accountingquotesallrequest.md:
-    last_write_checksum: sha1:24d33b83669fdb1c26c7a4023c1600b539a641f5
+    last_write_checksum: sha1:24118f4cabde280251db3eee7f7b65f8a68e0867
   docs/models/accountingquotesallresponse.md:
     last_write_checksum: sha1:a7c9586c9cc2b2977614139a7f209f5beeab4ef5
   docs/models/accountingquotesdeleteglobals.md:
@@ -21359,7 +21364,7 @@ trackedFiles:
   docs/models/creditnoteinput.md:
     last_write_checksum: sha1:5cd185371ea93e9f5d5de02ffc2e5894e0178e09
   docs/models/creditnotesfilter.md:
-    last_write_checksum: sha1:61dada164b221a0592e2e0a13a63e83b7604f47f
+    last_write_checksum: sha1:83212348f70448a5089bedb1153a82b20545c24b
   docs/models/creditnotessort.md:
     last_write_checksum: sha1:fd155892f6ca3800b5e3b8f6ba93ccee75ba2255
   docs/models/creditnotessortby.md:
@@ -21771,9 +21776,9 @@ trackedFiles:
   docs/models/deletebankaccountresponse.md:
     last_write_checksum: sha1:0c03cf9f1327a8c6d0503e14a3b591cea025aac8
   docs/models/deletebankfeedaccountresponse.md:
-    last_write_checksum: sha1:e2be8d362403ca93ce31cf676381f678949150f6
+    last_write_checksum: sha1:82891e64409dbe1ac49f0081478859e21a3a6aba
   docs/models/deletebankfeedstatementresponse.md:
-    last_write_checksum: sha1:ea857a68f33cde00920691a5f8674ee633c00fb7
+    last_write_checksum: sha1:b79e1441fbeb33280271f89f4e784dbba1d280cc
   docs/models/deletebillpaymentresponse.md:
     last_write_checksum: sha1:02949214be40b69ebbc0ac16a9ff40548d464fcf
   docs/models/deletebillresponse.md:
@@ -22381,13 +22386,13 @@ trackedFiles:
   docs/models/getbankaccountsresponse.md:
     last_write_checksum: sha1:2d0a785fe52a0d07019fdfac66b4ed197f733d84
   docs/models/getbankfeedaccountresponse.md:
-    last_write_checksum: sha1:763964e00adb1fb3f48ca89c5da6cfa70a552820
+    last_write_checksum: sha1:e3c63bfcfbfa25eeeaa4091981fe5621692ed08f
   docs/models/getbankfeedaccountsresponse.md:
-    last_write_checksum: sha1:d3dc88ec0e7c71a286a74f113701dac171d59fb5
+    last_write_checksum: sha1:e8373cd5ac7269cd081f4f7ba172f2256f8295df
   docs/models/getbankfeedstatementresponse.md:
-    last_write_checksum: sha1:d8dcbaa2f4802023162a9640d9fb2a5445d90461
+    last_write_checksum: sha1:d1b0ce098323958b4a4d05f57fad6b08da581cde
   docs/models/getbankfeedstatementsresponse.md:
-    last_write_checksum: sha1:38918319557e846bd489bdef6b80af2bf76b9c81
+    last_write_checksum: sha1:37e2df80dab5d7a0431a8f7935fa3a495d9b4335
   docs/models/getbillpaymentresponse.md:
     last_write_checksum: sha1:994ada55f906aa6060e49a6f248ae10870f8da45
   docs/models/getbillpaymentsresponse.md:
@@ -22841,7 +22846,7 @@ trackedFiles:
   docs/models/invoiceresponse.md:
     last_write_checksum: sha1:bc0577dbf4ceec23ec16db3034fd6199ef550dc7
   docs/models/invoicesfilter.md:
-    last_write_checksum: sha1:684abb5ac6c9fb31e4cd331216b7f7b321f46660
+    last_write_checksum: sha1:5b2e17f84b09cf46880212b0efc18b5ccfdc36ed
   docs/models/invoicessort.md:
     last_write_checksum: sha1:1eba528d38a368e93a9d28100a5d7c566bad30a1
   docs/models/invoicessortby.md:
@@ -23327,7 +23332,7 @@ trackedFiles:
   docs/models/quotelineitemtype.md:
     last_write_checksum: sha1:df59dbf0dd185da8a9aabd570399ebdb49dca86b
   docs/models/quotesfilter.md:
-    last_write_checksum: sha1:c4897eb6ad552e74852c8bf72e9ab25bab0c10d2
+    last_write_checksum: sha1:d3adb6da7d1f1f8310b42b414755ab1f347d34ae
   docs/models/quotestatus.md:
     last_write_checksum: sha1:f00b3209a9c7ebccedd03f94739a739ceb6fdc81
   docs/models/rebilling.md:
@@ -23593,9 +23598,9 @@ trackedFiles:
   docs/models/updatebankaccountresponse.md:
     last_write_checksum: sha1:af8162aa817f490345a24c754ad074032ca08ca3
   docs/models/updatebankfeedaccountresponse.md:
-    last_write_checksum: sha1:bf32d72b67071a72eb751e65aaad217b37146ecc
+    last_write_checksum: sha1:1c746fa98b29c4ab6b8445c6b0e4ca9bcd89ecae
   docs/models/updatebankfeedstatementresponse.md:
-    last_write_checksum: sha1:30dfb58567871d7d03b1c7da242bcddf29bc05f5
+    last_write_checksum: sha1:c7ba714202630b53f83ebba940e532c0941ada27
   docs/models/updatebillpaymentresponse.md:
     last_write_checksum: sha1:3de8c1e936c8cc96ae8a2758319b2b55e82e8378
   docs/models/updatebillresponse.md:
@@ -24013,7 +24018,7 @@ trackedFiles:
   docs/sdks/createcallback/README.md:
     last_write_checksum: sha1:fe7ad7d4efe54f8b2daa4b8d623e67f8b0a4dd6c
   docs/sdks/creditnotes/README.md:
-    last_write_checksum: sha1:da2ecf243dbd0bb01658cda2210e7989ea15e077
+    last_write_checksum: sha1:a265c426c4ff7b32d79697672328e54f6e8079a6
   docs/sdks/customers/README.md:
     last_write_checksum: sha1:9ab384bd3eab6ed33074d1670d9657e0dc9f5d56
   docs/sdks/customfields/README.md:
@@ -24053,7 +24058,7 @@ trackedFiles:
   docs/sdks/invoiceitems/README.md:
     last_write_checksum: sha1:d2426572c3480a9b6d0befefb7256a11051b7d76
   docs/sdks/invoices/README.md:
-    last_write_checksum: sha1:9b7e3903cede1da4555bafd8a6725c88b1c589c3
+    last_write_checksum: sha1:cf2ddb7e323eea33b02704bb2dbd1808c0896345
   docs/sdks/jobs/README.md:
     last_write_checksum: sha1:27ca05b0e4c859e5e36418df5c1b1463d060a58f
   docs/sdks/journalentries/README.md:
@@ -24093,7 +24098,7 @@ trackedFiles:
   docs/sdks/purchaseorders/README.md:
     last_write_checksum: sha1:fb84ad40ffac3213e8249afbb310b4c4d5b4dfed
   docs/sdks/quotes/README.md:
-    last_write_checksum: sha1:d14b65d1f60c0d91f086a81c3e837077154e109d
+    last_write_checksum: sha1:9419f691ddabb312b0a912a6f0a98da028a96ba1
   docs/sdks/refunds/README.md:
     last_write_checksum: sha1:f02f4f6ba8629d448e1708c0a82e505f526c7079
   docs/sdks/sessions/README.md:
@@ -24141,7 +24146,7 @@ trackedFiles:
   src/apideck_unify/_hooks/types.py:
     last_write_checksum: sha1:d57be38e644de01983a9224b9733ae0add898d43
   src/apideck_unify/_version.py:
-    last_write_checksum: sha1:69095ca879bb56e92d89e9866b22f22c763097c6
+    last_write_checksum: sha1:aaee3f7a5d414719782b3b6cc73f0a9cd83570a7
   src/apideck_unify/accounting.py:
     last_write_checksum: sha1:63ea555e29266c0cbe993e2bddf21ffecd9b02b9
   src/apideck_unify/activities.py:
@@ -24157,7 +24162,7 @@ trackedFiles:
   src/apideck_unify/apideck_departments.py:
     last_write_checksum: sha1:9c6e4af55297ccb825e8bf5bb5c4089e53e344b5
   src/apideck_unify/apideck_employees.py:
-    last_write_checksum: sha1:2682fbaaa6c9794a55bb5ecac9b515af6439ea0c
+    last_write_checksum: sha1:f164162398cb80e30873bfb607c11fbf337ad63c
   src/apideck_unify/apideck_hris_companies.py:
     last_write_checksum: sha1:8b1eb48fe3ec7b1d4d84e283a19556d98160d3ca
   src/apideck_unify/apiresourcecoverage_sdk.py:
@@ -24949,7 +24954,7 @@ trackedFiles:
   src/apideck_unify/models/creditnote.py:
     last_write_checksum: sha1:ba366de9071b72708dce6e538c2f0f4508a83eea
   src/apideck_unify/models/creditnotesfilter.py:
-    last_write_checksum: sha1:820e73f5e564f64fdee7325c4304398b752207e8
+    last_write_checksum: sha1:803a342c080a548d225d86a3704214bd1cd9de43
   src/apideck_unify/models/creditnotessort.py:
     last_write_checksum: sha1:8dfe580975c11a8e44f8e2df6416781f831d0ae6
   src/apideck_unify/models/creditordebit.py:
@@ -25761,7 +25766,7 @@ trackedFiles:
   src/apideck_unify/models/invoiceresponse.py:
     last_write_checksum: sha1:f8f75f00763047726a6e2798859f10a9c8c29850
   src/apideck_unify/models/invoicesfilter.py:
-    last_write_checksum: sha1:ecf047712bcd955d772e9528d6a1dd64cf304698
+    last_write_checksum: sha1:715b51f28ee5a0eac9d17c96e3a8720eb046121a
   src/apideck_unify/models/invoicessort.py:
     last_write_checksum: sha1:36801ee2f678352f726e270ceb3465ef0fe5390c
   src/apideck_unify/models/issuesfilter.py:
@@ -25999,7 +26004,7 @@ trackedFiles:
   src/apideck_unify/models/quotelineitem.py:
     last_write_checksum: sha1:ec6e349592938366215654e8f7ac369ea28dfc73
   src/apideck_unify/models/quotesfilter.py:
-    last_write_checksum: sha1:a7479f988fdb9a996fe75f961339dcd9f27a078a
+    last_write_checksum: sha1:e4ebfa923cf669c041a0a8c0ac56f0336b404b14
   src/apideck_unify/models/rebilling.py:
     last_write_checksum: sha1:335956b996339dc4b07c60468e34408b9f9fff3f
   src/apideck_unify/models/refund.py:
@@ -26349,7 +26354,7 @@ trackedFiles:
   src/apideck_unify/taxrates.py:
     last_write_checksum: sha1:c4a28fec0799b6c4976c98d5269021b63fe47b3e
   src/apideck_unify/timeoffrequests.py:
-    last_write_checksum: sha1:6202cc9d837c45ad3398558e69849d1f6754c606
+    last_write_checksum: sha1:07f0ba31145daa562027e1e8dd63084e9c70930e
   src/apideck_unify/trackingcategories.py:
     last_write_checksum: sha1:342455b46551e9a43c5441581df9fc8c4ac0e9d0
   src/apideck_unify/types/__init__.py:
