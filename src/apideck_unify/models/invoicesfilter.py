@@ -19,6 +19,8 @@ class InvoicesFilterTypedDict(TypedDict):
     r"""Supplier ID to filter invoices by"""
     subsidiary_id: NotRequired[str]
     r"""Filter by the subsidiary (legal entity) the record belongs to. Only honored on connectors that support multi-entity scoping (e.g. NetSuite OneWorld); ignored elsewhere."""
+    customer_id: NotRequired[str]
+    r"""Filter by customer id"""
 
 
 class InvoicesFilter(BaseModel):
@@ -37,3 +39,6 @@ class InvoicesFilter(BaseModel):
 
     subsidiary_id: Annotated[Optional[str], FieldMetadata(query=True)] = None
     r"""Filter by the subsidiary (legal entity) the record belongs to. Only honored on connectors that support multi-entity scoping (e.g. NetSuite OneWorld); ignored elsewhere."""
+
+    customer_id: Annotated[Optional[str], FieldMetadata(query=True)] = None
+    r"""Filter by customer id"""

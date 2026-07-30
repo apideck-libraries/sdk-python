@@ -13,6 +13,8 @@ class QuotesFilterTypedDict(TypedDict):
     created_since: NotRequired[datetime]
     number: NotRequired[str]
     r"""Quote number to search for"""
+    customer_id: NotRequired[str]
+    r"""Filter by customer id"""
 
 
 class QuotesFilter(BaseModel):
@@ -22,3 +24,6 @@ class QuotesFilter(BaseModel):
 
     number: Annotated[Optional[str], FieldMetadata(query=True)] = None
     r"""Quote number to search for"""
+
+    customer_id: Annotated[Optional[str], FieldMetadata(query=True)] = None
+    r"""Filter by customer id"""
