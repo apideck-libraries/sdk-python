@@ -8,6 +8,11 @@ from .customfield import CustomField, CustomFieldTypedDict
 from .email import Email, EmailTypedDict
 from .linkedledgeraccount import LinkedLedgerAccount, LinkedLedgerAccountTypedDict
 from .linkedparentcustomer import LinkedParentCustomer, LinkedParentCustomerTypedDict
+from .linkedsubsidiary import LinkedSubsidiary, LinkedSubsidiaryTypedDict
+from .linkedsubsidiary_input import (
+    LinkedSubsidiaryInput,
+    LinkedSubsidiaryInputTypedDict,
+)
 from .linkedtaxrate import LinkedTaxRate, LinkedTaxRateTypedDict
 from .linkedtaxrate_input import LinkedTaxRateInput, LinkedTaxRateInputTypedDict
 from .passthroughbody import PassThroughBody, PassThroughBodyTypedDict
@@ -53,6 +58,7 @@ class CustomerTypedDict(TypedDict):
     r"""The name of the company."""
     company_id: NotRequired[Nullable[str]]
     r"""The company ID the transaction belongs to"""
+    subsidiary: NotRequired[Nullable[LinkedSubsidiaryTypedDict]]
     customer_category: NotRequired[Nullable[str]]
     r"""The category/type of the customer"""
     title: NotRequired[Nullable[str]]
@@ -129,6 +135,8 @@ class Customer(BaseModel):
 
     company_id: OptionalNullable[str] = UNSET
     r"""The company ID the transaction belongs to"""
+
+    subsidiary: OptionalNullable[LinkedSubsidiary] = UNSET
 
     customer_category: OptionalNullable[str] = UNSET
     r"""The category/type of the customer"""
@@ -250,6 +258,7 @@ class Customer(BaseModel):
             "display_name",
             "company_name",
             "company_id",
+            "subsidiary",
             "customer_category",
             "title",
             "first_name",
@@ -290,6 +299,7 @@ class Customer(BaseModel):
             "display_name",
             "company_name",
             "company_id",
+            "subsidiary",
             "customer_category",
             "title",
             "first_name",
@@ -352,6 +362,7 @@ class CustomerInputTypedDict(TypedDict):
     r"""The name of the company."""
     company_id: NotRequired[Nullable[str]]
     r"""The company ID the transaction belongs to"""
+    subsidiary: NotRequired[Nullable[LinkedSubsidiaryInputTypedDict]]
     customer_category: NotRequired[Nullable[str]]
     r"""The category/type of the customer"""
     title: NotRequired[Nullable[str]]
@@ -412,6 +423,8 @@ class CustomerInput(BaseModel):
 
     company_id: OptionalNullable[str] = UNSET
     r"""The company ID the transaction belongs to"""
+
+    subsidiary: OptionalNullable[LinkedSubsidiaryInput] = UNSET
 
     customer_category: OptionalNullable[str] = UNSET
     r"""The category/type of the customer"""
@@ -517,6 +530,7 @@ class CustomerInput(BaseModel):
             "display_name",
             "company_name",
             "company_id",
+            "subsidiary",
             "customer_category",
             "title",
             "first_name",
@@ -551,6 +565,7 @@ class CustomerInput(BaseModel):
             "display_name",
             "company_name",
             "company_id",
+            "subsidiary",
             "customer_category",
             "title",
             "first_name",

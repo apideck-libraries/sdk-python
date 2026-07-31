@@ -405,6 +405,9 @@ class Suppliers(BaseSDK):
         display_name: OptionalNullable[str] = UNSET,
         company_name: OptionalNullable[str] = UNSET,
         company_id: OptionalNullable[str] = UNSET,
+        subsidiary: OptionalNullable[
+            Union[models.LinkedSubsidiaryInput, models.LinkedSubsidiaryInputTypedDict]
+        ] = UNSET,
         supplier_category: OptionalNullable[str] = UNSET,
         title: OptionalNullable[str] = UNSET,
         first_name: OptionalNullable[str] = UNSET,
@@ -481,6 +484,7 @@ class Suppliers(BaseSDK):
         :param display_name: Display name
         :param company_name: The name of the company.
         :param company_id: The company ID the transaction belongs to
+        :param subsidiary:
         :param supplier_category: The category/type of the supplier
         :param title: The job title of the person.
         :param first_name: The first name of the person.
@@ -539,6 +543,9 @@ class Suppliers(BaseSDK):
                 display_name=display_name,
                 company_name=company_name,
                 company_id=company_id,
+                subsidiary=utils.get_pydantic_model(
+                    subsidiary, OptionalNullable[models.LinkedSubsidiaryInput]
+                ),
                 supplier_category=supplier_category,
                 title=title,
                 first_name=first_name,
@@ -706,6 +713,9 @@ class Suppliers(BaseSDK):
         display_name: OptionalNullable[str] = UNSET,
         company_name: OptionalNullable[str] = UNSET,
         company_id: OptionalNullable[str] = UNSET,
+        subsidiary: OptionalNullable[
+            Union[models.LinkedSubsidiaryInput, models.LinkedSubsidiaryInputTypedDict]
+        ] = UNSET,
         supplier_category: OptionalNullable[str] = UNSET,
         title: OptionalNullable[str] = UNSET,
         first_name: OptionalNullable[str] = UNSET,
@@ -782,6 +792,7 @@ class Suppliers(BaseSDK):
         :param display_name: Display name
         :param company_name: The name of the company.
         :param company_id: The company ID the transaction belongs to
+        :param subsidiary:
         :param supplier_category: The category/type of the supplier
         :param title: The job title of the person.
         :param first_name: The first name of the person.
@@ -840,6 +851,9 @@ class Suppliers(BaseSDK):
                 display_name=display_name,
                 company_name=company_name,
                 company_id=company_id,
+                subsidiary=utils.get_pydantic_model(
+                    subsidiary, OptionalNullable[models.LinkedSubsidiaryInput]
+                ),
                 supplier_category=supplier_category,
                 title=title,
                 first_name=first_name,
@@ -1302,6 +1316,9 @@ class Suppliers(BaseSDK):
         display_name: OptionalNullable[str] = UNSET,
         company_name: OptionalNullable[str] = UNSET,
         company_id: OptionalNullable[str] = UNSET,
+        subsidiary: OptionalNullable[
+            Union[models.LinkedSubsidiaryInput, models.LinkedSubsidiaryInputTypedDict]
+        ] = UNSET,
         supplier_category: OptionalNullable[str] = UNSET,
         title: OptionalNullable[str] = UNSET,
         first_name: OptionalNullable[str] = UNSET,
@@ -1379,6 +1396,7 @@ class Suppliers(BaseSDK):
         :param display_name: Display name
         :param company_name: The name of the company.
         :param company_id: The company ID the transaction belongs to
+        :param subsidiary:
         :param supplier_category: The category/type of the supplier
         :param title: The job title of the person.
         :param first_name: The first name of the person.
@@ -1438,6 +1456,9 @@ class Suppliers(BaseSDK):
                 display_name=display_name,
                 company_name=company_name,
                 company_id=company_id,
+                subsidiary=utils.get_pydantic_model(
+                    subsidiary, OptionalNullable[models.LinkedSubsidiaryInput]
+                ),
                 supplier_category=supplier_category,
                 title=title,
                 first_name=first_name,
@@ -1606,6 +1627,9 @@ class Suppliers(BaseSDK):
         display_name: OptionalNullable[str] = UNSET,
         company_name: OptionalNullable[str] = UNSET,
         company_id: OptionalNullable[str] = UNSET,
+        subsidiary: OptionalNullable[
+            Union[models.LinkedSubsidiaryInput, models.LinkedSubsidiaryInputTypedDict]
+        ] = UNSET,
         supplier_category: OptionalNullable[str] = UNSET,
         title: OptionalNullable[str] = UNSET,
         first_name: OptionalNullable[str] = UNSET,
@@ -1683,6 +1707,7 @@ class Suppliers(BaseSDK):
         :param display_name: Display name
         :param company_name: The name of the company.
         :param company_id: The company ID the transaction belongs to
+        :param subsidiary:
         :param supplier_category: The category/type of the supplier
         :param title: The job title of the person.
         :param first_name: The first name of the person.
@@ -1742,6 +1767,9 @@ class Suppliers(BaseSDK):
                 display_name=display_name,
                 company_name=company_name,
                 company_id=company_id,
+                subsidiary=utils.get_pydantic_model(
+                    subsidiary, OptionalNullable[models.LinkedSubsidiaryInput]
+                ),
                 supplier_category=supplier_category,
                 title=title,
                 first_name=first_name,

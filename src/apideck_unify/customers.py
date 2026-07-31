@@ -405,6 +405,9 @@ class Customers(BaseSDK):
         display_name: OptionalNullable[str] = UNSET,
         company_name: OptionalNullable[str] = UNSET,
         company_id: OptionalNullable[str] = UNSET,
+        subsidiary: OptionalNullable[
+            Union[models.LinkedSubsidiaryInput, models.LinkedSubsidiaryInputTypedDict]
+        ] = UNSET,
         customer_category: OptionalNullable[str] = UNSET,
         title: OptionalNullable[str] = UNSET,
         first_name: OptionalNullable[str] = UNSET,
@@ -469,6 +472,7 @@ class Customers(BaseSDK):
         :param display_name: Display name
         :param company_name: The name of the company.
         :param company_id: The company ID the transaction belongs to
+        :param subsidiary:
         :param customer_category: The category/type of the customer
         :param title: The job title of the person.
         :param first_name: The first name of the person.
@@ -523,6 +527,9 @@ class Customers(BaseSDK):
                 display_name=display_name,
                 company_name=company_name,
                 company_id=company_id,
+                subsidiary=utils.get_pydantic_model(
+                    subsidiary, OptionalNullable[models.LinkedSubsidiaryInput]
+                ),
                 customer_category=customer_category,
                 title=title,
                 first_name=first_name,
@@ -683,6 +690,9 @@ class Customers(BaseSDK):
         display_name: OptionalNullable[str] = UNSET,
         company_name: OptionalNullable[str] = UNSET,
         company_id: OptionalNullable[str] = UNSET,
+        subsidiary: OptionalNullable[
+            Union[models.LinkedSubsidiaryInput, models.LinkedSubsidiaryInputTypedDict]
+        ] = UNSET,
         customer_category: OptionalNullable[str] = UNSET,
         title: OptionalNullable[str] = UNSET,
         first_name: OptionalNullable[str] = UNSET,
@@ -747,6 +757,7 @@ class Customers(BaseSDK):
         :param display_name: Display name
         :param company_name: The name of the company.
         :param company_id: The company ID the transaction belongs to
+        :param subsidiary:
         :param customer_category: The category/type of the customer
         :param title: The job title of the person.
         :param first_name: The first name of the person.
@@ -801,6 +812,9 @@ class Customers(BaseSDK):
                 display_name=display_name,
                 company_name=company_name,
                 company_id=company_id,
+                subsidiary=utils.get_pydantic_model(
+                    subsidiary, OptionalNullable[models.LinkedSubsidiaryInput]
+                ),
                 customer_category=customer_category,
                 title=title,
                 first_name=first_name,
@@ -1255,6 +1269,9 @@ class Customers(BaseSDK):
         display_name: OptionalNullable[str] = UNSET,
         company_name: OptionalNullable[str] = UNSET,
         company_id: OptionalNullable[str] = UNSET,
+        subsidiary: OptionalNullable[
+            Union[models.LinkedSubsidiaryInput, models.LinkedSubsidiaryInputTypedDict]
+        ] = UNSET,
         customer_category: OptionalNullable[str] = UNSET,
         title: OptionalNullable[str] = UNSET,
         first_name: OptionalNullable[str] = UNSET,
@@ -1319,6 +1336,7 @@ class Customers(BaseSDK):
         :param display_name: Display name
         :param company_name: The name of the company.
         :param company_id: The company ID the transaction belongs to
+        :param subsidiary:
         :param customer_category: The category/type of the customer
         :param title: The job title of the person.
         :param first_name: The first name of the person.
@@ -1373,6 +1391,9 @@ class Customers(BaseSDK):
                 display_name=display_name,
                 company_name=company_name,
                 company_id=company_id,
+                subsidiary=utils.get_pydantic_model(
+                    subsidiary, OptionalNullable[models.LinkedSubsidiaryInput]
+                ),
                 customer_category=customer_category,
                 title=title,
                 first_name=first_name,
@@ -1533,6 +1554,9 @@ class Customers(BaseSDK):
         display_name: OptionalNullable[str] = UNSET,
         company_name: OptionalNullable[str] = UNSET,
         company_id: OptionalNullable[str] = UNSET,
+        subsidiary: OptionalNullable[
+            Union[models.LinkedSubsidiaryInput, models.LinkedSubsidiaryInputTypedDict]
+        ] = UNSET,
         customer_category: OptionalNullable[str] = UNSET,
         title: OptionalNullable[str] = UNSET,
         first_name: OptionalNullable[str] = UNSET,
@@ -1597,6 +1621,7 @@ class Customers(BaseSDK):
         :param display_name: Display name
         :param company_name: The name of the company.
         :param company_id: The company ID the transaction belongs to
+        :param subsidiary:
         :param customer_category: The category/type of the customer
         :param title: The job title of the person.
         :param first_name: The first name of the person.
@@ -1651,6 +1676,9 @@ class Customers(BaseSDK):
                 display_name=display_name,
                 company_name=company_name,
                 company_id=company_id,
+                subsidiary=utils.get_pydantic_model(
+                    subsidiary, OptionalNullable[models.LinkedSubsidiaryInput]
+                ),
                 customer_category=customer_category,
                 title=title,
                 first_name=first_name,
