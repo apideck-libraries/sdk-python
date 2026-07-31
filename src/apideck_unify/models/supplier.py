@@ -7,6 +7,11 @@ from .currency import Currency
 from .customfield import CustomField, CustomFieldTypedDict
 from .email import Email, EmailTypedDict
 from .linkedledgeraccount import LinkedLedgerAccount, LinkedLedgerAccountTypedDict
+from .linkedsubsidiary import LinkedSubsidiary, LinkedSubsidiaryTypedDict
+from .linkedsubsidiary_input import (
+    LinkedSubsidiaryInput,
+    LinkedSubsidiaryInputTypedDict,
+)
 from .linkedtaxdetail import LinkedTaxDetail, LinkedTaxDetailTypedDict
 from .linkedtaxrate import LinkedTaxRate, LinkedTaxRateTypedDict
 from .linkedtaxrate_input import LinkedTaxRateInput, LinkedTaxRateInputTypedDict
@@ -54,6 +59,7 @@ class SupplierTypedDict(TypedDict):
     r"""The name of the company."""
     company_id: NotRequired[Nullable[str]]
     r"""The company ID the transaction belongs to"""
+    subsidiary: NotRequired[Nullable[LinkedSubsidiaryTypedDict]]
     supplier_category: NotRequired[Nullable[str]]
     r"""The category/type of the supplier"""
     title: NotRequired[Nullable[str]]
@@ -136,6 +142,8 @@ class Supplier(BaseModel):
 
     company_id: OptionalNullable[str] = UNSET
     r"""The company ID the transaction belongs to"""
+
+    subsidiary: OptionalNullable[LinkedSubsidiary] = UNSET
 
     supplier_category: OptionalNullable[str] = UNSET
     r"""The category/type of the supplier"""
@@ -266,6 +274,7 @@ class Supplier(BaseModel):
             "display_name",
             "company_name",
             "company_id",
+            "subsidiary",
             "supplier_category",
             "title",
             "first_name",
@@ -310,6 +319,7 @@ class Supplier(BaseModel):
             "display_name",
             "company_name",
             "company_id",
+            "subsidiary",
             "supplier_category",
             "title",
             "first_name",
@@ -372,6 +382,7 @@ class SupplierInputTypedDict(TypedDict):
     r"""The name of the company."""
     company_id: NotRequired[Nullable[str]]
     r"""The company ID the transaction belongs to"""
+    subsidiary: NotRequired[Nullable[LinkedSubsidiaryInputTypedDict]]
     supplier_category: NotRequired[Nullable[str]]
     r"""The category/type of the supplier"""
     title: NotRequired[Nullable[str]]
@@ -438,6 +449,8 @@ class SupplierInput(BaseModel):
 
     company_id: OptionalNullable[str] = UNSET
     r"""The company ID the transaction belongs to"""
+
+    subsidiary: OptionalNullable[LinkedSubsidiaryInput] = UNSET
 
     supplier_category: OptionalNullable[str] = UNSET
     r"""The category/type of the supplier"""
@@ -552,6 +565,7 @@ class SupplierInput(BaseModel):
             "display_name",
             "company_name",
             "company_id",
+            "subsidiary",
             "supplier_category",
             "title",
             "first_name",
@@ -590,6 +604,7 @@ class SupplierInput(BaseModel):
             "display_name",
             "company_name",
             "company_id",
+            "subsidiary",
             "supplier_category",
             "title",
             "first_name",
