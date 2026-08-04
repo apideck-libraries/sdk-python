@@ -1,12 +1,12 @@
 lockVersion: 2.0.0
 id: fca0ac3a-5f4e-452c-bbc7-2311afa8da40
 management:
-  docChecksum: c47461cb920232c6c3b06d8434a29a26
+  docChecksum: c66158bd9f60e83326a0eb4b6e0968f8
   docVersion: 10.29.1
   speakeasyVersion: 1.656.1
   generationVersion: 2.753.1
-  releaseVersion: 0.33.1
-  configChecksum: 85ef1f8aa39e93528a4a14c78a56b3cb
+  releaseVersion: 0.33.2
+  configChecksum: 0850d2c57f06eccf9471a5f71f778ae8
   repoURL: https://github.com/apideck-libraries/sdk-python.git
   installationURL: https://github.com/apideck-libraries/sdk-python.git
   published: true
@@ -19843,16 +19843,6 @@ examples:
           application/json: {"status_code": 400, "error": "Bad Request", "type_name": "RequestHeadersValidationError", "message": "Invalid Params", "detail": "Missing Header: x-apideck-consumer-id", "ref": "https://developers.apideck.com/errors#unauthorizederror"}
 examplesVersion: 1.0.2
 generatedTests: {}
-releaseNotes: |
-  ## Python SDK Changes Detected:
-  * `apideck.accounting.customers.list()`:  `response.data.[].subsidiary` **Added**
-  * `apideck.accounting.customers.create()`:  `request.subsidiary` **Added**
-  * `apideck.accounting.customers.get()`:  `response.data.subsidiary` **Added**
-  * `apideck.accounting.customers.update()`:  `request.subsidiary` **Added**
-  * `apideck.accounting.suppliers.list()`:  `response.data.[].subsidiary` **Added**
-  * `apideck.accounting.suppliers.create()`:  `request.subsidiary` **Added**
-  * `apideck.accounting.suppliers.get()`:  `response.data.subsidiary` **Added**
-  * `apideck.accounting.suppliers.update()`:  `request.subsidiary` **Added**
 trackedFiles:
   .devcontainer/README.md:
     last_write_checksum: sha1:07adb0c0c051a9be4d479ea06461f3a9b3bbeb2f
@@ -24137,7 +24127,7 @@ trackedFiles:
   pylintrc:
     last_write_checksum: sha1:ec6665a4862060890cf4c6ba61438d11decf5c3c
   pyproject.toml:
-    last_write_checksum: sha1:af3d3cfa750c7e701dded2133d5c1c9702c244fa
+    last_write_checksum: sha1:73eb0077bdf29daf9a762f1c5a1a65ce80fe417c
   scripts/prepare_readme.py:
     last_write_checksum: sha1:798a05bafe4fbbfff5b67037866fa25efc52f11a
   scripts/publish.sh:
@@ -24151,7 +24141,7 @@ trackedFiles:
   src/apideck_unify/_hooks/types.py:
     last_write_checksum: sha1:d57be38e644de01983a9224b9733ae0add898d43
   src/apideck_unify/_version.py:
-    last_write_checksum: sha1:fb3602e1d485c82e13ecc10c975fabdc45a792ee
+    last_write_checksum: sha1:403d9bb251f5f374a5914487536798e41a64539e
   src/apideck_unify/accounting.py:
     last_write_checksum: sha1:63ea555e29266c0cbe993e2bddf21ffecd9b02b9
   src/apideck_unify/activities.py:
@@ -24167,7 +24157,7 @@ trackedFiles:
   src/apideck_unify/apideck_departments.py:
     last_write_checksum: sha1:9c6e4af55297ccb825e8bf5bb5c4089e53e344b5
   src/apideck_unify/apideck_employees.py:
-    last_write_checksum: sha1:f164162398cb80e30873bfb607c11fbf337ad63c
+    last_write_checksum: sha1:16b462466cb92e469dd907c54aec6ecd7511c4fa
   src/apideck_unify/apideck_hris_companies.py:
     last_write_checksum: sha1:8b1eb48fe3ec7b1d4d84e283a19556d98160d3ca
   src/apideck_unify/apiresourcecoverage_sdk.py:
@@ -24241,7 +24231,7 @@ trackedFiles:
   src/apideck_unify/createcallback.py:
     last_write_checksum: sha1:fa6cddb89b59b3890fbc0a06c4b7730e91e76f2e
   src/apideck_unify/creditnotes.py:
-    last_write_checksum: sha1:5d95fd8d693e4d240403be60b90c44a17da95989
+    last_write_checksum: sha1:7eac254d4ea538ea02d8a447dd2b97836917db0b
   src/apideck_unify/crm.py:
     last_write_checksum: sha1:36ede783f767decc1cf2e32812890740f1a85f58
   src/apideck_unify/customers.py:
