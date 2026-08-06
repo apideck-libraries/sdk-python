@@ -1556,6 +1556,11 @@ if TYPE_CHECKING:
         TrackingCategoriesMode,
     )
     from .compensation import Compensation, CompensationTypedDict
+    from .conflictresponse import (
+        ConflictResponse,
+        ConflictResponseData,
+        ConflictResponseDetail,
+    )
     from .connection import (
         Configuration,
         ConfigurationTypedDict,
@@ -1587,6 +1592,10 @@ if TYPE_CHECKING:
         ConnectionImportDataTypedDict,
         Credentials,
         CredentialsTypedDict,
+    )
+    from .connectionmigratedata import (
+        ConnectionMigrateData,
+        ConnectionMigrateDataTypedDict,
     )
     from .connectionstate import ConnectionState
     from .connector import (
@@ -4867,6 +4876,14 @@ if TYPE_CHECKING:
         VaultConnectionsImportResponse,
         VaultConnectionsImportResponseTypedDict,
     )
+    from .vault_connectionsmigrateop import (
+        VaultConnectionsMigrateGlobals,
+        VaultConnectionsMigrateGlobalsTypedDict,
+        VaultConnectionsMigrateRequest,
+        VaultConnectionsMigrateRequestTypedDict,
+        VaultConnectionsMigrateResponse,
+        VaultConnectionsMigrateResponseTypedDict,
+    )
     from .vault_connectionsoneop import (
         VaultConnectionsOneGlobals,
         VaultConnectionsOneGlobalsTypedDict,
@@ -6268,6 +6285,9 @@ __all__ = [
     "ComponentsTypedDict",
     "Configuration",
     "ConfigurationTypedDict",
+    "ConflictResponse",
+    "ConflictResponseData",
+    "ConflictResponseDetail",
     "Connection",
     "ConnectionConfiguration",
     "ConnectionConfigurationTypedDict",
@@ -6282,6 +6302,8 @@ __all__ = [
     "ConnectionMetadataInput",
     "ConnectionMetadataInputTypedDict",
     "ConnectionMetadataTypedDict",
+    "ConnectionMigrateData",
+    "ConnectionMigrateDataTypedDict",
     "ConnectionState",
     "ConnectionStatus",
     "ConnectionTypedDict",
@@ -8784,6 +8806,12 @@ __all__ = [
     "VaultConnectionsImportRequestTypedDict",
     "VaultConnectionsImportResponse",
     "VaultConnectionsImportResponseTypedDict",
+    "VaultConnectionsMigrateGlobals",
+    "VaultConnectionsMigrateGlobalsTypedDict",
+    "VaultConnectionsMigrateRequest",
+    "VaultConnectionsMigrateRequestTypedDict",
+    "VaultConnectionsMigrateResponse",
+    "VaultConnectionsMigrateResponseTypedDict",
     "VaultConnectionsOneGlobals",
     "VaultConnectionsOneGlobalsTypedDict",
     "VaultConnectionsOneRequest",
@@ -10148,6 +10176,9 @@ _dynamic_imports: dict[str, str] = {
     "TrackingCategoriesMode": ".companyinfo",
     "Compensation": ".compensation",
     "CompensationTypedDict": ".compensation",
+    "ConflictResponse": ".conflictresponse",
+    "ConflictResponseData": ".conflictresponse",
+    "ConflictResponseDetail": ".conflictresponse",
     "Configuration": ".connection",
     "ConfigurationTypedDict": ".connection",
     "Connection": ".connection",
@@ -10176,6 +10207,8 @@ _dynamic_imports: dict[str, str] = {
     "ConnectionImportDataTypedDict": ".connectionimportdata",
     "Credentials": ".connectionimportdata",
     "CredentialsTypedDict": ".connectionimportdata",
+    "ConnectionMigrateData": ".connectionmigratedata",
+    "ConnectionMigrateDataTypedDict": ".connectionmigratedata",
     "ConnectionState": ".connectionstate",
     "Connector": ".connector",
     "ConnectorAuthType": ".connector",
@@ -12654,6 +12687,12 @@ _dynamic_imports: dict[str, str] = {
     "VaultConnectionsImportRequestTypedDict": ".vault_connectionsimportop",
     "VaultConnectionsImportResponse": ".vault_connectionsimportop",
     "VaultConnectionsImportResponseTypedDict": ".vault_connectionsimportop",
+    "VaultConnectionsMigrateGlobals": ".vault_connectionsmigrateop",
+    "VaultConnectionsMigrateGlobalsTypedDict": ".vault_connectionsmigrateop",
+    "VaultConnectionsMigrateRequest": ".vault_connectionsmigrateop",
+    "VaultConnectionsMigrateRequestTypedDict": ".vault_connectionsmigrateop",
+    "VaultConnectionsMigrateResponse": ".vault_connectionsmigrateop",
+    "VaultConnectionsMigrateResponseTypedDict": ".vault_connectionsmigrateop",
     "VaultConnectionsOneGlobals": ".vault_connectionsoneop",
     "VaultConnectionsOneGlobalsTypedDict": ".vault_connectionsoneop",
     "VaultConnectionsOneRequest": ".vault_connectionsoneop",

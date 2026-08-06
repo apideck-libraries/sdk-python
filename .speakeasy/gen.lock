@@ -1,12 +1,12 @@
 lockVersion: 2.0.0
 id: fca0ac3a-5f4e-452c-bbc7-2311afa8da40
 management:
-  docChecksum: 583a45aee3ac842c134beadf8e03578a
-  docVersion: 10.30.0
+  docChecksum: 7dd1cdc42dd5a13c70d062e2701b8f1d
+  docVersion: 10.31.0
   speakeasyVersion: 1.656.1
   generationVersion: 2.753.1
-  releaseVersion: 0.34.0
-  configChecksum: a50a462d4c78c4bcd1dc9b3657ebc839
+  releaseVersion: 0.35.0
+  configChecksum: 1a7a0871de54b486d2bbe4797c4288c5
   repoURL: https://github.com/apideck-libraries/sdk-python.git
   installationURL: https://github.com/apideck-libraries/sdk-python.git
   published: true
@@ -671,6 +671,8 @@ generatedFiles:
   - docs/models/compensation.md
   - docs/models/components.md
   - docs/models/configuration.md
+  - docs/models/conflictresponse.md
+  - docs/models/conflictresponsedetail.md
   - docs/models/connection.md
   - docs/models/connectionconfiguration.md
   - docs/models/connectiondefaults.md
@@ -679,6 +681,7 @@ generatedFiles:
   - docs/models/connectioninput.md
   - docs/models/connectionmetadata.md
   - docs/models/connectionmetadatainput.md
+  - docs/models/connectionmigratedata.md
   - docs/models/connectionstate.md
   - docs/models/connectionstatus.md
   - docs/models/connectionvalue.md
@@ -2010,6 +2013,9 @@ generatedFiles:
   - docs/models/vaultconnectionsimportglobals.md
   - docs/models/vaultconnectionsimportrequest.md
   - docs/models/vaultconnectionsimportresponse.md
+  - docs/models/vaultconnectionsmigrateglobals.md
+  - docs/models/vaultconnectionsmigraterequest.md
+  - docs/models/vaultconnectionsmigrateresponse.md
   - docs/models/vaultconnectionsoneglobals.md
   - docs/models/vaultconnectionsonerequest.md
   - docs/models/vaultconnectionsoneresponse.md
@@ -2504,9 +2510,11 @@ generatedFiles:
   - src/apideck_unify/models/company1.py
   - src/apideck_unify/models/companyinfo.py
   - src/apideck_unify/models/compensation.py
+  - src/apideck_unify/models/conflictresponse.py
   - src/apideck_unify/models/connection.py
   - src/apideck_unify/models/connectionhealth.py
   - src/apideck_unify/models/connectionimportdata.py
+  - src/apideck_unify/models/connectionmigratedata.py
   - src/apideck_unify/models/connectionstate.py
   - src/apideck_unify/models/connector.py
   - src/apideck_unify/models/connector_apiresourcecoverageoneop.py
@@ -3248,6 +3256,7 @@ generatedFiles:
   - src/apideck_unify/models/vault_connectionsettingsallop.py
   - src/apideck_unify/models/vault_connectionsettingsupdateop.py
   - src/apideck_unify/models/vault_connectionsimportop.py
+  - src/apideck_unify/models/vault_connectionsmigrateop.py
   - src/apideck_unify/models/vault_connectionsoneop.py
   - src/apideck_unify/models/vault_connectionstokenop.py
   - src/apideck_unify/models/vault_connectionsupdateop.py
@@ -19841,8 +19850,41 @@ examples:
           application/json: {"status_code": 422, "error": "Unprocessable Entity", "type_name": "InvalidStateError", "message": "Invalid State", "detail": "Unprocessable request, please verify your request headers and body.", "ref": "https://developers.apideck.com/errors#invalidstateerror"}
         default:
           application/json: {"status_code": 400, "error": "Bad Request", "type_name": "RequestHeadersValidationError", "message": "Invalid Params", "detail": "Missing Header: x-apideck-consumer-id", "ref": "https://developers.apideck.com/errors#unauthorizederror"}
+  vault.connectionsMigrate:
+    speakeasy-default-vault-connections-migrate:
+      parameters:
+        path:
+          service_id: "pipedrive"
+          unified_api: "crm"
+        header:
+          x-apideck-consumer-id: "test-consumer"
+          x-apideck-app-id: "dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX"
+      requestBody:
+        application/json: {"target_service_id": "intuit-enterprise-suite"}
+      responses:
+        "200":
+          application/json: {"status_code": 201, "status": "OK", "data": {"id": "crm+salesforce", "service_id": "salesforce", "name": "Salesforce", "tag_line": "CRM software solutions and enterprise cloud computing from Salesforce, the leader in customer relationship management (CRM) and PaaS. Free 30 day trial.", "unified_api": "crm", "state": "authorized", "integration_state": "configured", "auth_type": "oauth2", "oauth_grant_type": "authorization_code", "enabled": true, "website": "https://www.salesforce.com", "icon": "https://res.cloudinary.com/apideck/image/upload/v1529456047/catalog/salesforce/icon128x128.png", "logo": "https://c1.sfdcstatic.com/content/dam/web/en_us/www/images/home/logo-salesforce-m.svg", "authorize_url": "https://unify.apideck.com/vault/authorize/salesforce/<application-id>?state=<state>", "revoke_url": "https://unify.apideck.com/vault/revoke/salesforce/<application-id>?state=<state>", "settings": {"instance_url": "https://eu28.salesforce.com", "api_key": "12345xxxxxx"}, "metadata": {"account": {"name": "My Company", "id": "c01458a5-7276-41ce-bc19-639906b0450a"}, "plan": "enterprise"}, "form_fields": [{"id": "instance_url", "label": "Instance url", "placeholder": "", "type": "text", "required": true, "custom_field": false, "allow_custom_values": false, "disabled": false, "sensitive": false}, {"id": "api_key", "label": "API Key", "placeholder": "", "type": "text", "required": true, "custom_field": false, "allow_custom_values": false, "disabled": false, "sensitive": true}], "configuration": [{"resource": "leads", "defaults": [{"target": "custom_fields", "id": "ProductInterest", "options": [{"label": "General Channel", "options": [{"label": "General Channel", "value": "general", "option_type": "simple"}], "option_type": "group"}], "value": "GC5000 series"}]}], "configurable_resources": ["opportunities", "companies", "contacts", "leads"], "resource_schema_support": ["leads"], "resource_settings_support": ["leads"], "settings_required_for_authorization": ["client_id", "client_secret"], "subscriptions": [{"downstream_id": "5f5f5f5f5f5f5f5f5f5f5f5f", "unify_event_types": ["crm.contact.created"], "downstream_event_types": ["contacts.CREATED"], "execute_url": "https://unify.apideck.com/webhook/w/{lookupIdToken}/{serviceId}?e={downstreamEventType}", "created_at": "2020-10-01T12:00:00.000Z"}], "has_guide": true, "custom_mappings": [{"id": "hris+employees+first_aid_training", "label": "First Aid Training", "description": "First Aid Training completed after 2019-01-01", "value": "$.root.training.first_aid", "key": "first_aid_training", "required": false, "custom_field": true, "consumer_id": "test_user_id", "example": "Some value"}], "consent_state": "granted", "consents": [{"id": "con_1234567890", "created_at": "2025-04-15T14:30:00Z", "granted": true, "resources": {"hris.employees": {"id": {"read": true, "write": false}, "first_name": {"read": true, "write": true}, "last_name": {"read": true, "write": true}, "email": {"read": true, "write": true}, "addresses[].street": {"read": true, "write": false}, "addresses[].city": {"read": true, "write": false}, "employment.job_title": {"read": true, "write": true}, "custom_fields[].employee_number": {"read": true, "write": false}}, "hris.departments": {"id": {"read": true, "write": false}, "name": {"read": true, "write": true}, "code": {"read": true, "write": false}}}}], "latest_consent": {"id": "con_1234567890", "created_at": "2025-04-15T14:30:00Z", "granted": true, "resources": {"hris.employees": {"id": {"read": true, "write": false}, "first_name": {"read": true, "write": true}, "last_name": {"read": true, "write": true}, "email": {"read": true, "write": true}, "addresses[].street": {"read": true, "write": false}, "addresses[].city": {"read": true, "write": false}, "employment.job_title": {"read": true, "write": true}, "custom_fields[].employee_number": {"read": true, "write": false}}, "hris.departments": {"id": {"read": true, "write": false}, "name": {"read": true, "write": true}, "code": {"read": true, "write": false}}}}, "application_data_scopes": {"enabled": true, "updated_at": "2025-04-15T14:30:00Z", "resources": {"hris.employees": {"id": {"read": true, "write": false}, "first_name": {"read": true, "write": true}, "last_name": {"read": true, "write": true}, "email": {"read": true, "write": true}, "addresses[].street": {"read": true, "write": false}, "addresses[].city": {"read": true, "write": false}, "employment.job_title": {"read": true, "write": true}, "custom_fields[].employee_number": {"read": true, "write": false}}, "hris.departments": {"id": {"read": true, "write": false}, "name": {"read": true, "write": true}, "code": {"read": true, "write": false}}}}, "health": "ok", "credentials_expire_at": 1730172800000, "last_refresh_failed_at": 1730000000000, "last_downstream_error_at": 1730000000000, "created_at": 1615563533390, "updated_at": 1616662325753}}
+        "400":
+          application/json: {"status_code": 400, "error": "Bad Request", "type_name": "RequestValidationError", "message": "Invalid Params", "detail": "Missing property foobar", "ref": "https://developers.apideck.com/errors#requestvalidationerror", "downstream_errors": [{"message": "Account code '100' has been archived or deleted", "detail": "Each line item must reference a valid account", "code": "VALIDATION_ERROR"}]}
+        "401":
+          application/json: {"status_code": 401, "error": "Unauthorized", "type_name": "UnauthorizedError", "message": "Unauthorized Request", "detail": "Missing authentication", "ref": "https://developers.apideck.com/errors#unauthorizederror"}
+        "402":
+          application/json: {"status_code": 402, "error": "Payment Required", "type_name": "RequestLimitError", "message": "Request Limit Reached", "detail": "You have reached your limit of 2000", "ref": "https://developers.apideck.com/errors#requestlimiterror"}
+        "404":
+          application/json: {"status_code": 404, "error": "Not Found", "type_name": "EntityNotFoundError", "message": "Unknown Widget", "detail": "Could not find widget with id: '123'", "ref": "https://developers.apideck.com/errors#entitynotfounderror"}
+        "409":
+          application/json: {"status_code": 409, "error": "Conflict", "type_name": "ConflictError", "message": "Conflict", "detail": "A connection already exists for the target connector", "ref": "https://developers.apideck.com/errors#conflicterror"}
+        "422":
+          application/json: {"status_code": 422, "error": "Unprocessable Entity", "type_name": "InvalidStateError", "message": "Invalid State", "detail": "Unprocessable request, please verify your request headers and body.", "ref": "https://developers.apideck.com/errors#invalidstateerror"}
+        default:
+          application/json: {"status_code": 400, "error": "Bad Request", "type_name": "RequestHeadersValidationError", "message": "Invalid Params", "detail": "Missing Header: x-apideck-consumer-id", "ref": "https://developers.apideck.com/errors#unauthorizederror"}
 examplesVersion: 1.0.2
 generatedTests: {}
+releaseNotes: |
+  ## Python SDK Changes Detected:
+  * `apideck.vault.connections.migrate()`: **Added**
+  * `apideck.connector.connectors.list()`:  `response.data.[].migration_targets` **Added**
+  * `apideck.connector.connectors.get()`:  `response.data.migration_targets` **Added**
 trackedFiles:
   .devcontainer/README.md:
     last_write_checksum: sha1:07adb0c0c051a9be4d479ea06461f3a9b3bbeb2f
@@ -21092,6 +21134,10 @@ trackedFiles:
     last_write_checksum: sha1:26d832692cb7ed21fc3cdd834eb10c3453effbed
   docs/models/configuration.md:
     last_write_checksum: sha1:d7316959670bb33007c8e75596a6b67e3e860b55
+  docs/models/conflictresponse.md:
+    last_write_checksum: sha1:24b9807f55b36d90013f2a9eb61c5013a78ebe5c
+  docs/models/conflictresponsedetail.md:
+    last_write_checksum: sha1:5842182bcd12b86a333326efb912c20d69e4b41f
   docs/models/connection.md:
     last_write_checksum: sha1:fd1bc93338e93a27f12fc8c93f59574f1f78129b
   docs/models/connectionconfiguration.md:
@@ -21108,6 +21154,8 @@ trackedFiles:
     last_write_checksum: sha1:f618ae678ec59b842fe18fe688587b1301d59325
   docs/models/connectionmetadatainput.md:
     last_write_checksum: sha1:353dce9726c8dd09bfabf40ace264a53cf4d4f9b
+  docs/models/connectionmigratedata.md:
+    last_write_checksum: sha1:756d77851471b7e94ef573f6395a04038a4e8102
   docs/models/connectionstate.md:
     last_write_checksum: sha1:84ce695b7c2812c878d5183be67fe19ee2c0e0f8
   docs/models/connectionstatus.md:
@@ -21115,7 +21163,7 @@ trackedFiles:
   docs/models/connectionvalue.md:
     last_write_checksum: sha1:b1f1eb6efbf3520c4586c16a6d455515b6599853
   docs/models/connector.md:
-    last_write_checksum: sha1:b90acd67808ec295d7ab137eb713e39d30bf4288
+    last_write_checksum: sha1:0034479928ea1f212ec607a97d2348fed8fa0f50
   docs/models/connectorapiresourcecoverageoneglobals.md:
     last_write_checksum: sha1:17406fc857fa169bb17977ce90d2b52701b1f193
   docs/models/connectorapiresourcecoverageonerequest.md:
@@ -23770,6 +23818,12 @@ trackedFiles:
     last_write_checksum: sha1:8538976b484539042aba115d108ab20595c5075a
   docs/models/vaultconnectionsimportresponse.md:
     last_write_checksum: sha1:1ed441ceaf8da8f18c87fa1cab46d453a3a6f6af
+  docs/models/vaultconnectionsmigrateglobals.md:
+    last_write_checksum: sha1:32de906ec2c79cbe644d607407076865e2c444e9
+  docs/models/vaultconnectionsmigraterequest.md:
+    last_write_checksum: sha1:606ade0f9652091fbc102fe38aeb25d9ee064b1c
+  docs/models/vaultconnectionsmigrateresponse.md:
+    last_write_checksum: sha1:3f0dcbbb36fa086feecc39d84a736b764a8d3ab7
   docs/models/vaultconnectionsoneglobals.md:
     last_write_checksum: sha1:ad31769e562084646aba08f64ccc9a8db6d38a18
   docs/models/vaultconnectionsonerequest.md:
@@ -23887,7 +23941,7 @@ trackedFiles:
   docs/models/webhookeventlogsfilterservice.md:
     last_write_checksum: sha1:91879316d2b412d23cf082cca77d946dda736357
   docs/models/webhookeventtype.md:
-    last_write_checksum: sha1:5707458b27a306735ac568606a63bd3568db9457
+    last_write_checksum: sha1:e8f604aa6291964beab3cb281dd1497479729aed
   docs/models/webhooksubscription.md:
     last_write_checksum: sha1:a698dbef407f125cd3e724b8a0920760f88182cb
   docs/models/webhooksupport.md:
@@ -23995,7 +24049,7 @@ trackedFiles:
   docs/sdks/connectioncustommappings/README.md:
     last_write_checksum: sha1:ee38aaa8e38cf2ef7032c4c5e185d88b21230623
   docs/sdks/connections/README.md:
-    last_write_checksum: sha1:2793d1484bde4c808720d7397557612dc31d5079
+    last_write_checksum: sha1:242fc6da46d2699335d76aad0e5f395918950926
   docs/sdks/connectionsettings/README.md:
     last_write_checksum: sha1:bc14e30ee33d313b48ba28883065413c471d182c
   docs/sdks/connectordocs/README.md:
@@ -24127,7 +24181,7 @@ trackedFiles:
   pylintrc:
     last_write_checksum: sha1:ec6665a4862060890cf4c6ba61438d11decf5c3c
   pyproject.toml:
-    last_write_checksum: sha1:73eb0077bdf29daf9a762f1c5a1a65ce80fe417c
+    last_write_checksum: sha1:0234bb9c48dad3cefcbc9a44ac9cff92ee8e537b
   scripts/prepare_readme.py:
     last_write_checksum: sha1:798a05bafe4fbbfff5b67037866fa25efc52f11a
   scripts/publish.sh:
@@ -24141,7 +24195,7 @@ trackedFiles:
   src/apideck_unify/_hooks/types.py:
     last_write_checksum: sha1:d57be38e644de01983a9224b9733ae0add898d43
   src/apideck_unify/_version.py:
-    last_write_checksum: sha1:efcf8e7824510c76eb849256c24f81603bbdfd52
+    last_write_checksum: sha1:c09a9b5d6ef53e612afac519380091f53ddefed7
   src/apideck_unify/accounting.py:
     last_write_checksum: sha1:63ea555e29266c0cbe993e2bddf21ffecd9b02b9
   src/apideck_unify/activities.py:
@@ -24211,7 +24265,7 @@ trackedFiles:
   src/apideck_unify/connectioncustommappings.py:
     last_write_checksum: sha1:d2fd0a88db94b2c37465ffbb9b592143afc2b4ed
   src/apideck_unify/connections.py:
-    last_write_checksum: sha1:9556e3105de03628e7ffecb224d4f400a478fe54
+    last_write_checksum: sha1:d591fb190f4fd3891f2db54cf6b9a272b40a890a
   src/apideck_unify/connectionsettings.py:
     last_write_checksum: sha1:59e6c14890f4f77881daaef0c6df2aced9d02ee8
   src/apideck_unify/connector_sdk.py:
@@ -24301,7 +24355,7 @@ trackedFiles:
   src/apideck_unify/messages.py:
     last_write_checksum: sha1:8b1e180d3c7d2ae9916b1f645460caebf5281d7b
   src/apideck_unify/models/__init__.py:
-    last_write_checksum: sha1:f1a7a635a2f51d61f1502aad67623397234c7d2e
+    last_write_checksum: sha1:1e1ae795cf036c48f86dbf015c94cfac9b9d13c0
   src/apideck_unify/models/accounting_agedcreditorsoneop.py:
     last_write_checksum: sha1:7346d1ab1c21db21995aae34c5ba01549c2786c2
   src/apideck_unify/models/accounting_ageddebtorsoneop.py:
@@ -24758,16 +24812,20 @@ trackedFiles:
     last_write_checksum: sha1:c1da6e5045978977c7f57ab2567fba25f2fb794f
   src/apideck_unify/models/compensation.py:
     last_write_checksum: sha1:e7ca2fd1d1315919bf40046de212790ec14de531
+  src/apideck_unify/models/conflictresponse.py:
+    last_write_checksum: sha1:1a98c2da647b1e99eb68e871dc980acedc0844e5
   src/apideck_unify/models/connection.py:
     last_write_checksum: sha1:42b2af530e34c1b36c61e401c0ed232caebc37d6
   src/apideck_unify/models/connectionhealth.py:
     last_write_checksum: sha1:33626f53cabfa62de333f5646fd5b2e68a2a9c06
   src/apideck_unify/models/connectionimportdata.py:
     last_write_checksum: sha1:78b328cd244958ce60632ba080e4fc515b53864f
+  src/apideck_unify/models/connectionmigratedata.py:
+    last_write_checksum: sha1:ada0bca62ff767378316d740d423e1909ca1e236
   src/apideck_unify/models/connectionstate.py:
     last_write_checksum: sha1:10a2c63fe318c90f6f64eff8c5c04cf53df24cfe
   src/apideck_unify/models/connector.py:
-    last_write_checksum: sha1:9dce0a38c0670e5bdd862cd5f882b94394706778
+    last_write_checksum: sha1:871400b85022a3addc16bf1c523b30327e36553b
   src/apideck_unify/models/connector_apiresourcecoverageoneop.py:
     last_write_checksum: sha1:74421eade8bd09e84f1ee93b05f7336ee7ccfc20
   src/apideck_unify/models/connector_apiresourcesoneop.py:
@@ -26246,6 +26304,8 @@ trackedFiles:
     last_write_checksum: sha1:c26aecf1f5be5dab3454aa17e28a49f7e6940537
   src/apideck_unify/models/vault_connectionsimportop.py:
     last_write_checksum: sha1:f196b54986143124bf3eaa43d69d5f16cf571193
+  src/apideck_unify/models/vault_connectionsmigrateop.py:
+    last_write_checksum: sha1:1504f7850f81bb885721fc856509a69fa708b38b
   src/apideck_unify/models/vault_connectionsoneop.py:
     last_write_checksum: sha1:3a7ca5d5a54d73b661e8b7f1b450c47ddb59e3c0
   src/apideck_unify/models/vault_connectionstokenop.py:
@@ -26295,7 +26355,7 @@ trackedFiles:
   src/apideck_unify/models/webhookeventlogsfilter.py:
     last_write_checksum: sha1:b30f5eb58dc623a969c8411269bd4fad2f3ba1ba
   src/apideck_unify/models/webhookeventtype.py:
-    last_write_checksum: sha1:b2ac9c3c126924d6734f64298eba7bf406cbf3c3
+    last_write_checksum: sha1:bda11f12eb24b873c320d738ef177c3bcc2472ab
   src/apideck_unify/models/webhooksubscription.py:
     last_write_checksum: sha1:12537b4b59e1cdb5798ddf08ad98dfb50f809a83
   src/apideck_unify/models/webhooksupport.py:

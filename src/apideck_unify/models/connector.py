@@ -176,6 +176,8 @@ class ConnectorTypedDict(TypedDict):
     r"""Link to the connector's partner program signup page."""
     free_trial_available: NotRequired[bool]
     r"""Set to `true` when the connector offers a free trial. Use `signup_url` to sign up for a free trial"""
+    migration_targets: NotRequired[List[str]]
+    r"""Service ids of connectors this connector's connections can be migrated to via the Vault connectionsMigrate operation."""
     auth_type: NotRequired[ConnectorAuthType]
     r"""Type of authorization used by the connector"""
     auth_only: NotRequired[bool]
@@ -245,6 +247,9 @@ class Connector(BaseModel):
 
     free_trial_available: Optional[bool] = None
     r"""Set to `true` when the connector offers a free trial. Use `signup_url` to sign up for a free trial"""
+
+    migration_targets: Optional[List[str]] = None
+    r"""Service ids of connectors this connector's connections can be migrated to via the Vault connectionsMigrate operation."""
 
     auth_type: Annotated[
         Optional[ConnectorAuthType], PlainValidator(validate_open_enum(False))
@@ -355,6 +360,7 @@ class Connector(BaseModel):
             "signup_url",
             "partner_signup_url",
             "free_trial_available",
+            "migration_targets",
             "auth_type",
             "auth_only",
             "blind_mapped",
