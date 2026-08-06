@@ -10,6 +10,7 @@
 * [update](#update) - Update connection
 * [delete](#delete) - Deletes a connection
 * [imports](#imports) - Import connection
+* [migrate](#migrate) - Migrate connection
 * [token](#token) - Authorize Access Token
 
 ## list
@@ -506,6 +507,71 @@ with Apideck(
 | models.UnauthorizedResponse    | 401                            | application/json               |
 | models.PaymentRequiredResponse | 402                            | application/json               |
 | models.NotFoundResponse        | 404                            | application/json               |
+| models.UnprocessableResponse   | 422                            | application/json               |
+| models.APIError                | 4XX, 5XX                       | \*/\*                          |
+
+## migrate
+
+Migrate the connection to the target connector, keeping its credentials and connection state
+(settings, metadata, configuration, subscriptions, consents). The source connection record is
+removed WITHOUT revoking or disconnecting the downstream token.
+
+Available migration targets are declared per connector — refer to the connector's
+documentation page or the Connector API's `migration_targets` field.
+
+Migrated tokens carry the source connector's OAuth scopes, so operations exclusive to the
+target connector may require re-authorization.
+
+Retries are idempotent: a partially-completed migration resumes where it left off.
+
+
+### Example Usage
+
+<!-- UsageSnippet language="python" operationID="vault.connectionsMigrate" method="post" path="/vault/connections/{unified_api}/{service_id}/migrate" -->
+```python
+from apideck_unify import Apideck
+import os
+
+
+with Apideck(
+    consumer_id="test-consumer",
+    app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
+) as apideck:
+
+    res = apideck.vault.connections.migrate(service_id="pipedrive", unified_api="crm", target_service_id="intuit-enterprise-suite")
+
+    assert res.create_connection_response is not None
+
+    # Handle response
+    print(res.create_connection_response)
+
+```
+
+### Parameters
+
+| Parameter                                                                                                                        | Type                                                                                                                             | Required                                                                                                                         | Description                                                                                                                      | Example                                                                                                                          |
+| -------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| `service_id`                                                                                                                     | *str*                                                                                                                            | :heavy_check_mark:                                                                                                               | Service ID of the resource to return                                                                                             | pipedrive                                                                                                                        |
+| `unified_api`                                                                                                                    | *str*                                                                                                                            | :heavy_check_mark:                                                                                                               | Unified API                                                                                                                      | crm                                                                                                                              |
+| `target_service_id`                                                                                                              | *str*                                                                                                                            | :heavy_check_mark:                                                                                                               | The service id of the connector to migrate this connection to. Must be one of the source connector's declared migration targets. | intuit-enterprise-suite                                                                                                          |
+| `consumer_id`                                                                                                                    | *Optional[str]*                                                                                                                  | :heavy_minus_sign:                                                                                                               | ID of the consumer which you want to get or push data from                                                                       | test-consumer                                                                                                                    |
+| `app_id`                                                                                                                         | *Optional[str]*                                                                                                                  | :heavy_minus_sign:                                                                                                               | The ID of your Unify application                                                                                                 | dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX                                                                                          |
+| `retries`                                                                                                                        | [Optional[utils.RetryConfig]](../../models/utils/retryconfig.md)                                                                 | :heavy_minus_sign:                                                                                                               | Configuration to override the default retry behavior of the client.                                                              |                                                                                                                                  |
+
+### Response
+
+**[models.VaultConnectionsMigrateResponse](../../models/vaultconnectionsmigrateresponse.md)**
+
+### Errors
+
+| Error Type                     | Status Code                    | Content Type                   |
+| ------------------------------ | ------------------------------ | ------------------------------ |
+| models.BadRequestResponse      | 400                            | application/json               |
+| models.UnauthorizedResponse    | 401                            | application/json               |
+| models.PaymentRequiredResponse | 402                            | application/json               |
+| models.NotFoundResponse        | 404                            | application/json               |
+| models.ConflictResponse        | 409                            | application/json               |
 | models.UnprocessableResponse   | 422                            | application/json               |
 | models.APIError                | 4XX, 5XX                       | \*/\*                          |
 

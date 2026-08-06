@@ -805,6 +805,7 @@ with Apideck(
 * [update](docs/sdks/connections/README.md#update) - Update connection
 * [delete](docs/sdks/connections/README.md#delete) - Deletes a connection
 * [imports](docs/sdks/connections/README.md#imports) - Import connection
+* [migrate](docs/sdks/connections/README.md#migrate) - Migrate connection
 * [token](docs/sdks/connections/README.md#token) - Authorize Access Token
 
 #### [vault.consumer_request_counts](docs/sdks/consumerrequestcounts/README.md)
@@ -1066,7 +1067,7 @@ with Apideck(
   * [`BadRequestResponse`](./src/apideck_unify/models/badrequestresponse.py): Bad Request. Status code `400`. *
   * [`UnprocessableResponse`](./src/apideck_unify/models/unprocessableresponse.py): Unprocessable. Status code `422`. *
 
-<details><summary>Less common errors (6)</summary>
+<details><summary>Less common errors (7)</summary>
 
 <br />
 
@@ -1077,7 +1078,8 @@ with Apideck(
 
 
 **Inherit from [`ApideckError`](./src/apideck_unify/models/apideckerror.py)**:
-* [`Unauthorized`](./src/apideck_unify/models/unauthorized.py): Unauthorized. Status code `401`. Applicable to 6 of 339 methods.*
+* [`Unauthorized`](./src/apideck_unify/models/unauthorized.py): Unauthorized. Status code `401`. Applicable to 6 of 340 methods.*
+* [`ConflictResponse`](./src/apideck_unify/models/conflictresponse.py): Conflict — a connection already exists for the target connector. Status code `409`. Applicable to 1 of 340 methods.*
 * [`ResponseValidationError`](./src/apideck_unify/models/responsevalidationerror.py): Type mismatch between the response data and the expected Pydantic model. Provides access to the Pydantic validation error via the `cause` attribute.
 
 </details>

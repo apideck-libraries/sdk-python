@@ -33,6 +33,7 @@
 | `VAULT_CONNECTION_DELETED`                 | vault.connection.deleted                   |
 | `VAULT_CONNECTION_CALLABLE`                | vault.connection.callable                  |
 | `VAULT_CONNECTION_REVOKED`                 | vault.connection.revoked                   |
+| `VAULT_CONNECTION_MIGRATED`                | vault.connection.migrated                  |
 | `VAULT_CONNECTION_TOKEN_REFRESH_FAILED`    | vault.connection.token_refresh.failed      |
 | `VAULT_CONNECTION_TOKEN_REFRESH_PENDING`   | vault.connection.token_refresh.pending     |
 | `VAULT_CONNECTION_TOKEN_REFRESH_RECOVERED` | vault.connection.token_refresh.recovered   |
