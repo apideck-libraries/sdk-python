@@ -8,6 +8,7 @@ from apideck_unify.contacts import Contacts
 from apideck_unify.customobjects import CustomObjects
 from apideck_unify.customobjectschemas import CustomObjectSchemas
 from apideck_unify.leads import Leads
+from apideck_unify.listmembers import ListMembers
 from apideck_unify.lists import Lists
 from apideck_unify.notes import Notes
 from apideck_unify.opportunities import Opportunities
@@ -23,6 +24,7 @@ class Crm(BaseSDK):
     leads: Leads
     pipelines: Pipelines
     lists: Lists
+    list_members: ListMembers
     notes: Notes
     users: Users
     activities: Activities
@@ -47,6 +49,9 @@ class Crm(BaseSDK):
         self.leads = Leads(self.sdk_configuration, parent_ref=self.parent_ref)
         self.pipelines = Pipelines(self.sdk_configuration, parent_ref=self.parent_ref)
         self.lists = Lists(self.sdk_configuration, parent_ref=self.parent_ref)
+        self.list_members = ListMembers(
+            self.sdk_configuration, parent_ref=self.parent_ref
+        )
         self.notes = Notes(self.sdk_configuration, parent_ref=self.parent_ref)
         self.users = Users(self.sdk_configuration, parent_ref=self.parent_ref)
         self.activities = Activities(self.sdk_configuration, parent_ref=self.parent_ref)

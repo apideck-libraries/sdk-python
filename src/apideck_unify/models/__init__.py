@@ -2209,6 +2209,14 @@ if TYPE_CHECKING:
         CrmLeadsUpdateResponse,
         CrmLeadsUpdateResponseTypedDict,
     )
+    from .crm_listmembersallop import (
+        CrmListMembersAllGlobals,
+        CrmListMembersAllGlobalsTypedDict,
+        CrmListMembersAllRequest,
+        CrmListMembersAllRequestTypedDict,
+        CrmListMembersAllResponse,
+        CrmListMembersAllResponseTypedDict,
+    )
     from .crm_listsallop import (
         CrmListsAllGlobals,
         CrmListsAllGlobalsTypedDict,
@@ -3504,6 +3512,10 @@ if TYPE_CHECKING:
         GetLedgerAccountsResponse,
         GetLedgerAccountsResponseTypedDict,
     )
+    from .getlistmembersresponse import (
+        GetListMembersResponse,
+        GetListMembersResponseTypedDict,
+    )
     from .getlistresponse import GetListResponse, GetListResponseTypedDict
     from .getlistsresponse import GetListsResponse, GetListsResponseTypedDict
     from .getlogsresponse import GetLogsResponse, GetLogsResponseTypedDict
@@ -4130,6 +4142,7 @@ if TYPE_CHECKING:
     from .linkedworktag import LinkedWorktag, LinkedWorktagTypedDict
     from .links import Links, LinksTypedDict
     from .list import ListT, ListTTypedDict, ListType, ListVisibility
+    from .listmember import ListMember, ListMemberTypedDict
     from .log import (
         Log,
         LogTypedDict,
@@ -6733,6 +6746,12 @@ __all__ = [
     "CrmLeadsUpdateRequestTypedDict",
     "CrmLeadsUpdateResponse",
     "CrmLeadsUpdateResponseTypedDict",
+    "CrmListMembersAllGlobals",
+    "CrmListMembersAllGlobalsTypedDict",
+    "CrmListMembersAllRequest",
+    "CrmListMembersAllRequestTypedDict",
+    "CrmListMembersAllResponse",
+    "CrmListMembersAllResponseTypedDict",
     "CrmListsAllGlobals",
     "CrmListsAllGlobalsTypedDict",
     "CrmListsAllRequest",
@@ -7684,6 +7703,8 @@ __all__ = [
     "GetLedgerAccountResponseTypedDict",
     "GetLedgerAccountsResponse",
     "GetLedgerAccountsResponseTypedDict",
+    "GetListMembersResponse",
+    "GetListMembersResponseTypedDict",
     "GetListResponse",
     "GetListResponseTypedDict",
     "GetListsResponse",
@@ -8187,6 +8208,8 @@ __all__ = [
     "LinkedWorktagTypedDict",
     "Links",
     "LinksTypedDict",
+    "ListMember",
+    "ListMemberTypedDict",
     "ListT",
     "ListTTypedDict",
     "ListType",
@@ -10649,6 +10672,12 @@ _dynamic_imports: dict[str, str] = {
     "CrmLeadsUpdateRequestTypedDict": ".crm_leadsupdateop",
     "CrmLeadsUpdateResponse": ".crm_leadsupdateop",
     "CrmLeadsUpdateResponseTypedDict": ".crm_leadsupdateop",
+    "CrmListMembersAllGlobals": ".crm_listmembersallop",
+    "CrmListMembersAllGlobalsTypedDict": ".crm_listmembersallop",
+    "CrmListMembersAllRequest": ".crm_listmembersallop",
+    "CrmListMembersAllRequestTypedDict": ".crm_listmembersallop",
+    "CrmListMembersAllResponse": ".crm_listmembersallop",
+    "CrmListMembersAllResponseTypedDict": ".crm_listmembersallop",
     "CrmListsAllGlobals": ".crm_listsallop",
     "CrmListsAllGlobalsTypedDict": ".crm_listsallop",
     "CrmListsAllRequest": ".crm_listsallop",
@@ -11576,6 +11605,8 @@ _dynamic_imports: dict[str, str] = {
     "GetLedgerAccountResponseTypedDict": ".getledgeraccountresponse",
     "GetLedgerAccountsResponse": ".getledgeraccountsresponse",
     "GetLedgerAccountsResponseTypedDict": ".getledgeraccountsresponse",
+    "GetListMembersResponse": ".getlistmembersresponse",
+    "GetListMembersResponseTypedDict": ".getlistmembersresponse",
     "GetListResponse": ".getlistresponse",
     "GetListResponseTypedDict": ".getlistresponse",
     "GetListsResponse": ".getlistsresponse",
@@ -12099,6 +12130,8 @@ _dynamic_imports: dict[str, str] = {
     "ListTTypedDict": ".list",
     "ListType": ".list",
     "ListVisibility": ".list",
+    "ListMember": ".listmember",
+    "ListMemberTypedDict": ".listmember",
     "Log": ".log",
     "LogTypedDict": ".log",
     "Operation": ".log",

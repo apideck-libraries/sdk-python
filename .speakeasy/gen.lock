@@ -1,12 +1,12 @@
 lockVersion: 2.0.0
 id: fca0ac3a-5f4e-452c-bbc7-2311afa8da40
 management:
-  docChecksum: cae9bcc4dd344f8f38207f741df7dd86
-  docVersion: 10.31.0
+  docChecksum: 9f3555dd6bfbb134dd1c354d722d51cd
+  docVersion: 10.32.0
   speakeasyVersion: 1.656.1
   generationVersion: 2.753.1
-  releaseVersion: 0.35.0
-  configChecksum: 1a7a0871de54b486d2bbe4797c4288c5
+  releaseVersion: 0.36.0
+  configChecksum: 1928e1a3a55bbe660fc9260c7d01431d
   repoURL: https://github.com/apideck-libraries/sdk-python.git
   installationURL: https://github.com/apideck-libraries/sdk-python.git
   published: true
@@ -903,6 +903,9 @@ generatedFiles:
   - docs/models/crmleadsupdateglobals.md
   - docs/models/crmleadsupdaterequest.md
   - docs/models/crmleadsupdateresponse.md
+  - docs/models/crmlistmembersallglobals.md
+  - docs/models/crmlistmembersallrequest.md
+  - docs/models/crmlistmembersallresponse.md
   - docs/models/crmlistsallglobals.md
   - docs/models/crmlistsallrequest.md
   - docs/models/crmlistsallresponse.md
@@ -1399,6 +1402,7 @@ generatedFiles:
   - docs/models/getleadsresponse.md
   - docs/models/getledgeraccountresponse.md
   - docs/models/getledgeraccountsresponse.md
+  - docs/models/getlistmembersresponse.md
   - docs/models/getlistresponse.md
   - docs/models/getlistsresponse.md
   - docs/models/getlogsresponse.md
@@ -1665,6 +1669,7 @@ generatedFiles:
   - docs/models/linkedtrackingcategory.md
   - docs/models/linkedworktag.md
   - docs/models/links.md
+  - docs/models/listmember.md
   - docs/models/listt.md
   - docs/models/listtype.md
   - docs/models/listvisibility.md
@@ -2162,6 +2167,7 @@ generatedFiles:
   - docs/sdks/journalentries/README.md
   - docs/sdks/leads/README.md
   - docs/sdks/ledgeraccounts/README.md
+  - docs/sdks/listmembers/README.md
   - docs/sdks/lists/README.md
   - docs/sdks/locations/README.md
   - docs/sdks/logs/README.md
@@ -2277,6 +2283,7 @@ generatedFiles:
   - src/apideck_unify/journalentries.py
   - src/apideck_unify/leads.py
   - src/apideck_unify/ledgeraccounts.py
+  - src/apideck_unify/listmembers.py
   - src/apideck_unify/lists.py
   - src/apideck_unify/locations.py
   - src/apideck_unify/logs.py
@@ -2640,6 +2647,7 @@ generatedFiles:
   - src/apideck_unify/models/crm_leadsdeleteop.py
   - src/apideck_unify/models/crm_leadsoneop.py
   - src/apideck_unify/models/crm_leadsupdateop.py
+  - src/apideck_unify/models/crm_listmembersallop.py
   - src/apideck_unify/models/crm_listsallop.py
   - src/apideck_unify/models/crm_listsoneop.py
   - src/apideck_unify/models/crm_notesaddop.py
@@ -2929,6 +2937,7 @@ generatedFiles:
   - src/apideck_unify/models/getleadsresponse.py
   - src/apideck_unify/models/getledgeraccountresponse.py
   - src/apideck_unify/models/getledgeraccountsresponse.py
+  - src/apideck_unify/models/getlistmembersresponse.py
   - src/apideck_unify/models/getlistresponse.py
   - src/apideck_unify/models/getlistsresponse.py
   - src/apideck_unify/models/getlogsresponse.py
@@ -3076,6 +3085,7 @@ generatedFiles:
   - src/apideck_unify/models/linkedworktag.py
   - src/apideck_unify/models/links.py
   - src/apideck_unify/models/list.py
+  - src/apideck_unify/models/listmember.py
   - src/apideck_unify/models/log.py
   - src/apideck_unify/models/logsfilter.py
   - src/apideck_unify/models/message.py
@@ -19878,13 +19888,40 @@ examples:
           application/json: {"status_code": 422, "error": "Unprocessable Entity", "type_name": "InvalidStateError", "message": "Invalid State", "detail": "Unprocessable request, please verify your request headers and body.", "ref": "https://developers.apideck.com/errors#invalidstateerror"}
         default:
           application/json: {"status_code": 400, "error": "Bad Request", "type_name": "RequestHeadersValidationError", "message": "Invalid Params", "detail": "Missing Header: x-apideck-consumer-id", "ref": "https://developers.apideck.com/errors#unauthorizederror"}
+  crm.listMembersAll:
+    speakeasy-default-crm-list-members-all:
+      parameters:
+        path:
+          id: "<id>"
+        query:
+          raw: false
+          limit: 20
+          pass_through: {"search": "San Francisco"}
+          fields: "id,updated_at"
+        header:
+          x-apideck-consumer-id: "test-consumer"
+          x-apideck-app-id: "dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX"
+          x-apideck-service-id: "salesforce"
+      responses:
+        "200":
+          application/json: {"status_code": 200, "status": "OK", "service": "hubspot", "resource": "list-members", "operation": "all", "data": [{"id": "12345", "object_type": "contacts"}], "meta": {"items_on_page": 50, "cursors": {"previous": "em9oby1jcm06OnBhZ2U6OjE=", "current": "em9oby1jcm06OnBhZ2U6OjI=", "next": "em9oby1jcm06OnBhZ2U6OjM="}, "total_count": 1, "warnings": [{"type": "downstream_request_failed", "status_code": 429, "operation": "getManager"}]}, "links": {"previous": "https://unify.apideck.com/crm/companies?cursor=em9oby1jcm06OnBhZ2U6OjE%3D", "current": "https://unify.apideck.com/crm/companies", "next": "https://unify.apideck.com/crm/companies?cursor=em9oby1jcm06OnBhZ2U6OjM"}}
+        "400":
+          application/json: {"status_code": 400, "error": "Bad Request", "type_name": "RequestValidationError", "message": "Invalid Params", "detail": "Missing property foobar", "ref": "https://developers.apideck.com/errors#requestvalidationerror", "downstream_errors": [{"message": "Account code '100' has been archived or deleted", "detail": "Each line item must reference a valid account", "code": "VALIDATION_ERROR"}]}
+        "401":
+          application/json: {"status_code": 401, "error": "Unauthorized", "type_name": "UnauthorizedError", "message": "Unauthorized Request", "detail": "Missing authentication", "ref": "https://developers.apideck.com/errors#unauthorizederror"}
+        "402":
+          application/json: {"status_code": 402, "error": "Payment Required", "type_name": "RequestLimitError", "message": "Request Limit Reached", "detail": "You have reached your limit of 2000", "ref": "https://developers.apideck.com/errors#requestlimiterror"}
+        "404":
+          application/json: {"status_code": 404, "error": "Not Found", "type_name": "EntityNotFoundError", "message": "Unknown Widget", "detail": "Could not find widget with id: '123'", "ref": "https://developers.apideck.com/errors#entitynotfounderror"}
+        "422":
+          application/json: {"status_code": 422, "error": "Unprocessable Entity", "type_name": "InvalidStateError", "message": "Invalid State", "detail": "Unprocessable request, please verify your request headers and body.", "ref": "https://developers.apideck.com/errors#invalidstateerror"}
+        default:
+          application/json: {"status_code": 400, "error": "Bad Request", "type_name": "RequestHeadersValidationError", "message": "Invalid Params", "detail": "Missing Header: x-apideck-consumer-id", "ref": "https://developers.apideck.com/errors#unauthorizederror"}
 examplesVersion: 1.0.2
 generatedTests: {}
 releaseNotes: |
   ## Python SDK Changes Detected:
-  * `apideck.vault.connections.migrate()`: **Added**
-  * `apideck.connector.connectors.list()`:  `response.data.[].migration_targets` **Added**
-  * `apideck.connector.connectors.get()`:  `response.data.migration_targets` **Added**
+  * `apideck.crm.list_members.list()`: **Added**
 trackedFiles:
   .devcontainer/README.md:
     last_write_checksum: sha1:07adb0c0c051a9be4d479ea06461f3a9b3bbeb2f
@@ -21598,6 +21635,12 @@ trackedFiles:
     last_write_checksum: sha1:32a155860e345df5e809bc1b758d0e69d8d776df
   docs/models/crmleadsupdateresponse.md:
     last_write_checksum: sha1:b5c8aff63d9dba4574290902992390d816e33e0b
+  docs/models/crmlistmembersallglobals.md:
+    last_write_checksum: sha1:6df5cc2b81d8ac9b6605342044a80b4763aff89c
+  docs/models/crmlistmembersallrequest.md:
+    last_write_checksum: sha1:cb236282c92454b8635ea44294b87ed822dc1504
+  docs/models/crmlistmembersallresponse.md:
+    last_write_checksum: sha1:98b2a64c6bd5fe63af3221022d3323b2b80f16c3
   docs/models/crmlistsallglobals.md:
     last_write_checksum: sha1:b547ed0770dc3ec9bc7304b5f26ac856b69bddf5
   docs/models/crmlistsallrequest.md:
@@ -22590,6 +22633,8 @@ trackedFiles:
     last_write_checksum: sha1:d5132371085b9dad52ede250fb7043322d1fd939
   docs/models/getledgeraccountsresponse.md:
     last_write_checksum: sha1:1732da4f6dbd356ef365a68a0046408173b8f6f1
+  docs/models/getlistmembersresponse.md:
+    last_write_checksum: sha1:41f9865bb8bc0e0d9953928f8bf729bf6dfafa4f
   docs/models/getlistresponse.md:
     last_write_checksum: sha1:a3184f25f088cbd953669dd95ce196f2a53687a8
   docs/models/getlistsresponse.md:
@@ -23122,6 +23167,8 @@ trackedFiles:
     last_write_checksum: sha1:172939293e1ae9cd89024736a9c64f8aaea531c2
   docs/models/links.md:
     last_write_checksum: sha1:84288ced7c6386b2e81e9c201ab3c7a363695444
+  docs/models/listmember.md:
+    last_write_checksum: sha1:63e8d23304aeef559e92a04f301bc95e669785c3
   docs/models/listt.md:
     last_write_checksum: sha1:a9b62ff24c47fa595e824b82efde40c4c6f1937c
   docs/models/listtype.md:
@@ -24116,6 +24163,8 @@ trackedFiles:
     last_write_checksum: sha1:e522eeb94afc227e5f89f40f3ac6a28c31246eee
   docs/sdks/ledgeraccounts/README.md:
     last_write_checksum: sha1:a40405e175ffed52b1322d2cf7ef360fda402884
+  docs/sdks/listmembers/README.md:
+    last_write_checksum: sha1:1d75fa0d4b215f7d6733e297b738f6b2df93df16
   docs/sdks/lists/README.md:
     last_write_checksum: sha1:6877b39c27260930d8917aa45e32131c36a1d476
   docs/sdks/locations/README.md:
@@ -24181,7 +24230,7 @@ trackedFiles:
   pylintrc:
     last_write_checksum: sha1:ec6665a4862060890cf4c6ba61438d11decf5c3c
   pyproject.toml:
-    last_write_checksum: sha1:0234bb9c48dad3cefcbc9a44ac9cff92ee8e537b
+    last_write_checksum: sha1:6ac4dade3f8fb20f441a81afe18c5bf2a68b8145
   scripts/prepare_readme.py:
     last_write_checksum: sha1:798a05bafe4fbbfff5b67037866fa25efc52f11a
   scripts/publish.sh:
@@ -24195,7 +24244,7 @@ trackedFiles:
   src/apideck_unify/_hooks/types.py:
     last_write_checksum: sha1:d57be38e644de01983a9224b9733ae0add898d43
   src/apideck_unify/_version.py:
-    last_write_checksum: sha1:c09a9b5d6ef53e612afac519380091f53ddefed7
+    last_write_checksum: sha1:9cc39c32648dba7c105b813caab897829c618bfb
   src/apideck_unify/accounting.py:
     last_write_checksum: sha1:63ea555e29266c0cbe993e2bddf21ffecd9b02b9
   src/apideck_unify/activities.py:
@@ -24287,7 +24336,7 @@ trackedFiles:
   src/apideck_unify/creditnotes.py:
     last_write_checksum: sha1:c3c18f3cf2946eb8aec09b9149f06e47f4b0a3de
   src/apideck_unify/crm.py:
-    last_write_checksum: sha1:36ede783f767decc1cf2e32812890740f1a85f58
+    last_write_checksum: sha1:0a3f32ca2265dd9bf40c9b5c0373685dab9e5da6
   src/apideck_unify/customers.py:
     last_write_checksum: sha1:ecc191f389fe04b84a278c2994ea8349e6037380
   src/apideck_unify/customfields.py:
@@ -24346,6 +24395,8 @@ trackedFiles:
     last_write_checksum: sha1:b1898e48cf89d3269f10074a3a9bf5f6d6c945c3
   src/apideck_unify/ledgeraccounts.py:
     last_write_checksum: sha1:440e28ed5374a77bc483c06a81f2f329225531ac
+  src/apideck_unify/listmembers.py:
+    last_write_checksum: sha1:ae6ad18f742239e0462b3bf1fb25c8a8ed8b5d6c
   src/apideck_unify/lists.py:
     last_write_checksum: sha1:302e329249882f5f6c7cd4e8a55561393c3456e6
   src/apideck_unify/locations.py:
@@ -24355,7 +24406,7 @@ trackedFiles:
   src/apideck_unify/messages.py:
     last_write_checksum: sha1:8b1e180d3c7d2ae9916b1f645460caebf5281d7b
   src/apideck_unify/models/__init__.py:
-    last_write_checksum: sha1:1e1ae795cf036c48f86dbf015c94cfac9b9d13c0
+    last_write_checksum: sha1:6a069b237cc8036b23ce7f6153c2ad322985646d
   src/apideck_unify/models/accounting_agedcreditorsoneop.py:
     last_write_checksum: sha1:7346d1ab1c21db21995aae34c5ba01549c2786c2
   src/apideck_unify/models/accounting_ageddebtorsoneop.py:
@@ -25072,6 +25123,8 @@ trackedFiles:
     last_write_checksum: sha1:39d0dd64b1507b2b76cf3d9c334e0163a2d0849c
   src/apideck_unify/models/crm_leadsupdateop.py:
     last_write_checksum: sha1:574567e39b8bf21be6eecda15512ba691f1bccff
+  src/apideck_unify/models/crm_listmembersallop.py:
+    last_write_checksum: sha1:eaf25d9d41e2eeec85198f902f4c826f02f60817
   src/apideck_unify/models/crm_listsallop.py:
     last_write_checksum: sha1:70b3da9294138ac50518c698bc252905500c5122
   src/apideck_unify/models/crm_listsoneop.py:
@@ -25650,6 +25703,8 @@ trackedFiles:
     last_write_checksum: sha1:a9a70352f30a53710964c9fb551c8bb08bcb502c
   src/apideck_unify/models/getledgeraccountsresponse.py:
     last_write_checksum: sha1:d181093494dd9219c0647514fc7e3f3f5d8b2d8e
+  src/apideck_unify/models/getlistmembersresponse.py:
+    last_write_checksum: sha1:4f90d0155d87eff286d35474833268e0b4899b82
   src/apideck_unify/models/getlistresponse.py:
     last_write_checksum: sha1:57fc943ab683389e697132b9b49dbe27407137cf
   src/apideck_unify/models/getlistsresponse.py:
@@ -25944,6 +25999,8 @@ trackedFiles:
     last_write_checksum: sha1:166086eb6250d9d1b70e9cc7a6d89a3585bfd108
   src/apideck_unify/models/list.py:
     last_write_checksum: sha1:00e494f2ea51ef894ab84f05511985d7071f3a53
+  src/apideck_unify/models/listmember.py:
+    last_write_checksum: sha1:3e53251ef50a683d236dbe4beab245340ffee5d5
   src/apideck_unify/models/log.py:
     last_write_checksum: sha1:d4e242c818ce2166438e08905820f7fb4506977e
   src/apideck_unify/models/logsfilter.py:
