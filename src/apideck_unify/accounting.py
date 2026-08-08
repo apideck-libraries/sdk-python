@@ -33,6 +33,7 @@ from apideck_unify.projects import Projects
 from apideck_unify.purchaseorders import PurchaseOrders
 from apideck_unify.quotes import Quotes
 from apideck_unify.refunds import Refunds
+from apideck_unify.salesreceipts import SalesReceipts
 from apideck_unify.subsidiaries import Subsidiaries
 from apideck_unify.suppliers import Suppliers
 from apideck_unify.taxrates import TaxRates
@@ -57,6 +58,7 @@ class Accounting(BaseSDK):
     profit_and_loss: ProfitAndLossSDK
     journal_entries: JournalEntries
     general_ledger_transactions: GeneralLedgerTransactions
+    sales_receipts: SalesReceipts
     purchase_orders: PurchaseOrders
     subsidiaries: Subsidiaries
     locations: Locations
@@ -115,6 +117,9 @@ class Accounting(BaseSDK):
             self.sdk_configuration, parent_ref=self.parent_ref
         )
         self.general_ledger_transactions = GeneralLedgerTransactions(
+            self.sdk_configuration, parent_ref=self.parent_ref
+        )
+        self.sales_receipts = SalesReceipts(
             self.sdk_configuration, parent_ref=self.parent_ref
         )
         self.purchase_orders = PurchaseOrders(
