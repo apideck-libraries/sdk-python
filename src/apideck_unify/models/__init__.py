@@ -1008,6 +1008,46 @@ if TYPE_CHECKING:
         AccountingRefundsUpdateResponse,
         AccountingRefundsUpdateResponseTypedDict,
     )
+    from .accounting_salesreceiptsaddop import (
+        AccountingSalesReceiptsAddGlobals,
+        AccountingSalesReceiptsAddGlobalsTypedDict,
+        AccountingSalesReceiptsAddRequest,
+        AccountingSalesReceiptsAddRequestTypedDict,
+        AccountingSalesReceiptsAddResponse,
+        AccountingSalesReceiptsAddResponseTypedDict,
+    )
+    from .accounting_salesreceiptsallop import (
+        AccountingSalesReceiptsAllGlobals,
+        AccountingSalesReceiptsAllGlobalsTypedDict,
+        AccountingSalesReceiptsAllRequest,
+        AccountingSalesReceiptsAllRequestTypedDict,
+        AccountingSalesReceiptsAllResponse,
+        AccountingSalesReceiptsAllResponseTypedDict,
+    )
+    from .accounting_salesreceiptsdeleteop import (
+        AccountingSalesReceiptsDeleteGlobals,
+        AccountingSalesReceiptsDeleteGlobalsTypedDict,
+        AccountingSalesReceiptsDeleteRequest,
+        AccountingSalesReceiptsDeleteRequestTypedDict,
+        AccountingSalesReceiptsDeleteResponse,
+        AccountingSalesReceiptsDeleteResponseTypedDict,
+    )
+    from .accounting_salesreceiptsoneop import (
+        AccountingSalesReceiptsOneGlobals,
+        AccountingSalesReceiptsOneGlobalsTypedDict,
+        AccountingSalesReceiptsOneRequest,
+        AccountingSalesReceiptsOneRequestTypedDict,
+        AccountingSalesReceiptsOneResponse,
+        AccountingSalesReceiptsOneResponseTypedDict,
+    )
+    from .accounting_salesreceiptsupdateop import (
+        AccountingSalesReceiptsUpdateGlobals,
+        AccountingSalesReceiptsUpdateGlobalsTypedDict,
+        AccountingSalesReceiptsUpdateRequest,
+        AccountingSalesReceiptsUpdateRequestTypedDict,
+        AccountingSalesReceiptsUpdateResponse,
+        AccountingSalesReceiptsUpdateResponseTypedDict,
+    )
     from .accounting_subsidiariesaddop import (
         AccountingSubsidiariesAddGlobals,
         AccountingSubsidiariesAddGlobalsTypedDict,
@@ -1903,6 +1943,10 @@ if TYPE_CHECKING:
         CreateRefundResponse,
         CreateRefundResponseTypedDict,
     )
+    from .createsalesreceiptresponse import (
+        CreateSalesReceiptResponse,
+        CreateSalesReceiptResponseTypedDict,
+    )
     from .createsessionresponse import (
         CreateSessionResponse,
         CreateSessionResponseData,
@@ -2611,6 +2655,10 @@ if TYPE_CHECKING:
     from .deleterefundresponse import (
         DeleteRefundResponse,
         DeleteRefundResponseTypedDict,
+    )
+    from .deletesalesreceiptresponse import (
+        DeleteSalesReceiptResponse,
+        DeleteSalesReceiptResponseTypedDict,
     )
     from .deletesharedlinkresponse import (
         DeleteSharedLinkResponse,
@@ -3560,6 +3608,14 @@ if TYPE_CHECKING:
     from .getquotesresponse import GetQuotesResponse, GetQuotesResponseTypedDict
     from .getrefundresponse import GetRefundResponse, GetRefundResponseTypedDict
     from .getrefundsresponse import GetRefundsResponse, GetRefundsResponseTypedDict
+    from .getsalesreceiptresponse import (
+        GetSalesReceiptResponse,
+        GetSalesReceiptResponseTypedDict,
+    )
+    from .getsalesreceiptsresponse import (
+        GetSalesReceiptsResponse,
+        GetSalesReceiptsResponseTypedDict,
+    )
     from .getsharedlinkresponse import (
         GetSharedLinkResponse,
         GetSharedLinkResponseTypedDict,
@@ -4396,6 +4452,14 @@ if TYPE_CHECKING:
     )
     from .resourcestatus import ResourceStatus
     from .responsevalidationerror import ResponseValidationError
+    from .salesreceipt import SalesReceipt, SalesReceiptTypedDict
+    from .salesreceipt_input import SalesReceiptInput, SalesReceiptInputTypedDict
+    from .salesreceiptsfilter import SalesReceiptsFilter, SalesReceiptsFilterTypedDict
+    from .salesreceiptssort import (
+        SalesReceiptsSort,
+        SalesReceiptsSortBy,
+        SalesReceiptsSortTypedDict,
+    )
     from .schedule import (
         EvenWeeks,
         EvenWeeksTypedDict,
@@ -4773,6 +4837,10 @@ if TYPE_CHECKING:
     from .updaterefundresponse import (
         UpdateRefundResponse,
         UpdateRefundResponseTypedDict,
+    )
+    from .updatesalesreceiptresponse import (
+        UpdateSalesReceiptResponse,
+        UpdateSalesReceiptResponseTypedDict,
     )
     from .updatesharedlinkresponse import (
         UpdateSharedLinkResponse,
@@ -5897,6 +5965,36 @@ __all__ = [
     "AccountingRefundsUpdateRequestTypedDict",
     "AccountingRefundsUpdateResponse",
     "AccountingRefundsUpdateResponseTypedDict",
+    "AccountingSalesReceiptsAddGlobals",
+    "AccountingSalesReceiptsAddGlobalsTypedDict",
+    "AccountingSalesReceiptsAddRequest",
+    "AccountingSalesReceiptsAddRequestTypedDict",
+    "AccountingSalesReceiptsAddResponse",
+    "AccountingSalesReceiptsAddResponseTypedDict",
+    "AccountingSalesReceiptsAllGlobals",
+    "AccountingSalesReceiptsAllGlobalsTypedDict",
+    "AccountingSalesReceiptsAllRequest",
+    "AccountingSalesReceiptsAllRequestTypedDict",
+    "AccountingSalesReceiptsAllResponse",
+    "AccountingSalesReceiptsAllResponseTypedDict",
+    "AccountingSalesReceiptsDeleteGlobals",
+    "AccountingSalesReceiptsDeleteGlobalsTypedDict",
+    "AccountingSalesReceiptsDeleteRequest",
+    "AccountingSalesReceiptsDeleteRequestTypedDict",
+    "AccountingSalesReceiptsDeleteResponse",
+    "AccountingSalesReceiptsDeleteResponseTypedDict",
+    "AccountingSalesReceiptsOneGlobals",
+    "AccountingSalesReceiptsOneGlobalsTypedDict",
+    "AccountingSalesReceiptsOneRequest",
+    "AccountingSalesReceiptsOneRequestTypedDict",
+    "AccountingSalesReceiptsOneResponse",
+    "AccountingSalesReceiptsOneResponseTypedDict",
+    "AccountingSalesReceiptsUpdateGlobals",
+    "AccountingSalesReceiptsUpdateGlobalsTypedDict",
+    "AccountingSalesReceiptsUpdateRequest",
+    "AccountingSalesReceiptsUpdateRequestTypedDict",
+    "AccountingSalesReceiptsUpdateResponse",
+    "AccountingSalesReceiptsUpdateResponseTypedDict",
     "AccountingSubsidiariesAddGlobals",
     "AccountingSubsidiariesAddGlobalsTypedDict",
     "AccountingSubsidiariesAddRequest",
@@ -6524,6 +6622,8 @@ __all__ = [
     "CreateQuoteResponseTypedDict",
     "CreateRefundResponse",
     "CreateRefundResponseTypedDict",
+    "CreateSalesReceiptResponse",
+    "CreateSalesReceiptResponseTypedDict",
     "CreateSessionResponse",
     "CreateSessionResponseData",
     "CreateSessionResponseDataTypedDict",
@@ -7039,6 +7139,8 @@ __all__ = [
     "DeleteQuoteResponseTypedDict",
     "DeleteRefundResponse",
     "DeleteRefundResponseTypedDict",
+    "DeleteSalesReceiptResponse",
+    "DeleteSalesReceiptResponseTypedDict",
     "DeleteSharedLinkResponse",
     "DeleteSharedLinkResponseTypedDict",
     "DeleteSubsidiaryResponse",
@@ -7757,6 +7859,10 @@ __all__ = [
     "GetRefundResponseTypedDict",
     "GetRefundsResponse",
     "GetRefundsResponseTypedDict",
+    "GetSalesReceiptResponse",
+    "GetSalesReceiptResponseTypedDict",
+    "GetSalesReceiptsResponse",
+    "GetSalesReceiptsResponseTypedDict",
     "GetSharedLinkResponse",
     "GetSharedLinkResponseTypedDict",
     "GetSharedLinksResponse",
@@ -8468,6 +8574,15 @@ __all__ = [
     "SalaryTypedDict",
     "SalesDetails",
     "SalesDetailsTypedDict",
+    "SalesReceipt",
+    "SalesReceiptInput",
+    "SalesReceiptInputTypedDict",
+    "SalesReceiptTypedDict",
+    "SalesReceiptsFilter",
+    "SalesReceiptsFilterTypedDict",
+    "SalesReceiptsSort",
+    "SalesReceiptsSortBy",
+    "SalesReceiptsSortTypedDict",
     "Schedule",
     "ScheduleStatus",
     "ScheduleTypedDict",
@@ -8741,6 +8856,8 @@ __all__ = [
     "UpdateQuoteResponseTypedDict",
     "UpdateRefundResponse",
     "UpdateRefundResponseTypedDict",
+    "UpdateSalesReceiptResponse",
+    "UpdateSalesReceiptResponseTypedDict",
     "UpdateSharedLinkResponse",
     "UpdateSharedLinkResponseTypedDict",
     "UpdateSubsidiaryResponse",
@@ -9748,6 +9865,36 @@ _dynamic_imports: dict[str, str] = {
     "AccountingRefundsUpdateRequestTypedDict": ".accounting_refundsupdateop",
     "AccountingRefundsUpdateResponse": ".accounting_refundsupdateop",
     "AccountingRefundsUpdateResponseTypedDict": ".accounting_refundsupdateop",
+    "AccountingSalesReceiptsAddGlobals": ".accounting_salesreceiptsaddop",
+    "AccountingSalesReceiptsAddGlobalsTypedDict": ".accounting_salesreceiptsaddop",
+    "AccountingSalesReceiptsAddRequest": ".accounting_salesreceiptsaddop",
+    "AccountingSalesReceiptsAddRequestTypedDict": ".accounting_salesreceiptsaddop",
+    "AccountingSalesReceiptsAddResponse": ".accounting_salesreceiptsaddop",
+    "AccountingSalesReceiptsAddResponseTypedDict": ".accounting_salesreceiptsaddop",
+    "AccountingSalesReceiptsAllGlobals": ".accounting_salesreceiptsallop",
+    "AccountingSalesReceiptsAllGlobalsTypedDict": ".accounting_salesreceiptsallop",
+    "AccountingSalesReceiptsAllRequest": ".accounting_salesreceiptsallop",
+    "AccountingSalesReceiptsAllRequestTypedDict": ".accounting_salesreceiptsallop",
+    "AccountingSalesReceiptsAllResponse": ".accounting_salesreceiptsallop",
+    "AccountingSalesReceiptsAllResponseTypedDict": ".accounting_salesreceiptsallop",
+    "AccountingSalesReceiptsDeleteGlobals": ".accounting_salesreceiptsdeleteop",
+    "AccountingSalesReceiptsDeleteGlobalsTypedDict": ".accounting_salesreceiptsdeleteop",
+    "AccountingSalesReceiptsDeleteRequest": ".accounting_salesreceiptsdeleteop",
+    "AccountingSalesReceiptsDeleteRequestTypedDict": ".accounting_salesreceiptsdeleteop",
+    "AccountingSalesReceiptsDeleteResponse": ".accounting_salesreceiptsdeleteop",
+    "AccountingSalesReceiptsDeleteResponseTypedDict": ".accounting_salesreceiptsdeleteop",
+    "AccountingSalesReceiptsOneGlobals": ".accounting_salesreceiptsoneop",
+    "AccountingSalesReceiptsOneGlobalsTypedDict": ".accounting_salesreceiptsoneop",
+    "AccountingSalesReceiptsOneRequest": ".accounting_salesreceiptsoneop",
+    "AccountingSalesReceiptsOneRequestTypedDict": ".accounting_salesreceiptsoneop",
+    "AccountingSalesReceiptsOneResponse": ".accounting_salesreceiptsoneop",
+    "AccountingSalesReceiptsOneResponseTypedDict": ".accounting_salesreceiptsoneop",
+    "AccountingSalesReceiptsUpdateGlobals": ".accounting_salesreceiptsupdateop",
+    "AccountingSalesReceiptsUpdateGlobalsTypedDict": ".accounting_salesreceiptsupdateop",
+    "AccountingSalesReceiptsUpdateRequest": ".accounting_salesreceiptsupdateop",
+    "AccountingSalesReceiptsUpdateRequestTypedDict": ".accounting_salesreceiptsupdateop",
+    "AccountingSalesReceiptsUpdateResponse": ".accounting_salesreceiptsupdateop",
+    "AccountingSalesReceiptsUpdateResponseTypedDict": ".accounting_salesreceiptsupdateop",
     "AccountingSubsidiariesAddGlobals": ".accounting_subsidiariesaddop",
     "AccountingSubsidiariesAddGlobalsTypedDict": ".accounting_subsidiariesaddop",
     "AccountingSubsidiariesAddRequest": ".accounting_subsidiariesaddop",
@@ -10452,6 +10599,8 @@ _dynamic_imports: dict[str, str] = {
     "CreateQuoteResponseTypedDict": ".createquoteresponse",
     "CreateRefundResponse": ".createrefundresponse",
     "CreateRefundResponseTypedDict": ".createrefundresponse",
+    "CreateSalesReceiptResponse": ".createsalesreceiptresponse",
+    "CreateSalesReceiptResponseTypedDict": ".createsalesreceiptresponse",
     "CreateSessionResponse": ".createsessionresponse",
     "CreateSessionResponseData": ".createsessionresponse",
     "CreateSessionResponseDataTypedDict": ".createsessionresponse",
@@ -10958,6 +11107,8 @@ _dynamic_imports: dict[str, str] = {
     "DeleteQuoteResponseTypedDict": ".deletequoteresponse",
     "DeleteRefundResponse": ".deleterefundresponse",
     "DeleteRefundResponseTypedDict": ".deleterefundresponse",
+    "DeleteSalesReceiptResponse": ".deletesalesreceiptresponse",
+    "DeleteSalesReceiptResponseTypedDict": ".deletesalesreceiptresponse",
     "DeleteSharedLinkResponse": ".deletesharedlinkresponse",
     "DeleteSharedLinkResponseTypedDict": ".deletesharedlinkresponse",
     "DeleteSubsidiaryResponse": ".deletesubsidiaryresponse",
@@ -11659,6 +11810,10 @@ _dynamic_imports: dict[str, str] = {
     "GetRefundResponseTypedDict": ".getrefundresponse",
     "GetRefundsResponse": ".getrefundsresponse",
     "GetRefundsResponseTypedDict": ".getrefundsresponse",
+    "GetSalesReceiptResponse": ".getsalesreceiptresponse",
+    "GetSalesReceiptResponseTypedDict": ".getsalesreceiptresponse",
+    "GetSalesReceiptsResponse": ".getsalesreceiptsresponse",
+    "GetSalesReceiptsResponseTypedDict": ".getsalesreceiptsresponse",
     "GetSharedLinkResponse": ".getsharedlinkresponse",
     "GetSharedLinkResponseTypedDict": ".getsharedlinkresponse",
     "GetSharedLinksResponse": ".getsharedlinksresponse",
@@ -12364,6 +12519,15 @@ _dynamic_imports: dict[str, str] = {
     "RequestCountAllocationTypedDict": ".requestcountallocation",
     "ResourceStatus": ".resourcestatus",
     "ResponseValidationError": ".responsevalidationerror",
+    "SalesReceipt": ".salesreceipt",
+    "SalesReceiptTypedDict": ".salesreceipt",
+    "SalesReceiptInput": ".salesreceipt_input",
+    "SalesReceiptInputTypedDict": ".salesreceipt_input",
+    "SalesReceiptsFilter": ".salesreceiptsfilter",
+    "SalesReceiptsFilterTypedDict": ".salesreceiptsfilter",
+    "SalesReceiptsSort": ".salesreceiptssort",
+    "SalesReceiptsSortBy": ".salesreceiptssort",
+    "SalesReceiptsSortTypedDict": ".salesreceiptssort",
     "EvenWeeks": ".schedule",
     "EvenWeeksTypedDict": ".schedule",
     "OddWeeks": ".schedule",
@@ -12638,6 +12802,8 @@ _dynamic_imports: dict[str, str] = {
     "UpdateQuoteResponseTypedDict": ".updatequoteresponse",
     "UpdateRefundResponse": ".updaterefundresponse",
     "UpdateRefundResponseTypedDict": ".updaterefundresponse",
+    "UpdateSalesReceiptResponse": ".updatesalesreceiptresponse",
+    "UpdateSalesReceiptResponseTypedDict": ".updatesalesreceiptresponse",
     "UpdateSharedLinkResponse": ".updatesharedlinkresponse",
     "UpdateSharedLinkResponseTypedDict": ".updatesharedlinkresponse",
     "UpdateSubsidiaryResponse": ".updatesubsidiaryresponse",
