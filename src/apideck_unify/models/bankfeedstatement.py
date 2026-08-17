@@ -55,6 +55,8 @@ class TransactionsTypedDict(TypedDict):
     r"""The reference of the transaction."""
     transaction_type: NotRequired[BankFeedStatementTransactionType]
     r"""Type of transaction."""
+    merchant_category_code: NotRequired[Nullable[str]]
+    r"""The ISO 18245 merchant category code (MCC) classifying the merchant for this transaction, expected as a four-digit code such as `5812`. The format is not enforced by the API, matching the other bank identifier fields."""
 
 
 class Transactions(BaseModel):
@@ -85,6 +87,9 @@ class Transactions(BaseModel):
     ] = None
     r"""Type of transaction."""
 
+    merchant_category_code: OptionalNullable[str] = UNSET
+    r"""The ISO 18245 merchant category code (MCC) classifying the merchant for this transaction, expected as a four-digit code such as `5812`. The format is not enforced by the API, matching the other bank identifier fields."""
+
     @field_serializer("credit_or_debit")
     def serialize_credit_or_debit(self, value):
         if isinstance(value, str):
@@ -102,6 +107,42 @@ class Transactions(BaseModel):
             except ValueError:
                 return value
         return value
+
+    @model_serializer(mode="wrap")
+    def serialize_model(self, handler):
+        optional_fields = [
+            "description",
+            "counterparty",
+            "reference",
+            "transaction_type",
+            "merchant_category_code",
+        ]
+        nullable_fields = ["merchant_category_code"]
+        null_default_fields = []
+
+        serialized = handler(self)
+
+        m = {}
+
+        for n, f in type(self).model_fields.items():
+            k = f.alias or n
+            val = serialized.get(k)
+            serialized.pop(k, None)
+
+            optional_nullable = k in optional_fields and k in nullable_fields
+            is_set = (
+                self.__pydantic_fields_set__.intersection({n})
+                or k in null_default_fields
+            )  # pylint: disable=no-member
+
+            if val is not None and val != UNSET_SENTINEL:
+                m[k] = val
+            elif val != UNSET_SENTINEL and (
+                not k in optional_fields or (optional_nullable and is_set)
+            ):
+                m[k] = val
+
+        return m
 
 
 class BankFeedStatementTypedDict(TypedDict):

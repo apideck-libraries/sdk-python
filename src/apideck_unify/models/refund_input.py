@@ -60,7 +60,7 @@ class RefundInputTypedDict(TypedDict):
     status: NotRequired[RefundStatus]
     r"""Status of refund. Maps to: QBO (limited status), NetSuite CashRefund status, Sage Intacct state (draft/posted/voided), Zoho Books vis_state."""
     type: NotRequired[RefundType]
-    r"""Type of refund. `refund_receipt` for itemized refunds with product/service lines and payment (QBO RefundReceipt, NetSuite CashRefund). `cash_refund` for cash-out refunds with GL distribution or allocations (Sage Intacct). `credit_note_refund` for refunds applied against a credit note (Zoho Books)."""
+    r"""Type of refund. `refund_receipt` for itemized refunds with product/service lines and payment (QBO RefundReceipt; also NetSuite's apply-list-based CustomerRefund). `cash_refund` for cash-out refunds with GL distribution or allocations (Sage Intacct). `credit_note_refund` for refunds applied against a credit note (Zoho Books). `sale_refund` for itemized refunds tied to a cash sale or return authorization, without an apply-list (NetSuite CashRefund) — NetSuite's apply-list-based CustomerRefund reports as `refund_receipt` instead."""
     payment_method: NotRequired[Nullable[str]]
     r"""Payment method used for the transaction, such as cash, credit card, bank transfer, or check"""
     payment_method_reference: NotRequired[Nullable[str]]
@@ -69,7 +69,7 @@ class RefundInputTypedDict(TypedDict):
     r"""A unique identifier for an object."""
     account: NotRequired[Nullable[LinkedLedgerAccountTypedDict]]
     line_items: NotRequired[List[InvoiceLineItemInputTypedDict]]
-    r"""Line items for itemized refunds (type: refund_receipt). Used when the refund includes product/service details with quantities and pricing. Supported by QBO RefundReceipt and NetSuite CashRefund."""
+    r"""Line items for itemized refunds (type: refund_receipt or sale_refund). Used when the refund includes product/service details with quantities and pricing. Supported by QBO RefundReceipt and NetSuite CashRefund."""
     allocations: NotRequired[List[AllocationInputTypedDict]]
     r"""Allocations linking refund to existing documents (invoices, credit notes, overpayments). Used for credit_note_refund and cash_refund types where the refund is applied against prior transactions. Supported by Sage Intacct and Zoho Books."""
     tax_code: NotRequired[Nullable[str]]
@@ -140,7 +140,7 @@ class RefundInput(BaseModel):
     type: Annotated[Optional[RefundType], PlainValidator(validate_open_enum(False))] = (
         None
     )
-    r"""Type of refund. `refund_receipt` for itemized refunds with product/service lines and payment (QBO RefundReceipt, NetSuite CashRefund). `cash_refund` for cash-out refunds with GL distribution or allocations (Sage Intacct). `credit_note_refund` for refunds applied against a credit note (Zoho Books)."""
+    r"""Type of refund. `refund_receipt` for itemized refunds with product/service lines and payment (QBO RefundReceipt; also NetSuite's apply-list-based CustomerRefund). `cash_refund` for cash-out refunds with GL distribution or allocations (Sage Intacct). `credit_note_refund` for refunds applied against a credit note (Zoho Books). `sale_refund` for itemized refunds tied to a cash sale or return authorization, without an apply-list (NetSuite CashRefund) — NetSuite's apply-list-based CustomerRefund reports as `refund_receipt` instead."""
 
     payment_method: OptionalNullable[str] = UNSET
     r"""Payment method used for the transaction, such as cash, credit card, bank transfer, or check"""
@@ -154,7 +154,7 @@ class RefundInput(BaseModel):
     account: OptionalNullable[LinkedLedgerAccount] = UNSET
 
     line_items: Optional[List[InvoiceLineItemInput]] = None
-    r"""Line items for itemized refunds (type: refund_receipt). Used when the refund includes product/service details with quantities and pricing. Supported by QBO RefundReceipt and NetSuite CashRefund."""
+    r"""Line items for itemized refunds (type: refund_receipt or sale_refund). Used when the refund includes product/service details with quantities and pricing. Supported by QBO RefundReceipt and NetSuite CashRefund."""
 
     allocations: Optional[List[AllocationInput]] = None
     r"""Allocations linking refund to existing documents (invoices, credit notes, overpayments). Used for credit_note_refund and cash_refund types where the refund is applied against prior transactions. Supported by Sage Intacct and Zoho Books."""

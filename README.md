@@ -408,6 +408,14 @@ with Apideck(
 * [update](docs/sdks/locations/README.md#update) - Update Location
 * [delete](docs/sdks/locations/README.md#delete) - Delete Location
 
+#### [accounting.payment_methods](docs/sdks/paymentmethods/README.md)
+
+* [list](docs/sdks/paymentmethods/README.md#list) - List Payment Methods
+* [create](docs/sdks/paymentmethods/README.md#create) - Create Payment Method
+* [get](docs/sdks/paymentmethods/README.md#get) - Get Payment Method
+* [update](docs/sdks/paymentmethods/README.md#update) - Update Payment Method
+* [delete](docs/sdks/paymentmethods/README.md#delete) - Delete Payment Method
+
 #### [accounting.payments](docs/sdks/payments/README.md)
 
 * [list](docs/sdks/payments/README.md#list) - List Payments
@@ -451,6 +459,14 @@ with Apideck(
 * [get](docs/sdks/refunds/README.md#get) - Get Refund
 * [update](docs/sdks/refunds/README.md#update) - Update Refund
 * [delete](docs/sdks/refunds/README.md#delete) - Delete Refund
+
+#### [accounting.sales_receipts](docs/sdks/salesreceipts/README.md)
+
+* [list](docs/sdks/salesreceipts/README.md#list) - List Sales Receipts
+* [create](docs/sdks/salesreceipts/README.md#create) - Create Sales Receipt
+* [get](docs/sdks/salesreceipts/README.md#get) - Get Sales Receipt
+* [update](docs/sdks/salesreceipts/README.md#update) - Update Sales Receipt
+* [delete](docs/sdks/salesreceipts/README.md#delete) - Delete Sales Receipt
 
 #### [accounting.subsidiaries](docs/sdks/subsidiaries/README.md)
 
@@ -1082,8 +1098,8 @@ with Apideck(
 
 
 **Inherit from [`ApideckError`](./src/apideck_unify/models/apideckerror.py)**:
-* [`Unauthorized`](./src/apideck_unify/models/unauthorized.py): Unauthorized. Status code `401`. Applicable to 6 of 341 methods.*
-* [`ConflictResponse`](./src/apideck_unify/models/conflictresponse.py): Conflict — a connection already exists for the target connector. Status code `409`. Applicable to 1 of 341 methods.*
+* [`Unauthorized`](./src/apideck_unify/models/unauthorized.py): Unauthorized. Status code `401`. Applicable to 6 of 351 methods.*
+* [`ConflictResponse`](./src/apideck_unify/models/conflictresponse.py): Conflict — a connection already exists for the target connector. Status code `409`. Applicable to 1 of 351 methods.*
 * [`ResponseValidationError`](./src/apideck_unify/models/responsevalidationerror.py): Type mismatch between the response data and the expected Pydantic model. Provides access to the Pydantic validation error via the `cause` attribute.
 
 </details>

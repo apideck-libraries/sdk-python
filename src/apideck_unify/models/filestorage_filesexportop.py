@@ -138,7 +138,7 @@ class FileStorageFilesExportRequest(BaseModel):
 class FileStorageFilesExportResponseTypedDict(TypedDict):
     http_meta: HTTPMetadataTypedDict
     get_file_download_response: NotRequired[httpx.Response]
-    r"""File Download"""
+    r"""File Download. When the request includes `x-apideck-follow-redirects: false` and the download would otherwise redirect to a presigned URL, the response body is instead an `application/json` object `{ url, expires_at }` — fetch `url` explicitly (without the Authorization header) to retrieve the file."""
     unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
     r"""Unexpected error"""
 
@@ -147,7 +147,7 @@ class FileStorageFilesExportResponse(BaseModel):
     http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
 
     get_file_download_response: Optional[httpx.Response] = None
-    r"""File Download"""
+    r"""File Download. When the request includes `x-apideck-follow-redirects: false` and the download would otherwise redirect to a presigned URL, the response body is instead an `application/json` object `{ url, expires_at }` — fetch `url` explicitly (without the Authorization header) to retrieve the file."""
 
     unexpected_error_response: Optional[UnexpectedErrorResponse] = None
     r"""Unexpected error"""

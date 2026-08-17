@@ -82,6 +82,7 @@ class Proxy(BaseSDK):
         unified_api: Optional[str] = None,
         downstream_authorization: Optional[str] = None,
         timeout: Optional[int] = 28000,
+        follow_redirects: Optional[bool] = True,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -101,6 +102,7 @@ class Proxy(BaseSDK):
         :param unified_api: Specify which unified API to use for the connection lookup. Required for multi-API connectors (e.g., Workday) to ensure the correct credentials are used.
         :param downstream_authorization: Downstream authorization header. This will skip the Vault token injection.
         :param timeout: Override the default downstream request timeout in milliseconds. The default is 28000 (28 seconds).
+        :param follow_redirects: Set to `false` to opt out of the redirect to the presigned download URL. Instead of a `30x` response, you receive a `200` JSON body `{ url, expires_at }` containing the URL and its expiry, which you can fetch explicitly. Use this if your client automatically forwards the `Authorization` header onto redirects, since the downstream storage provider will reject that request. Any value other than `false` (or omitting the header) preserves the default redirect behavior.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -125,6 +127,7 @@ class Proxy(BaseSDK):
             downstream_url=downstream_url,
             downstream_authorization=downstream_authorization,
             timeout=timeout,
+            follow_redirects=follow_redirects,
         )
 
         req = self._build_request(
@@ -276,6 +279,7 @@ class Proxy(BaseSDK):
         unified_api: Optional[str] = None,
         downstream_authorization: Optional[str] = None,
         timeout: Optional[int] = 28000,
+        follow_redirects: Optional[bool] = True,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -295,6 +299,7 @@ class Proxy(BaseSDK):
         :param unified_api: Specify which unified API to use for the connection lookup. Required for multi-API connectors (e.g., Workday) to ensure the correct credentials are used.
         :param downstream_authorization: Downstream authorization header. This will skip the Vault token injection.
         :param timeout: Override the default downstream request timeout in milliseconds. The default is 28000 (28 seconds).
+        :param follow_redirects: Set to `false` to opt out of the redirect to the presigned download URL. Instead of a `30x` response, you receive a `200` JSON body `{ url, expires_at }` containing the URL and its expiry, which you can fetch explicitly. Use this if your client automatically forwards the `Authorization` header onto redirects, since the downstream storage provider will reject that request. Any value other than `false` (or omitting the header) preserves the default redirect behavior.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -319,6 +324,7 @@ class Proxy(BaseSDK):
             downstream_url=downstream_url,
             downstream_authorization=downstream_authorization,
             timeout=timeout,
+            follow_redirects=follow_redirects,
         )
 
         req = self._build_request_async(
@@ -470,6 +476,7 @@ class Proxy(BaseSDK):
         unified_api: Optional[str] = None,
         downstream_authorization: Optional[str] = None,
         timeout: Optional[int] = 28000,
+        follow_redirects: Optional[bool] = True,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -489,6 +496,7 @@ class Proxy(BaseSDK):
         :param unified_api: Specify which unified API to use for the connection lookup. Required for multi-API connectors (e.g., Workday) to ensure the correct credentials are used.
         :param downstream_authorization: Downstream authorization header. This will skip the Vault token injection.
         :param timeout: Override the default downstream request timeout in milliseconds. The default is 28000 (28 seconds).
+        :param follow_redirects: Set to `false` to opt out of the redirect to the presigned download URL. Instead of a `30x` response, you receive a `200` JSON body `{ url, expires_at }` containing the URL and its expiry, which you can fetch explicitly. Use this if your client automatically forwards the `Authorization` header onto redirects, since the downstream storage provider will reject that request. Any value other than `false` (or omitting the header) preserves the default redirect behavior.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -513,6 +521,7 @@ class Proxy(BaseSDK):
             downstream_url=downstream_url,
             downstream_authorization=downstream_authorization,
             timeout=timeout,
+            follow_redirects=follow_redirects,
         )
 
         req = self._build_request(
@@ -664,6 +673,7 @@ class Proxy(BaseSDK):
         unified_api: Optional[str] = None,
         downstream_authorization: Optional[str] = None,
         timeout: Optional[int] = 28000,
+        follow_redirects: Optional[bool] = True,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -683,6 +693,7 @@ class Proxy(BaseSDK):
         :param unified_api: Specify which unified API to use for the connection lookup. Required for multi-API connectors (e.g., Workday) to ensure the correct credentials are used.
         :param downstream_authorization: Downstream authorization header. This will skip the Vault token injection.
         :param timeout: Override the default downstream request timeout in milliseconds. The default is 28000 (28 seconds).
+        :param follow_redirects: Set to `false` to opt out of the redirect to the presigned download URL. Instead of a `30x` response, you receive a `200` JSON body `{ url, expires_at }` containing the URL and its expiry, which you can fetch explicitly. Use this if your client automatically forwards the `Authorization` header onto redirects, since the downstream storage provider will reject that request. Any value other than `false` (or omitting the header) preserves the default redirect behavior.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -707,6 +718,7 @@ class Proxy(BaseSDK):
             downstream_url=downstream_url,
             downstream_authorization=downstream_authorization,
             timeout=timeout,
+            follow_redirects=follow_redirects,
         )
 
         req = self._build_request_async(
@@ -858,6 +870,7 @@ class Proxy(BaseSDK):
         unified_api: Optional[str] = None,
         downstream_authorization: Optional[str] = None,
         timeout: Optional[int] = 28000,
+        follow_redirects: Optional[bool] = True,
         request_body: Optional[Union[bytes, IO[bytes], io.BufferedReader]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -878,6 +891,7 @@ class Proxy(BaseSDK):
         :param unified_api: Specify which unified API to use for the connection lookup. Required for multi-API connectors (e.g., Workday) to ensure the correct credentials are used.
         :param downstream_authorization: Downstream authorization header. This will skip the Vault token injection.
         :param timeout: Override the default downstream request timeout in milliseconds. The default is 28000 (28 seconds).
+        :param follow_redirects: Set to `false` to opt out of the redirect to the presigned download URL. Instead of a `30x` response, you receive a `200` JSON body `{ url, expires_at }` containing the URL and its expiry, which you can fetch explicitly. Use this if your client automatically forwards the `Authorization` header onto redirects, since the downstream storage provider will reject that request. Any value other than `false` (or omitting the header) preserves the default redirect behavior.
         :param request_body: Depending on the verb/method of the request this will contain the request body you want to POST/PATCH/PUT.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
@@ -903,6 +917,7 @@ class Proxy(BaseSDK):
             downstream_url=downstream_url,
             downstream_authorization=downstream_authorization,
             timeout=timeout,
+            follow_redirects=follow_redirects,
             request_body=request_body,
         )
 
@@ -1062,6 +1077,7 @@ class Proxy(BaseSDK):
         unified_api: Optional[str] = None,
         downstream_authorization: Optional[str] = None,
         timeout: Optional[int] = 28000,
+        follow_redirects: Optional[bool] = True,
         request_body: Optional[Union[bytes, IO[bytes], io.BufferedReader]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -1082,6 +1098,7 @@ class Proxy(BaseSDK):
         :param unified_api: Specify which unified API to use for the connection lookup. Required for multi-API connectors (e.g., Workday) to ensure the correct credentials are used.
         :param downstream_authorization: Downstream authorization header. This will skip the Vault token injection.
         :param timeout: Override the default downstream request timeout in milliseconds. The default is 28000 (28 seconds).
+        :param follow_redirects: Set to `false` to opt out of the redirect to the presigned download URL. Instead of a `30x` response, you receive a `200` JSON body `{ url, expires_at }` containing the URL and its expiry, which you can fetch explicitly. Use this if your client automatically forwards the `Authorization` header onto redirects, since the downstream storage provider will reject that request. Any value other than `false` (or omitting the header) preserves the default redirect behavior.
         :param request_body: Depending on the verb/method of the request this will contain the request body you want to POST/PATCH/PUT.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
@@ -1107,6 +1124,7 @@ class Proxy(BaseSDK):
             downstream_url=downstream_url,
             downstream_authorization=downstream_authorization,
             timeout=timeout,
+            follow_redirects=follow_redirects,
             request_body=request_body,
         )
 
@@ -1266,6 +1284,7 @@ class Proxy(BaseSDK):
         unified_api: Optional[str] = None,
         downstream_authorization: Optional[str] = None,
         timeout: Optional[int] = 28000,
+        follow_redirects: Optional[bool] = True,
         request_body: Optional[Union[bytes, IO[bytes], io.BufferedReader]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -1286,6 +1305,7 @@ class Proxy(BaseSDK):
         :param unified_api: Specify which unified API to use for the connection lookup. Required for multi-API connectors (e.g., Workday) to ensure the correct credentials are used.
         :param downstream_authorization: Downstream authorization header. This will skip the Vault token injection.
         :param timeout: Override the default downstream request timeout in milliseconds. The default is 28000 (28 seconds).
+        :param follow_redirects: Set to `false` to opt out of the redirect to the presigned download URL. Instead of a `30x` response, you receive a `200` JSON body `{ url, expires_at }` containing the URL and its expiry, which you can fetch explicitly. Use this if your client automatically forwards the `Authorization` header onto redirects, since the downstream storage provider will reject that request. Any value other than `false` (or omitting the header) preserves the default redirect behavior.
         :param request_body: Depending on the verb/method of the request this will contain the request body you want to POST/PATCH/PUT.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
@@ -1311,6 +1331,7 @@ class Proxy(BaseSDK):
             downstream_url=downstream_url,
             downstream_authorization=downstream_authorization,
             timeout=timeout,
+            follow_redirects=follow_redirects,
             request_body=request_body,
         )
 
@@ -1470,6 +1491,7 @@ class Proxy(BaseSDK):
         unified_api: Optional[str] = None,
         downstream_authorization: Optional[str] = None,
         timeout: Optional[int] = 28000,
+        follow_redirects: Optional[bool] = True,
         request_body: Optional[Union[bytes, IO[bytes], io.BufferedReader]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -1490,6 +1512,7 @@ class Proxy(BaseSDK):
         :param unified_api: Specify which unified API to use for the connection lookup. Required for multi-API connectors (e.g., Workday) to ensure the correct credentials are used.
         :param downstream_authorization: Downstream authorization header. This will skip the Vault token injection.
         :param timeout: Override the default downstream request timeout in milliseconds. The default is 28000 (28 seconds).
+        :param follow_redirects: Set to `false` to opt out of the redirect to the presigned download URL. Instead of a `30x` response, you receive a `200` JSON body `{ url, expires_at }` containing the URL and its expiry, which you can fetch explicitly. Use this if your client automatically forwards the `Authorization` header onto redirects, since the downstream storage provider will reject that request. Any value other than `false` (or omitting the header) preserves the default redirect behavior.
         :param request_body: Depending on the verb/method of the request this will contain the request body you want to POST/PATCH/PUT.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
@@ -1515,6 +1538,7 @@ class Proxy(BaseSDK):
             downstream_url=downstream_url,
             downstream_authorization=downstream_authorization,
             timeout=timeout,
+            follow_redirects=follow_redirects,
             request_body=request_body,
         )
 
@@ -1674,6 +1698,7 @@ class Proxy(BaseSDK):
         unified_api: Optional[str] = None,
         downstream_authorization: Optional[str] = None,
         timeout: Optional[int] = 28000,
+        follow_redirects: Optional[bool] = True,
         request_body: Optional[Union[bytes, IO[bytes], io.BufferedReader]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -1694,6 +1719,7 @@ class Proxy(BaseSDK):
         :param unified_api: Specify which unified API to use for the connection lookup. Required for multi-API connectors (e.g., Workday) to ensure the correct credentials are used.
         :param downstream_authorization: Downstream authorization header. This will skip the Vault token injection.
         :param timeout: Override the default downstream request timeout in milliseconds. The default is 28000 (28 seconds).
+        :param follow_redirects: Set to `false` to opt out of the redirect to the presigned download URL. Instead of a `30x` response, you receive a `200` JSON body `{ url, expires_at }` containing the URL and its expiry, which you can fetch explicitly. Use this if your client automatically forwards the `Authorization` header onto redirects, since the downstream storage provider will reject that request. Any value other than `false` (or omitting the header) preserves the default redirect behavior.
         :param request_body: Depending on the verb/method of the request this will contain the request body you want to POST/PATCH/PUT.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
@@ -1719,6 +1745,7 @@ class Proxy(BaseSDK):
             downstream_url=downstream_url,
             downstream_authorization=downstream_authorization,
             timeout=timeout,
+            follow_redirects=follow_redirects,
             request_body=request_body,
         )
 
@@ -1878,6 +1905,7 @@ class Proxy(BaseSDK):
         unified_api: Optional[str] = None,
         downstream_authorization: Optional[str] = None,
         timeout: Optional[int] = 28000,
+        follow_redirects: Optional[bool] = True,
         request_body: Optional[Union[bytes, IO[bytes], io.BufferedReader]] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -1898,6 +1926,7 @@ class Proxy(BaseSDK):
         :param unified_api: Specify which unified API to use for the connection lookup. Required for multi-API connectors (e.g., Workday) to ensure the correct credentials are used.
         :param downstream_authorization: Downstream authorization header. This will skip the Vault token injection.
         :param timeout: Override the default downstream request timeout in milliseconds. The default is 28000 (28 seconds).
+        :param follow_redirects: Set to `false` to opt out of the redirect to the presigned download URL. Instead of a `30x` response, you receive a `200` JSON body `{ url, expires_at }` containing the URL and its expiry, which you can fetch explicitly. Use this if your client automatically forwards the `Authorization` header onto redirects, since the downstream storage provider will reject that request. Any value other than `false` (or omitting the header) preserves the default redirect behavior.
         :param request_body: Depending on the verb/method of the request this will contain the request body you want to POST/PATCH/PUT.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
@@ -1923,6 +1952,7 @@ class Proxy(BaseSDK):
             downstream_url=downstream_url,
             downstream_authorization=downstream_authorization,
             timeout=timeout,
+            follow_redirects=follow_redirects,
             request_body=request_body,
         )
 
@@ -2082,6 +2112,7 @@ class Proxy(BaseSDK):
         unified_api: Optional[str] = None,
         downstream_authorization: Optional[str] = None,
         timeout: Optional[int] = 28000,
+        follow_redirects: Optional[bool] = True,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -2101,6 +2132,7 @@ class Proxy(BaseSDK):
         :param unified_api: Specify which unified API to use for the connection lookup. Required for multi-API connectors (e.g., Workday) to ensure the correct credentials are used.
         :param downstream_authorization: Downstream authorization header. This will skip the Vault token injection.
         :param timeout: Override the default downstream request timeout in milliseconds. The default is 28000 (28 seconds).
+        :param follow_redirects: Set to `false` to opt out of the redirect to the presigned download URL. Instead of a `30x` response, you receive a `200` JSON body `{ url, expires_at }` containing the URL and its expiry, which you can fetch explicitly. Use this if your client automatically forwards the `Authorization` header onto redirects, since the downstream storage provider will reject that request. Any value other than `false` (or omitting the header) preserves the default redirect behavior.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -2125,6 +2157,7 @@ class Proxy(BaseSDK):
             downstream_url=downstream_url,
             downstream_authorization=downstream_authorization,
             timeout=timeout,
+            follow_redirects=follow_redirects,
         )
 
         req = self._build_request(
@@ -2276,6 +2309,7 @@ class Proxy(BaseSDK):
         unified_api: Optional[str] = None,
         downstream_authorization: Optional[str] = None,
         timeout: Optional[int] = 28000,
+        follow_redirects: Optional[bool] = True,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -2295,6 +2329,7 @@ class Proxy(BaseSDK):
         :param unified_api: Specify which unified API to use for the connection lookup. Required for multi-API connectors (e.g., Workday) to ensure the correct credentials are used.
         :param downstream_authorization: Downstream authorization header. This will skip the Vault token injection.
         :param timeout: Override the default downstream request timeout in milliseconds. The default is 28000 (28 seconds).
+        :param follow_redirects: Set to `false` to opt out of the redirect to the presigned download URL. Instead of a `30x` response, you receive a `200` JSON body `{ url, expires_at }` containing the URL and its expiry, which you can fetch explicitly. Use this if your client automatically forwards the `Authorization` header onto redirects, since the downstream storage provider will reject that request. Any value other than `false` (or omitting the header) preserves the default redirect behavior.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -2319,6 +2354,7 @@ class Proxy(BaseSDK):
             downstream_url=downstream_url,
             downstream_authorization=downstream_authorization,
             timeout=timeout,
+            follow_redirects=follow_redirects,
         )
 
         req = self._build_request_async(
