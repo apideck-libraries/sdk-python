@@ -60,6 +60,8 @@ class FileStorageFilesDownloadRequestTypedDict(TypedDict):
     r"""Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API."""
     fields: NotRequired[Nullable[str]]
     r"""The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded."""
+    follow_redirects: NotRequired[bool]
+    r"""Set to `false` to opt out of the redirect to the presigned download URL. Instead of a `30x` response, you receive a `200` JSON body `{ url, expires_at }` containing the URL and its expiry, which you can fetch explicitly. Use this if your client automatically forwards the `Authorization` header onto redirects, since the downstream storage provider will reject that request. Any value other than `false` (or omitting the header) preserves the default redirect behavior."""
 
 
 class FileStorageFilesDownloadRequest(BaseModel):
@@ -95,9 +97,22 @@ class FileStorageFilesDownloadRequest(BaseModel):
     ] = UNSET
     r"""The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded."""
 
+    follow_redirects: Annotated[
+        Optional[bool],
+        pydantic.Field(alias="x-apideck-follow-redirects"),
+        FieldMetadata(header=HeaderMetadata(style="simple", explode=False)),
+    ] = True
+    r"""Set to `false` to opt out of the redirect to the presigned download URL. Instead of a `30x` response, you receive a `200` JSON body `{ url, expires_at }` containing the URL and its expiry, which you can fetch explicitly. Use this if your client automatically forwards the `Authorization` header onto redirects, since the downstream storage provider will reject that request. Any value other than `false` (or omitting the header) preserves the default redirect behavior."""
+
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
-        optional_fields = ["consumerId", "appId", "serviceId", "fields"]
+        optional_fields = [
+            "consumerId",
+            "appId",
+            "serviceId",
+            "fields",
+            "followRedirects",
+        ]
         nullable_fields = ["fields"]
         null_default_fields = []
 
@@ -129,7 +144,7 @@ class FileStorageFilesDownloadRequest(BaseModel):
 class FileStorageFilesDownloadResponseTypedDict(TypedDict):
     http_meta: HTTPMetadataTypedDict
     get_file_download_response: NotRequired[httpx.Response]
-    r"""File Download"""
+    r"""File Download. When the request includes `x-apideck-follow-redirects: false` and the download would otherwise redirect to a presigned URL, the response body is instead an `application/json` object `{ url, expires_at }` — fetch `url` explicitly (without the Authorization header) to retrieve the file."""
     unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
     r"""Unexpected error"""
 
@@ -138,7 +153,7 @@ class FileStorageFilesDownloadResponse(BaseModel):
     http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
 
     get_file_download_response: Optional[httpx.Response] = None
-    r"""File Download"""
+    r"""File Download. When the request includes `x-apideck-follow-redirects: false` and the download would otherwise redirect to a presigned URL, the response body is instead an `application/json` object `{ url, expires_at }` — fetch `url` explicitly (without the Authorization header) to retrieve the file."""
 
     unexpected_error_response: Optional[UnexpectedErrorResponse] = None
     r"""Unexpected error"""

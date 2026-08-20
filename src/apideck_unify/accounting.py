@@ -27,12 +27,14 @@ from apideck_unify.invoices import Invoices
 from apideck_unify.journalentries import JournalEntries
 from apideck_unify.ledgeraccounts import LedgerAccounts
 from apideck_unify.locations import Locations
+from apideck_unify.paymentmethods import PaymentMethods
 from apideck_unify.payments import Payments
 from apideck_unify.profitandloss_sdk import ProfitAndLossSDK
 from apideck_unify.projects import Projects
 from apideck_unify.purchaseorders import PurchaseOrders
 from apideck_unify.quotes import Quotes
 from apideck_unify.refunds import Refunds
+from apideck_unify.salesreceipts import SalesReceipts
 from apideck_unify.subsidiaries import Subsidiaries
 from apideck_unify.suppliers import Suppliers
 from apideck_unify.taxrates import TaxRates
@@ -57,6 +59,7 @@ class Accounting(BaseSDK):
     profit_and_loss: ProfitAndLossSDK
     journal_entries: JournalEntries
     general_ledger_transactions: GeneralLedgerTransactions
+    sales_receipts: SalesReceipts
     purchase_orders: PurchaseOrders
     subsidiaries: Subsidiaries
     locations: Locations
@@ -75,6 +78,7 @@ class Accounting(BaseSDK):
     projects: Projects
     employees: Employees
     expense_categories: ExpenseCategories
+    payment_methods: PaymentMethods
     expense_reports: ExpenseReports
 
     def __init__(
@@ -117,6 +121,9 @@ class Accounting(BaseSDK):
         self.general_ledger_transactions = GeneralLedgerTransactions(
             self.sdk_configuration, parent_ref=self.parent_ref
         )
+        self.sales_receipts = SalesReceipts(
+            self.sdk_configuration, parent_ref=self.parent_ref
+        )
         self.purchase_orders = PurchaseOrders(
             self.sdk_configuration, parent_ref=self.parent_ref
         )
@@ -157,6 +164,9 @@ class Accounting(BaseSDK):
         self.projects = Projects(self.sdk_configuration, parent_ref=self.parent_ref)
         self.employees = Employees(self.sdk_configuration, parent_ref=self.parent_ref)
         self.expense_categories = ExpenseCategories(
+            self.sdk_configuration, parent_ref=self.parent_ref
+        )
+        self.payment_methods = PaymentMethods(
             self.sdk_configuration, parent_ref=self.parent_ref
         )
         self.expense_reports = ExpenseReports(
