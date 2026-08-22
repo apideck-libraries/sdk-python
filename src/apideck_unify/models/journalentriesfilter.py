@@ -4,7 +4,7 @@ from __future__ import annotations
 from apideck_unify import models, utils
 from apideck_unify.types import BaseModel
 from apideck_unify.utils import FieldMetadata, validate_open_enum
-from datetime import datetime
+from datetime import date, datetime
 from enum import Enum
 from pydantic import field_serializer
 from pydantic.functional_validators import PlainValidator
@@ -32,6 +32,10 @@ class JournalEntriesFilterScope(str, Enum, metaclass=utils.OpenEnumMeta):
 
 class JournalEntriesFilterTypedDict(TypedDict):
     updated_since: NotRequired[datetime]
+    start_date: NotRequired[date]
+    r"""Return journal entries posted on or after this date (posting date, inclusive). Connectors without date-range support reject this filter with UnsupportedFiltersError."""
+    end_date: NotRequired[date]
+    r"""Return journal entries posted on or before this date (posting date, inclusive). Connectors without date-range support reject this filter with UnsupportedFiltersError."""
     status: NotRequired[JournalEntriesFilterStatus]
     scope: NotRequired[JournalEntriesFilterScope]
     r"""Connector-specific scope hint that controls which downstream source backs the read. On Xero, `manual` reads from `ManualJournals` (free in every tier), while `system` reads from `Journals` (the full general ledger view including manual journal postings, paid post 2026-03-02). Omitting the filter is equivalent to `system` and preserves the legacy default. Only honored on connectors where the distinction is exposed; ignored elsewhere."""
@@ -41,6 +45,12 @@ class JournalEntriesFilterTypedDict(TypedDict):
 
 class JournalEntriesFilter(BaseModel):
     updated_since: Annotated[Optional[datetime], FieldMetadata(query=True)] = None
+
+    start_date: Annotated[Optional[date], FieldMetadata(query=True)] = None
+    r"""Return journal entries posted on or after this date (posting date, inclusive). Connectors without date-range support reject this filter with UnsupportedFiltersError."""
+
+    end_date: Annotated[Optional[date], FieldMetadata(query=True)] = None
+    r"""Return journal entries posted on or before this date (posting date, inclusive). Connectors without date-range support reject this filter with UnsupportedFiltersError."""
 
     status: Annotated[
         Annotated[

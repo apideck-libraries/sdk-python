@@ -1648,6 +1648,7 @@ class Files(BaseSDK):
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         fields: OptionalNullable[str] = UNSET,
+        follow_redirects: Optional[bool] = True,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -1663,6 +1664,7 @@ class Files(BaseSDK):
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param fields: The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded.
+        :param follow_redirects: Set to `false` to opt out of the redirect to the presigned download URL. Instead of a `30x` response, you receive a `200` JSON body `{ url, expires_at }` containing the URL and its expiry, which you can fetch explicitly. Use this if your client automatically forwards the `Authorization` header onto redirects, since the downstream storage provider will reject that request. Any value other than `false` (or omitting the header) preserves the default redirect behavior.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -1685,6 +1687,7 @@ class Files(BaseSDK):
             app_id=app_id,
             service_id=service_id,
             fields=fields,
+            follow_redirects=follow_redirects,
         )
 
         req = self._build_request(
@@ -1799,6 +1802,7 @@ class Files(BaseSDK):
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         fields: OptionalNullable[str] = UNSET,
+        follow_redirects: Optional[bool] = True,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -1814,6 +1818,7 @@ class Files(BaseSDK):
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param fields: The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded.
+        :param follow_redirects: Set to `false` to opt out of the redirect to the presigned download URL. Instead of a `30x` response, you receive a `200` JSON body `{ url, expires_at }` containing the URL and its expiry, which you can fetch explicitly. Use this if your client automatically forwards the `Authorization` header onto redirects, since the downstream storage provider will reject that request. Any value other than `false` (or omitting the header) preserves the default redirect behavior.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -1836,6 +1841,7 @@ class Files(BaseSDK):
             app_id=app_id,
             service_id=service_id,
             fields=fields,
+            follow_redirects=follow_redirects,
         )
 
         req = self._build_request_async(
