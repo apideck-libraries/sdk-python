@@ -41,12 +41,20 @@ class BankFeedAccountTypedDict(TypedDict):
     r"""Type of the bank account."""
     source_account_id: NotRequired[str]
     r"""The source account's unique identifier."""
+    source_routing_number: NotRequired[Nullable[str]]
+    r"""Bank routing number (US)"""
+    source_account_number: NotRequired[Nullable[str]]
+    r"""The bank account number"""
     target_account_id: NotRequired[str]
     r"""The target account's unique identifier in the accounting connector."""
     target_account_name: NotRequired[str]
     r"""Name associated with the target account."""
     target_account_number: NotRequired[str]
     r"""Account number of the destination bank account."""
+    balance: NotRequired[Nullable[float]]
+    r"""The current balance of the source bank account."""
+    available_balance: NotRequired[Nullable[float]]
+    r"""The available balance of the source bank account (considering pending transactions and overdraft)."""
     currency: NotRequired[Nullable[Currency]]
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
     feed_status: NotRequired[FeedStatus]
@@ -78,6 +86,12 @@ class BankFeedAccount(BaseModel):
     source_account_id: Optional[str] = None
     r"""The source account's unique identifier."""
 
+    source_routing_number: OptionalNullable[str] = UNSET
+    r"""Bank routing number (US)"""
+
+    source_account_number: OptionalNullable[str] = UNSET
+    r"""The bank account number"""
+
     target_account_id: Optional[str] = None
     r"""The target account's unique identifier in the accounting connector."""
 
@@ -86,6 +100,12 @@ class BankFeedAccount(BaseModel):
 
     target_account_number: Optional[str] = None
     r"""Account number of the destination bank account."""
+
+    balance: OptionalNullable[float] = UNSET
+    r"""The current balance of the source bank account."""
+
+    available_balance: OptionalNullable[float] = UNSET
+    r"""The available balance of the source bank account (considering pending transactions and overdraft)."""
 
     currency: Annotated[
         OptionalNullable[Currency], PlainValidator(validate_open_enum(False))
@@ -149,9 +169,13 @@ class BankFeedAccount(BaseModel):
         optional_fields = [
             "bank_account_type",
             "source_account_id",
+            "source_routing_number",
+            "source_account_number",
             "target_account_id",
             "target_account_name",
             "target_account_number",
+            "balance",
+            "available_balance",
             "currency",
             "feed_status",
             "country",
@@ -163,6 +187,10 @@ class BankFeedAccount(BaseModel):
             "created_by",
         ]
         nullable_fields = [
+            "source_routing_number",
+            "source_account_number",
+            "balance",
+            "available_balance",
             "currency",
             "country",
             "custom_mappings",
@@ -203,12 +231,20 @@ class BankFeedAccountInputTypedDict(TypedDict):
     r"""Type of the bank account."""
     source_account_id: NotRequired[str]
     r"""The source account's unique identifier."""
+    source_routing_number: NotRequired[Nullable[str]]
+    r"""Bank routing number (US)"""
+    source_account_number: NotRequired[Nullable[str]]
+    r"""The bank account number"""
     target_account_id: NotRequired[str]
     r"""The target account's unique identifier in the accounting connector."""
     target_account_name: NotRequired[str]
     r"""Name associated with the target account."""
     target_account_number: NotRequired[str]
     r"""Account number of the destination bank account."""
+    balance: NotRequired[Nullable[float]]
+    r"""The current balance of the source bank account."""
+    available_balance: NotRequired[Nullable[float]]
+    r"""The available balance of the source bank account (considering pending transactions and overdraft)."""
     currency: NotRequired[Nullable[Currency]]
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
     feed_status: NotRequired[FeedStatus]
@@ -227,6 +263,12 @@ class BankFeedAccountInput(BaseModel):
     source_account_id: Optional[str] = None
     r"""The source account's unique identifier."""
 
+    source_routing_number: OptionalNullable[str] = UNSET
+    r"""Bank routing number (US)"""
+
+    source_account_number: OptionalNullable[str] = UNSET
+    r"""The bank account number"""
+
     target_account_id: Optional[str] = None
     r"""The target account's unique identifier in the accounting connector."""
 
@@ -235,6 +277,12 @@ class BankFeedAccountInput(BaseModel):
 
     target_account_number: Optional[str] = None
     r"""Account number of the destination bank account."""
+
+    balance: OptionalNullable[float] = UNSET
+    r"""The current balance of the source bank account."""
+
+    available_balance: OptionalNullable[float] = UNSET
+    r"""The available balance of the source bank account (considering pending transactions and overdraft)."""
 
     currency: Annotated[
         OptionalNullable[Currency], PlainValidator(validate_open_enum(False))
@@ -283,15 +331,26 @@ class BankFeedAccountInput(BaseModel):
         optional_fields = [
             "bank_account_type",
             "source_account_id",
+            "source_routing_number",
+            "source_account_number",
             "target_account_id",
             "target_account_name",
             "target_account_number",
+            "balance",
+            "available_balance",
             "currency",
             "feed_status",
             "country",
             "custom_fields",
         ]
-        nullable_fields = ["currency", "country"]
+        nullable_fields = [
+            "source_routing_number",
+            "source_account_number",
+            "balance",
+            "available_balance",
+            "currency",
+            "country",
+        ]
         null_default_fields = []
 
         serialized = handler(self)

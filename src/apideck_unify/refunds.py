@@ -473,12 +473,12 @@ class Refunds(BaseSDK):
         :param total_tax: Total tax amount applied to this transaction.
         :param refund_date: The date of the refund - YYYY-MM-DDThh:mm:ss.sTZD
         :param status: Status of refund. Maps to: QBO (limited status), NetSuite CashRefund status, Sage Intacct state (draft/posted/voided), Zoho Books vis_state.
-        :param type: Type of refund. `refund_receipt` for itemized refunds with product/service lines and payment (QBO RefundReceipt, NetSuite CashRefund). `cash_refund` for cash-out refunds with GL distribution or allocations (Sage Intacct). `credit_note_refund` for refunds applied against a credit note (Zoho Books).
+        :param type: Type of refund. `refund_receipt` for itemized refunds with product/service lines and payment (QBO RefundReceipt; also NetSuite's apply-list-based CustomerRefund). `cash_refund` for cash-out refunds with GL distribution or allocations (Sage Intacct). `credit_note_refund` for refunds applied against a credit note (Zoho Books). `sale_refund` for itemized refunds tied to a cash sale or return authorization, without an apply-list (NetSuite CashRefund) — NetSuite's apply-list-based CustomerRefund reports as `refund_receipt` instead.
         :param payment_method: Payment method used for the transaction, such as cash, credit card, bank transfer, or check
         :param payment_method_reference: Optional reference message returned by payment method on processing
         :param payment_method_id: A unique identifier for an object.
         :param account:
-        :param line_items: Line items for itemized refunds (type: refund_receipt). Used when the refund includes product/service details with quantities and pricing. Supported by QBO RefundReceipt and NetSuite CashRefund.
+        :param line_items: Line items for itemized refunds (type: refund_receipt or sale_refund). Used when the refund includes product/service details with quantities and pricing. Supported by QBO RefundReceipt and NetSuite CashRefund.
         :param allocations: Allocations linking refund to existing documents (invoices, credit notes, overpayments). Used for credit_note_refund and cash_refund types where the refund is applied against prior transactions. Supported by Sage Intacct and Zoho Books.
         :param tax_code: Applicable tax id/code override if tax is not supplied on a line item basis.
         :param discount_percentage: Discount percentage applied to this refund.
@@ -763,12 +763,12 @@ class Refunds(BaseSDK):
         :param total_tax: Total tax amount applied to this transaction.
         :param refund_date: The date of the refund - YYYY-MM-DDThh:mm:ss.sTZD
         :param status: Status of refund. Maps to: QBO (limited status), NetSuite CashRefund status, Sage Intacct state (draft/posted/voided), Zoho Books vis_state.
-        :param type: Type of refund. `refund_receipt` for itemized refunds with product/service lines and payment (QBO RefundReceipt, NetSuite CashRefund). `cash_refund` for cash-out refunds with GL distribution or allocations (Sage Intacct). `credit_note_refund` for refunds applied against a credit note (Zoho Books).
+        :param type: Type of refund. `refund_receipt` for itemized refunds with product/service lines and payment (QBO RefundReceipt; also NetSuite's apply-list-based CustomerRefund). `cash_refund` for cash-out refunds with GL distribution or allocations (Sage Intacct). `credit_note_refund` for refunds applied against a credit note (Zoho Books). `sale_refund` for itemized refunds tied to a cash sale or return authorization, without an apply-list (NetSuite CashRefund) — NetSuite's apply-list-based CustomerRefund reports as `refund_receipt` instead.
         :param payment_method: Payment method used for the transaction, such as cash, credit card, bank transfer, or check
         :param payment_method_reference: Optional reference message returned by payment method on processing
         :param payment_method_id: A unique identifier for an object.
         :param account:
-        :param line_items: Line items for itemized refunds (type: refund_receipt). Used when the refund includes product/service details with quantities and pricing. Supported by QBO RefundReceipt and NetSuite CashRefund.
+        :param line_items: Line items for itemized refunds (type: refund_receipt or sale_refund). Used when the refund includes product/service details with quantities and pricing. Supported by QBO RefundReceipt and NetSuite CashRefund.
         :param allocations: Allocations linking refund to existing documents (invoices, credit notes, overpayments). Used for credit_note_refund and cash_refund types where the refund is applied against prior transactions. Supported by Sage Intacct and Zoho Books.
         :param tax_code: Applicable tax id/code override if tax is not supplied on a line item basis.
         :param discount_percentage: Discount percentage applied to this refund.
@@ -1343,12 +1343,12 @@ class Refunds(BaseSDK):
         :param total_tax: Total tax amount applied to this transaction.
         :param refund_date: The date of the refund - YYYY-MM-DDThh:mm:ss.sTZD
         :param status: Status of refund. Maps to: QBO (limited status), NetSuite CashRefund status, Sage Intacct state (draft/posted/voided), Zoho Books vis_state.
-        :param type: Type of refund. `refund_receipt` for itemized refunds with product/service lines and payment (QBO RefundReceipt, NetSuite CashRefund). `cash_refund` for cash-out refunds with GL distribution or allocations (Sage Intacct). `credit_note_refund` for refunds applied against a credit note (Zoho Books).
+        :param type: Type of refund. `refund_receipt` for itemized refunds with product/service lines and payment (QBO RefundReceipt; also NetSuite's apply-list-based CustomerRefund). `cash_refund` for cash-out refunds with GL distribution or allocations (Sage Intacct). `credit_note_refund` for refunds applied against a credit note (Zoho Books). `sale_refund` for itemized refunds tied to a cash sale or return authorization, without an apply-list (NetSuite CashRefund) — NetSuite's apply-list-based CustomerRefund reports as `refund_receipt` instead.
         :param payment_method: Payment method used for the transaction, such as cash, credit card, bank transfer, or check
         :param payment_method_reference: Optional reference message returned by payment method on processing
         :param payment_method_id: A unique identifier for an object.
         :param account:
-        :param line_items: Line items for itemized refunds (type: refund_receipt). Used when the refund includes product/service details with quantities and pricing. Supported by QBO RefundReceipt and NetSuite CashRefund.
+        :param line_items: Line items for itemized refunds (type: refund_receipt or sale_refund). Used when the refund includes product/service details with quantities and pricing. Supported by QBO RefundReceipt and NetSuite CashRefund.
         :param allocations: Allocations linking refund to existing documents (invoices, credit notes, overpayments). Used for credit_note_refund and cash_refund types where the refund is applied against prior transactions. Supported by Sage Intacct and Zoho Books.
         :param tax_code: Applicable tax id/code override if tax is not supplied on a line item basis.
         :param discount_percentage: Discount percentage applied to this refund.
@@ -1636,12 +1636,12 @@ class Refunds(BaseSDK):
         :param total_tax: Total tax amount applied to this transaction.
         :param refund_date: The date of the refund - YYYY-MM-DDThh:mm:ss.sTZD
         :param status: Status of refund. Maps to: QBO (limited status), NetSuite CashRefund status, Sage Intacct state (draft/posted/voided), Zoho Books vis_state.
-        :param type: Type of refund. `refund_receipt` for itemized refunds with product/service lines and payment (QBO RefundReceipt, NetSuite CashRefund). `cash_refund` for cash-out refunds with GL distribution or allocations (Sage Intacct). `credit_note_refund` for refunds applied against a credit note (Zoho Books).
+        :param type: Type of refund. `refund_receipt` for itemized refunds with product/service lines and payment (QBO RefundReceipt; also NetSuite's apply-list-based CustomerRefund). `cash_refund` for cash-out refunds with GL distribution or allocations (Sage Intacct). `credit_note_refund` for refunds applied against a credit note (Zoho Books). `sale_refund` for itemized refunds tied to a cash sale or return authorization, without an apply-list (NetSuite CashRefund) — NetSuite's apply-list-based CustomerRefund reports as `refund_receipt` instead.
         :param payment_method: Payment method used for the transaction, such as cash, credit card, bank transfer, or check
         :param payment_method_reference: Optional reference message returned by payment method on processing
         :param payment_method_id: A unique identifier for an object.
         :param account:
-        :param line_items: Line items for itemized refunds (type: refund_receipt). Used when the refund includes product/service details with quantities and pricing. Supported by QBO RefundReceipt and NetSuite CashRefund.
+        :param line_items: Line items for itemized refunds (type: refund_receipt or sale_refund). Used when the refund includes product/service details with quantities and pricing. Supported by QBO RefundReceipt and NetSuite CashRefund.
         :param allocations: Allocations linking refund to existing documents (invoices, credit notes, overpayments). Used for credit_note_refund and cash_refund types where the refund is applied against prior transactions. Supported by Sage Intacct and Zoho Books.
         :param tax_code: Applicable tax id/code override if tax is not supplied on a line item basis.
         :param discount_percentage: Discount percentage applied to this refund.

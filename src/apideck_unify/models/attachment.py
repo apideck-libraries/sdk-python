@@ -30,6 +30,8 @@ class AttachmentTypedDict(TypedDict):
     reference: NotRequired[AttachmentReferenceTypedDict]
     description: NotRequired[Nullable[str]]
     r"""Optional description of the file"""
+    file_url: NotRequired[Nullable[str]]
+    r"""The URL to download or preview the file"""
     parent_folder_id: NotRequired[Nullable[str]]
     r"""The folder id where this attachment belong to"""
     updated_by: NotRequired[Nullable[str]]
@@ -65,6 +67,9 @@ class Attachment(BaseModel):
     description: OptionalNullable[str] = UNSET
     r"""Optional description of the file"""
 
+    file_url: OptionalNullable[str] = UNSET
+    r"""The URL to download or preview the file"""
+
     parent_folder_id: OptionalNullable[str] = UNSET
     r"""The folder id where this attachment belong to"""
 
@@ -93,6 +98,7 @@ class Attachment(BaseModel):
             "size",
             "reference",
             "description",
+            "file_url",
             "parent_folder_id",
             "updated_by",
             "created_by",
@@ -106,6 +112,7 @@ class Attachment(BaseModel):
             "mime_type",
             "size",
             "description",
+            "file_url",
             "parent_folder_id",
             "updated_by",
             "created_by",

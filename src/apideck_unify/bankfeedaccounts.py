@@ -378,9 +378,13 @@ class BankFeedAccounts(BaseSDK):
         service_id: Optional[str] = None,
         bank_account_type: Optional[models.BankAccountType] = None,
         source_account_id: Optional[str] = None,
+        source_routing_number: OptionalNullable[str] = UNSET,
+        source_account_number: OptionalNullable[str] = UNSET,
         target_account_id: Optional[str] = None,
         target_account_name: Optional[str] = None,
         target_account_number: Optional[str] = None,
+        balance: OptionalNullable[float] = UNSET,
+        available_balance: OptionalNullable[float] = UNSET,
         currency: OptionalNullable[models.Currency] = UNSET,
         feed_status: Optional[models.FeedStatus] = None,
         country: OptionalNullable[str] = UNSET,
@@ -402,9 +406,13 @@ class BankFeedAccounts(BaseSDK):
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param bank_account_type: Type of the bank account.
         :param source_account_id: The source account's unique identifier.
+        :param source_routing_number: Bank routing number (US)
+        :param source_account_number: The bank account number
         :param target_account_id: The target account's unique identifier in the accounting connector.
         :param target_account_name: Name associated with the target account.
         :param target_account_number: Account number of the destination bank account.
+        :param balance: The current balance of the source bank account.
+        :param available_balance: The available balance of the source bank account (considering pending transactions and overdraft).
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
         :param feed_status: Current status of the bank feed.
         :param country: Country code according to ISO 3166-1 alpha-2.
@@ -432,9 +440,13 @@ class BankFeedAccounts(BaseSDK):
             bank_feed_account=models.BankFeedAccountInput(
                 bank_account_type=bank_account_type,
                 source_account_id=source_account_id,
+                source_routing_number=source_routing_number,
+                source_account_number=source_account_number,
                 target_account_id=target_account_id,
                 target_account_name=target_account_name,
                 target_account_number=target_account_number,
+                balance=balance,
+                available_balance=available_balance,
                 currency=currency,
                 feed_status=feed_status,
                 country=country,
@@ -556,9 +568,13 @@ class BankFeedAccounts(BaseSDK):
         service_id: Optional[str] = None,
         bank_account_type: Optional[models.BankAccountType] = None,
         source_account_id: Optional[str] = None,
+        source_routing_number: OptionalNullable[str] = UNSET,
+        source_account_number: OptionalNullable[str] = UNSET,
         target_account_id: Optional[str] = None,
         target_account_name: Optional[str] = None,
         target_account_number: Optional[str] = None,
+        balance: OptionalNullable[float] = UNSET,
+        available_balance: OptionalNullable[float] = UNSET,
         currency: OptionalNullable[models.Currency] = UNSET,
         feed_status: Optional[models.FeedStatus] = None,
         country: OptionalNullable[str] = UNSET,
@@ -580,9 +596,13 @@ class BankFeedAccounts(BaseSDK):
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param bank_account_type: Type of the bank account.
         :param source_account_id: The source account's unique identifier.
+        :param source_routing_number: Bank routing number (US)
+        :param source_account_number: The bank account number
         :param target_account_id: The target account's unique identifier in the accounting connector.
         :param target_account_name: Name associated with the target account.
         :param target_account_number: Account number of the destination bank account.
+        :param balance: The current balance of the source bank account.
+        :param available_balance: The available balance of the source bank account (considering pending transactions and overdraft).
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
         :param feed_status: Current status of the bank feed.
         :param country: Country code according to ISO 3166-1 alpha-2.
@@ -610,9 +630,13 @@ class BankFeedAccounts(BaseSDK):
             bank_feed_account=models.BankFeedAccountInput(
                 bank_account_type=bank_account_type,
                 source_account_id=source_account_id,
+                source_routing_number=source_routing_number,
+                source_account_number=source_account_number,
                 target_account_id=target_account_id,
                 target_account_name=target_account_name,
                 target_account_number=target_account_number,
+                balance=balance,
+                available_balance=available_balance,
                 currency=currency,
                 feed_status=feed_status,
                 country=country,
@@ -1029,9 +1053,13 @@ class BankFeedAccounts(BaseSDK):
         raw: Optional[bool] = False,
         bank_account_type: Optional[models.BankAccountType] = None,
         source_account_id: Optional[str] = None,
+        source_routing_number: OptionalNullable[str] = UNSET,
+        source_account_number: OptionalNullable[str] = UNSET,
         target_account_id: Optional[str] = None,
         target_account_name: Optional[str] = None,
         target_account_number: Optional[str] = None,
+        balance: OptionalNullable[float] = UNSET,
+        available_balance: OptionalNullable[float] = UNSET,
         currency: OptionalNullable[models.Currency] = UNSET,
         feed_status: Optional[models.FeedStatus] = None,
         country: OptionalNullable[str] = UNSET,
@@ -1054,9 +1082,13 @@ class BankFeedAccounts(BaseSDK):
         :param raw: Include raw response. Mostly used for debugging purposes
         :param bank_account_type: Type of the bank account.
         :param source_account_id: The source account's unique identifier.
+        :param source_routing_number: Bank routing number (US)
+        :param source_account_number: The bank account number
         :param target_account_id: The target account's unique identifier in the accounting connector.
         :param target_account_name: Name associated with the target account.
         :param target_account_number: Account number of the destination bank account.
+        :param balance: The current balance of the source bank account.
+        :param available_balance: The available balance of the source bank account (considering pending transactions and overdraft).
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
         :param feed_status: Current status of the bank feed.
         :param country: Country code according to ISO 3166-1 alpha-2.
@@ -1085,9 +1117,13 @@ class BankFeedAccounts(BaseSDK):
             bank_feed_account=models.BankFeedAccountInput(
                 bank_account_type=bank_account_type,
                 source_account_id=source_account_id,
+                source_routing_number=source_routing_number,
+                source_account_number=source_account_number,
                 target_account_id=target_account_id,
                 target_account_name=target_account_name,
                 target_account_number=target_account_number,
+                balance=balance,
+                available_balance=available_balance,
                 currency=currency,
                 feed_status=feed_status,
                 country=country,
@@ -1210,9 +1246,13 @@ class BankFeedAccounts(BaseSDK):
         raw: Optional[bool] = False,
         bank_account_type: Optional[models.BankAccountType] = None,
         source_account_id: Optional[str] = None,
+        source_routing_number: OptionalNullable[str] = UNSET,
+        source_account_number: OptionalNullable[str] = UNSET,
         target_account_id: Optional[str] = None,
         target_account_name: Optional[str] = None,
         target_account_number: Optional[str] = None,
+        balance: OptionalNullable[float] = UNSET,
+        available_balance: OptionalNullable[float] = UNSET,
         currency: OptionalNullable[models.Currency] = UNSET,
         feed_status: Optional[models.FeedStatus] = None,
         country: OptionalNullable[str] = UNSET,
@@ -1235,9 +1275,13 @@ class BankFeedAccounts(BaseSDK):
         :param raw: Include raw response. Mostly used for debugging purposes
         :param bank_account_type: Type of the bank account.
         :param source_account_id: The source account's unique identifier.
+        :param source_routing_number: Bank routing number (US)
+        :param source_account_number: The bank account number
         :param target_account_id: The target account's unique identifier in the accounting connector.
         :param target_account_name: Name associated with the target account.
         :param target_account_number: Account number of the destination bank account.
+        :param balance: The current balance of the source bank account.
+        :param available_balance: The available balance of the source bank account (considering pending transactions and overdraft).
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
         :param feed_status: Current status of the bank feed.
         :param country: Country code according to ISO 3166-1 alpha-2.
@@ -1266,9 +1310,13 @@ class BankFeedAccounts(BaseSDK):
             bank_feed_account=models.BankFeedAccountInput(
                 bank_account_type=bank_account_type,
                 source_account_id=source_account_id,
+                source_routing_number=source_routing_number,
+                source_account_number=source_account_number,
                 target_account_id=target_account_id,
                 target_account_name=target_account_name,
                 target_account_number=target_account_number,
+                balance=balance,
+                available_balance=available_balance,
                 currency=currency,
                 feed_status=feed_status,
                 country=country,

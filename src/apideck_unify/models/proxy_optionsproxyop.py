@@ -48,6 +48,8 @@ class ProxyOptionsProxyRequestTypedDict(TypedDict):
     r"""Downstream authorization header. This will skip the Vault token injection."""
     timeout: NotRequired[int]
     r"""Override the default downstream request timeout in milliseconds. The default is 28000 (28 seconds)."""
+    follow_redirects: NotRequired[bool]
+    r"""Set to `false` to opt out of the redirect to the presigned download URL. Instead of a `30x` response, you receive a `200` JSON body `{ url, expires_at }` containing the URL and its expiry, which you can fetch explicitly. Use this if your client automatically forwards the `Authorization` header onto redirects, since the downstream storage provider will reject that request. Any value other than `false` (or omitting the header) preserves the default redirect behavior."""
 
 
 class ProxyOptionsProxyRequest(BaseModel):
@@ -100,22 +102,29 @@ class ProxyOptionsProxyRequest(BaseModel):
     ] = 28000
     r"""Override the default downstream request timeout in milliseconds. The default is 28000 (28 seconds)."""
 
+    follow_redirects: Annotated[
+        Optional[bool],
+        pydantic.Field(alias="x-apideck-follow-redirects"),
+        FieldMetadata(header=HeaderMetadata(style="simple", explode=False)),
+    ] = True
+    r"""Set to `false` to opt out of the redirect to the presigned download URL. Instead of a `30x` response, you receive a `200` JSON body `{ url, expires_at }` containing the URL and its expiry, which you can fetch explicitly. Use this if your client automatically forwards the `Authorization` header onto redirects, since the downstream storage provider will reject that request. Any value other than `false` (or omitting the header) preserves the default redirect behavior."""
+
 
 class ProxyOptionsProxyResponseTypedDict(TypedDict):
     http_meta: HTTPMetadataTypedDict
     headers: Dict[str, List[str]]
     response_json: NotRequired[Dict[str, Any]]
-    r"""Ok"""
+    r"""Ok. When the request includes `x-apideck-follow-redirects: false` and the downstream response would otherwise redirect to a presigned URL (oversized responses), the body is instead an `application/json` object `{ url, expires_at }` — fetch `url` explicitly (without the Authorization header) to retrieve the payload."""
     response_binary: NotRequired[httpx.Response]
-    r"""Ok"""
+    r"""Ok. When the request includes `x-apideck-follow-redirects: false` and the downstream response would otherwise redirect to a presigned URL (oversized responses), the body is instead an `application/json` object `{ url, expires_at }` — fetch `url` explicitly (without the Authorization header) to retrieve the payload."""
     response_pdf: NotRequired[httpx.Response]
-    r"""Ok"""
+    r"""Ok. When the request includes `x-apideck-follow-redirects: false` and the downstream response would otherwise redirect to a presigned URL (oversized responses), the body is instead an `application/json` object `{ url, expires_at }` — fetch `url` explicitly (without the Authorization header) to retrieve the payload."""
     response_xml: NotRequired[str]
-    r"""Ok"""
+    r"""Ok. When the request includes `x-apideck-follow-redirects: false` and the downstream response would otherwise redirect to a presigned URL (oversized responses), the body is instead an `application/json` object `{ url, expires_at }` — fetch `url` explicitly (without the Authorization header) to retrieve the payload."""
     response_csv: NotRequired[str]
-    r"""Ok"""
+    r"""Ok. When the request includes `x-apideck-follow-redirects: false` and the downstream response would otherwise redirect to a presigned URL (oversized responses), the body is instead an `application/json` object `{ url, expires_at }` — fetch `url` explicitly (without the Authorization header) to retrieve the payload."""
     response_text: NotRequired[str]
-    r"""Ok"""
+    r"""Ok. When the request includes `x-apideck-follow-redirects: false` and the downstream response would otherwise redirect to a presigned URL (oversized responses), the body is instead an `application/json` object `{ url, expires_at }` — fetch `url` explicitly (without the Authorization header) to retrieve the payload."""
     error_json: NotRequired[Dict[str, Any]]
     r"""Proxy error"""
     error_xml: NotRequired[str]
@@ -132,22 +141,22 @@ class ProxyOptionsProxyResponse(BaseModel):
     headers: Dict[str, List[str]]
 
     response_json: Optional[Dict[str, Any]] = None
-    r"""Ok"""
+    r"""Ok. When the request includes `x-apideck-follow-redirects: false` and the downstream response would otherwise redirect to a presigned URL (oversized responses), the body is instead an `application/json` object `{ url, expires_at }` — fetch `url` explicitly (without the Authorization header) to retrieve the payload."""
 
     response_binary: Optional[httpx.Response] = None
-    r"""Ok"""
+    r"""Ok. When the request includes `x-apideck-follow-redirects: false` and the downstream response would otherwise redirect to a presigned URL (oversized responses), the body is instead an `application/json` object `{ url, expires_at }` — fetch `url` explicitly (without the Authorization header) to retrieve the payload."""
 
     response_pdf: Optional[httpx.Response] = None
-    r"""Ok"""
+    r"""Ok. When the request includes `x-apideck-follow-redirects: false` and the downstream response would otherwise redirect to a presigned URL (oversized responses), the body is instead an `application/json` object `{ url, expires_at }` — fetch `url` explicitly (without the Authorization header) to retrieve the payload."""
 
     response_xml: Optional[str] = None
-    r"""Ok"""
+    r"""Ok. When the request includes `x-apideck-follow-redirects: false` and the downstream response would otherwise redirect to a presigned URL (oversized responses), the body is instead an `application/json` object `{ url, expires_at }` — fetch `url` explicitly (without the Authorization header) to retrieve the payload."""
 
     response_csv: Optional[str] = None
-    r"""Ok"""
+    r"""Ok. When the request includes `x-apideck-follow-redirects: false` and the downstream response would otherwise redirect to a presigned URL (oversized responses), the body is instead an `application/json` object `{ url, expires_at }` — fetch `url` explicitly (without the Authorization header) to retrieve the payload."""
 
     response_text: Optional[str] = None
-    r"""Ok"""
+    r"""Ok. When the request includes `x-apideck-follow-redirects: false` and the downstream response would otherwise redirect to a presigned URL (oversized responses), the body is instead an `application/json` object `{ url, expires_at }` — fetch `url` explicitly (without the Authorization header) to retrieve the payload."""
 
     error_json: Optional[Dict[str, Any]] = None
     r"""Proxy error"""

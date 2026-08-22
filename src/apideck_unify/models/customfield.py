@@ -42,6 +42,8 @@ class CustomField2TypedDict(TypedDict):
     r"""Name of the custom field."""
     id: NotRequired[Nullable[str]]
     r"""Unique identifier for the custom field."""
+    ref_name: NotRequired[Nullable[str]]
+    r"""Display name of the record a reference-type custom field points at. `value` carries that record's id; this carries its human-readable name, so a consumer does not need a second lookup to render it."""
     description: NotRequired[Nullable[str]]
     r"""More information about the custom field"""
     value: NotRequired[Nullable[CustomFieldValueTypedDict]]
@@ -54,6 +56,9 @@ class CustomField2(BaseModel):
     id: OptionalNullable[str] = UNSET
     r"""Unique identifier for the custom field."""
 
+    ref_name: OptionalNullable[str] = UNSET
+    r"""Display name of the record a reference-type custom field points at. `value` carries that record's id; this carries its human-readable name, so a consumer does not need a second lookup to render it."""
+
     description: OptionalNullable[str] = UNSET
     r"""More information about the custom field"""
 
@@ -61,8 +66,8 @@ class CustomField2(BaseModel):
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
-        optional_fields = ["id", "description", "value"]
-        nullable_fields = ["id", "name", "description", "value"]
+        optional_fields = ["id", "ref_name", "description", "value"]
+        nullable_fields = ["id", "name", "ref_name", "description", "value"]
         null_default_fields = []
 
         serialized = handler(self)
@@ -117,6 +122,8 @@ class CustomField1TypedDict(TypedDict):
     r"""Unique identifier for the custom field."""
     name: NotRequired[Nullable[str]]
     r"""Name of the custom field."""
+    ref_name: NotRequired[Nullable[str]]
+    r"""Display name of the record a reference-type custom field points at. `value` carries that record's id; this carries its human-readable name, so a consumer does not need a second lookup to render it."""
     description: NotRequired[Nullable[str]]
     r"""More information about the custom field"""
     value: NotRequired[Nullable[CustomField1ValueTypedDict]]
@@ -129,6 +136,9 @@ class CustomField1(BaseModel):
     name: OptionalNullable[str] = UNSET
     r"""Name of the custom field."""
 
+    ref_name: OptionalNullable[str] = UNSET
+    r"""Display name of the record a reference-type custom field points at. `value` carries that record's id; this carries its human-readable name, so a consumer does not need a second lookup to render it."""
+
     description: OptionalNullable[str] = UNSET
     r"""More information about the custom field"""
 
@@ -136,8 +146,8 @@ class CustomField1(BaseModel):
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
-        optional_fields = ["name", "description", "value"]
-        nullable_fields = ["id", "name", "description", "value"]
+        optional_fields = ["name", "ref_name", "description", "value"]
+        nullable_fields = ["id", "name", "ref_name", "description", "value"]
         null_default_fields = []
 
         serialized = handler(self)
