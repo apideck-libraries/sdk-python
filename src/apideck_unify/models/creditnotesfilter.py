@@ -9,6 +9,8 @@ from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class CreditNotesFilterTypedDict(TypedDict):
+    ids: NotRequired[str]
+    r"""Comma-separated list of credit note IDs to filter by (e.g. `12345,67890`). On some connectors (e.g. DualEntry) the credit note ID is the credit note number."""
     id_since: NotRequired[str]
     r"""Return records with a row ID greater than or equal to the given value"""
     updated_since: NotRequired[datetime]
@@ -22,6 +24,9 @@ class CreditNotesFilterTypedDict(TypedDict):
 
 
 class CreditNotesFilter(BaseModel):
+    ids: Annotated[Optional[str], FieldMetadata(query=True)] = None
+    r"""Comma-separated list of credit note IDs to filter by (e.g. `12345,67890`). On some connectors (e.g. DualEntry) the credit note ID is the credit note number."""
+
     id_since: Annotated[Optional[str], FieldMetadata(query=True)] = None
     r"""Return records with a row ID greater than or equal to the given value"""
 

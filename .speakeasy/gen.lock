@@ -1,12 +1,12 @@
 lockVersion: 2.0.0
 id: fca0ac3a-5f4e-452c-bbc7-2311afa8da40
 management:
-  docChecksum: 37f03733b612e44aca3a0c00e4481d0e
-  docVersion: 10.44.0
+  docChecksum: bafc2d9cd2b83bacd4084e3936462de0
+  docVersion: 10.45.0
   speakeasyVersion: 1.656.1
   generationVersion: 2.753.1
-  releaseVersion: 0.37.0
-  configChecksum: 6f2507158991e43a9c64d38193effabc
+  releaseVersion: 0.38.0
+  configChecksum: f35c12798947882b0c1c4d911745398e
   repoURL: https://github.com/apideck-libraries/sdk-python.git
   installationURL: https://github.com/apideck-libraries/sdk-python.git
   published: true
@@ -3997,7 +3997,7 @@ examples:
         query:
           raw: false
           limit: 20
-          filter: {"id_since": "1", "updated_since": "2020-09-30T07:43:32.000Z", "created_since": "2020-09-30T07:43:32.000Z", "number": "OIT00546", "supplier_id": "123", "customer_id": "123abc"}
+          filter: {"ids": "12345,67890", "id_since": "1", "updated_since": "2020-09-30T07:43:32.000Z", "created_since": "2020-09-30T07:43:32.000Z", "number": "OIT00546", "supplier_id": "123", "customer_id": "123abc"}
           sort: {"by": "updated_at", "direction": "desc"}
           pass_through: {"search": "San Francisco"}
           fields: "id,updated_at"
@@ -4811,7 +4811,7 @@ examples:
         query:
           raw: false
           limit: 20
-          filter: {"id_since": "1", "updated_since": "2020-09-30T07:43:32.000Z", "created_since": "2020-09-30T07:43:32.000Z", "number": "OIT00546", "customer_id": "123abc"}
+          filter: {"ids": "12345,67890", "id_since": "1", "updated_since": "2020-09-30T07:43:32.000Z", "created_since": "2020-09-30T07:43:32.000Z", "number": "OIT00546", "customer_id": "123abc"}
           sort: {"by": "updated_at", "direction": "desc"}
           pass_through: {"search": "San Francisco"}
           fields: "id,updated_at"
@@ -5081,7 +5081,7 @@ examples:
         query:
           raw: false
           limit: 20
-          filter: {"company_name": "SpaceX", "display_name": "Elon Musk", "first_name": "Elon", "last_name": "Musk", "email": "elon@musk.com", "status": "active", "updated_since": "2020-09-30T07:43:32.000Z", "supplier_id": "123"}
+          filter: {"ids": "12345,67890", "company_name": "SpaceX", "display_name": "Elon Musk", "first_name": "Elon", "last_name": "Musk", "email": "elon@musk.com", "status": "active", "updated_since": "2020-09-30T07:43:32.000Z", "supplier_id": "123"}
           sort: {"by": "updated_at", "direction": "desc"}
           pass_through: {"search": "San Francisco"}
           fields: "id,updated_at"
@@ -20280,7 +20280,11 @@ examples:
           application/json: {"status_code": 400, "error": "Bad Request", "type_name": "RequestHeadersValidationError", "message": "Invalid Params", "detail": "Missing Header: x-apideck-consumer-id", "ref": "https://developers.apideck.com/errors#unauthorizederror"}
 examplesVersion: 1.0.2
 generatedTests: {}
-releaseNotes: "## Python SDK Changes Detected:\n* `apideck.accounting.sales_receipts.list()`: **Added**\n* `apideck.accounting.sales_receipts.create()`: **Added**\n* `apideck.accounting.sales_receipts.get()`: **Added**\n* `apideck.accounting.sales_receipts.update()`: **Added**\n* `apideck.accounting.sales_receipts.delete()`: **Added**\n* `apideck.accounting.payment_methods.list()`: **Added**\n* `apideck.accounting.payment_methods.create()`: **Added**\n* `apideck.accounting.payment_methods.get()`: **Added**\n* `apideck.accounting.payment_methods.update()`: **Added**\n* `apideck.accounting.payment_methods.delete()`: **Added**\n* `apideck.accounting.tax_rates.list()`:  `response.data.[].custom_fields.[]` **Changed**\n* `apideck.accounting.tax_rates.create()`: \n  *  `request.custom_fields.[]` **Changed**\n* `apideck.accounting.tax_rates.get()`:  `response.data.custom_fields.[]` **Changed**\n* `apideck.accounting.tax_rates.update()`: \n  *  `request.custom_fields.[]` **Changed**\n* `apideck.accounting.bills.list()`:  `response.data.[].custom_fields.[]` **Changed**\n* `apideck.accounting.bills.create()`: \n  *  `request.custom_fields.[]` **Changed**\n* `apideck.accounting.bills.get()`:  `response.data.custom_fields.[]` **Changed**\n* `apideck.accounting.bills.update()`: \n  *  `request.custom_fields.[]` **Changed**\n* `apideck.accounting.invoices.list()`:  `response.data.[].line_items.[].custom_fields.[]` **Changed**\n* `apideck.accounting.invoices.create()`: \n  *  `request.line_items.[].custom_fields.[]` **Changed**\n* `apideck.accounting.invoices.get()`:  `response.data.line_items.[].custom_fields.[]` **Changed**\n* `apideck.accounting.invoices.update()`: \n  *  `request.line_items.[].custom_fields.[]` **Changed**\n* `apideck.accounting.ledger_accounts.list()`:  `response.data.[].custom_fields.[]` **Changed**\n* `apideck.accounting.ledger_accounts.create()`: \n  *  `request.custom_fields.[]` **Changed**\n* `apideck.accounting.ledger_accounts.get()`:  `response.data.custom_fields.[]` **Changed**\n* `apideck.accounting.ledger_accounts.update()`: \n  *  `request.custom_fields.[]` **Changed**\n* `apideck.accounting.credit_notes.list()`:  `response.data.[].line_items.[].custom_fields.[]` **Changed**\n* `apideck.accounting.credit_notes.create()`: \n  *  `request.line_items.[].custom_fields.[]` **Changed**\n* `apideck.accounting.credit_notes.get()`:  `response.data.line_items.[].custom_fields.[]` **Changed**\n* `apideck.accounting.credit_notes.update()`: \n  *  `request.line_items.[].custom_fields.[]` **Changed**\n* `apideck.accounting.customers.list()`:  `response.data.[].custom_fields.[]` **Changed**\n* `apideck.accounting.customers.create()`: \n  *  `request.custom_fields.[]` **Changed**\n* `apideck.accounting.customers.get()`:  `response.data.custom_fields.[]` **Changed**\n* `apideck.accounting.customers.update()`: \n  *  `request.custom_fields.[]` **Changed**\n* `apideck.accounting.suppliers.list()`:  `response.data.[].custom_fields.[]` **Changed**\n* `apideck.accounting.suppliers.create()`: \n  *  `request.custom_fields.[]` **Changed**\n* `apideck.accounting.suppliers.get()`:  `response.data.custom_fields.[]` **Changed**\n* `apideck.accounting.suppliers.update()`: \n  *  `request.custom_fields.[]` **Changed**\n* `apideck.accounting.payments.list()`:  `response.data.[].custom_fields.[]` **Changed**\n* `apideck.accounting.payments.create()`: \n  *  `request.custom_fields.[]` **Changed**\n* `apideck.accounting.payments.get()`:  `response.data.custom_fields.[]` **Changed**\n* `apideck.accounting.payments.update()`: \n  *  `request.custom_fields.[]` **Changed**\n* `apideck.accounting.refunds.list()`:  `response.data.[].line_items.[].custom_fields.[]` **Changed**\n* `apideck.accounting.refunds.create()`: \n  *  `request.line_items.[].custom_fields.[]` **Changed**\n* `apideck.accounting.refunds.get()`:  `response.data.line_items.[].custom_fields.[]` **Changed**\n* `apideck.accounting.refunds.update()`: \n  *  `request.line_items.[].custom_fields.[]` **Changed**\n* `apideck.accounting.company_info.get()`:  `response.data.default_sales_tax.custom_fields.[]` **Changed**\n* `apideck.accounting.journal_entries.list()`: \n  *  `request.filter` **Changed**\n  *  `response.data.[].custom_fields.[]` **Changed**\n* `apideck.accounting.journal_entries.create()`: \n  *  `request.custom_fields.[]` **Changed**\n* `apideck.accounting.journal_entries.get()`:  `response.data.custom_fields.[]` **Changed**\n* `apideck.accounting.journal_entries.update()`: \n  *  `request.custom_fields.[]` **Changed**\n* `apideck.accounting.general_ledger_transactions.list()`:  `response.data.[].custom_fields.[]` **Changed**\n* `apideck.accounting.general_ledger_transactions.get()`:  `response.data.custom_fields.[]` **Changed**\n* `apideck.accounting.purchase_orders.list()`:  `response.data.[].line_items.[].custom_fields.[]` **Changed**\n* `apideck.accounting.purchase_orders.create()`: \n  *  `request.line_items.[].custom_fields.[]` **Changed**\n* `apideck.accounting.purchase_orders.get()`:  `response.data.line_items.[].custom_fields.[]` **Changed**\n* `apideck.accounting.purchase_orders.update()`: \n  *  `request.line_items.[].custom_fields.[]` **Changed**\n* `apideck.accounting.attachments.list()`:  `response.data.[].file_url` **Added**\n* `apideck.accounting.attachments.get()`:  `response.data.file_url` **Added**\n* `apideck.accounting.attachments.download()`:  `request.follow_redirects` **Added**\n* `apideck.accounting.bank_accounts.list()`:  `response.data.[].custom_fields.[]` **Changed**\n* `apideck.accounting.bank_accounts.create()`: \n  *  `request.custom_fields.[]` **Changed**\n* `apideck.accounting.bank_accounts.get()`:  `response.data.custom_fields.[]` **Changed**\n* `apideck.accounting.bank_accounts.update()`: \n  *  `request.custom_fields.[]` **Changed**\n* `apideck.accounting.bill_payments.list()`:  `response.data.[].custom_fields.[]` **Changed**\n* `apideck.accounting.bill_payments.create()`: \n  *  `request.custom_fields.[]` **Changed**\n* `apideck.accounting.bill_payments.get()`:  `response.data.custom_fields.[]` **Changed**\n* `apideck.accounting.bill_payments.update()`: \n  *  `request.custom_fields.[]` **Changed**\n* `apideck.accounting.expenses.list()`:  `response.data.[].custom_fields.[]` **Changed**\n* `apideck.accounting.expenses.create()`: \n  *  `request.custom_fields.[]` **Changed**\n* `apideck.accounting.expenses.get()`:  `response.data.custom_fields.[]` **Changed**\n* `apideck.accounting.expenses.update()`: \n  *  `request.custom_fields.[]` **Changed**\n* `apideck.accounting.bank_feed_accounts.list()`:  `response.data.[]` **Changed**\n* `apideck.accounting.bank_feed_accounts.create()`:  `request` **Changed**\n* `apideck.accounting.bank_feed_accounts.get()`:  `response.data` **Changed**\n* `apideck.accounting.bank_feed_accounts.update()`:  `request` **Changed**\n* `apideck.accounting.bank_feed_statements.list()`:  `response.data.[].transactions.[].merchant_category_code` **Added**\n* `apideck.accounting.bank_feed_statements.create()`: \n  *  `request.transactions.[].merchant_category_code` **Added**\n* `apideck.accounting.bank_feed_statements.get()`:  `response.data.transactions.[].merchant_category_code` **Added**\n* `apideck.accounting.bank_feed_statements.update()`: \n  *  `request.transactions.[].merchant_category_code` **Added**\n* `apideck.accounting.quotes.list()`:  `response.data.[].line_items.[].custom_fields.[]` **Changed**\n* `apideck.accounting.quotes.create()`: \n  *  `request.line_items.[].custom_fields.[]` **Changed**\n* `apideck.accounting.quotes.get()`:  `response.data.line_items.[].custom_fields.[]` **Changed**\n* `apideck.accounting.quotes.update()`: \n  *  `request.line_items.[].custom_fields.[]` **Changed**\n* `apideck.accounting.projects.list()`:  `response.data.[].custom_fields.[]` **Changed**\n* `apideck.accounting.projects.create()`: \n  *  `request.custom_fields.[]` **Changed**\n* `apideck.accounting.projects.get()`:  `response.data.custom_fields.[]` **Changed**\n* `apideck.accounting.projects.update()`: \n  *  `request.custom_fields.[]` **Changed**\n* `apideck.accounting.employees.list()`:  `response.data.[].custom_fields.[]` **Changed**\n* `apideck.accounting.employees.create()`: \n  *  `request.custom_fields.[]` **Changed**\n* `apideck.accounting.employees.get()`:  `response.data.custom_fields.[]` **Changed**\n* `apideck.accounting.employees.update()`: \n  *  `request.custom_fields.[]` **Changed**\n* `apideck.accounting.expense_reports.list()`:  `response.data.[].custom_fields.[]` **Changed**\n* `apideck.accounting.expense_reports.create()`: \n  *  `request.custom_fields.[]` **Changed**\n* `apideck.accounting.expense_reports.get()`:  `response.data.custom_fields.[]` **Changed**\n* `apideck.accounting.expense_reports.update()`: \n  *  `request.custom_fields.[]` **Changed**\n* `apideck.ats.jobs.list()`:  `response.data.[].custom_fields.[]` **Changed**\n* `apideck.ats.jobs.create()`: \n  *  `request.custom_fields.[]` **Changed**\n* `apideck.ats.jobs.get()`:  `response.data.custom_fields.[]` **Changed**\n* `apideck.ats.jobs.update()`: \n  *  `request.custom_fields.[]` **Changed**\n* `apideck.ats.applicants.list()`:  `response.data.[].custom_fields.[]` **Changed**\n* `apideck.ats.applicants.create()`: \n  *  `request.custom_fields.[]` **Changed**\n* `apideck.ats.applicants.get()`:  `response.data.custom_fields.[]` **Changed**\n* `apideck.ats.applicants.update()`: \n  *  `request.custom_fields.[]` **Changed**\n* `apideck.crm.companies.list()`:  `response.data.[].custom_fields.[]` **Changed**\n* `apideck.crm.companies.create()`: \n  *  `request.custom_fields.[]` **Changed**\n* `apideck.crm.companies.get()`:  `response.data.custom_fields.[]` **Changed**\n* `apideck.crm.companies.update()`: \n  *  `request.custom_fields.[]` **Changed**\n* `apideck.crm.contacts.list()`:  `response.data.[].custom_fields.[]` **Changed**\n* `apideck.crm.contacts.create()`: \n  *  `request.custom_fields.[]` **Changed**\n* `apideck.crm.contacts.get()`:  `response.data.custom_fields.[]` **Changed**\n* `apideck.crm.contacts.update()`: \n  *  `request.custom_fields.[]` **Changed**\n* `apideck.crm.opportunities.list()`:  `response.data.[].custom_fields.[]` **Changed**\n* `apideck.crm.opportunities.create()`: \n  *  `request.custom_fields.[]` **Changed**\n* `apideck.crm.opportunities.get()`:  `response.data.custom_fields.[]` **Changed**\n* `apideck.crm.opportunities.update()`: \n  *  `request.custom_fields.[]` **Changed**\n* `apideck.crm.leads.list()`:  `response.data.[].custom_fields.[]` **Changed**\n* `apideck.crm.leads.create()`: \n  *  `request.custom_fields.[]` **Changed**\n* `apideck.crm.leads.get()`:  `response.data.custom_fields.[]` **Changed**\n* `apideck.crm.leads.update()`: \n  *  `request.custom_fields.[]` **Changed**\n* `apideck.crm.lists.list()`:  `response.data.[].custom_fields.[]` **Changed**\n* `apideck.crm.lists.get()`:  `response.data.custom_fields.[]` **Changed**\n* `apideck.crm.activities.list()`:  `response.data.[].custom_fields.[]` **Changed**\n* `apideck.crm.activities.create()`: \n  *  `request.custom_fields.[]` **Changed**\n* `apideck.crm.activities.get()`:  `response.data.custom_fields.[]` **Changed**\n* `apideck.crm.activities.update()`: \n  *  `request.custom_fields.[]` **Changed**\n* `apideck.file_storage.files.download()`:  `request.follow_redirects` **Added**\n* `apideck.hris.employees.list()`:  `response.data.[].custom_fields.[]` **Changed**\n* `apideck.hris.employees.create()`: \n  *  `request.custom_fields.[]` **Changed**\n* `apideck.hris.employees.get()`:  `response.data.custom_fields.[]` **Changed**\n* `apideck.hris.employees.update()`: \n  *  `request.custom_fields.[]` **Changed**\n* `apideck.hris.employee_schedules.list()`:  `response.data.employee.custom_fields.[]` **Changed**\n* `apideck.proxy.get()`:  `request.follow_redirects` **Added**\n* `apideck.proxy.options()`:  `request.follow_redirects` **Added**\n* `apideck.proxy.post()`:  `request.follow_redirects` **Added**\n* `apideck.proxy.put()`:  `request.follow_redirects` **Added**\n* `apideck.proxy.patch()`:  `request.follow_redirects` **Added**\n* `apideck.proxy.delete()`:  `request.follow_redirects` **Added**\n"
+releaseNotes: |
+  ## Python SDK Changes Detected:
+  * `apideck.accounting.invoices.list()`:  `request.filter` **Changed**
+  * `apideck.accounting.credit_notes.list()`:  `request.filter` **Changed**
+  * `apideck.accounting.customers.list()`:  `request.filter` **Changed**
 trackedFiles:
   .devcontainer/README.md:
     last_write_checksum: sha1:07adb0c0c051a9be4d479ea06461f3a9b3bbeb2f
@@ -20535,7 +20539,7 @@ trackedFiles:
   docs/models/accountingcreditnotesallglobals.md:
     last_write_checksum: sha1:6affe934dd7a3832d96d3d60e51ea03a02a31d57
   docs/models/accountingcreditnotesallrequest.md:
-    last_write_checksum: sha1:da239ccc36bda1145b27c188c15958c876e93131
+    last_write_checksum: sha1:21783de010b543ff48fcf9e9184b44c399fe6ed1
   docs/models/accountingcreditnotesallresponse.md:
     last_write_checksum: sha1:83e512a7ab79ed3270fc44a04655ade3d47c73f1
   docs/models/accountingcreditnotesdeleteglobals.md:
@@ -20565,7 +20569,7 @@ trackedFiles:
   docs/models/accountingcustomersallglobals.md:
     last_write_checksum: sha1:9775de6dc4b3b5a0217076317d2771fce5454b6b
   docs/models/accountingcustomersallrequest.md:
-    last_write_checksum: sha1:329cb5c38ab7e40ff08e44b1cc95b31cd2534a00
+    last_write_checksum: sha1:9a242a68b1270d71251ae61289c1fa26046758ba
   docs/models/accountingcustomersallresponse.md:
     last_write_checksum: sha1:2186f4a80bab19de553ad5fed01d3153c43ce692
   docs/models/accountingcustomersdeleteglobals.md:
@@ -20803,7 +20807,7 @@ trackedFiles:
   docs/models/accountinginvoicesallglobals.md:
     last_write_checksum: sha1:f6a2622baadf2627d9b04eae13e49533f66e5b0f
   docs/models/accountinginvoicesallrequest.md:
-    last_write_checksum: sha1:9e0a928626d9b375ef096897cb855a7c7f03b6c7
+    last_write_checksum: sha1:06537dd70d3350ff7ed552ad71338ac5d6e3fb9a
   docs/models/accountinginvoicesallresponse.md:
     last_write_checksum: sha1:28be251ab5404d91f259683afee1407dc5bcc6bf
   docs/models/accountinginvoicesdeleteglobals.md:
@@ -21875,7 +21879,7 @@ trackedFiles:
   docs/models/creditnoteinput.md:
     last_write_checksum: sha1:5cd185371ea93e9f5d5de02ffc2e5894e0178e09
   docs/models/creditnotesfilter.md:
-    last_write_checksum: sha1:83212348f70448a5089bedb1153a82b20545c24b
+    last_write_checksum: sha1:d0ffa5a9b5f470422f858a5aa309dfdfa6ea92b5
   docs/models/creditnotessort.md:
     last_write_checksum: sha1:fd155892f6ca3800b5e3b8f6ba93ccee75ba2255
   docs/models/creditnotessortby.md:
@@ -22213,7 +22217,7 @@ trackedFiles:
   docs/models/customerinput.md:
     last_write_checksum: sha1:8184dfe7e9378fca188c30b75fcba8fe72c5ce99
   docs/models/customersfilter.md:
-    last_write_checksum: sha1:b384cc609d09dd6c4fd360243dda59914bdcdcbb
+    last_write_checksum: sha1:7eb743caf5c4f504ca52abefa01c14fa8b905a8f
   docs/models/customersfilterstatus.md:
     last_write_checksum: sha1:51104ca6ea38000fa961da1382d30d453e238940
   docs/models/customerssort.md:
@@ -23377,7 +23381,7 @@ trackedFiles:
   docs/models/invoiceresponse.md:
     last_write_checksum: sha1:bc0577dbf4ceec23ec16db3034fd6199ef550dc7
   docs/models/invoicesfilter.md:
-    last_write_checksum: sha1:5b2e17f84b09cf46880212b0efc18b5ccfdc36ed
+    last_write_checksum: sha1:0dab81f37a9fefacecb751fbe539c362b0062588
   docs/models/invoicessort.md:
     last_write_checksum: sha1:1eba528d38a368e93a9d28100a5d7c566bad30a1
   docs/models/invoicessortby.md:
@@ -24571,9 +24575,9 @@ trackedFiles:
   docs/sdks/createcallback/README.md:
     last_write_checksum: sha1:fe7ad7d4efe54f8b2daa4b8d623e67f8b0a4dd6c
   docs/sdks/creditnotes/README.md:
-    last_write_checksum: sha1:a265c426c4ff7b32d79697672328e54f6e8079a6
+    last_write_checksum: sha1:bebfa70e9be9fb9d8b039f4562a052d402d4072a
   docs/sdks/customers/README.md:
-    last_write_checksum: sha1:085abafa421ab1c69ad7d503b8fb1768c84c26f6
+    last_write_checksum: sha1:d2a3a0451e66fa629e65fbd4c990ea657fc274eb
   docs/sdks/customfields/README.md:
     last_write_checksum: sha1:252fc8f3f3e1fa1416362942bd6454885aaf64d9
   docs/sdks/custommappings/README.md:
@@ -24611,7 +24615,7 @@ trackedFiles:
   docs/sdks/invoiceitems/README.md:
     last_write_checksum: sha1:d2426572c3480a9b6d0befefb7256a11051b7d76
   docs/sdks/invoices/README.md:
-    last_write_checksum: sha1:cf2ddb7e323eea33b02704bb2dbd1808c0896345
+    last_write_checksum: sha1:959778997a93d77019f23d8d1a99110e2fe6d4f5
   docs/sdks/jobs/README.md:
     last_write_checksum: sha1:27ca05b0e4c859e5e36418df5c1b1463d060a58f
   docs/sdks/journalentries/README.md:
@@ -24691,7 +24695,7 @@ trackedFiles:
   pylintrc:
     last_write_checksum: sha1:ec6665a4862060890cf4c6ba61438d11decf5c3c
   pyproject.toml:
-    last_write_checksum: sha1:bb13d309654b3239b54edd03be305401946d854a
+    last_write_checksum: sha1:099a1237b7f710d50518f4af8259c8a9909792d6
   scripts/prepare_readme.py:
     last_write_checksum: sha1:798a05bafe4fbbfff5b67037866fa25efc52f11a
   scripts/publish.sh:
@@ -24705,7 +24709,7 @@ trackedFiles:
   src/apideck_unify/_hooks/types.py:
     last_write_checksum: sha1:d57be38e644de01983a9224b9733ae0add898d43
   src/apideck_unify/_version.py:
-    last_write_checksum: sha1:38bed84976d2057ee8c109664246acaf6f10149d
+    last_write_checksum: sha1:fb7c4837165531c2c801f3cfbaacff5c23722623
   src/apideck_unify/accounting.py:
     last_write_checksum: sha1:b6ffaba7a3af019489bff091acec26c331b2acbc
   src/apideck_unify/activities.py:
@@ -24749,7 +24753,7 @@ trackedFiles:
   src/apideck_unify/basesdk.py:
     last_write_checksum: sha1:02f62bd40dfedb9697666050be333be287dd5a5b
   src/apideck_unify/billpayments.py:
-    last_write_checksum: sha1:3f58257ea1f77f328edc711beb1f38f69d095f14
+    last_write_checksum: sha1:69211c1f7b5bcc8c39e2baf1a98473f209f1220b
   src/apideck_unify/bills.py:
     last_write_checksum: sha1:1c693a52738107afbe07e7d91a769cb013e989c7
   src/apideck_unify/categories.py:
@@ -24795,11 +24799,11 @@ trackedFiles:
   src/apideck_unify/createcallback.py:
     last_write_checksum: sha1:fa6cddb89b59b3890fbc0a06c4b7730e91e76f2e
   src/apideck_unify/creditnotes.py:
-    last_write_checksum: sha1:1e874248a8aaddecf089293263a371fa48ac580c
+    last_write_checksum: sha1:14ef99c5771a0fbf98e648bf7c0d3746adfcb27f
   src/apideck_unify/crm.py:
     last_write_checksum: sha1:0a3f32ca2265dd9bf40c9b5c0373685dab9e5da6
   src/apideck_unify/customers.py:
-    last_write_checksum: sha1:df6caa95164aee08cf242fc53d3f3df4a9915591
+    last_write_checksum: sha1:dc58aeb4e9e5e0c348431653a919c18387c3aa66
   src/apideck_unify/customfields.py:
     last_write_checksum: sha1:7666758135082e5efdc1c4b3f570cb2cc9a5c33c
   src/apideck_unify/custommappings.py:
@@ -24845,7 +24849,7 @@ trackedFiles:
   src/apideck_unify/invoiceitems.py:
     last_write_checksum: sha1:65382dd0b2c24ade626c5054bba658079da184e8
   src/apideck_unify/invoices.py:
-    last_write_checksum: sha1:2117cf75f5a54ec3e8f3ed25b7913c8a144bf0dd
+    last_write_checksum: sha1:854a89ba2bee8f07f88ce3820d8ac0c0246c0c18
   src/apideck_unify/issuetracking.py:
     last_write_checksum: sha1:a18420473c9ae884dcdc562042a52205924643c5
   src/apideck_unify/jobs.py:
@@ -25545,7 +25549,7 @@ trackedFiles:
   src/apideck_unify/models/creditnote.py:
     last_write_checksum: sha1:ba366de9071b72708dce6e538c2f0f4508a83eea
   src/apideck_unify/models/creditnotesfilter.py:
-    last_write_checksum: sha1:803a342c080a548d225d86a3704214bd1cd9de43
+    last_write_checksum: sha1:691f43c70a03cd70c1e632748a37c29cb3495c25
   src/apideck_unify/models/creditnotessort.py:
     last_write_checksum: sha1:8dfe580975c11a8e44f8e2df6416781f831d0ae6
   src/apideck_unify/models/creditordebit.py:
@@ -25661,7 +25665,7 @@ trackedFiles:
   src/apideck_unify/models/customer.py:
     last_write_checksum: sha1:7f9f162a075befb8fde245373e3ece282be845dd
   src/apideck_unify/models/customersfilter.py:
-    last_write_checksum: sha1:a23757bf9a2a26947f535b47a7f25eb24ac2b709
+    last_write_checksum: sha1:b5c2a4c1696ea8fab13c70cc71d208bf64a5da64
   src/apideck_unify/models/customerssort.py:
     last_write_checksum: sha1:1ae868c9919cd921fe7a4c953cede4a382bd804e
   src/apideck_unify/models/customfield.py:
@@ -26373,7 +26377,7 @@ trackedFiles:
   src/apideck_unify/models/invoiceresponse.py:
     last_write_checksum: sha1:f8f75f00763047726a6e2798859f10a9c8c29850
   src/apideck_unify/models/invoicesfilter.py:
-    last_write_checksum: sha1:715b51f28ee5a0eac9d17c96e3a8720eb046121a
+    last_write_checksum: sha1:4dad30df656b9dc8efa3fa284736b78cd5eb51b0
   src/apideck_unify/models/invoicessort.py:
     last_write_checksum: sha1:36801ee2f678352f726e270ceb3465ef0fe5390c
   src/apideck_unify/models/issuesfilter.py:
@@ -26939,13 +26943,13 @@ trackedFiles:
   src/apideck_unify/paymentmethods.py:
     last_write_checksum: sha1:5ce788c7cb3d54f998604c930d89a179f39fc2b3
   src/apideck_unify/payments.py:
-    last_write_checksum: sha1:a8f75982091644582c43ba4c824d9b8c55bbc405
+    last_write_checksum: sha1:29bff4d94ab901c01120a771c249ff1f5973d6de
   src/apideck_unify/payrolls.py:
     last_write_checksum: sha1:5ccd0b249a6acb7ec93202cf3e02d445138a66b0
   src/apideck_unify/pipelines.py:
     last_write_checksum: sha1:e190d857987220810e9cb5f2a2ab3bdf3a9225d9
   src/apideck_unify/products.py:
-    last_write_checksum: sha1:516b2bf87267fdf7c8b41b8b6a9f5e96e98ddc00
+    last_write_checksum: sha1:8553a62bd610bab4b66f5da25fd6dfad2a29c750
   src/apideck_unify/profitandloss_sdk.py:
     last_write_checksum: sha1:20d3057d32cdb49e710aee22dfd67e0c52242a12
   src/apideck_unify/projects.py:
@@ -26977,7 +26981,7 @@ trackedFiles:
   src/apideck_unify/subsidiaries.py:
     last_write_checksum: sha1:dbcf581c0704e0e7c9016b16b3d5f0feb27a07ad
   src/apideck_unify/suppliers.py:
-    last_write_checksum: sha1:d20a92cf310ed231547807a66efad28b435f5239
+    last_write_checksum: sha1:731600230cc63ed09fc1948b6e9005e987e30a66
   src/apideck_unify/taxrates.py:
     last_write_checksum: sha1:36374c7b578b7c5d329f6be778f578b02a79e1f1
   src/apideck_unify/timeoffrequests.py:
