@@ -28,6 +28,8 @@ class CustomersFilterStatus(str, Enum, metaclass=utils.OpenEnumMeta):
 
 
 class CustomersFilterTypedDict(TypedDict):
+    ids: NotRequired[str]
+    r"""Comma-separated list of customer IDs to filter by (e.g. `12345,67890`)."""
     company_name: NotRequired[str]
     r"""Company Name of customer to search for"""
     display_name: NotRequired[str]
@@ -48,6 +50,9 @@ class CustomersFilterTypedDict(TypedDict):
 
 
 class CustomersFilter(BaseModel):
+    ids: Annotated[Optional[str], FieldMetadata(query=True)] = None
+    r"""Comma-separated list of customer IDs to filter by (e.g. `12345,67890`)."""
+
     company_name: Annotated[Optional[str], FieldMetadata(query=True)] = None
     r"""Company Name of customer to search for"""
 
@@ -92,6 +97,7 @@ class CustomersFilter(BaseModel):
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
         optional_fields = [
+            "ids",
             "company_name",
             "display_name",
             "first_name",
