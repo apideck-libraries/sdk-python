@@ -1,12 +1,12 @@
 lockVersion: 2.0.0
 id: fca0ac3a-5f4e-452c-bbc7-2311afa8da40
 management:
-  docChecksum: 42238e2f7d8aa1bd41f2e0cbb19ff662
+  docChecksum: 6b496d5451bbcb4b55d35f5f2ae57e52
   docVersion: 10.45.0
   speakeasyVersion: 1.656.1
   generationVersion: 2.753.1
-  releaseVersion: 0.38.2
-  configChecksum: 739de4e061e50bbd48436f9349d8f741
+  releaseVersion: 0.38.3
+  configChecksum: e19636553b6157d1c2110204ee0b6e60
   repoURL: https://github.com/apideck-libraries/sdk-python.git
   installationURL: https://github.com/apideck-libraries/sdk-python.git
   published: true
@@ -24736,7 +24736,7 @@ trackedFiles:
   src/apideck_unify/ats.py:
     last_write_checksum: sha1:0d5c5cedbfeb231840eb69958e0240f2fbb630f8
   src/apideck_unify/attachments.py:
-    last_write_checksum: sha1:5a780e30fce2345c05087ff57a50a27a8787d860
+    last_write_checksum: sha1:2c2eebc9500668e34d3b1af7306965b41a351b48
   src/apideck_unify/balancesheet_sdk.py:
     last_write_checksum: sha1:335c4eae53d13970b8e19573dff7fa625dce8ed5
   src/apideck_unify/bankaccounts.py:
@@ -24750,7 +24750,7 @@ trackedFiles:
   src/apideck_unify/billpayments.py:
     last_write_checksum: sha1:ca8ff866f5f493d86cceb6ad2f27ff85b925bad0
   src/apideck_unify/bills.py:
-    last_write_checksum: sha1:6d95f9ce74a76530941ac07db57c37850f626226
+    last_write_checksum: sha1:a6512d36be57ef750f025ab803af9db73545f2b5
   src/apideck_unify/categories.py:
     last_write_checksum: sha1:e1ea6fe95dd3b5357c4b6dab95d0cf6e78f33750
   src/apideck_unify/collections.py:
@@ -24798,7 +24798,7 @@ trackedFiles:
   src/apideck_unify/crm.py:
     last_write_checksum: sha1:0a3f32ca2265dd9bf40c9b5c0373685dab9e5da6
   src/apideck_unify/customers.py:
-    last_write_checksum: sha1:056e9dedf6e5c57913fc31c927e3d3bb442a45f3
+    last_write_checksum: sha1:9eb6836dab793afa83b9b702fd022e0a7898cd19
   src/apideck_unify/customfields.py:
     last_write_checksum: sha1:7666758135082e5efdc1c4b3f570cb2cc9a5c33c
   src/apideck_unify/custommappings.py:
@@ -24844,13 +24844,13 @@ trackedFiles:
   src/apideck_unify/invoiceitems.py:
     last_write_checksum: sha1:65382dd0b2c24ade626c5054bba658079da184e8
   src/apideck_unify/invoices.py:
-    last_write_checksum: sha1:e750fe582e2a3a9971d84db2a61782f8666c6682
+    last_write_checksum: sha1:72e0eef9ccd9aebee8ad7bd9cb077a07ff71157f
   src/apideck_unify/issuetracking.py:
     last_write_checksum: sha1:a18420473c9ae884dcdc562042a52205924643c5
   src/apideck_unify/jobs.py:
     last_write_checksum: sha1:68126ac4bf72cb0457e888f727138e29fa49c498
   src/apideck_unify/journalentries.py:
-    last_write_checksum: sha1:0dbf1aa1bab4d49a2c7614beee96b11539e99f6b
+    last_write_checksum: sha1:91caab96ec9b429dae80e4059feef66c12b2ca7b
   src/apideck_unify/leads.py:
     last_write_checksum: sha1:b1898e48cf89d3269f10074a3a9bf5f6d6c945c3
   src/apideck_unify/ledgeraccounts.py:
@@ -26976,7 +26976,7 @@ trackedFiles:
   src/apideck_unify/subsidiaries.py:
     last_write_checksum: sha1:dbcf581c0704e0e7c9016b16b3d5f0feb27a07ad
   src/apideck_unify/suppliers.py:
-    last_write_checksum: sha1:2333931f049372ecab2e9a7e3783f5f1c95d3eb3
+    last_write_checksum: sha1:c251c752d0624b421d49104428a26866b4e467b8
   src/apideck_unify/taxrates.py:
     last_write_checksum: sha1:c6f10153eba9e342506d3e1b53ff0c3c2305887b
   src/apideck_unify/timeoffrequests.py:
