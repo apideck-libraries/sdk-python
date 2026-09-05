@@ -49,6 +49,8 @@ class FormFieldTypedDict(TypedDict):
     r"""Only applicable to select fields. Allow the user to add a custom value though the option select if the desired value is not in the option select list."""
     disabled: NotRequired[Nullable[bool]]
     r"""Indicates if the form field is displayed in a “read-only” mode."""
+    options_fetch_error: NotRequired[Nullable[bool]]
+    r"""Indicates if the options for a form field failed to be fetched from the downstream service. Only applicable to fields with dynamic options. When true, a retry mechanism should be provided to the user."""
     hidden: NotRequired[Nullable[bool]]
     r"""Indicates if the form field is not displayed but the value that is being stored on the connection."""
     deprecated: NotRequired[Nullable[bool]]
@@ -88,6 +90,9 @@ class FormField(BaseModel):
     disabled: OptionalNullable[bool] = UNSET
     r"""Indicates if the form field is displayed in a “read-only” mode."""
 
+    options_fetch_error: OptionalNullable[bool] = UNSET
+    r"""Indicates if the options for a form field failed to be fetched from the downstream service. Only applicable to fields with dynamic options. When true, a retry mechanism should be provided to the user."""
+
     hidden: OptionalNullable[bool] = UNSET
     r"""Indicates if the form field is not displayed but the value that is being stored on the connection."""
 
@@ -117,6 +122,7 @@ class FormField(BaseModel):
             "custom_field",
             "allow_custom_values",
             "disabled",
+            "options_fetch_error",
             "hidden",
             "deprecated",
             "sensitive",
@@ -128,6 +134,7 @@ class FormField(BaseModel):
             "placeholder",
             "description",
             "disabled",
+            "options_fetch_error",
             "hidden",
             "deprecated",
             "sensitive",

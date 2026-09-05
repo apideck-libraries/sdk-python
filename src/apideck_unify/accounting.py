@@ -9,6 +9,7 @@ from apideck_unify.balancesheet_sdk import BalanceSheetSDK
 from apideck_unify.bankaccounts import BankAccounts
 from apideck_unify.bankfeedaccounts import BankFeedAccounts
 from apideck_unify.bankfeedstatements import BankFeedStatements
+from apideck_unify.billcreditnotes import BillCreditNotes
 from apideck_unify.billpayments import BillPayments
 from apideck_unify.bills import Bills
 from apideck_unify.categories import Categories
@@ -49,6 +50,7 @@ class Accounting(BaseSDK):
     ledger_accounts: LedgerAccounts
     invoice_items: InvoiceItems
     credit_notes: CreditNotes
+    bill_credit_notes: BillCreditNotes
     customers: Customers
     suppliers: Suppliers
     payments: Payments
@@ -99,6 +101,9 @@ class Accounting(BaseSDK):
             self.sdk_configuration, parent_ref=self.parent_ref
         )
         self.credit_notes = CreditNotes(
+            self.sdk_configuration, parent_ref=self.parent_ref
+        )
+        self.bill_credit_notes = BillCreditNotes(
             self.sdk_configuration, parent_ref=self.parent_ref
         )
         self.customers = Customers(self.sdk_configuration, parent_ref=self.parent_ref)
