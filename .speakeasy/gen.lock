@@ -1,12 +1,12 @@
 lockVersion: 2.0.0
 id: fca0ac3a-5f4e-452c-bbc7-2311afa8da40
 management:
-  docChecksum: 6b496d5451bbcb4b55d35f5f2ae57e52
-  docVersion: 10.45.0
+  docChecksum: 21e564de24bca9f406b9d8af2f8c1e73
+  docVersion: 10.47.1
   speakeasyVersion: 1.656.1
   generationVersion: 2.753.1
-  releaseVersion: 0.38.3
-  configChecksum: e19636553b6157d1c2110204ee0b6e60
+  releaseVersion: 0.39.0
+  configChecksum: 7001d6b5d363e56555b3c501def838a5
   repoURL: https://github.com/apideck-libraries/sdk-python.git
   installationURL: https://github.com/apideck-libraries/sdk-python.git
   published: true
@@ -126,6 +126,21 @@ generatedFiles:
   - docs/models/accountingbankfeedstatementsupdateglobals.md
   - docs/models/accountingbankfeedstatementsupdaterequest.md
   - docs/models/accountingbankfeedstatementsupdateresponse.md
+  - docs/models/accountingbillcreditnotesaddglobals.md
+  - docs/models/accountingbillcreditnotesaddrequest.md
+  - docs/models/accountingbillcreditnotesaddresponse.md
+  - docs/models/accountingbillcreditnotesallglobals.md
+  - docs/models/accountingbillcreditnotesallrequest.md
+  - docs/models/accountingbillcreditnotesallresponse.md
+  - docs/models/accountingbillcreditnotesdeleteglobals.md
+  - docs/models/accountingbillcreditnotesdeleterequest.md
+  - docs/models/accountingbillcreditnotesdeleteresponse.md
+  - docs/models/accountingbillcreditnotesoneglobals.md
+  - docs/models/accountingbillcreditnotesonerequest.md
+  - docs/models/accountingbillcreditnotesoneresponse.md
+  - docs/models/accountingbillcreditnotesupdateglobals.md
+  - docs/models/accountingbillcreditnotesupdaterequest.md
+  - docs/models/accountingbillcreditnotesupdateresponse.md
   - docs/models/accountingbillpaymentsaddglobals.md
   - docs/models/accountingbillpaymentsaddrequest.md
   - docs/models/accountingbillpaymentsaddresponse.md
@@ -661,6 +676,15 @@ generatedFiles:
   - docs/models/bankfeedstatementtransactiontype.md
   - docs/models/benefit.md
   - docs/models/bill.md
+  - docs/models/billcreditnote.md
+  - docs/models/billcreditnoteinput.md
+  - docs/models/billcreditnotelineitem.md
+  - docs/models/billcreditnotelineiteminput.md
+  - docs/models/billcreditnotesfilter.md
+  - docs/models/billcreditnotessort.md
+  - docs/models/billcreditnotessortby.md
+  - docs/models/billcreditnotestatus.md
+  - docs/models/billcreditnotetype.md
   - docs/models/billingmethod.md
   - docs/models/billinput.md
   - docs/models/billlineitem.md
@@ -784,6 +808,7 @@ generatedFiles:
   - docs/models/createbankaccountresponse.md
   - docs/models/createbankfeedaccountresponse.md
   - docs/models/createbankfeedstatementresponse.md
+  - docs/models/createbillcreditnoteresponse.md
   - docs/models/createbillpaymentresponse.md
   - docs/models/createbillresponse.md
   - docs/models/createcallbackstate.md
@@ -1054,6 +1079,7 @@ generatedFiles:
   - docs/models/deletebankaccountresponse.md
   - docs/models/deletebankfeedaccountresponse.md
   - docs/models/deletebankfeedstatementresponse.md
+  - docs/models/deletebillcreditnoteresponse.md
   - docs/models/deletebillpaymentresponse.md
   - docs/models/deletebillresponse.md
   - docs/models/deletecommentresponse.md
@@ -1363,6 +1389,8 @@ generatedFiles:
   - docs/models/getbankfeedaccountsresponse.md
   - docs/models/getbankfeedstatementresponse.md
   - docs/models/getbankfeedstatementsresponse.md
+  - docs/models/getbillcreditnoteresponse.md
+  - docs/models/getbillcreditnotesresponse.md
   - docs/models/getbillpaymentresponse.md
   - docs/models/getbillpaymentsresponse.md
   - docs/models/getbillresponse.md
@@ -1978,6 +2006,7 @@ generatedFiles:
   - docs/models/updatebankaccountresponse.md
   - docs/models/updatebankfeedaccountresponse.md
   - docs/models/updatebankfeedstatementresponse.md
+  - docs/models/updatebillcreditnoteresponse.md
   - docs/models/updatebillpaymentresponse.md
   - docs/models/updatebillresponse.md
   - docs/models/updatecommentresponse.md
@@ -2169,6 +2198,7 @@ generatedFiles:
   - docs/sdks/bankaccounts/README.md
   - docs/sdks/bankfeedaccounts/README.md
   - docs/sdks/bankfeedstatements/README.md
+  - docs/sdks/billcreditnotes/README.md
   - docs/sdks/billpayments/README.md
   - docs/sdks/bills/README.md
   - docs/sdks/categories/README.md
@@ -2280,6 +2310,7 @@ generatedFiles:
   - src/apideck_unify/bankfeedaccounts.py
   - src/apideck_unify/bankfeedstatements.py
   - src/apideck_unify/basesdk.py
+  - src/apideck_unify/billcreditnotes.py
   - src/apideck_unify/billpayments.py
   - src/apideck_unify/bills.py
   - src/apideck_unify/categories.py
@@ -2363,6 +2394,11 @@ generatedFiles:
   - src/apideck_unify/models/accounting_bankfeedstatementsdeleteop.py
   - src/apideck_unify/models/accounting_bankfeedstatementsoneop.py
   - src/apideck_unify/models/accounting_bankfeedstatementsupdateop.py
+  - src/apideck_unify/models/accounting_billcreditnotesaddop.py
+  - src/apideck_unify/models/accounting_billcreditnotesallop.py
+  - src/apideck_unify/models/accounting_billcreditnotesdeleteop.py
+  - src/apideck_unify/models/accounting_billcreditnotesoneop.py
+  - src/apideck_unify/models/accounting_billcreditnotesupdateop.py
   - src/apideck_unify/models/accounting_billpaymentsaddop.py
   - src/apideck_unify/models/accounting_billpaymentsallop.py
   - src/apideck_unify/models/accounting_billpaymentsdeleteop.py
@@ -2559,6 +2595,11 @@ generatedFiles:
   - src/apideck_unify/models/bankfeedstatement.py
   - src/apideck_unify/models/benefit.py
   - src/apideck_unify/models/bill.py
+  - src/apideck_unify/models/billcreditnote.py
+  - src/apideck_unify/models/billcreditnotelineitem.py
+  - src/apideck_unify/models/billcreditnotelineitem_input.py
+  - src/apideck_unify/models/billcreditnotesfilter.py
+  - src/apideck_unify/models/billcreditnotessort.py
   - src/apideck_unify/models/billlineitem.py
   - src/apideck_unify/models/billlineitem_input.py
   - src/apideck_unify/models/billpayment.py
@@ -2623,6 +2664,7 @@ generatedFiles:
   - src/apideck_unify/models/createbankaccountresponse.py
   - src/apideck_unify/models/createbankfeedaccountresponse.py
   - src/apideck_unify/models/createbankfeedstatementresponse.py
+  - src/apideck_unify/models/createbillcreditnoteresponse.py
   - src/apideck_unify/models/createbillpaymentresponse.py
   - src/apideck_unify/models/createbillresponse.py
   - src/apideck_unify/models/createcallbackstate.py
@@ -2758,6 +2800,7 @@ generatedFiles:
   - src/apideck_unify/models/deletebankaccountresponse.py
   - src/apideck_unify/models/deletebankfeedaccountresponse.py
   - src/apideck_unify/models/deletebankfeedstatementresponse.py
+  - src/apideck_unify/models/deletebillcreditnoteresponse.py
   - src/apideck_unify/models/deletebillpaymentresponse.py
   - src/apideck_unify/models/deletebillresponse.py
   - src/apideck_unify/models/deletecommentresponse.py
@@ -2926,6 +2969,8 @@ generatedFiles:
   - src/apideck_unify/models/getbankfeedaccountsresponse.py
   - src/apideck_unify/models/getbankfeedstatementresponse.py
   - src/apideck_unify/models/getbankfeedstatementsresponse.py
+  - src/apideck_unify/models/getbillcreditnoteresponse.py
+  - src/apideck_unify/models/getbillcreditnotesresponse.py
   - src/apideck_unify/models/getbillpaymentresponse.py
   - src/apideck_unify/models/getbillpaymentsresponse.py
   - src/apideck_unify/models/getbillresponse.py
@@ -3275,6 +3320,7 @@ generatedFiles:
   - src/apideck_unify/models/updatebankaccountresponse.py
   - src/apideck_unify/models/updatebankfeedaccountresponse.py
   - src/apideck_unify/models/updatebankfeedstatementresponse.py
+  - src/apideck_unify/models/updatebillcreditnoteresponse.py
   - src/apideck_unify/models/updatebillpaymentresponse.py
   - src/apideck_unify/models/updatebillresponse.py
   - src/apideck_unify/models/updatecommentresponse.py
@@ -20278,8 +20324,169 @@ examples:
           application/json: {"status_code": 422, "error": "Unprocessable Entity", "type_name": "InvalidStateError", "message": "Invalid State", "detail": "Unprocessable request, please verify your request headers and body.", "ref": "https://developers.apideck.com/errors#invalidstateerror"}
         default:
           application/json: {"status_code": 400, "error": "Bad Request", "type_name": "RequestHeadersValidationError", "message": "Invalid Params", "detail": "Missing Header: x-apideck-consumer-id", "ref": "https://developers.apideck.com/errors#unauthorizederror"}
+  accounting.billCreditNotesAll:
+    speakeasy-default-accounting-bill-credit-notes-all:
+      parameters:
+        query:
+          raw: false
+          limit: 20
+          filter: {"ids": "12345,67890", "id_since": "1", "updated_since": "2020-09-30T07:43:32.000Z", "created_since": "2020-09-30T07:43:32.000Z", "number": "OIT00546", "supplier_id": "123abc"}
+          sort: {"by": "updated_at", "direction": "desc"}
+          pass_through: {"search": "San Francisco"}
+          fields: "id,updated_at"
+        header:
+          x-apideck-consumer-id: "test-consumer"
+          x-apideck-app-id: "dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX"
+          x-apideck-service-id: "salesforce"
+          x-apideck-company-id: "12345"
+      responses:
+        "200":
+          application/json: {"status_code": 200, "status": "OK", "service": "microsoft-dynamics-365-business-central", "resource": "bill-credit-notes", "operation": "all", "data": [{"id": "123456", "number": "OIT00546", "supplier": {"id": "12345", "display_id": "SUPP00101", "display_name": "Windsurf Shop", "company_name": "The boring company", "address": {"id": "123", "type": "primary", "string": "25 Spring Street, Blackburn, VIC 3130", "name": "HQ US", "line1": "Main street", "line2": "apt #", "line3": "Suite #", "line4": "delivery instructions", "line5": "Attention: Finance Dept", "street_number": "25", "city": "San Francisco", "state": "CA", "postal_code": "94104", "country": "US", "latitude": "40.759211", "longitude": "-73.984638", "county": "Santa Clara", "contact_name": "Elon Musk", "salutation": "Mr", "phone_number": "111-111-1111", "fax": "122-111-1111", "email": "elon@musk.com", "website": "https://elonmusk.com", "notes": "Address notes or delivery instructions.", "row_version": "1-12345"}}, "subsidiary": {"id": "12345", "display_id": "123456", "name": "Acme Inc."}, "location": {"id": "123456", "display_id": "123456", "name": "New York Office", "downstream_id": "12345"}, "department": {"id": "12345", "display_id": "123456", "name": "Acme Inc.", "downstream_id": "12345"}, "currency": "USD", "currency_rate": 0.69, "tax_inclusive": true, "sub_total": 27500, "total_amount": 49.99, "total_tax": 2500, "tax_code": "1234", "balance": 27500, "remaining_credit": 27500, "status": "authorised", "reference": "123456", "date_issued": "2021-05-01T12:00:00.000Z", "date_paid": "2021-05-01T12:00:00.000Z", "type": "accounts_payable_credit", "account": null, "line_items": [{"id": "12345", "row_id": "12345", "code": "120-C", "line_number": 1, "description": "Returned goods credit", "type": "expense_account", "tax_amount": 27.5, "total_amount": 27500, "quantity": 1, "unit_price": 27500.5, "unit_of_measure": "pc.", "discount_percentage": 0.01, "discount_amount": 19.99, "service_date": "2024-01-15", "location": null, "department": {"id": "12345", "display_id": "123456", "name": "Acme Inc.", "downstream_id": "12345"}, "item": {"id": "12344", "code": "120-C", "name": "Model Y"}, "tax_rate": {"id": "123456", "code": "N-T", "name": "GST on Purchases", "rate": 10}, "ledger_account": {"id": "123456", "name": "Bank account", "nominal_code": "N091", "code": "453", "parent_id": "123456", "display_id": "123456"}, "tracking_categories": [{"id": "123456", "code": "100", "name": "New York", "parent_id": "123456", "parent_name": "New York"}], "row_version": "1-12345", "updated_by": "12345", "created_by": "12345", "created_at": "2020-09-30T07:43:32.000Z", "updated_at": "2020-09-30T07:43:32.000Z"}], "allocations": [{"id": "123456", "code": "N091", "amount": 49.99, "allocation_id": "123456"}], "note": "Some notes about this bill credit note", "terms": "Some terms about this bill credit note", "tracking_categories": [{"id": "123456", "code": "100", "name": "New York", "parent_id": "123456", "parent_name": "New York"}], "custom_fields": [{"id": "2389328923893298", "name": "employee_level", "ref_name": "Marketing", "description": "Employee Level", "value": "Uses Salesforce and Marketo"}], "row_version": "1-12345", "updated_by": "12345", "created_by": "12345", "updated_at": "2020-09-30T07:43:32.000Z", "created_at": "2020-09-30T07:43:32.000Z", "pass_through": [{"service_id": "<id>", "extend_paths": [{"path": "$.nested.property", "value": {"TaxClassificationRef": {"value": "EUC-99990201-V1-00020000"}}}]}]}], "meta": {"items_on_page": 50, "cursors": {"previous": "em9oby1jcm06OnBhZ2U6OjE=", "current": "em9oby1jcm06OnBhZ2U6OjI=", "next": "em9oby1jcm06OnBhZ2U6OjM="}, "total_count": 1, "warnings": [{"type": "downstream_request_failed", "status_code": 429, "operation": "getManager"}]}, "links": {"previous": "https://unify.apideck.com/crm/companies?cursor=em9oby1jcm06OnBhZ2U6OjE%3D", "current": "https://unify.apideck.com/crm/companies", "next": "https://unify.apideck.com/crm/companies?cursor=em9oby1jcm06OnBhZ2U6OjM"}}
+        "400":
+          application/json: {"status_code": 400, "error": "Bad Request", "type_name": "RequestValidationError", "message": "Invalid Params", "detail": "Missing property foobar", "ref": "https://developers.apideck.com/errors#requestvalidationerror", "downstream_errors": [{"message": "Account code '100' has been archived or deleted", "detail": "Each line item must reference a valid account", "code": "VALIDATION_ERROR"}]}
+        "401":
+          application/json: {"status_code": 401, "error": "Unauthorized", "type_name": "UnauthorizedError", "message": "Unauthorized Request", "detail": "Missing authentication", "ref": "https://developers.apideck.com/errors#unauthorizederror"}
+        "402":
+          application/json: {"status_code": 402, "error": "Payment Required", "type_name": "RequestLimitError", "message": "Request Limit Reached", "detail": "You have reached your limit of 2000", "ref": "https://developers.apideck.com/errors#requestlimiterror"}
+        "404":
+          application/json: {"status_code": 404, "error": "Not Found", "type_name": "EntityNotFoundError", "message": "Unknown Widget", "detail": "Could not find widget with id: '123'", "ref": "https://developers.apideck.com/errors#entitynotfounderror"}
+        "422":
+          application/json: {"status_code": 422, "error": "Unprocessable Entity", "type_name": "InvalidStateError", "message": "Invalid State", "detail": "Unprocessable request, please verify your request headers and body.", "ref": "https://developers.apideck.com/errors#invalidstateerror"}
+        default:
+          application/json: {"status_code": 400, "error": "Bad Request", "type_name": "RequestHeadersValidationError", "message": "Invalid Params", "detail": "Missing Header: x-apideck-consumer-id", "ref": "https://developers.apideck.com/errors#unauthorizederror"}
+  accounting.billCreditNotesAdd:
+    speakeasy-default-accounting-bill-credit-notes-add:
+      parameters:
+        query:
+          raw: false
+        header:
+          x-apideck-consumer-id: "test-consumer"
+          x-apideck-app-id: "dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX"
+          x-apideck-service-id: "salesforce"
+          x-apideck-company-id: "12345"
+      requestBody:
+        application/json: {"number": "OIT00546", "supplier": {"id": "12345", "display_name": "Windsurf Shop", "address": {"id": "123", "type": "primary", "string": "25 Spring Street, Blackburn, VIC 3130", "name": "HQ US", "line1": "Main street", "line2": "apt #", "line3": "Suite #", "line4": "delivery instructions", "line5": "Attention: Finance Dept", "street_number": "25", "city": "San Francisco", "state": "CA", "postal_code": "94104", "country": "US", "latitude": "40.759211", "longitude": "-73.984638", "county": "Santa Clara", "contact_name": "Elon Musk", "salutation": "Mr", "phone_number": "111-111-1111", "fax": "122-111-1111", "email": "elon@musk.com", "website": "https://elonmusk.com", "notes": "Address notes or delivery instructions.", "row_version": "1-12345"}}, "subsidiary": {"display_id": "123456", "name": "Acme Inc."}, "location": {"id": "123456", "display_id": "123456", "name": "New York Office"}, "department": {"display_id": "123456", "name": "Acme Inc."}, "currency": "USD", "currency_rate": 0.69, "tax_inclusive": true, "sub_total": 27500, "total_amount": 49.99, "total_tax": 2500, "tax_code": "1234", "balance": 27500, "remaining_credit": 27500, "status": "authorised", "reference": "123456", "date_issued": "2021-05-01T12:00:00.000Z", "date_paid": "2021-05-01T12:00:00.000Z", "type": "accounts_payable_credit", "account": {"id": "123456", "name": "Bank account", "nominal_code": "N091", "code": "453", "parent_id": "123456", "display_id": "123456"}, "line_items": [{"row_id": "12345", "code": "120-C", "line_number": 1, "description": "Returned goods credit", "type": "expense_account", "tax_amount": 27.5, "total_amount": 27500, "quantity": 1, "unit_price": 27500.5, "unit_of_measure": "pc.", "discount_percentage": 0.01, "discount_amount": 19.99, "service_date": "2024-01-15", "location": {"id": "123456", "display_id": "123456", "name": "New York Office"}, "department": null, "item": {"id": "12344", "code": "120-C", "name": "Model Y"}, "tax_rate": {"id": "123456", "code": "N-T", "rate": 10}, "ledger_account": {"id": "123456", "name": "Bank account", "nominal_code": "N091", "code": "453", "parent_id": "123456", "display_id": "123456"}, "tracking_categories": [{"id": "123456", "code": "100", "name": "New York", "parent_id": "123456", "parent_name": "New York"}], "row_version": "1-12345"}], "allocations": [{"id": "123456", "amount": 49.99, "allocation_id": "123456"}], "note": "Some notes about this bill credit note", "terms": "Some terms about this bill credit note", "tracking_categories": [{"id": "123456", "code": "100", "name": "New York", "parent_id": "123456", "parent_name": "New York"}], "custom_fields": [{"id": "2389328923893298", "name": "employee_level", "ref_name": "Marketing", "description": "Employee Level", "value": "Uses Salesforce and Marketo"}], "row_version": "1-12345", "pass_through": [{"service_id": "<id>", "extend_paths": [{"path": "$.nested.property", "value": {"TaxClassificationRef": {"value": "EUC-99990201-V1-00020000"}}}]}]}
+      responses:
+        "201":
+          application/json: {"status_code": 200, "status": "OK", "service": "microsoft-dynamics-365-business-central", "resource": "bill-credit-notes", "operation": "add", "data": {"id": "12345"}}
+        "400":
+          application/json: {"status_code": 400, "error": "Bad Request", "type_name": "RequestValidationError", "message": "Invalid Params", "detail": "Missing property foobar", "ref": "https://developers.apideck.com/errors#requestvalidationerror", "downstream_errors": [{"message": "Account code '100' has been archived or deleted", "detail": "Each line item must reference a valid account", "code": "VALIDATION_ERROR"}]}
+        "401":
+          application/json: {"status_code": 401, "error": "Unauthorized", "type_name": "UnauthorizedError", "message": "Unauthorized Request", "detail": "Missing authentication", "ref": "https://developers.apideck.com/errors#unauthorizederror"}
+        "402":
+          application/json: {"status_code": 402, "error": "Payment Required", "type_name": "RequestLimitError", "message": "Request Limit Reached", "detail": "You have reached your limit of 2000", "ref": "https://developers.apideck.com/errors#requestlimiterror"}
+        "404":
+          application/json: {"status_code": 404, "error": "Not Found", "type_name": "EntityNotFoundError", "message": "Unknown Widget", "detail": "Could not find widget with id: '123'", "ref": "https://developers.apideck.com/errors#entitynotfounderror"}
+        "422":
+          application/json: {"status_code": 422, "error": "Unprocessable Entity", "type_name": "InvalidStateError", "message": "Invalid State", "detail": "Unprocessable request, please verify your request headers and body.", "ref": "https://developers.apideck.com/errors#invalidstateerror"}
+        default:
+          application/json: {"status_code": 400, "error": "Bad Request", "type_name": "RequestHeadersValidationError", "message": "Invalid Params", "detail": "Missing Header: x-apideck-consumer-id", "ref": "https://developers.apideck.com/errors#unauthorizederror"}
+  accounting.billCreditNotesOne:
+    speakeasy-default-accounting-bill-credit-notes-one:
+      parameters:
+        path:
+          id: "<id>"
+        query:
+          raw: false
+          fields: "id,updated_at"
+        header:
+          x-apideck-consumer-id: "test-consumer"
+          x-apideck-app-id: "dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX"
+          x-apideck-service-id: "salesforce"
+          x-apideck-company-id: "12345"
+      responses:
+        "200":
+          application/json: {"status_code": 200, "status": "OK", "service": "microsoft-dynamics-365-business-central", "resource": "bill-credit-notes", "operation": "one", "data": {"id": "123456", "number": "OIT00546", "supplier": {"id": "12345", "display_id": "SUPP00101", "display_name": "Windsurf Shop", "company_name": "The boring company", "address": {"id": "123", "type": "primary", "string": "25 Spring Street, Blackburn, VIC 3130", "name": "HQ US", "line1": "Main street", "line2": "apt #", "line3": "Suite #", "line4": "delivery instructions", "line5": "Attention: Finance Dept", "street_number": "25", "city": "San Francisco", "state": "CA", "postal_code": "94104", "country": "US", "latitude": "40.759211", "longitude": "-73.984638", "county": "Santa Clara", "contact_name": "Elon Musk", "salutation": "Mr", "phone_number": "111-111-1111", "fax": "122-111-1111", "email": "elon@musk.com", "website": "https://elonmusk.com", "notes": "Address notes or delivery instructions.", "row_version": "1-12345"}}, "subsidiary": {"id": "12345", "display_id": "123456", "name": "Acme Inc."}, "location": {"id": "123456", "display_id": "123456", "name": "New York Office", "downstream_id": "12345"}, "department": {"id": "12345", "display_id": "123456", "name": "Acme Inc.", "downstream_id": "12345"}, "currency": "USD", "currency_rate": 0.69, "tax_inclusive": true, "sub_total": 27500, "total_amount": 49.99, "total_tax": 2500, "tax_code": "1234", "balance": 27500, "remaining_credit": 27500, "status": "authorised", "reference": "123456", "date_issued": "2021-05-01T12:00:00.000Z", "date_paid": "2021-05-01T12:00:00.000Z", "type": "accounts_payable_credit", "account": {"id": "123456", "name": "Bank account", "nominal_code": "N091", "code": "453", "parent_id": "123456", "display_id": "123456"}, "line_items": [{"id": "12345", "row_id": "12345", "code": "120-C", "line_number": 1, "description": "Returned goods credit", "type": "expense_account", "tax_amount": 27.5, "total_amount": 27500, "quantity": 1, "unit_price": 27500.5, "unit_of_measure": "pc.", "discount_percentage": 0.01, "discount_amount": 19.99, "service_date": "2024-01-15", "location": {"id": "123456", "display_id": "123456", "name": "New York Office", "downstream_id": "12345"}, "department": {"id": "12345", "display_id": "123456", "name": "Acme Inc.", "downstream_id": "12345"}, "item": {"id": "12344", "code": "120-C", "name": "Model Y"}, "tax_rate": {"id": "123456", "code": "N-T", "name": "GST on Purchases", "rate": 10}, "ledger_account": {"id": "123456", "name": "Bank account", "nominal_code": "N091", "code": "453", "parent_id": "123456", "display_id": "123456"}, "tracking_categories": [{"id": "123456", "code": "100", "name": "New York", "parent_id": "123456", "parent_name": "New York"}], "row_version": "1-12345", "updated_by": "12345", "created_by": "12345", "created_at": "2020-09-30T07:43:32.000Z", "updated_at": "2020-09-30T07:43:32.000Z"}], "allocations": [{"id": "123456", "code": "N091", "amount": 49.99, "allocation_id": "123456"}], "note": "Some notes about this bill credit note", "terms": "Some terms about this bill credit note", "tracking_categories": [{"id": "123456", "code": "100", "name": "New York", "parent_id": "123456", "parent_name": "New York"}], "custom_fields": [{"id": "2389328923893298", "name": "employee_level", "ref_name": "Marketing", "description": "Employee Level", "value": "Uses Salesforce and Marketo"}], "row_version": "1-12345", "updated_by": "12345", "created_by": "12345", "updated_at": "2020-09-30T07:43:32.000Z", "created_at": "2020-09-30T07:43:32.000Z", "pass_through": [{"service_id": "<id>", "extend_paths": [{"path": "$.nested.property", "value": {"TaxClassificationRef": {"value": "EUC-99990201-V1-00020000"}}}]}]}, "meta": {"items_on_page": 50, "cursors": {"previous": "em9oby1jcm06OnBhZ2U6OjE=", "current": "em9oby1jcm06OnBhZ2U6OjI=", "next": "em9oby1jcm06OnBhZ2U6OjM="}, "total_count": 1, "warnings": null}}
+        "400":
+          application/json: {"status_code": 400, "error": "Bad Request", "type_name": "RequestValidationError", "message": "Invalid Params", "detail": "Missing property foobar", "ref": "https://developers.apideck.com/errors#requestvalidationerror", "downstream_errors": [{"message": "Account code '100' has been archived or deleted", "detail": "Each line item must reference a valid account", "code": "VALIDATION_ERROR"}]}
+        "401":
+          application/json: {"status_code": 401, "error": "Unauthorized", "type_name": "UnauthorizedError", "message": "Unauthorized Request", "detail": "Missing authentication", "ref": "https://developers.apideck.com/errors#unauthorizederror"}
+        "402":
+          application/json: {"status_code": 402, "error": "Payment Required", "type_name": "RequestLimitError", "message": "Request Limit Reached", "detail": "You have reached your limit of 2000", "ref": "https://developers.apideck.com/errors#requestlimiterror"}
+        "404":
+          application/json: {"status_code": 404, "error": "Not Found", "type_name": "EntityNotFoundError", "message": "Unknown Widget", "detail": "Could not find widget with id: '123'", "ref": "https://developers.apideck.com/errors#entitynotfounderror"}
+        "422":
+          application/json: {"status_code": 422, "error": "Unprocessable Entity", "type_name": "InvalidStateError", "message": "Invalid State", "detail": "Unprocessable request, please verify your request headers and body.", "ref": "https://developers.apideck.com/errors#invalidstateerror"}
+        default:
+          application/json: {"status_code": 400, "error": "Bad Request", "type_name": "RequestHeadersValidationError", "message": "Invalid Params", "detail": "Missing Header: x-apideck-consumer-id", "ref": "https://developers.apideck.com/errors#unauthorizederror"}
+  accounting.billCreditNotesUpdate:
+    speakeasy-default-accounting-bill-credit-notes-update:
+      parameters:
+        path:
+          id: "<id>"
+        query:
+          raw: false
+        header:
+          x-apideck-consumer-id: "test-consumer"
+          x-apideck-app-id: "dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX"
+          x-apideck-service-id: "salesforce"
+      requestBody:
+        application/json: {"number": "OIT00546", "supplier": {"id": "12345", "display_name": "Windsurf Shop", "address": {"id": "123", "type": "primary", "string": "25 Spring Street, Blackburn, VIC 3130", "name": "HQ US", "line1": "Main street", "line2": "apt #", "line3": "Suite #", "line4": "delivery instructions", "line5": "Attention: Finance Dept", "street_number": "25", "city": "San Francisco", "state": "CA", "postal_code": "94104", "country": "US", "latitude": "40.759211", "longitude": "-73.984638", "county": "Santa Clara", "contact_name": "Elon Musk", "salutation": "Mr", "phone_number": "111-111-1111", "fax": "122-111-1111", "email": "elon@musk.com", "website": "https://elonmusk.com", "notes": "Address notes or delivery instructions.", "row_version": "1-12345"}}, "subsidiary": {"display_id": "123456", "name": "Acme Inc."}, "location": {"id": "123456", "display_id": "123456", "name": "New York Office"}, "department": {"display_id": "123456", "name": "Acme Inc."}, "currency": "USD", "currency_rate": 0.69, "tax_inclusive": true, "sub_total": 27500, "total_amount": 49.99, "total_tax": 2500, "tax_code": "1234", "balance": 27500, "remaining_credit": 27500, "status": "authorised", "reference": "123456", "date_issued": "2021-05-01T12:00:00.000Z", "date_paid": "2021-05-01T12:00:00.000Z", "type": "accounts_payable_credit", "account": {"id": "123456", "name": "Bank account", "nominal_code": "N091", "code": "453", "parent_id": "123456", "display_id": "123456"}, "line_items": [{"row_id": "12345", "code": "120-C", "line_number": 1, "description": "Returned goods credit", "type": "expense_account", "tax_amount": 27.5, "total_amount": 27500, "quantity": 1, "unit_price": 27500.5, "unit_of_measure": "pc.", "discount_percentage": 0.01, "discount_amount": 19.99, "service_date": "2024-01-15", "location": {"id": "123456", "display_id": "123456", "name": "New York Office"}, "department": {"display_id": "123456", "name": "Acme Inc."}, "item": {"id": "12344", "code": "120-C", "name": "Model Y"}, "tax_rate": {"id": "123456", "code": "N-T", "rate": 10}, "ledger_account": {"id": "123456", "name": "Bank account", "nominal_code": "N091", "code": "453", "parent_id": "123456", "display_id": "123456"}, "tracking_categories": [{"id": "123456", "code": "100", "name": "New York", "parent_id": "123456", "parent_name": "New York"}], "row_version": "1-12345"}], "allocations": [{"id": "123456", "amount": 49.99, "allocation_id": "123456"}], "note": "Some notes about this bill credit note", "terms": "Some terms about this bill credit note", "tracking_categories": [{"id": "123456", "code": "100", "name": "New York", "parent_id": "123456", "parent_name": "New York"}], "custom_fields": [{"id": "2389328923893298", "name": "employee_level", "ref_name": "Marketing", "description": "Employee Level", "value": "Uses Salesforce and Marketo"}], "row_version": "1-12345", "pass_through": [{"service_id": "<id>", "extend_paths": [{"path": "$.nested.property", "value": {"TaxClassificationRef": {"value": "EUC-99990201-V1-00020000"}}}]}]}
+      responses:
+        "200":
+          application/json: {"status_code": 200, "status": "OK", "service": "microsoft-dynamics-365-business-central", "resource": "bill-credit-notes", "operation": "update", "data": {"id": "12345"}}
+        "400":
+          application/json: {"status_code": 400, "error": "Bad Request", "type_name": "RequestValidationError", "message": "Invalid Params", "detail": "Missing property foobar", "ref": "https://developers.apideck.com/errors#requestvalidationerror", "downstream_errors": [{"message": "Account code '100' has been archived or deleted", "detail": "Each line item must reference a valid account", "code": "VALIDATION_ERROR"}]}
+        "401":
+          application/json: {"status_code": 401, "error": "Unauthorized", "type_name": "UnauthorizedError", "message": "Unauthorized Request", "detail": "Missing authentication", "ref": "https://developers.apideck.com/errors#unauthorizederror"}
+        "402":
+          application/json: {"status_code": 402, "error": "Payment Required", "type_name": "RequestLimitError", "message": "Request Limit Reached", "detail": "You have reached your limit of 2000", "ref": "https://developers.apideck.com/errors#requestlimiterror"}
+        "404":
+          application/json: {"status_code": 404, "error": "Not Found", "type_name": "EntityNotFoundError", "message": "Unknown Widget", "detail": "Could not find widget with id: '123'", "ref": "https://developers.apideck.com/errors#entitynotfounderror"}
+        "422":
+          application/json: {"status_code": 422, "error": "Unprocessable Entity", "type_name": "InvalidStateError", "message": "Invalid State", "detail": "Unprocessable request, please verify your request headers and body.", "ref": "https://developers.apideck.com/errors#invalidstateerror"}
+        default:
+          application/json: {"status_code": 400, "error": "Bad Request", "type_name": "RequestHeadersValidationError", "message": "Invalid Params", "detail": "Missing Header: x-apideck-consumer-id", "ref": "https://developers.apideck.com/errors#unauthorizederror"}
+  accounting.billCreditNotesDelete:
+    speakeasy-default-accounting-bill-credit-notes-delete:
+      parameters:
+        path:
+          id: "<id>"
+        query:
+          raw: false
+        header:
+          x-apideck-consumer-id: "test-consumer"
+          x-apideck-app-id: "dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX"
+          x-apideck-service-id: "salesforce"
+      responses:
+        "200":
+          application/json: {"status_code": 200, "status": "OK", "service": "microsoft-dynamics-365-business-central", "resource": "bill-credit-notes", "operation": "delete", "data": {"id": "12345"}}
+        "400":
+          application/json: {"status_code": 400, "error": "Bad Request", "type_name": "RequestValidationError", "message": "Invalid Params", "detail": "Missing property foobar", "ref": "https://developers.apideck.com/errors#requestvalidationerror", "downstream_errors": [{"message": "Account code '100' has been archived or deleted", "detail": "Each line item must reference a valid account", "code": "VALIDATION_ERROR"}]}
+        "401":
+          application/json: {"status_code": 401, "error": "Unauthorized", "type_name": "UnauthorizedError", "message": "Unauthorized Request", "detail": "Missing authentication", "ref": "https://developers.apideck.com/errors#unauthorizederror"}
+        "402":
+          application/json: {"status_code": 402, "error": "Payment Required", "type_name": "RequestLimitError", "message": "Request Limit Reached", "detail": "You have reached your limit of 2000", "ref": "https://developers.apideck.com/errors#requestlimiterror"}
+        "404":
+          application/json: {"status_code": 404, "error": "Not Found", "type_name": "EntityNotFoundError", "message": "Unknown Widget", "detail": "Could not find widget with id: '123'", "ref": "https://developers.apideck.com/errors#entitynotfounderror"}
+        "422":
+          application/json: {"status_code": 422, "error": "Unprocessable Entity", "type_name": "InvalidStateError", "message": "Invalid State", "detail": "Unprocessable request, please verify your request headers and body.", "ref": "https://developers.apideck.com/errors#invalidstateerror"}
+        default:
+          application/json: {"status_code": 400, "error": "Bad Request", "type_name": "RequestHeadersValidationError", "message": "Invalid Params", "detail": "Missing Header: x-apideck-consumer-id", "ref": "https://developers.apideck.com/errors#unauthorizederror"}
 examplesVersion: 1.0.2
 generatedTests: {}
+releaseNotes: |
+  ## Python SDK Changes Detected:
+  * `apideck.accounting.bill_credit_notes.list()`: **Added**
+  * `apideck.accounting.bill_credit_notes.create()`: **Added**
+  * `apideck.accounting.bill_credit_notes.get()`: **Added**
+  * `apideck.accounting.bill_credit_notes.update()`: **Added**
+  * `apideck.accounting.bill_credit_notes.delete()`: **Added**
+  * `apideck.accounting.refunds.list()`:  `request.filter` **Changed**
+  * `apideck.accounting.attachments.list()`:  `request.reference_type` **Changed**
+  * `apideck.accounting.attachments.upload()`:  `request.reference_type` **Changed**
+  * `apideck.accounting.attachments.get()`:  `request.reference_type` **Changed**
+  * `apideck.accounting.attachments.delete()`:  `request.reference_type` **Changed**
+  * `apideck.accounting.attachments.download()`:  `request.reference_type` **Changed**
+  * `apideck.accounting.quotes.list()`:  `request.filter` **Changed**
+  * `apideck.vault.connections.list()`:  `response.data.[].form_fields.[].options_fetch_error` **Added**
+  * `apideck.vault.connections.get()`:  `response.data.form_fields.[].options_fetch_error` **Added**
+  * `apideck.vault.connections.update()`:  `response.data.form_fields.[].options_fetch_error` **Added**
+  * `apideck.vault.connections.imports()`:  `response.data.form_fields.[].options_fetch_error` **Added**
+  * `apideck.vault.connections.migrate()`:  `response.data.form_fields.[].options_fetch_error` **Added**
+  * `apideck.vault.connections.token()`:  `response.data.form_fields.[].options_fetch_error` **Added**
+  * `apideck.vault.connection_settings.list()`:  `response.data.form_fields.[].options_fetch_error` **Added**
+  * `apideck.vault.connection_settings.update()`:  `response.data.form_fields.[].options_fetch_error` **Added**
 trackedFiles:
   .devcontainer/README.md:
     last_write_checksum: sha1:07adb0c0c051a9be4d479ea06461f3a9b3bbeb2f
@@ -20439,6 +20646,36 @@ trackedFiles:
     last_write_checksum: sha1:e934e9410beb5973ff04d1a1444d6749625ea094
   docs/models/accountingbankfeedstatementsupdateresponse.md:
     last_write_checksum: sha1:213975f6204bc645d9dd372ea571fbb59fd75621
+  docs/models/accountingbillcreditnotesaddglobals.md:
+    last_write_checksum: sha1:f79c133edb96c7c3e352c7917a032ab48da04778
+  docs/models/accountingbillcreditnotesaddrequest.md:
+    last_write_checksum: sha1:b393684aa89e8ac5c651ec091ef41383f65e38d2
+  docs/models/accountingbillcreditnotesaddresponse.md:
+    last_write_checksum: sha1:1a2cdde704471a1de0c8d4ab61273fd3b8ce6531
+  docs/models/accountingbillcreditnotesallglobals.md:
+    last_write_checksum: sha1:157c67c79e3c07aa9cab1462b253f2eb8e5121a6
+  docs/models/accountingbillcreditnotesallrequest.md:
+    last_write_checksum: sha1:16c1f312e125d3cfbe07be0aec72677164b78ccc
+  docs/models/accountingbillcreditnotesallresponse.md:
+    last_write_checksum: sha1:0d2a7afedd9539e703cbd6c249670cb4a4f2ec27
+  docs/models/accountingbillcreditnotesdeleteglobals.md:
+    last_write_checksum: sha1:600380f79e0e974758b37767910bf029e82c422c
+  docs/models/accountingbillcreditnotesdeleterequest.md:
+    last_write_checksum: sha1:cadaf1b206b9f2f11ab77119bb854899c8d58509
+  docs/models/accountingbillcreditnotesdeleteresponse.md:
+    last_write_checksum: sha1:e1e439b18629ddc65b45b649fe76313807fbed13
+  docs/models/accountingbillcreditnotesoneglobals.md:
+    last_write_checksum: sha1:9e067dcc597ecd46dac6b52d0b564c1f3cabfa0d
+  docs/models/accountingbillcreditnotesonerequest.md:
+    last_write_checksum: sha1:47ebac98f91382747ff868602ab37b04a42b57ee
+  docs/models/accountingbillcreditnotesoneresponse.md:
+    last_write_checksum: sha1:cc110d19db0965654f26209f6afab2e6731ec583
+  docs/models/accountingbillcreditnotesupdateglobals.md:
+    last_write_checksum: sha1:82b8859417fb82dc9ff6109e7aa714db59cc248c
+  docs/models/accountingbillcreditnotesupdaterequest.md:
+    last_write_checksum: sha1:9dd71627d70beed25b03debb3a60175f87141151
+  docs/models/accountingbillcreditnotesupdateresponse.md:
+    last_write_checksum: sha1:bf9156b0ebba187a6484d9d9a69f6516900b6886
   docs/models/accountingbillpaymentsaddglobals.md:
     last_write_checksum: sha1:8629423b15dd2039d56c736fde3f4ebf17e98736
   docs/models/accountingbillpaymentsaddrequest.md:
@@ -21440,7 +21677,7 @@ trackedFiles:
   docs/models/attachmentreference.md:
     last_write_checksum: sha1:e1309515117268d54df56cf96fcd22651a6b174e
   docs/models/attachmentreferencetype.md:
-    last_write_checksum: sha1:29a387b41c944ee65a4cd2c30949eef2abb2bb55
+    last_write_checksum: sha1:57c45fc7b72a6a9d392c65f24a5f6649287f61c7
   docs/models/attempts.md:
     last_write_checksum: sha1:c77d6ef2cd3be58eb264dcb91de97fbe662212c8
   docs/models/audience.md:
@@ -21509,6 +21746,24 @@ trackedFiles:
     last_write_checksum: sha1:b336de5797dac45992cd634a827d5c0c7a7567f8
   docs/models/bill.md:
     last_write_checksum: sha1:2ff09ed038a8e19bc474ab2dcf785723a5e741c0
+  docs/models/billcreditnote.md:
+    last_write_checksum: sha1:cebb05f743f5e666e297d069b010b610b851bc3f
+  docs/models/billcreditnoteinput.md:
+    last_write_checksum: sha1:38a3b68cebf62a578f8628b3e8ff00bca244146f
+  docs/models/billcreditnotelineitem.md:
+    last_write_checksum: sha1:c3b64b3753bb7cdce0b6b3bd80fb456ec1e1677a
+  docs/models/billcreditnotelineiteminput.md:
+    last_write_checksum: sha1:49b9c3c5407a1318614303b6b14b28910c572a5a
+  docs/models/billcreditnotesfilter.md:
+    last_write_checksum: sha1:22634b3589e534b586155c7f18e2981ed6d6bb01
+  docs/models/billcreditnotessort.md:
+    last_write_checksum: sha1:14e08d0b59abf0530838ddc86b7895f7911a8f18
+  docs/models/billcreditnotessortby.md:
+    last_write_checksum: sha1:f313202350f953a72a3025034bef952be2b41972
+  docs/models/billcreditnotestatus.md:
+    last_write_checksum: sha1:55e763c0a104b5395bc005a6f06db3a3941b514e
+  docs/models/billcreditnotetype.md:
+    last_write_checksum: sha1:6ed07cfc963cc1f1fcb7f468dc5b0bd22854f7bd
   docs/models/billingmethod.md:
     last_write_checksum: sha1:1ee1bfb097848b3d1311ac34753485f4ad1babec
   docs/models/billinput.md:
@@ -21755,6 +22010,8 @@ trackedFiles:
     last_write_checksum: sha1:e6af6f5efdad799e26074b7407f1cb35fdade4ac
   docs/models/createbankfeedstatementresponse.md:
     last_write_checksum: sha1:2573793fa7b377cfd7ab12555806bf2f6f3d9f50
+  docs/models/createbillcreditnoteresponse.md:
+    last_write_checksum: sha1:d308a6d038fccb71bfa6b4695e2665d9a1f41307
   docs/models/createbillpaymentresponse.md:
     last_write_checksum: sha1:4fd0016f15be53e70bd547eaed71d346a53736dc
   docs/models/createbillresponse.md:
@@ -21870,9 +22127,9 @@ trackedFiles:
   docs/models/credentials.md:
     last_write_checksum: sha1:4c8281197850166494653091be7c4b19a5af92c7
   docs/models/creditnote.md:
-    last_write_checksum: sha1:cc60f7b13fa4119127d598a355661c66e11b3f48
+    last_write_checksum: sha1:255608a1203951b4c3d90c18803380b10a943a36
   docs/models/creditnoteinput.md:
-    last_write_checksum: sha1:5cd185371ea93e9f5d5de02ffc2e5894e0178e09
+    last_write_checksum: sha1:e011767c74205c720cbc5e491a36e0f4374ac63d
   docs/models/creditnotesfilter.md:
     last_write_checksum: sha1:d0ffa5a9b5f470422f858a5aa309dfdfa6ea92b5
   docs/models/creditnotessort.md:
@@ -21882,7 +22139,7 @@ trackedFiles:
   docs/models/creditnotestatus.md:
     last_write_checksum: sha1:1faec31112350d09bbb7ba52eb68c7c64d1c48c0
   docs/models/creditnotetype.md:
-    last_write_checksum: sha1:52bc123c991e769c922c004e955130f8a261f1d5
+    last_write_checksum: sha1:fe336d8d4487c90f26ca00431565300a0bd4613a
   docs/models/creditordebit.md:
     last_write_checksum: sha1:422dfcd066d9425a72370c13aec74a5f93c71bcd
   docs/models/crmactivitiesaddglobals.md:
@@ -22295,6 +22552,8 @@ trackedFiles:
     last_write_checksum: sha1:82891e64409dbe1ac49f0081478859e21a3a6aba
   docs/models/deletebankfeedstatementresponse.md:
     last_write_checksum: sha1:b79e1441fbeb33280271f89f4e784dbba1d280cc
+  docs/models/deletebillcreditnoteresponse.md:
+    last_write_checksum: sha1:ecb074a004f5d821f916b7d242be3909f62cf36e
   docs/models/deletebillpaymentresponse.md:
     last_write_checksum: sha1:02949214be40b69ebbc0ac16a9ff40548d464fcf
   docs/models/deletebillresponse.md:
@@ -22832,7 +23091,7 @@ trackedFiles:
   docs/models/format_.md:
     last_write_checksum: sha1:5e1ebe5085522cec790029f5b1734424aa78a678
   docs/models/formfield.md:
-    last_write_checksum: sha1:0cfa6b59356e0aa5dc348c22973bd1418dc7b417
+    last_write_checksum: sha1:ef6d0056529c1414a56bb0ba9afa49eaf39bc188
   docs/models/formfieldoption.md:
     last_write_checksum: sha1:0426675ee662b057a1993aa29746a1b9b34122f0
   docs/models/formfieldoptiongroup.md:
@@ -22913,6 +23172,10 @@ trackedFiles:
     last_write_checksum: sha1:d1b0ce098323958b4a4d05f57fad6b08da581cde
   docs/models/getbankfeedstatementsresponse.md:
     last_write_checksum: sha1:37e2df80dab5d7a0431a8f7935fa3a495d9b4335
+  docs/models/getbillcreditnoteresponse.md:
+    last_write_checksum: sha1:edcdc8b72b9b367fc923464eec8b9b6753add50f
+  docs/models/getbillcreditnotesresponse.md:
+    last_write_checksum: sha1:97f254ca32b126db088df128e170efdae5364934
   docs/models/getbillpaymentresponse.md:
     last_write_checksum: sha1:994ada55f906aa6060e49a6f248ae10870f8da45
   docs/models/getbillpaymentsresponse.md:
@@ -23864,7 +24127,7 @@ trackedFiles:
   docs/models/quotelineitemtype.md:
     last_write_checksum: sha1:df59dbf0dd185da8a9aabd570399ebdb49dca86b
   docs/models/quotesfilter.md:
-    last_write_checksum: sha1:d3adb6da7d1f1f8310b42b414755ab1f347d34ae
+    last_write_checksum: sha1:11ca5918df964a1deff780ffeb289eabf4ffc3c3
   docs/models/quotestatus.md:
     last_write_checksum: sha1:f00b3209a9c7ebccedd03f94739a739ceb6fdc81
   docs/models/rebilling.md:
@@ -23876,7 +24139,7 @@ trackedFiles:
   docs/models/refundinput.md:
     last_write_checksum: sha1:3d336db23559c5a4f9eebb028f9dff815c0ea79f
   docs/models/refundsfilter.md:
-    last_write_checksum: sha1:cd3c7b4af029d96a2ee5b1d5102ef905638036a5
+    last_write_checksum: sha1:f87c53b28b280e5e72e9c58b91b13062f928b41a
   docs/models/refundssort.md:
     last_write_checksum: sha1:9ad05ba0e2616b98778594049b61fb5d000cac7e
   docs/models/refundssortby.md:
@@ -24143,6 +24406,8 @@ trackedFiles:
     last_write_checksum: sha1:1c746fa98b29c4ab6b8445c6b0e4ca9bcd89ecae
   docs/models/updatebankfeedstatementresponse.md:
     last_write_checksum: sha1:c7ba714202630b53f83ebba940e532c0941ada27
+  docs/models/updatebillcreditnoteresponse.md:
+    last_write_checksum: sha1:bc649d60f581c5f47c88e29343441122883e2afa
   docs/models/updatebillpaymentresponse.md:
     last_write_checksum: sha1:3de8c1e936c8cc96ae8a2758319b2b55e82e8378
   docs/models/updatebillresponse.md:
@@ -24525,6 +24790,8 @@ trackedFiles:
     last_write_checksum: sha1:a4ec29b64e1246c75f82a080016a0e11a669dc49
   docs/sdks/bankfeedstatements/README.md:
     last_write_checksum: sha1:dc4e86b81dc7c23d30dba5ebb12fba03d4be8850
+  docs/sdks/billcreditnotes/README.md:
+    last_write_checksum: sha1:ad0f10ee4e2be6beec8cdb2bd508dce2fd3bc4ee
   docs/sdks/billpayments/README.md:
     last_write_checksum: sha1:6353e19f78b1634b55ed78b12d0d1b822c6b73c9
   docs/sdks/bills/README.md:
@@ -24570,7 +24837,7 @@ trackedFiles:
   docs/sdks/createcallback/README.md:
     last_write_checksum: sha1:fe7ad7d4efe54f8b2daa4b8d623e67f8b0a4dd6c
   docs/sdks/creditnotes/README.md:
-    last_write_checksum: sha1:bebfa70e9be9fb9d8b039f4562a052d402d4072a
+    last_write_checksum: sha1:106894f30542a6b4666d69cad8f3435f58b2e1fa
   docs/sdks/customers/README.md:
     last_write_checksum: sha1:d2a3a0451e66fa629e65fbd4c990ea657fc274eb
   docs/sdks/customfields/README.md:
@@ -24704,15 +24971,15 @@ trackedFiles:
   src/apideck_unify/_hooks/types.py:
     last_write_checksum: sha1:d57be38e644de01983a9224b9733ae0add898d43
   src/apideck_unify/_version.py:
-    last_write_checksum: sha1:f624aea47eea141a99d0f5b1b8fe7340b9404bfb
+    last_write_checksum: sha1:9bb6fb0db2b43a183a2db8cf9b56f09f590b2c2e
   src/apideck_unify/accounting.py:
-    last_write_checksum: sha1:b6ffaba7a3af019489bff091acec26c331b2acbc
+    last_write_checksum: sha1:991f670ed1605477506881aa6a0faf2db2dd1301
   src/apideck_unify/activities.py:
     last_write_checksum: sha1:d0d893423acbd8366c1581b05f4f76efffc9ef23
   src/apideck_unify/agedcreditors_sdk.py:
-    last_write_checksum: sha1:800f1152a51e1fe4535b7949c556cf634d27faeb
+    last_write_checksum: sha1:7097d77541edb2bb34849a4acb59b2b651b0e8c4
   src/apideck_unify/ageddebtors_sdk.py:
-    last_write_checksum: sha1:3063d797eb56fa9d9c22f50b36bdb2c1cf3bac17
+    last_write_checksum: sha1:85d4bbe85314c8ef2707b3d2aec586890d78127f
   src/apideck_unify/apideck_companies.py:
     last_write_checksum: sha1:8c5aa2d646e4c74de13e0d763f15d4ec67081ee3
   src/apideck_unify/apideck_customers.py:
@@ -24720,7 +24987,7 @@ trackedFiles:
   src/apideck_unify/apideck_departments.py:
     last_write_checksum: sha1:9c6e4af55297ccb825e8bf5bb5c4089e53e344b5
   src/apideck_unify/apideck_employees.py:
-    last_write_checksum: sha1:0dce41bc680db1cce89134d43174300124f7039c
+    last_write_checksum: sha1:cbdab8934e1c0b99b03b7c414c04588ba1871248
   src/apideck_unify/apideck_hris_companies.py:
     last_write_checksum: sha1:8b1eb48fe3ec7b1d4d84e283a19556d98160d3ca
   src/apideck_unify/apiresourcecoverage_sdk.py:
@@ -24730,15 +24997,15 @@ trackedFiles:
   src/apideck_unify/apis.py:
     last_write_checksum: sha1:45c93202d348c002b8bc4c116d40e4fa5213e48f
   src/apideck_unify/applicants.py:
-    last_write_checksum: sha1:c7aecd13208497e278241cd12feb8ce4ea4cafa3
+    last_write_checksum: sha1:9fd00c66672e4bf885cf55389a356bbba0eb9bc5
   src/apideck_unify/applications.py:
     last_write_checksum: sha1:0c50ef26dc1986523ec038e5e22a04775ae76e70
   src/apideck_unify/ats.py:
     last_write_checksum: sha1:0d5c5cedbfeb231840eb69958e0240f2fbb630f8
   src/apideck_unify/attachments.py:
-    last_write_checksum: sha1:2c2eebc9500668e34d3b1af7306965b41a351b48
+    last_write_checksum: sha1:c84b11d05fa6202809bfa0c0d575fd3f4870eba1
   src/apideck_unify/balancesheet_sdk.py:
-    last_write_checksum: sha1:335c4eae53d13970b8e19573dff7fa625dce8ed5
+    last_write_checksum: sha1:7a8dd951e4c575806be79a049f05c2415d570dc8
   src/apideck_unify/bankaccounts.py:
     last_write_checksum: sha1:94f2b7c758e00b7c50e6dbcace95a95b2e2bae7a
   src/apideck_unify/bankfeedaccounts.py:
@@ -24747,10 +25014,12 @@ trackedFiles:
     last_write_checksum: sha1:e4ac4d9bee63a65f4a4505bc28b6b9d7dc1405fc
   src/apideck_unify/basesdk.py:
     last_write_checksum: sha1:02f62bd40dfedb9697666050be333be287dd5a5b
+  src/apideck_unify/billcreditnotes.py:
+    last_write_checksum: sha1:c4f1442e25494667f8f1aebbb9963668c075c7a1
   src/apideck_unify/billpayments.py:
-    last_write_checksum: sha1:ca8ff866f5f493d86cceb6ad2f27ff85b925bad0
+    last_write_checksum: sha1:26b56fd5a8b1ac93061b7282aa58cfa48005702c
   src/apideck_unify/bills.py:
-    last_write_checksum: sha1:a6512d36be57ef750f025ab803af9db73545f2b5
+    last_write_checksum: sha1:29eb6558d92fb10257e69bd3bc8a7d5654311d6f
   src/apideck_unify/categories.py:
     last_write_checksum: sha1:e1ea6fe95dd3b5357c4b6dab95d0cf6e78f33750
   src/apideck_unify/collections.py:
@@ -24766,7 +25035,7 @@ trackedFiles:
   src/apideck_unify/companies.py:
     last_write_checksum: sha1:ce7de49a986bd8828c063f04a2b3384ed0fbc052
   src/apideck_unify/companyinfo_sdk.py:
-    last_write_checksum: sha1:523644e2a6871f3e5b4c84f778929174d7644a6a
+    last_write_checksum: sha1:b94e459818762b67e8a5826c6d05d9187e14f8d2
   src/apideck_unify/connectionconsent.py:
     last_write_checksum: sha1:993ea1c38b4b1bf47cdc1311e1f14820c0f26859
   src/apideck_unify/connectionconsents.py:
@@ -24794,11 +25063,11 @@ trackedFiles:
   src/apideck_unify/createcallback.py:
     last_write_checksum: sha1:fa6cddb89b59b3890fbc0a06c4b7730e91e76f2e
   src/apideck_unify/creditnotes.py:
-    last_write_checksum: sha1:14ef99c5771a0fbf98e648bf7c0d3746adfcb27f
+    last_write_checksum: sha1:e9b1331d92fc169a759beabe2746fe4b4a71d13c
   src/apideck_unify/crm.py:
     last_write_checksum: sha1:0a3f32ca2265dd9bf40c9b5c0373685dab9e5da6
   src/apideck_unify/customers.py:
-    last_write_checksum: sha1:9eb6836dab793afa83b9b702fd022e0a7898cd19
+    last_write_checksum: sha1:b6df43b2ec2a8b65f16291db00e8fe63665e9028
   src/apideck_unify/customfields.py:
     last_write_checksum: sha1:7666758135082e5efdc1c4b3f570cb2cc9a5c33c
   src/apideck_unify/custommappings.py:
@@ -24808,7 +25077,7 @@ trackedFiles:
   src/apideck_unify/customobjectschemas.py:
     last_write_checksum: sha1:79befec63cb3d5bdbc8b94bd28baa361d4e784e7
   src/apideck_unify/departments.py:
-    last_write_checksum: sha1:90065b3fa3a77066b900946599578da0041eabfd
+    last_write_checksum: sha1:8872e821a3d19f0b36e0992536fb9f751bd739ce
   src/apideck_unify/drivegroups.py:
     last_write_checksum: sha1:171da83d1abba6a961388d876c506c9a284f016c
   src/apideck_unify/drives.py:
@@ -24818,17 +25087,17 @@ trackedFiles:
   src/apideck_unify/employeepayrolls.py:
     last_write_checksum: sha1:c84a061f34d666312600b49bf07abc88e56942a5
   src/apideck_unify/employees.py:
-    last_write_checksum: sha1:cb380dd40d1645aa0ccc34a2789495d227c4ac10
+    last_write_checksum: sha1:9ecb395eb081fcfbac69b2f9136c80db967b9b24
   src/apideck_unify/employeeschedules_sdk.py:
-    last_write_checksum: sha1:a6be96924e77fe71013a32069043a73d29185028
+    last_write_checksum: sha1:eb1ae542418d07e79fdb1c54a2ead5b32fecb027
   src/apideck_unify/eventlogs.py:
     last_write_checksum: sha1:d1729709f928d9c708ff4d4eb825cb98c5423f1f
   src/apideck_unify/expensecategories.py:
-    last_write_checksum: sha1:544e423a166f01fc368728ce058e837803221af1
+    last_write_checksum: sha1:8fe0fa088b4b364ce8b9ef7a32cdde9050caf4ca
   src/apideck_unify/expensereports.py:
     last_write_checksum: sha1:3f6f38c22128c7d4c74bb4fe4305a6c7ab1574f9
   src/apideck_unify/expenses.py:
-    last_write_checksum: sha1:3d5566c00e4f551de83a2985a2fc32f576e1c734
+    last_write_checksum: sha1:83d653943047b107f309e4806813391dfbb71ca4
   src/apideck_unify/files.py:
     last_write_checksum: sha1:21b25dc08beaf72df1e912f498f65cb5f57846e9
   src/apideck_unify/filestorage.py:
@@ -24836,7 +25105,7 @@ trackedFiles:
   src/apideck_unify/folders.py:
     last_write_checksum: sha1:ff18938d91f50a29e51654d421e1133310545000
   src/apideck_unify/generalledgertransactions.py:
-    last_write_checksum: sha1:c728f210f3d44aa2dcb7d7147704592cc32f3d98
+    last_write_checksum: sha1:4ff6ba7368296750638b4d8744f53bbd04c27242
   src/apideck_unify/hris.py:
     last_write_checksum: sha1:912ec8837c4f787eb3151a5184689536b586cc44
   src/apideck_unify/httpclient.py:
@@ -24844,29 +25113,29 @@ trackedFiles:
   src/apideck_unify/invoiceitems.py:
     last_write_checksum: sha1:65382dd0b2c24ade626c5054bba658079da184e8
   src/apideck_unify/invoices.py:
-    last_write_checksum: sha1:72e0eef9ccd9aebee8ad7bd9cb077a07ff71157f
+    last_write_checksum: sha1:f3189b829d5978ac27d8c03459417f885d9f3b39
   src/apideck_unify/issuetracking.py:
     last_write_checksum: sha1:a18420473c9ae884dcdc562042a52205924643c5
   src/apideck_unify/jobs.py:
-    last_write_checksum: sha1:68126ac4bf72cb0457e888f727138e29fa49c498
+    last_write_checksum: sha1:b16c87611a4857f156f28bd7a93e1e25f2f71dcc
   src/apideck_unify/journalentries.py:
-    last_write_checksum: sha1:91caab96ec9b429dae80e4059feef66c12b2ca7b
+    last_write_checksum: sha1:cda1fc469422efff3a7c668f74c25f73e15836f2
   src/apideck_unify/leads.py:
     last_write_checksum: sha1:b1898e48cf89d3269f10074a3a9bf5f6d6c945c3
   src/apideck_unify/ledgeraccounts.py:
-    last_write_checksum: sha1:6888886db0dfe438f07d047bddf492d658df39ef
+    last_write_checksum: sha1:7e4f256c13657100dd03fb33098d991b06e6697b
   src/apideck_unify/listmembers.py:
     last_write_checksum: sha1:ae6ad18f742239e0462b3bf1fb25c8a8ed8b5d6c
   src/apideck_unify/lists.py:
     last_write_checksum: sha1:302e329249882f5f6c7cd4e8a55561393c3456e6
   src/apideck_unify/locations.py:
-    last_write_checksum: sha1:b2349b967d5fe9a68615897ac268dd670bfd9a03
+    last_write_checksum: sha1:c271574da8cd33c110e63df05d425f0f7f0c2dbb
   src/apideck_unify/logs.py:
     last_write_checksum: sha1:e72432784f35bf5d801fcbb8f946c8ea9939d02d
   src/apideck_unify/messages.py:
     last_write_checksum: sha1:8b1e180d3c7d2ae9916b1f645460caebf5281d7b
   src/apideck_unify/models/__init__.py:
-    last_write_checksum: sha1:0b53ed3a40873992803c5141786f306e281b87f4
+    last_write_checksum: sha1:d174a98514bbd74b58541142189793a72d958280
   src/apideck_unify/models/accounting_agedcreditorsoneop.py:
     last_write_checksum: sha1:7346d1ab1c21db21995aae34c5ba01549c2786c2
   src/apideck_unify/models/accounting_ageddebtorsoneop.py:
@@ -24913,6 +25182,16 @@ trackedFiles:
     last_write_checksum: sha1:cfbb89e8f786056aa355802a061029e1c07dcba4
   src/apideck_unify/models/accounting_bankfeedstatementsupdateop.py:
     last_write_checksum: sha1:66d62ebf0c8ac5cd648e2740a71c6cce510da3c3
+  src/apideck_unify/models/accounting_billcreditnotesaddop.py:
+    last_write_checksum: sha1:62a233c659a869da6620b9eee0d82aadb497d901
+  src/apideck_unify/models/accounting_billcreditnotesallop.py:
+    last_write_checksum: sha1:f2fdcba0727ad6211f2aa44d3978a743224cfe88
+  src/apideck_unify/models/accounting_billcreditnotesdeleteop.py:
+    last_write_checksum: sha1:fc86e09ba71b10ef7cb1e25ca321db60576d5987
+  src/apideck_unify/models/accounting_billcreditnotesoneop.py:
+    last_write_checksum: sha1:8e7b77c02cf5498100bf5c71d82b243d328622b7
+  src/apideck_unify/models/accounting_billcreditnotesupdateop.py:
+    last_write_checksum: sha1:dfa5d58afc06cf0d6070eceebe84b819369d99ad
   src/apideck_unify/models/accounting_billpaymentsaddop.py:
     last_write_checksum: sha1:597cdb7a4e2c9408a78b3f30cfc580e18de88ca4
   src/apideck_unify/models/accounting_billpaymentsallop.py:
@@ -25272,7 +25551,7 @@ trackedFiles:
   src/apideck_unify/models/attachmentreference.py:
     last_write_checksum: sha1:b2f4588cec995080da804b500d30e69e64f204c4
   src/apideck_unify/models/attachmentreferencetype.py:
-    last_write_checksum: sha1:4668e2def6b766dac2e2c95a49c41e6b2afefb68
+    last_write_checksum: sha1:a2a4f4b2e976b27ba07221c5b98244195067d5fa
   src/apideck_unify/models/authtype.py:
     last_write_checksum: sha1:9f1410dffc47177588eb438ac9c4f3d45da9d031
   src/apideck_unify/models/badrequestresponse.py:
@@ -25305,6 +25584,16 @@ trackedFiles:
     last_write_checksum: sha1:e538d645b907406fb5af8a000ab66db60907fbe5
   src/apideck_unify/models/bill.py:
     last_write_checksum: sha1:640ba94c3ae102410635c47d8f72846efe4b8ef8
+  src/apideck_unify/models/billcreditnote.py:
+    last_write_checksum: sha1:6fb961d253a75aeddb24a2e6af8f83dd1c90d221
+  src/apideck_unify/models/billcreditnotelineitem.py:
+    last_write_checksum: sha1:912ffef3e3154cdec034f3b511dc845305e3f160
+  src/apideck_unify/models/billcreditnotelineitem_input.py:
+    last_write_checksum: sha1:b0aea8acb6fe8232c8ea8e136c4df4fb59721542
+  src/apideck_unify/models/billcreditnotesfilter.py:
+    last_write_checksum: sha1:0b4921c25408ee4c9785cf0c93afd025e3eb1ebd
+  src/apideck_unify/models/billcreditnotessort.py:
+    last_write_checksum: sha1:dd9f7ce4fb7cf84a5a24ac1e79e12908f404b51d
   src/apideck_unify/models/billlineitem.py:
     last_write_checksum: sha1:729d34c5fcc379290ecec58cecf48cd31770587f
   src/apideck_unify/models/billlineitem_input.py:
@@ -25433,6 +25722,8 @@ trackedFiles:
     last_write_checksum: sha1:7bf84bae92f2fec00d5269ed575460cd97cc7cfd
   src/apideck_unify/models/createbankfeedstatementresponse.py:
     last_write_checksum: sha1:9b4fff80c09c733ce09c001676db28fd2232ed18
+  src/apideck_unify/models/createbillcreditnoteresponse.py:
+    last_write_checksum: sha1:af3fb04d162e67a873652f3020e009155f8a42c6
   src/apideck_unify/models/createbillpaymentresponse.py:
     last_write_checksum: sha1:a3d88fe0ce57d8bdff56e13321bcccb6295c02dc
   src/apideck_unify/models/createbillresponse.py:
@@ -25542,7 +25833,7 @@ trackedFiles:
   src/apideck_unify/models/createwebhookresponse.py:
     last_write_checksum: sha1:f4638444f6b90e3398e0c4ae2d04b3c0ca15973e
   src/apideck_unify/models/creditnote.py:
-    last_write_checksum: sha1:ba366de9071b72708dce6e538c2f0f4508a83eea
+    last_write_checksum: sha1:cfcf74ed60b6aca67f0efcb5e6d53e9c0b11b1f0
   src/apideck_unify/models/creditnotesfilter.py:
     last_write_checksum: sha1:691f43c70a03cd70c1e632748a37c29cb3495c25
   src/apideck_unify/models/creditnotessort.py:
@@ -25703,6 +25994,8 @@ trackedFiles:
     last_write_checksum: sha1:2a40fe4ab466012fd15cd3da4d52e3a7625f7b9a
   src/apideck_unify/models/deletebankfeedstatementresponse.py:
     last_write_checksum: sha1:2482fe2aa49e5d23e1f743a6333ce8bd0e845517
+  src/apideck_unify/models/deletebillcreditnoteresponse.py:
+    last_write_checksum: sha1:ec8eb02de30c211b7eac01d71a753a942be930dd
   src/apideck_unify/models/deletebillpaymentresponse.py:
     last_write_checksum: sha1:2e15c7fafb5b4e63e6f4be3e05d17dfab63bf7ab
   src/apideck_unify/models/deletebillresponse.py:
@@ -25970,7 +26263,7 @@ trackedFiles:
   src/apideck_unify/models/folder.py:
     last_write_checksum: sha1:63fc7eb0fcbc97f72d886490ed90d020182199db
   src/apideck_unify/models/formfield.py:
-    last_write_checksum: sha1:043ef0b19cec76f02bbf6bf2671974b324294584
+    last_write_checksum: sha1:1dafc99404a08576af51f20d6b13904d6d92f86e
   src/apideck_unify/models/formfieldoption.py:
     last_write_checksum: sha1:7112154511634b1042ebe34423e5eb3a47bd67f1
   src/apideck_unify/models/formfieldoptiongroup.py:
@@ -26039,6 +26332,10 @@ trackedFiles:
     last_write_checksum: sha1:8e299e1cac211f7dc6513c9ab7231a3fac4eda01
   src/apideck_unify/models/getbankfeedstatementsresponse.py:
     last_write_checksum: sha1:50b036d54cf244ee28d382f48bf0d8f17ae6198b
+  src/apideck_unify/models/getbillcreditnoteresponse.py:
+    last_write_checksum: sha1:d4d91fe2e81e49ca63f32eee3fcbffab4333c25d
+  src/apideck_unify/models/getbillcreditnotesresponse.py:
+    last_write_checksum: sha1:8085ee72e19dbf0e0a017dd4b188f013fe77353c
   src/apideck_unify/models/getbillpaymentresponse.py:
     last_write_checksum: sha1:b4beb223b529904ff271462c1346f2367ab596f6
   src/apideck_unify/models/getbillpaymentsresponse.py:
@@ -26612,7 +26909,7 @@ trackedFiles:
   src/apideck_unify/models/quotelineitem.py:
     last_write_checksum: sha1:ec6e349592938366215654e8f7ac369ea28dfc73
   src/apideck_unify/models/quotesfilter.py:
-    last_write_checksum: sha1:e4ebfa923cf669c041a0a8c0ac56f0336b404b14
+    last_write_checksum: sha1:6f46213a49ee7e440e2b776617dfde2a55b90d3f
   src/apideck_unify/models/rebilling.py:
     last_write_checksum: sha1:335956b996339dc4b07c60468e34408b9f9fff3f
   src/apideck_unify/models/refund.py:
@@ -26620,7 +26917,7 @@ trackedFiles:
   src/apideck_unify/models/refund_input.py:
     last_write_checksum: sha1:1b6a9193dd23195874b51a7bb7f752ce7caab566
   src/apideck_unify/models/refundsfilter.py:
-    last_write_checksum: sha1:fd1e3a37130f9d6c5fd057b15697eeb51dc08e2e
+    last_write_checksum: sha1:1495e0916ff20b70530ee408d14639b9b961cb98
   src/apideck_unify/models/refundssort.py:
     last_write_checksum: sha1:43ed30a35bbf34813754a85b00806182553f7a48
   src/apideck_unify/models/refundstatus.py:
@@ -26737,6 +27034,8 @@ trackedFiles:
     last_write_checksum: sha1:908a677c6336389a18f6dbfdd211c14a59f025f9
   src/apideck_unify/models/updatebankfeedstatementresponse.py:
     last_write_checksum: sha1:56f03972e4d1cc181fa05c07b0581a7286d2a8e4
+  src/apideck_unify/models/updatebillcreditnoteresponse.py:
+    last_write_checksum: sha1:afd11975b7f9b82f09998eacdf5badd107ba8905
   src/apideck_unify/models/updatebillpaymentresponse.py:
     last_write_checksum: sha1:16a7131628f61b65f7d8d16909327fdceb0f6794
   src/apideck_unify/models/updatebillresponse.py:
@@ -26938,7 +27237,7 @@ trackedFiles:
   src/apideck_unify/paymentmethods.py:
     last_write_checksum: sha1:400da5d9e4b0d83179351e3468ac96cd8bf63687
   src/apideck_unify/payments.py:
-    last_write_checksum: sha1:d92546ca23b4479e1ccccf165f06bddf7b6c60c1
+    last_write_checksum: sha1:85b84aff8f1836f8d7ced45bb521c6c7d4f8b90b
   src/apideck_unify/payrolls.py:
     last_write_checksum: sha1:5ccd0b249a6acb7ec93202cf3e02d445138a66b0
   src/apideck_unify/pipelines.py:
@@ -26946,7 +27245,7 @@ trackedFiles:
   src/apideck_unify/products.py:
     last_write_checksum: sha1:8553a62bd610bab4b66f5da25fd6dfad2a29c750
   src/apideck_unify/profitandloss_sdk.py:
-    last_write_checksum: sha1:20d3057d32cdb49e710aee22dfd67e0c52242a12
+    last_write_checksum: sha1:25383f7a37a9b5b7a1e48111f49177dad4e8c491
   src/apideck_unify/projects.py:
     last_write_checksum: sha1:8f23286f7ecad3c85c1c60deb93e8c9f3567cacf
   src/apideck_unify/proxy.py:
@@ -26976,13 +27275,13 @@ trackedFiles:
   src/apideck_unify/subsidiaries.py:
     last_write_checksum: sha1:dbcf581c0704e0e7c9016b16b3d5f0feb27a07ad
   src/apideck_unify/suppliers.py:
-    last_write_checksum: sha1:c251c752d0624b421d49104428a26866b4e467b8
+    last_write_checksum: sha1:4c1b0efc03f2aa90763b269778c3eb84ec31c9d3
   src/apideck_unify/taxrates.py:
-    last_write_checksum: sha1:c6f10153eba9e342506d3e1b53ff0c3c2305887b
+    last_write_checksum: sha1:4ed78936a0dfd8fce39fd8aa32d707afb06b88a9
   src/apideck_unify/timeoffrequests.py:
     last_write_checksum: sha1:07f0ba31145daa562027e1e8dd63084e9c70930e
   src/apideck_unify/trackingcategories.py:
-    last_write_checksum: sha1:579926f7dd69a38a0cae4a5897bdf7c2c9091f4b
+    last_write_checksum: sha1:c2110ec1f84b162e79a07b6293cad0f1605e75d5
   src/apideck_unify/types/__init__.py:
     last_write_checksum: sha1:f9ad14217f832e74f594285960125add50324be9
   src/apideck_unify/types/base64fileinput.py:

@@ -15,6 +15,8 @@ class QuotesFilterTypedDict(TypedDict):
     r"""Quote number to search for"""
     customer_id: NotRequired[str]
     r"""Filter by customer id"""
+    subsidiary_id: NotRequired[str]
+    r"""Filter by the subsidiary (legal entity) the record belongs to. Only honored on connectors that support multi-entity scoping (e.g. NetSuite OneWorld); ignored elsewhere."""
 
 
 class QuotesFilter(BaseModel):
@@ -27,3 +29,6 @@ class QuotesFilter(BaseModel):
 
     customer_id: Annotated[Optional[str], FieldMetadata(query=True)] = None
     r"""Filter by customer id"""
+
+    subsidiary_id: Annotated[Optional[str], FieldMetadata(query=True)] = None
+    r"""Filter by the subsidiary (legal entity) the record belongs to. Only honored on connectors that support multi-entity scoping (e.g. NetSuite OneWorld); ignored elsewhere."""

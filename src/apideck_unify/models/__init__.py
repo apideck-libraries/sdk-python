@@ -192,6 +192,46 @@ if TYPE_CHECKING:
         AccountingBankFeedStatementsUpdateResponse,
         AccountingBankFeedStatementsUpdateResponseTypedDict,
     )
+    from .accounting_billcreditnotesaddop import (
+        AccountingBillCreditNotesAddGlobals,
+        AccountingBillCreditNotesAddGlobalsTypedDict,
+        AccountingBillCreditNotesAddRequest,
+        AccountingBillCreditNotesAddRequestTypedDict,
+        AccountingBillCreditNotesAddResponse,
+        AccountingBillCreditNotesAddResponseTypedDict,
+    )
+    from .accounting_billcreditnotesallop import (
+        AccountingBillCreditNotesAllGlobals,
+        AccountingBillCreditNotesAllGlobalsTypedDict,
+        AccountingBillCreditNotesAllRequest,
+        AccountingBillCreditNotesAllRequestTypedDict,
+        AccountingBillCreditNotesAllResponse,
+        AccountingBillCreditNotesAllResponseTypedDict,
+    )
+    from .accounting_billcreditnotesdeleteop import (
+        AccountingBillCreditNotesDeleteGlobals,
+        AccountingBillCreditNotesDeleteGlobalsTypedDict,
+        AccountingBillCreditNotesDeleteRequest,
+        AccountingBillCreditNotesDeleteRequestTypedDict,
+        AccountingBillCreditNotesDeleteResponse,
+        AccountingBillCreditNotesDeleteResponseTypedDict,
+    )
+    from .accounting_billcreditnotesoneop import (
+        AccountingBillCreditNotesOneGlobals,
+        AccountingBillCreditNotesOneGlobalsTypedDict,
+        AccountingBillCreditNotesOneRequest,
+        AccountingBillCreditNotesOneRequestTypedDict,
+        AccountingBillCreditNotesOneResponse,
+        AccountingBillCreditNotesOneResponseTypedDict,
+    )
+    from .accounting_billcreditnotesupdateop import (
+        AccountingBillCreditNotesUpdateGlobals,
+        AccountingBillCreditNotesUpdateGlobalsTypedDict,
+        AccountingBillCreditNotesUpdateRequest,
+        AccountingBillCreditNotesUpdateRequestTypedDict,
+        AccountingBillCreditNotesUpdateResponse,
+        AccountingBillCreditNotesUpdateResponseTypedDict,
+    )
     from .accounting_billpaymentsaddop import (
         AccountingBillPaymentsAddGlobals,
         AccountingBillPaymentsAddGlobalsTypedDict,
@@ -1585,6 +1625,31 @@ if TYPE_CHECKING:
         BillStatus,
         BillTypedDict,
     )
+    from .billcreditnote import (
+        BillCreditNote,
+        BillCreditNoteInput,
+        BillCreditNoteInputTypedDict,
+        BillCreditNoteStatus,
+        BillCreditNoteType,
+        BillCreditNoteTypedDict,
+    )
+    from .billcreditnotelineitem import (
+        BillCreditNoteLineItem,
+        BillCreditNoteLineItemTypedDict,
+    )
+    from .billcreditnotelineitem_input import (
+        BillCreditNoteLineItemInput,
+        BillCreditNoteLineItemInputTypedDict,
+    )
+    from .billcreditnotesfilter import (
+        BillCreditNotesFilter,
+        BillCreditNotesFilterTypedDict,
+    )
+    from .billcreditnotessort import (
+        BillCreditNotesSort,
+        BillCreditNotesSortBy,
+        BillCreditNotesSortTypedDict,
+    )
     from .billlineitem import BillLineItem, BillLineItemTypedDict
     from .billlineitem_input import BillLineItemInput, BillLineItemInputTypedDict
     from .billpayment import (
@@ -1856,6 +1921,10 @@ if TYPE_CHECKING:
     from .createbankfeedstatementresponse import (
         CreateBankFeedStatementResponse,
         CreateBankFeedStatementResponseTypedDict,
+    )
+    from .createbillcreditnoteresponse import (
+        CreateBillCreditNoteResponse,
+        CreateBillCreditNoteResponseTypedDict,
     )
     from .createbillpaymentresponse import (
         CreateBillPaymentResponse,
@@ -2590,6 +2659,10 @@ if TYPE_CHECKING:
     from .deletebankfeedstatementresponse import (
         DeleteBankFeedStatementResponse,
         DeleteBankFeedStatementResponseTypedDict,
+    )
+    from .deletebillcreditnoteresponse import (
+        DeleteBillCreditNoteResponse,
+        DeleteBillCreditNoteResponseTypedDict,
     )
     from .deletebillpaymentresponse import (
         DeleteBillPaymentResponse,
@@ -3377,6 +3450,14 @@ if TYPE_CHECKING:
     from .getbankfeedstatementsresponse import (
         GetBankFeedStatementsResponse,
         GetBankFeedStatementsResponseTypedDict,
+    )
+    from .getbillcreditnoteresponse import (
+        GetBillCreditNoteResponse,
+        GetBillCreditNoteResponseTypedDict,
+    )
+    from .getbillcreditnotesresponse import (
+        GetBillCreditNotesResponse,
+        GetBillCreditNotesResponseTypedDict,
     )
     from .getbillpaymentresponse import (
         GetBillPaymentResponse,
@@ -4760,6 +4841,10 @@ if TYPE_CHECKING:
         UpdateBankFeedStatementResponse,
         UpdateBankFeedStatementResponseTypedDict,
     )
+    from .updatebillcreditnoteresponse import (
+        UpdateBillCreditNoteResponse,
+        UpdateBillCreditNoteResponseTypedDict,
+    )
     from .updatebillpaymentresponse import (
         UpdateBillPaymentResponse,
         UpdateBillPaymentResponseTypedDict,
@@ -5395,6 +5480,36 @@ __all__ = [
     "AccountingBankFeedStatementsUpdateRequestTypedDict",
     "AccountingBankFeedStatementsUpdateResponse",
     "AccountingBankFeedStatementsUpdateResponseTypedDict",
+    "AccountingBillCreditNotesAddGlobals",
+    "AccountingBillCreditNotesAddGlobalsTypedDict",
+    "AccountingBillCreditNotesAddRequest",
+    "AccountingBillCreditNotesAddRequestTypedDict",
+    "AccountingBillCreditNotesAddResponse",
+    "AccountingBillCreditNotesAddResponseTypedDict",
+    "AccountingBillCreditNotesAllGlobals",
+    "AccountingBillCreditNotesAllGlobalsTypedDict",
+    "AccountingBillCreditNotesAllRequest",
+    "AccountingBillCreditNotesAllRequestTypedDict",
+    "AccountingBillCreditNotesAllResponse",
+    "AccountingBillCreditNotesAllResponseTypedDict",
+    "AccountingBillCreditNotesDeleteGlobals",
+    "AccountingBillCreditNotesDeleteGlobalsTypedDict",
+    "AccountingBillCreditNotesDeleteRequest",
+    "AccountingBillCreditNotesDeleteRequestTypedDict",
+    "AccountingBillCreditNotesDeleteResponse",
+    "AccountingBillCreditNotesDeleteResponseTypedDict",
+    "AccountingBillCreditNotesOneGlobals",
+    "AccountingBillCreditNotesOneGlobalsTypedDict",
+    "AccountingBillCreditNotesOneRequest",
+    "AccountingBillCreditNotesOneRequestTypedDict",
+    "AccountingBillCreditNotesOneResponse",
+    "AccountingBillCreditNotesOneResponseTypedDict",
+    "AccountingBillCreditNotesUpdateGlobals",
+    "AccountingBillCreditNotesUpdateGlobalsTypedDict",
+    "AccountingBillCreditNotesUpdateRequest",
+    "AccountingBillCreditNotesUpdateRequestTypedDict",
+    "AccountingBillCreditNotesUpdateResponse",
+    "AccountingBillCreditNotesUpdateResponseTypedDict",
     "AccountingBillPaymentsAddGlobals",
     "AccountingBillPaymentsAddGlobalsTypedDict",
     "AccountingBillPaymentsAddRequest",
@@ -6425,6 +6540,21 @@ __all__ = [
     "Benefit",
     "BenefitTypedDict",
     "Bill",
+    "BillCreditNote",
+    "BillCreditNoteInput",
+    "BillCreditNoteInputTypedDict",
+    "BillCreditNoteLineItem",
+    "BillCreditNoteLineItemInput",
+    "BillCreditNoteLineItemInputTypedDict",
+    "BillCreditNoteLineItemTypedDict",
+    "BillCreditNoteStatus",
+    "BillCreditNoteType",
+    "BillCreditNoteTypedDict",
+    "BillCreditNotesFilter",
+    "BillCreditNotesFilterTypedDict",
+    "BillCreditNotesSort",
+    "BillCreditNotesSortBy",
+    "BillCreditNotesSortTypedDict",
     "BillInput",
     "BillInputTypedDict",
     "BillLineItem",
@@ -6646,6 +6776,8 @@ __all__ = [
     "CreateBankFeedAccountResponseTypedDict",
     "CreateBankFeedStatementResponse",
     "CreateBankFeedStatementResponseTypedDict",
+    "CreateBillCreditNoteResponse",
+    "CreateBillCreditNoteResponseTypedDict",
     "CreateBillPaymentResponse",
     "CreateBillPaymentResponseTypedDict",
     "CreateBillResponse",
@@ -7175,6 +7307,8 @@ __all__ = [
     "DeleteBankFeedAccountResponseTypedDict",
     "DeleteBankFeedStatementResponse",
     "DeleteBankFeedStatementResponseTypedDict",
+    "DeleteBillCreditNoteResponse",
+    "DeleteBillCreditNoteResponseTypedDict",
     "DeleteBillPaymentResponse",
     "DeleteBillPaymentResponseTypedDict",
     "DeleteBillResponse",
@@ -7759,6 +7893,10 @@ __all__ = [
     "GetBankFeedStatementResponseTypedDict",
     "GetBankFeedStatementsResponse",
     "GetBankFeedStatementsResponseTypedDict",
+    "GetBillCreditNoteResponse",
+    "GetBillCreditNoteResponseTypedDict",
+    "GetBillCreditNotesResponse",
+    "GetBillCreditNotesResponseTypedDict",
     "GetBillPaymentResponse",
     "GetBillPaymentResponseTypedDict",
     "GetBillPaymentsResponse",
@@ -8884,6 +9022,8 @@ __all__ = [
     "UpdateBankFeedAccountResponseTypedDict",
     "UpdateBankFeedStatementResponse",
     "UpdateBankFeedStatementResponseTypedDict",
+    "UpdateBillCreditNoteResponse",
+    "UpdateBillCreditNoteResponseTypedDict",
     "UpdateBillPaymentResponse",
     "UpdateBillPaymentResponseTypedDict",
     "UpdateBillResponse",
@@ -9367,6 +9507,36 @@ _dynamic_imports: dict[str, str] = {
     "AccountingBankFeedStatementsUpdateRequestTypedDict": ".accounting_bankfeedstatementsupdateop",
     "AccountingBankFeedStatementsUpdateResponse": ".accounting_bankfeedstatementsupdateop",
     "AccountingBankFeedStatementsUpdateResponseTypedDict": ".accounting_bankfeedstatementsupdateop",
+    "AccountingBillCreditNotesAddGlobals": ".accounting_billcreditnotesaddop",
+    "AccountingBillCreditNotesAddGlobalsTypedDict": ".accounting_billcreditnotesaddop",
+    "AccountingBillCreditNotesAddRequest": ".accounting_billcreditnotesaddop",
+    "AccountingBillCreditNotesAddRequestTypedDict": ".accounting_billcreditnotesaddop",
+    "AccountingBillCreditNotesAddResponse": ".accounting_billcreditnotesaddop",
+    "AccountingBillCreditNotesAddResponseTypedDict": ".accounting_billcreditnotesaddop",
+    "AccountingBillCreditNotesAllGlobals": ".accounting_billcreditnotesallop",
+    "AccountingBillCreditNotesAllGlobalsTypedDict": ".accounting_billcreditnotesallop",
+    "AccountingBillCreditNotesAllRequest": ".accounting_billcreditnotesallop",
+    "AccountingBillCreditNotesAllRequestTypedDict": ".accounting_billcreditnotesallop",
+    "AccountingBillCreditNotesAllResponse": ".accounting_billcreditnotesallop",
+    "AccountingBillCreditNotesAllResponseTypedDict": ".accounting_billcreditnotesallop",
+    "AccountingBillCreditNotesDeleteGlobals": ".accounting_billcreditnotesdeleteop",
+    "AccountingBillCreditNotesDeleteGlobalsTypedDict": ".accounting_billcreditnotesdeleteop",
+    "AccountingBillCreditNotesDeleteRequest": ".accounting_billcreditnotesdeleteop",
+    "AccountingBillCreditNotesDeleteRequestTypedDict": ".accounting_billcreditnotesdeleteop",
+    "AccountingBillCreditNotesDeleteResponse": ".accounting_billcreditnotesdeleteop",
+    "AccountingBillCreditNotesDeleteResponseTypedDict": ".accounting_billcreditnotesdeleteop",
+    "AccountingBillCreditNotesOneGlobals": ".accounting_billcreditnotesoneop",
+    "AccountingBillCreditNotesOneGlobalsTypedDict": ".accounting_billcreditnotesoneop",
+    "AccountingBillCreditNotesOneRequest": ".accounting_billcreditnotesoneop",
+    "AccountingBillCreditNotesOneRequestTypedDict": ".accounting_billcreditnotesoneop",
+    "AccountingBillCreditNotesOneResponse": ".accounting_billcreditnotesoneop",
+    "AccountingBillCreditNotesOneResponseTypedDict": ".accounting_billcreditnotesoneop",
+    "AccountingBillCreditNotesUpdateGlobals": ".accounting_billcreditnotesupdateop",
+    "AccountingBillCreditNotesUpdateGlobalsTypedDict": ".accounting_billcreditnotesupdateop",
+    "AccountingBillCreditNotesUpdateRequest": ".accounting_billcreditnotesupdateop",
+    "AccountingBillCreditNotesUpdateRequestTypedDict": ".accounting_billcreditnotesupdateop",
+    "AccountingBillCreditNotesUpdateResponse": ".accounting_billcreditnotesupdateop",
+    "AccountingBillCreditNotesUpdateResponseTypedDict": ".accounting_billcreditnotesupdateop",
     "AccountingBillPaymentsAddGlobals": ".accounting_billpaymentsaddop",
     "AccountingBillPaymentsAddGlobalsTypedDict": ".accounting_billpaymentsaddop",
     "AccountingBillPaymentsAddRequest": ".accounting_billpaymentsaddop",
@@ -10432,6 +10602,21 @@ _dynamic_imports: dict[str, str] = {
     "BillInputTypedDict": ".bill",
     "BillStatus": ".bill",
     "BillTypedDict": ".bill",
+    "BillCreditNote": ".billcreditnote",
+    "BillCreditNoteInput": ".billcreditnote",
+    "BillCreditNoteInputTypedDict": ".billcreditnote",
+    "BillCreditNoteStatus": ".billcreditnote",
+    "BillCreditNoteType": ".billcreditnote",
+    "BillCreditNoteTypedDict": ".billcreditnote",
+    "BillCreditNoteLineItem": ".billcreditnotelineitem",
+    "BillCreditNoteLineItemTypedDict": ".billcreditnotelineitem",
+    "BillCreditNoteLineItemInput": ".billcreditnotelineitem_input",
+    "BillCreditNoteLineItemInputTypedDict": ".billcreditnotelineitem_input",
+    "BillCreditNotesFilter": ".billcreditnotesfilter",
+    "BillCreditNotesFilterTypedDict": ".billcreditnotesfilter",
+    "BillCreditNotesSort": ".billcreditnotessort",
+    "BillCreditNotesSortBy": ".billcreditnotessort",
+    "BillCreditNotesSortTypedDict": ".billcreditnotessort",
     "BillLineItem": ".billlineitem",
     "BillLineItemTypedDict": ".billlineitem",
     "BillLineItemInput": ".billlineitem_input",
@@ -10669,6 +10854,8 @@ _dynamic_imports: dict[str, str] = {
     "CreateBankFeedAccountResponseTypedDict": ".createbankfeedaccountresponse",
     "CreateBankFeedStatementResponse": ".createbankfeedstatementresponse",
     "CreateBankFeedStatementResponseTypedDict": ".createbankfeedstatementresponse",
+    "CreateBillCreditNoteResponse": ".createbillcreditnoteresponse",
+    "CreateBillCreditNoteResponseTypedDict": ".createbillcreditnoteresponse",
     "CreateBillPaymentResponse": ".createbillpaymentresponse",
     "CreateBillPaymentResponseTypedDict": ".createbillpaymentresponse",
     "CreateBillResponse": ".createbillresponse",
@@ -11189,6 +11376,8 @@ _dynamic_imports: dict[str, str] = {
     "DeleteBankFeedAccountResponseTypedDict": ".deletebankfeedaccountresponse",
     "DeleteBankFeedStatementResponse": ".deletebankfeedstatementresponse",
     "DeleteBankFeedStatementResponseTypedDict": ".deletebankfeedstatementresponse",
+    "DeleteBillCreditNoteResponse": ".deletebillcreditnoteresponse",
+    "DeleteBillCreditNoteResponseTypedDict": ".deletebillcreditnoteresponse",
     "DeleteBillPaymentResponse": ".deletebillpaymentresponse",
     "DeleteBillPaymentResponseTypedDict": ".deletebillpaymentresponse",
     "DeleteBillResponse": ".deletebillresponse",
@@ -11754,6 +11943,10 @@ _dynamic_imports: dict[str, str] = {
     "GetBankFeedStatementResponseTypedDict": ".getbankfeedstatementresponse",
     "GetBankFeedStatementsResponse": ".getbankfeedstatementsresponse",
     "GetBankFeedStatementsResponseTypedDict": ".getbankfeedstatementsresponse",
+    "GetBillCreditNoteResponse": ".getbillcreditnoteresponse",
+    "GetBillCreditNoteResponseTypedDict": ".getbillcreditnoteresponse",
+    "GetBillCreditNotesResponse": ".getbillcreditnotesresponse",
+    "GetBillCreditNotesResponseTypedDict": ".getbillcreditnotesresponse",
     "GetBillPaymentResponse": ".getbillpaymentresponse",
     "GetBillPaymentResponseTypedDict": ".getbillpaymentresponse",
     "GetBillPaymentsResponse": ".getbillpaymentsresponse",
@@ -12873,6 +13066,8 @@ _dynamic_imports: dict[str, str] = {
     "UpdateBankFeedAccountResponseTypedDict": ".updatebankfeedaccountresponse",
     "UpdateBankFeedStatementResponse": ".updatebankfeedstatementresponse",
     "UpdateBankFeedStatementResponseTypedDict": ".updatebankfeedstatementresponse",
+    "UpdateBillCreditNoteResponse": ".updatebillcreditnoteresponse",
+    "UpdateBillCreditNoteResponseTypedDict": ".updatebillcreditnoteresponse",
     "UpdateBillPaymentResponse": ".updatebillpaymentresponse",
     "UpdateBillPaymentResponseTypedDict": ".updatebillpaymentresponse",
     "UpdateBillResponse": ".updatebillresponse",
