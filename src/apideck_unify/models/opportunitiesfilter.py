@@ -12,6 +12,8 @@ class OpportunitiesFilterTypedDict(TypedDict):
     r"""Title of the opportunity to filter on"""
     status: NotRequired[str]
     r"""Status to filter on"""
+    status_id: NotRequired[str]
+    r"""Status ID to filter on"""
     monetary_amount: NotRequired[float]
     r"""Monetary amount to filter on"""
     win_probability: NotRequired[float]
@@ -30,6 +32,9 @@ class OpportunitiesFilter(BaseModel):
 
     status: Annotated[Optional[str], FieldMetadata(query=True)] = None
     r"""Status to filter on"""
+
+    status_id: Annotated[Optional[str], FieldMetadata(query=True)] = None
+    r"""Status ID to filter on"""
 
     monetary_amount: Annotated[Optional[float], FieldMetadata(query=True)] = None
     r"""Monetary amount to filter on"""

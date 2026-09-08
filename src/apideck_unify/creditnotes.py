@@ -497,7 +497,7 @@ class CreditNotes(BaseSDK):
         :param reference: Optional reference message ie: Debit remittance detail.
         :param date_issued: Date credit note issued - YYYY:MM::DDThh:mm:ss.sTZD
         :param date_paid: Date credit note paid - YYYY:MM::DDThh:mm:ss.sTZD
-        :param type: Type of payment
+        :param type: Whether this credit note reduces an amount owed by a customer (accounts receivable) or owed to a supplier (accounts payable). `accounts_payable_credit` support is connector-specific — most connectors only expose the accounts-receivable side. Check the connector's gotchas for known deviations.
         :param account:
         :param line_items:
         :param allocations:
@@ -786,7 +786,7 @@ class CreditNotes(BaseSDK):
         :param reference: Optional reference message ie: Debit remittance detail.
         :param date_issued: Date credit note issued - YYYY:MM::DDThh:mm:ss.sTZD
         :param date_paid: Date credit note paid - YYYY:MM::DDThh:mm:ss.sTZD
-        :param type: Type of payment
+        :param type: Whether this credit note reduces an amount owed by a customer (accounts receivable) or owed to a supplier (accounts payable). `accounts_payable_credit` support is connector-specific — most connectors only expose the accounts-receivable side. Check the connector's gotchas for known deviations.
         :param account:
         :param line_items:
         :param allocations:
@@ -1369,7 +1369,7 @@ class CreditNotes(BaseSDK):
         :param reference: Optional reference message ie: Debit remittance detail.
         :param date_issued: Date credit note issued - YYYY:MM::DDThh:mm:ss.sTZD
         :param date_paid: Date credit note paid - YYYY:MM::DDThh:mm:ss.sTZD
-        :param type: Type of payment
+        :param type: Whether this credit note reduces an amount owed by a customer (accounts receivable) or owed to a supplier (accounts payable). `accounts_payable_credit` support is connector-specific — most connectors only expose the accounts-receivable side. Check the connector's gotchas for known deviations.
         :param account:
         :param line_items:
         :param allocations:
@@ -1658,7 +1658,7 @@ class CreditNotes(BaseSDK):
         :param reference: Optional reference message ie: Debit remittance detail.
         :param date_issued: Date credit note issued - YYYY:MM::DDThh:mm:ss.sTZD
         :param date_paid: Date credit note paid - YYYY:MM::DDThh:mm:ss.sTZD
-        :param type: Type of payment
+        :param type: Whether this credit note reduces an amount owed by a customer (accounts receivable) or owed to a supplier (accounts payable). `accounts_payable_credit` support is connector-specific — most connectors only expose the accounts-receivable side. Check the connector's gotchas for known deviations.
         :param account:
         :param line_items:
         :param allocations:
