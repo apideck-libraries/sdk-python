@@ -278,6 +278,14 @@ with Apideck(
 * [update](docs/sdks/bankfeedstatements/README.md#update) - Update Bank Feed Statement
 * [delete](docs/sdks/bankfeedstatements/README.md#delete) - Delete Bank Feed Statement
 
+#### [accounting.bill_credit_notes](docs/sdks/billcreditnotes/README.md)
+
+* [list](docs/sdks/billcreditnotes/README.md#list) - List Bill Credit Notes
+* [create](docs/sdks/billcreditnotes/README.md#create) - Create Bill Credit Note
+* [get](docs/sdks/billcreditnotes/README.md#get) - Get Bill Credit Note
+* [update](docs/sdks/billcreditnotes/README.md#update) - Update Bill Credit Note
+* [delete](docs/sdks/billcreditnotes/README.md#delete) - Delete Bill Credit Note
+
 #### [accounting.bill_payments](docs/sdks/billpayments/README.md)
 
 * [list](docs/sdks/billpayments/README.md#list) - List Bill Payments
@@ -1098,8 +1106,8 @@ with Apideck(
 
 
 **Inherit from [`ApideckError`](./src/apideck_unify/models/apideckerror.py)**:
-* [`Unauthorized`](./src/apideck_unify/models/unauthorized.py): Unauthorized. Status code `401`. Applicable to 6 of 351 methods.*
-* [`ConflictResponse`](./src/apideck_unify/models/conflictresponse.py): Conflict — a connection already exists for the target connector. Status code `409`. Applicable to 1 of 351 methods.*
+* [`Unauthorized`](./src/apideck_unify/models/unauthorized.py): Unauthorized. Status code `401`. Applicable to 6 of 356 methods.*
+* [`ConflictResponse`](./src/apideck_unify/models/conflictresponse.py): Conflict — a connection already exists for the target connector. Status code `409`. Applicable to 1 of 356 methods.*
 * [`ResponseValidationError`](./src/apideck_unify/models/responsevalidationerror.py): Type mismatch between the response data and the expected Pydantic model. Provides access to the Pydantic validation error via the `cause` attribute.
 
 </details>

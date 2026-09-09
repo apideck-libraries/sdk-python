@@ -59,7 +59,7 @@ class CreditNoteStatus(str, Enum, metaclass=utils.OpenEnumMeta):
 
 
 class CreditNoteType(str, Enum, metaclass=utils.OpenEnumMeta):
-    r"""Type of payment"""
+    r"""Whether this credit note reduces an amount owed by a customer (accounts receivable) or owed to a supplier (accounts payable). `accounts_payable_credit` support is connector-specific — most connectors only expose the accounts-receivable side. Check the connector's gotchas for known deviations."""
 
     ACCOUNTS_RECEIVABLE_CREDIT = "accounts_receivable_credit"
     ACCOUNTS_PAYABLE_CREDIT = "accounts_payable_credit"
@@ -106,7 +106,7 @@ class CreditNoteTypedDict(TypedDict):
     date_paid: NotRequired[Nullable[datetime]]
     r"""Date credit note paid - YYYY:MM::DDThh:mm:ss.sTZD"""
     type: NotRequired[CreditNoteType]
-    r"""Type of payment"""
+    r"""Whether this credit note reduces an amount owed by a customer (accounts receivable) or owed to a supplier (accounts payable). `accounts_payable_credit` support is connector-specific — most connectors only expose the accounts-receivable side. Check the connector's gotchas for known deviations."""
     account: NotRequired[Nullable[LinkedLedgerAccountTypedDict]]
     line_items: NotRequired[List[InvoiceLineItemTypedDict]]
     allocations: NotRequired[List[AllocationTypedDict]]
@@ -206,7 +206,7 @@ class CreditNote(BaseModel):
     type: Annotated[
         Optional[CreditNoteType], PlainValidator(validate_open_enum(False))
     ] = None
-    r"""Type of payment"""
+    r"""Whether this credit note reduces an amount owed by a customer (accounts receivable) or owed to a supplier (accounts payable). `accounts_payable_credit` support is connector-specific — most connectors only expose the accounts-receivable side. Check the connector's gotchas for known deviations."""
 
     account: OptionalNullable[LinkedLedgerAccount] = UNSET
 
@@ -417,7 +417,7 @@ class CreditNoteInputTypedDict(TypedDict):
     date_paid: NotRequired[Nullable[datetime]]
     r"""Date credit note paid - YYYY:MM::DDThh:mm:ss.sTZD"""
     type: NotRequired[CreditNoteType]
-    r"""Type of payment"""
+    r"""Whether this credit note reduces an amount owed by a customer (accounts receivable) or owed to a supplier (accounts payable). `accounts_payable_credit` support is connector-specific — most connectors only expose the accounts-receivable side. Check the connector's gotchas for known deviations."""
     account: NotRequired[Nullable[LinkedLedgerAccountTypedDict]]
     line_items: NotRequired[List[InvoiceLineItemInputTypedDict]]
     allocations: NotRequired[List[AllocationInputTypedDict]]
@@ -504,7 +504,7 @@ class CreditNoteInput(BaseModel):
     type: Annotated[
         Optional[CreditNoteType], PlainValidator(validate_open_enum(False))
     ] = None
-    r"""Type of payment"""
+    r"""Whether this credit note reduces an amount owed by a customer (accounts receivable) or owed to a supplier (accounts payable). `accounts_payable_credit` support is connector-specific — most connectors only expose the accounts-receivable side. Check the connector's gotchas for known deviations."""
 
     account: OptionalNullable[LinkedLedgerAccount] = UNSET
 

@@ -25,6 +25,14 @@ class ProductStatus(str, Enum, metaclass=utils.OpenEnumMeta):
     ARCHIVED = "archived"
 
 
+class TaxStatus(str, Enum, metaclass=utils.OpenEnumMeta):
+    r"""The tax applicability of the product: `taxable` (the product is taxed), `shipping` (only the shipping is taxed, the product itself is exempt) or `none` (neither is taxed)."""
+
+    TAXABLE = "taxable"
+    SHIPPING = "shipping"
+    NONE = "none"
+
+
 class ImagesTypedDict(TypedDict):
     id: NotRequired[Nullable[str]]
     r"""A unique identifier for an object."""
@@ -361,6 +369,8 @@ class EcommerceProductTypedDict(TypedDict):
     r"""A detailed description of the product."""
     status: NotRequired[Nullable[ProductStatus]]
     r"""The current status of the product (active or archived)."""
+    tax_status: NotRequired[Nullable[TaxStatus]]
+    r"""The tax applicability of the product: `taxable` (the product is taxed), `shipping` (only the shipping is taxed, the product itself is exempt) or `none` (neither is taxed)."""
     price: NotRequired[Nullable[str]]
     r"""The price of the product."""
     sku: NotRequired[Nullable[str]]
@@ -402,6 +412,11 @@ class EcommerceProduct(BaseModel):
         OptionalNullable[ProductStatus], PlainValidator(validate_open_enum(False))
     ] = UNSET
     r"""The current status of the product (active or archived)."""
+
+    tax_status: Annotated[
+        OptionalNullable[TaxStatus], PlainValidator(validate_open_enum(False))
+    ] = UNSET
+    r"""The tax applicability of the product: `taxable` (the product is taxed), `shipping` (only the shipping is taxed, the product itself is exempt) or `none` (neither is taxed)."""
 
     price: OptionalNullable[str] = UNSET
     r"""The price of the product."""
@@ -450,12 +465,22 @@ class EcommerceProduct(BaseModel):
                 return value
         return value
 
+    @field_serializer("tax_status")
+    def serialize_tax_status(self, value):
+        if isinstance(value, str):
+            try:
+                return models.TaxStatus(value)
+            except ValueError:
+                return value
+        return value
+
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
         optional_fields = [
             "name",
             "description",
             "status",
+            "tax_status",
             "price",
             "sku",
             "inventory_quantity",
@@ -474,6 +499,7 @@ class EcommerceProduct(BaseModel):
             "name",
             "description",
             "status",
+            "tax_status",
             "price",
             "sku",
             "inventory_quantity",
