@@ -8,6 +8,7 @@ from enum import Enum
 class AttachmentReferenceType(str, Enum, metaclass=utils.OpenEnumMeta):
     INVOICE = "invoice"
     BILL = "bill"
+    BILL_CREDIT_NOTE = "bill-credit-note"
     EXPENSE = "expense"
     EXPENSE_REPORT = "expense-report"
     QUOTE = "quote"
