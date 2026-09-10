@@ -26,6 +26,7 @@ from apideck_unify.generalledgertransactions import GeneralLedgerTransactions
 from apideck_unify.invoiceitems import InvoiceItems
 from apideck_unify.invoices import Invoices
 from apideck_unify.journalentries import JournalEntries
+from apideck_unify.journals import Journals
 from apideck_unify.ledgeraccounts import LedgerAccounts
 from apideck_unify.locations import Locations
 from apideck_unify.paymentmethods import PaymentMethods
@@ -68,6 +69,7 @@ class Accounting(BaseSDK):
     departments: Departments
     attachments: Attachments
     bank_accounts: BankAccounts
+    journals: Journals
     tracking_categories: TrackingCategories
     bill_payments: BillPayments
     expenses: Expenses
@@ -145,6 +147,7 @@ class Accounting(BaseSDK):
         self.bank_accounts = BankAccounts(
             self.sdk_configuration, parent_ref=self.parent_ref
         )
+        self.journals = Journals(self.sdk_configuration, parent_ref=self.parent_ref)
         self.tracking_categories = TrackingCategories(
             self.sdk_configuration, parent_ref=self.parent_ref
         )

@@ -3,15 +3,14 @@
 from .basesdk import BaseSDK
 from apideck_unify import models, utils
 from apideck_unify._hooks import HookContext
-from apideck_unify.types import Nullable, OptionalNullable, UNSET
+from apideck_unify.types import OptionalNullable, UNSET
 from apideck_unify.utils import get_security_from_env
 from apideck_unify.utils.unmarshal_json_response import unmarshal_json_response
-from datetime import datetime
 from jsonpath import JSONPath
 from typing import Any, Dict, List, Mapping, Optional, Union
 
 
-class JournalEntries(BaseSDK):
+class Journals(BaseSDK):
     def list(
         self,
         *,
@@ -22,22 +21,16 @@ class JournalEntries(BaseSDK):
         company_id: Optional[str] = None,
         cursor: OptionalNullable[str] = UNSET,
         limit: Optional[int] = 20,
-        filter_: Optional[
-            Union[models.JournalEntriesFilter, models.JournalEntriesFilterTypedDict]
-        ] = None,
-        sort: Optional[
-            Union[models.JournalEntriesSort, models.JournalEntriesSortTypedDict]
-        ] = None,
         pass_through: Optional[Dict[str, Any]] = None,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
         http_headers: Optional[Mapping[str, str]] = None,
-    ) -> Optional[models.AccountingJournalEntriesAllResponse]:
-        r"""List Journal Entries
+    ) -> Optional[models.AccountingJournalsAllResponse]:
+        r"""List Journals
 
-        List Journal Entries
+        List the journals (daybooks) available for posting accounting entries, including their codes, types, and VAT settings.
 
         :param raw: Include raw response. Mostly used for debugging purposes
         :param consumer_id: ID of the consumer which you want to get or push data from
@@ -46,8 +39,6 @@ class JournalEntries(BaseSDK):
         :param company_id: The ID of the company to scope requests to. For connectors that support multi-company, this overrides the default company configured in connection settings.
         :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
         :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
-        :param filter_: Apply filters
-        :param sort: Apply sorting
         :param pass_through: Optional unmapped key/values that will be passed through to downstream as query parameters. Ie: ?pass_through[search]=leads becomes ?search=leads
         :param fields: The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded.
         :param retries: Override the default retry configuration for this method
@@ -65,7 +56,7 @@ class JournalEntries(BaseSDK):
         else:
             base_url = self._get_url(base_url, url_variables)
 
-        request = models.AccountingJournalEntriesAllRequest(
+        request = models.AccountingJournalsAllRequest(
             raw=raw,
             consumer_id=consumer_id,
             app_id=app_id,
@@ -73,17 +64,13 @@ class JournalEntries(BaseSDK):
             company_id=company_id,
             cursor=cursor,
             limit=limit,
-            filter_=utils.get_pydantic_model(
-                filter_, Optional[models.JournalEntriesFilter]
-            ),
-            sort=utils.get_pydantic_model(sort, Optional[models.JournalEntriesSort]),
             pass_through=pass_through,
             fields=fields,
         )
 
         req = self._build_request(
             method="GET",
-            path="/accounting/journal-entries",
+            path="/accounting/journals",
             base_url=base_url,
             url_variables=url_variables,
             request=request,
@@ -93,7 +80,7 @@ class JournalEntries(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             http_headers=http_headers,
-            _globals=models.AccountingJournalEntriesAllGlobals(
+            _globals=models.AccountingJournalsAllGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
@@ -117,7 +104,7 @@ class JournalEntries(BaseSDK):
             hook_ctx=HookContext(
                 config=self.sdk_configuration,
                 base_url=base_url or "",
-                operation_id="accounting.journalEntriesAll",
+                operation_id="accounting.journalsAll",
                 oauth2_scopes=None,
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
@@ -128,7 +115,7 @@ class JournalEntries(BaseSDK):
             retry_config=retry_config,
         )
 
-        def next_func() -> Optional[models.AccountingJournalEntriesAllResponse]:
+        def next_func() -> Optional[models.AccountingJournalsAllResponse]:
             body = utils.unmarshal_json(http_res.text, Union[Dict[Any, Any], List[Any]])
             next_cursor = JSONPath("$.meta.cursors.next").parse(body)
 
@@ -147,8 +134,6 @@ class JournalEntries(BaseSDK):
                 company_id=company_id,
                 cursor=next_cursor,
                 limit=limit,
-                filter_=filter_,
-                sort=sort,
                 pass_through=pass_through,
                 fields=fields,
                 retries=retries,
@@ -156,9 +141,9 @@ class JournalEntries(BaseSDK):
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return models.AccountingJournalEntriesAllResponse(
-                get_journal_entries_response=unmarshal_json_response(
-                    Optional[models.GetJournalEntriesResponse], http_res
+            return models.AccountingJournalsAllResponse(
+                get_journals_response=unmarshal_json_response(
+                    Optional[models.GetJournalsResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
@@ -195,7 +180,7 @@ class JournalEntries(BaseSDK):
             http_res_text = utils.stream_to_text(http_res)
             raise models.APIError("API error occurred", http_res, http_res_text)
         if utils.match_response(http_res, "default", "application/json"):
-            return models.AccountingJournalEntriesAllResponse(
+            return models.AccountingJournalsAllResponse(
                 unexpected_error_response=unmarshal_json_response(
                     Optional[models.UnexpectedErrorResponse], http_res
                 ),
@@ -215,22 +200,16 @@ class JournalEntries(BaseSDK):
         company_id: Optional[str] = None,
         cursor: OptionalNullable[str] = UNSET,
         limit: Optional[int] = 20,
-        filter_: Optional[
-            Union[models.JournalEntriesFilter, models.JournalEntriesFilterTypedDict]
-        ] = None,
-        sort: Optional[
-            Union[models.JournalEntriesSort, models.JournalEntriesSortTypedDict]
-        ] = None,
         pass_through: Optional[Dict[str, Any]] = None,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
         http_headers: Optional[Mapping[str, str]] = None,
-    ) -> Optional[models.AccountingJournalEntriesAllResponse]:
-        r"""List Journal Entries
+    ) -> Optional[models.AccountingJournalsAllResponse]:
+        r"""List Journals
 
-        List Journal Entries
+        List the journals (daybooks) available for posting accounting entries, including their codes, types, and VAT settings.
 
         :param raw: Include raw response. Mostly used for debugging purposes
         :param consumer_id: ID of the consumer which you want to get or push data from
@@ -239,8 +218,6 @@ class JournalEntries(BaseSDK):
         :param company_id: The ID of the company to scope requests to. For connectors that support multi-company, this overrides the default company configured in connection settings.
         :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
         :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
-        :param filter_: Apply filters
-        :param sort: Apply sorting
         :param pass_through: Optional unmapped key/values that will be passed through to downstream as query parameters. Ie: ?pass_through[search]=leads becomes ?search=leads
         :param fields: The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded.
         :param retries: Override the default retry configuration for this method
@@ -258,7 +235,7 @@ class JournalEntries(BaseSDK):
         else:
             base_url = self._get_url(base_url, url_variables)
 
-        request = models.AccountingJournalEntriesAllRequest(
+        request = models.AccountingJournalsAllRequest(
             raw=raw,
             consumer_id=consumer_id,
             app_id=app_id,
@@ -266,17 +243,13 @@ class JournalEntries(BaseSDK):
             company_id=company_id,
             cursor=cursor,
             limit=limit,
-            filter_=utils.get_pydantic_model(
-                filter_, Optional[models.JournalEntriesFilter]
-            ),
-            sort=utils.get_pydantic_model(sort, Optional[models.JournalEntriesSort]),
             pass_through=pass_through,
             fields=fields,
         )
 
         req = self._build_request_async(
             method="GET",
-            path="/accounting/journal-entries",
+            path="/accounting/journals",
             base_url=base_url,
             url_variables=url_variables,
             request=request,
@@ -286,7 +259,7 @@ class JournalEntries(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             http_headers=http_headers,
-            _globals=models.AccountingJournalEntriesAllGlobals(
+            _globals=models.AccountingJournalsAllGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
@@ -310,7 +283,7 @@ class JournalEntries(BaseSDK):
             hook_ctx=HookContext(
                 config=self.sdk_configuration,
                 base_url=base_url or "",
-                operation_id="accounting.journalEntriesAll",
+                operation_id="accounting.journalsAll",
                 oauth2_scopes=None,
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
@@ -321,7 +294,7 @@ class JournalEntries(BaseSDK):
             retry_config=retry_config,
         )
 
-        def next_func() -> Optional[models.AccountingJournalEntriesAllResponse]:
+        def next_func() -> Optional[models.AccountingJournalsAllResponse]:
             body = utils.unmarshal_json(http_res.text, Union[Dict[Any, Any], List[Any]])
             next_cursor = JSONPath("$.meta.cursors.next").parse(body)
 
@@ -340,8 +313,6 @@ class JournalEntries(BaseSDK):
                 company_id=company_id,
                 cursor=next_cursor,
                 limit=limit,
-                filter_=filter_,
-                sort=sort,
                 pass_through=pass_through,
                 fields=fields,
                 retries=retries,
@@ -349,9 +320,9 @@ class JournalEntries(BaseSDK):
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return models.AccountingJournalEntriesAllResponse(
-                get_journal_entries_response=unmarshal_json_response(
-                    Optional[models.GetJournalEntriesResponse], http_res
+            return models.AccountingJournalsAllResponse(
+                get_journals_response=unmarshal_json_response(
+                    Optional[models.GetJournalsResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
@@ -388,7 +359,7 @@ class JournalEntries(BaseSDK):
             http_res_text = await utils.stream_to_text_async(http_res)
             raise models.APIError("API error occurred", http_res, http_res_text)
         if utils.match_response(http_res, "default", "application/json"):
-            return models.AccountingJournalEntriesAllResponse(
+            return models.AccountingJournalsAllResponse(
                 unexpected_error_response=unmarshal_json_response(
                     Optional[models.UnexpectedErrorResponse], http_res
                 ),
@@ -405,88 +376,44 @@ class JournalEntries(BaseSDK):
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
-        company_id_param: Optional[str] = None,
-        display_id: OptionalNullable[str] = UNSET,
-        title: OptionalNullable[str] = UNSET,
-        currency_rate: OptionalNullable[float] = UNSET,
+        company_id: Optional[str] = None,
+        code: OptionalNullable[str] = UNSET,
+        name: OptionalNullable[str] = UNSET,
+        description: OptionalNullable[str] = UNSET,
+        type_: OptionalNullable[models.JournalType] = UNSET,
+        allow_vat: OptionalNullable[bool] = UNSET,
         currency: OptionalNullable[models.Currency] = UNSET,
-        company_id: OptionalNullable[str] = UNSET,
-        subsidiary: OptionalNullable[
-            Union[models.LinkedSubsidiaryInput, models.LinkedSubsidiaryInputTypedDict]
-        ] = UNSET,
-        line_items: Optional[
+        iban: OptionalNullable[str] = UNSET,
+        default_account: OptionalNullable[
             Union[
-                List[models.JournalEntryLineItemInput],
-                List[models.JournalEntryLineItemInputTypedDict],
-            ]
-        ] = None,
-        status: OptionalNullable[models.JournalEntryStatus] = UNSET,
-        memo: OptionalNullable[str] = UNSET,
-        posted_at: Optional[datetime] = None,
-        journal_symbol: OptionalNullable[str] = UNSET,
-        tax_type: OptionalNullable[str] = UNSET,
-        tax_code: OptionalNullable[str] = UNSET,
-        number: OptionalNullable[str] = UNSET,
-        tracking_categories: OptionalNullable[
-            Union[
-                List[Nullable[models.LinkedTrackingCategory]],
-                List[Nullable[models.LinkedTrackingCategoryTypedDict]],
+                models.LinkedFinancialAccountInput,
+                models.LinkedFinancialAccountInputTypedDict,
             ]
         ] = UNSET,
-        accounting_period: OptionalNullable[str] = UNSET,
-        tax_inclusive: OptionalNullable[bool] = UNSET,
-        attachments: Optional[
-            Union[
-                List[Nullable[models.LinkedAttachment]],
-                List[Nullable[models.LinkedAttachmentTypedDict]],
-            ]
-        ] = None,
-        source_type: OptionalNullable[str] = UNSET,
-        source_id: OptionalNullable[str] = UNSET,
-        row_version: OptionalNullable[str] = UNSET,
-        custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
-        ] = None,
-        pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
-        ] = None,
+        blocked: OptionalNullable[bool] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
         http_headers: Optional[Mapping[str, str]] = None,
-    ) -> models.AccountingJournalEntriesAddResponse:
-        r"""Create Journal Entry
+    ) -> models.AccountingJournalsAddResponse:
+        r"""Create Journal
 
-        Create Journal Entry
+        Create Journal
 
         :param raw: Include raw response. Mostly used for debugging purposes
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
-        :param company_id_param: The ID of the company to scope requests to. For connectors that support multi-company, this overrides the default company configured in connection settings.
-        :param display_id: Display ID of the journal entry
-        :param title: Journal entry title
-        :param currency_rate: Currency Exchange Rate at the time entity was recorded/generated.
+        :param company_id: The ID of the company to scope requests to. For connectors that support multi-company, this overrides the default company configured in connection settings.
+        :param code: Code used to select this journal when posting entries. For Exact Online, pass this code as journal_symbol, not the journal id.
+        :param name: Name of the journal.
+        :param description: Description of the journal.
+        :param type: Normalized journal classification.
+        :param allow_vat: Whether the journal permits VAT on entries. Null or absent means unknown. Exact Online exposes this setting for general journals; it must not be treated as a universal VAT capability flag for other journal types.
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
-        :param company_id: The company ID the transaction belongs to
-        :param subsidiary:
-        :param line_items: Requires a minimum of 2 line items that sum to 0
-        :param status: Journal entry status
-        :param memo: Reference for the journal entry.
-        :param posted_at: This is the date on which the journal entry was added. This can be different from the creation date and can also be backdated.
-        :param journal_symbol: Journal symbol of the entry. For example IND for indirect costs. Where supported, list /accounting/journals to discover available journals and their posting rules. For Exact Online, supply the journal code, not its id.
-        :param tax_type: Deprecated — use line_items[].tax_type for per-line tax applicability. Kept as fallback: applies to all lines that do not set their own tax_type.
-        :param tax_code: Applicable tax id/code override if tax is not supplied on a line item basis.
-        :param number: Journal entry number.
-        :param tracking_categories: A list of linked tracking categories.
-        :param accounting_period: Accounting period
-        :param tax_inclusive: Amounts are including tax
-        :param attachments: Files attached to this journal entry. Use the attachments endpoints with reference_type=journal-entry and this entry's id where the connector supports it.
-        :param source_type: The source type of the journal entry
-        :param source_id: A unique identifier for the source of the journal entry
-        :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
-        :param custom_fields:
-        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
+        :param iban: International Bank Account Number
+        :param default_account: A flexible account reference that can represent a ledger account (GL account), a bank account, or an employee payable account, depending on the connector's requirements.
+        :param blocked: Whether the journal is blocked for posting.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -502,55 +429,31 @@ class JournalEntries(BaseSDK):
         else:
             base_url = self._get_url(base_url, url_variables)
 
-        request = models.AccountingJournalEntriesAddRequest(
+        request = models.AccountingJournalsAddRequest(
             raw=raw,
             consumer_id=consumer_id,
             app_id=app_id,
             service_id=service_id,
-            company_id_param=company_id_param,
-            journal_entry=models.JournalEntryInput(
-                display_id=display_id,
-                title=title,
-                currency_rate=currency_rate,
+            company_id=company_id,
+            journal=models.JournalInput(
+                code=code,
+                name=name,
+                description=description,
+                type=type_,
+                allow_vat=allow_vat,
                 currency=currency,
-                company_id=company_id,
-                subsidiary=utils.get_pydantic_model(
-                    subsidiary, OptionalNullable[models.LinkedSubsidiaryInput]
+                iban=iban,
+                default_account=utils.get_pydantic_model(
+                    default_account,
+                    OptionalNullable[models.LinkedFinancialAccountInput],
                 ),
-                line_items=utils.get_pydantic_model(
-                    line_items, Optional[List[models.JournalEntryLineItemInput]]
-                ),
-                status=status,
-                memo=memo,
-                posted_at=posted_at,
-                journal_symbol=journal_symbol,
-                tax_type=tax_type,
-                tax_code=tax_code,
-                number=number,
-                tracking_categories=utils.get_pydantic_model(
-                    tracking_categories,
-                    OptionalNullable[List[Nullable[models.LinkedTrackingCategory]]],
-                ),
-                accounting_period=accounting_period,
-                tax_inclusive=tax_inclusive,
-                attachments=utils.get_pydantic_model(
-                    attachments, Optional[List[Nullable[models.LinkedAttachment]]]
-                ),
-                source_type=source_type,
-                source_id=source_id,
-                row_version=row_version,
-                custom_fields=utils.get_pydantic_model(
-                    custom_fields, Optional[List[models.CustomField]]
-                ),
-                pass_through=utils.get_pydantic_model(
-                    pass_through, Optional[List[models.PassThroughBody]]
-                ),
+                blocked=blocked,
             ),
         )
 
         req = self._build_request(
             method="POST",
-            path="/accounting/journal-entries",
+            path="/accounting/journals",
             base_url=base_url,
             url_variables=url_variables,
             request=request,
@@ -560,13 +463,13 @@ class JournalEntries(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             http_headers=http_headers,
-            _globals=models.AccountingJournalEntriesAddGlobals(
+            _globals=models.AccountingJournalsAddGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
             get_serialized_body=lambda: utils.serialize_request_body(
-                request.journal_entry, False, False, "json", models.JournalEntryInput
+                request.journal, False, False, "json", models.JournalInput
             ),
             timeout_ms=timeout_ms,
         )
@@ -587,7 +490,7 @@ class JournalEntries(BaseSDK):
             hook_ctx=HookContext(
                 config=self.sdk_configuration,
                 base_url=base_url or "",
-                operation_id="accounting.journalEntriesAdd",
+                operation_id="accounting.journalsAdd",
                 oauth2_scopes=None,
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
@@ -600,9 +503,9 @@ class JournalEntries(BaseSDK):
 
         response_data: Any = None
         if utils.match_response(http_res, "201", "application/json"):
-            return models.AccountingJournalEntriesAddResponse(
-                create_journal_entry_response=unmarshal_json_response(
-                    Optional[models.CreateJournalEntryResponse], http_res
+            return models.AccountingJournalsAddResponse(
+                create_journal_response=unmarshal_json_response(
+                    Optional[models.CreateJournalResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
             )
@@ -638,7 +541,7 @@ class JournalEntries(BaseSDK):
             http_res_text = utils.stream_to_text(http_res)
             raise models.APIError("API error occurred", http_res, http_res_text)
         if utils.match_response(http_res, "default", "application/json"):
-            return models.AccountingJournalEntriesAddResponse(
+            return models.AccountingJournalsAddResponse(
                 unexpected_error_response=unmarshal_json_response(
                     Optional[models.UnexpectedErrorResponse], http_res
                 ),
@@ -654,88 +557,44 @@ class JournalEntries(BaseSDK):
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
-        company_id_param: Optional[str] = None,
-        display_id: OptionalNullable[str] = UNSET,
-        title: OptionalNullable[str] = UNSET,
-        currency_rate: OptionalNullable[float] = UNSET,
+        company_id: Optional[str] = None,
+        code: OptionalNullable[str] = UNSET,
+        name: OptionalNullable[str] = UNSET,
+        description: OptionalNullable[str] = UNSET,
+        type_: OptionalNullable[models.JournalType] = UNSET,
+        allow_vat: OptionalNullable[bool] = UNSET,
         currency: OptionalNullable[models.Currency] = UNSET,
-        company_id: OptionalNullable[str] = UNSET,
-        subsidiary: OptionalNullable[
-            Union[models.LinkedSubsidiaryInput, models.LinkedSubsidiaryInputTypedDict]
-        ] = UNSET,
-        line_items: Optional[
+        iban: OptionalNullable[str] = UNSET,
+        default_account: OptionalNullable[
             Union[
-                List[models.JournalEntryLineItemInput],
-                List[models.JournalEntryLineItemInputTypedDict],
-            ]
-        ] = None,
-        status: OptionalNullable[models.JournalEntryStatus] = UNSET,
-        memo: OptionalNullable[str] = UNSET,
-        posted_at: Optional[datetime] = None,
-        journal_symbol: OptionalNullable[str] = UNSET,
-        tax_type: OptionalNullable[str] = UNSET,
-        tax_code: OptionalNullable[str] = UNSET,
-        number: OptionalNullable[str] = UNSET,
-        tracking_categories: OptionalNullable[
-            Union[
-                List[Nullable[models.LinkedTrackingCategory]],
-                List[Nullable[models.LinkedTrackingCategoryTypedDict]],
+                models.LinkedFinancialAccountInput,
+                models.LinkedFinancialAccountInputTypedDict,
             ]
         ] = UNSET,
-        accounting_period: OptionalNullable[str] = UNSET,
-        tax_inclusive: OptionalNullable[bool] = UNSET,
-        attachments: Optional[
-            Union[
-                List[Nullable[models.LinkedAttachment]],
-                List[Nullable[models.LinkedAttachmentTypedDict]],
-            ]
-        ] = None,
-        source_type: OptionalNullable[str] = UNSET,
-        source_id: OptionalNullable[str] = UNSET,
-        row_version: OptionalNullable[str] = UNSET,
-        custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
-        ] = None,
-        pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
-        ] = None,
+        blocked: OptionalNullable[bool] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
         http_headers: Optional[Mapping[str, str]] = None,
-    ) -> models.AccountingJournalEntriesAddResponse:
-        r"""Create Journal Entry
+    ) -> models.AccountingJournalsAddResponse:
+        r"""Create Journal
 
-        Create Journal Entry
+        Create Journal
 
         :param raw: Include raw response. Mostly used for debugging purposes
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
-        :param company_id_param: The ID of the company to scope requests to. For connectors that support multi-company, this overrides the default company configured in connection settings.
-        :param display_id: Display ID of the journal entry
-        :param title: Journal entry title
-        :param currency_rate: Currency Exchange Rate at the time entity was recorded/generated.
+        :param company_id: The ID of the company to scope requests to. For connectors that support multi-company, this overrides the default company configured in connection settings.
+        :param code: Code used to select this journal when posting entries. For Exact Online, pass this code as journal_symbol, not the journal id.
+        :param name: Name of the journal.
+        :param description: Description of the journal.
+        :param type: Normalized journal classification.
+        :param allow_vat: Whether the journal permits VAT on entries. Null or absent means unknown. Exact Online exposes this setting for general journals; it must not be treated as a universal VAT capability flag for other journal types.
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
-        :param company_id: The company ID the transaction belongs to
-        :param subsidiary:
-        :param line_items: Requires a minimum of 2 line items that sum to 0
-        :param status: Journal entry status
-        :param memo: Reference for the journal entry.
-        :param posted_at: This is the date on which the journal entry was added. This can be different from the creation date and can also be backdated.
-        :param journal_symbol: Journal symbol of the entry. For example IND for indirect costs. Where supported, list /accounting/journals to discover available journals and their posting rules. For Exact Online, supply the journal code, not its id.
-        :param tax_type: Deprecated — use line_items[].tax_type for per-line tax applicability. Kept as fallback: applies to all lines that do not set their own tax_type.
-        :param tax_code: Applicable tax id/code override if tax is not supplied on a line item basis.
-        :param number: Journal entry number.
-        :param tracking_categories: A list of linked tracking categories.
-        :param accounting_period: Accounting period
-        :param tax_inclusive: Amounts are including tax
-        :param attachments: Files attached to this journal entry. Use the attachments endpoints with reference_type=journal-entry and this entry's id where the connector supports it.
-        :param source_type: The source type of the journal entry
-        :param source_id: A unique identifier for the source of the journal entry
-        :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
-        :param custom_fields:
-        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
+        :param iban: International Bank Account Number
+        :param default_account: A flexible account reference that can represent a ledger account (GL account), a bank account, or an employee payable account, depending on the connector's requirements.
+        :param blocked: Whether the journal is blocked for posting.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -751,55 +610,31 @@ class JournalEntries(BaseSDK):
         else:
             base_url = self._get_url(base_url, url_variables)
 
-        request = models.AccountingJournalEntriesAddRequest(
+        request = models.AccountingJournalsAddRequest(
             raw=raw,
             consumer_id=consumer_id,
             app_id=app_id,
             service_id=service_id,
-            company_id_param=company_id_param,
-            journal_entry=models.JournalEntryInput(
-                display_id=display_id,
-                title=title,
-                currency_rate=currency_rate,
+            company_id=company_id,
+            journal=models.JournalInput(
+                code=code,
+                name=name,
+                description=description,
+                type=type_,
+                allow_vat=allow_vat,
                 currency=currency,
-                company_id=company_id,
-                subsidiary=utils.get_pydantic_model(
-                    subsidiary, OptionalNullable[models.LinkedSubsidiaryInput]
+                iban=iban,
+                default_account=utils.get_pydantic_model(
+                    default_account,
+                    OptionalNullable[models.LinkedFinancialAccountInput],
                 ),
-                line_items=utils.get_pydantic_model(
-                    line_items, Optional[List[models.JournalEntryLineItemInput]]
-                ),
-                status=status,
-                memo=memo,
-                posted_at=posted_at,
-                journal_symbol=journal_symbol,
-                tax_type=tax_type,
-                tax_code=tax_code,
-                number=number,
-                tracking_categories=utils.get_pydantic_model(
-                    tracking_categories,
-                    OptionalNullable[List[Nullable[models.LinkedTrackingCategory]]],
-                ),
-                accounting_period=accounting_period,
-                tax_inclusive=tax_inclusive,
-                attachments=utils.get_pydantic_model(
-                    attachments, Optional[List[Nullable[models.LinkedAttachment]]]
-                ),
-                source_type=source_type,
-                source_id=source_id,
-                row_version=row_version,
-                custom_fields=utils.get_pydantic_model(
-                    custom_fields, Optional[List[models.CustomField]]
-                ),
-                pass_through=utils.get_pydantic_model(
-                    pass_through, Optional[List[models.PassThroughBody]]
-                ),
+                blocked=blocked,
             ),
         )
 
         req = self._build_request_async(
             method="POST",
-            path="/accounting/journal-entries",
+            path="/accounting/journals",
             base_url=base_url,
             url_variables=url_variables,
             request=request,
@@ -809,13 +644,13 @@ class JournalEntries(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             http_headers=http_headers,
-            _globals=models.AccountingJournalEntriesAddGlobals(
+            _globals=models.AccountingJournalsAddGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
             get_serialized_body=lambda: utils.serialize_request_body(
-                request.journal_entry, False, False, "json", models.JournalEntryInput
+                request.journal, False, False, "json", models.JournalInput
             ),
             timeout_ms=timeout_ms,
         )
@@ -836,7 +671,7 @@ class JournalEntries(BaseSDK):
             hook_ctx=HookContext(
                 config=self.sdk_configuration,
                 base_url=base_url or "",
-                operation_id="accounting.journalEntriesAdd",
+                operation_id="accounting.journalsAdd",
                 oauth2_scopes=None,
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
@@ -849,9 +684,9 @@ class JournalEntries(BaseSDK):
 
         response_data: Any = None
         if utils.match_response(http_res, "201", "application/json"):
-            return models.AccountingJournalEntriesAddResponse(
-                create_journal_entry_response=unmarshal_json_response(
-                    Optional[models.CreateJournalEntryResponse], http_res
+            return models.AccountingJournalsAddResponse(
+                create_journal_response=unmarshal_json_response(
+                    Optional[models.CreateJournalResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
             )
@@ -887,7 +722,7 @@ class JournalEntries(BaseSDK):
             http_res_text = await utils.stream_to_text_async(http_res)
             raise models.APIError("API error occurred", http_res, http_res_text)
         if utils.match_response(http_res, "default", "application/json"):
-            return models.AccountingJournalEntriesAddResponse(
+            return models.AccountingJournalsAddResponse(
                 unexpected_error_response=unmarshal_json_response(
                     Optional[models.UnexpectedErrorResponse], http_res
                 ),
@@ -910,10 +745,10 @@ class JournalEntries(BaseSDK):
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
         http_headers: Optional[Mapping[str, str]] = None,
-    ) -> models.AccountingJournalEntriesOneResponse:
-        r"""Get Journal Entry
+    ) -> models.AccountingJournalsOneResponse:
+        r"""Get Journal
 
-        Get Journal Entry
+        Get Journal
 
         :param id: ID of the record you are acting upon.
         :param consumer_id: ID of the consumer which you want to get or push data from
@@ -937,7 +772,7 @@ class JournalEntries(BaseSDK):
         else:
             base_url = self._get_url(base_url, url_variables)
 
-        request = models.AccountingJournalEntriesOneRequest(
+        request = models.AccountingJournalsOneRequest(
             id=id,
             consumer_id=consumer_id,
             app_id=app_id,
@@ -949,7 +784,7 @@ class JournalEntries(BaseSDK):
 
         req = self._build_request(
             method="GET",
-            path="/accounting/journal-entries/{id}",
+            path="/accounting/journals/{id}",
             base_url=base_url,
             url_variables=url_variables,
             request=request,
@@ -959,7 +794,7 @@ class JournalEntries(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             http_headers=http_headers,
-            _globals=models.AccountingJournalEntriesOneGlobals(
+            _globals=models.AccountingJournalsOneGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
@@ -983,7 +818,7 @@ class JournalEntries(BaseSDK):
             hook_ctx=HookContext(
                 config=self.sdk_configuration,
                 base_url=base_url or "",
-                operation_id="accounting.journalEntriesOne",
+                operation_id="accounting.journalsOne",
                 oauth2_scopes=None,
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
@@ -996,9 +831,9 @@ class JournalEntries(BaseSDK):
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return models.AccountingJournalEntriesOneResponse(
-                get_journal_entry_response=unmarshal_json_response(
-                    Optional[models.GetJournalEntryResponse], http_res
+            return models.AccountingJournalsOneResponse(
+                get_journal_response=unmarshal_json_response(
+                    Optional[models.GetJournalResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
             )
@@ -1034,7 +869,7 @@ class JournalEntries(BaseSDK):
             http_res_text = utils.stream_to_text(http_res)
             raise models.APIError("API error occurred", http_res, http_res_text)
         if utils.match_response(http_res, "default", "application/json"):
-            return models.AccountingJournalEntriesOneResponse(
+            return models.AccountingJournalsOneResponse(
                 unexpected_error_response=unmarshal_json_response(
                     Optional[models.UnexpectedErrorResponse], http_res
                 ),
@@ -1057,10 +892,10 @@ class JournalEntries(BaseSDK):
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
         http_headers: Optional[Mapping[str, str]] = None,
-    ) -> models.AccountingJournalEntriesOneResponse:
-        r"""Get Journal Entry
+    ) -> models.AccountingJournalsOneResponse:
+        r"""Get Journal
 
-        Get Journal Entry
+        Get Journal
 
         :param id: ID of the record you are acting upon.
         :param consumer_id: ID of the consumer which you want to get or push data from
@@ -1084,7 +919,7 @@ class JournalEntries(BaseSDK):
         else:
             base_url = self._get_url(base_url, url_variables)
 
-        request = models.AccountingJournalEntriesOneRequest(
+        request = models.AccountingJournalsOneRequest(
             id=id,
             consumer_id=consumer_id,
             app_id=app_id,
@@ -1096,7 +931,7 @@ class JournalEntries(BaseSDK):
 
         req = self._build_request_async(
             method="GET",
-            path="/accounting/journal-entries/{id}",
+            path="/accounting/journals/{id}",
             base_url=base_url,
             url_variables=url_variables,
             request=request,
@@ -1106,7 +941,7 @@ class JournalEntries(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             http_headers=http_headers,
-            _globals=models.AccountingJournalEntriesOneGlobals(
+            _globals=models.AccountingJournalsOneGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
@@ -1130,7 +965,7 @@ class JournalEntries(BaseSDK):
             hook_ctx=HookContext(
                 config=self.sdk_configuration,
                 base_url=base_url or "",
-                operation_id="accounting.journalEntriesOne",
+                operation_id="accounting.journalsOne",
                 oauth2_scopes=None,
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
@@ -1143,9 +978,9 @@ class JournalEntries(BaseSDK):
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return models.AccountingJournalEntriesOneResponse(
-                get_journal_entry_response=unmarshal_json_response(
-                    Optional[models.GetJournalEntryResponse], http_res
+            return models.AccountingJournalsOneResponse(
+                get_journal_response=unmarshal_json_response(
+                    Optional[models.GetJournalResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
             )
@@ -1181,7 +1016,7 @@ class JournalEntries(BaseSDK):
             http_res_text = await utils.stream_to_text_async(http_res)
             raise models.APIError("API error occurred", http_res, http_res_text)
         if utils.match_response(http_res, "default", "application/json"):
-            return models.AccountingJournalEntriesOneResponse(
+            return models.AccountingJournalsOneResponse(
                 unexpected_error_response=unmarshal_json_response(
                     Optional[models.UnexpectedErrorResponse], http_res
                 ),
@@ -1197,90 +1032,46 @@ class JournalEntries(BaseSDK):
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
-        company_id_param: Optional[str] = None,
+        company_id: Optional[str] = None,
         raw: Optional[bool] = False,
-        display_id: OptionalNullable[str] = UNSET,
-        title: OptionalNullable[str] = UNSET,
-        currency_rate: OptionalNullable[float] = UNSET,
+        code: OptionalNullable[str] = UNSET,
+        name: OptionalNullable[str] = UNSET,
+        description: OptionalNullable[str] = UNSET,
+        type_: OptionalNullable[models.JournalType] = UNSET,
+        allow_vat: OptionalNullable[bool] = UNSET,
         currency: OptionalNullable[models.Currency] = UNSET,
-        company_id: OptionalNullable[str] = UNSET,
-        subsidiary: OptionalNullable[
-            Union[models.LinkedSubsidiaryInput, models.LinkedSubsidiaryInputTypedDict]
-        ] = UNSET,
-        line_items: Optional[
+        iban: OptionalNullable[str] = UNSET,
+        default_account: OptionalNullable[
             Union[
-                List[models.JournalEntryLineItemInput],
-                List[models.JournalEntryLineItemInputTypedDict],
-            ]
-        ] = None,
-        status: OptionalNullable[models.JournalEntryStatus] = UNSET,
-        memo: OptionalNullable[str] = UNSET,
-        posted_at: Optional[datetime] = None,
-        journal_symbol: OptionalNullable[str] = UNSET,
-        tax_type: OptionalNullable[str] = UNSET,
-        tax_code: OptionalNullable[str] = UNSET,
-        number: OptionalNullable[str] = UNSET,
-        tracking_categories: OptionalNullable[
-            Union[
-                List[Nullable[models.LinkedTrackingCategory]],
-                List[Nullable[models.LinkedTrackingCategoryTypedDict]],
+                models.LinkedFinancialAccountInput,
+                models.LinkedFinancialAccountInputTypedDict,
             ]
         ] = UNSET,
-        accounting_period: OptionalNullable[str] = UNSET,
-        tax_inclusive: OptionalNullable[bool] = UNSET,
-        attachments: Optional[
-            Union[
-                List[Nullable[models.LinkedAttachment]],
-                List[Nullable[models.LinkedAttachmentTypedDict]],
-            ]
-        ] = None,
-        source_type: OptionalNullable[str] = UNSET,
-        source_id: OptionalNullable[str] = UNSET,
-        row_version: OptionalNullable[str] = UNSET,
-        custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
-        ] = None,
-        pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
-        ] = None,
+        blocked: OptionalNullable[bool] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
         http_headers: Optional[Mapping[str, str]] = None,
-    ) -> models.AccountingJournalEntriesUpdateResponse:
-        r"""Update Journal Entry
+    ) -> models.AccountingJournalsUpdateResponse:
+        r"""Update Journal
 
-        Update Journal Entry
+        Update Journal
 
         :param id: ID of the record you are acting upon.
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
-        :param company_id_param: The ID of the company to scope requests to. For connectors that support multi-company, this overrides the default company configured in connection settings.
+        :param company_id: The ID of the company to scope requests to. For connectors that support multi-company, this overrides the default company configured in connection settings.
         :param raw: Include raw response. Mostly used for debugging purposes
-        :param display_id: Display ID of the journal entry
-        :param title: Journal entry title
-        :param currency_rate: Currency Exchange Rate at the time entity was recorded/generated.
+        :param code: Code used to select this journal when posting entries. For Exact Online, pass this code as journal_symbol, not the journal id.
+        :param name: Name of the journal.
+        :param description: Description of the journal.
+        :param type: Normalized journal classification.
+        :param allow_vat: Whether the journal permits VAT on entries. Null or absent means unknown. Exact Online exposes this setting for general journals; it must not be treated as a universal VAT capability flag for other journal types.
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
-        :param company_id: The company ID the transaction belongs to
-        :param subsidiary:
-        :param line_items: Requires a minimum of 2 line items that sum to 0
-        :param status: Journal entry status
-        :param memo: Reference for the journal entry.
-        :param posted_at: This is the date on which the journal entry was added. This can be different from the creation date and can also be backdated.
-        :param journal_symbol: Journal symbol of the entry. For example IND for indirect costs. Where supported, list /accounting/journals to discover available journals and their posting rules. For Exact Online, supply the journal code, not its id.
-        :param tax_type: Deprecated — use line_items[].tax_type for per-line tax applicability. Kept as fallback: applies to all lines that do not set their own tax_type.
-        :param tax_code: Applicable tax id/code override if tax is not supplied on a line item basis.
-        :param number: Journal entry number.
-        :param tracking_categories: A list of linked tracking categories.
-        :param accounting_period: Accounting period
-        :param tax_inclusive: Amounts are including tax
-        :param attachments: Files attached to this journal entry. Use the attachments endpoints with reference_type=journal-entry and this entry's id where the connector supports it.
-        :param source_type: The source type of the journal entry
-        :param source_id: A unique identifier for the source of the journal entry
-        :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
-        :param custom_fields:
-        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
+        :param iban: International Bank Account Number
+        :param default_account: A flexible account reference that can represent a ledger account (GL account), a bank account, or an employee payable account, depending on the connector's requirements.
+        :param blocked: Whether the journal is blocked for posting.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -1296,56 +1087,32 @@ class JournalEntries(BaseSDK):
         else:
             base_url = self._get_url(base_url, url_variables)
 
-        request = models.AccountingJournalEntriesUpdateRequest(
+        request = models.AccountingJournalsUpdateRequest(
             id=id,
             consumer_id=consumer_id,
             app_id=app_id,
             service_id=service_id,
-            company_id_param=company_id_param,
+            company_id=company_id,
             raw=raw,
-            journal_entry=models.JournalEntryInput(
-                display_id=display_id,
-                title=title,
-                currency_rate=currency_rate,
+            journal=models.JournalInput(
+                code=code,
+                name=name,
+                description=description,
+                type=type_,
+                allow_vat=allow_vat,
                 currency=currency,
-                company_id=company_id,
-                subsidiary=utils.get_pydantic_model(
-                    subsidiary, OptionalNullable[models.LinkedSubsidiaryInput]
+                iban=iban,
+                default_account=utils.get_pydantic_model(
+                    default_account,
+                    OptionalNullable[models.LinkedFinancialAccountInput],
                 ),
-                line_items=utils.get_pydantic_model(
-                    line_items, Optional[List[models.JournalEntryLineItemInput]]
-                ),
-                status=status,
-                memo=memo,
-                posted_at=posted_at,
-                journal_symbol=journal_symbol,
-                tax_type=tax_type,
-                tax_code=tax_code,
-                number=number,
-                tracking_categories=utils.get_pydantic_model(
-                    tracking_categories,
-                    OptionalNullable[List[Nullable[models.LinkedTrackingCategory]]],
-                ),
-                accounting_period=accounting_period,
-                tax_inclusive=tax_inclusive,
-                attachments=utils.get_pydantic_model(
-                    attachments, Optional[List[Nullable[models.LinkedAttachment]]]
-                ),
-                source_type=source_type,
-                source_id=source_id,
-                row_version=row_version,
-                custom_fields=utils.get_pydantic_model(
-                    custom_fields, Optional[List[models.CustomField]]
-                ),
-                pass_through=utils.get_pydantic_model(
-                    pass_through, Optional[List[models.PassThroughBody]]
-                ),
+                blocked=blocked,
             ),
         )
 
         req = self._build_request(
             method="PATCH",
-            path="/accounting/journal-entries/{id}",
+            path="/accounting/journals/{id}",
             base_url=base_url,
             url_variables=url_variables,
             request=request,
@@ -1355,13 +1122,13 @@ class JournalEntries(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             http_headers=http_headers,
-            _globals=models.AccountingJournalEntriesUpdateGlobals(
+            _globals=models.AccountingJournalsUpdateGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
             get_serialized_body=lambda: utils.serialize_request_body(
-                request.journal_entry, False, False, "json", models.JournalEntryInput
+                request.journal, False, False, "json", models.JournalInput
             ),
             timeout_ms=timeout_ms,
         )
@@ -1382,7 +1149,7 @@ class JournalEntries(BaseSDK):
             hook_ctx=HookContext(
                 config=self.sdk_configuration,
                 base_url=base_url or "",
-                operation_id="accounting.journalEntriesUpdate",
+                operation_id="accounting.journalsUpdate",
                 oauth2_scopes=None,
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
@@ -1395,9 +1162,9 @@ class JournalEntries(BaseSDK):
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return models.AccountingJournalEntriesUpdateResponse(
-                update_journal_entry_response=unmarshal_json_response(
-                    Optional[models.UpdateJournalEntryResponse], http_res
+            return models.AccountingJournalsUpdateResponse(
+                update_journal_response=unmarshal_json_response(
+                    Optional[models.UpdateJournalResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
             )
@@ -1433,7 +1200,7 @@ class JournalEntries(BaseSDK):
             http_res_text = utils.stream_to_text(http_res)
             raise models.APIError("API error occurred", http_res, http_res_text)
         if utils.match_response(http_res, "default", "application/json"):
-            return models.AccountingJournalEntriesUpdateResponse(
+            return models.AccountingJournalsUpdateResponse(
                 unexpected_error_response=unmarshal_json_response(
                     Optional[models.UnexpectedErrorResponse], http_res
                 ),
@@ -1449,90 +1216,46 @@ class JournalEntries(BaseSDK):
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
-        company_id_param: Optional[str] = None,
+        company_id: Optional[str] = None,
         raw: Optional[bool] = False,
-        display_id: OptionalNullable[str] = UNSET,
-        title: OptionalNullable[str] = UNSET,
-        currency_rate: OptionalNullable[float] = UNSET,
+        code: OptionalNullable[str] = UNSET,
+        name: OptionalNullable[str] = UNSET,
+        description: OptionalNullable[str] = UNSET,
+        type_: OptionalNullable[models.JournalType] = UNSET,
+        allow_vat: OptionalNullable[bool] = UNSET,
         currency: OptionalNullable[models.Currency] = UNSET,
-        company_id: OptionalNullable[str] = UNSET,
-        subsidiary: OptionalNullable[
-            Union[models.LinkedSubsidiaryInput, models.LinkedSubsidiaryInputTypedDict]
-        ] = UNSET,
-        line_items: Optional[
+        iban: OptionalNullable[str] = UNSET,
+        default_account: OptionalNullable[
             Union[
-                List[models.JournalEntryLineItemInput],
-                List[models.JournalEntryLineItemInputTypedDict],
-            ]
-        ] = None,
-        status: OptionalNullable[models.JournalEntryStatus] = UNSET,
-        memo: OptionalNullable[str] = UNSET,
-        posted_at: Optional[datetime] = None,
-        journal_symbol: OptionalNullable[str] = UNSET,
-        tax_type: OptionalNullable[str] = UNSET,
-        tax_code: OptionalNullable[str] = UNSET,
-        number: OptionalNullable[str] = UNSET,
-        tracking_categories: OptionalNullable[
-            Union[
-                List[Nullable[models.LinkedTrackingCategory]],
-                List[Nullable[models.LinkedTrackingCategoryTypedDict]],
+                models.LinkedFinancialAccountInput,
+                models.LinkedFinancialAccountInputTypedDict,
             ]
         ] = UNSET,
-        accounting_period: OptionalNullable[str] = UNSET,
-        tax_inclusive: OptionalNullable[bool] = UNSET,
-        attachments: Optional[
-            Union[
-                List[Nullable[models.LinkedAttachment]],
-                List[Nullable[models.LinkedAttachmentTypedDict]],
-            ]
-        ] = None,
-        source_type: OptionalNullable[str] = UNSET,
-        source_id: OptionalNullable[str] = UNSET,
-        row_version: OptionalNullable[str] = UNSET,
-        custom_fields: Optional[
-            Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
-        ] = None,
-        pass_through: Optional[
-            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
-        ] = None,
+        blocked: OptionalNullable[bool] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
         http_headers: Optional[Mapping[str, str]] = None,
-    ) -> models.AccountingJournalEntriesUpdateResponse:
-        r"""Update Journal Entry
+    ) -> models.AccountingJournalsUpdateResponse:
+        r"""Update Journal
 
-        Update Journal Entry
+        Update Journal
 
         :param id: ID of the record you are acting upon.
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
-        :param company_id_param: The ID of the company to scope requests to. For connectors that support multi-company, this overrides the default company configured in connection settings.
+        :param company_id: The ID of the company to scope requests to. For connectors that support multi-company, this overrides the default company configured in connection settings.
         :param raw: Include raw response. Mostly used for debugging purposes
-        :param display_id: Display ID of the journal entry
-        :param title: Journal entry title
-        :param currency_rate: Currency Exchange Rate at the time entity was recorded/generated.
+        :param code: Code used to select this journal when posting entries. For Exact Online, pass this code as journal_symbol, not the journal id.
+        :param name: Name of the journal.
+        :param description: Description of the journal.
+        :param type: Normalized journal classification.
+        :param allow_vat: Whether the journal permits VAT on entries. Null or absent means unknown. Exact Online exposes this setting for general journals; it must not be treated as a universal VAT capability flag for other journal types.
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
-        :param company_id: The company ID the transaction belongs to
-        :param subsidiary:
-        :param line_items: Requires a minimum of 2 line items that sum to 0
-        :param status: Journal entry status
-        :param memo: Reference for the journal entry.
-        :param posted_at: This is the date on which the journal entry was added. This can be different from the creation date and can also be backdated.
-        :param journal_symbol: Journal symbol of the entry. For example IND for indirect costs. Where supported, list /accounting/journals to discover available journals and their posting rules. For Exact Online, supply the journal code, not its id.
-        :param tax_type: Deprecated — use line_items[].tax_type for per-line tax applicability. Kept as fallback: applies to all lines that do not set their own tax_type.
-        :param tax_code: Applicable tax id/code override if tax is not supplied on a line item basis.
-        :param number: Journal entry number.
-        :param tracking_categories: A list of linked tracking categories.
-        :param accounting_period: Accounting period
-        :param tax_inclusive: Amounts are including tax
-        :param attachments: Files attached to this journal entry. Use the attachments endpoints with reference_type=journal-entry and this entry's id where the connector supports it.
-        :param source_type: The source type of the journal entry
-        :param source_id: A unique identifier for the source of the journal entry
-        :param row_version: A binary value used to detect updates to a object and prevent data conflicts. It is incremented each time an update is made to the object.
-        :param custom_fields:
-        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
+        :param iban: International Bank Account Number
+        :param default_account: A flexible account reference that can represent a ledger account (GL account), a bank account, or an employee payable account, depending on the connector's requirements.
+        :param blocked: Whether the journal is blocked for posting.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -1548,56 +1271,32 @@ class JournalEntries(BaseSDK):
         else:
             base_url = self._get_url(base_url, url_variables)
 
-        request = models.AccountingJournalEntriesUpdateRequest(
+        request = models.AccountingJournalsUpdateRequest(
             id=id,
             consumer_id=consumer_id,
             app_id=app_id,
             service_id=service_id,
-            company_id_param=company_id_param,
+            company_id=company_id,
             raw=raw,
-            journal_entry=models.JournalEntryInput(
-                display_id=display_id,
-                title=title,
-                currency_rate=currency_rate,
+            journal=models.JournalInput(
+                code=code,
+                name=name,
+                description=description,
+                type=type_,
+                allow_vat=allow_vat,
                 currency=currency,
-                company_id=company_id,
-                subsidiary=utils.get_pydantic_model(
-                    subsidiary, OptionalNullable[models.LinkedSubsidiaryInput]
+                iban=iban,
+                default_account=utils.get_pydantic_model(
+                    default_account,
+                    OptionalNullable[models.LinkedFinancialAccountInput],
                 ),
-                line_items=utils.get_pydantic_model(
-                    line_items, Optional[List[models.JournalEntryLineItemInput]]
-                ),
-                status=status,
-                memo=memo,
-                posted_at=posted_at,
-                journal_symbol=journal_symbol,
-                tax_type=tax_type,
-                tax_code=tax_code,
-                number=number,
-                tracking_categories=utils.get_pydantic_model(
-                    tracking_categories,
-                    OptionalNullable[List[Nullable[models.LinkedTrackingCategory]]],
-                ),
-                accounting_period=accounting_period,
-                tax_inclusive=tax_inclusive,
-                attachments=utils.get_pydantic_model(
-                    attachments, Optional[List[Nullable[models.LinkedAttachment]]]
-                ),
-                source_type=source_type,
-                source_id=source_id,
-                row_version=row_version,
-                custom_fields=utils.get_pydantic_model(
-                    custom_fields, Optional[List[models.CustomField]]
-                ),
-                pass_through=utils.get_pydantic_model(
-                    pass_through, Optional[List[models.PassThroughBody]]
-                ),
+                blocked=blocked,
             ),
         )
 
         req = self._build_request_async(
             method="PATCH",
-            path="/accounting/journal-entries/{id}",
+            path="/accounting/journals/{id}",
             base_url=base_url,
             url_variables=url_variables,
             request=request,
@@ -1607,13 +1306,13 @@ class JournalEntries(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             http_headers=http_headers,
-            _globals=models.AccountingJournalEntriesUpdateGlobals(
+            _globals=models.AccountingJournalsUpdateGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
             security=self.sdk_configuration.security,
             get_serialized_body=lambda: utils.serialize_request_body(
-                request.journal_entry, False, False, "json", models.JournalEntryInput
+                request.journal, False, False, "json", models.JournalInput
             ),
             timeout_ms=timeout_ms,
         )
@@ -1634,7 +1333,7 @@ class JournalEntries(BaseSDK):
             hook_ctx=HookContext(
                 config=self.sdk_configuration,
                 base_url=base_url or "",
-                operation_id="accounting.journalEntriesUpdate",
+                operation_id="accounting.journalsUpdate",
                 oauth2_scopes=None,
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
@@ -1647,9 +1346,9 @@ class JournalEntries(BaseSDK):
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return models.AccountingJournalEntriesUpdateResponse(
-                update_journal_entry_response=unmarshal_json_response(
-                    Optional[models.UpdateJournalEntryResponse], http_res
+            return models.AccountingJournalsUpdateResponse(
+                update_journal_response=unmarshal_json_response(
+                    Optional[models.UpdateJournalResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
             )
@@ -1685,7 +1384,7 @@ class JournalEntries(BaseSDK):
             http_res_text = await utils.stream_to_text_async(http_res)
             raise models.APIError("API error occurred", http_res, http_res_text)
         if utils.match_response(http_res, "default", "application/json"):
-            return models.AccountingJournalEntriesUpdateResponse(
+            return models.AccountingJournalsUpdateResponse(
                 unexpected_error_response=unmarshal_json_response(
                     Optional[models.UnexpectedErrorResponse], http_res
                 ),
@@ -1707,10 +1406,10 @@ class JournalEntries(BaseSDK):
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
         http_headers: Optional[Mapping[str, str]] = None,
-    ) -> models.AccountingJournalEntriesDeleteResponse:
-        r"""Delete Journal Entry
+    ) -> models.AccountingJournalsDeleteResponse:
+        r"""Delete Journal
 
-        Delete Journal Entry
+        Delete Journal
 
         :param id: ID of the record you are acting upon.
         :param consumer_id: ID of the consumer which you want to get or push data from
@@ -1733,7 +1432,7 @@ class JournalEntries(BaseSDK):
         else:
             base_url = self._get_url(base_url, url_variables)
 
-        request = models.AccountingJournalEntriesDeleteRequest(
+        request = models.AccountingJournalsDeleteRequest(
             id=id,
             consumer_id=consumer_id,
             app_id=app_id,
@@ -1744,7 +1443,7 @@ class JournalEntries(BaseSDK):
 
         req = self._build_request(
             method="DELETE",
-            path="/accounting/journal-entries/{id}",
+            path="/accounting/journals/{id}",
             base_url=base_url,
             url_variables=url_variables,
             request=request,
@@ -1754,7 +1453,7 @@ class JournalEntries(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             http_headers=http_headers,
-            _globals=models.AccountingJournalEntriesDeleteGlobals(
+            _globals=models.AccountingJournalsDeleteGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
@@ -1778,7 +1477,7 @@ class JournalEntries(BaseSDK):
             hook_ctx=HookContext(
                 config=self.sdk_configuration,
                 base_url=base_url or "",
-                operation_id="accounting.journalEntriesDelete",
+                operation_id="accounting.journalsDelete",
                 oauth2_scopes=None,
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
@@ -1791,9 +1490,9 @@ class JournalEntries(BaseSDK):
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return models.AccountingJournalEntriesDeleteResponse(
-                delete_journal_entry_response=unmarshal_json_response(
-                    Optional[models.DeleteJournalEntryResponse], http_res
+            return models.AccountingJournalsDeleteResponse(
+                delete_journal_response=unmarshal_json_response(
+                    Optional[models.DeleteJournalResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
             )
@@ -1829,7 +1528,7 @@ class JournalEntries(BaseSDK):
             http_res_text = utils.stream_to_text(http_res)
             raise models.APIError("API error occurred", http_res, http_res_text)
         if utils.match_response(http_res, "default", "application/json"):
-            return models.AccountingJournalEntriesDeleteResponse(
+            return models.AccountingJournalsDeleteResponse(
                 unexpected_error_response=unmarshal_json_response(
                     Optional[models.UnexpectedErrorResponse], http_res
                 ),
@@ -1851,10 +1550,10 @@ class JournalEntries(BaseSDK):
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
         http_headers: Optional[Mapping[str, str]] = None,
-    ) -> models.AccountingJournalEntriesDeleteResponse:
-        r"""Delete Journal Entry
+    ) -> models.AccountingJournalsDeleteResponse:
+        r"""Delete Journal
 
-        Delete Journal Entry
+        Delete Journal
 
         :param id: ID of the record you are acting upon.
         :param consumer_id: ID of the consumer which you want to get or push data from
@@ -1877,7 +1576,7 @@ class JournalEntries(BaseSDK):
         else:
             base_url = self._get_url(base_url, url_variables)
 
-        request = models.AccountingJournalEntriesDeleteRequest(
+        request = models.AccountingJournalsDeleteRequest(
             id=id,
             consumer_id=consumer_id,
             app_id=app_id,
@@ -1888,7 +1587,7 @@ class JournalEntries(BaseSDK):
 
         req = self._build_request_async(
             method="DELETE",
-            path="/accounting/journal-entries/{id}",
+            path="/accounting/journals/{id}",
             base_url=base_url,
             url_variables=url_variables,
             request=request,
@@ -1898,7 +1597,7 @@ class JournalEntries(BaseSDK):
             user_agent_header="user-agent",
             accept_header_value="application/json",
             http_headers=http_headers,
-            _globals=models.AccountingJournalEntriesDeleteGlobals(
+            _globals=models.AccountingJournalsDeleteGlobals(
                 consumer_id=self.sdk_configuration.globals.consumer_id,
                 app_id=self.sdk_configuration.globals.app_id,
             ),
@@ -1922,7 +1621,7 @@ class JournalEntries(BaseSDK):
             hook_ctx=HookContext(
                 config=self.sdk_configuration,
                 base_url=base_url or "",
-                operation_id="accounting.journalEntriesDelete",
+                operation_id="accounting.journalsDelete",
                 oauth2_scopes=None,
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
@@ -1935,9 +1634,9 @@ class JournalEntries(BaseSDK):
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return models.AccountingJournalEntriesDeleteResponse(
-                delete_journal_entry_response=unmarshal_json_response(
-                    Optional[models.DeleteJournalEntryResponse], http_res
+            return models.AccountingJournalsDeleteResponse(
+                delete_journal_response=unmarshal_json_response(
+                    Optional[models.DeleteJournalResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
             )
@@ -1973,7 +1672,7 @@ class JournalEntries(BaseSDK):
             http_res_text = await utils.stream_to_text_async(http_res)
             raise models.APIError("API error occurred", http_res, http_res_text)
         if utils.match_response(http_res, "default", "application/json"):
-            return models.AccountingJournalEntriesDeleteResponse(
+            return models.AccountingJournalsDeleteResponse(
                 unexpected_error_response=unmarshal_json_response(
                     Optional[models.UnexpectedErrorResponse], http_res
                 ),
