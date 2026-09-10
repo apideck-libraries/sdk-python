@@ -760,6 +760,46 @@ if TYPE_CHECKING:
         AccountingJournalEntriesUpdateResponse,
         AccountingJournalEntriesUpdateResponseTypedDict,
     )
+    from .accounting_journalsaddop import (
+        AccountingJournalsAddGlobals,
+        AccountingJournalsAddGlobalsTypedDict,
+        AccountingJournalsAddRequest,
+        AccountingJournalsAddRequestTypedDict,
+        AccountingJournalsAddResponse,
+        AccountingJournalsAddResponseTypedDict,
+    )
+    from .accounting_journalsallop import (
+        AccountingJournalsAllGlobals,
+        AccountingJournalsAllGlobalsTypedDict,
+        AccountingJournalsAllRequest,
+        AccountingJournalsAllRequestTypedDict,
+        AccountingJournalsAllResponse,
+        AccountingJournalsAllResponseTypedDict,
+    )
+    from .accounting_journalsdeleteop import (
+        AccountingJournalsDeleteGlobals,
+        AccountingJournalsDeleteGlobalsTypedDict,
+        AccountingJournalsDeleteRequest,
+        AccountingJournalsDeleteRequestTypedDict,
+        AccountingJournalsDeleteResponse,
+        AccountingJournalsDeleteResponseTypedDict,
+    )
+    from .accounting_journalsoneop import (
+        AccountingJournalsOneGlobals,
+        AccountingJournalsOneGlobalsTypedDict,
+        AccountingJournalsOneRequest,
+        AccountingJournalsOneRequestTypedDict,
+        AccountingJournalsOneResponse,
+        AccountingJournalsOneResponseTypedDict,
+    )
+    from .accounting_journalsupdateop import (
+        AccountingJournalsUpdateGlobals,
+        AccountingJournalsUpdateGlobalsTypedDict,
+        AccountingJournalsUpdateRequest,
+        AccountingJournalsUpdateRequestTypedDict,
+        AccountingJournalsUpdateResponse,
+        AccountingJournalsUpdateResponseTypedDict,
+    )
     from .accounting_ledgeraccountsaddop import (
         AccountingLedgerAccountsAddGlobals,
         AccountingLedgerAccountsAddGlobalsTypedDict,
@@ -2025,6 +2065,10 @@ if TYPE_CHECKING:
         CreateJournalEntryResponse,
         CreateJournalEntryResponseTypedDict,
     )
+    from .createjournalresponse import (
+        CreateJournalResponse,
+        CreateJournalResponseTypedDict,
+    )
     from .createleadresponse import CreateLeadResponse, CreateLeadResponseTypedDict
     from .createledgeraccountresponse import (
         CreateLedgerAccountResponse,
@@ -2745,6 +2789,10 @@ if TYPE_CHECKING:
     from .deletejournalentryresponse import (
         DeleteJournalEntryResponse,
         DeleteJournalEntryResponseTypedDict,
+    )
+    from .deletejournalresponse import (
+        DeleteJournalResponse,
+        DeleteJournalResponseTypedDict,
     )
     from .deleteleadresponse import DeleteLeadResponse, DeleteLeadResponseTypedDict
     from .deleteledgeraccountresponse import (
@@ -3688,6 +3736,8 @@ if TYPE_CHECKING:
         GetJournalEntryResponse,
         GetJournalEntryResponseTypedDict,
     )
+    from .getjournalresponse import GetJournalResponse, GetJournalResponseTypedDict
+    from .getjournalsresponse import GetJournalsResponse, GetJournalsResponseTypedDict
     from .getleadresponse import GetLeadResponse, GetLeadResponseTypedDict
     from .getleadsresponse import GetLeadsResponse, GetLeadsResponseTypedDict
     from .getledgeraccountresponse import (
@@ -4218,6 +4268,13 @@ if TYPE_CHECKING:
         Visibility,
     )
     from .jobstatus import JobStatus
+    from .journal import (
+        Journal,
+        JournalInput,
+        JournalInputTypedDict,
+        JournalType,
+        JournalTypedDict,
+    )
     from .journalentriesfilter import (
         JournalEntriesFilter,
         JournalEntriesFilterScope,
@@ -4952,6 +5009,10 @@ if TYPE_CHECKING:
     from .updatejournalentryresponse import (
         UpdateJournalEntryResponse,
         UpdateJournalEntryResponseTypedDict,
+    )
+    from .updatejournalresponse import (
+        UpdateJournalResponse,
+        UpdateJournalResponseTypedDict,
     )
     from .updateleadresponse import UpdateLeadResponse, UpdateLeadResponseTypedDict
     from .updateledgeraccountresponse import (
@@ -5924,6 +5985,36 @@ __all__ = [
     "AccountingJournalEntriesUpdateRequestTypedDict",
     "AccountingJournalEntriesUpdateResponse",
     "AccountingJournalEntriesUpdateResponseTypedDict",
+    "AccountingJournalsAddGlobals",
+    "AccountingJournalsAddGlobalsTypedDict",
+    "AccountingJournalsAddRequest",
+    "AccountingJournalsAddRequestTypedDict",
+    "AccountingJournalsAddResponse",
+    "AccountingJournalsAddResponseTypedDict",
+    "AccountingJournalsAllGlobals",
+    "AccountingJournalsAllGlobalsTypedDict",
+    "AccountingJournalsAllRequest",
+    "AccountingJournalsAllRequestTypedDict",
+    "AccountingJournalsAllResponse",
+    "AccountingJournalsAllResponseTypedDict",
+    "AccountingJournalsDeleteGlobals",
+    "AccountingJournalsDeleteGlobalsTypedDict",
+    "AccountingJournalsDeleteRequest",
+    "AccountingJournalsDeleteRequestTypedDict",
+    "AccountingJournalsDeleteResponse",
+    "AccountingJournalsDeleteResponseTypedDict",
+    "AccountingJournalsOneGlobals",
+    "AccountingJournalsOneGlobalsTypedDict",
+    "AccountingJournalsOneRequest",
+    "AccountingJournalsOneRequestTypedDict",
+    "AccountingJournalsOneResponse",
+    "AccountingJournalsOneResponseTypedDict",
+    "AccountingJournalsUpdateGlobals",
+    "AccountingJournalsUpdateGlobalsTypedDict",
+    "AccountingJournalsUpdateRequest",
+    "AccountingJournalsUpdateRequestTypedDict",
+    "AccountingJournalsUpdateResponse",
+    "AccountingJournalsUpdateResponseTypedDict",
     "AccountingLedgerAccountsAddGlobals",
     "AccountingLedgerAccountsAddGlobalsTypedDict",
     "AccountingLedgerAccountsAddRequest",
@@ -6837,6 +6928,8 @@ __all__ = [
     "CreateJobResponseTypedDict",
     "CreateJournalEntryResponse",
     "CreateJournalEntryResponseTypedDict",
+    "CreateJournalResponse",
+    "CreateJournalResponseTypedDict",
     "CreateLeadResponse",
     "CreateLeadResponseTypedDict",
     "CreateLedgerAccountResponse",
@@ -7358,6 +7451,8 @@ __all__ = [
     "DeleteJobResponseTypedDict",
     "DeleteJournalEntryResponse",
     "DeleteJournalEntryResponseTypedDict",
+    "DeleteJournalResponse",
+    "DeleteJournalResponseTypedDict",
     "DeleteLeadResponse",
     "DeleteLeadResponseTypedDict",
     "DeleteLedgerAccountResponse",
@@ -8044,6 +8139,10 @@ __all__ = [
     "GetJournalEntriesResponseTypedDict",
     "GetJournalEntryResponse",
     "GetJournalEntryResponseTypedDict",
+    "GetJournalResponse",
+    "GetJournalResponseTypedDict",
+    "GetJournalsResponse",
+    "GetJournalsResponseTypedDict",
     "GetLeadResponse",
     "GetLeadResponseTypedDict",
     "GetLeadsResponse",
@@ -8458,6 +8557,7 @@ __all__ = [
     "JobStatus",
     "JobType",
     "JobTypedDict",
+    "Journal",
     "JournalEntriesFilter",
     "JournalEntriesFilterScope",
     "JournalEntriesFilterStatus",
@@ -8475,6 +8575,10 @@ __all__ = [
     "JournalEntryLineItemTypedDict",
     "JournalEntryStatus",
     "JournalEntryTypedDict",
+    "JournalInput",
+    "JournalInputTypedDict",
+    "JournalType",
+    "JournalTypedDict",
     "Lead",
     "LeadInput",
     "LeadInputTypedDict",
@@ -9088,6 +9192,8 @@ __all__ = [
     "UpdateJobResponseTypedDict",
     "UpdateJournalEntryResponse",
     "UpdateJournalEntryResponseTypedDict",
+    "UpdateJournalResponse",
+    "UpdateJournalResponseTypedDict",
     "UpdateLeadResponse",
     "UpdateLeadResponseTypedDict",
     "UpdateLedgerAccountResponse",
@@ -9935,6 +10041,36 @@ _dynamic_imports: dict[str, str] = {
     "AccountingJournalEntriesUpdateRequestTypedDict": ".accounting_journalentriesupdateop",
     "AccountingJournalEntriesUpdateResponse": ".accounting_journalentriesupdateop",
     "AccountingJournalEntriesUpdateResponseTypedDict": ".accounting_journalentriesupdateop",
+    "AccountingJournalsAddGlobals": ".accounting_journalsaddop",
+    "AccountingJournalsAddGlobalsTypedDict": ".accounting_journalsaddop",
+    "AccountingJournalsAddRequest": ".accounting_journalsaddop",
+    "AccountingJournalsAddRequestTypedDict": ".accounting_journalsaddop",
+    "AccountingJournalsAddResponse": ".accounting_journalsaddop",
+    "AccountingJournalsAddResponseTypedDict": ".accounting_journalsaddop",
+    "AccountingJournalsAllGlobals": ".accounting_journalsallop",
+    "AccountingJournalsAllGlobalsTypedDict": ".accounting_journalsallop",
+    "AccountingJournalsAllRequest": ".accounting_journalsallop",
+    "AccountingJournalsAllRequestTypedDict": ".accounting_journalsallop",
+    "AccountingJournalsAllResponse": ".accounting_journalsallop",
+    "AccountingJournalsAllResponseTypedDict": ".accounting_journalsallop",
+    "AccountingJournalsDeleteGlobals": ".accounting_journalsdeleteop",
+    "AccountingJournalsDeleteGlobalsTypedDict": ".accounting_journalsdeleteop",
+    "AccountingJournalsDeleteRequest": ".accounting_journalsdeleteop",
+    "AccountingJournalsDeleteRequestTypedDict": ".accounting_journalsdeleteop",
+    "AccountingJournalsDeleteResponse": ".accounting_journalsdeleteop",
+    "AccountingJournalsDeleteResponseTypedDict": ".accounting_journalsdeleteop",
+    "AccountingJournalsOneGlobals": ".accounting_journalsoneop",
+    "AccountingJournalsOneGlobalsTypedDict": ".accounting_journalsoneop",
+    "AccountingJournalsOneRequest": ".accounting_journalsoneop",
+    "AccountingJournalsOneRequestTypedDict": ".accounting_journalsoneop",
+    "AccountingJournalsOneResponse": ".accounting_journalsoneop",
+    "AccountingJournalsOneResponseTypedDict": ".accounting_journalsoneop",
+    "AccountingJournalsUpdateGlobals": ".accounting_journalsupdateop",
+    "AccountingJournalsUpdateGlobalsTypedDict": ".accounting_journalsupdateop",
+    "AccountingJournalsUpdateRequest": ".accounting_journalsupdateop",
+    "AccountingJournalsUpdateRequestTypedDict": ".accounting_journalsupdateop",
+    "AccountingJournalsUpdateResponse": ".accounting_journalsupdateop",
+    "AccountingJournalsUpdateResponseTypedDict": ".accounting_journalsupdateop",
     "AccountingLedgerAccountsAddGlobals": ".accounting_ledgeraccountsaddop",
     "AccountingLedgerAccountsAddGlobalsTypedDict": ".accounting_ledgeraccountsaddop",
     "AccountingLedgerAccountsAddRequest": ".accounting_ledgeraccountsaddop",
@@ -10916,6 +11052,8 @@ _dynamic_imports: dict[str, str] = {
     "CreateJobResponseTypedDict": ".createjobresponse",
     "CreateJournalEntryResponse": ".createjournalentryresponse",
     "CreateJournalEntryResponseTypedDict": ".createjournalentryresponse",
+    "CreateJournalResponse": ".createjournalresponse",
+    "CreateJournalResponseTypedDict": ".createjournalresponse",
     "CreateLeadResponse": ".createleadresponse",
     "CreateLeadResponseTypedDict": ".createleadresponse",
     "CreateLedgerAccountResponse": ".createledgeraccountresponse",
@@ -11428,6 +11566,8 @@ _dynamic_imports: dict[str, str] = {
     "DeleteJobResponseTypedDict": ".deletejobresponse",
     "DeleteJournalEntryResponse": ".deletejournalentryresponse",
     "DeleteJournalEntryResponseTypedDict": ".deletejournalentryresponse",
+    "DeleteJournalResponse": ".deletejournalresponse",
+    "DeleteJournalResponseTypedDict": ".deletejournalresponse",
     "DeleteLeadResponse": ".deleteleadresponse",
     "DeleteLeadResponseTypedDict": ".deleteleadresponse",
     "DeleteLedgerAccountResponse": ".deleteledgeraccountresponse",
@@ -12098,6 +12238,10 @@ _dynamic_imports: dict[str, str] = {
     "GetJournalEntriesResponseTypedDict": ".getjournalentriesresponse",
     "GetJournalEntryResponse": ".getjournalentryresponse",
     "GetJournalEntryResponseTypedDict": ".getjournalentryresponse",
+    "GetJournalResponse": ".getjournalresponse",
+    "GetJournalResponseTypedDict": ".getjournalresponse",
+    "GetJournalsResponse": ".getjournalsresponse",
+    "GetJournalsResponseTypedDict": ".getjournalsresponse",
     "GetLeadResponse": ".getleadresponse",
     "GetLeadResponseTypedDict": ".getleadresponse",
     "GetLeadsResponse": ".getleadsresponse",
@@ -12522,6 +12666,11 @@ _dynamic_imports: dict[str, str] = {
     "SalaryTypedDict": ".job",
     "Visibility": ".job",
     "JobStatus": ".jobstatus",
+    "Journal": ".journal",
+    "JournalInput": ".journal",
+    "JournalInputTypedDict": ".journal",
+    "JournalType": ".journal",
+    "JournalTypedDict": ".journal",
     "JournalEntriesFilter": ".journalentriesfilter",
     "JournalEntriesFilterScope": ".journalentriesfilter",
     "JournalEntriesFilterStatus": ".journalentriesfilter",
@@ -13136,6 +13285,8 @@ _dynamic_imports: dict[str, str] = {
     "UpdateJobResponseTypedDict": ".updatejobresponse",
     "UpdateJournalEntryResponse": ".updatejournalentryresponse",
     "UpdateJournalEntryResponseTypedDict": ".updatejournalentryresponse",
+    "UpdateJournalResponse": ".updatejournalresponse",
+    "UpdateJournalResponseTypedDict": ".updatejournalresponse",
     "UpdateLeadResponse": ".updateleadresponse",
     "UpdateLeadResponseTypedDict": ".updateleadresponse",
     "UpdateLedgerAccountResponse": ".updateledgeraccountresponse",

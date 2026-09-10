@@ -63,6 +63,8 @@ class JournalEntryLineItemTypedDict(TypedDict):
     r"""Sub-total amount, normally before tax."""
     total_amount: NotRequired[Nullable[float]]
     r"""Debit entries are considered positive, and credit entries are considered negative."""
+    base_currency_amount: NotRequired[Nullable[float]]
+    r"""Amount for this line in the company's base currency. Used when the journal entry currency differs from the company's base currency."""
     tax_rate: NotRequired[LinkedTaxRateTypedDict]
     tax_type: NotRequired[Nullable[TaxType]]
     r"""The tax applicability of this line item. Overrides the root-level tax_type for this line."""
@@ -109,6 +111,9 @@ class JournalEntryLineItem(BaseModel):
 
     total_amount: OptionalNullable[float] = UNSET
     r"""Debit entries are considered positive, and credit entries are considered negative."""
+
+    base_currency_amount: OptionalNullable[float] = UNSET
+    r"""Amount for this line in the company's base currency. Used when the journal entry currency differs from the company's base currency."""
 
     tax_rate: Optional[LinkedTaxRate] = None
 
@@ -176,6 +181,7 @@ class JournalEntryLineItem(BaseModel):
             "tax_amount",
             "sub_total",
             "total_amount",
+            "base_currency_amount",
             "tax_rate",
             "tax_type",
             "tracking_category",
@@ -193,6 +199,7 @@ class JournalEntryLineItem(BaseModel):
             "tax_amount",
             "sub_total",
             "total_amount",
+            "base_currency_amount",
             "type",
             "tax_type",
             "tracking_category",
@@ -244,6 +251,8 @@ class JournalEntryLineItemInputTypedDict(TypedDict):
     r"""Sub-total amount, normally before tax."""
     total_amount: NotRequired[Nullable[float]]
     r"""Debit entries are considered positive, and credit entries are considered negative."""
+    base_currency_amount: NotRequired[Nullable[float]]
+    r"""Amount for this line in the company's base currency. Used when the journal entry currency differs from the company's base currency."""
     tax_rate: NotRequired[LinkedTaxRateInputTypedDict]
     tax_type: NotRequired[Nullable[TaxType]]
     r"""The tax applicability of this line item. Overrides the root-level tax_type for this line."""
@@ -287,6 +296,9 @@ class JournalEntryLineItemInput(BaseModel):
 
     total_amount: OptionalNullable[float] = UNSET
     r"""Debit entries are considered positive, and credit entries are considered negative."""
+
+    base_currency_amount: OptionalNullable[float] = UNSET
+    r"""Amount for this line in the company's base currency. Used when the journal entry currency differs from the company's base currency."""
 
     tax_rate: Optional[LinkedTaxRateInput] = None
 
@@ -353,6 +365,7 @@ class JournalEntryLineItemInput(BaseModel):
             "tax_amount",
             "sub_total",
             "total_amount",
+            "base_currency_amount",
             "tax_rate",
             "tax_type",
             "tracking_category",
@@ -370,6 +383,7 @@ class JournalEntryLineItemInput(BaseModel):
             "tax_amount",
             "sub_total",
             "total_amount",
+            "base_currency_amount",
             "type",
             "tax_type",
             "tracking_category",

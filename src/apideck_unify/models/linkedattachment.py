@@ -18,7 +18,7 @@ class LinkedAttachmentTypedDict(TypedDict):
     mime_type: NotRequired[Nullable[str]]
     r"""The MIME type of the file."""
     is_compressed: NotRequired[Nullable[bool]]
-    r"""Whether the file is c ompressed."""
+    r"""Whether the file is compressed."""
     encoding: NotRequired[Nullable[str]]
     r"""The encoding of the file."""
     content: NotRequired[Nullable[str]]
@@ -35,7 +35,7 @@ class LinkedAttachment(BaseModel):
     r"""The MIME type of the file."""
 
     is_compressed: OptionalNullable[bool] = UNSET
-    r"""Whether the file is c ompressed."""
+    r"""Whether the file is compressed."""
 
     encoding: OptionalNullable[str] = UNSET
     r"""The encoding of the file."""

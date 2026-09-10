@@ -9,6 +9,7 @@ from .journalentrylineitem import (
     JournalEntryLineItemInputTypedDict,
     JournalEntryLineItemTypedDict,
 )
+from .linkedattachment import LinkedAttachment, LinkedAttachmentTypedDict
 from .linkedsubsidiary import LinkedSubsidiary, LinkedSubsidiaryTypedDict
 from .linkedsubsidiary_input import (
     LinkedSubsidiaryInput,
@@ -75,7 +76,7 @@ class JournalEntryTypedDict(TypedDict):
     posted_at: NotRequired[datetime]
     r"""This is the date on which the journal entry was added. This can be different from the creation date and can also be backdated."""
     journal_symbol: NotRequired[Nullable[str]]
-    r"""Journal symbol of the entry. For example IND for indirect costs"""
+    r"""Journal symbol of the entry. For example IND for indirect costs. Where supported, list /accounting/journals to discover available journals and their posting rules. For Exact Online, supply the journal code, not its id."""
     tax_type: NotRequired[Nullable[str]]
     r"""Deprecated — use line_items[].tax_type for per-line tax applicability. Kept as fallback: applies to all lines that do not set their own tax_type."""
     tax_code: NotRequired[Nullable[str]]
@@ -90,6 +91,8 @@ class JournalEntryTypedDict(TypedDict):
     r"""Accounting period"""
     tax_inclusive: NotRequired[Nullable[bool]]
     r"""Amounts are including tax"""
+    attachments: NotRequired[List[Nullable[LinkedAttachmentTypedDict]]]
+    r"""Files attached to this journal entry. Use the attachments endpoints with reference_type=journal-entry and this entry's id where the connector supports it."""
     source_type: NotRequired[Nullable[str]]
     r"""The source type of the journal entry"""
     source_id: NotRequired[Nullable[str]]
@@ -152,7 +155,7 @@ class JournalEntry(BaseModel):
     r"""This is the date on which the journal entry was added. This can be different from the creation date and can also be backdated."""
 
     journal_symbol: OptionalNullable[str] = UNSET
-    r"""Journal symbol of the entry. For example IND for indirect costs"""
+    r"""Journal symbol of the entry. For example IND for indirect costs. Where supported, list /accounting/journals to discover available journals and their posting rules. For Exact Online, supply the journal code, not its id."""
 
     tax_type: Annotated[
         OptionalNullable[str],
@@ -178,6 +181,9 @@ class JournalEntry(BaseModel):
 
     tax_inclusive: OptionalNullable[bool] = UNSET
     r"""Amounts are including tax"""
+
+    attachments: Optional[List[Nullable[LinkedAttachment]]] = None
+    r"""Files attached to this journal entry. Use the attachments endpoints with reference_type=journal-entry and this entry's id where the connector supports it."""
 
     source_type: OptionalNullable[str] = UNSET
     r"""The source type of the journal entry"""
@@ -248,6 +254,7 @@ class JournalEntry(BaseModel):
             "tracking_categories",
             "accounting_period",
             "tax_inclusive",
+            "attachments",
             "source_type",
             "source_id",
             "custom_mappings",
@@ -333,7 +340,7 @@ class JournalEntryInputTypedDict(TypedDict):
     posted_at: NotRequired[datetime]
     r"""This is the date on which the journal entry was added. This can be different from the creation date and can also be backdated."""
     journal_symbol: NotRequired[Nullable[str]]
-    r"""Journal symbol of the entry. For example IND for indirect costs"""
+    r"""Journal symbol of the entry. For example IND for indirect costs. Where supported, list /accounting/journals to discover available journals and their posting rules. For Exact Online, supply the journal code, not its id."""
     tax_type: NotRequired[Nullable[str]]
     r"""Deprecated — use line_items[].tax_type for per-line tax applicability. Kept as fallback: applies to all lines that do not set their own tax_type."""
     tax_code: NotRequired[Nullable[str]]
@@ -348,6 +355,8 @@ class JournalEntryInputTypedDict(TypedDict):
     r"""Accounting period"""
     tax_inclusive: NotRequired[Nullable[bool]]
     r"""Amounts are including tax"""
+    attachments: NotRequired[List[Nullable[LinkedAttachmentTypedDict]]]
+    r"""Files attached to this journal entry. Use the attachments endpoints with reference_type=journal-entry and this entry's id where the connector supports it."""
     source_type: NotRequired[Nullable[str]]
     r"""The source type of the journal entry"""
     source_id: NotRequired[Nullable[str]]
@@ -394,7 +403,7 @@ class JournalEntryInput(BaseModel):
     r"""This is the date on which the journal entry was added. This can be different from the creation date and can also be backdated."""
 
     journal_symbol: OptionalNullable[str] = UNSET
-    r"""Journal symbol of the entry. For example IND for indirect costs"""
+    r"""Journal symbol of the entry. For example IND for indirect costs. Where supported, list /accounting/journals to discover available journals and their posting rules. For Exact Online, supply the journal code, not its id."""
 
     tax_type: Annotated[
         OptionalNullable[str],
@@ -420,6 +429,9 @@ class JournalEntryInput(BaseModel):
 
     tax_inclusive: OptionalNullable[bool] = UNSET
     r"""Amounts are including tax"""
+
+    attachments: Optional[List[Nullable[LinkedAttachment]]] = None
+    r"""Files attached to this journal entry. Use the attachments endpoints with reference_type=journal-entry and this entry's id where the connector supports it."""
 
     source_type: OptionalNullable[str] = UNSET
     r"""The source type of the journal entry"""
@@ -473,6 +485,7 @@ class JournalEntryInput(BaseModel):
             "tracking_categories",
             "accounting_period",
             "tax_inclusive",
+            "attachments",
             "source_type",
             "source_id",
             "row_version",

@@ -400,6 +400,14 @@ with Apideck(
 * [update](docs/sdks/journalentries/README.md#update) - Update Journal Entry
 * [delete](docs/sdks/journalentries/README.md#delete) - Delete Journal Entry
 
+#### [accounting.journals](docs/sdks/journals/README.md)
+
+* [list](docs/sdks/journals/README.md#list) - List Journals
+* [create](docs/sdks/journals/README.md#create) - Create Journal
+* [get](docs/sdks/journals/README.md#get) - Get Journal
+* [update](docs/sdks/journals/README.md#update) - Update Journal
+* [delete](docs/sdks/journals/README.md#delete) - Delete Journal
+
 #### [accounting.ledger_accounts](docs/sdks/ledgeraccounts/README.md)
 
 * [list](docs/sdks/ledgeraccounts/README.md#list) - List Ledger Accounts
@@ -1106,8 +1114,8 @@ with Apideck(
 
 
 **Inherit from [`ApideckError`](./src/apideck_unify/models/apideckerror.py)**:
-* [`Unauthorized`](./src/apideck_unify/models/unauthorized.py): Unauthorized. Status code `401`. Applicable to 6 of 356 methods.*
-* [`ConflictResponse`](./src/apideck_unify/models/conflictresponse.py): Conflict — a connection already exists for the target connector. Status code `409`. Applicable to 1 of 356 methods.*
+* [`Unauthorized`](./src/apideck_unify/models/unauthorized.py): Unauthorized. Status code `401`. Applicable to 6 of 361 methods.*
+* [`ConflictResponse`](./src/apideck_unify/models/conflictresponse.py): Conflict — a connection already exists for the target connector. Status code `409`. Applicable to 1 of 361 methods.*
 * [`ResponseValidationError`](./src/apideck_unify/models/responsevalidationerror.py): Type mismatch between the response data and the expected Pydantic model. Provides access to the Pydantic validation error via the `cause` attribute.
 
 </details>
