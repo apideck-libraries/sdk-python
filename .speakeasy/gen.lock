@@ -1,12 +1,12 @@
 lockVersion: 2.0.0
 id: fca0ac3a-5f4e-452c-bbc7-2311afa8da40
 management:
-  docChecksum: 5d8609037761a539499d1497f42b4fc7
-  docVersion: 10.53.0
+  docChecksum: 60fad5f0934c590643169d56eeed1bc3
+  docVersion: 10.55.2
   speakeasyVersion: 1.656.1
   generationVersion: 2.753.1
-  releaseVersion: 0.39.2
-  configChecksum: 6de3b4274c96c10b390bc199c283d070
+  releaseVersion: 0.40.0
+  configChecksum: 7de933eda5b22d6ca02e38976aebe365
   repoURL: https://github.com/apideck-libraries/sdk-python.git
   installationURL: https://github.com/apideck-libraries/sdk-python.git
   published: true
@@ -24963,13 +24963,13 @@ trackedFiles:
   docs/sdks/ageddebtorssdk/README.md:
     last_write_checksum: sha1:90c0dc1213ae0ae22d54460b14e475e9768ec21b
   docs/sdks/apideckcompanies/README.md:
-    last_write_checksum: sha1:844f3c7e999b6b3bea790cef7f2345c6054c8209
+    last_write_checksum: sha1:9ebdfc2afa528e2bade1195152085f604f8273da
   docs/sdks/apideckcustomers/README.md:
     last_write_checksum: sha1:98ee6110c3a32129238df14a6861d9c0c61a2a84
   docs/sdks/apideckdepartments/README.md:
     last_write_checksum: sha1:f9b2d7e94ad6332c1477b3d4e8e8a3b08a413b72
   docs/sdks/apideckemployees/README.md:
-    last_write_checksum: sha1:a7216a076976cafcc4cdf64638d9646c4c65c176
+    last_write_checksum: sha1:ebe1d7f0b5b6aa631e9b988fb5635ad19d42327a
   docs/sdks/apideckhriscompanies/README.md:
     last_write_checksum: sha1:95db1bd89275bf430df2ab0ce0a077bdb3a87e16
   docs/sdks/apiresourcecoveragesdk/README.md:
@@ -24987,17 +24987,17 @@ trackedFiles:
   docs/sdks/balancesheetsdk/README.md:
     last_write_checksum: sha1:47308e0099d4f7a4de9fd131ebcf4eb2f53f26e2
   docs/sdks/bankaccounts/README.md:
-    last_write_checksum: sha1:6d779f048c175eeb51d207b78bed7750858dc694
+    last_write_checksum: sha1:862617f7d49417ab0ee3d692b69c8068a61781d7
   docs/sdks/bankfeedaccounts/README.md:
-    last_write_checksum: sha1:a4ec29b64e1246c75f82a080016a0e11a669dc49
+    last_write_checksum: sha1:ce1d57e8f22d4d8c040f9bae860e7e3bf56e8429
   docs/sdks/bankfeedstatements/README.md:
-    last_write_checksum: sha1:dc4e86b81dc7c23d30dba5ebb12fba03d4be8850
+    last_write_checksum: sha1:8e93b8a4fa654756047f46252117021e36db8042
   docs/sdks/billcreditnotes/README.md:
-    last_write_checksum: sha1:ad0f10ee4e2be6beec8cdb2bd508dce2fd3bc4ee
+    last_write_checksum: sha1:5ba470b67a136a23d9b0551357b320e52bcc55f4
   docs/sdks/billpayments/README.md:
     last_write_checksum: sha1:6353e19f78b1634b55ed78b12d0d1b822c6b73c9
   docs/sdks/bills/README.md:
-    last_write_checksum: sha1:157f273e32692c52decc5917fecab13725a92e87
+    last_write_checksum: sha1:de65cef276d64258a2a521f2eb19621d810af7a1
   docs/sdks/categories/README.md:
     last_write_checksum: sha1:f4ba2fe95e14ca1636ff03b02ba8dcadfc915120
   docs/sdks/collections/README.md:
@@ -25039,9 +25039,9 @@ trackedFiles:
   docs/sdks/createcallback/README.md:
     last_write_checksum: sha1:fe7ad7d4efe54f8b2daa4b8d623e67f8b0a4dd6c
   docs/sdks/creditnotes/README.md:
-    last_write_checksum: sha1:106894f30542a6b4666d69cad8f3435f58b2e1fa
+    last_write_checksum: sha1:31077653be5db2bb2a28ce1225cd902c920b5975
   docs/sdks/customers/README.md:
-    last_write_checksum: sha1:d2a3a0451e66fa629e65fbd4c990ea657fc274eb
+    last_write_checksum: sha1:53f9790d7f7e6ebbfb34884ce43f9b65abe35d16
   docs/sdks/customfields/README.md:
     last_write_checksum: sha1:252fc8f3f3e1fa1416362942bd6454885aaf64d9
   docs/sdks/custommappings/README.md:
@@ -25065,11 +25065,11 @@ trackedFiles:
   docs/sdks/eventlogs/README.md:
     last_write_checksum: sha1:d48376fe80b03118f59d1dbcbda4dacee05fa096
   docs/sdks/expensecategories/README.md:
-    last_write_checksum: sha1:2b7be1230724d3f0e00dbcb93913f69c1a8cc735
+    last_write_checksum: sha1:b902addfa3434a208e243cb17099d75081dd83d1
   docs/sdks/expensereports/README.md:
-    last_write_checksum: sha1:e845c086a4f5b9bdfcde3cbb8a1bb1370bdfa7a5
+    last_write_checksum: sha1:3ae0263d4da7e7601315da6d853ee38d30d95ec5
   docs/sdks/expenses/README.md:
-    last_write_checksum: sha1:807b3f70c96441c34b9d080b79dda4a57df8f52a
+    last_write_checksum: sha1:dda19e3b568293b9ce5fc557de0c524a8c1dd8a7
   docs/sdks/files/README.md:
     last_write_checksum: sha1:0057885a8e80e3571519cf5cada56d0fe7b2bf6e
   docs/sdks/folders/README.md:
@@ -25077,19 +25077,19 @@ trackedFiles:
   docs/sdks/generalledgertransactions/README.md:
     last_write_checksum: sha1:a6f1e311d62ca308340a41b8e124abd30e6477c0
   docs/sdks/invoiceitems/README.md:
-    last_write_checksum: sha1:d2426572c3480a9b6d0befefb7256a11051b7d76
+    last_write_checksum: sha1:69e5cc85513e6c6311c35f649d59968a9dee41e3
   docs/sdks/invoices/README.md:
-    last_write_checksum: sha1:959778997a93d77019f23d8d1a99110e2fe6d4f5
+    last_write_checksum: sha1:a6eb391e7b90d8dd32c43f750c73fecbb7419053
   docs/sdks/jobs/README.md:
     last_write_checksum: sha1:27ca05b0e4c859e5e36418df5c1b1463d060a58f
   docs/sdks/journalentries/README.md:
-    last_write_checksum: sha1:469ce4acd15565bb47e5d07c97e81096400a419a
+    last_write_checksum: sha1:730c5c13ca399560f5d673ab1788a4cbf0aac540
   docs/sdks/journals/README.md:
     last_write_checksum: sha1:9792411897cc8fad4d6e9e3b9ff61e95367313c9
   docs/sdks/leads/README.md:
-    last_write_checksum: sha1:e522eeb94afc227e5f89f40f3ac6a28c31246eee
+    last_write_checksum: sha1:41ffc3466cf14b3200ab691b274e718b1914fa2b
   docs/sdks/ledgeraccounts/README.md:
-    last_write_checksum: sha1:a40405e175ffed52b1322d2cf7ef360fda402884
+    last_write_checksum: sha1:fac12ad754c52eed71ff08fa1860b23f5e88cb4a
   docs/sdks/listmembers/README.md:
     last_write_checksum: sha1:1d75fa0d4b215f7d6733e297b738f6b2df93df16
   docs/sdks/lists/README.md:
@@ -25097,13 +25097,13 @@ trackedFiles:
   docs/sdks/locations/README.md:
     last_write_checksum: sha1:e60fafcbea996ef5b78ba36ab5243846b07a513a
   docs/sdks/logs/README.md:
-    last_write_checksum: sha1:4ccfaa2fd3ce10de65b4da89332553a2a83b6ab9
+    last_write_checksum: sha1:94c7876784bb324f9d325198429e3e7712bdddab
   docs/sdks/messages/README.md:
     last_write_checksum: sha1:8750f2c90b2b1a0a87c1bc9a91cae70557f28299
   docs/sdks/notes/README.md:
     last_write_checksum: sha1:e8cad99d8dbc8870c5409271c29b9097bb228b24
   docs/sdks/opportunities/README.md:
-    last_write_checksum: sha1:d90f239920b2833dc8dc548aa9c88c3efc5f4f67
+    last_write_checksum: sha1:c124fd7e021441071731c0d019891c82ceb13a63
   docs/sdks/orders/README.md:
     last_write_checksum: sha1:dcb1b40d536f93c51a86aba423dbf130425ee888
   docs/sdks/paymentmethods/README.md:
@@ -25119,17 +25119,17 @@ trackedFiles:
   docs/sdks/profitandlosssdk/README.md:
     last_write_checksum: sha1:0a1686208a94c6a4b868bca25673e509c268045e
   docs/sdks/projects/README.md:
-    last_write_checksum: sha1:f267cb7704f6dcd0b1cab8e48babb1ca8f065bea
+    last_write_checksum: sha1:5a624bcf926d4eeca1493117ab320a9f9e9b0da2
   docs/sdks/proxy/README.md:
     last_write_checksum: sha1:f639cf9757ae90a3c0f188472322647aa5d24769
   docs/sdks/purchaseorders/README.md:
-    last_write_checksum: sha1:fb84ad40ffac3213e8249afbb310b4c4d5b4dfed
+    last_write_checksum: sha1:07b87cf85f80e6a9d1c427fa275fa14c5cc68f9b
   docs/sdks/quotes/README.md:
-    last_write_checksum: sha1:9419f691ddabb312b0a912a6f0a98da028a96ba1
+    last_write_checksum: sha1:1e4d4eda1a6413d6de070c0b26ae00443ee4bb39
   docs/sdks/refunds/README.md:
-    last_write_checksum: sha1:996196cb58da37aaa3a80a99a91abd90bed6beb7
+    last_write_checksum: sha1:45d60d3802ce5adae38d6a61baf748d191c0002b
   docs/sdks/salesreceipts/README.md:
-    last_write_checksum: sha1:5278da59bfc684ed9a8383cffc4cdf38e4058307
+    last_write_checksum: sha1:f46d26b779d34c609ddf1569da92396e33f91259
   docs/sdks/sessions/README.md:
     last_write_checksum: sha1:d68c81526c32b02dadeaf7b116edf23931eec337
   docs/sdks/sharedlinks/README.md:
@@ -25139,15 +25139,15 @@ trackedFiles:
   docs/sdks/subsidiaries/README.md:
     last_write_checksum: sha1:1df130dfbfeba620f14ec69e24e833de8fac3cef
   docs/sdks/suppliers/README.md:
-    last_write_checksum: sha1:337c5bc0da2c64617a0ec5d06d8759df2e29a633
+    last_write_checksum: sha1:7eec430e7887c31b3399a426f6da39f80e089154
   docs/sdks/taxrates/README.md:
-    last_write_checksum: sha1:6c469cfde1da24d406da648cfd5b05b6d8c41a52
+    last_write_checksum: sha1:51dbba34887b82afa706943561046bb8da5c0bff
   docs/sdks/timeoffrequests/README.md:
     last_write_checksum: sha1:6c2bb0978896d1ea64e809868203853ba8e57255
   docs/sdks/trackingcategories/README.md:
     last_write_checksum: sha1:f6dd619e0936352d5561cb16bf354c1fec411704
   docs/sdks/uploadsessions/README.md:
-    last_write_checksum: sha1:c5df08f1ca2dde7c07bf3bfbf88ef617b2c8f574
+    last_write_checksum: sha1:16927e32c0e714768c9cfca1291d46d3454d0d40
   docs/sdks/users/README.md:
     last_write_checksum: sha1:e9a893fa1d34355f7001a76687f27d9da35c5e0c
   docs/sdks/validateconnection/README.md:
@@ -25175,7 +25175,7 @@ trackedFiles:
   src/apideck_unify/_hooks/types.py:
     last_write_checksum: sha1:d57be38e644de01983a9224b9733ae0add898d43
   src/apideck_unify/_version.py:
-    last_write_checksum: sha1:0dd18b94c2a3d18922ea5dfc803778c91ee09300
+    last_write_checksum: sha1:43467000182fa837076be0b3c37236fe9b38a064
   src/apideck_unify/accounting.py:
     last_write_checksum: sha1:50a654e35178d4f42b197e7f44e5cb3fd15df16c
   src/apideck_unify/activities.py:
@@ -25207,7 +25207,7 @@ trackedFiles:
   src/apideck_unify/ats.py:
     last_write_checksum: sha1:0d5c5cedbfeb231840eb69958e0240f2fbb630f8
   src/apideck_unify/attachments.py:
-    last_write_checksum: sha1:2a4cf6c48f31ae26e98a542c9aae4039a2ff106a
+    last_write_checksum: sha1:b2dd451041410e670734bf9e1295a29fe98e0022
   src/apideck_unify/balancesheet_sdk.py:
     last_write_checksum: sha1:7a8dd951e4c575806be79a049f05c2415d570dc8
   src/apideck_unify/bankaccounts.py:
@@ -25219,11 +25219,11 @@ trackedFiles:
   src/apideck_unify/basesdk.py:
     last_write_checksum: sha1:02f62bd40dfedb9697666050be333be287dd5a5b
   src/apideck_unify/billcreditnotes.py:
-    last_write_checksum: sha1:b15ed1fdb060bcc25e2da27a8fcdf14d797d0a5b
+    last_write_checksum: sha1:0cca85767336a03e0bebc544a2385c9ec714f2e6
   src/apideck_unify/billpayments.py:
-    last_write_checksum: sha1:26b56fd5a8b1ac93061b7282aa58cfa48005702c
+    last_write_checksum: sha1:e9af8dbc83515ff97e4ed0a1a072220e2f2b736a
   src/apideck_unify/bills.py:
-    last_write_checksum: sha1:ce3a00b7995cc5a9194671a55f562900df03f420
+    last_write_checksum: sha1:e8165f2e40bdbea6e24e6545db3efe8223742c0f
   src/apideck_unify/categories.py:
     last_write_checksum: sha1:e1ea6fe95dd3b5357c4b6dab95d0cf6e78f33750
   src/apideck_unify/collections.py:
@@ -25267,11 +25267,11 @@ trackedFiles:
   src/apideck_unify/createcallback.py:
     last_write_checksum: sha1:fa6cddb89b59b3890fbc0a06c4b7730e91e76f2e
   src/apideck_unify/creditnotes.py:
-    last_write_checksum: sha1:54a048eb03b7a8afe11e43160090206b135fb89f
+    last_write_checksum: sha1:7f57c9b420ae1135992254efa5daeb2e3cfa862b
   src/apideck_unify/crm.py:
     last_write_checksum: sha1:0a3f32ca2265dd9bf40c9b5c0373685dab9e5da6
   src/apideck_unify/customers.py:
-    last_write_checksum: sha1:d433d1b4fa81967aa025ceb2fa668bdfd72d56aa
+    last_write_checksum: sha1:8af778ed082aba1322aaba4655ad09be7cac1f93
   src/apideck_unify/customfields.py:
     last_write_checksum: sha1:7666758135082e5efdc1c4b3f570cb2cc9a5c33c
   src/apideck_unify/custommappings.py:
@@ -25315,9 +25315,9 @@ trackedFiles:
   src/apideck_unify/httpclient.py:
     last_write_checksum: sha1:5e55338d6ee9f01ab648cad4380201a8a3da7dd7
   src/apideck_unify/invoiceitems.py:
-    last_write_checksum: sha1:65382dd0b2c24ade626c5054bba658079da184e8
+    last_write_checksum: sha1:3a498addd16f20f64be0b3a9d5761a4cbc79b661
   src/apideck_unify/invoices.py:
-    last_write_checksum: sha1:0ac3b5f0972e52ae36a881e01aed749f008e3e02
+    last_write_checksum: sha1:c3cffdda2ff7b680c9309e93a8a6c2562500242a
   src/apideck_unify/issuetracking.py:
     last_write_checksum: sha1:a18420473c9ae884dcdc562042a52205924643c5
   src/apideck_unify/jobs.py:
@@ -25329,7 +25329,7 @@ trackedFiles:
   src/apideck_unify/leads.py:
     last_write_checksum: sha1:b1898e48cf89d3269f10074a3a9bf5f6d6c945c3
   src/apideck_unify/ledgeraccounts.py:
-    last_write_checksum: sha1:bb21ac225a7249b1910fb6b4db8007332c5f82e5
+    last_write_checksum: sha1:6d0ef5d69704d54fe942f893b3cd122f6fb4d568
   src/apideck_unify/listmembers.py:
     last_write_checksum: sha1:ae6ad18f742239e0462b3bf1fb25c8a8ed8b5d6c
   src/apideck_unify/lists.py:
@@ -27503,7 +27503,7 @@ trackedFiles:
   src/apideck_unify/subsidiaries.py:
     last_write_checksum: sha1:dbcf581c0704e0e7c9016b16b3d5f0feb27a07ad
   src/apideck_unify/suppliers.py:
-    last_write_checksum: sha1:06cfd9707c7d8f2bba13d5b9545fee9acabf69b1
+    last_write_checksum: sha1:5c1bb7b6c1a1a4b9132b7b59636aa6414f79d487
   src/apideck_unify/taxrates.py:
     last_write_checksum: sha1:4ed78936a0dfd8fce39fd8aa32d707afb06b88a9
   src/apideck_unify/timeoffrequests.py:
@@ -27521,7 +27521,7 @@ trackedFiles:
   src/apideck_unify/users.py:
     last_write_checksum: sha1:9a454f30a9ff330d06199f3b37734f271992b752
   src/apideck_unify/utils/__init__.py:
-    last_write_checksum: sha1:527db7a6c93948ecdec6a33f56b6551ae44f0180
+    last_write_checksum: sha1:e6fb1146e02dbccdc147eb3724b57e71568b8391
   src/apideck_unify/utils/annotations.py:
     last_write_checksum: sha1:a4824ad65f730303e4e1e3ec1febf87b4eb46dbc
   src/apideck_unify/utils/datetimes.py:
@@ -27549,7 +27549,7 @@ trackedFiles:
   src/apideck_unify/utils/security.py:
     last_write_checksum: sha1:8fa29426fabb7f0a04e5adf11966681ab88900f8
   src/apideck_unify/utils/serializers.py:
-    last_write_checksum: sha1:7485f1425b0661fd84836186570df90207eec6af
+    last_write_checksum: sha1:2fb543339b424a0818b126e69695df5c91cd4d7b
   src/apideck_unify/utils/unmarshal_json_response.py:
     last_write_checksum: sha1:01ae4a19a6e7d0163c14944e54bc80096dbfe341
   src/apideck_unify/utils/url.py:
