@@ -24,6 +24,10 @@ class BillsFilterTypedDict(TypedDict):
     id_since: NotRequired[str]
     r"""Return records with a row ID greater than or equal to the given value"""
     updated_since: NotRequired[datetime]
+    bill_number: NotRequired[str]
+    r"""Return bills whose `bill_number` equals the given value (exact match). Use this to verify whether a create that timed out (`outcome: uncertain`) was persisted before retrying. Bill numbers are not guaranteed unique on every connector, so more than one bill can be returned."""
+    reference: NotRequired[str]
+    r"""Return bills whose `reference` equals the given value (exact match). Use this to look up a bill by the reference you supplied on create, for example after a create that timed out (`outcome: uncertain`)."""
     billed_since: NotRequired[date]
     r"""Return bills with a document date (`bill_date`) on or after the given date (YYYY-MM-DD)."""
     due_since: NotRequired[date]
@@ -39,6 +43,12 @@ class BillsFilter(BaseModel):
     r"""Return records with a row ID greater than or equal to the given value"""
 
     updated_since: Annotated[Optional[datetime], FieldMetadata(query=True)] = None
+
+    bill_number: Annotated[Optional[str], FieldMetadata(query=True)] = None
+    r"""Return bills whose `bill_number` equals the given value (exact match). Use this to verify whether a create that timed out (`outcome: uncertain`) was persisted before retrying. Bill numbers are not guaranteed unique on every connector, so more than one bill can be returned."""
+
+    reference: Annotated[Optional[str], FieldMetadata(query=True)] = None
+    r"""Return bills whose `reference` equals the given value (exact match). Use this to look up a bill by the reference you supplied on create, for example after a create that timed out (`outcome: uncertain`)."""
 
     billed_since: Annotated[Optional[date], FieldMetadata(query=True)] = None
     r"""Return bills with a document date (`bill_date`) on or after the given date (YYYY-MM-DD)."""

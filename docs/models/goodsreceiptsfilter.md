@@ -1,0 +1,10 @@
+# GoodsReceiptsFilter
+
+
+## Fields
+
+| Field                                                                           | Type                                                                            | Required                                                                        | Description                                                                     | Example                                                                         |
+| ------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| `updated_since`                                                                 | [date](https://docs.python.org/3/library/datetime.html#date-objects)            | :heavy_minus_sign:                                                              | N/A                                                                             | 2026-09-01T07:43:32.000Z                                                        |
+| `supplier_id`                                                                   | *Optional[str]*                                                                 | :heavy_minus_sign:                                                              | Filter by supplier id                                                           | 123abc                                                                          |
+| `purchase_order_id`                                                             | *Optional[str]*                                                                 | :heavy_minus_sign:                                                              | Return only receipts with at least one line created against this purchase order | 123456                                                                          |

@@ -23,6 +23,7 @@ from apideck_unify.expensecategories import ExpenseCategories
 from apideck_unify.expensereports import ExpenseReports
 from apideck_unify.expenses import Expenses
 from apideck_unify.generalledgertransactions import GeneralLedgerTransactions
+from apideck_unify.goodsreceipts import GoodsReceipts
 from apideck_unify.invoiceitems import InvoiceItems
 from apideck_unify.invoices import Invoices
 from apideck_unify.journalentries import JournalEntries
@@ -64,6 +65,7 @@ class Accounting(BaseSDK):
     general_ledger_transactions: GeneralLedgerTransactions
     sales_receipts: SalesReceipts
     purchase_orders: PurchaseOrders
+    goods_receipts: GoodsReceipts
     subsidiaries: Subsidiaries
     locations: Locations
     departments: Departments
@@ -132,6 +134,9 @@ class Accounting(BaseSDK):
             self.sdk_configuration, parent_ref=self.parent_ref
         )
         self.purchase_orders = PurchaseOrders(
+            self.sdk_configuration, parent_ref=self.parent_ref
+        )
+        self.goods_receipts = GoodsReceipts(
             self.sdk_configuration, parent_ref=self.parent_ref
         )
         self.subsidiaries = Subsidiaries(
