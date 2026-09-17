@@ -87,6 +87,8 @@ class CustomerTypedDict(TypedDict):
     r"""Whether the entity is subject to taxation"""
     currency: NotRequired[Nullable[Currency]]
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
+    balance: NotRequired[Nullable[float]]
+    r"""The customer's outstanding balance: the amount the customer currently owes, in the customer's currency. A positive value means the customer owes the business."""
     account: NotRequired[Nullable[LinkedLedgerAccountTypedDict]]
     parent: NotRequired[Nullable[LinkedParentCustomerTypedDict]]
     r"""The parent customer this entity is linked to."""
@@ -186,6 +188,9 @@ class Customer(BaseModel):
     ] = UNSET
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
 
+    balance: OptionalNullable[float] = UNSET
+    r"""The customer's outstanding balance: the amount the customer currently owes, in the customer's currency. A positive value means the customer owes the business."""
+
     account: OptionalNullable[LinkedLedgerAccount] = UNSET
 
     parent: OptionalNullable[LinkedParentCustomer] = UNSET
@@ -277,6 +282,7 @@ class Customer(BaseModel):
             "tax_number",
             "taxable",
             "currency",
+            "balance",
             "account",
             "parent",
             "status",
@@ -312,6 +318,7 @@ class Customer(BaseModel):
             "tax_number",
             "taxable",
             "currency",
+            "balance",
             "account",
             "parent",
             "status",
