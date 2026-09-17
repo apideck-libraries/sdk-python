@@ -81,6 +81,8 @@ class InvoiceLineItemTypedDict(TypedDict):
     prepaid: NotRequired[Nullable[bool]]
     r"""Whether the line item is prepaid"""
     item: NotRequired[LinkedInvoiceItemTypedDict]
+    taxable: NotRequired[Nullable[bool]]
+    r"""If true, this line item is subject to tax. Read-only, and only populated by connectors that record taxability on the line itself."""
     tax_applicable_on: NotRequired[Nullable[str]]
     r"""Tax applicable on"""
     tax_recoverability: NotRequired[Nullable[str]]
@@ -174,6 +176,9 @@ class InvoiceLineItem(BaseModel):
 
     item: Optional[LinkedInvoiceItem] = None
 
+    taxable: OptionalNullable[bool] = UNSET
+    r"""If true, this line item is subject to tax. Read-only, and only populated by connectors that record taxability on the line itself."""
+
     tax_applicable_on: OptionalNullable[str] = UNSET
     r"""Tax applicable on"""
 
@@ -246,6 +251,7 @@ class InvoiceLineItem(BaseModel):
             "memo",
             "prepaid",
             "item",
+            "taxable",
             "tax_applicable_on",
             "tax_recoverability",
             "tax_method",
@@ -281,6 +287,7 @@ class InvoiceLineItem(BaseModel):
             "shipping_id",
             "memo",
             "prepaid",
+            "taxable",
             "tax_applicable_on",
             "tax_recoverability",
             "tax_method",
