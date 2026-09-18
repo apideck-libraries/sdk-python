@@ -2,20 +2,20 @@ speakeasyVersion: 1.656.1
 sources:
     Apideck:
         sourceNamespace: apideck
-        sourceRevisionDigest: sha256:c8ab1218dd463a77dd0430c35f63648a6e8c0cee0aabce5360ae67781c5d8024
-        sourceBlobDigest: sha256:43cdb07e064fa93e598dba14ce1037508562f72f3ffdcd37231c7140abed6c73
+        sourceRevisionDigest: sha256:0351e50c08512f2c650395d2cf398d5ef9bc2228e77acf72a030a3ff6f534747
+        sourceBlobDigest: sha256:3d200ac7790105cdc3b016dc8a50f727aa0e95d28ed4508aa23c2418f9a4440a
         tags:
             - latest
             - speakeasy-sdk-regen-1789563935
-            - 10.57.5
+            - 10.58.0
 targets:
     apideck:
         source: Apideck
         sourceNamespace: apideck
-        sourceRevisionDigest: sha256:c8ab1218dd463a77dd0430c35f63648a6e8c0cee0aabce5360ae67781c5d8024
-        sourceBlobDigest: sha256:43cdb07e064fa93e598dba14ce1037508562f72f3ffdcd37231c7140abed6c73
+        sourceRevisionDigest: sha256:0351e50c08512f2c650395d2cf398d5ef9bc2228e77acf72a030a3ff6f534747
+        sourceBlobDigest: sha256:3d200ac7790105cdc3b016dc8a50f727aa0e95d28ed4508aa23c2418f9a4440a
         codeSamplesNamespace: apideck-python-code-samples
-        codeSamplesRevisionDigest: sha256:3f4cfb488b5730a8d727d286105f26c6d5ae6421edc8003c86924f93ae49c181
+        codeSamplesRevisionDigest: sha256:4ac1d5128cd57bbb3f45f5abca64ac7a83a6f477cc775a1e637f65c62db0b917
 workflow:
     workflowVersion: 1.0.0
     speakeasyVersion: latest

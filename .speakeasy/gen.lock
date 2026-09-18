@@ -1,12 +1,12 @@
 lockVersion: 2.0.0
 id: fca0ac3a-5f4e-452c-bbc7-2311afa8da40
 management:
-  docChecksum: 910074e7eb199163e5e992f467874884
-  docVersion: 10.57.5
+  docChecksum: 1166a8c460c1868f21911ccd4a41c2f8
+  docVersion: 10.58.0
   speakeasyVersion: 1.656.1
   generationVersion: 2.753.1
-  releaseVersion: 0.41.1
-  configChecksum: 5791640e19650abdb1232c67648f6caa
+  releaseVersion: 0.42.0
+  configChecksum: a4b16301c094a352c86c37e130aaf22e
   repoURL: https://github.com/apideck-libraries/sdk-python.git
   installationURL: https://github.com/apideck-libraries/sdk-python.git
   published: true
@@ -20723,20 +20723,6 @@ examples:
           application/json: {"status_code": 400, "error": "Bad Request", "type_name": "RequestHeadersValidationError", "message": "Invalid Params", "detail": "Missing Header: x-apideck-consumer-id", "ref": "https://developers.apideck.com/errors#unauthorizederror"}
 examplesVersion: 1.0.2
 generatedTests: {}
-releaseNotes: |
-  ## Python SDK Changes Detected:
-  * `apideck.accounting.invoices.list()`:  `response.data.[].line_items.[].taxable` **Added**
-  * `apideck.accounting.invoices.get()`:  `response.data.line_items.[].taxable` **Added**
-  * `apideck.accounting.credit_notes.list()`:  `response.data.[].line_items.[].taxable` **Added**
-  * `apideck.accounting.credit_notes.get()`:  `response.data.line_items.[].taxable` **Added**
-  * `apideck.accounting.customers.list()`:  `response.data.[].balance` **Added**
-  * `apideck.accounting.customers.get()`:  `response.data.balance` **Added**
-  * `apideck.accounting.refunds.list()`:  `response.data.[].line_items.[].taxable` **Added**
-  * `apideck.accounting.refunds.get()`:  `response.data.line_items.[].taxable` **Added**
-  * `apideck.accounting.sales_receipts.list()`:  `response.data.[].line_items.[].taxable` **Added**
-  * `apideck.accounting.sales_receipts.get()`:  `response.data.line_items.[].taxable` **Added**
-  * `apideck.accounting.purchase_orders.list()`:  `response.data.[].line_items.[].taxable` **Added**
-  * `apideck.accounting.purchase_orders.get()`:  `response.data.line_items.[].taxable` **Added**
 trackedFiles:
   .devcontainer/README.md:
     last_write_checksum: sha1:07adb0c0c051a9be4d479ea06461f3a9b3bbeb2f
@@ -25301,7 +25287,7 @@ trackedFiles:
   src/apideck_unify/_hooks/types.py:
     last_write_checksum: sha1:d57be38e644de01983a9224b9733ae0add898d43
   src/apideck_unify/_version.py:
-    last_write_checksum: sha1:58edf780a5bfedd6db30bdfde447d1eeb822e8fd
+    last_write_checksum: sha1:c46eadf39a868bc5177173e8d243bfd918530e73
   src/apideck_unify/accounting.py:
     last_write_checksum: sha1:2c97de9f5ac09a34183439555d14920748bd573a
   src/apideck_unify/activities.py:
@@ -25317,7 +25303,7 @@ trackedFiles:
   src/apideck_unify/apideck_departments.py:
     last_write_checksum: sha1:9c6e4af55297ccb825e8bf5bb5c4089e53e344b5
   src/apideck_unify/apideck_employees.py:
-    last_write_checksum: sha1:cbdab8934e1c0b99b03b7c414c04588ba1871248
+    last_write_checksum: sha1:e7ed2291b927c875610f3658278771e010ce1758
   src/apideck_unify/apideck_hris_companies.py:
     last_write_checksum: sha1:8b1eb48fe3ec7b1d4d84e283a19556d98160d3ca
   src/apideck_unify/apiresourcecoverage_sdk.py:
@@ -25335,7 +25321,7 @@ trackedFiles:
   src/apideck_unify/attachments.py:
     last_write_checksum: sha1:b2dd451041410e670734bf9e1295a29fe98e0022
   src/apideck_unify/balancesheet_sdk.py:
-    last_write_checksum: sha1:7a8dd951e4c575806be79a049f05c2415d570dc8
+    last_write_checksum: sha1:2b3ac2cd6ad9abe8d0366eb5c57185329700635e
   src/apideck_unify/bankaccounts.py:
     last_write_checksum: sha1:94f2b7c758e00b7c50e6dbcace95a95b2e2bae7a
   src/apideck_unify/bankfeedaccounts.py:
@@ -27617,7 +27603,7 @@ trackedFiles:
   src/apideck_unify/products.py:
     last_write_checksum: sha1:971979a14db8b7db248a2ed0a1eb0f68a0547510
   src/apideck_unify/profitandloss_sdk.py:
-    last_write_checksum: sha1:25383f7a37a9b5b7a1e48111f49177dad4e8c491
+    last_write_checksum: sha1:40a727371d53f0293c4d116416861e7f58416305
   src/apideck_unify/projects.py:
     last_write_checksum: sha1:8f23286f7ecad3c85c1c60deb93e8c9f3567cacf
   src/apideck_unify/proxy.py:
