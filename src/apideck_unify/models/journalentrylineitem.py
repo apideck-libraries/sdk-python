@@ -27,6 +27,7 @@ from apideck_unify.types import (
     UNSET_SENTINEL,
 )
 from apideck_unify.utils import validate_open_enum
+from datetime import date
 from enum import Enum
 import pydantic
 from pydantic import field_serializer, model_serializer
@@ -87,6 +88,10 @@ class JournalEntryLineItemTypedDict(TypedDict):
     r"""Line number of the resource"""
     worktags: NotRequired[List[Nullable[LinkedWorktagTypedDict]]]
     r"""Worktags of the line item. This is currently only supported in Workday."""
+    date_: NotRequired[Nullable[date]]
+    r"""The financial date of this specific line, when it differs from the journal entry's own posted_at date - for example when booking a historical or backdated transaction. Not populated by every connector: some post the entry date at the header level only, in which case this line-level date is legitimately absent rather than wrong."""
+    source_id: NotRequired[Nullable[str]]
+    r"""A unique identifier for the source of this specific line, distinct from the journal entry's own source_id. Useful for reconciling an individual line back to an external system's own record when a single journal entry aggregates lines originating from more than one source."""
 
 
 class JournalEntryLineItem(BaseModel):
@@ -155,6 +160,12 @@ class JournalEntryLineItem(BaseModel):
     worktags: Optional[List[Nullable[LinkedWorktag]]] = None
     r"""Worktags of the line item. This is currently only supported in Workday."""
 
+    date_: Annotated[OptionalNullable[date], pydantic.Field(alias="date")] = UNSET
+    r"""The financial date of this specific line, when it differs from the journal entry's own posted_at date - for example when booking a historical or backdated transaction. Not populated by every connector: some post the entry date at the header level only, in which case this line-level date is legitimately absent rather than wrong."""
+
+    source_id: OptionalNullable[str] = UNSET
+    r"""A unique identifier for the source of this specific line, distinct from the journal entry's own source_id. Useful for reconciling an individual line back to an external system's own record when a single journal entry aggregates lines originating from more than one source."""
+
     @field_serializer("type")
     def serialize_type(self, value):
         if isinstance(value, str):
@@ -193,6 +204,8 @@ class JournalEntryLineItem(BaseModel):
             "location_id",
             "line_number",
             "worktags",
+            "date",
+            "source_id",
         ]
         nullable_fields = [
             "description",
@@ -211,6 +224,8 @@ class JournalEntryLineItem(BaseModel):
             "department_id",
             "location_id",
             "line_number",
+            "date",
+            "source_id",
         ]
         null_default_fields = []
 
@@ -275,6 +290,10 @@ class JournalEntryLineItemInputTypedDict(TypedDict):
     r"""Line number of the resource"""
     worktags: NotRequired[List[Nullable[LinkedWorktagTypedDict]]]
     r"""Worktags of the line item. This is currently only supported in Workday."""
+    date_: NotRequired[Nullable[date]]
+    r"""The financial date of this specific line, when it differs from the journal entry's own posted_at date - for example when booking a historical or backdated transaction. Not populated by every connector: some post the entry date at the header level only, in which case this line-level date is legitimately absent rather than wrong."""
+    source_id: NotRequired[Nullable[str]]
+    r"""A unique identifier for the source of this specific line, distinct from the journal entry's own source_id. Useful for reconciling an individual line back to an external system's own record when a single journal entry aggregates lines originating from more than one source."""
 
 
 class JournalEntryLineItemInput(BaseModel):
@@ -340,6 +359,12 @@ class JournalEntryLineItemInput(BaseModel):
     worktags: Optional[List[Nullable[LinkedWorktag]]] = None
     r"""Worktags of the line item. This is currently only supported in Workday."""
 
+    date_: Annotated[OptionalNullable[date], pydantic.Field(alias="date")] = UNSET
+    r"""The financial date of this specific line, when it differs from the journal entry's own posted_at date - for example when booking a historical or backdated transaction. Not populated by every connector: some post the entry date at the header level only, in which case this line-level date is legitimately absent rather than wrong."""
+
+    source_id: OptionalNullable[str] = UNSET
+    r"""A unique identifier for the source of this specific line, distinct from the journal entry's own source_id. Useful for reconciling an individual line back to an external system's own record when a single journal entry aggregates lines originating from more than one source."""
+
     @field_serializer("type")
     def serialize_type(self, value):
         if isinstance(value, str):
@@ -377,6 +402,8 @@ class JournalEntryLineItemInput(BaseModel):
             "location_id",
             "line_number",
             "worktags",
+            "date",
+            "source_id",
         ]
         nullable_fields = [
             "description",
@@ -395,6 +422,8 @@ class JournalEntryLineItemInput(BaseModel):
             "department_id",
             "location_id",
             "line_number",
+            "date",
+            "source_id",
         ]
         null_default_fields = []
 

@@ -4440,11 +4440,11 @@ if TYPE_CHECKING:
     from .log import (
         Log,
         LogTypedDict,
+        LogUnifiedAPI,
         Operation,
         OperationTypedDict,
         Service,
         ServiceTypedDict,
-        UnifiedAPI,
     )
     from .logsfilter import LogsFilter, LogsFilterTypedDict, PathMatchMode
     from .message import (
@@ -4885,6 +4885,7 @@ if TYPE_CHECKING:
         UnexpectedErrorResponse,
         UnexpectedErrorResponseTypedDict,
     )
+    from .unifiedapi import UnifiedAPI
     from .unifiedapiid import UnifiedAPIID
     from .unifiedfile import (
         Permissions,
@@ -8739,6 +8740,7 @@ __all__ = [
     "LocationStatus",
     "Log",
     "LogTypedDict",
+    "LogUnifiedAPI",
     "LogsFilter",
     "LogsFilterTypedDict",
     "ManagedVia",
@@ -12879,11 +12881,11 @@ _dynamic_imports: dict[str, str] = {
     "ListMemberTypedDict": ".listmember",
     "Log": ".log",
     "LogTypedDict": ".log",
+    "LogUnifiedAPI": ".log",
     "Operation": ".log",
     "OperationTypedDict": ".log",
     "Service": ".log",
     "ServiceTypedDict": ".log",
-    "UnifiedAPI": ".log",
     "LogsFilter": ".logsfilter",
     "LogsFilterTypedDict": ".logsfilter",
     "PathMatchMode": ".logsfilter",
@@ -13277,6 +13279,7 @@ _dynamic_imports: dict[str, str] = {
     "DetailTypedDict": ".unexpectederrorresponse",
     "UnexpectedErrorResponse": ".unexpectederrorresponse",
     "UnexpectedErrorResponseTypedDict": ".unexpectederrorresponse",
+    "UnifiedAPI": ".unifiedapi",
     "UnifiedAPIID": ".unifiedapiid",
     "Permissions": ".unifiedfile",
     "PermissionsTypedDict": ".unifiedfile",

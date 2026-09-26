@@ -73,10 +73,8 @@ class BillCreditNoteType(str, Enum, metaclass=utils.OpenEnumMeta):
 
 
 class BillCreditNoteTypedDict(TypedDict):
-    id: str
+    id: NotRequired[str]
     r"""Unique identifier representing the entity"""
-    total_amount: float
-    r"""Amount of transaction"""
     number: NotRequired[Nullable[str]]
     r"""Bill credit note number."""
     supplier: NotRequired[Nullable[LinkedSupplierTypedDict]]
@@ -92,6 +90,8 @@ class BillCreditNoteTypedDict(TypedDict):
     r"""Amounts are including tax"""
     sub_total: NotRequired[Nullable[float]]
     r"""Sub-total amount, normally before tax."""
+    total_amount: NotRequired[float]
+    r"""Amount of transaction"""
     total_tax: NotRequired[Nullable[float]]
     r"""Total tax amount applied to this bill credit note."""
     tax_code: NotRequired[Nullable[str]]
@@ -139,11 +139,8 @@ class BillCreditNoteTypedDict(TypedDict):
 
 
 class BillCreditNote(BaseModel):
-    id: str
+    id: Optional[str] = None
     r"""Unique identifier representing the entity"""
-
-    total_amount: float
-    r"""Amount of transaction"""
 
     number: OptionalNullable[str] = UNSET
     r"""Bill credit note number."""
@@ -170,6 +167,9 @@ class BillCreditNote(BaseModel):
 
     sub_total: OptionalNullable[float] = UNSET
     r"""Sub-total amount, normally before tax."""
+
+    total_amount: Optional[float] = None
+    r"""Amount of transaction"""
 
     total_tax: OptionalNullable[float] = UNSET
     r"""Total tax amount applied to this bill credit note."""
@@ -272,6 +272,7 @@ class BillCreditNote(BaseModel):
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
         optional_fields = [
+            "id",
             "number",
             "supplier",
             "subsidiary",
@@ -281,6 +282,7 @@ class BillCreditNote(BaseModel):
             "currency_rate",
             "tax_inclusive",
             "sub_total",
+            "total_amount",
             "total_tax",
             "tax_code",
             "balance",
@@ -360,8 +362,6 @@ class BillCreditNote(BaseModel):
 
 
 class BillCreditNoteInputTypedDict(TypedDict):
-    total_amount: float
-    r"""Amount of transaction"""
     number: NotRequired[Nullable[str]]
     r"""Bill credit note number."""
     supplier: NotRequired[Nullable[LinkedSupplierInputTypedDict]]
@@ -377,6 +377,8 @@ class BillCreditNoteInputTypedDict(TypedDict):
     r"""Amounts are including tax"""
     sub_total: NotRequired[Nullable[float]]
     r"""Sub-total amount, normally before tax."""
+    total_amount: NotRequired[float]
+    r"""Amount of transaction"""
     total_tax: NotRequired[Nullable[float]]
     r"""Total tax amount applied to this bill credit note."""
     tax_code: NotRequired[Nullable[str]]
@@ -414,9 +416,6 @@ class BillCreditNoteInputTypedDict(TypedDict):
 
 
 class BillCreditNoteInput(BaseModel):
-    total_amount: float
-    r"""Amount of transaction"""
-
     number: OptionalNullable[str] = UNSET
     r"""Bill credit note number."""
 
@@ -442,6 +441,9 @@ class BillCreditNoteInput(BaseModel):
 
     sub_total: OptionalNullable[float] = UNSET
     r"""Sub-total amount, normally before tax."""
+
+    total_amount: Optional[float] = None
+    r"""Amount of transaction"""
 
     total_tax: OptionalNullable[float] = UNSET
     r"""Total tax amount applied to this bill credit note."""
@@ -538,6 +540,7 @@ class BillCreditNoteInput(BaseModel):
             "currency_rate",
             "tax_inclusive",
             "sub_total",
+            "total_amount",
             "total_tax",
             "tax_code",
             "balance",
