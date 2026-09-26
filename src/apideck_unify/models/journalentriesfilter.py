@@ -32,6 +32,8 @@ class JournalEntriesFilterScope(str, Enum, metaclass=utils.OpenEnumMeta):
 
 class JournalEntriesFilterTypedDict(TypedDict):
     updated_since: NotRequired[datetime]
+    number: NotRequired[str]
+    r"""Journal entry number to search for"""
     start_date: NotRequired[date]
     r"""Return journal entries posted on or after this date (posting date, inclusive). Connectors without date-range support reject this filter with UnsupportedFiltersError."""
     end_date: NotRequired[date]
@@ -45,6 +47,9 @@ class JournalEntriesFilterTypedDict(TypedDict):
 
 class JournalEntriesFilter(BaseModel):
     updated_since: Annotated[Optional[datetime], FieldMetadata(query=True)] = None
+
+    number: Annotated[Optional[str], FieldMetadata(query=True)] = None
+    r"""Journal entry number to search for"""
 
     start_date: Annotated[Optional[date], FieldMetadata(query=True)] = None
     r"""Return journal entries posted on or after this date (posting date, inclusive). Connectors without date-range support reject this filter with UnsupportedFiltersError."""

@@ -10,19 +10,15 @@ from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
 )
-from .unifiedapiid import UnifiedAPIID
-from apideck_unify import models
+from .unifiedapi import UnifiedAPI
 from apideck_unify.types import BaseModel
 from apideck_unify.utils import (
     FieldMetadata,
     HeaderMetadata,
     PathParamMetadata,
     QueryParamMetadata,
-    validate_open_enum,
 )
 import pydantic
-from pydantic import field_serializer
-from pydantic.functional_validators import PlainValidator
 from typing import Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
@@ -48,7 +44,7 @@ class ConnectorConnectorResourcesOneRequestTypedDict(TypedDict):
     r"""ID of the resource you are acting upon."""
     app_id: NotRequired[str]
     r"""The ID of your Unify application"""
-    unified_api: NotRequired[UnifiedAPIID]
+    unified_api: NotRequired[UnifiedAPI]
     r"""Specify unified API for the connector resource. This is useful when a resource appears in multiple APIs"""
 
 
@@ -71,19 +67,10 @@ class ConnectorConnectorResourcesOneRequest(BaseModel):
     r"""The ID of your Unify application"""
 
     unified_api: Annotated[
-        Annotated[Optional[UnifiedAPIID], PlainValidator(validate_open_enum(False))],
+        Optional[UnifiedAPI],
         FieldMetadata(query=QueryParamMetadata(style="form", explode=True)),
     ] = None
     r"""Specify unified API for the connector resource. This is useful when a resource appears in multiple APIs"""
-
-    @field_serializer("unified_api")
-    def serialize_unified_api(self, value):
-        if isinstance(value, str):
-            try:
-                return models.UnifiedAPIID(value)
-            except ValueError:
-                return value
-        return value
 
 
 class ConnectorConnectorResourcesOneResponseTypedDict(TypedDict):
