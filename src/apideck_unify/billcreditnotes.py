@@ -401,7 +401,6 @@ class BillCreditNotes(BaseSDK):
     def create(
         self,
         *,
-        total_amount: float,
         raw: Optional[bool] = False,
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
@@ -424,6 +423,7 @@ class BillCreditNotes(BaseSDK):
         currency_rate: OptionalNullable[float] = UNSET,
         tax_inclusive: OptionalNullable[bool] = UNSET,
         sub_total: OptionalNullable[float] = UNSET,
+        total_amount: Optional[float] = None,
         total_tax: OptionalNullable[float] = UNSET,
         tax_code: OptionalNullable[str] = UNSET,
         balance: OptionalNullable[float] = UNSET,
@@ -469,7 +469,6 @@ class BillCreditNotes(BaseSDK):
 
         Create Bill Credit Note
 
-        :param total_amount: Amount of transaction
         :param raw: Include raw response. Mostly used for debugging purposes
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
@@ -484,6 +483,7 @@ class BillCreditNotes(BaseSDK):
         :param currency_rate: Currency Exchange Rate at the time entity was recorded/generated.
         :param tax_inclusive: Amounts are including tax
         :param sub_total: Sub-total amount, normally before tax.
+        :param total_amount: Amount of transaction
         :param total_tax: Total tax amount applied to this bill credit note.
         :param tax_code: Applicable tax id/code override if tax is not supplied on a line item basis.
         :param balance: The balance reflecting any payments made against the transaction.
@@ -682,7 +682,6 @@ class BillCreditNotes(BaseSDK):
     async def create_async(
         self,
         *,
-        total_amount: float,
         raw: Optional[bool] = False,
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
@@ -705,6 +704,7 @@ class BillCreditNotes(BaseSDK):
         currency_rate: OptionalNullable[float] = UNSET,
         tax_inclusive: OptionalNullable[bool] = UNSET,
         sub_total: OptionalNullable[float] = UNSET,
+        total_amount: Optional[float] = None,
         total_tax: OptionalNullable[float] = UNSET,
         tax_code: OptionalNullable[str] = UNSET,
         balance: OptionalNullable[float] = UNSET,
@@ -750,7 +750,6 @@ class BillCreditNotes(BaseSDK):
 
         Create Bill Credit Note
 
-        :param total_amount: Amount of transaction
         :param raw: Include raw response. Mostly used for debugging purposes
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
@@ -765,6 +764,7 @@ class BillCreditNotes(BaseSDK):
         :param currency_rate: Currency Exchange Rate at the time entity was recorded/generated.
         :param tax_inclusive: Amounts are including tax
         :param sub_total: Sub-total amount, normally before tax.
+        :param total_amount: Amount of transaction
         :param total_tax: Total tax amount applied to this bill credit note.
         :param tax_code: Applicable tax id/code override if tax is not supplied on a line item basis.
         :param balance: The balance reflecting any payments made against the transaction.
@@ -1258,7 +1258,6 @@ class BillCreditNotes(BaseSDK):
         self,
         *,
         id: str,
-        total_amount: float,
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
@@ -1280,6 +1279,7 @@ class BillCreditNotes(BaseSDK):
         currency_rate: OptionalNullable[float] = UNSET,
         tax_inclusive: OptionalNullable[bool] = UNSET,
         sub_total: OptionalNullable[float] = UNSET,
+        total_amount: Optional[float] = None,
         total_tax: OptionalNullable[float] = UNSET,
         tax_code: OptionalNullable[str] = UNSET,
         balance: OptionalNullable[float] = UNSET,
@@ -1326,7 +1326,6 @@ class BillCreditNotes(BaseSDK):
         Update Bill Credit Note
 
         :param id: ID of the record you are acting upon.
-        :param total_amount: Amount of transaction
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
@@ -1340,6 +1339,7 @@ class BillCreditNotes(BaseSDK):
         :param currency_rate: Currency Exchange Rate at the time entity was recorded/generated.
         :param tax_inclusive: Amounts are including tax
         :param sub_total: Sub-total amount, normally before tax.
+        :param total_amount: Amount of transaction
         :param total_tax: Total tax amount applied to this bill credit note.
         :param tax_code: Applicable tax id/code override if tax is not supplied on a line item basis.
         :param balance: The balance reflecting any payments made against the transaction.
@@ -1539,7 +1539,6 @@ class BillCreditNotes(BaseSDK):
         self,
         *,
         id: str,
-        total_amount: float,
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
@@ -1561,6 +1560,7 @@ class BillCreditNotes(BaseSDK):
         currency_rate: OptionalNullable[float] = UNSET,
         tax_inclusive: OptionalNullable[bool] = UNSET,
         sub_total: OptionalNullable[float] = UNSET,
+        total_amount: Optional[float] = None,
         total_tax: OptionalNullable[float] = UNSET,
         tax_code: OptionalNullable[str] = UNSET,
         balance: OptionalNullable[float] = UNSET,
@@ -1607,7 +1607,6 @@ class BillCreditNotes(BaseSDK):
         Update Bill Credit Note
 
         :param id: ID of the record you are acting upon.
-        :param total_amount: Amount of transaction
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
@@ -1621,6 +1620,7 @@ class BillCreditNotes(BaseSDK):
         :param currency_rate: Currency Exchange Rate at the time entity was recorded/generated.
         :param tax_inclusive: Amounts are including tax
         :param sub_total: Sub-total amount, normally before tax.
+        :param total_amount: Amount of transaction
         :param total_tax: Total tax amount applied to this bill credit note.
         :param tax_code: Applicable tax id/code override if tax is not supplied on a line item basis.
         :param balance: The balance reflecting any payments made against the transaction.
