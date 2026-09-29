@@ -418,6 +418,8 @@ class Company1InputTypedDict(TypedDict):
     r"""The first name of the person."""
     last_name: NotRequired[Nullable[str]]
     r"""The last name of the person."""
+    parent_id: NotRequired[Nullable[str]]
+    r"""Parent ID"""
     bank_accounts: NotRequired[List[BankAccount1TypedDict]]
     websites: NotRequired[List[WebsiteTypedDict]]
     addresses: NotRequired[List[AddressTypedDict]]
@@ -497,6 +499,9 @@ class Company1Input(BaseModel):
     last_name: OptionalNullable[str] = UNSET
     r"""The last name of the person."""
 
+    parent_id: OptionalNullable[str] = UNSET
+    r"""Parent ID"""
+
     bank_accounts: Optional[List[BankAccount1]] = None
 
     websites: Optional[List[Website]] = None
@@ -557,6 +562,7 @@ class Company1Input(BaseModel):
             "acn",
             "first_name",
             "last_name",
+            "parent_id",
             "bank_accounts",
             "websites",
             "addresses",
@@ -591,6 +597,7 @@ class Company1Input(BaseModel):
             "acn",
             "first_name",
             "last_name",
+            "parent_id",
             "tags",
             "read_only",
             "salutation",

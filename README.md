@@ -285,6 +285,7 @@ with Apideck(
 * [get](docs/sdks/billcreditnotes/README.md#get) - Get Bill Credit Note
 * [update](docs/sdks/billcreditnotes/README.md#update) - Update Bill Credit Note
 * [delete](docs/sdks/billcreditnotes/README.md#delete) - Delete Bill Credit Note
+* [create_batch](docs/sdks/billcreditnotes/README.md#create_batch) - Create Bill Credit Notes in batch
 
 #### [accounting.bill_payments](docs/sdks/billpayments/README.md)
 
@@ -293,6 +294,7 @@ with Apideck(
 * [get](docs/sdks/billpayments/README.md#get) - Get Bill Payment
 * [update](docs/sdks/billpayments/README.md#update) - Update Bill Payment
 * [delete](docs/sdks/billpayments/README.md#delete) - Delete Bill Payment
+* [create_batch](docs/sdks/billpayments/README.md#create_batch) - Create Bill Payments in batch
 
 #### [accounting.bills](docs/sdks/bills/README.md)
 
@@ -301,6 +303,7 @@ with Apideck(
 * [get](docs/sdks/bills/README.md#get) - Get Bill
 * [update](docs/sdks/bills/README.md#update) - Update Bill
 * [delete](docs/sdks/bills/README.md#delete) - Delete Bill
+* [create_batch](docs/sdks/bills/README.md#create_batch) - Create Bills in batch
 
 #### [accounting.categories](docs/sdks/categories/README.md)
 
@@ -322,6 +325,7 @@ with Apideck(
 * [get](docs/sdks/creditnotes/README.md#get) - Get Credit Note
 * [update](docs/sdks/creditnotes/README.md#update) - Update Credit Note
 * [delete](docs/sdks/creditnotes/README.md#delete) - Delete Credit Note
+* [create_batch](docs/sdks/creditnotes/README.md#create_batch) - Create Credit Notes in batch
 
 #### [accounting.customers](docs/sdks/customers/README.md)
 
@@ -396,6 +400,7 @@ with Apideck(
 * [get](docs/sdks/invoices/README.md#get) - Get Invoice
 * [update](docs/sdks/invoices/README.md#update) - Update Invoice
 * [delete](docs/sdks/invoices/README.md#delete) - Delete Invoice
+* [create_batch](docs/sdks/invoices/README.md#create_batch) - Create Invoices in batch
 
 #### [accounting.journal_entries](docs/sdks/journalentries/README.md)
 
@@ -444,6 +449,7 @@ with Apideck(
 * [get](docs/sdks/payments/README.md#get) - Get Payment
 * [update](docs/sdks/payments/README.md#update) - Update Payment
 * [delete](docs/sdks/payments/README.md#delete) - Delete Payment
+* [create_batch](docs/sdks/payments/README.md#create_batch) - Create Payments in batch
 
 #### [accounting.profit_and_loss](docs/sdks/profitandlosssdk/README.md)
 
@@ -1119,8 +1125,8 @@ with Apideck(
 
 
 **Inherit from [`ApideckError`](./src/apideck_unify/models/apideckerror.py)**:
-* [`Unauthorized`](./src/apideck_unify/models/unauthorized.py): Unauthorized. Status code `401`. Applicable to 6 of 363 methods.*
-* [`ConflictResponse`](./src/apideck_unify/models/conflictresponse.py): Conflict — a connection already exists for the target connector. Status code `409`. Applicable to 1 of 363 methods.*
+* [`Unauthorized`](./src/apideck_unify/models/unauthorized.py): Unauthorized. Status code `401`. Applicable to 6 of 369 methods.*
+* [`ConflictResponse`](./src/apideck_unify/models/conflictresponse.py): Conflict — a connection already exists for the target connector. Status code `409`. Applicable to 1 of 369 methods.*
 * [`ResponseValidationError`](./src/apideck_unify/models/responsevalidationerror.py): Type mismatch between the response data and the expected Pydantic model. Provides access to the Pydantic validation error via the `cause` attribute.
 
 </details>

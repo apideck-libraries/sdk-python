@@ -54,7 +54,7 @@ class Service(BaseModel):
     r"""Apideck service provider name."""
 
 
-class UnifiedAPI(str, Enum, metaclass=utils.OpenEnumMeta):
+class LogUnifiedAPI(str, Enum, metaclass=utils.OpenEnumMeta):
     r"""Which Unified Api request was made to."""
 
     CRM = "crm"
@@ -108,7 +108,7 @@ class LogTypedDict(TypedDict):
     r"""Whether or not the request was successful."""
     timestamp: str
     r"""ISO Date and time when the request was made."""
-    unified_api: UnifiedAPI
+    unified_api: LogUnifiedAPI
     r"""Which Unified Api request was made to."""
     error_message: NotRequired[Nullable[str]]
     r"""If error occurred, this is brief explanation"""
@@ -171,7 +171,7 @@ class Log(BaseModel):
     timestamp: str
     r"""ISO Date and time when the request was made."""
 
-    unified_api: Annotated[UnifiedAPI, PlainValidator(validate_open_enum(False))]
+    unified_api: Annotated[LogUnifiedAPI, PlainValidator(validate_open_enum(False))]
     r"""Which Unified Api request was made to."""
 
     error_message: OptionalNullable[str] = UNSET
@@ -184,7 +184,7 @@ class Log(BaseModel):
     def serialize_unified_api(self, value):
         if isinstance(value, str):
             try:
-                return models.UnifiedAPI(value)
+                return models.LogUnifiedAPI(value)
             except ValueError:
                 return value
         return value

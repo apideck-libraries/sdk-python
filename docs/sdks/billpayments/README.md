@@ -10,6 +10,7 @@
 * [get](#get) - Get Bill Payment
 * [update](#update) - Update Bill Payment
 * [delete](#delete) - Delete Bill Payment
+* [create_batch](#create_batch) - Create Bill Payments in batch
 
 ## list
 
@@ -612,6 +613,168 @@ with Apideck(
 ### Response
 
 **[models.AccountingBillPaymentsDeleteResponse](../../models/accountingbillpaymentsdeleteresponse.md)**
+
+### Errors
+
+| Error Type                     | Status Code                    | Content Type                   |
+| ------------------------------ | ------------------------------ | ------------------------------ |
+| models.BadRequestResponse      | 400                            | application/json               |
+| models.UnauthorizedResponse    | 401                            | application/json               |
+| models.PaymentRequiredResponse | 402                            | application/json               |
+| models.NotFoundResponse        | 404                            | application/json               |
+| models.UnprocessableResponse   | 422                            | application/json               |
+| models.APIError                | 4XX, 5XX                       | \*/\*                          |
+
+## create_batch
+
+Create multiple bill payments in a single request. Each item is processed independently, so some may be created while others fail; the response returns `200` with one result per item, in the order the items were sent. The maximum number of items accepted per request depends on the connector.
+
+### Example Usage
+
+<!-- UsageSnippet language="python" operationID="accounting.billPaymentsBatchAdd" method="post" path="/accounting/bill-payments/batch" -->
+```python
+import apideck_unify
+from apideck_unify import Apideck
+from apideck_unify.utils import parse_datetime
+import os
+
+
+with Apideck(
+    consumer_id="test-consumer",
+    app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
+) as apideck:
+
+    res = apideck.accounting.bill_payments.create_batch(items=[
+        {
+            "ref": "item-1",
+            "data": {
+                "currency": apideck_unify.Currency.USD,
+                "currency_rate": 0.69,
+                "total_amount": 49.99,
+                "reference": "123456",
+                "payment_method": "cash",
+                "payment_method_reference": "123456",
+                "payment_method_id": "12345",
+                "account": {
+                    "id": "123456",
+                    "name": "Bank account",
+                    "nominal_code": "N091",
+                    "code": "453",
+                    "parent_id": "123456",
+                    "display_id": "123456",
+                },
+                "transaction_date": parse_datetime("2021-05-01T12:00:00.000Z"),
+                "supplier": {
+                    "id": "12345",
+                    "display_name": "Windsurf Shop",
+                    "address": {
+                        "id": "123",
+                        "type": apideck_unify.Type.PRIMARY,
+                        "string": "25 Spring Street, Blackburn, VIC 3130",
+                        "name": "HQ US",
+                        "line1": "Main street",
+                        "line2": "apt #",
+                        "line3": "Suite #",
+                        "line4": "delivery instructions",
+                        "line5": "Attention: Finance Dept",
+                        "street_number": "25",
+                        "city": "San Francisco",
+                        "state": "CA",
+                        "postal_code": "94104",
+                        "country": "US",
+                        "latitude": "40.759211",
+                        "longitude": "-73.984638",
+                        "county": "Santa Clara",
+                        "contact_name": "Elon Musk",
+                        "salutation": "Mr",
+                        "phone_number": "111-111-1111",
+                        "fax": "122-111-1111",
+                        "email": "elon@musk.com",
+                        "website": "https://elonmusk.com",
+                        "notes": "Address notes or delivery instructions.",
+                        "row_version": "1-12345",
+                    },
+                },
+                "company_id": "12345",
+                "subsidiary": {
+                    "display_id": "123456",
+                    "name": "Acme Inc.",
+                },
+                "reconciled": True,
+                "status": apideck_unify.PaymentStatus.AUTHORISED,
+                "type": apideck_unify.BillPaymentCreateInputBillPaymentType.ACCOUNTS_PAYABLE,
+                "allocations": [
+                    {
+                        "id": "12345",
+                        "type": apideck_unify.BillPaymentCreateInputAllocationType.BILL,
+                        "amount": 49.99,
+                        "allocation_id": "123456",
+                    },
+                ],
+                "note": "Some notes about this transaction",
+                "number": "123456",
+                "tracking_categories": [
+                    {
+                        "id": "123456",
+                        "code": "100",
+                        "name": "New York",
+                        "parent_id": "123456",
+                        "parent_name": "New York",
+                    },
+                ],
+                "custom_fields": [
+                    {
+                        "id": "2389328923893298",
+                        "name": "employee_level",
+                        "ref_name": "Marketing",
+                        "description": "Employee Level",
+                        "value": "Uses Salesforce and Marketo",
+                    },
+                ],
+                "row_version": "1-12345",
+                "display_id": "123456",
+                "pass_through": [
+                    {
+                        "service_id": "<id>",
+                        "extend_paths": [
+                            {
+                                "path": "$.nested.property",
+                                "value": {
+                                    "TaxClassificationRef": {
+                                        "value": "EUC-99990201-V1-00020000",
+                                    },
+                                },
+                            },
+                        ],
+                    },
+                ],
+            },
+        },
+    ], raw=False, service_id="salesforce", company_id="12345")
+
+    assert res.batch_bill_payments_response is not None
+
+    # Handle response
+    print(res.batch_bill_payments_response)
+
+```
+
+### Parameters
+
+| Parameter                                                                                                                                                                                                                                                                                                                                                                        | Type                                                                                                                                                                                                                                                                                                                                                                             | Required                                                                                                                                                                                                                                                                                                                                                                         | Description                                                                                                                                                                                                                                                                                                                                                                      | Example                                                                                                                                                                                                                                                                                                                                                                          |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `items`                                                                                                                                                                                                                                                                                                                                                                          | List[[models.BatchBillPaymentsRequestItems](../../models/batchbillpaymentsrequestitems.md)]                                                                                                                                                                                                                                                                                      | :heavy_check_mark:                                                                                                                                                                                                                                                                                                                                                               | The records to write. The per-connector limit is the real cap and is usually lower than the ceiling here: read `batch_support.resources[<resource>].max_items` on the Connector API for the connector you are calling, or the resource gotchas. This ceiling exists so an oversized array is rejected by request validation before any per-item work runs, rather than after it. |                                                                                                                                                                                                                                                                                                                                                                                  |
+| `raw`                                                                                                                                                                                                                                                                                                                                                                            | *Optional[bool]*                                                                                                                                                                                                                                                                                                                                                                 | :heavy_minus_sign:                                                                                                                                                                                                                                                                                                                                                               | Include raw response. Mostly used for debugging purposes                                                                                                                                                                                                                                                                                                                         |                                                                                                                                                                                                                                                                                                                                                                                  |
+| `consumer_id`                                                                                                                                                                                                                                                                                                                                                                    | *Optional[str]*                                                                                                                                                                                                                                                                                                                                                                  | :heavy_minus_sign:                                                                                                                                                                                                                                                                                                                                                               | ID of the consumer which you want to get or push data from                                                                                                                                                                                                                                                                                                                       | test-consumer                                                                                                                                                                                                                                                                                                                                                                    |
+| `app_id`                                                                                                                                                                                                                                                                                                                                                                         | *Optional[str]*                                                                                                                                                                                                                                                                                                                                                                  | :heavy_minus_sign:                                                                                                                                                                                                                                                                                                                                                               | The ID of your Unify application                                                                                                                                                                                                                                                                                                                                                 | dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX                                                                                                                                                                                                                                                                                                                                          |
+| `service_id`                                                                                                                                                                                                                                                                                                                                                                     | *Optional[str]*                                                                                                                                                                                                                                                                                                                                                                  | :heavy_minus_sign:                                                                                                                                                                                                                                                                                                                                                               | Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.                                                                                                                                                                                                                                    | salesforce                                                                                                                                                                                                                                                                                                                                                                       |
+| `company_id`                                                                                                                                                                                                                                                                                                                                                                     | *Optional[str]*                                                                                                                                                                                                                                                                                                                                                                  | :heavy_minus_sign:                                                                                                                                                                                                                                                                                                                                                               | The ID of the company to scope requests to. For connectors that support multi-company, this overrides the default company configured in connection settings.                                                                                                                                                                                                                     | 12345                                                                                                                                                                                                                                                                                                                                                                            |
+| `retries`                                                                                                                                                                                                                                                                                                                                                                        | [Optional[utils.RetryConfig]](../../models/utils/retryconfig.md)                                                                                                                                                                                                                                                                                                                 | :heavy_minus_sign:                                                                                                                                                                                                                                                                                                                                                               | Configuration to override the default retry behavior of the client.                                                                                                                                                                                                                                                                                                              |                                                                                                                                                                                                                                                                                                                                                                                  |
+
+### Response
+
+**[models.AccountingBillPaymentsBatchAddResponse](../../models/accountingbillpaymentsbatchaddresponse.md)**
 
 ### Errors
 
