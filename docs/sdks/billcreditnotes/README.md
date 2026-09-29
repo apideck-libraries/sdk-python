@@ -10,6 +10,7 @@
 * [get](#get) - Get Bill Credit Note
 * [update](#update) - Update Bill Credit Note
 * [delete](#delete) - Delete Bill Credit Note
+* [create_batch](#create_batch) - Create Bill Credit Notes in batch
 
 ## list
 
@@ -105,7 +106,7 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.accounting.bill_credit_notes.create(total_amount=49.99, raw=False, service_id="salesforce", company_id="12345", number="OIT00546", supplier={
+    res = apideck.accounting.bill_credit_notes.create(raw=False, service_id="salesforce", company_id="12345", number="OIT00546", supplier={
         "id": "12345",
         "display_name": "Windsurf Shop",
         "address": {
@@ -145,7 +146,7 @@ with Apideck(
     }, department={
         "display_id": "123456",
         "name": "Acme Inc.",
-    }, currency=apideck_unify.Currency.USD, currency_rate=0.69, tax_inclusive=True, sub_total=27500, total_tax=2500, tax_code="1234", balance=27500, remaining_credit=27500, status=apideck_unify.BillCreditNoteStatus.AUTHORISED, reference="123456", date_issued=parse_datetime("2021-05-01T12:00:00.000Z"), date_paid=parse_datetime("2021-05-01T12:00:00.000Z"), type_=apideck_unify.BillCreditNoteType.ACCOUNTS_PAYABLE_CREDIT, account={
+    }, currency=apideck_unify.Currency.USD, currency_rate=0.69, tax_inclusive=True, sub_total=27500, total_amount=49.99, total_tax=2500, tax_code="1234", balance=27500, remaining_credit=27500, status=apideck_unify.BillCreditNoteStatus.AUTHORISED, reference="123456", date_issued=parse_datetime("2021-05-01T12:00:00.000Z"), date_paid=parse_datetime("2021-05-01T12:00:00.000Z"), type_=apideck_unify.BillCreditNoteType.ACCOUNTS_PAYABLE_CREDIT, account={
         "id": "123456",
         "name": "Bank account",
         "nominal_code": "N091",
@@ -251,7 +252,6 @@ with Apideck(
 
 | Parameter                                                                                                                                                    | Type                                                                                                                                                         | Required                                                                                                                                                     | Description                                                                                                                                                  | Example                                                                                                                                                      |
 | ------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `total_amount`                                                                                                                                               | *float*                                                                                                                                                      | :heavy_check_mark:                                                                                                                                           | Amount of transaction                                                                                                                                        | 49.99                                                                                                                                                        |
 | `raw`                                                                                                                                                        | *Optional[bool]*                                                                                                                                             | :heavy_minus_sign:                                                                                                                                           | Include raw response. Mostly used for debugging purposes                                                                                                     |                                                                                                                                                              |
 | `consumer_id`                                                                                                                                                | *Optional[str]*                                                                                                                                              | :heavy_minus_sign:                                                                                                                                           | ID of the consumer which you want to get or push data from                                                                                                   | test-consumer                                                                                                                                                |
 | `app_id`                                                                                                                                                     | *Optional[str]*                                                                                                                                              | :heavy_minus_sign:                                                                                                                                           | The ID of your Unify application                                                                                                                             | dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX                                                                                                                      |
@@ -266,6 +266,7 @@ with Apideck(
 | `currency_rate`                                                                                                                                              | *OptionalNullable[float]*                                                                                                                                    | :heavy_minus_sign:                                                                                                                                           | Currency Exchange Rate at the time entity was recorded/generated.                                                                                            | 0.69                                                                                                                                                         |
 | `tax_inclusive`                                                                                                                                              | *OptionalNullable[bool]*                                                                                                                                     | :heavy_minus_sign:                                                                                                                                           | Amounts are including tax                                                                                                                                    | true                                                                                                                                                         |
 | `sub_total`                                                                                                                                                  | *OptionalNullable[float]*                                                                                                                                    | :heavy_minus_sign:                                                                                                                                           | Sub-total amount, normally before tax.                                                                                                                       | 27500                                                                                                                                                        |
+| `total_amount`                                                                                                                                               | *Optional[float]*                                                                                                                                            | :heavy_minus_sign:                                                                                                                                           | Amount of transaction                                                                                                                                        | 49.99                                                                                                                                                        |
 | `total_tax`                                                                                                                                                  | *OptionalNullable[float]*                                                                                                                                    | :heavy_minus_sign:                                                                                                                                           | Total tax amount applied to this bill credit note.                                                                                                           | 2500                                                                                                                                                         |
 | `tax_code`                                                                                                                                                   | *OptionalNullable[str]*                                                                                                                                      | :heavy_minus_sign:                                                                                                                                           | Applicable tax id/code override if tax is not supplied on a line item basis.                                                                                 | 1234                                                                                                                                                         |
 | `balance`                                                                                                                                                    | *OptionalNullable[float]*                                                                                                                                    | :heavy_minus_sign:                                                                                                                                           | The balance reflecting any payments made against the transaction.                                                                                            | 27500                                                                                                                                                        |
@@ -377,7 +378,7 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.accounting.bill_credit_notes.update(id="<id>", total_amount=49.99, service_id="salesforce", raw=False, number="OIT00546", supplier={
+    res = apideck.accounting.bill_credit_notes.update(id="<id>", service_id="salesforce", raw=False, number="OIT00546", supplier={
         "id": "12345",
         "display_name": "Windsurf Shop",
         "address": {
@@ -417,7 +418,7 @@ with Apideck(
     }, department={
         "display_id": "123456",
         "name": "Acme Inc.",
-    }, currency=apideck_unify.Currency.USD, currency_rate=0.69, tax_inclusive=True, sub_total=27500, total_tax=2500, tax_code="1234", balance=27500, remaining_credit=27500, status=apideck_unify.BillCreditNoteStatus.AUTHORISED, reference="123456", date_issued=parse_datetime("2021-05-01T12:00:00.000Z"), date_paid=parse_datetime("2021-05-01T12:00:00.000Z"), type_=apideck_unify.BillCreditNoteType.ACCOUNTS_PAYABLE_CREDIT, account={
+    }, currency=apideck_unify.Currency.USD, currency_rate=0.69, tax_inclusive=True, sub_total=27500, total_amount=49.99, total_tax=2500, tax_code="1234", balance=27500, remaining_credit=27500, status=apideck_unify.BillCreditNoteStatus.AUTHORISED, reference="123456", date_issued=parse_datetime("2021-05-01T12:00:00.000Z"), date_paid=parse_datetime("2021-05-01T12:00:00.000Z"), type_=apideck_unify.BillCreditNoteType.ACCOUNTS_PAYABLE_CREDIT, account={
         "id": "123456",
         "name": "Bank account",
         "nominal_code": "N091",
@@ -527,7 +528,6 @@ with Apideck(
 | Parameter                                                                                                                                               | Type                                                                                                                                                    | Required                                                                                                                                                | Description                                                                                                                                             | Example                                                                                                                                                 |
 | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `id`                                                                                                                                                    | *str*                                                                                                                                                   | :heavy_check_mark:                                                                                                                                      | ID of the record you are acting upon.                                                                                                                   |                                                                                                                                                         |
-| `total_amount`                                                                                                                                          | *float*                                                                                                                                                 | :heavy_check_mark:                                                                                                                                      | Amount of transaction                                                                                                                                   | 49.99                                                                                                                                                   |
 | `consumer_id`                                                                                                                                           | *Optional[str]*                                                                                                                                         | :heavy_minus_sign:                                                                                                                                      | ID of the consumer which you want to get or push data from                                                                                              | test-consumer                                                                                                                                           |
 | `app_id`                                                                                                                                                | *Optional[str]*                                                                                                                                         | :heavy_minus_sign:                                                                                                                                      | The ID of your Unify application                                                                                                                        | dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX                                                                                                                 |
 | `service_id`                                                                                                                                            | *Optional[str]*                                                                                                                                         | :heavy_minus_sign:                                                                                                                                      | Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.           | salesforce                                                                                                                                              |
@@ -541,6 +541,7 @@ with Apideck(
 | `currency_rate`                                                                                                                                         | *OptionalNullable[float]*                                                                                                                               | :heavy_minus_sign:                                                                                                                                      | Currency Exchange Rate at the time entity was recorded/generated.                                                                                       | 0.69                                                                                                                                                    |
 | `tax_inclusive`                                                                                                                                         | *OptionalNullable[bool]*                                                                                                                                | :heavy_minus_sign:                                                                                                                                      | Amounts are including tax                                                                                                                               | true                                                                                                                                                    |
 | `sub_total`                                                                                                                                             | *OptionalNullable[float]*                                                                                                                               | :heavy_minus_sign:                                                                                                                                      | Sub-total amount, normally before tax.                                                                                                                  | 27500                                                                                                                                                   |
+| `total_amount`                                                                                                                                          | *Optional[float]*                                                                                                                                       | :heavy_minus_sign:                                                                                                                                      | Amount of transaction                                                                                                                                   | 49.99                                                                                                                                                   |
 | `total_tax`                                                                                                                                             | *OptionalNullable[float]*                                                                                                                               | :heavy_minus_sign:                                                                                                                                      | Total tax amount applied to this bill credit note.                                                                                                      | 2500                                                                                                                                                    |
 | `tax_code`                                                                                                                                              | *OptionalNullable[str]*                                                                                                                                 | :heavy_minus_sign:                                                                                                                                      | Applicable tax id/code override if tax is not supplied on a line item basis.                                                                            | 1234                                                                                                                                                    |
 | `balance`                                                                                                                                               | *OptionalNullable[float]*                                                                                                                               | :heavy_minus_sign:                                                                                                                                      | The balance reflecting any payments made against the transaction.                                                                                       | 27500                                                                                                                                                   |
@@ -617,6 +618,230 @@ with Apideck(
 ### Response
 
 **[models.AccountingBillCreditNotesDeleteResponse](../../models/accountingbillcreditnotesdeleteresponse.md)**
+
+### Errors
+
+| Error Type                     | Status Code                    | Content Type                   |
+| ------------------------------ | ------------------------------ | ------------------------------ |
+| models.BadRequestResponse      | 400                            | application/json               |
+| models.UnauthorizedResponse    | 401                            | application/json               |
+| models.PaymentRequiredResponse | 402                            | application/json               |
+| models.NotFoundResponse        | 404                            | application/json               |
+| models.UnprocessableResponse   | 422                            | application/json               |
+| models.APIError                | 4XX, 5XX                       | \*/\*                          |
+
+## create_batch
+
+Create multiple bill credit notes in a single request. Each item is processed independently, so some may be created while others fail; the response returns `200` with one result per item, in the order the items were sent. The maximum number of items accepted per request depends on the connector.
+
+### Example Usage
+
+<!-- UsageSnippet language="python" operationID="accounting.billCreditNotesBatchAdd" method="post" path="/accounting/bill-credit-notes/batch" -->
+```python
+import apideck_unify
+from apideck_unify import Apideck
+from apideck_unify.utils import parse_datetime
+from datetime import date
+import os
+
+
+with Apideck(
+    consumer_id="test-consumer",
+    app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
+) as apideck:
+
+    res = apideck.accounting.bill_credit_notes.create_batch(items=[
+        {
+            "ref": "item-1",
+            "data": {
+                "number": "OIT00546",
+                "supplier": {
+                    "id": "12345",
+                    "display_name": "Windsurf Shop",
+                    "address": {
+                        "id": "123",
+                        "type": apideck_unify.Type.PRIMARY,
+                        "string": "25 Spring Street, Blackburn, VIC 3130",
+                        "name": "HQ US",
+                        "line1": "Main street",
+                        "line2": "apt #",
+                        "line3": "Suite #",
+                        "line4": "delivery instructions",
+                        "line5": "Attention: Finance Dept",
+                        "street_number": "25",
+                        "city": "San Francisco",
+                        "state": "CA",
+                        "postal_code": "94104",
+                        "country": "US",
+                        "latitude": "40.759211",
+                        "longitude": "-73.984638",
+                        "county": "Santa Clara",
+                        "contact_name": "Elon Musk",
+                        "salutation": "Mr",
+                        "phone_number": "111-111-1111",
+                        "fax": "122-111-1111",
+                        "email": "elon@musk.com",
+                        "website": "https://elonmusk.com",
+                        "notes": "Address notes or delivery instructions.",
+                        "row_version": "1-12345",
+                    },
+                },
+                "subsidiary": None,
+                "location": {
+                    "id": "123456",
+                    "display_id": "123456",
+                    "name": "New York Office",
+                },
+                "department": {
+                    "display_id": "123456",
+                    "name": "Acme Inc.",
+                },
+                "currency": apideck_unify.Currency.USD,
+                "currency_rate": 0.69,
+                "tax_inclusive": True,
+                "sub_total": 27500,
+                "total_amount": 49.99,
+                "total_tax": 2500,
+                "tax_code": "1234",
+                "balance": 27500,
+                "remaining_credit": 27500,
+                "status": apideck_unify.BillCreditNoteCreateInputBillCreditNoteStatus.AUTHORISED,
+                "reference": "123456",
+                "date_issued": parse_datetime("2021-05-01T12:00:00.000Z"),
+                "date_paid": parse_datetime("2021-05-01T12:00:00.000Z"),
+                "type": apideck_unify.BillCreditNoteCreateInputBillCreditNoteType.ACCOUNTS_PAYABLE_CREDIT,
+                "account": {
+                    "id": "123456",
+                    "name": "Bank account",
+                    "nominal_code": "N091",
+                    "code": "453",
+                    "parent_id": "123456",
+                    "display_id": "123456",
+                },
+                "line_items": [
+                    {
+                        "row_id": "12345",
+                        "code": "120-C",
+                        "line_number": 1,
+                        "description": "Returned goods credit",
+                        "type": apideck_unify.LineItemType.EXPENSE_ACCOUNT,
+                        "tax_amount": 27.5,
+                        "total_amount": 27500,
+                        "quantity": 1,
+                        "unit_price": 27500.5,
+                        "unit_of_measure": "pc.",
+                        "discount_percentage": 0.01,
+                        "discount_amount": 19.99,
+                        "service_date": date.fromisoformat("2024-01-15"),
+                        "location": {
+                            "id": "123456",
+                            "display_id": "123456",
+                            "name": "New York Office",
+                        },
+                        "department": {
+                            "display_id": "123456",
+                            "name": "Acme Inc.",
+                        },
+                        "item": {
+                            "id": "12344",
+                            "code": "120-C",
+                            "name": "Model Y",
+                        },
+                        "tax_rate": {
+                            "id": "123456",
+                            "code": "N-T",
+                            "rate": 10,
+                        },
+                        "ledger_account": {
+                            "id": "123456",
+                            "name": "Bank account",
+                            "nominal_code": "N091",
+                            "code": "453",
+                            "parent_id": "123456",
+                            "display_id": "123456",
+                        },
+                        "tracking_categories": [
+                            {
+                                "id": "123456",
+                                "code": "100",
+                                "name": "New York",
+                                "parent_id": "123456",
+                                "parent_name": "New York",
+                            },
+                        ],
+                        "row_version": "1-12345",
+                    },
+                ],
+                "allocations": [
+                    {
+                        "id": "123456",
+                        "amount": 49.99,
+                        "allocation_id": "123456",
+                    },
+                ],
+                "note": "Some notes about this bill credit note",
+                "terms": "Some terms about this bill credit note",
+                "tracking_categories": [
+                    {
+                        "id": "123456",
+                        "code": "100",
+                        "name": "New York",
+                        "parent_id": "123456",
+                        "parent_name": "New York",
+                    },
+                ],
+                "custom_fields": [
+                    {
+                        "id": "2389328923893298",
+                        "name": "employee_level",
+                        "ref_name": "Marketing",
+                        "description": "Employee Level",
+                        "value": "Uses Salesforce and Marketo",
+                    },
+                ],
+                "row_version": "1-12345",
+                "pass_through": [
+                    {
+                        "service_id": "<id>",
+                        "extend_paths": [
+                            {
+                                "path": "$.nested.property",
+                                "value": {
+                                    "TaxClassificationRef": {
+                                        "value": "EUC-99990201-V1-00020000",
+                                    },
+                                },
+                            },
+                        ],
+                    },
+                ],
+            },
+        },
+    ], raw=False, service_id="salesforce", company_id="12345")
+
+    assert res.batch_bill_credit_notes_response is not None
+
+    # Handle response
+    print(res.batch_bill_credit_notes_response)
+
+```
+
+### Parameters
+
+| Parameter                                                                                                                                                                                                                                                                                                                                                                        | Type                                                                                                                                                                                                                                                                                                                                                                             | Required                                                                                                                                                                                                                                                                                                                                                                         | Description                                                                                                                                                                                                                                                                                                                                                                      | Example                                                                                                                                                                                                                                                                                                                                                                          |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `items`                                                                                                                                                                                                                                                                                                                                                                          | List[[models.BatchBillCreditNotesRequestItems](../../models/batchbillcreditnotesrequestitems.md)]                                                                                                                                                                                                                                                                                | :heavy_check_mark:                                                                                                                                                                                                                                                                                                                                                               | The records to write. The per-connector limit is the real cap and is usually lower than the ceiling here: read `batch_support.resources[<resource>].max_items` on the Connector API for the connector you are calling, or the resource gotchas. This ceiling exists so an oversized array is rejected by request validation before any per-item work runs, rather than after it. |                                                                                                                                                                                                                                                                                                                                                                                  |
+| `raw`                                                                                                                                                                                                                                                                                                                                                                            | *Optional[bool]*                                                                                                                                                                                                                                                                                                                                                                 | :heavy_minus_sign:                                                                                                                                                                                                                                                                                                                                                               | Include raw response. Mostly used for debugging purposes                                                                                                                                                                                                                                                                                                                         |                                                                                                                                                                                                                                                                                                                                                                                  |
+| `consumer_id`                                                                                                                                                                                                                                                                                                                                                                    | *Optional[str]*                                                                                                                                                                                                                                                                                                                                                                  | :heavy_minus_sign:                                                                                                                                                                                                                                                                                                                                                               | ID of the consumer which you want to get or push data from                                                                                                                                                                                                                                                                                                                       | test-consumer                                                                                                                                                                                                                                                                                                                                                                    |
+| `app_id`                                                                                                                                                                                                                                                                                                                                                                         | *Optional[str]*                                                                                                                                                                                                                                                                                                                                                                  | :heavy_minus_sign:                                                                                                                                                                                                                                                                                                                                                               | The ID of your Unify application                                                                                                                                                                                                                                                                                                                                                 | dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX                                                                                                                                                                                                                                                                                                                                          |
+| `service_id`                                                                                                                                                                                                                                                                                                                                                                     | *Optional[str]*                                                                                                                                                                                                                                                                                                                                                                  | :heavy_minus_sign:                                                                                                                                                                                                                                                                                                                                                               | Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.                                                                                                                                                                                                                                    | salesforce                                                                                                                                                                                                                                                                                                                                                                       |
+| `company_id`                                                                                                                                                                                                                                                                                                                                                                     | *Optional[str]*                                                                                                                                                                                                                                                                                                                                                                  | :heavy_minus_sign:                                                                                                                                                                                                                                                                                                                                                               | The ID of the company to scope requests to. For connectors that support multi-company, this overrides the default company configured in connection settings.                                                                                                                                                                                                                     | 12345                                                                                                                                                                                                                                                                                                                                                                            |
+| `retries`                                                                                                                                                                                                                                                                                                                                                                        | [Optional[utils.RetryConfig]](../../models/utils/retryconfig.md)                                                                                                                                                                                                                                                                                                                 | :heavy_minus_sign:                                                                                                                                                                                                                                                                                                                                                               | Configuration to override the default retry behavior of the client.                                                                                                                                                                                                                                                                                                              |                                                                                                                                                                                                                                                                                                                                                                                  |
+
+### Response
+
+**[models.AccountingBillCreditNotesBatchAddResponse](../../models/accountingbillcreditnotesbatchaddresponse.md)**
 
 ### Errors
 

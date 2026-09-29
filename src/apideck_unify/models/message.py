@@ -116,7 +116,7 @@ class Price(BaseModel):
         return m
 
 
-class ErrorTypedDict(TypedDict):
+class MessageErrorTypedDict(TypedDict):
     r"""The error returned if your message status is failed or undelivered."""
 
     code: NotRequired[str]
@@ -124,7 +124,7 @@ class ErrorTypedDict(TypedDict):
     message: NotRequired[str]
 
 
-class Error(BaseModel):
+class MessageError(BaseModel):
     r"""The error returned if your message status is failed or undelivered."""
 
     code: Optional[str] = None
@@ -163,7 +163,7 @@ class MessageTypedDict(TypedDict):
     r"""A client reference."""
     price: NotRequired[PriceTypedDict]
     r"""Price of the message."""
-    error: NotRequired[ErrorTypedDict]
+    error: NotRequired[MessageErrorTypedDict]
     r"""The error returned if your message status is failed or undelivered."""
     messaging_service_id: NotRequired[str]
     r"""The ID of the Messaging Service used with the message. In case of Plivo this links to the Powerpack ID."""
@@ -232,7 +232,7 @@ class Message(BaseModel):
     price: Optional[Price] = None
     r"""Price of the message."""
 
-    error: Optional[Error] = None
+    error: Optional[MessageError] = None
     r"""The error returned if your message status is failed or undelivered."""
 
     messaging_service_id: Optional[str] = None

@@ -26,7 +26,7 @@ class APIType(str, Enum, metaclass=utils.OpenEnumMeta):
     UNIFIED = "unified"
 
 
-class ResourcesTypedDict(TypedDict):
+class APIResourcesModelTypedDict(TypedDict):
     id: NotRequired[str]
     r"""ID of the resource, typically a lowercased version of its name."""
     name: NotRequired[str]
@@ -37,7 +37,7 @@ class ResourcesTypedDict(TypedDict):
     r"""Exclude from mapping coverage"""
 
 
-class Resources(BaseModel):
+class APIResourcesModel(BaseModel):
     id: Optional[str] = None
     r"""ID of the resource, typically a lowercased version of its name."""
 
@@ -81,7 +81,7 @@ class APITypedDict(TypedDict):
     r"""ID of the Postman collection of the API."""
     categories: NotRequired[List[str]]
     r"""List of categories the API belongs to."""
-    resources: NotRequired[List[ResourcesTypedDict]]
+    resources: NotRequired[List[APIResourcesModelTypedDict]]
     r"""List of resources supported in this API."""
     events: NotRequired[List[str]]
     r"""List of event types this API supports."""
@@ -117,7 +117,7 @@ class API(BaseModel):
     categories: Optional[List[str]] = None
     r"""List of categories the API belongs to."""
 
-    resources: Optional[List[Resources]] = None
+    resources: Optional[List[APIResourcesModel]] = None
     r"""List of resources supported in this API."""
 
     events: Optional[List[str]] = None

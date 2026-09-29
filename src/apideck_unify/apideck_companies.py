@@ -412,6 +412,7 @@ class ApideckCompanies(BaseSDK):
         acn: OptionalNullable[str] = UNSET,
         first_name: OptionalNullable[str] = UNSET,
         last_name: OptionalNullable[str] = UNSET,
+        parent_id: OptionalNullable[str] = UNSET,
         bank_accounts: Optional[
             Union[List[models.BankAccount1], List[models.BankAccount1TypedDict]]
         ] = None,
@@ -473,6 +474,7 @@ class ApideckCompanies(BaseSDK):
         :param acn: The Australian Company Number (ACN) is a nine digit number with the last digit being a check digit calculated using a modified modulus 10 calculation. ASIC has adopted a convention of always printing and displaying the ACN in the format XXX XXX XXX; three blocks of three characters, each block separated by a blank.
         :param first_name: The first name of the person.
         :param last_name: The last name of the person.
+        :param parent_id: Parent ID
         :param bank_accounts:
         :param websites:
         :param addresses:
@@ -526,6 +528,7 @@ class ApideckCompanies(BaseSDK):
                 acn=acn,
                 first_name=first_name,
                 last_name=last_name,
+                parent_id=parent_id,
                 bank_accounts=utils.get_pydantic_model(
                     bank_accounts, Optional[List[models.BankAccount1]]
                 ),
@@ -683,6 +686,7 @@ class ApideckCompanies(BaseSDK):
         acn: OptionalNullable[str] = UNSET,
         first_name: OptionalNullable[str] = UNSET,
         last_name: OptionalNullable[str] = UNSET,
+        parent_id: OptionalNullable[str] = UNSET,
         bank_accounts: Optional[
             Union[List[models.BankAccount1], List[models.BankAccount1TypedDict]]
         ] = None,
@@ -744,6 +748,7 @@ class ApideckCompanies(BaseSDK):
         :param acn: The Australian Company Number (ACN) is a nine digit number with the last digit being a check digit calculated using a modified modulus 10 calculation. ASIC has adopted a convention of always printing and displaying the ACN in the format XXX XXX XXX; three blocks of three characters, each block separated by a blank.
         :param first_name: The first name of the person.
         :param last_name: The last name of the person.
+        :param parent_id: Parent ID
         :param bank_accounts:
         :param websites:
         :param addresses:
@@ -797,6 +802,7 @@ class ApideckCompanies(BaseSDK):
                 acn=acn,
                 first_name=first_name,
                 last_name=last_name,
+                parent_id=parent_id,
                 bank_accounts=utils.get_pydantic_model(
                     bank_accounts, Optional[List[models.BankAccount1]]
                 ),
@@ -1243,6 +1249,7 @@ class ApideckCompanies(BaseSDK):
         acn: OptionalNullable[str] = UNSET,
         first_name: OptionalNullable[str] = UNSET,
         last_name: OptionalNullable[str] = UNSET,
+        parent_id: OptionalNullable[str] = UNSET,
         bank_accounts: Optional[
             Union[List[models.BankAccount1], List[models.BankAccount1TypedDict]]
         ] = None,
@@ -1305,6 +1312,7 @@ class ApideckCompanies(BaseSDK):
         :param acn: The Australian Company Number (ACN) is a nine digit number with the last digit being a check digit calculated using a modified modulus 10 calculation. ASIC has adopted a convention of always printing and displaying the ACN in the format XXX XXX XXX; three blocks of three characters, each block separated by a blank.
         :param first_name: The first name of the person.
         :param last_name: The last name of the person.
+        :param parent_id: Parent ID
         :param bank_accounts:
         :param websites:
         :param addresses:
@@ -1359,6 +1367,7 @@ class ApideckCompanies(BaseSDK):
                 acn=acn,
                 first_name=first_name,
                 last_name=last_name,
+                parent_id=parent_id,
                 bank_accounts=utils.get_pydantic_model(
                     bank_accounts, Optional[List[models.BankAccount1]]
                 ),
@@ -1517,6 +1526,7 @@ class ApideckCompanies(BaseSDK):
         acn: OptionalNullable[str] = UNSET,
         first_name: OptionalNullable[str] = UNSET,
         last_name: OptionalNullable[str] = UNSET,
+        parent_id: OptionalNullable[str] = UNSET,
         bank_accounts: Optional[
             Union[List[models.BankAccount1], List[models.BankAccount1TypedDict]]
         ] = None,
@@ -1579,6 +1589,7 @@ class ApideckCompanies(BaseSDK):
         :param acn: The Australian Company Number (ACN) is a nine digit number with the last digit being a check digit calculated using a modified modulus 10 calculation. ASIC has adopted a convention of always printing and displaying the ACN in the format XXX XXX XXX; three blocks of three characters, each block separated by a blank.
         :param first_name: The first name of the person.
         :param last_name: The last name of the person.
+        :param parent_id: Parent ID
         :param bank_accounts:
         :param websites:
         :param addresses:
@@ -1633,6 +1644,7 @@ class ApideckCompanies(BaseSDK):
                 acn=acn,
                 first_name=first_name,
                 last_name=last_name,
+                parent_id=parent_id,
                 bank_accounts=utils.get_pydantic_model(
                     bank_accounts, Optional[List[models.BankAccount1]]
                 ),
