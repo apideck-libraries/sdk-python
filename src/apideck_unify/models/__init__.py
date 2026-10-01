@@ -1726,6 +1726,10 @@ if TYPE_CHECKING:
         Transactions,
         TransactionsTypedDict,
     )
+    from .bankfeedstatementsfilter import (
+        BankFeedStatementsFilter,
+        BankFeedStatementsFilterTypedDict,
+    )
     from .batchbillcreditnotesrequest import (
         BatchBillCreditNotesRequest,
         BatchBillCreditNotesRequestItems,
@@ -6882,6 +6886,8 @@ __all__ = [
     "BankFeedStatementInputTypedDict",
     "BankFeedStatementTransactionType",
     "BankFeedStatementTypedDict",
+    "BankFeedStatementsFilter",
+    "BankFeedStatementsFilterTypedDict",
     "BatchBillCreditNotesRequest",
     "BatchBillCreditNotesRequestItems",
     "BatchBillCreditNotesRequestItemsTypedDict",
@@ -11125,6 +11131,8 @@ _dynamic_imports: dict[str, str] = {
     "StatementStatus": ".bankfeedstatement",
     "Transactions": ".bankfeedstatement",
     "TransactionsTypedDict": ".bankfeedstatement",
+    "BankFeedStatementsFilter": ".bankfeedstatementsfilter",
+    "BankFeedStatementsFilterTypedDict": ".bankfeedstatementsfilter",
     "BatchBillCreditNotesRequest": ".batchbillcreditnotesrequest",
     "BatchBillCreditNotesRequestItems": ".batchbillcreditnotesrequest",
     "BatchBillCreditNotesRequestItemsTypedDict": ".batchbillcreditnotesrequest",

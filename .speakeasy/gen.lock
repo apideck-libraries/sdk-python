@@ -1,12 +1,12 @@
 lockVersion: 2.0.0
 id: fca0ac3a-5f4e-452c-bbc7-2311afa8da40
 management:
-  docChecksum: f2ffdb86554df6c87f1a9bd74f87d828
-  docVersion: 10.59.0
+  docChecksum: a4c5850a542eb072ad59633342a25935
+  docVersion: 10.59.1
   speakeasyVersion: 1.656.1
   generationVersion: 2.753.1
-  releaseVersion: 0.43.1
-  configChecksum: d81bde63565f1a0a6830d5f8be205b79
+  releaseVersion: 0.43.2
+  configChecksum: 21186db3c016f353742b13626799f608
   repoURL: https://github.com/apideck-libraries/sdk-python.git
   installationURL: https://github.com/apideck-libraries/sdk-python.git
   published: true
@@ -713,6 +713,7 @@ generatedFiles:
   - docs/models/bankfeedaccountinput.md
   - docs/models/bankfeedstatement.md
   - docs/models/bankfeedstatementinput.md
+  - docs/models/bankfeedstatementsfilter.md
   - docs/models/bankfeedstatementtransactiontype.md
   - docs/models/batchbillcreditnotesrequest.md
   - docs/models/batchbillcreditnotesrequestitems.md
@@ -2713,6 +2714,7 @@ generatedFiles:
   - src/apideck_unify/models/bankaccountssort.py
   - src/apideck_unify/models/bankfeedaccount.py
   - src/apideck_unify/models/bankfeedstatement.py
+  - src/apideck_unify/models/bankfeedstatementsfilter.py
   - src/apideck_unify/models/batchbillcreditnotesrequest.py
   - src/apideck_unify/models/batchbillcreditnotesresponse.py
   - src/apideck_unify/models/batchbillpaymentsrequest.py
@@ -9081,6 +9083,7 @@ examples:
           limit: 20
           pass_through: {"search": "San Francisco"}
           fields: "id,updated_at"
+          filter: {"bank_feed_account_id": "12345"}
         header:
           x-apideck-consumer-id: "test-consumer"
           x-apideck-app-id: "dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX"
@@ -20655,7 +20658,7 @@ examples:
           x-apideck-service-id: "salesforce"
           x-apideck-company-id: "12345"
       requestBody:
-        application/json: {"code": "90", "name": "General journal", "description": "General journal", "type": "general", "allow_vat": true, "currency": "USD", "iban": "GB33BUKB20201555555555", "default_account": {"id": "123456", "type": "ledger_account", "code": "1100", "display_id": "123456", "account_number": "123465"}, "blocked": false}
+        application/json: {"code": "90", "name": "General journal", "description": "General journal", "type": "general", "allow_vat": true, "currency": "USD", "iban": "GB33BUKB20201555555555", "default_account": {"id": "123456", "type": "ledger_account", "code": "1100", "display_id": "123456", "account_number": "123465"}, "clearing_account": {"id": "123456", "type": "ledger_account", "code": "1100", "display_id": "123456", "account_number": "123465"}, "blocked": false}
       responses:
         "201":
           application/json: {"status_code": 200, "status": "OK", "service": "exact-online", "resource": "journals", "operation": "add", "data": {"id": "12345"}}
@@ -20686,7 +20689,7 @@ examples:
           x-apideck-company-id: "12345"
       responses:
         "200":
-          application/json: {"status_code": 200, "status": "OK", "service": "exact-online", "resource": "journals", "operation": "one", "data": {"id": "12345", "code": "90", "name": "General journal", "description": "General journal", "type": "general", "allow_vat": true, "currency": "USD", "iban": "GB33BUKB20201555555555", "default_account": {"id": "123456", "type": "ledger_account", "code": "1100", "display_id": "123456", "account_number": "123465", "name": "Current assets", "downstream_id": "12345"}, "blocked": false, "created_at": "2020-09-30T07:43:32.000Z", "updated_at": "2020-09-30T07:43:32.000Z"}, "meta": {"items_on_page": 50, "cursors": {"previous": "em9oby1jcm06OnBhZ2U6OjE=", "current": "em9oby1jcm06OnBhZ2U6OjI=", "next": "em9oby1jcm06OnBhZ2U6OjM="}, "total_count": 1, "warnings": [{"type": "downstream_request_failed", "status_code": 429, "operation": "getManager"}]}}
+          application/json: {"status_code": 200, "status": "OK", "service": "exact-online", "resource": "journals", "operation": "one", "data": {"id": "12345", "code": "90", "name": "General journal", "description": "General journal", "type": "general", "allow_vat": true, "currency": "USD", "iban": "GB33BUKB20201555555555", "default_account": {"id": "123456", "type": "ledger_account", "code": "1100", "display_id": "123456", "account_number": "123465", "name": "Current assets", "downstream_id": "12345"}, "clearing_account": {"id": "123456", "type": "ledger_account", "code": "1100", "display_id": "123456", "account_number": "123465", "name": "Current assets", "downstream_id": "12345"}, "blocked": false, "created_at": "2020-09-30T07:43:32.000Z", "updated_at": "2020-09-30T07:43:32.000Z"}, "meta": {"items_on_page": 50, "cursors": {"previous": "em9oby1jcm06OnBhZ2U6OjE=", "current": "em9oby1jcm06OnBhZ2U6OjI=", "next": "em9oby1jcm06OnBhZ2U6OjM="}, "total_count": 1, "warnings": [{"type": "downstream_request_failed", "status_code": 429, "operation": "getManager"}]}}
         "400":
           application/json: {"status_code": 400, "error": "Bad Request", "type_name": "RequestValidationError", "message": "Invalid Params", "detail": "Missing property foobar", "ref": "https://developers.apideck.com/errors#requestvalidationerror", "downstream_errors": [{"message": "Account code '100' has been archived or deleted", "detail": "Each line item must reference a valid account", "code": "VALIDATION_ERROR"}]}
         "401":
@@ -20712,7 +20715,7 @@ examples:
           x-apideck-service-id: "salesforce"
           x-apideck-company-id: "12345"
       requestBody:
-        application/json: {"code": "90", "name": "General journal", "description": "General journal", "type": "general", "allow_vat": true, "currency": "USD", "iban": "GB33BUKB20201555555555", "default_account": null, "blocked": false}
+        application/json: {"code": "90", "name": "General journal", "description": "General journal", "type": "general", "allow_vat": true, "currency": "USD", "iban": "GB33BUKB20201555555555", "default_account": null, "clearing_account": null, "blocked": false}
       responses:
         "200":
           application/json: {"status_code": 200, "status": "OK", "service": "exact-online", "resource": "journals", "operation": "update", "data": {"id": "12345"}}
@@ -20977,6 +20980,14 @@ examples:
           application/json: {"status_code": 400, "error": "Bad Request", "type_name": "RequestHeadersValidationError", "message": "Invalid Params", "detail": "Missing Header: x-apideck-consumer-id", "ref": "https://developers.apideck.com/errors#unauthorizederror"}
 examplesVersion: 1.0.2
 generatedTests: {}
+releaseNotes: |
+  ## Python SDK Changes Detected:
+  * `apideck.accounting.journals.list()`:  `response.data.[].clearing_account` **Added**
+  * `apideck.accounting.journals.create()`:  `request.clearing_account` **Added**
+  * `apideck.accounting.journals.get()`:  `response.data.clearing_account` **Added**
+  * `apideck.accounting.journals.update()`:  `request.clearing_account` **Added**
+  * `apideck.accounting.bank_feed_statements.list()`:  `request.filter` **Added**
+  * `apideck.crm.notes.list()`:  `request.filter` **Changed**
 trackedFiles:
   .devcontainer/README.md:
     last_write_checksum: sha1:07adb0c0c051a9be4d479ea06461f3a9b3bbeb2f
@@ -21115,7 +21126,7 @@ trackedFiles:
   docs/models/accountingbankfeedstatementsallglobals.md:
     last_write_checksum: sha1:2fcc05f9e074136f3571b7270955ccc17a552a01
   docs/models/accountingbankfeedstatementsallrequest.md:
-    last_write_checksum: sha1:2346633bf89e2f471d076ef193fe3aa8d4b89207
+    last_write_checksum: sha1:ec5cc253388b95ec0a4ce6cb202e9a149ae47ef4
   docs/models/accountingbankfeedstatementsallresponse.md:
     last_write_checksum: sha1:74ab90139961fe8440a1d19d44b09912020650c4
   docs/models/accountingbankfeedstatementsdeleteglobals.md:
@@ -22310,6 +22321,8 @@ trackedFiles:
     last_write_checksum: sha1:6192257d44e888e76cfab4d060f33bf0373efbc1
   docs/models/bankfeedstatementinput.md:
     last_write_checksum: sha1:351c5b2621709f55231979b337fe0dca1a992d1b
+  docs/models/bankfeedstatementsfilter.md:
+    last_write_checksum: sha1:c16dca94545b30ca0bf243b0b062b20a6a5a788f
   docs/models/bankfeedstatementtransactiontype.md:
     last_write_checksum: sha1:9f14f9bd6fae628cadb6fc8e0a7e43659c80eaad
   docs/models/batchbillcreditnotesrequest.md:
@@ -24433,7 +24446,7 @@ trackedFiles:
   docs/models/jobtype.md:
     last_write_checksum: sha1:e6ebaadba669092d88c14d3127d44a218002e927
   docs/models/journal.md:
-    last_write_checksum: sha1:9af7d2adabfc054279a6a413596e308f22dd7311
+    last_write_checksum: sha1:bd2217dba03011be45a1a4b1893ad8b81ab6c45b
   docs/models/journalentriesfilter.md:
     last_write_checksum: sha1:dc8108d5427070fce723ada1415a9b218dd2dd21
   docs/models/journalentriesfilterscope.md:
@@ -24457,7 +24470,7 @@ trackedFiles:
   docs/models/journalentrystatus.md:
     last_write_checksum: sha1:846a6d1a95bbd656eb72dbc0dea0a7a48935a80b
   docs/models/journalinput.md:
-    last_write_checksum: sha1:7c18bb8ecd723eebbe442d87b66a9dbf30d38f95
+    last_write_checksum: sha1:533d19f34c2e7e199ccaea39f57eaf878e56c48b
   docs/models/journaltype.md:
     last_write_checksum: sha1:960aa6ff255071926caa75589e17b4439cbe5842
   docs/models/lead.md:
@@ -24599,7 +24612,7 @@ trackedFiles:
   docs/models/noteinput.md:
     last_write_checksum: sha1:9316048e335fb1cd5406658a5a7a0d64d73ce736
   docs/models/notesfilter.md:
-    last_write_checksum: sha1:68957689cd77b13170a0673456ae4aee2f80114d
+    last_write_checksum: sha1:8e781e338fb76fc8dc07f526ef380c0eaa18683f
   docs/models/notesmodel.md:
     last_write_checksum: sha1:088f1a6dba54ce44f94d23fa45fb6831180351a4
   docs/models/notfoundresponse.md:
@@ -25485,7 +25498,7 @@ trackedFiles:
   docs/sdks/bankfeedaccounts/README.md:
     last_write_checksum: sha1:ce1d57e8f22d4d8c040f9bae860e7e3bf56e8429
   docs/sdks/bankfeedstatements/README.md:
-    last_write_checksum: sha1:8e93b8a4fa654756047f46252117021e36db8042
+    last_write_checksum: sha1:35cb3b733318efaad114c48ff4b97cca484833ed
   docs/sdks/billcreditnotes/README.md:
     last_write_checksum: sha1:820eb0d293a6e97dc5b7dfa5d15a1baad5d6f63f
   docs/sdks/billpayments/README.md:
@@ -25581,7 +25594,7 @@ trackedFiles:
   docs/sdks/journalentries/README.md:
     last_write_checksum: sha1:730c5c13ca399560f5d673ab1788a4cbf0aac540
   docs/sdks/journals/README.md:
-    last_write_checksum: sha1:9792411897cc8fad4d6e9e3b9ff61e95367313c9
+    last_write_checksum: sha1:fdaf7231eb3b856196073475b919dbc6e64e8923
   docs/sdks/leads/README.md:
     last_write_checksum: sha1:41ffc3466cf14b3200ab691b274e718b1914fa2b
   docs/sdks/ledgeraccounts/README.md:
@@ -25671,7 +25684,7 @@ trackedFiles:
   src/apideck_unify/_hooks/types.py:
     last_write_checksum: sha1:d57be38e644de01983a9224b9733ae0add898d43
   src/apideck_unify/_version.py:
-    last_write_checksum: sha1:58d710e9a08bfcdd9bea37b6baa603569a1d5f40
+    last_write_checksum: sha1:9de2fcd896018db4184205c69d50c4e355e5f4da
   src/apideck_unify/accounting.py:
     last_write_checksum: sha1:2c97de9f5ac09a34183439555d14920748bd573a
   src/apideck_unify/activities.py:
@@ -25681,13 +25694,13 @@ trackedFiles:
   src/apideck_unify/ageddebtors_sdk.py:
     last_write_checksum: sha1:20798f95fd221ef07fe4f88b0137b0ce34ad8e37
   src/apideck_unify/apideck_companies.py:
-    last_write_checksum: sha1:ccd4dde600a9d30311c41eceaea786787bf3b59f
+    last_write_checksum: sha1:ac4cdbb85cc6ccc0d0c13a3e7845683867a068c9
   src/apideck_unify/apideck_customers.py:
     last_write_checksum: sha1:cf02c21c8bd013abfe15a3704ebb16f33094fa1f
   src/apideck_unify/apideck_departments.py:
     last_write_checksum: sha1:b2826eb6634e516fc06b42aa6b7a676ffb4d6a56
   src/apideck_unify/apideck_employees.py:
-    last_write_checksum: sha1:4652158a44969676e6082ba54e6c625c5cf98835
+    last_write_checksum: sha1:98e30af6ae414ac863f14e25c5a41fbb49aa9a82
   src/apideck_unify/apideck_hris_companies.py:
     last_write_checksum: sha1:0fb7935a44ea7aeecfdacf6e55c3351bb9d5f1dc
   src/apideck_unify/apiresourcecoverage_sdk.py:
@@ -25709,9 +25722,9 @@ trackedFiles:
   src/apideck_unify/bankaccounts.py:
     last_write_checksum: sha1:fd86eced758455a0c7fa586125ed01f79837889b
   src/apideck_unify/bankfeedaccounts.py:
-    last_write_checksum: sha1:60d7fd8262d7d038d0abcdd550c519fd58b14214
+    last_write_checksum: sha1:54f43f9cbd4957038c04e8acd811516d261346eb
   src/apideck_unify/bankfeedstatements.py:
-    last_write_checksum: sha1:4144463b66fd8900fc3a31551c20544e92018e8b
+    last_write_checksum: sha1:f833fe0134a02dfe5ba3bf08d181614914fd3bbb
   src/apideck_unify/basesdk.py:
     last_write_checksum: sha1:02f62bd40dfedb9697666050be333be287dd5a5b
   src/apideck_unify/billcreditnotes.py:
@@ -25823,7 +25836,7 @@ trackedFiles:
   src/apideck_unify/journalentries.py:
     last_write_checksum: sha1:a04524bbaddc165ad13ba80441d3b5014d0a7681
   src/apideck_unify/journals.py:
-    last_write_checksum: sha1:5ccc40632a6bbb8fd09f6abfd188f77c28672307
+    last_write_checksum: sha1:d77ca393c0ba01a84edbc769ce96637b63df4f97
   src/apideck_unify/leads.py:
     last_write_checksum: sha1:b1898e48cf89d3269f10074a3a9bf5f6d6c945c3
   src/apideck_unify/ledgeraccounts.py:
@@ -25839,7 +25852,7 @@ trackedFiles:
   src/apideck_unify/messages.py:
     last_write_checksum: sha1:8b1e180d3c7d2ae9916b1f645460caebf5281d7b
   src/apideck_unify/models/__init__.py:
-    last_write_checksum: sha1:18d8a1bac3f85349430a353c41187befe8459624
+    last_write_checksum: sha1:63c7aa8b28809531a6e21017158bc043c9cabd1f
   src/apideck_unify/models/accounting_agedcreditorsoneop.py:
     last_write_checksum: sha1:7346d1ab1c21db21995aae34c5ba01549c2786c2
   src/apideck_unify/models/accounting_ageddebtorsoneop.py:
@@ -25879,7 +25892,7 @@ trackedFiles:
   src/apideck_unify/models/accounting_bankfeedstatementsaddop.py:
     last_write_checksum: sha1:0f477e597a0418500d12be6e19af55848584c5ec
   src/apideck_unify/models/accounting_bankfeedstatementsallop.py:
-    last_write_checksum: sha1:cd8448f114aca4aa151f50651ace742b81b23a0b
+    last_write_checksum: sha1:361ab1986c47f8b566da57e8d2f72b27e78f3c8f
   src/apideck_unify/models/accounting_bankfeedstatementsdeleteop.py:
     last_write_checksum: sha1:25993b44aacbb6bc0251ed8251a0d300d36030d4
   src/apideck_unify/models/accounting_bankfeedstatementsoneop.py:
@@ -26310,6 +26323,8 @@ trackedFiles:
     last_write_checksum: sha1:ed3bfc176affc4deb08a855e602b9bbb1df919d5
   src/apideck_unify/models/bankfeedstatement.py:
     last_write_checksum: sha1:276ab4383fbca6acaff819174169a36adeccfd26
+  src/apideck_unify/models/bankfeedstatementsfilter.py:
+    last_write_checksum: sha1:293f20e3c6075bdc58df456cb9c7dce13f00c652
   src/apideck_unify/models/batchbillcreditnotesrequest.py:
     last_write_checksum: sha1:d7bcc44a49a4d9ee0a7d309b62c393427f8ed032
   src/apideck_unify/models/batchbillcreditnotesresponse.py:
@@ -27497,7 +27512,7 @@ trackedFiles:
   src/apideck_unify/models/jobstatus.py:
     last_write_checksum: sha1:832a677ab0a2c3adee9378579d34429372aab42b
   src/apideck_unify/models/journal.py:
-    last_write_checksum: sha1:f254e1bd7fcdcf662f1b29ebebf4b6d4f23423a2
+    last_write_checksum: sha1:9cca0cc51fec70c31dfa93707010d823c771733b
   src/apideck_unify/models/journalentriesfilter.py:
     last_write_checksum: sha1:947ff1c11ea2b498ef255871d5d00862bac272f1
   src/apideck_unify/models/journalentriessort.py:
@@ -27601,7 +27616,7 @@ trackedFiles:
   src/apideck_unify/models/note_input.py:
     last_write_checksum: sha1:f4402b1c9dbc0c9c2d4acb966d2145ca883c21e9
   src/apideck_unify/models/notesfilter.py:
-    last_write_checksum: sha1:3aeb577a1016ef7ac50ab05d762cab733a14f206
+    last_write_checksum: sha1:8e7a7cd46a44b8f44a242ab317c44569e83b3e8c
   src/apideck_unify/models/notfoundresponse.py:
     last_write_checksum: sha1:52ed4f8aa3a73fb1218847916a67bdabd29568be
   src/apideck_unify/models/oauthgranttype.py:
@@ -28025,7 +28040,7 @@ trackedFiles:
   src/apideck_unify/models/website.py:
     last_write_checksum: sha1:deb21698b9dec32eca6c3c22114c0c678a3c7ef8
   src/apideck_unify/notes.py:
-    last_write_checksum: sha1:2835a9acd16ab47fdb69d556098865d91d2f1ef4
+    last_write_checksum: sha1:b0adaa2a153424dd57ffa0e368f7c7e5068236ec
   src/apideck_unify/opportunities.py:
     last_write_checksum: sha1:93256b50e99311f6e9b6553d9d44fab71f532022
   src/apideck_unify/orders.py:

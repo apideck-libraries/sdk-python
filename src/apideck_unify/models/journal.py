@@ -58,6 +58,8 @@ class JournalTypedDict(TypedDict):
     r"""International Bank Account Number"""
     default_account: NotRequired[Nullable[LinkedFinancialAccountTypedDict]]
     r"""A flexible account reference that can represent a ledger account (GL account), a bank account, or an employee payable account, depending on the connector's requirements."""
+    clearing_account: NotRequired[Nullable[LinkedFinancialAccountTypedDict]]
+    r"""A flexible account reference that can represent a ledger account (GL account), a bank account, or an employee payable account, depending on the connector's requirements."""
     blocked: NotRequired[Nullable[bool]]
     r"""Whether the journal is blocked for posting."""
     created_at: NotRequired[Nullable[datetime]]
@@ -98,6 +100,9 @@ class Journal(BaseModel):
     r"""International Bank Account Number"""
 
     default_account: OptionalNullable[LinkedFinancialAccount] = UNSET
+    r"""A flexible account reference that can represent a ledger account (GL account), a bank account, or an employee payable account, depending on the connector's requirements."""
+
+    clearing_account: OptionalNullable[LinkedFinancialAccount] = UNSET
     r"""A flexible account reference that can represent a ledger account (GL account), a bank account, or an employee payable account, depending on the connector's requirements."""
 
     blocked: OptionalNullable[bool] = UNSET
@@ -142,6 +147,7 @@ class Journal(BaseModel):
             "currency",
             "iban",
             "default_account",
+            "clearing_account",
             "blocked",
             "created_at",
             "updated_at",
@@ -156,6 +162,7 @@ class Journal(BaseModel):
             "currency",
             "iban",
             "default_account",
+            "clearing_account",
             "blocked",
             "created_at",
             "updated_at",
@@ -205,6 +212,8 @@ class JournalInputTypedDict(TypedDict):
     r"""International Bank Account Number"""
     default_account: NotRequired[Nullable[LinkedFinancialAccountInputTypedDict]]
     r"""A flexible account reference that can represent a ledger account (GL account), a bank account, or an employee payable account, depending on the connector's requirements."""
+    clearing_account: NotRequired[Nullable[LinkedFinancialAccountInputTypedDict]]
+    r"""A flexible account reference that can represent a ledger account (GL account), a bank account, or an employee payable account, depending on the connector's requirements."""
     blocked: NotRequired[Nullable[bool]]
     r"""Whether the journal is blocked for posting."""
 
@@ -236,6 +245,9 @@ class JournalInput(BaseModel):
     r"""International Bank Account Number"""
 
     default_account: OptionalNullable[LinkedFinancialAccountInput] = UNSET
+    r"""A flexible account reference that can represent a ledger account (GL account), a bank account, or an employee payable account, depending on the connector's requirements."""
+
+    clearing_account: OptionalNullable[LinkedFinancialAccountInput] = UNSET
     r"""A flexible account reference that can represent a ledger account (GL account), a bank account, or an employee payable account, depending on the connector's requirements."""
 
     blocked: OptionalNullable[bool] = UNSET
@@ -270,6 +282,7 @@ class JournalInput(BaseModel):
             "currency",
             "iban",
             "default_account",
+            "clearing_account",
             "blocked",
         ]
         nullable_fields = [
@@ -281,6 +294,7 @@ class JournalInput(BaseModel):
             "currency",
             "iban",
             "default_account",
+            "clearing_account",
             "blocked",
         ]
         null_default_fields = []
