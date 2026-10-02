@@ -1,0 +1,10 @@
+# AccountingTrackingCategoriesBatchAddResponse
+
+
+## Fields
+
+| Field                                                                                            | Type                                                                                             | Required                                                                                         | Description                                                                                      |
+| ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------ |
+| `http_meta`                                                                                      | [models.HTTPMetadata](../models/httpmetadata.md)                                                 | :heavy_check_mark:                                                                               | N/A                                                                                              |
+| `batch_tracking_categories_response`                                                             | [Optional[models.BatchTrackingCategoriesResponse]](../models/batchtrackingcategoriesresponse.md) | :heavy_minus_sign:                                                                               | Tracking Categories batch processed                                                              |
+| `unexpected_error_response`                                                                      | [Optional[models.UnexpectedErrorResponse]](../models/unexpectederrorresponse.md)                 | :heavy_minus_sign:                                                                               | Unexpected error                                                                                 |

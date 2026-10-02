@@ -390,6 +390,12 @@ class Journals(BaseSDK):
                 models.LinkedFinancialAccountInputTypedDict,
             ]
         ] = UNSET,
+        clearing_account: OptionalNullable[
+            Union[
+                models.LinkedFinancialAccountInput,
+                models.LinkedFinancialAccountInputTypedDict,
+            ]
+        ] = UNSET,
         blocked: OptionalNullable[bool] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -413,6 +419,7 @@ class Journals(BaseSDK):
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
         :param iban: International Bank Account Number
         :param default_account: A flexible account reference that can represent a ledger account (GL account), a bank account, or an employee payable account, depending on the connector's requirements.
+        :param clearing_account: A flexible account reference that can represent a ledger account (GL account), a bank account, or an employee payable account, depending on the connector's requirements.
         :param blocked: Whether the journal is blocked for posting.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
@@ -445,6 +452,10 @@ class Journals(BaseSDK):
                 iban=iban,
                 default_account=utils.get_pydantic_model(
                     default_account,
+                    OptionalNullable[models.LinkedFinancialAccountInput],
+                ),
+                clearing_account=utils.get_pydantic_model(
+                    clearing_account,
                     OptionalNullable[models.LinkedFinancialAccountInput],
                 ),
                 blocked=blocked,
@@ -571,6 +582,12 @@ class Journals(BaseSDK):
                 models.LinkedFinancialAccountInputTypedDict,
             ]
         ] = UNSET,
+        clearing_account: OptionalNullable[
+            Union[
+                models.LinkedFinancialAccountInput,
+                models.LinkedFinancialAccountInputTypedDict,
+            ]
+        ] = UNSET,
         blocked: OptionalNullable[bool] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -594,6 +611,7 @@ class Journals(BaseSDK):
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
         :param iban: International Bank Account Number
         :param default_account: A flexible account reference that can represent a ledger account (GL account), a bank account, or an employee payable account, depending on the connector's requirements.
+        :param clearing_account: A flexible account reference that can represent a ledger account (GL account), a bank account, or an employee payable account, depending on the connector's requirements.
         :param blocked: Whether the journal is blocked for posting.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
@@ -626,6 +644,10 @@ class Journals(BaseSDK):
                 iban=iban,
                 default_account=utils.get_pydantic_model(
                     default_account,
+                    OptionalNullable[models.LinkedFinancialAccountInput],
+                ),
+                clearing_account=utils.get_pydantic_model(
+                    clearing_account,
                     OptionalNullable[models.LinkedFinancialAccountInput],
                 ),
                 blocked=blocked,
@@ -1047,6 +1069,12 @@ class Journals(BaseSDK):
                 models.LinkedFinancialAccountInputTypedDict,
             ]
         ] = UNSET,
+        clearing_account: OptionalNullable[
+            Union[
+                models.LinkedFinancialAccountInput,
+                models.LinkedFinancialAccountInputTypedDict,
+            ]
+        ] = UNSET,
         blocked: OptionalNullable[bool] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -1071,6 +1099,7 @@ class Journals(BaseSDK):
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
         :param iban: International Bank Account Number
         :param default_account: A flexible account reference that can represent a ledger account (GL account), a bank account, or an employee payable account, depending on the connector's requirements.
+        :param clearing_account: A flexible account reference that can represent a ledger account (GL account), a bank account, or an employee payable account, depending on the connector's requirements.
         :param blocked: Whether the journal is blocked for posting.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
@@ -1104,6 +1133,10 @@ class Journals(BaseSDK):
                 iban=iban,
                 default_account=utils.get_pydantic_model(
                     default_account,
+                    OptionalNullable[models.LinkedFinancialAccountInput],
+                ),
+                clearing_account=utils.get_pydantic_model(
+                    clearing_account,
                     OptionalNullable[models.LinkedFinancialAccountInput],
                 ),
                 blocked=blocked,
@@ -1231,6 +1264,12 @@ class Journals(BaseSDK):
                 models.LinkedFinancialAccountInputTypedDict,
             ]
         ] = UNSET,
+        clearing_account: OptionalNullable[
+            Union[
+                models.LinkedFinancialAccountInput,
+                models.LinkedFinancialAccountInputTypedDict,
+            ]
+        ] = UNSET,
         blocked: OptionalNullable[bool] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
@@ -1255,6 +1294,7 @@ class Journals(BaseSDK):
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
         :param iban: International Bank Account Number
         :param default_account: A flexible account reference that can represent a ledger account (GL account), a bank account, or an employee payable account, depending on the connector's requirements.
+        :param clearing_account: A flexible account reference that can represent a ledger account (GL account), a bank account, or an employee payable account, depending on the connector's requirements.
         :param blocked: Whether the journal is blocked for posting.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
@@ -1288,6 +1328,10 @@ class Journals(BaseSDK):
                 iban=iban,
                 default_account=utils.get_pydantic_model(
                     default_account,
+                    OptionalNullable[models.LinkedFinancialAccountInput],
+                ),
+                clearing_account=utils.get_pydantic_model(
+                    clearing_account,
                     OptionalNullable[models.LinkedFinancialAccountInput],
                 ),
                 blocked=blocked,

@@ -13,6 +13,12 @@ class NotesFilterTypedDict(TypedDict):
     r"""Title of the note to filter on"""
     owner_id: NotRequired[str]
     r"""Owner ID to filter on"""
+    contact_id: NotRequired[str]
+    r"""Unique identifier of the contact to filter notes on"""
+    company_id: NotRequired[str]
+    r"""Unique identifier of the company to filter notes on"""
+    opportunity_id: NotRequired[str]
+    r"""Unique identifier of the opportunity to filter notes on"""
     updated_since: NotRequired[datetime]
     created_since: NotRequired[datetime]
 
@@ -23,6 +29,15 @@ class NotesFilter(BaseModel):
 
     owner_id: Annotated[Optional[str], FieldMetadata(query=True)] = None
     r"""Owner ID to filter on"""
+
+    contact_id: Annotated[Optional[str], FieldMetadata(query=True)] = None
+    r"""Unique identifier of the contact to filter notes on"""
+
+    company_id: Annotated[Optional[str], FieldMetadata(query=True)] = None
+    r"""Unique identifier of the company to filter notes on"""
+
+    opportunity_id: Annotated[Optional[str], FieldMetadata(query=True)] = None
+    r"""Unique identifier of the opportunity to filter notes on"""
 
     updated_since: Annotated[Optional[datetime], FieldMetadata(query=True)] = None
 

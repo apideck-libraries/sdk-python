@@ -22,6 +22,12 @@ class BankFeedStatements(BaseSDK):
         company_id: Optional[str] = None,
         cursor: OptionalNullable[str] = UNSET,
         limit: Optional[int] = 20,
+        filter_: Optional[
+            Union[
+                models.BankFeedStatementsFilter,
+                models.BankFeedStatementsFilterTypedDict,
+            ]
+        ] = None,
         pass_through: Optional[Dict[str, Any]] = None,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
@@ -40,6 +46,7 @@ class BankFeedStatements(BaseSDK):
         :param company_id: The ID of the company to scope requests to. For connectors that support multi-company, this overrides the default company configured in connection settings.
         :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
         :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
+        :param filter_: Apply filters
         :param pass_through: Optional unmapped key/values that will be passed through to downstream as query parameters. Ie: ?pass_through[search]=leads becomes ?search=leads
         :param fields: The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded.
         :param retries: Override the default retry configuration for this method
@@ -65,6 +72,9 @@ class BankFeedStatements(BaseSDK):
             company_id=company_id,
             cursor=cursor,
             limit=limit,
+            filter_=utils.get_pydantic_model(
+                filter_, Optional[models.BankFeedStatementsFilter]
+            ),
             pass_through=pass_through,
             fields=fields,
         )
@@ -135,6 +145,7 @@ class BankFeedStatements(BaseSDK):
                 company_id=company_id,
                 cursor=next_cursor,
                 limit=limit,
+                filter_=filter_,
                 pass_through=pass_through,
                 fields=fields,
                 retries=retries,
@@ -201,6 +212,12 @@ class BankFeedStatements(BaseSDK):
         company_id: Optional[str] = None,
         cursor: OptionalNullable[str] = UNSET,
         limit: Optional[int] = 20,
+        filter_: Optional[
+            Union[
+                models.BankFeedStatementsFilter,
+                models.BankFeedStatementsFilterTypedDict,
+            ]
+        ] = None,
         pass_through: Optional[Dict[str, Any]] = None,
         fields: OptionalNullable[str] = UNSET,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
@@ -219,6 +236,7 @@ class BankFeedStatements(BaseSDK):
         :param company_id: The ID of the company to scope requests to. For connectors that support multi-company, this overrides the default company configured in connection settings.
         :param cursor: Cursor to start from. You can find cursors for next/previous pages in the meta.cursors property of the response.
         :param limit: Number of results to return. Minimum 1, Maximum 200, Default 20
+        :param filter_: Apply filters
         :param pass_through: Optional unmapped key/values that will be passed through to downstream as query parameters. Ie: ?pass_through[search]=leads becomes ?search=leads
         :param fields: The 'fields' parameter allows API users to specify the fields they want to include in the API response. If this parameter is not present, the API will return all available fields. If this parameter is present, only the fields specified in the comma-separated string will be included in the response. Nested properties can also be requested by using a dot notation. <br /><br />Example: `fields=name,email,addresses.city`<br /><br />In the example above, the response will only include the fields \"name\", \"email\" and \"addresses.city\". If any other fields are available, they will be excluded.
         :param retries: Override the default retry configuration for this method
@@ -244,6 +262,9 @@ class BankFeedStatements(BaseSDK):
             company_id=company_id,
             cursor=cursor,
             limit=limit,
+            filter_=utils.get_pydantic_model(
+                filter_, Optional[models.BankFeedStatementsFilter]
+            ),
             pass_through=pass_through,
             fields=fields,
         )
@@ -314,6 +335,7 @@ class BankFeedStatements(BaseSDK):
                 company_id=company_id,
                 cursor=next_cursor,
                 limit=limit,
+                filter_=filter_,
                 pass_through=pass_through,
                 fields=fields,
                 retries=retries,

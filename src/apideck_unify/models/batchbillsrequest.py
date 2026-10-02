@@ -8,14 +8,14 @@ from typing import List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
-class ItemsTypedDict(TypedDict):
+class BatchBillsRequestItemsTypedDict(TypedDict):
     data: BillCreateInputTypedDict
     r"""The writable shape of Bill for a batch create. Identical to [Bill](the model returned on reads) with the read-only properties removed — the same properties the single-record create endpoint rejects, so a batched record and a single-record create accept exactly the same body."""
     ref: NotRequired[str]
     r"""A caller-supplied reference for this item, echoed back on the matching result so each outcome can be tied to the record it came from. Must be unique within the request. Never sent to the connector."""
 
 
-class Items(BaseModel):
+class BatchBillsRequestItems(BaseModel):
     data: BillCreateInput
     r"""The writable shape of Bill for a batch create. Identical to [Bill](the model returned on reads) with the read-only properties removed — the same properties the single-record create endpoint rejects, so a batched record and a single-record create accept exactly the same body."""
 
@@ -26,12 +26,12 @@ class Items(BaseModel):
 class BatchBillsRequestTypedDict(TypedDict):
     r"""A batch of bills to write in a single request. Each item is processed independently: some may succeed while others fail, and the response carries one result per item in the order they were sent."""
 
-    items: List[ItemsTypedDict]
+    items: List[BatchBillsRequestItemsTypedDict]
     r"""The records to write. The per-connector limit is the real cap and is usually lower than the ceiling here: read `batch_support.resources[<resource>].max_items` on the Connector API for the connector you are calling, or the resource gotchas. This ceiling exists so an oversized array is rejected by request validation before any per-item work runs, rather than after it."""
 
 
 class BatchBillsRequest(BaseModel):
     r"""A batch of bills to write in a single request. Each item is processed independently: some may succeed while others fail, and the response carries one result per item in the order they were sent."""
 
-    items: List[Items]
+    items: List[BatchBillsRequestItems]
     r"""The records to write. The per-connector limit is the real cap and is usually lower than the ceiling here: read `batch_support.resources[<resource>].max_items` on the Connector API for the connector you are calling, or the resource gotchas. This ceiling exists so an oversized array is rejected by request validation before any per-item work runs, rather than after it."""
