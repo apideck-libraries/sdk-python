@@ -10,6 +10,7 @@
 * [get](#get) - Get Ledger Account
 * [update](#update) - Update Ledger Account
 * [delete](#delete) - Delete Ledger Account
+* [create_batch](#create_batch) - Create Ledger Accounts in batch
 
 ## list
 
@@ -459,6 +460,135 @@ with Apideck(
 ### Response
 
 **[models.AccountingLedgerAccountsDeleteResponse](../../models/accountingledgeraccountsdeleteresponse.md)**
+
+### Errors
+
+| Error Type                     | Status Code                    | Content Type                   |
+| ------------------------------ | ------------------------------ | ------------------------------ |
+| models.BadRequestResponse      | 400                            | application/json               |
+| models.UnauthorizedResponse    | 401                            | application/json               |
+| models.PaymentRequiredResponse | 402                            | application/json               |
+| models.NotFoundResponse        | 404                            | application/json               |
+| models.UnprocessableResponse   | 422                            | application/json               |
+| models.APIError                | 4XX, 5XX                       | \*/\*                          |
+
+## create_batch
+
+Create multiple ledger accounts in a single request. Each item is processed independently, so some may be created while others fail; the response returns `200` with one result per item, in the order the items were sent. The maximum number of items accepted per request depends on the connector.
+
+### Example Usage
+
+<!-- UsageSnippet language="python" operationID="accounting.ledgerAccountsBatchAdd" method="post" path="/accounting/ledger-accounts/batch" -->
+```python
+import apideck_unify
+from apideck_unify import Apideck
+from datetime import date
+import os
+
+
+with Apideck(
+    consumer_id="test-consumer",
+    app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
+) as apideck:
+
+    res = apideck.accounting.ledger_accounts.create_batch(items=[
+        apideck_unify.BatchLedgerAccountsRequestItems(
+            ref="item-1",
+            data=apideck_unify.LedgerAccountCreateInput(
+                display_id="1-12345",
+                code="453",
+                classification=apideck_unify.LedgerAccountCreateInputClassification.ASSET,
+                type=apideck_unify.LedgerAccountCreateInputType.BANK,
+                sub_type="CHECKING_ACCOUNT",
+                name="Bank account",
+                fully_qualified_name="Asset.Bank.Checking_Account",
+                description="Main checking account",
+                opening_balance=75000,
+                current_balance=20000,
+                currency=apideck_unify.Currency.USD,
+                tax_type="NONE",
+                tax_rate=apideck_unify.LinkedTaxRateInput(
+                    id="123456",
+                    code="N-T",
+                    rate=10,
+                ),
+                level=1,
+                active=True,
+                status=apideck_unify.LedgerAccountCreateInputAccountStatus.ACTIVE,
+                header=True,
+                bank_account=apideck_unify.BankAccount(
+                    bank_name="Chase Bank",
+                    account_number="123465",
+                    account_name="Main Operating Account",
+                    account_type=apideck_unify.AccountType.CREDIT_CARD,
+                    iban="GB33BUKB20201555555555",
+                    bic="CHASUS33",
+                    routing_number="021000021",
+                    bsb_number="062-001",
+                    branch_identifier="001",
+                    bank_code="BNH",
+                    currency=apideck_unify.Currency.USD,
+                    country="US",
+                ),
+                parent_account=apideck_unify.LedgerAccountCreateInputParentAccount(
+                    id="12345",
+                    name="Bank Accounts",
+                    display_id="1-1100",
+                ),
+                sub_account=False,
+                last_reconciliation_date=date.fromisoformat("2020-09-30"),
+                custom_fields=[
+                    apideck_unify.CustomField1(
+                        id="2389328923893298",
+                        name="employee_level",
+                        ref_name="Marketing",
+                        description="Employee Level",
+                        value="Uses Salesforce and Marketo",
+                    ),
+                ],
+                row_version="1-12345",
+                pass_through=[
+                    apideck_unify.PassThroughBody(
+                        service_id="<id>",
+                        extend_paths=[
+                            apideck_unify.ExtendPaths(
+                                path="$.nested.property",
+                                value={
+                                    "TaxClassificationRef": {
+                                        "value": "EUC-99990201-V1-00020000",
+                                    },
+                                },
+                            ),
+                        ],
+                    ),
+                ],
+            ),
+        ),
+    ], raw=False, service_id="salesforce", company_id="12345")
+
+    assert res.batch_ledger_accounts_response is not None
+
+    # Handle response
+    print(res.batch_ledger_accounts_response)
+
+```
+
+### Parameters
+
+| Parameter                                                                                                                                                                                                                                                                                                                                                                        | Type                                                                                                                                                                                                                                                                                                                                                                             | Required                                                                                                                                                                                                                                                                                                                                                                         | Description                                                                                                                                                                                                                                                                                                                                                                      | Example                                                                                                                                                                                                                                                                                                                                                                          |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `items`                                                                                                                                                                                                                                                                                                                                                                          | List[[models.BatchLedgerAccountsRequestItems](../../models/batchledgeraccountsrequestitems.md)]                                                                                                                                                                                                                                                                                  | :heavy_check_mark:                                                                                                                                                                                                                                                                                                                                                               | The records to write. The per-connector limit is the real cap and is usually lower than the ceiling here: read `batch_support.resources[<resource>].max_items` on the Connector API for the connector you are calling, or the resource gotchas. This ceiling exists so an oversized array is rejected by request validation before any per-item work runs, rather than after it. |                                                                                                                                                                                                                                                                                                                                                                                  |
+| `raw`                                                                                                                                                                                                                                                                                                                                                                            | *Optional[bool]*                                                                                                                                                                                                                                                                                                                                                                 | :heavy_minus_sign:                                                                                                                                                                                                                                                                                                                                                               | Include raw response. Mostly used for debugging purposes                                                                                                                                                                                                                                                                                                                         |                                                                                                                                                                                                                                                                                                                                                                                  |
+| `consumer_id`                                                                                                                                                                                                                                                                                                                                                                    | *Optional[str]*                                                                                                                                                                                                                                                                                                                                                                  | :heavy_minus_sign:                                                                                                                                                                                                                                                                                                                                                               | ID of the consumer which you want to get or push data from                                                                                                                                                                                                                                                                                                                       | test-consumer                                                                                                                                                                                                                                                                                                                                                                    |
+| `app_id`                                                                                                                                                                                                                                                                                                                                                                         | *Optional[str]*                                                                                                                                                                                                                                                                                                                                                                  | :heavy_minus_sign:                                                                                                                                                                                                                                                                                                                                                               | The ID of your Unify application                                                                                                                                                                                                                                                                                                                                                 | dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX                                                                                                                                                                                                                                                                                                                                          |
+| `service_id`                                                                                                                                                                                                                                                                                                                                                                     | *Optional[str]*                                                                                                                                                                                                                                                                                                                                                                  | :heavy_minus_sign:                                                                                                                                                                                                                                                                                                                                                               | Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.                                                                                                                                                                                                                                    | salesforce                                                                                                                                                                                                                                                                                                                                                                       |
+| `company_id`                                                                                                                                                                                                                                                                                                                                                                     | *Optional[str]*                                                                                                                                                                                                                                                                                                                                                                  | :heavy_minus_sign:                                                                                                                                                                                                                                                                                                                                                               | The ID of the company to scope requests to. For connectors that support multi-company, this overrides the default company configured in connection settings.                                                                                                                                                                                                                     | 12345                                                                                                                                                                                                                                                                                                                                                                            |
+| `retries`                                                                                                                                                                                                                                                                                                                                                                        | [Optional[utils.RetryConfig]](../../models/utils/retryconfig.md)                                                                                                                                                                                                                                                                                                                 | :heavy_minus_sign:                                                                                                                                                                                                                                                                                                                                                               | Configuration to override the default retry behavior of the client.                                                                                                                                                                                                                                                                                                              |                                                                                                                                                                                                                                                                                                                                                                                  |
+
+### Response
+
+**[models.AccountingLedgerAccountsBatchAddResponse](../../models/accountingledgeraccountsbatchaddresponse.md)**
 
 ### Errors
 

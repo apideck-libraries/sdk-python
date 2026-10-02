@@ -1981,3 +1981,319 @@ class JournalEntries(BaseSDK):
             )
 
         raise models.APIError("Unexpected response received", http_res)
+
+    def create_batch(
+        self,
+        *,
+        items: Union[
+            List[models.BatchJournalEntriesRequestItems],
+            List[models.BatchJournalEntriesRequestItemsTypedDict],
+        ],
+        raw: Optional[bool] = False,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
+        service_id: Optional[str] = None,
+        company_id: Optional[str] = None,
+        retries: OptionalNullable[utils.RetryConfig] = UNSET,
+        server_url: Optional[str] = None,
+        timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
+    ) -> models.AccountingJournalEntriesBatchAddResponse:
+        r"""Create Journal Entries in batch
+
+        Create multiple journal entries in a single request. Each item is processed independently, so some may be created while others fail; the response returns `200` with one result per item, in the order the items were sent. The maximum number of items accepted per request depends on the connector.
+
+        :param items: The records to write. The per-connector limit is the real cap and is usually lower than the ceiling here: read `batch_support.resources[<resource>].max_items` on the Connector API for the connector you are calling, or the resource gotchas. This ceiling exists so an oversized array is rejected by request validation before any per-item work runs, rather than after it.
+        :param raw: Include raw response. Mostly used for debugging purposes
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
+        :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param company_id: The ID of the company to scope requests to. For connectors that support multi-company, this overrides the default company configured in connection settings.
+        :param retries: Override the default retry configuration for this method
+        :param server_url: Override the default server URL for this method
+        :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
+        """
+        base_url = None
+        url_variables = None
+        if timeout_ms is None:
+            timeout_ms = self.sdk_configuration.timeout_ms
+
+        if server_url is not None:
+            base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
+
+        request = models.AccountingJournalEntriesBatchAddRequest(
+            raw=raw,
+            consumer_id=consumer_id,
+            app_id=app_id,
+            service_id=service_id,
+            company_id=company_id,
+            batch_journal_entries_request=models.BatchJournalEntriesRequest(
+                items=utils.get_pydantic_model(
+                    items, List[models.BatchJournalEntriesRequestItems]
+                ),
+            ),
+        )
+
+        req = self._build_request(
+            method="POST",
+            path="/accounting/journal-entries/batch",
+            base_url=base_url,
+            url_variables=url_variables,
+            request=request,
+            request_body_required=True,
+            request_has_path_params=False,
+            request_has_query_params=True,
+            user_agent_header="user-agent",
+            accept_header_value="application/json",
+            http_headers=http_headers,
+            _globals=models.AccountingJournalEntriesBatchAddGlobals(
+                consumer_id=self.sdk_configuration.globals.consumer_id,
+                app_id=self.sdk_configuration.globals.app_id,
+            ),
+            security=self.sdk_configuration.security,
+            get_serialized_body=lambda: utils.serialize_request_body(
+                request.batch_journal_entries_request,
+                False,
+                False,
+                "json",
+                models.BatchJournalEntriesRequest,
+            ),
+            timeout_ms=timeout_ms,
+        )
+
+        if retries == UNSET:
+            if self.sdk_configuration.retry_config is not UNSET:
+                retries = self.sdk_configuration.retry_config
+            else:
+                retries = utils.RetryConfig(
+                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 900000), True
+                )
+
+        retry_config = None
+        if isinstance(retries, utils.RetryConfig):
+            retry_config = (retries, ["408", "500", "502", "503", "504"])
+
+        http_res = self.do_request(
+            hook_ctx=HookContext(
+                config=self.sdk_configuration,
+                base_url=base_url or "",
+                operation_id="accounting.journalEntriesBatchAdd",
+                oauth2_scopes=None,
+                security_source=get_security_from_env(
+                    self.sdk_configuration.security, models.Security
+                ),
+            ),
+            request=req,
+            error_status_codes=["400", "401", "402", "404", "422", "4XX", "5XX"],
+            retry_config=retry_config,
+        )
+
+        response_data: Any = None
+        if utils.match_response(http_res, "200", "application/json"):
+            return models.AccountingJournalEntriesBatchAddResponse(
+                batch_journal_entries_response=unmarshal_json_response(
+                    Optional[models.BatchJournalEntriesResponse], http_res
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
+        if utils.match_response(http_res, "400", "application/json"):
+            response_data = unmarshal_json_response(
+                models.BadRequestResponseData, http_res
+            )
+            raise models.BadRequestResponse(response_data, http_res)
+        if utils.match_response(http_res, "401", "application/json"):
+            response_data = unmarshal_json_response(
+                models.UnauthorizedResponseData, http_res
+            )
+            raise models.UnauthorizedResponse(response_data, http_res)
+        if utils.match_response(http_res, "402", "application/json"):
+            response_data = unmarshal_json_response(
+                models.PaymentRequiredResponseData, http_res
+            )
+            raise models.PaymentRequiredResponse(response_data, http_res)
+        if utils.match_response(http_res, "404", "application/json"):
+            response_data = unmarshal_json_response(
+                models.NotFoundResponseData, http_res
+            )
+            raise models.NotFoundResponse(response_data, http_res)
+        if utils.match_response(http_res, "422", "application/json"):
+            response_data = unmarshal_json_response(
+                models.UnprocessableResponseData, http_res
+            )
+            raise models.UnprocessableResponse(response_data, http_res)
+        if utils.match_response(http_res, "4XX", "*"):
+            http_res_text = utils.stream_to_text(http_res)
+            raise models.APIError("API error occurred", http_res, http_res_text)
+        if utils.match_response(http_res, "5XX", "*"):
+            http_res_text = utils.stream_to_text(http_res)
+            raise models.APIError("API error occurred", http_res, http_res_text)
+        if utils.match_response(http_res, "default", "application/json"):
+            return models.AccountingJournalEntriesBatchAddResponse(
+                unexpected_error_response=unmarshal_json_response(
+                    Optional[models.UnexpectedErrorResponse], http_res
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
+
+        raise models.APIError("Unexpected response received", http_res)
+
+    async def create_batch_async(
+        self,
+        *,
+        items: Union[
+            List[models.BatchJournalEntriesRequestItems],
+            List[models.BatchJournalEntriesRequestItemsTypedDict],
+        ],
+        raw: Optional[bool] = False,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
+        service_id: Optional[str] = None,
+        company_id: Optional[str] = None,
+        retries: OptionalNullable[utils.RetryConfig] = UNSET,
+        server_url: Optional[str] = None,
+        timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
+    ) -> models.AccountingJournalEntriesBatchAddResponse:
+        r"""Create Journal Entries in batch
+
+        Create multiple journal entries in a single request. Each item is processed independently, so some may be created while others fail; the response returns `200` with one result per item, in the order the items were sent. The maximum number of items accepted per request depends on the connector.
+
+        :param items: The records to write. The per-connector limit is the real cap and is usually lower than the ceiling here: read `batch_support.resources[<resource>].max_items` on the Connector API for the connector you are calling, or the resource gotchas. This ceiling exists so an oversized array is rejected by request validation before any per-item work runs, rather than after it.
+        :param raw: Include raw response. Mostly used for debugging purposes
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
+        :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param company_id: The ID of the company to scope requests to. For connectors that support multi-company, this overrides the default company configured in connection settings.
+        :param retries: Override the default retry configuration for this method
+        :param server_url: Override the default server URL for this method
+        :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
+        """
+        base_url = None
+        url_variables = None
+        if timeout_ms is None:
+            timeout_ms = self.sdk_configuration.timeout_ms
+
+        if server_url is not None:
+            base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
+
+        request = models.AccountingJournalEntriesBatchAddRequest(
+            raw=raw,
+            consumer_id=consumer_id,
+            app_id=app_id,
+            service_id=service_id,
+            company_id=company_id,
+            batch_journal_entries_request=models.BatchJournalEntriesRequest(
+                items=utils.get_pydantic_model(
+                    items, List[models.BatchJournalEntriesRequestItems]
+                ),
+            ),
+        )
+
+        req = self._build_request_async(
+            method="POST",
+            path="/accounting/journal-entries/batch",
+            base_url=base_url,
+            url_variables=url_variables,
+            request=request,
+            request_body_required=True,
+            request_has_path_params=False,
+            request_has_query_params=True,
+            user_agent_header="user-agent",
+            accept_header_value="application/json",
+            http_headers=http_headers,
+            _globals=models.AccountingJournalEntriesBatchAddGlobals(
+                consumer_id=self.sdk_configuration.globals.consumer_id,
+                app_id=self.sdk_configuration.globals.app_id,
+            ),
+            security=self.sdk_configuration.security,
+            get_serialized_body=lambda: utils.serialize_request_body(
+                request.batch_journal_entries_request,
+                False,
+                False,
+                "json",
+                models.BatchJournalEntriesRequest,
+            ),
+            timeout_ms=timeout_ms,
+        )
+
+        if retries == UNSET:
+            if self.sdk_configuration.retry_config is not UNSET:
+                retries = self.sdk_configuration.retry_config
+            else:
+                retries = utils.RetryConfig(
+                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 900000), True
+                )
+
+        retry_config = None
+        if isinstance(retries, utils.RetryConfig):
+            retry_config = (retries, ["408", "500", "502", "503", "504"])
+
+        http_res = await self.do_request_async(
+            hook_ctx=HookContext(
+                config=self.sdk_configuration,
+                base_url=base_url or "",
+                operation_id="accounting.journalEntriesBatchAdd",
+                oauth2_scopes=None,
+                security_source=get_security_from_env(
+                    self.sdk_configuration.security, models.Security
+                ),
+            ),
+            request=req,
+            error_status_codes=["400", "401", "402", "404", "422", "4XX", "5XX"],
+            retry_config=retry_config,
+        )
+
+        response_data: Any = None
+        if utils.match_response(http_res, "200", "application/json"):
+            return models.AccountingJournalEntriesBatchAddResponse(
+                batch_journal_entries_response=unmarshal_json_response(
+                    Optional[models.BatchJournalEntriesResponse], http_res
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
+        if utils.match_response(http_res, "400", "application/json"):
+            response_data = unmarshal_json_response(
+                models.BadRequestResponseData, http_res
+            )
+            raise models.BadRequestResponse(response_data, http_res)
+        if utils.match_response(http_res, "401", "application/json"):
+            response_data = unmarshal_json_response(
+                models.UnauthorizedResponseData, http_res
+            )
+            raise models.UnauthorizedResponse(response_data, http_res)
+        if utils.match_response(http_res, "402", "application/json"):
+            response_data = unmarshal_json_response(
+                models.PaymentRequiredResponseData, http_res
+            )
+            raise models.PaymentRequiredResponse(response_data, http_res)
+        if utils.match_response(http_res, "404", "application/json"):
+            response_data = unmarshal_json_response(
+                models.NotFoundResponseData, http_res
+            )
+            raise models.NotFoundResponse(response_data, http_res)
+        if utils.match_response(http_res, "422", "application/json"):
+            response_data = unmarshal_json_response(
+                models.UnprocessableResponseData, http_res
+            )
+            raise models.UnprocessableResponse(response_data, http_res)
+        if utils.match_response(http_res, "4XX", "*"):
+            http_res_text = await utils.stream_to_text_async(http_res)
+            raise models.APIError("API error occurred", http_res, http_res_text)
+        if utils.match_response(http_res, "5XX", "*"):
+            http_res_text = await utils.stream_to_text_async(http_res)
+            raise models.APIError("API error occurred", http_res, http_res_text)
+        if utils.match_response(http_res, "default", "application/json"):
+            return models.AccountingJournalEntriesBatchAddResponse(
+                unexpected_error_response=unmarshal_json_response(
+                    Optional[models.UnexpectedErrorResponse], http_res
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+            )
+
+        raise models.APIError("Unexpected response received", http_res)

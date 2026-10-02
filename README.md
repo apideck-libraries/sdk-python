@@ -334,6 +334,7 @@ with Apideck(
 * [get](docs/sdks/customers/README.md#get) - Get Customer
 * [update](docs/sdks/customers/README.md#update) - Update Customer
 * [delete](docs/sdks/customers/README.md#delete) - Delete Customer
+* [create_batch](docs/sdks/customers/README.md#create_batch) - Create Customers in batch
 
 #### [accounting.departments](docs/sdks/departments/README.md)
 
@@ -409,6 +410,7 @@ with Apideck(
 * [get](docs/sdks/journalentries/README.md#get) - Get Journal Entry
 * [update](docs/sdks/journalentries/README.md#update) - Update Journal Entry
 * [delete](docs/sdks/journalentries/README.md#delete) - Delete Journal Entry
+* [create_batch](docs/sdks/journalentries/README.md#create_batch) - Create Journal Entries in batch
 
 #### [accounting.journals](docs/sdks/journals/README.md)
 
@@ -425,6 +427,7 @@ with Apideck(
 * [get](docs/sdks/ledgeraccounts/README.md#get) - Get Ledger Account
 * [update](docs/sdks/ledgeraccounts/README.md#update) - Update Ledger Account
 * [delete](docs/sdks/ledgeraccounts/README.md#delete) - Delete Ledger Account
+* [create_batch](docs/sdks/ledgeraccounts/README.md#create_batch) - Create Ledger Accounts in batch
 
 #### [accounting.locations](docs/sdks/locations/README.md)
 
@@ -510,6 +513,7 @@ with Apideck(
 * [get](docs/sdks/suppliers/README.md#get) - Get Supplier
 * [update](docs/sdks/suppliers/README.md#update) - Update Supplier
 * [delete](docs/sdks/suppliers/README.md#delete) - Delete Supplier
+* [create_batch](docs/sdks/suppliers/README.md#create_batch) - Create Suppliers in batch
 
 #### [accounting.tax_rates](docs/sdks/taxrates/README.md)
 
@@ -526,6 +530,7 @@ with Apideck(
 * [get](docs/sdks/trackingcategories/README.md#get) - Get Tracking Category
 * [update](docs/sdks/trackingcategories/README.md#update) - Update Tracking Category
 * [delete](docs/sdks/trackingcategories/README.md#delete) - Delete Tracking Category
+* [create_batch](docs/sdks/trackingcategories/README.md#create_batch) - Create Tracking Categories in batch
 
 #### [ats.applicants](docs/sdks/applicants/README.md)
 
@@ -1125,8 +1130,8 @@ with Apideck(
 
 
 **Inherit from [`ApideckError`](./src/apideck_unify/models/apideckerror.py)**:
-* [`Unauthorized`](./src/apideck_unify/models/unauthorized.py): Unauthorized. Status code `401`. Applicable to 6 of 369 methods.*
-* [`ConflictResponse`](./src/apideck_unify/models/conflictresponse.py): Conflict — a connection already exists for the target connector. Status code `409`. Applicable to 1 of 369 methods.*
+* [`Unauthorized`](./src/apideck_unify/models/unauthorized.py): Unauthorized. Status code `401`. Applicable to 6 of 374 methods.*
+* [`ConflictResponse`](./src/apideck_unify/models/conflictresponse.py): Conflict — a connection already exists for the target connector. Status code `409`. Applicable to 1 of 374 methods.*
 * [`ResponseValidationError`](./src/apideck_unify/models/responsevalidationerror.py): Type mismatch between the response data and the expected Pydantic model. Provides access to the Pydantic validation error via the `cause` attribute.
 
 </details>

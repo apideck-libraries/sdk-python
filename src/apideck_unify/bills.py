@@ -2311,7 +2311,10 @@ class Bills(BaseSDK):
     def create_batch(
         self,
         *,
-        items: Union[List[models.Items], List[models.ItemsTypedDict]],
+        items: Union[
+            List[models.BatchBillsRequestItems],
+            List[models.BatchBillsRequestItemsTypedDict],
+        ],
         raw: Optional[bool] = False,
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
@@ -2354,7 +2357,9 @@ class Bills(BaseSDK):
             service_id=service_id,
             company_id=company_id,
             batch_bills_request=models.BatchBillsRequest(
-                items=utils.get_pydantic_model(items, List[models.Items]),
+                items=utils.get_pydantic_model(
+                    items, List[models.BatchBillsRequestItems]
+                ),
             ),
         )
 
@@ -2464,7 +2469,10 @@ class Bills(BaseSDK):
     async def create_batch_async(
         self,
         *,
-        items: Union[List[models.Items], List[models.ItemsTypedDict]],
+        items: Union[
+            List[models.BatchBillsRequestItems],
+            List[models.BatchBillsRequestItemsTypedDict],
+        ],
         raw: Optional[bool] = False,
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
@@ -2507,7 +2515,9 @@ class Bills(BaseSDK):
             service_id=service_id,
             company_id=company_id,
             batch_bills_request=models.BatchBillsRequest(
-                items=utils.get_pydantic_model(items, List[models.Items]),
+                items=utils.get_pydantic_model(
+                    items, List[models.BatchBillsRequestItems]
+                ),
             ),
         )
 
