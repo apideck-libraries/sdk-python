@@ -51,6 +51,8 @@ class AddressesTypedDict(TypedDict):
     r"""Postal code of the customer"""
     country: NotRequired[Nullable[str]]
     r"""Country of the customer"""
+    tax_number: NotRequired[Nullable[str]]
+    r"""Tax or VAT identification number registered on this address"""
 
 
 class Addresses(BaseModel):
@@ -79,6 +81,9 @@ class Addresses(BaseModel):
     country: OptionalNullable[str] = UNSET
     r"""Country of the customer"""
 
+    tax_number: OptionalNullable[str] = UNSET
+    r"""Tax or VAT identification number registered on this address"""
+
     @field_serializer("type")
     def serialize_type(self, value):
         if isinstance(value, str):
@@ -99,6 +104,7 @@ class Addresses(BaseModel):
             "state",
             "postal_code",
             "country",
+            "tax_number",
         ]
         nullable_fields = [
             "id",
@@ -108,6 +114,7 @@ class Addresses(BaseModel):
             "state",
             "postal_code",
             "country",
+            "tax_number",
         ]
         null_default_fields = []
 
@@ -149,6 +156,8 @@ class EcommerceCustomerTypedDict(TypedDict):
     r"""Company name of the customer"""
     status: NotRequired[Nullable[CustomerStatus]]
     r"""The current status of the customer"""
+    tax_number: NotRequired[Nullable[str]]
+    r"""Tax or VAT identification number of the customer"""
     currency: NotRequired[Nullable[Currency]]
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
     emails: NotRequired[Nullable[List[EmailTypedDict]]]
@@ -186,6 +195,9 @@ class EcommerceCustomer(BaseModel):
         OptionalNullable[CustomerStatus], PlainValidator(validate_open_enum(False))
     ] = UNSET
     r"""The current status of the customer"""
+
+    tax_number: OptionalNullable[str] = UNSET
+    r"""Tax or VAT identification number of the customer"""
 
     currency: Annotated[
         OptionalNullable[Currency], PlainValidator(validate_open_enum(False))
@@ -238,6 +250,7 @@ class EcommerceCustomer(BaseModel):
             "last_name",
             "company_name",
             "status",
+            "tax_number",
             "currency",
             "emails",
             "phone_numbers",
@@ -253,6 +266,7 @@ class EcommerceCustomer(BaseModel):
             "last_name",
             "company_name",
             "status",
+            "tax_number",
             "currency",
             "emails",
             "phone_numbers",

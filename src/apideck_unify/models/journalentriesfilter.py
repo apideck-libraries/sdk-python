@@ -34,6 +34,8 @@ class JournalEntriesFilterTypedDict(TypedDict):
     updated_since: NotRequired[datetime]
     number: NotRequired[str]
     r"""Journal entry number to search for"""
+    source_id: NotRequired[str]
+    r"""Return only journal entries whose source_id equals the given value (the caller-supplied reference, where the connector stores one). Connectors without support reject this filter with UnsupportedFiltersError."""
     start_date: NotRequired[date]
     r"""Return journal entries posted on or after this date (posting date, inclusive). Connectors without date-range support reject this filter with UnsupportedFiltersError."""
     end_date: NotRequired[date]
@@ -50,6 +52,9 @@ class JournalEntriesFilter(BaseModel):
 
     number: Annotated[Optional[str], FieldMetadata(query=True)] = None
     r"""Journal entry number to search for"""
+
+    source_id: Annotated[Optional[str], FieldMetadata(query=True)] = None
+    r"""Return only journal entries whose source_id equals the given value (the caller-supplied reference, where the connector stores one). Connectors without support reject this filter with UnsupportedFiltersError."""
 
     start_date: Annotated[Optional[date], FieldMetadata(query=True)] = None
     r"""Return journal entries posted on or after this date (posting date, inclusive). Connectors without date-range support reject this filter with UnsupportedFiltersError."""

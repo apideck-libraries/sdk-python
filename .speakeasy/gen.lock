@@ -1,12 +1,12 @@
 lockVersion: 2.0.0
 id: fca0ac3a-5f4e-452c-bbc7-2311afa8da40
 management:
-  docChecksum: 4f6fcf9df2805b5c96e74c806de12f25
-  docVersion: 10.60.0
+  docChecksum: ee58f8c7c4f1a0530f9ea06c4f8bbd6e
+  docVersion: 10.61.1
   speakeasyVersion: 1.656.1
   generationVersion: 2.753.1
-  releaseVersion: 0.44.0
-  configChecksum: 27c25e93a7d929fb90cd270a64f2cf75
+  releaseVersion: 0.45.0
+  configChecksum: 2300d791a8ffa090c7c8a5ecd7dc7958
   repoURL: https://github.com/apideck-libraries/sdk-python.git
   installationURL: https://github.com/apideck-libraries/sdk-python.git
   published: true
@@ -12451,7 +12451,7 @@ examples:
           x-apideck-service-id: "salesforce"
       responses:
         "200":
-          application/json: {"status_code": 200, "status": "OK", "service": "shopify", "resource": "customers", "operation": "one", "data": {"id": "12345", "name": "John Doe", "first_name": "John", "last_name": "Doe", "company_name": "Acme Inc.", "status": "active", "currency": "USD", "emails": null, "phone_numbers": [{"id": "12345", "country_code": "1", "area_code": "323", "number": "111-111-1111", "extension": "105", "type": "primary"}], "addresses": [{"type": "billing", "id": "12345", "line1": "Main street", "line2": "apt #", "city": "Anytown", "state": "Ohio", "postal_code": "12345", "country": "US"}], "orders": [{"id": "12345", "total": "199.99", "status": "active"}], "created_at": "2020-09-30T07:43:32.000Z", "updated_at": "2020-09-30T07:43:32.000Z"}, "meta": {"items_on_page": 50, "cursors": {"previous": "em9oby1jcm06OnBhZ2U6OjE=", "current": "em9oby1jcm06OnBhZ2U6OjI=", "next": "em9oby1jcm06OnBhZ2U6OjM="}, "total_count": 1, "warnings": null}}
+          application/json: {"status_code": 200, "status": "OK", "service": "shopify", "resource": "customers", "operation": "one", "data": {"id": "12345", "name": "John Doe", "first_name": "John", "last_name": "Doe", "company_name": "Acme Inc.", "status": "active", "tax_number": "BE0689615164", "currency": "USD", "emails": null, "phone_numbers": [{"id": "12345", "country_code": "1", "area_code": "323", "number": "111-111-1111", "extension": "105", "type": "primary"}], "addresses": [{"type": "billing", "id": "12345", "line1": "Main street", "line2": "apt #", "city": "Anytown", "state": "Ohio", "postal_code": "12345", "country": "US"}], "orders": [{"id": "12345", "total": "199.99", "status": "active"}], "created_at": "2020-09-30T07:43:32.000Z", "updated_at": "2020-09-30T07:43:32.000Z"}, "meta": {"items_on_page": 50, "cursors": {"previous": "em9oby1jcm06OnBhZ2U6OjE=", "current": "em9oby1jcm06OnBhZ2U6OjI=", "next": "em9oby1jcm06OnBhZ2U6OjM="}, "total_count": 1, "warnings": null}}
         "400":
           application/json: {"status_code": 400, "error": "Bad Request", "type_name": "RequestValidationError", "message": "Invalid Params", "detail": "Missing property foobar", "ref": "https://developers.apideck.com/errors#requestvalidationerror", "downstream_errors": [{"message": "Account code '100' has been archived or deleted", "detail": "Each line item must reference a valid account", "code": "VALIDATION_ERROR"}]}
         "401":
@@ -21182,17 +21182,9 @@ examplesVersion: 1.0.2
 generatedTests: {}
 releaseNotes: |
   ## Python SDK Changes Detected:
-  * `apideck.accounting.ledger_accounts.create_batch()`: **Added**
-  * `apideck.accounting.customers.create_batch()`: **Added**
-  * `apideck.accounting.suppliers.create_batch()`: **Added**
-  * `apideck.accounting.journal_entries.create_batch()`: **Added**
-  * `apideck.accounting.tracking_categories.create_batch()`: **Added**
-  * `apideck.accounting.journals.list()`:  `response.data.[].clearing_account` **Added**
-  * `apideck.accounting.journals.create()`:  `request.clearing_account` **Added**
-  * `apideck.accounting.journals.get()`:  `response.data.clearing_account` **Added**
-  * `apideck.accounting.journals.update()`:  `request.clearing_account` **Added**
-  * `apideck.accounting.bank_feed_statements.list()`:  `request.filter` **Added**
-  * `apideck.crm.notes.list()`:  `request.filter` **Changed**
+  * `apideck.accounting.journal_entries.list()`:  `request.filter` **Changed**
+  * `apideck.ecommerce.customers.list()`:  `response.data.[]` **Changed**
+  * `apideck.ecommerce.customers.get()`:  `response.data` **Changed**
 trackedFiles:
   .devcontainer/README.md:
     last_write_checksum: sha1:07adb0c0c051a9be4d479ea06461f3a9b3bbeb2f
@@ -22343,7 +22335,7 @@ trackedFiles:
   docs/models/address.md:
     last_write_checksum: sha1:13341b79350b776eb7d056eb14d46e6581e1f5f1
   docs/models/addresses.md:
-    last_write_checksum: sha1:3a1d4495bbfa3de48bf92956a405f0a83f787cc3
+    last_write_checksum: sha1:411645c2223acb5e7b2f45605035a2c394b2d839
   docs/models/agedcreditors.md:
     last_write_checksum: sha1:35387efc12399af79a589a1da972171388340d80
   docs/models/ageddebtors.md:
@@ -23627,7 +23619,7 @@ trackedFiles:
   docs/models/ecommerceaddress.md:
     last_write_checksum: sha1:5c439e9e52ebd59b1439a0770f787d0eb649bb6a
   docs/models/ecommercecustomer.md:
-    last_write_checksum: sha1:36fd82cabd7802baa2f2a300f560248bfe1133cc
+    last_write_checksum: sha1:d2062da1bf03a45f287eef3f7400b3c08d6f7ffa
   docs/models/ecommercecustomersallglobals.md:
     last_write_checksum: sha1:da35b96d4c663055097d09f0079d7e260e2d1b58
   docs/models/ecommercecustomersallrequest.md:
@@ -24717,7 +24709,7 @@ trackedFiles:
   docs/models/journal.md:
     last_write_checksum: sha1:bd2217dba03011be45a1a4b1893ad8b81ab6c45b
   docs/models/journalentriesfilter.md:
-    last_write_checksum: sha1:dc8108d5427070fce723ada1415a9b218dd2dd21
+    last_write_checksum: sha1:68570d785f821e4984e628c552b5a7aa0390bba6
   docs/models/journalentriesfilterscope.md:
     last_write_checksum: sha1:df5230ed4aadb3058cabc89269c06fd6a5b24014
   docs/models/journalentriesfilterstatus.md:
@@ -25965,7 +25957,7 @@ trackedFiles:
   pylintrc:
     last_write_checksum: sha1:ec6665a4862060890cf4c6ba61438d11decf5c3c
   pyproject.toml:
-    last_write_checksum: sha1:de67be0af2267000a4d2249d08a7e3f0cedb123b
+    last_write_checksum: sha1:18e4a5720fdee4d67696e71cf596d306b9cf07c4
   scripts/prepare_readme.py:
     last_write_checksum: sha1:798a05bafe4fbbfff5b67037866fa25efc52f11a
   scripts/publish.sh:
@@ -25979,7 +25971,7 @@ trackedFiles:
   src/apideck_unify/_hooks/types.py:
     last_write_checksum: sha1:d57be38e644de01983a9224b9733ae0add898d43
   src/apideck_unify/_version.py:
-    last_write_checksum: sha1:01a919b31d6a7d40d96ea60dbd195b56054f301f
+    last_write_checksum: sha1:a7dee2ba3786e480d059e9dacfff3aa807a22315
   src/apideck_unify/accounting.py:
     last_write_checksum: sha1:2c97de9f5ac09a34183439555d14920748bd573a
   src/apideck_unify/activities.py:
@@ -25993,11 +25985,11 @@ trackedFiles:
   src/apideck_unify/apideck_customers.py:
     last_write_checksum: sha1:cf02c21c8bd013abfe15a3704ebb16f33094fa1f
   src/apideck_unify/apideck_departments.py:
-    last_write_checksum: sha1:b2826eb6634e516fc06b42aa6b7a676ffb4d6a56
+    last_write_checksum: sha1:59a81b7d246ffd8a00dbf65a7d660c112548dd74
   src/apideck_unify/apideck_employees.py:
-    last_write_checksum: sha1:98e30af6ae414ac863f14e25c5a41fbb49aa9a82
+    last_write_checksum: sha1:a2439c75eda7b44b42993dd5688e6c8f7707d19b
   src/apideck_unify/apideck_hris_companies.py:
-    last_write_checksum: sha1:0fb7935a44ea7aeecfdacf6e55c3351bb9d5f1dc
+    last_write_checksum: sha1:4a0e3c47bbedbc5fbed2114c9bd520efa4fbae05
   src/apideck_unify/apiresourcecoverage_sdk.py:
     last_write_checksum: sha1:b9966ba43e09944888d401e67c1cc8c630337893
   src/apideck_unify/apiresources.py:
@@ -26027,7 +26019,7 @@ trackedFiles:
   src/apideck_unify/billpayments.py:
     last_write_checksum: sha1:21a86a45acedad798cdbcf1019d8c7f68a83128c
   src/apideck_unify/bills.py:
-    last_write_checksum: sha1:011fa4bb3c145bac02cc8ce7620ff11f9b3de156
+    last_write_checksum: sha1:c615b07994b7c5c09d4d3336828352bddf49af5e
   src/apideck_unify/categories.py:
     last_write_checksum: sha1:e1ea6fe95dd3b5357c4b6dab95d0cf6e78f33750
   src/apideck_unify/collections.py:
@@ -26043,7 +26035,7 @@ trackedFiles:
   src/apideck_unify/companies.py:
     last_write_checksum: sha1:ce7de49a986bd8828c063f04a2b3384ed0fbc052
   src/apideck_unify/companyinfo_sdk.py:
-    last_write_checksum: sha1:b94e459818762b67e8a5826c6d05d9187e14f8d2
+    last_write_checksum: sha1:a79672f1ce74e4672787a27273c447d35895d868
   src/apideck_unify/connectionconsent.py:
     last_write_checksum: sha1:993ea1c38b4b1bf47cdc1311e1f14820c0f26859
   src/apideck_unify/connectionconsents.py:
@@ -26067,7 +26059,7 @@ trackedFiles:
   src/apideck_unify/consumers.py:
     last_write_checksum: sha1:f53a2e10961bc23fec8d9122e33cbc42c5dce5b1
   src/apideck_unify/contacts.py:
-    last_write_checksum: sha1:452f377527fe5a8773a30a871c1db5db8155ae72
+    last_write_checksum: sha1:19815626e7680b6cde72e1e65c3e54ee52b68272
   src/apideck_unify/createcallback.py:
     last_write_checksum: sha1:fa6cddb89b59b3890fbc0a06c4b7730e91e76f2e
   src/apideck_unify/creditnotes.py:
@@ -26121,21 +26113,21 @@ trackedFiles:
   src/apideck_unify/httpclient.py:
     last_write_checksum: sha1:5e55338d6ee9f01ab648cad4380201a8a3da7dd7
   src/apideck_unify/invoiceitems.py:
-    last_write_checksum: sha1:693d8f31e4b77706a6cf053d79a1498961ed4822
+    last_write_checksum: sha1:1731b3a97e47c1f861057d983f777d432d2e0f77
   src/apideck_unify/invoices.py:
-    last_write_checksum: sha1:cbbbf15b1d1b40bfe6187901e03b1a4c0254d125
+    last_write_checksum: sha1:a18af82061bbf5b77e0814e2e6e2018c2525ec67
   src/apideck_unify/issuetracking.py:
     last_write_checksum: sha1:a18420473c9ae884dcdc562042a52205924643c5
   src/apideck_unify/jobs.py:
     last_write_checksum: sha1:b16c87611a4857f156f28bd7a93e1e25f2f71dcc
   src/apideck_unify/journalentries.py:
-    last_write_checksum: sha1:95243bbda8901d057a33f69872b6788cde20212a
+    last_write_checksum: sha1:d2e0bd1f67354dbc9409480ed98a0a72072869b0
   src/apideck_unify/journals.py:
     last_write_checksum: sha1:d77ca393c0ba01a84edbc769ce96637b63df4f97
   src/apideck_unify/leads.py:
     last_write_checksum: sha1:b1898e48cf89d3269f10074a3a9bf5f6d6c945c3
   src/apideck_unify/ledgeraccounts.py:
-    last_write_checksum: sha1:7b3a60015e3984192ee0d0d2c8b78a1fde9edfad
+    last_write_checksum: sha1:7bc218edaec9a81ec9611379ce527aead5ffad85
   src/apideck_unify/listmembers.py:
     last_write_checksum: sha1:ae6ad18f742239e0462b3bf1fb25c8a8ed8b5d6c
   src/apideck_unify/lists.py:
@@ -27239,7 +27231,7 @@ trackedFiles:
   src/apideck_unify/models/ecommerceaddress.py:
     last_write_checksum: sha1:b178be0bc5c4c97a8657cdfb3933a498bd22e66f
   src/apideck_unify/models/ecommercecustomer.py:
-    last_write_checksum: sha1:92819cd0d21cb6659386ede6215064e61af5aecd
+    last_write_checksum: sha1:c452ef1b8d071f0a640db95143173ec24c25140f
   src/apideck_unify/models/ecommercecustomersfilter.py:
     last_write_checksum: sha1:6f03a2890bb089a9ce1e36fb86e08c0609235672
   src/apideck_unify/models/ecommercediscount.py:
@@ -27841,7 +27833,7 @@ trackedFiles:
   src/apideck_unify/models/journal.py:
     last_write_checksum: sha1:9cca0cc51fec70c31dfa93707010d823c771733b
   src/apideck_unify/models/journalentriesfilter.py:
-    last_write_checksum: sha1:947ff1c11ea2b498ef255871d5d00862bac272f1
+    last_write_checksum: sha1:017ac183240b9194119790db7a5a6ad1397d0002
   src/apideck_unify/models/journalentriessort.py:
     last_write_checksum: sha1:3c089f317739a631b48f3de2486e6b3275af38b9
   src/apideck_unify/models/journalentry.py:
@@ -28419,15 +28411,15 @@ trackedFiles:
   src/apideck_unify/stores.py:
     last_write_checksum: sha1:bc8869e3e071c4b8881d3b19865db7ec2d6a9ef0
   src/apideck_unify/subsidiaries.py:
-    last_write_checksum: sha1:dbcf581c0704e0e7c9016b16b3d5f0feb27a07ad
+    last_write_checksum: sha1:d26c804b603fc62d5357899c5cd2c71756a93184
   src/apideck_unify/suppliers.py:
     last_write_checksum: sha1:48f91bcfcdbecff23ae4cdf79775dac25db63be5
   src/apideck_unify/taxrates.py:
     last_write_checksum: sha1:b46f2a88769f098665fcf7d06a2ff3fa7420a830
   src/apideck_unify/timeoffrequests.py:
-    last_write_checksum: sha1:fd89071d3fe739d325f032890a9d5af511491142
+    last_write_checksum: sha1:653404a6177c58b53d79d8e89ca7e0f2c4206273
   src/apideck_unify/trackingcategories.py:
-    last_write_checksum: sha1:85bfc0d16bd4dde04b6330c21ca0f2ff28577a7b
+    last_write_checksum: sha1:eb4f94d466f36c5905eb690758be93444f0c4b9d
   src/apideck_unify/types/__init__.py:
     last_write_checksum: sha1:f9ad14217f832e74f594285960125add50324be9
   src/apideck_unify/types/base64fileinput.py:
