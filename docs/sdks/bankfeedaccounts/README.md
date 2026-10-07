@@ -89,7 +89,60 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.accounting.bank_feed_accounts.create(raw=False, service_id="salesforce", bank_account_type=apideck_unify.BankAccountType.BANK, source_account_id="src_456", source_routing_number="021000021", source_account_number="123465", target_account_id="tgt_789", target_account_name="Main Company Checking", target_account_number="NL91ABNA0417164300", balance=25000, available_balance=24500, currency=apideck_unify.Currency.USD, feed_status=apideck_unify.FeedStatus.PENDING, country="US", custom_fields=[
+    res = apideck.accounting.bank_feed_accounts.create(raw=False, service_id="salesforce", bank_account_type=apideck_unify.BankAccountType.BANK, source_account_id="src_456", source_routing_number="021000021", source_account_number="123465", target_account_id="tgt_789", target_account_name="Main Company Checking", target_account_number="NL91ABNA0417164300", balance=25000, available_balance=24500, currency=apideck_unify.Currency.USD, feed_status=apideck_unify.FeedStatus.PENDING, country="US", account_holders=[
+        {
+            "type": apideck_unify.HolderType.CONSUMER,
+            "relationship": apideck_unify.HolderRelationship.PRIMARY,
+            "first_name": "Jane",
+            "middle_name": "Quinn",
+            "last_name": "Doe",
+            "suffix": "Jr",
+            "business_name": "Acme LLC",
+        },
+    ], emails=[
+        {
+            "id": "123",
+            "email": "elon@musk.com",
+            "type": apideck_unify.EmailType.PRIMARY,
+        },
+    ], addresses=[
+        {
+            "id": "123",
+            "type": apideck_unify.Type.PRIMARY,
+            "string": "25 Spring Street, Blackburn, VIC 3130",
+            "name": "HQ US",
+            "line1": "Main street",
+            "line2": "apt #",
+            "line3": "Suite #",
+            "line4": "delivery instructions",
+            "line5": "Attention: Finance Dept",
+            "street_number": "25",
+            "city": "San Francisco",
+            "state": "CA",
+            "postal_code": "94104",
+            "country": "US",
+            "latitude": "40.759211",
+            "longitude": "-73.984638",
+            "county": "Santa Clara",
+            "contact_name": "Elon Musk",
+            "salutation": "Mr",
+            "phone_number": "111-111-1111",
+            "fax": "122-111-1111",
+            "email": "elon@musk.com",
+            "website": "https://elonmusk.com",
+            "notes": "Address notes or delivery instructions.",
+            "row_version": "1-12345",
+        },
+    ], phone_numbers=[
+        {
+            "id": "12345",
+            "country_code": "1",
+            "area_code": "323",
+            "number": "111-111-1111",
+            "extension": "105",
+            "type": apideck_unify.PhoneNumberType.PRIMARY,
+        },
+    ], custom_fields=[
         {
             "id": "2389328923893298",
             "name": "employee_level",
@@ -137,6 +190,10 @@ with Apideck(
 | `currency`                                                                                                                                    | [OptionalNullable[models.Currency]](../../models/currency.md)                                                                                 | :heavy_minus_sign:                                                                                                                            | Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).            | USD                                                                                                                                           |
 | `feed_status`                                                                                                                                 | [Optional[models.FeedStatus]](../../models/feedstatus.md)                                                                                     | :heavy_minus_sign:                                                                                                                            | Current status of the bank feed.                                                                                                              | pending                                                                                                                                       |
 | `country`                                                                                                                                     | *OptionalNullable[str]*                                                                                                                       | :heavy_minus_sign:                                                                                                                            | Country code according to ISO 3166-1 alpha-2.                                                                                                 | US                                                                                                                                            |
+| `account_holders`                                                                                                                             | List[[models.BankFeedAccountHolder](../../models/bankfeedaccountholder.md)]                                                                   | :heavy_minus_sign:                                                                                                                            | The people or businesses that hold the source bank account. Optional; `plaid-exchange` requires at least one.                                 |                                                                                                                                               |
+| `emails`                                                                                                                                      | List[[models.Email](../../models/email.md)]                                                                                                   | :heavy_minus_sign:                                                                                                                            | Email addresses of the account holders. Optional; `plaid-exchange` requires at least one.                                                     |                                                                                                                                               |
+| `addresses`                                                                                                                                   | List[[models.Address](../../models/address.md)]                                                                                               | :heavy_minus_sign:                                                                                                                            | Addresses of the account holders. Optional; `plaid-exchange` requires at least one.                                                           |                                                                                                                                               |
+| `phone_numbers`                                                                                                                               | List[[models.PhoneNumber](../../models/phonenumber.md)]                                                                                       | :heavy_minus_sign:                                                                                                                            | Phone numbers of the account holders. Optional; `plaid-exchange` requires at least one.                                                       |                                                                                                                                               |
 | `custom_fields`                                                                                                                               | List[[models.CustomField](../../models/customfield.md)]                                                                                       | :heavy_minus_sign:                                                                                                                            | N/A                                                                                                                                           |                                                                                                                                               |
 | `retries`                                                                                                                                     | [Optional[utils.RetryConfig]](../../models/utils/retryconfig.md)                                                                              | :heavy_minus_sign:                                                                                                                            | Configuration to override the default retry behavior of the client.                                                                           |                                                                                                                                               |
 
@@ -229,7 +286,60 @@ with Apideck(
     api_key=os.getenv("APIDECK_API_KEY", ""),
 ) as apideck:
 
-    res = apideck.accounting.bank_feed_accounts.update(id="<id>", service_id="salesforce", raw=False, bank_account_type=apideck_unify.BankAccountType.BANK, source_account_id="src_456", source_routing_number="021000021", source_account_number="123465", target_account_id="tgt_789", target_account_name="Main Company Checking", target_account_number="NL91ABNA0417164300", balance=25000, available_balance=24500, currency=apideck_unify.Currency.USD, feed_status=apideck_unify.FeedStatus.PENDING, country="US", custom_fields=[
+    res = apideck.accounting.bank_feed_accounts.update(id="<id>", service_id="salesforce", raw=False, bank_account_type=apideck_unify.BankAccountType.BANK, source_account_id="src_456", source_routing_number="021000021", source_account_number="123465", target_account_id="tgt_789", target_account_name="Main Company Checking", target_account_number="NL91ABNA0417164300", balance=25000, available_balance=24500, currency=apideck_unify.Currency.USD, feed_status=apideck_unify.FeedStatus.PENDING, country="US", account_holders=[
+        {
+            "type": apideck_unify.HolderType.CONSUMER,
+            "relationship": apideck_unify.HolderRelationship.PRIMARY,
+            "first_name": "Jane",
+            "middle_name": "Quinn",
+            "last_name": "Doe",
+            "suffix": "Jr",
+            "business_name": "Acme LLC",
+        },
+    ], emails=[
+        {
+            "id": "123",
+            "email": "elon@musk.com",
+            "type": apideck_unify.EmailType.PRIMARY,
+        },
+    ], addresses=[
+        {
+            "id": "123",
+            "type": apideck_unify.Type.PRIMARY,
+            "string": "25 Spring Street, Blackburn, VIC 3130",
+            "name": "HQ US",
+            "line1": "Main street",
+            "line2": "apt #",
+            "line3": "Suite #",
+            "line4": "delivery instructions",
+            "line5": "Attention: Finance Dept",
+            "street_number": "25",
+            "city": "San Francisco",
+            "state": "CA",
+            "postal_code": "94104",
+            "country": "US",
+            "latitude": "40.759211",
+            "longitude": "-73.984638",
+            "county": "Santa Clara",
+            "contact_name": "Elon Musk",
+            "salutation": "Mr",
+            "phone_number": "111-111-1111",
+            "fax": "122-111-1111",
+            "email": "elon@musk.com",
+            "website": "https://elonmusk.com",
+            "notes": "Address notes or delivery instructions.",
+            "row_version": "1-12345",
+        },
+    ], phone_numbers=[
+        {
+            "id": "12345",
+            "country_code": "1",
+            "area_code": "323",
+            "number": "111-111-1111",
+            "extension": "105",
+            "type": apideck_unify.PhoneNumberType.PRIMARY,
+        },
+    ], custom_fields=[
         {
             "id": "2389328923893298",
             "name": "employee_level",
@@ -272,6 +382,10 @@ with Apideck(
 | `currency`                                                                                                                                    | [OptionalNullable[models.Currency]](../../models/currency.md)                                                                                 | :heavy_minus_sign:                                                                                                                            | Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).            | USD                                                                                                                                           |
 | `feed_status`                                                                                                                                 | [Optional[models.FeedStatus]](../../models/feedstatus.md)                                                                                     | :heavy_minus_sign:                                                                                                                            | Current status of the bank feed.                                                                                                              | pending                                                                                                                                       |
 | `country`                                                                                                                                     | *OptionalNullable[str]*                                                                                                                       | :heavy_minus_sign:                                                                                                                            | Country code according to ISO 3166-1 alpha-2.                                                                                                 | US                                                                                                                                            |
+| `account_holders`                                                                                                                             | List[[models.BankFeedAccountHolder](../../models/bankfeedaccountholder.md)]                                                                   | :heavy_minus_sign:                                                                                                                            | The people or businesses that hold the source bank account. Optional; `plaid-exchange` requires at least one.                                 |                                                                                                                                               |
+| `emails`                                                                                                                                      | List[[models.Email](../../models/email.md)]                                                                                                   | :heavy_minus_sign:                                                                                                                            | Email addresses of the account holders. Optional; `plaid-exchange` requires at least one.                                                     |                                                                                                                                               |
+| `addresses`                                                                                                                                   | List[[models.Address](../../models/address.md)]                                                                                               | :heavy_minus_sign:                                                                                                                            | Addresses of the account holders. Optional; `plaid-exchange` requires at least one.                                                           |                                                                                                                                               |
+| `phone_numbers`                                                                                                                               | List[[models.PhoneNumber](../../models/phonenumber.md)]                                                                                       | :heavy_minus_sign:                                                                                                                            | Phone numbers of the account holders. Optional; `plaid-exchange` requires at least one.                                                       |                                                                                                                                               |
 | `custom_fields`                                                                                                                               | List[[models.CustomField](../../models/customfield.md)]                                                                                       | :heavy_minus_sign:                                                                                                                            | N/A                                                                                                                                           |                                                                                                                                               |
 | `retries`                                                                                                                                     | [Optional[utils.RetryConfig]](../../models/utils/retryconfig.md)                                                                              | :heavy_minus_sign:                                                                                                                            | Configuration to override the default retry behavior of the client.                                                                           |                                                                                                                                               |
 

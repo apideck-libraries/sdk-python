@@ -388,6 +388,19 @@ class BankFeedAccounts(BaseSDK):
         currency: OptionalNullable[models.Currency] = UNSET,
         feed_status: Optional[models.FeedStatus] = None,
         country: OptionalNullable[str] = UNSET,
+        account_holders: Optional[
+            Union[
+                List[models.BankFeedAccountHolder],
+                List[models.BankFeedAccountHolderTypedDict],
+            ]
+        ] = None,
+        emails: Optional[Union[List[models.Email], List[models.EmailTypedDict]]] = None,
+        addresses: Optional[
+            Union[List[models.Address], List[models.AddressTypedDict]]
+        ] = None,
+        phone_numbers: Optional[
+            Union[List[models.PhoneNumber], List[models.PhoneNumberTypedDict]]
+        ] = None,
         custom_fields: Optional[
             Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
         ] = None,
@@ -416,6 +429,10 @@ class BankFeedAccounts(BaseSDK):
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
         :param feed_status: Current status of the bank feed.
         :param country: Country code according to ISO 3166-1 alpha-2.
+        :param account_holders: The people or businesses that hold the source bank account. Optional; `plaid-exchange` requires at least one.
+        :param emails: Email addresses of the account holders. Optional; `plaid-exchange` requires at least one.
+        :param addresses: Addresses of the account holders. Optional; `plaid-exchange` requires at least one.
+        :param phone_numbers: Phone numbers of the account holders. Optional; `plaid-exchange` requires at least one.
         :param custom_fields:
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
@@ -450,6 +467,16 @@ class BankFeedAccounts(BaseSDK):
                 currency=currency,
                 feed_status=feed_status,
                 country=country,
+                account_holders=utils.get_pydantic_model(
+                    account_holders, Optional[List[models.BankFeedAccountHolder]]
+                ),
+                emails=utils.get_pydantic_model(emails, Optional[List[models.Email]]),
+                addresses=utils.get_pydantic_model(
+                    addresses, Optional[List[models.Address]]
+                ),
+                phone_numbers=utils.get_pydantic_model(
+                    phone_numbers, Optional[List[models.PhoneNumber]]
+                ),
                 custom_fields=utils.get_pydantic_model(
                     custom_fields, Optional[List[models.CustomField]]
                 ),
@@ -578,6 +605,19 @@ class BankFeedAccounts(BaseSDK):
         currency: OptionalNullable[models.Currency] = UNSET,
         feed_status: Optional[models.FeedStatus] = None,
         country: OptionalNullable[str] = UNSET,
+        account_holders: Optional[
+            Union[
+                List[models.BankFeedAccountHolder],
+                List[models.BankFeedAccountHolderTypedDict],
+            ]
+        ] = None,
+        emails: Optional[Union[List[models.Email], List[models.EmailTypedDict]]] = None,
+        addresses: Optional[
+            Union[List[models.Address], List[models.AddressTypedDict]]
+        ] = None,
+        phone_numbers: Optional[
+            Union[List[models.PhoneNumber], List[models.PhoneNumberTypedDict]]
+        ] = None,
         custom_fields: Optional[
             Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
         ] = None,
@@ -606,6 +646,10 @@ class BankFeedAccounts(BaseSDK):
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
         :param feed_status: Current status of the bank feed.
         :param country: Country code according to ISO 3166-1 alpha-2.
+        :param account_holders: The people or businesses that hold the source bank account. Optional; `plaid-exchange` requires at least one.
+        :param emails: Email addresses of the account holders. Optional; `plaid-exchange` requires at least one.
+        :param addresses: Addresses of the account holders. Optional; `plaid-exchange` requires at least one.
+        :param phone_numbers: Phone numbers of the account holders. Optional; `plaid-exchange` requires at least one.
         :param custom_fields:
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
@@ -640,6 +684,16 @@ class BankFeedAccounts(BaseSDK):
                 currency=currency,
                 feed_status=feed_status,
                 country=country,
+                account_holders=utils.get_pydantic_model(
+                    account_holders, Optional[List[models.BankFeedAccountHolder]]
+                ),
+                emails=utils.get_pydantic_model(emails, Optional[List[models.Email]]),
+                addresses=utils.get_pydantic_model(
+                    addresses, Optional[List[models.Address]]
+                ),
+                phone_numbers=utils.get_pydantic_model(
+                    phone_numbers, Optional[List[models.PhoneNumber]]
+                ),
                 custom_fields=utils.get_pydantic_model(
                     custom_fields, Optional[List[models.CustomField]]
                 ),
@@ -1063,6 +1117,19 @@ class BankFeedAccounts(BaseSDK):
         currency: OptionalNullable[models.Currency] = UNSET,
         feed_status: Optional[models.FeedStatus] = None,
         country: OptionalNullable[str] = UNSET,
+        account_holders: Optional[
+            Union[
+                List[models.BankFeedAccountHolder],
+                List[models.BankFeedAccountHolderTypedDict],
+            ]
+        ] = None,
+        emails: Optional[Union[List[models.Email], List[models.EmailTypedDict]]] = None,
+        addresses: Optional[
+            Union[List[models.Address], List[models.AddressTypedDict]]
+        ] = None,
+        phone_numbers: Optional[
+            Union[List[models.PhoneNumber], List[models.PhoneNumberTypedDict]]
+        ] = None,
         custom_fields: Optional[
             Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
         ] = None,
@@ -1092,6 +1159,10 @@ class BankFeedAccounts(BaseSDK):
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
         :param feed_status: Current status of the bank feed.
         :param country: Country code according to ISO 3166-1 alpha-2.
+        :param account_holders: The people or businesses that hold the source bank account. Optional; `plaid-exchange` requires at least one.
+        :param emails: Email addresses of the account holders. Optional; `plaid-exchange` requires at least one.
+        :param addresses: Addresses of the account holders. Optional; `plaid-exchange` requires at least one.
+        :param phone_numbers: Phone numbers of the account holders. Optional; `plaid-exchange` requires at least one.
         :param custom_fields:
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
@@ -1127,6 +1198,16 @@ class BankFeedAccounts(BaseSDK):
                 currency=currency,
                 feed_status=feed_status,
                 country=country,
+                account_holders=utils.get_pydantic_model(
+                    account_holders, Optional[List[models.BankFeedAccountHolder]]
+                ),
+                emails=utils.get_pydantic_model(emails, Optional[List[models.Email]]),
+                addresses=utils.get_pydantic_model(
+                    addresses, Optional[List[models.Address]]
+                ),
+                phone_numbers=utils.get_pydantic_model(
+                    phone_numbers, Optional[List[models.PhoneNumber]]
+                ),
                 custom_fields=utils.get_pydantic_model(
                     custom_fields, Optional[List[models.CustomField]]
                 ),
@@ -1256,6 +1337,19 @@ class BankFeedAccounts(BaseSDK):
         currency: OptionalNullable[models.Currency] = UNSET,
         feed_status: Optional[models.FeedStatus] = None,
         country: OptionalNullable[str] = UNSET,
+        account_holders: Optional[
+            Union[
+                List[models.BankFeedAccountHolder],
+                List[models.BankFeedAccountHolderTypedDict],
+            ]
+        ] = None,
+        emails: Optional[Union[List[models.Email], List[models.EmailTypedDict]]] = None,
+        addresses: Optional[
+            Union[List[models.Address], List[models.AddressTypedDict]]
+        ] = None,
+        phone_numbers: Optional[
+            Union[List[models.PhoneNumber], List[models.PhoneNumberTypedDict]]
+        ] = None,
         custom_fields: Optional[
             Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
         ] = None,
@@ -1285,6 +1379,10 @@ class BankFeedAccounts(BaseSDK):
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
         :param feed_status: Current status of the bank feed.
         :param country: Country code according to ISO 3166-1 alpha-2.
+        :param account_holders: The people or businesses that hold the source bank account. Optional; `plaid-exchange` requires at least one.
+        :param emails: Email addresses of the account holders. Optional; `plaid-exchange` requires at least one.
+        :param addresses: Addresses of the account holders. Optional; `plaid-exchange` requires at least one.
+        :param phone_numbers: Phone numbers of the account holders. Optional; `plaid-exchange` requires at least one.
         :param custom_fields:
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
@@ -1320,6 +1418,16 @@ class BankFeedAccounts(BaseSDK):
                 currency=currency,
                 feed_status=feed_status,
                 country=country,
+                account_holders=utils.get_pydantic_model(
+                    account_holders, Optional[List[models.BankFeedAccountHolder]]
+                ),
+                emails=utils.get_pydantic_model(emails, Optional[List[models.Email]]),
+                addresses=utils.get_pydantic_model(
+                    addresses, Optional[List[models.Address]]
+                ),
+                phone_numbers=utils.get_pydantic_model(
+                    phone_numbers, Optional[List[models.PhoneNumber]]
+                ),
                 custom_fields=utils.get_pydantic_model(
                     custom_fields, Optional[List[models.CustomField]]
                 ),
