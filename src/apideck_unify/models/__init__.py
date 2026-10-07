@@ -1756,6 +1756,12 @@ if TYPE_CHECKING:
         BankFeedAccountTypedDict,
         FeedStatus,
     )
+    from .bankfeedaccountholder import (
+        BankFeedAccountHolder,
+        BankFeedAccountHolderTypedDict,
+        HolderRelationship,
+        HolderType,
+    )
     from .bankfeedstatement import (
         BankFeedStatement,
         BankFeedStatementInput,
@@ -7031,6 +7037,8 @@ __all__ = [
     "BankAccountsSort",
     "BankAccountsSortTypedDict",
     "BankFeedAccount",
+    "BankFeedAccountHolder",
+    "BankFeedAccountHolderTypedDict",
     "BankFeedAccountInput",
     "BankFeedAccountInputTypedDict",
     "BankFeedAccountTypedDict",
@@ -8782,6 +8790,8 @@ __all__ = [
     "HTTPMetadata",
     "HTTPMetadataTypedDict",
     "Health",
+    "HolderRelationship",
+    "HolderType",
     "HrisCompaniesAddGlobals",
     "HrisCompaniesAddGlobalsTypedDict",
     "HrisCompaniesAddRequest",
@@ -11359,6 +11369,10 @@ _dynamic_imports: dict[str, str] = {
     "BankFeedAccountInputTypedDict": ".bankfeedaccount",
     "BankFeedAccountTypedDict": ".bankfeedaccount",
     "FeedStatus": ".bankfeedaccount",
+    "BankFeedAccountHolder": ".bankfeedaccountholder",
+    "BankFeedAccountHolderTypedDict": ".bankfeedaccountholder",
+    "HolderRelationship": ".bankfeedaccountholder",
+    "HolderType": ".bankfeedaccountholder",
     "BankFeedStatement": ".bankfeedstatement",
     "BankFeedStatementInput": ".bankfeedstatement",
     "BankFeedStatementInputTypedDict": ".bankfeedstatement",
