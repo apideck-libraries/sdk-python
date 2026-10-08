@@ -147,3 +147,9 @@
 | `ACCOUNTING_TRACKING_CATEGORY_CREATED`     | accounting.tracking_category.created       |
 | `ACCOUNTING_TRACKING_CATEGORY_UPDATED`     | accounting.tracking_category.updated       |
 | `ACCOUNTING_TRACKING_CATEGORY_DELETED`     | accounting.tracking_category.deleted       |
+| `ACCOUNTING_SALES_RECEIPT_CREATED`         | accounting.sales_receipt.created           |
+| `ACCOUNTING_SALES_RECEIPT_UPDATED`         | accounting.sales_receipt.updated           |
+| `ACCOUNTING_SALES_RECEIPT_DELETED`         | accounting.sales_receipt.deleted           |
+| `ACCOUNTING_REFUND_CREATED`                | accounting.refund.created                  |
+| `ACCOUNTING_REFUND_UPDATED`                | accounting.refund.updated                  |
+| `ACCOUNTING_REFUND_DELETED`                | accounting.refund.deleted                  |

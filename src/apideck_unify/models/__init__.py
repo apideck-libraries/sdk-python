@@ -1216,6 +1216,46 @@ if TYPE_CHECKING:
         AccountingRefundsUpdateResponse,
         AccountingRefundsUpdateResponseTypedDict,
     )
+    from .accounting_salesordersaddop import (
+        AccountingSalesOrdersAddGlobals,
+        AccountingSalesOrdersAddGlobalsTypedDict,
+        AccountingSalesOrdersAddRequest,
+        AccountingSalesOrdersAddRequestTypedDict,
+        AccountingSalesOrdersAddResponse,
+        AccountingSalesOrdersAddResponseTypedDict,
+    )
+    from .accounting_salesordersallop import (
+        AccountingSalesOrdersAllGlobals,
+        AccountingSalesOrdersAllGlobalsTypedDict,
+        AccountingSalesOrdersAllRequest,
+        AccountingSalesOrdersAllRequestTypedDict,
+        AccountingSalesOrdersAllResponse,
+        AccountingSalesOrdersAllResponseTypedDict,
+    )
+    from .accounting_salesordersdeleteop import (
+        AccountingSalesOrdersDeleteGlobals,
+        AccountingSalesOrdersDeleteGlobalsTypedDict,
+        AccountingSalesOrdersDeleteRequest,
+        AccountingSalesOrdersDeleteRequestTypedDict,
+        AccountingSalesOrdersDeleteResponse,
+        AccountingSalesOrdersDeleteResponseTypedDict,
+    )
+    from .accounting_salesordersoneop import (
+        AccountingSalesOrdersOneGlobals,
+        AccountingSalesOrdersOneGlobalsTypedDict,
+        AccountingSalesOrdersOneRequest,
+        AccountingSalesOrdersOneRequestTypedDict,
+        AccountingSalesOrdersOneResponse,
+        AccountingSalesOrdersOneResponseTypedDict,
+    )
+    from .accounting_salesordersupdateop import (
+        AccountingSalesOrdersUpdateGlobals,
+        AccountingSalesOrdersUpdateGlobalsTypedDict,
+        AccountingSalesOrdersUpdateRequest,
+        AccountingSalesOrdersUpdateRequestTypedDict,
+        AccountingSalesOrdersUpdateResponse,
+        AccountingSalesOrdersUpdateResponseTypedDict,
+    )
     from .accounting_salesreceiptsaddop import (
         AccountingSalesReceiptsAddGlobals,
         AccountingSalesReceiptsAddGlobalsTypedDict,
@@ -2376,6 +2416,10 @@ if TYPE_CHECKING:
         CreateRefundResponse,
         CreateRefundResponseTypedDict,
     )
+    from .createsalesorderresponse import (
+        CreateSalesOrderResponse,
+        CreateSalesOrderResponseTypedDict,
+    )
     from .createsalesreceiptresponse import (
         CreateSalesReceiptResponse,
         CreateSalesReceiptResponseTypedDict,
@@ -3111,6 +3155,10 @@ if TYPE_CHECKING:
     from .deleterefundresponse import (
         DeleteRefundResponse,
         DeleteRefundResponseTypedDict,
+    )
+    from .deletesalesorderresponse import (
+        DeleteSalesOrderResponse,
+        DeleteSalesOrderResponseTypedDict,
     )
     from .deletesalesreceiptresponse import (
         DeleteSalesReceiptResponse,
@@ -4091,6 +4139,14 @@ if TYPE_CHECKING:
     from .getquotesresponse import GetQuotesResponse, GetQuotesResponseTypedDict
     from .getrefundresponse import GetRefundResponse, GetRefundResponseTypedDict
     from .getrefundsresponse import GetRefundsResponse, GetRefundsResponseTypedDict
+    from .getsalesorderresponse import (
+        GetSalesOrderResponse,
+        GetSalesOrderResponseTypedDict,
+    )
+    from .getsalesordersresponse import (
+        GetSalesOrdersResponse,
+        GetSalesOrdersResponseTypedDict,
+    )
     from .getsalesreceiptresponse import (
         GetSalesReceiptResponse,
         GetSalesReceiptResponseTypedDict,
@@ -4978,6 +5034,14 @@ if TYPE_CHECKING:
     )
     from .resourcestatus import ResourceStatus
     from .responsevalidationerror import ResponseValidationError
+    from .salesorder import (
+        SalesOrder,
+        SalesOrderInput,
+        SalesOrderInputTypedDict,
+        SalesOrderStatus,
+        SalesOrderTypedDict,
+    )
+    from .salesordersfilter import SalesOrdersFilter, SalesOrdersFilterTypedDict
     from .salesreceipt import SalesReceipt, SalesReceiptTypedDict
     from .salesreceipt_input import SalesReceiptInput, SalesReceiptInputTypedDict
     from .salesreceiptsfilter import SalesReceiptsFilter, SalesReceiptsFilterTypedDict
@@ -5388,6 +5452,10 @@ if TYPE_CHECKING:
     from .updaterefundresponse import (
         UpdateRefundResponse,
         UpdateRefundResponseTypedDict,
+    )
+    from .updatesalesorderresponse import (
+        UpdateSalesOrderResponse,
+        UpdateSalesOrderResponseTypedDict,
     )
     from .updatesalesreceiptresponse import (
         UpdateSalesReceiptResponse,
@@ -6680,6 +6748,36 @@ __all__ = [
     "AccountingRefundsUpdateRequestTypedDict",
     "AccountingRefundsUpdateResponse",
     "AccountingRefundsUpdateResponseTypedDict",
+    "AccountingSalesOrdersAddGlobals",
+    "AccountingSalesOrdersAddGlobalsTypedDict",
+    "AccountingSalesOrdersAddRequest",
+    "AccountingSalesOrdersAddRequestTypedDict",
+    "AccountingSalesOrdersAddResponse",
+    "AccountingSalesOrdersAddResponseTypedDict",
+    "AccountingSalesOrdersAllGlobals",
+    "AccountingSalesOrdersAllGlobalsTypedDict",
+    "AccountingSalesOrdersAllRequest",
+    "AccountingSalesOrdersAllRequestTypedDict",
+    "AccountingSalesOrdersAllResponse",
+    "AccountingSalesOrdersAllResponseTypedDict",
+    "AccountingSalesOrdersDeleteGlobals",
+    "AccountingSalesOrdersDeleteGlobalsTypedDict",
+    "AccountingSalesOrdersDeleteRequest",
+    "AccountingSalesOrdersDeleteRequestTypedDict",
+    "AccountingSalesOrdersDeleteResponse",
+    "AccountingSalesOrdersDeleteResponseTypedDict",
+    "AccountingSalesOrdersOneGlobals",
+    "AccountingSalesOrdersOneGlobalsTypedDict",
+    "AccountingSalesOrdersOneRequest",
+    "AccountingSalesOrdersOneRequestTypedDict",
+    "AccountingSalesOrdersOneResponse",
+    "AccountingSalesOrdersOneResponseTypedDict",
+    "AccountingSalesOrdersUpdateGlobals",
+    "AccountingSalesOrdersUpdateGlobalsTypedDict",
+    "AccountingSalesOrdersUpdateRequest",
+    "AccountingSalesOrdersUpdateRequestTypedDict",
+    "AccountingSalesOrdersUpdateResponse",
+    "AccountingSalesOrdersUpdateResponseTypedDict",
     "AccountingSalesReceiptsAddGlobals",
     "AccountingSalesReceiptsAddGlobalsTypedDict",
     "AccountingSalesReceiptsAddRequest",
@@ -7463,6 +7561,8 @@ __all__ = [
     "CreateQuoteResponseTypedDict",
     "CreateRefundResponse",
     "CreateRefundResponseTypedDict",
+    "CreateSalesOrderResponse",
+    "CreateSalesOrderResponseTypedDict",
     "CreateSalesReceiptResponse",
     "CreateSalesReceiptResponseTypedDict",
     "CreateSessionResponse",
@@ -7993,6 +8093,8 @@ __all__ = [
     "DeleteQuoteResponseTypedDict",
     "DeleteRefundResponse",
     "DeleteRefundResponseTypedDict",
+    "DeleteSalesOrderResponse",
+    "DeleteSalesOrderResponseTypedDict",
     "DeleteSalesReceiptResponse",
     "DeleteSalesReceiptResponseTypedDict",
     "DeleteSharedLinkResponse",
@@ -8731,6 +8833,10 @@ __all__ = [
     "GetRefundResponseTypedDict",
     "GetRefundsResponse",
     "GetRefundsResponseTypedDict",
+    "GetSalesOrderResponse",
+    "GetSalesOrderResponseTypedDict",
+    "GetSalesOrdersResponse",
+    "GetSalesOrdersResponseTypedDict",
     "GetSalesReceiptResponse",
     "GetSalesReceiptResponseTypedDict",
     "GetSalesReceiptsResponse",
@@ -9488,6 +9594,13 @@ __all__ = [
     "SalaryTypedDict",
     "SalesDetails",
     "SalesDetailsTypedDict",
+    "SalesOrder",
+    "SalesOrderInput",
+    "SalesOrderInputTypedDict",
+    "SalesOrderStatus",
+    "SalesOrderTypedDict",
+    "SalesOrdersFilter",
+    "SalesOrdersFilterTypedDict",
     "SalesReceipt",
     "SalesReceiptInput",
     "SalesReceiptInputTypedDict",
@@ -9785,6 +9898,8 @@ __all__ = [
     "UpdateQuoteResponseTypedDict",
     "UpdateRefundResponse",
     "UpdateRefundResponseTypedDict",
+    "UpdateSalesOrderResponse",
+    "UpdateSalesOrderResponseTypedDict",
     "UpdateSalesReceiptResponse",
     "UpdateSalesReceiptResponseTypedDict",
     "UpdateSharedLinkResponse",
@@ -10950,6 +11065,36 @@ _dynamic_imports: dict[str, str] = {
     "AccountingRefundsUpdateRequestTypedDict": ".accounting_refundsupdateop",
     "AccountingRefundsUpdateResponse": ".accounting_refundsupdateop",
     "AccountingRefundsUpdateResponseTypedDict": ".accounting_refundsupdateop",
+    "AccountingSalesOrdersAddGlobals": ".accounting_salesordersaddop",
+    "AccountingSalesOrdersAddGlobalsTypedDict": ".accounting_salesordersaddop",
+    "AccountingSalesOrdersAddRequest": ".accounting_salesordersaddop",
+    "AccountingSalesOrdersAddRequestTypedDict": ".accounting_salesordersaddop",
+    "AccountingSalesOrdersAddResponse": ".accounting_salesordersaddop",
+    "AccountingSalesOrdersAddResponseTypedDict": ".accounting_salesordersaddop",
+    "AccountingSalesOrdersAllGlobals": ".accounting_salesordersallop",
+    "AccountingSalesOrdersAllGlobalsTypedDict": ".accounting_salesordersallop",
+    "AccountingSalesOrdersAllRequest": ".accounting_salesordersallop",
+    "AccountingSalesOrdersAllRequestTypedDict": ".accounting_salesordersallop",
+    "AccountingSalesOrdersAllResponse": ".accounting_salesordersallop",
+    "AccountingSalesOrdersAllResponseTypedDict": ".accounting_salesordersallop",
+    "AccountingSalesOrdersDeleteGlobals": ".accounting_salesordersdeleteop",
+    "AccountingSalesOrdersDeleteGlobalsTypedDict": ".accounting_salesordersdeleteop",
+    "AccountingSalesOrdersDeleteRequest": ".accounting_salesordersdeleteop",
+    "AccountingSalesOrdersDeleteRequestTypedDict": ".accounting_salesordersdeleteop",
+    "AccountingSalesOrdersDeleteResponse": ".accounting_salesordersdeleteop",
+    "AccountingSalesOrdersDeleteResponseTypedDict": ".accounting_salesordersdeleteop",
+    "AccountingSalesOrdersOneGlobals": ".accounting_salesordersoneop",
+    "AccountingSalesOrdersOneGlobalsTypedDict": ".accounting_salesordersoneop",
+    "AccountingSalesOrdersOneRequest": ".accounting_salesordersoneop",
+    "AccountingSalesOrdersOneRequestTypedDict": ".accounting_salesordersoneop",
+    "AccountingSalesOrdersOneResponse": ".accounting_salesordersoneop",
+    "AccountingSalesOrdersOneResponseTypedDict": ".accounting_salesordersoneop",
+    "AccountingSalesOrdersUpdateGlobals": ".accounting_salesordersupdateop",
+    "AccountingSalesOrdersUpdateGlobalsTypedDict": ".accounting_salesordersupdateop",
+    "AccountingSalesOrdersUpdateRequest": ".accounting_salesordersupdateop",
+    "AccountingSalesOrdersUpdateRequestTypedDict": ".accounting_salesordersupdateop",
+    "AccountingSalesOrdersUpdateResponse": ".accounting_salesordersupdateop",
+    "AccountingSalesOrdersUpdateResponseTypedDict": ".accounting_salesordersupdateop",
     "AccountingSalesReceiptsAddGlobals": ".accounting_salesreceiptsaddop",
     "AccountingSalesReceiptsAddGlobalsTypedDict": ".accounting_salesreceiptsaddop",
     "AccountingSalesReceiptsAddRequest": ".accounting_salesreceiptsaddop",
@@ -11826,6 +11971,8 @@ _dynamic_imports: dict[str, str] = {
     "CreateQuoteResponseTypedDict": ".createquoteresponse",
     "CreateRefundResponse": ".createrefundresponse",
     "CreateRefundResponseTypedDict": ".createrefundresponse",
+    "CreateSalesOrderResponse": ".createsalesorderresponse",
+    "CreateSalesOrderResponseTypedDict": ".createsalesorderresponse",
     "CreateSalesReceiptResponse": ".createsalesreceiptresponse",
     "CreateSalesReceiptResponseTypedDict": ".createsalesreceiptresponse",
     "CreateSessionResponse": ".createsessionresponse",
@@ -12347,6 +12494,8 @@ _dynamic_imports: dict[str, str] = {
     "DeleteQuoteResponseTypedDict": ".deletequoteresponse",
     "DeleteRefundResponse": ".deleterefundresponse",
     "DeleteRefundResponseTypedDict": ".deleterefundresponse",
+    "DeleteSalesOrderResponse": ".deletesalesorderresponse",
+    "DeleteSalesOrderResponseTypedDict": ".deletesalesorderresponse",
     "DeleteSalesReceiptResponse": ".deletesalesreceiptresponse",
     "DeleteSalesReceiptResponseTypedDict": ".deletesalesreceiptresponse",
     "DeleteSharedLinkResponse": ".deletesharedlinkresponse",
@@ -13067,6 +13216,10 @@ _dynamic_imports: dict[str, str] = {
     "GetRefundResponseTypedDict": ".getrefundresponse",
     "GetRefundsResponse": ".getrefundsresponse",
     "GetRefundsResponseTypedDict": ".getrefundsresponse",
+    "GetSalesOrderResponse": ".getsalesorderresponse",
+    "GetSalesOrderResponseTypedDict": ".getsalesorderresponse",
+    "GetSalesOrdersResponse": ".getsalesordersresponse",
+    "GetSalesOrdersResponseTypedDict": ".getsalesordersresponse",
     "GetSalesReceiptResponse": ".getsalesreceiptresponse",
     "GetSalesReceiptResponseTypedDict": ".getsalesreceiptresponse",
     "GetSalesReceiptsResponse": ".getsalesreceiptsresponse",
@@ -13811,6 +13964,13 @@ _dynamic_imports: dict[str, str] = {
     "RequestCountAllocationTypedDict": ".requestcountallocation",
     "ResourceStatus": ".resourcestatus",
     "ResponseValidationError": ".responsevalidationerror",
+    "SalesOrder": ".salesorder",
+    "SalesOrderInput": ".salesorder",
+    "SalesOrderInputTypedDict": ".salesorder",
+    "SalesOrderStatus": ".salesorder",
+    "SalesOrderTypedDict": ".salesorder",
+    "SalesOrdersFilter": ".salesordersfilter",
+    "SalesOrdersFilterTypedDict": ".salesordersfilter",
     "SalesReceipt": ".salesreceipt",
     "SalesReceiptTypedDict": ".salesreceipt",
     "SalesReceiptInput": ".salesreceipt_input",
@@ -14109,6 +14269,8 @@ _dynamic_imports: dict[str, str] = {
     "UpdateQuoteResponseTypedDict": ".updatequoteresponse",
     "UpdateRefundResponse": ".updaterefundresponse",
     "UpdateRefundResponseTypedDict": ".updaterefundresponse",
+    "UpdateSalesOrderResponse": ".updatesalesorderresponse",
+    "UpdateSalesOrderResponseTypedDict": ".updatesalesorderresponse",
     "UpdateSalesReceiptResponse": ".updatesalesreceiptresponse",
     "UpdateSalesReceiptResponseTypedDict": ".updatesalesreceiptresponse",
     "UpdateSharedLinkResponse": ".updatesharedlinkresponse",
