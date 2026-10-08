@@ -490,6 +490,14 @@ with Apideck(
 * [update](docs/sdks/refunds/README.md#update) - Update Refund
 * [delete](docs/sdks/refunds/README.md#delete) - Delete Refund
 
+#### [accounting.sales_orders](docs/sdks/salesorders/README.md)
+
+* [list](docs/sdks/salesorders/README.md#list) - List Sales Orders
+* [create](docs/sdks/salesorders/README.md#create) - Create Sales Order
+* [get](docs/sdks/salesorders/README.md#get) - Get Sales Order
+* [update](docs/sdks/salesorders/README.md#update) - Update Sales Order
+* [delete](docs/sdks/salesorders/README.md#delete) - Delete Sales Order
+
 #### [accounting.sales_receipts](docs/sdks/salesreceipts/README.md)
 
 * [list](docs/sdks/salesreceipts/README.md#list) - List Sales Receipts
@@ -1130,8 +1138,8 @@ with Apideck(
 
 
 **Inherit from [`ApideckError`](./src/apideck_unify/models/apideckerror.py)**:
-* [`Unauthorized`](./src/apideck_unify/models/unauthorized.py): Unauthorized. Status code `401`. Applicable to 6 of 374 methods.*
-* [`ConflictResponse`](./src/apideck_unify/models/conflictresponse.py): Conflict — a connection already exists for the target connector. Status code `409`. Applicable to 1 of 374 methods.*
+* [`Unauthorized`](./src/apideck_unify/models/unauthorized.py): Unauthorized. Status code `401`. Applicable to 6 of 379 methods.*
+* [`ConflictResponse`](./src/apideck_unify/models/conflictresponse.py): Conflict — a connection already exists for the target connector. Status code `409`. Applicable to 1 of 379 methods.*
 * [`ResponseValidationError`](./src/apideck_unify/models/responsevalidationerror.py): Type mismatch between the response data and the expected Pydantic model. Provides access to the Pydantic validation error via the `cause` attribute.
 
 </details>
