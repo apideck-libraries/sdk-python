@@ -1,12 +1,12 @@
 lockVersion: 2.0.0
 id: fca0ac3a-5f4e-452c-bbc7-2311afa8da40
 management:
-  docChecksum: d36975289f868b55389441e2073519b5
-  docVersion: 10.66.1
+  docChecksum: 3310725d715857d23e6821c35875c9d5
+  docVersion: 10.66.3
   speakeasyVersion: 1.656.1
   generationVersion: 2.753.1
-  releaseVersion: 0.47.0
-  configChecksum: 04c225c99228468fe566f2ae91579652
+  releaseVersion: 0.47.1
+  configChecksum: eb84d3d510ed05d1dfe0d240f66e9843
   repoURL: https://github.com/apideck-libraries/sdk-python.git
   installationURL: https://github.com/apideck-libraries/sdk-python.git
   published: true
@@ -4094,7 +4094,7 @@ examples:
           x-apideck-consumer-id: "test-consumer"
           x-apideck-app-id: "dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX"
           x-apideck-service-id: "salesforce"
-          idempotency-key: "8e03978e-40d5-43e8-bc93-6894a57f9324"
+          idempotency-key: "your-unique-key-per-create"
       requestBody:
         application/json: {"display_id": "123456", "bill_number": "10001", "supplier": {"id": "12345", "display_name": "Windsurf Shop", "address": {"id": "123", "type": "primary", "string": "25 Spring Street, Blackburn, VIC 3130", "name": "HQ US", "line1": "Main street", "line2": "apt #", "line3": "Suite #", "line4": "delivery instructions", "line5": "Attention: Finance Dept", "street_number": "25", "city": "San Francisco", "state": "CA", "postal_code": "94104", "country": "US", "latitude": "40.759211", "longitude": "-73.984638", "county": "Santa Clara", "contact_name": "Elon Musk", "salutation": "Mr", "phone_number": "111-111-1111", "fax": "122-111-1111", "email": "elon@musk.com", "website": "https://elonmusk.com", "notes": "Address notes or delivery instructions.", "row_version": "1-12345"}}, "company_id": "12345", "subsidiary": {"display_id": "123456", "name": "Acme Inc."}, "location_id": "12345", "department_id": "12345", "currency": "USD", "currency_rate": 0.69, "tax_inclusive": true, "bill_date": "2020-09-30", "due_date": "2020-10-30", "paid_date": "2020-10-30", "po_number": "90000117", "reference": "INV-2024-001", "line_items": [{"row_id": "12345", "code": "120-C", "line_number": 1, "description": "Model Y is a fully electric, mid-size SUV, with seating for up to seven, dual motor AWD and unparalleled protection.", "type": "expense_account", "tax_amount": 27500, "total_amount": 27500, "quantity": 1, "unit_price": 27500.5, "unit_of_measure": "pc.", "discount_percentage": 0.01, "discount_amount": 19.99, "location_id": "12345", "department_id": "12345", "item": {"id": "12344", "code": "120-C", "name": "Model Y"}, "tax_rate": {"id": "123456", "rate": 10}, "ledger_account": {"id": "123456", "nominal_code": "N091", "code": "453"}, "tracking_categories": [{"id": "123456", "name": "New York"}], "row_version": "1-12345"}], "terms": "Net 30 days", "terms_id": "12345", "balance": 27500, "deposit": 0, "sub_total": 250, "total_tax": 25, "total": 27500, "tax_code": "1234", "notes": "Some notes about this bill.", "status": "draft", "ledger_account": {"id": "123456", "name": "Bank account", "nominal_code": "N091", "code": "453", "parent_id": "123456", "display_id": "123456"}, "payment_method": "cash", "channel": "email", "language": "EN", "accounting_by_row": false, "bank_account": {"bank_name": "Chase Bank", "account_number": "123465", "account_name": "Main Operating Account", "account_type": "credit_card", "iban": "GB33BUKB20201555555555", "bic": "CHASUS33", "routing_number": "021000021", "bsb_number": "062-001", "branch_identifier": "001", "bank_code": "BNH", "currency": "USD", "country": "US"}, "discount_percentage": 5.5, "template_id": "123456", "approved_by": "John Doe", "tax_method": "Due to supplier", "document_received": true, "source_document_url": "https://www.invoicesolution.com/bill/123456", "payment_allocations": [{"id": "123456", "allocated_amount": 1000, "date": "2020-09-30T07:43:32.000Z"}], "tracking_categories": [{"id": "123456", "name": "New York"}], "row_version": "1-12345", "custom_fields": [{"id": "2389328923893298", "name": "employee_level", "description": "Employee Level", "value": "Uses Salesforce and Marketo"}], "pass_through": [{"service_id": "<id>", "extend_paths": [{"path": "$.nested.property", "value": {"TaxClassificationRef": {"value": "EUC-99990201-V1-00020000"}}}]}], "accounting_period": "01-24", "attachments": [{"name": "sample.jpg", "mime_type": "image/jpeg", "is_compressed": false, "encoding": "base64", "content": "data:image/jpeg;base64,...", "notes": "A sample image"}]}
       responses:
@@ -4365,7 +4365,7 @@ examples:
           x-apideck-app-id: "dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX"
           x-apideck-service-id: "salesforce"
           x-apideck-company-id: "12345"
-          idempotency-key: "8e03978e-40d5-43e8-bc93-6894a57f9324"
+          idempotency-key: "your-unique-key-per-create"
       requestBody:
         application/json: {"display_id": "123456", "type": "service", "number": "OIT00546", "customer": {"id": "12345", "display_name": "Windsurf Shop", "email": "boring@boring.com"}, "company_id": "12345", "subsidiary": {"display_id": "123456", "name": "Acme Inc."}, "location_id": "12345", "department_id": "12345", "invoice_date": "2020-09-30", "due_date": "2020-09-30", "terms": "Net 30 days", "terms_id": "12345", "po_number": "90000117", "reference": "INV-2024-001", "status": "draft", "invoice_sent": true, "currency": "USD", "currency_rate": 0.69, "tax_inclusive": true, "sub_total": 27500, "total_tax": 2500, "tax_code": "1234", "discount_percentage": 5.5, "discount_amount": 25, "total": 27500, "balance": 27500, "deposit": 0, "customer_memo": "Thank you for your business and have a great day!", "tracking_categories": [{"id": "123456", "name": "New York"}], "line_items": [{"id": "12345", "row_id": "12345", "code": "120-C", "line_number": 1, "description": "Model Y is a fully electric, mid-size SUV, with seating for up to seven, dual motor AWD and unparalleled protection.", "type": "sales_item", "tax_amount": 27500, "total_amount": 27500, "quantity": 1, "unit_price": 27500.5, "unit_of_measure": "pc.", "discount_percentage": 0.01, "discount_amount": 19.99, "location_id": "12345", "department_id": "12345", "item": {"id": "12344", "code": "120-C", "name": "Model Y"}, "tax_rate": {"id": "123456", "rate": 10}, "tracking_categories": [{"id": "123456", "name": "New York"}], "ledger_account": {"id": "123456", "nominal_code": "N091", "code": "453"}, "custom_fields": [{"id": "2389328923893298", "name": "employee_level", "description": "Employee Level", "value": "Uses Salesforce and Marketo"}], "row_version": "1-12345"}], "billing_address": {"id": "123", "type": "primary", "string": "25 Spring Street, Blackburn, VIC 3130", "name": "HQ US", "line1": "Main street", "line2": "apt #", "line3": "Suite #", "line4": "delivery instructions", "line5": "Attention: Finance Dept", "street_number": "25", "city": "San Francisco", "state": "CA", "postal_code": "94104", "country": "US", "latitude": "40.759211", "longitude": "-73.984638", "county": "Santa Clara", "contact_name": "Elon Musk", "salutation": "Mr", "phone_number": "111-111-1111", "fax": "122-111-1111", "email": "elon@musk.com", "website": "https://elonmusk.com", "notes": "Address notes or delivery instructions.", "row_version": "1-12345"}, "shipping_address": {"id": "123", "type": "primary", "string": "25 Spring Street, Blackburn, VIC 3130", "name": "HQ US", "line1": "Main street", "line2": "apt #", "line3": "Suite #", "line4": "delivery instructions", "line5": "Attention: Finance Dept", "street_number": "25", "city": "San Francisco", "state": "CA", "postal_code": "94104", "country": "US", "latitude": "40.759211", "longitude": "-73.984638", "county": "Santa Clara", "contact_name": "Elon Musk", "salutation": "Mr", "phone_number": "111-111-1111", "fax": "122-111-1111", "email": "elon@musk.com", "website": "https://elonmusk.com", "notes": "Address notes or delivery instructions.", "row_version": "1-12345"}, "template_id": "123456", "source_document_url": "https://www.invoicesolution.com/invoice/123456", "payment_allocations": [{"id": "123456", "allocated_amount": 1000, "date": "2020-09-30T07:43:32.000Z"}], "payment_method": "cash", "channel": "email", "language": "EN", "accounting_by_row": false, "bank_account": {"bank_name": "Chase Bank", "account_number": "123465", "account_name": "Main Operating Account", "account_type": "credit_card", "iban": "GB33BUKB20201555555555", "bic": "CHASUS33", "routing_number": "021000021", "bsb_number": "062-001", "branch_identifier": "001", "bank_code": "BNH", "currency": "USD", "country": "US"}, "ledger_account": null, "custom_fields": [{"id": "2389328923893298", "name": "employee_level", "description": "Employee Level", "value": "Uses Salesforce and Marketo"}], "row_version": "1-12345", "pass_through": [{"service_id": "<id>", "extend_paths": [{"path": "$.nested.property", "value": {"TaxClassificationRef": {"value": "EUC-99990201-V1-00020000"}}}]}]}
       responses:
@@ -6420,7 +6420,7 @@ examples:
           x-apideck-app-id: "dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX"
           x-apideck-service-id: "salesforce"
           x-apideck-company-id: "12345"
-          idempotency-key: "8e03978e-40d5-43e8-bc93-6894a57f9324"
+          idempotency-key: "your-unique-key-per-create"
       requestBody:
         application/json: {"display_id": "12345", "title": "Purchase Invoice-Inventory (USD): 2019/02/01 Batch Summary Entry", "currency_rate": 0.69, "currency": "USD", "company_id": "12345", "subsidiary": null, "line_items": [{"description": "Model Y is a fully electric, mid-size SUV, with seating for up to seven, dual motor AWD and unparalleled protection.", "tax_amount": 27500, "sub_total": 27500, "total_amount": 27500, "type": "debit", "tax_rate": {"id": "123456", "rate": 10}, "tracking_categories": null, "ledger_account": {"id": "123456", "nominal_code": "N091", "code": "453"}, "customer": {"id": "12345", "display_name": "Windsurf Shop", "email": "boring@boring.com"}, "supplier": {"id": "12345", "display_name": "Windsurf Shop", "address": {"id": "123", "type": "primary", "string": "25 Spring Street, Blackburn, VIC 3130", "name": "HQ US", "line1": "Main street", "line2": "apt #", "line3": "Suite #", "line4": "delivery instructions", "street_number": "25", "city": "San Francisco", "state": "CA", "postal_code": "94104", "country": "US", "latitude": "40.759211", "longitude": "-73.984638", "county": "Santa Clara", "contact_name": "Elon Musk", "salutation": "Mr", "phone_number": "111-111-1111", "fax": "122-111-1111", "email": "elon@musk.com", "website": "https://elonmusk.com", "notes": "Address notes or delivery instructions.", "row_version": "1-12345"}}, "department_id": "12345", "location_id": "12345", "line_number": 1}], "status": "draft", "memo": "Thank you for your business and have a great day!", "posted_at": "2020-09-30T07:43:32.000Z", "journal_symbol": "IND", "tax_code": "1234", "number": "OIT00546", "tracking_categories": [{"id": "123456", "name": "New York"}], "accounting_period": "01-24", "tax_inclusive": true, "attachments": [{"name": "sample.jpg", "mime_type": "image/jpeg", "is_compressed": false, "encoding": "base64", "content": "data:image/jpeg;base64,...", "notes": "A sample image"}], "source_type": "manual", "source_id": "12345", "row_version": "1-12345", "custom_fields": [{"id": "2389328923893298", "name": "employee_level", "description": "Employee Level", "value": "Uses Salesforce and Marketo"}], "pass_through": [{"service_id": "<id>", "extend_paths": [{"path": "$.nested.property", "value": {"TaxClassificationRef": {"value": "EUC-99990201-V1-00020000"}}}]}]}
       responses:
@@ -21363,16 +21363,6 @@ examples:
           application/json: {"status_code": 400, "error": "Bad Request", "type_name": "RequestHeadersValidationError", "message": "Invalid Params", "detail": "Missing Header: x-apideck-consumer-id", "ref": "https://developers.apideck.com/errors#unauthorizederror"}
 examplesVersion: 1.0.2
 generatedTests: {}
-releaseNotes: |
-  ## Python SDK Changes Detected:
-  * `apideck.accounting.sales_orders.list()`: **Added**
-  * `apideck.accounting.sales_orders.create()`: **Added**
-  * `apideck.accounting.sales_orders.get()`: **Added**
-  * `apideck.accounting.sales_orders.update()`: **Added**
-  * `apideck.accounting.sales_orders.delete()`: **Added**
-  * `apideck.accounting.bills.create()`:  `request.idempotency_key` **Added**
-  * `apideck.accounting.invoices.create()`:  `request.idempotency_key` **Added**
-  * `apideck.accounting.journal_entries.create()`:  `request.idempotency_key` **Added**
 trackedFiles:
   .devcontainer/README.md:
     last_write_checksum: sha1:07adb0c0c051a9be4d479ea06461f3a9b3bbeb2f
@@ -21607,7 +21597,7 @@ trackedFiles:
   docs/models/accountingbillsaddglobals.md:
     last_write_checksum: sha1:888ea8ff384ec3652b9ae269299f5b73e6fbeacc
   docs/models/accountingbillsaddrequest.md:
-    last_write_checksum: sha1:21d86167d1a170c962ee4155bc7963b804d3cfca
+    last_write_checksum: sha1:5861243a0b78434d86eff8ac051b1f998e84c6c5
   docs/models/accountingbillsaddresponse.md:
     last_write_checksum: sha1:5fd2726d27c0f37f7be65cc110cfcafc5c162146
   docs/models/accountingbillsallglobals.md:
@@ -21961,7 +21951,7 @@ trackedFiles:
   docs/models/accountinginvoicesaddglobals.md:
     last_write_checksum: sha1:e873a204090d0a4586781ba27408beb613e35a5d
   docs/models/accountinginvoicesaddrequest.md:
-    last_write_checksum: sha1:f023c84c391588bd0027a4e08a1790e0e4200959
+    last_write_checksum: sha1:02268dc4c8fd6bf0534800a696fec3fc953b4aca
   docs/models/accountinginvoicesaddresponse.md:
     last_write_checksum: sha1:a7501a87b7b3b37b94533ba32a30c65520b8ee2f
   docs/models/accountinginvoicesallglobals.md:
@@ -21997,7 +21987,7 @@ trackedFiles:
   docs/models/accountingjournalentriesaddglobals.md:
     last_write_checksum: sha1:be0d2ebf229403520abeaccf212ce6f301145153
   docs/models/accountingjournalentriesaddrequest.md:
-    last_write_checksum: sha1:bc2b1e05d0b625c394a64858b804e593c5988197
+    last_write_checksum: sha1:c9f080fd30d7c27bcbb62e732f0437ca0d3ce5f8
   docs/models/accountingjournalentriesaddresponse.md:
     last_write_checksum: sha1:f8d45d72b95e5fc7becf2d5521ff18ad0f19c04c
   docs/models/accountingjournalentriesallglobals.md:
@@ -26033,7 +26023,7 @@ trackedFiles:
   docs/sdks/billpayments/README.md:
     last_write_checksum: sha1:4ec1f41a2cb70d2bead3d0f056a622cc8b36546e
   docs/sdks/bills/README.md:
-    last_write_checksum: sha1:5290b10c379655e77c9371e7c0d46c1ed15faa43
+    last_write_checksum: sha1:272126c6879aa23f447b3a2457ad6af4802c49bf
   docs/sdks/categories/README.md:
     last_write_checksum: sha1:f4ba2fe95e14ca1636ff03b02ba8dcadfc915120
   docs/sdks/collections/README.md:
@@ -26117,11 +26107,11 @@ trackedFiles:
   docs/sdks/invoiceitems/README.md:
     last_write_checksum: sha1:d9c53351c17816331d06bba8c894659e1e9212dd
   docs/sdks/invoices/README.md:
-    last_write_checksum: sha1:84e21afe507e5983f8f3f5738a43af7911dba18c
+    last_write_checksum: sha1:27d7e120196fd6534466935d9262507338d9a8c1
   docs/sdks/jobs/README.md:
     last_write_checksum: sha1:689d5986252f7db05d5f87fb6950910b314eeaa9
   docs/sdks/journalentries/README.md:
-    last_write_checksum: sha1:a421c5b4d34dd82a5f737a9bc63e7c129e78022d
+    last_write_checksum: sha1:cf4a8ddc68fe9081c78b9ad196cbeee83bbc3c18
   docs/sdks/journals/README.md:
     last_write_checksum: sha1:fdaf7231eb3b856196073475b919dbc6e64e8923
   docs/sdks/leads/README.md:
@@ -26201,7 +26191,7 @@ trackedFiles:
   pylintrc:
     last_write_checksum: sha1:ec6665a4862060890cf4c6ba61438d11decf5c3c
   pyproject.toml:
-    last_write_checksum: sha1:55f58e9567a36cabd929f0a62afb3a26a372fc58
+    last_write_checksum: sha1:2ba082d77c1db96c4d92575c10af5ab27fe0a175
   scripts/prepare_readme.py:
     last_write_checksum: sha1:798a05bafe4fbbfff5b67037866fa25efc52f11a
   scripts/publish.sh:
@@ -26215,7 +26205,7 @@ trackedFiles:
   src/apideck_unify/_hooks/types.py:
     last_write_checksum: sha1:d57be38e644de01983a9224b9733ae0add898d43
   src/apideck_unify/_version.py:
-    last_write_checksum: sha1:aacfe0069145c2c0f5927013a06ee6af487e05c3
+    last_write_checksum: sha1:514f827e2f5abcf48e8f239a16239b5bf112add7
   src/apideck_unify/accounting.py:
     last_write_checksum: sha1:d6a14fd8dde50111ee42312e468e6a3b6ea14fb1
   src/apideck_unify/activities.py:
