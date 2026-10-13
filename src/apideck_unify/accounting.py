@@ -22,6 +22,7 @@ from apideck_unify.employees import Employees
 from apideck_unify.expensecategories import ExpenseCategories
 from apideck_unify.expensereports import ExpenseReports
 from apideck_unify.expenses import Expenses
+from apideck_unify.fiscalperiods import FiscalPeriods
 from apideck_unify.generalledgertransactions import GeneralLedgerTransactions
 from apideck_unify.goodsreceipts import GoodsReceipts
 from apideck_unify.invoiceitems import InvoiceItems
@@ -43,6 +44,7 @@ from apideck_unify.subsidiaries import Subsidiaries
 from apideck_unify.suppliers import Suppliers
 from apideck_unify.taxrates import TaxRates
 from apideck_unify.trackingcategories import TrackingCategories
+from apideck_unify.trialbalance_sdk import TrialBalanceSDK
 from typing import Optional
 
 
@@ -73,6 +75,8 @@ class Accounting(BaseSDK):
     attachments: Attachments
     bank_accounts: BankAccounts
     journals: Journals
+    fiscal_periods: FiscalPeriods
+    trial_balance: TrialBalanceSDK
     tracking_categories: TrackingCategories
     bill_payments: BillPayments
     expenses: Expenses
@@ -155,6 +159,12 @@ class Accounting(BaseSDK):
             self.sdk_configuration, parent_ref=self.parent_ref
         )
         self.journals = Journals(self.sdk_configuration, parent_ref=self.parent_ref)
+        self.fiscal_periods = FiscalPeriods(
+            self.sdk_configuration, parent_ref=self.parent_ref
+        )
+        self.trial_balance = TrialBalanceSDK(
+            self.sdk_configuration, parent_ref=self.parent_ref
+        )
         self.tracking_categories = TrackingCategories(
             self.sdk_configuration, parent_ref=self.parent_ref
         )
