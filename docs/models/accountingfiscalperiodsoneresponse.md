@@ -1,0 +1,10 @@
+# AccountingFiscalPeriodsOneResponse
+
+
+## Fields
+
+| Field                                                                            | Type                                                                             | Required                                                                         | Description                                                                      |
+| -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| `http_meta`                                                                      | [models.HTTPMetadata](../models/httpmetadata.md)                                 | :heavy_check_mark:                                                               | N/A                                                                              |
+| `get_fiscal_period_response`                                                     | [Optional[models.GetFiscalPeriodResponse]](../models/getfiscalperiodresponse.md) | :heavy_minus_sign:                                                               | Fiscal Period                                                                    |
+| `unexpected_error_response`                                                      | [Optional[models.UnexpectedErrorResponse]](../models/unexpectederrorresponse.md) | :heavy_minus_sign:                                                               | Unexpected error                                                                 |

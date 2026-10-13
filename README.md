@@ -376,6 +376,11 @@ with Apideck(
 * [update](docs/sdks/expenses/README.md#update) - Update Expense
 * [delete](docs/sdks/expenses/README.md#delete) - Delete Expense
 
+#### [accounting.fiscal_periods](docs/sdks/fiscalperiods/README.md)
+
+* [list](docs/sdks/fiscalperiods/README.md#list) - List Fiscal Periods
+* [get](docs/sdks/fiscalperiods/README.md#get) - Get Fiscal Period
+
 #### [accounting.general_ledger_transactions](docs/sdks/generalledgertransactions/README.md)
 
 * [list](docs/sdks/generalledgertransactions/README.md#list) - List General Ledger Transactions
@@ -539,6 +544,10 @@ with Apideck(
 * [update](docs/sdks/trackingcategories/README.md#update) - Update Tracking Category
 * [delete](docs/sdks/trackingcategories/README.md#delete) - Delete Tracking Category
 * [create_batch](docs/sdks/trackingcategories/README.md#create_batch) - Create Tracking Categories in batch
+
+#### [accounting.trial_balance](docs/sdks/trialbalancesdk/README.md)
+
+* [get](docs/sdks/trialbalancesdk/README.md#get) - Get Trial Balance
 
 #### [ats.applicants](docs/sdks/applicants/README.md)
 
@@ -1138,8 +1147,8 @@ with Apideck(
 
 
 **Inherit from [`ApideckError`](./src/apideck_unify/models/apideckerror.py)**:
-* [`Unauthorized`](./src/apideck_unify/models/unauthorized.py): Unauthorized. Status code `401`. Applicable to 6 of 379 methods.*
-* [`ConflictResponse`](./src/apideck_unify/models/conflictresponse.py): Conflict — a connection already exists for the target connector. Status code `409`. Applicable to 1 of 379 methods.*
+* [`Unauthorized`](./src/apideck_unify/models/unauthorized.py): Unauthorized. Status code `401`. Applicable to 6 of 382 methods.*
+* [`ConflictResponse`](./src/apideck_unify/models/conflictresponse.py): Conflict — a connection already exists for the target connector. Status code `409`. Applicable to 1 of 382 methods.*
 * [`ResponseValidationError`](./src/apideck_unify/models/responsevalidationerror.py): Type mismatch between the response data and the expected Pydantic model. Provides access to the Pydantic validation error via the `cause` attribute.
 
 </details>

@@ -664,6 +664,22 @@ if TYPE_CHECKING:
         AccountingExpensesUpdateResponse,
         AccountingExpensesUpdateResponseTypedDict,
     )
+    from .accounting_fiscalperiodsallop import (
+        AccountingFiscalPeriodsAllGlobals,
+        AccountingFiscalPeriodsAllGlobalsTypedDict,
+        AccountingFiscalPeriodsAllRequest,
+        AccountingFiscalPeriodsAllRequestTypedDict,
+        AccountingFiscalPeriodsAllResponse,
+        AccountingFiscalPeriodsAllResponseTypedDict,
+    )
+    from .accounting_fiscalperiodsoneop import (
+        AccountingFiscalPeriodsOneGlobals,
+        AccountingFiscalPeriodsOneGlobalsTypedDict,
+        AccountingFiscalPeriodsOneRequest,
+        AccountingFiscalPeriodsOneRequestTypedDict,
+        AccountingFiscalPeriodsOneResponse,
+        AccountingFiscalPeriodsOneResponseTypedDict,
+    )
     from .accounting_generalledgertransactionsallop import (
         AccountingGeneralLedgerTransactionsAllGlobals,
         AccountingGeneralLedgerTransactionsAllGlobalsTypedDict,
@@ -1471,6 +1487,14 @@ if TYPE_CHECKING:
         AccountingTrackingCategoriesUpdateRequestTypedDict,
         AccountingTrackingCategoriesUpdateResponse,
         AccountingTrackingCategoriesUpdateResponseTypedDict,
+    )
+    from .accounting_trialbalanceoneop import (
+        AccountingTrialBalanceOneGlobals,
+        AccountingTrialBalanceOneGlobalsTypedDict,
+        AccountingTrialBalanceOneRequest,
+        AccountingTrialBalanceOneRequestTypedDict,
+        AccountingTrialBalanceOneResponse,
+        AccountingTrialBalanceOneResponseTypedDict,
     )
     from .accountingbankaccount import (
         AccountingBankAccount,
@@ -3699,6 +3723,12 @@ if TYPE_CHECKING:
         FileStorageUploadSessionsUploadResponseTypedDict,
     )
     from .filetype import FileType
+    from .fiscalperiod import (
+        FiscalPeriod,
+        FiscalPeriodPeriodType,
+        FiscalPeriodStatus,
+        FiscalPeriodTypedDict,
+    )
     from .folder import Folder, FolderTypedDict
     from .formfield import FormField, FormFieldType, FormFieldTypedDict
     from .formfieldoption import FormFieldOption, FormFieldOptionTypedDict
@@ -4026,6 +4056,14 @@ if TYPE_CHECKING:
     from .getexpensesresponse import GetExpensesResponse, GetExpensesResponseTypedDict
     from .getfileresponse import GetFileResponse, GetFileResponseTypedDict
     from .getfilesresponse import GetFilesResponse, GetFilesResponseTypedDict
+    from .getfiscalperiodresponse import (
+        GetFiscalPeriodResponse,
+        GetFiscalPeriodResponseTypedDict,
+    )
+    from .getfiscalperiodsresponse import (
+        GetFiscalPeriodsResponse,
+        GetFiscalPeriodsResponseTypedDict,
+    )
     from .getfolderresponse import GetFolderResponse, GetFolderResponseTypedDict
     from .getgeneralledgertransactionresponse import (
         GetGeneralLedgerTransactionResponse,
@@ -4196,6 +4234,10 @@ if TYPE_CHECKING:
     from .gettrackingcategoryresponse import (
         GetTrackingCategoryResponse,
         GetTrackingCategoryResponseTypedDict,
+    )
+    from .gettrialbalanceresponse import (
+        GetTrialBalanceResponse,
+        GetTrialBalanceResponseTypedDict,
     )
     from .getuploadsessionresponse import (
         GetUploadSessionResponse,
@@ -5217,6 +5259,18 @@ if TYPE_CHECKING:
         TrackingCategoryCreateInputTypedDict,
     )
     from .trackingitem import TrackingItem, TrackingItemTypedDict
+    from .trialbalance import (
+        Accounts,
+        AccountsTypedDict,
+        LineType,
+        TrialBalance,
+        TrialBalanceTypedDict,
+    )
+    from .trialbalancefilter import (
+        TrialBalanceFilter,
+        TrialBalanceFilterAccountingMethod,
+        TrialBalanceFilterTypedDict,
+    )
     from .unauthorized import (
         DetailDebug,
         DetailDebugTypedDict,
@@ -6319,6 +6373,18 @@ __all__ = [
     "AccountingExpensesUpdateRequestTypedDict",
     "AccountingExpensesUpdateResponse",
     "AccountingExpensesUpdateResponseTypedDict",
+    "AccountingFiscalPeriodsAllGlobals",
+    "AccountingFiscalPeriodsAllGlobalsTypedDict",
+    "AccountingFiscalPeriodsAllRequest",
+    "AccountingFiscalPeriodsAllRequestTypedDict",
+    "AccountingFiscalPeriodsAllResponse",
+    "AccountingFiscalPeriodsAllResponseTypedDict",
+    "AccountingFiscalPeriodsOneGlobals",
+    "AccountingFiscalPeriodsOneGlobalsTypedDict",
+    "AccountingFiscalPeriodsOneRequest",
+    "AccountingFiscalPeriodsOneRequestTypedDict",
+    "AccountingFiscalPeriodsOneResponse",
+    "AccountingFiscalPeriodsOneResponseTypedDict",
     "AccountingGeneralLedgerTransactionsAllGlobals",
     "AccountingGeneralLedgerTransactionsAllGlobalsTypedDict",
     "AccountingGeneralLedgerTransactionsAllRequest",
@@ -6940,6 +7006,14 @@ __all__ = [
     "AccountingTrackingCategoriesUpdateRequestTypedDict",
     "AccountingTrackingCategoriesUpdateResponse",
     "AccountingTrackingCategoriesUpdateResponseTypedDict",
+    "AccountingTrialBalanceOneGlobals",
+    "AccountingTrialBalanceOneGlobalsTypedDict",
+    "AccountingTrialBalanceOneRequest",
+    "AccountingTrialBalanceOneRequestTypedDict",
+    "AccountingTrialBalanceOneResponse",
+    "AccountingTrialBalanceOneResponseTypedDict",
+    "Accounts",
+    "AccountsTypedDict",
     "ActivitiesFilter",
     "ActivitiesFilterTypedDict",
     "ActivitiesSort",
@@ -8528,6 +8602,10 @@ __all__ = [
     "FilesSort",
     "FilesSortBy",
     "FilesSortTypedDict",
+    "FiscalPeriod",
+    "FiscalPeriodPeriodType",
+    "FiscalPeriodStatus",
+    "FiscalPeriodTypedDict",
     "Five",
     "FiveTypedDict",
     "FlsaStatus",
@@ -8733,6 +8811,10 @@ __all__ = [
     "GetFileResponseTypedDict",
     "GetFilesResponse",
     "GetFilesResponseTypedDict",
+    "GetFiscalPeriodResponse",
+    "GetFiscalPeriodResponseTypedDict",
+    "GetFiscalPeriodsResponse",
+    "GetFiscalPeriodsResponseTypedDict",
     "GetFolderResponse",
     "GetFolderResponseTypedDict",
     "GetGeneralLedgerTransactionResponse",
@@ -8871,6 +8953,8 @@ __all__ = [
     "GetTrackingCategoriesResponseTypedDict",
     "GetTrackingCategoryResponse",
     "GetTrackingCategoryResponseTypedDict",
+    "GetTrialBalanceResponse",
+    "GetTrialBalanceResponseTypedDict",
     "GetUploadSessionResponse",
     "GetUploadSessionResponseTypedDict",
     "GetUserResponse",
@@ -9264,6 +9348,7 @@ __all__ = [
     "LedgerAccountsSortBy",
     "LedgerAccountsSortTypedDict",
     "LineItemType",
+    "LineType",
     "LinkedAttachment",
     "LinkedAttachmentTypedDict",
     "LinkedConnectorResource",
@@ -9765,6 +9850,11 @@ __all__ = [
     "TransactionType",
     "Transactions",
     "TransactionsTypedDict",
+    "TrialBalance",
+    "TrialBalanceFilter",
+    "TrialBalanceFilterAccountingMethod",
+    "TrialBalanceFilterTypedDict",
+    "TrialBalanceTypedDict",
     "Two",
     "Type",
     "Unauthorized",
@@ -10651,6 +10741,18 @@ _dynamic_imports: dict[str, str] = {
     "AccountingExpensesUpdateRequestTypedDict": ".accounting_expensesupdateop",
     "AccountingExpensesUpdateResponse": ".accounting_expensesupdateop",
     "AccountingExpensesUpdateResponseTypedDict": ".accounting_expensesupdateop",
+    "AccountingFiscalPeriodsAllGlobals": ".accounting_fiscalperiodsallop",
+    "AccountingFiscalPeriodsAllGlobalsTypedDict": ".accounting_fiscalperiodsallop",
+    "AccountingFiscalPeriodsAllRequest": ".accounting_fiscalperiodsallop",
+    "AccountingFiscalPeriodsAllRequestTypedDict": ".accounting_fiscalperiodsallop",
+    "AccountingFiscalPeriodsAllResponse": ".accounting_fiscalperiodsallop",
+    "AccountingFiscalPeriodsAllResponseTypedDict": ".accounting_fiscalperiodsallop",
+    "AccountingFiscalPeriodsOneGlobals": ".accounting_fiscalperiodsoneop",
+    "AccountingFiscalPeriodsOneGlobalsTypedDict": ".accounting_fiscalperiodsoneop",
+    "AccountingFiscalPeriodsOneRequest": ".accounting_fiscalperiodsoneop",
+    "AccountingFiscalPeriodsOneRequestTypedDict": ".accounting_fiscalperiodsoneop",
+    "AccountingFiscalPeriodsOneResponse": ".accounting_fiscalperiodsoneop",
+    "AccountingFiscalPeriodsOneResponseTypedDict": ".accounting_fiscalperiodsoneop",
     "AccountingGeneralLedgerTransactionsAllGlobals": ".accounting_generalledgertransactionsallop",
     "AccountingGeneralLedgerTransactionsAllGlobalsTypedDict": ".accounting_generalledgertransactionsallop",
     "AccountingGeneralLedgerTransactionsAllRequest": ".accounting_generalledgertransactionsallop",
@@ -11257,6 +11359,12 @@ _dynamic_imports: dict[str, str] = {
     "AccountingTrackingCategoriesUpdateRequestTypedDict": ".accounting_trackingcategoriesupdateop",
     "AccountingTrackingCategoriesUpdateResponse": ".accounting_trackingcategoriesupdateop",
     "AccountingTrackingCategoriesUpdateResponseTypedDict": ".accounting_trackingcategoriesupdateop",
+    "AccountingTrialBalanceOneGlobals": ".accounting_trialbalanceoneop",
+    "AccountingTrialBalanceOneGlobalsTypedDict": ".accounting_trialbalanceoneop",
+    "AccountingTrialBalanceOneRequest": ".accounting_trialbalanceoneop",
+    "AccountingTrialBalanceOneRequestTypedDict": ".accounting_trialbalanceoneop",
+    "AccountingTrialBalanceOneResponse": ".accounting_trialbalanceoneop",
+    "AccountingTrialBalanceOneResponseTypedDict": ".accounting_trialbalanceoneop",
     "AccountingBankAccount": ".accountingbankaccount",
     "AccountingBankAccountAccountType": ".accountingbankaccount",
     "AccountingBankAccountInput": ".accountingbankaccount",
@@ -12913,6 +13021,10 @@ _dynamic_imports: dict[str, str] = {
     "FileStorageUploadSessionsUploadResponse": ".filestorage_uploadsessionsuploadop",
     "FileStorageUploadSessionsUploadResponseTypedDict": ".filestorage_uploadsessionsuploadop",
     "FileType": ".filetype",
+    "FiscalPeriod": ".fiscalperiod",
+    "FiscalPeriodPeriodType": ".fiscalperiod",
+    "FiscalPeriodStatus": ".fiscalperiod",
+    "FiscalPeriodTypedDict": ".fiscalperiod",
     "Folder": ".folder",
     "FolderTypedDict": ".folder",
     "FormField": ".formfield",
@@ -13116,6 +13228,10 @@ _dynamic_imports: dict[str, str] = {
     "GetFileResponseTypedDict": ".getfileresponse",
     "GetFilesResponse": ".getfilesresponse",
     "GetFilesResponseTypedDict": ".getfilesresponse",
+    "GetFiscalPeriodResponse": ".getfiscalperiodresponse",
+    "GetFiscalPeriodResponseTypedDict": ".getfiscalperiodresponse",
+    "GetFiscalPeriodsResponse": ".getfiscalperiodsresponse",
+    "GetFiscalPeriodsResponseTypedDict": ".getfiscalperiodsresponse",
     "GetFolderResponse": ".getfolderresponse",
     "GetFolderResponseTypedDict": ".getfolderresponse",
     "GetGeneralLedgerTransactionResponse": ".getgeneralledgertransactionresponse",
@@ -13254,6 +13370,8 @@ _dynamic_imports: dict[str, str] = {
     "GetTrackingCategoriesResponseTypedDict": ".gettrackingcategoriesresponse",
     "GetTrackingCategoryResponse": ".gettrackingcategoryresponse",
     "GetTrackingCategoryResponseTypedDict": ".gettrackingcategoryresponse",
+    "GetTrialBalanceResponse": ".gettrialbalanceresponse",
+    "GetTrialBalanceResponseTypedDict": ".gettrialbalanceresponse",
     "GetUploadSessionResponse": ".getuploadsessionresponse",
     "GetUploadSessionResponseTypedDict": ".getuploadsessionresponse",
     "GetUserResponse": ".getuserresponse",
@@ -14121,6 +14239,14 @@ _dynamic_imports: dict[str, str] = {
     "TrackingCategoryCreateInputTypedDict": ".trackingcategorycreateinput",
     "TrackingItem": ".trackingitem",
     "TrackingItemTypedDict": ".trackingitem",
+    "Accounts": ".trialbalance",
+    "AccountsTypedDict": ".trialbalance",
+    "LineType": ".trialbalance",
+    "TrialBalance": ".trialbalance",
+    "TrialBalanceTypedDict": ".trialbalance",
+    "TrialBalanceFilter": ".trialbalancefilter",
+    "TrialBalanceFilterAccountingMethod": ".trialbalancefilter",
+    "TrialBalanceFilterTypedDict": ".trialbalancefilter",
     "DetailDebug": ".unauthorized",
     "DetailDebugTypedDict": ".unauthorized",
     "DetailRequest": ".unauthorized",
