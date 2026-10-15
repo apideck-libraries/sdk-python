@@ -45,10 +45,10 @@ class TransactionsTypedDict(TypedDict):
     r"""The amount of the transaction."""
     credit_or_debit: CreditOrDebit
     r"""Whether the amount is a credit or debit."""
-    source_transaction_id: str
-    r"""The ID of the source transaction."""
     description: NotRequired[str]
     r"""A description of the transaction."""
+    source_transaction_id: NotRequired[str]
+    r"""The ID of the source transaction."""
     counterparty: NotRequired[str]
     r"""The counterparty of the transaction."""
     reference: NotRequired[str]
@@ -69,11 +69,11 @@ class Transactions(BaseModel):
     credit_or_debit: Annotated[CreditOrDebit, PlainValidator(validate_open_enum(False))]
     r"""Whether the amount is a credit or debit."""
 
-    source_transaction_id: str
-    r"""The ID of the source transaction."""
-
     description: Optional[str] = None
     r"""A description of the transaction."""
+
+    source_transaction_id: Optional[str] = None
+    r"""The ID of the source transaction."""
 
     counterparty: Optional[str] = None
     r"""The counterparty of the transaction."""
@@ -112,6 +112,7 @@ class Transactions(BaseModel):
     def serialize_model(self, handler):
         optional_fields = [
             "description",
+            "source_transaction_id",
             "counterparty",
             "reference",
             "transaction_type",
