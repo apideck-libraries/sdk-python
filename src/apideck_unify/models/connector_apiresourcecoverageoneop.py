@@ -13,7 +13,7 @@ from .unexpectederrorresponse import (
 from apideck_unify.types import BaseModel
 from apideck_unify.utils import FieldMetadata, HeaderMetadata, PathParamMetadata
 import pydantic
-from typing import Optional
+from typing import Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
@@ -61,6 +61,7 @@ class ConnectorAPIResourceCoverageOneRequest(BaseModel):
 
 class ConnectorAPIResourceCoverageOneResponseTypedDict(TypedDict):
     http_meta: HTTPMetadataTypedDict
+    headers: Dict[str, List[str]]
     get_api_resource_coverage_response: NotRequired[
         GetAPIResourceCoverageResponseTypedDict
     ]
@@ -71,6 +72,8 @@ class ConnectorAPIResourceCoverageOneResponseTypedDict(TypedDict):
 
 class ConnectorAPIResourceCoverageOneResponse(BaseModel):
     http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    headers: Dict[str, List[str]]
 
     get_api_resource_coverage_response: Optional[GetAPIResourceCoverageResponse] = None
     r"""ApiResources"""

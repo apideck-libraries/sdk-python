@@ -18,7 +18,7 @@ from apideck_unify.utils import (
     QueryParamMetadata,
 )
 import pydantic
-from typing import Optional
+from typing import Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
@@ -94,6 +94,7 @@ class CrmPipelinesDeleteRequest(BaseModel):
 
 class CrmPipelinesDeleteResponseTypedDict(TypedDict):
     http_meta: HTTPMetadataTypedDict
+    headers: Dict[str, List[str]]
     delete_pipeline_response: NotRequired[DeletePipelineResponseTypedDict]
     r"""Pipeline deleted"""
     unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
@@ -102,6 +103,8 @@ class CrmPipelinesDeleteResponseTypedDict(TypedDict):
 
 class CrmPipelinesDeleteResponse(BaseModel):
     http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    headers: Dict[str, List[str]]
 
     delete_pipeline_response: Optional[DeletePipelineResponse] = None
     r"""Pipeline deleted"""

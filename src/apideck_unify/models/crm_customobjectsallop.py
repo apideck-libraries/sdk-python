@@ -25,7 +25,7 @@ from apideck_unify.utils import (
 )
 import pydantic
 from pydantic import model_serializer
-from typing import Any, Callable, Dict, Optional
+from typing import Any, Callable, Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
@@ -172,6 +172,7 @@ class CrmCustomObjectsAllRequest(BaseModel):
 
 class CrmCustomObjectsAllResponseTypedDict(TypedDict):
     http_meta: HTTPMetadataTypedDict
+    headers: Dict[str, List[str]]
     get_custom_objects_response: NotRequired[GetCustomObjectsResponseTypedDict]
     r"""Custom objects"""
     unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
@@ -182,6 +183,8 @@ class CrmCustomObjectsAllResponse(BaseModel):
     next: Callable[[], Optional[CrmCustomObjectsAllResponse]]
 
     http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    headers: Dict[str, List[str]]
 
     get_custom_objects_response: Optional[GetCustomObjectsResponse] = None
     r"""Custom objects"""

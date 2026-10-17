@@ -19,7 +19,7 @@ from apideck_unify.utils import (
     RequestMetadata,
 )
 import pydantic
-from typing import Optional
+from typing import Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
@@ -103,6 +103,7 @@ class AccountingSuppliersBatchAddRequest(BaseModel):
 
 class AccountingSuppliersBatchAddResponseTypedDict(TypedDict):
     http_meta: HTTPMetadataTypedDict
+    headers: Dict[str, List[str]]
     batch_suppliers_response: NotRequired[BatchSuppliersResponseTypedDict]
     r"""Suppliers batch processed"""
     unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
@@ -111,6 +112,8 @@ class AccountingSuppliersBatchAddResponseTypedDict(TypedDict):
 
 class AccountingSuppliersBatchAddResponse(BaseModel):
     http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    headers: Dict[str, List[str]]
 
     batch_suppliers_response: Optional[BatchSuppliersResponse] = None
     r"""Suppliers batch processed"""

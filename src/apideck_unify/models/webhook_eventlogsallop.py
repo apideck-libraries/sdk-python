@@ -24,7 +24,7 @@ from apideck_unify.types import (
 from apideck_unify.utils import FieldMetadata, HeaderMetadata, QueryParamMetadata
 import pydantic
 from pydantic import model_serializer
-from typing import Callable, Optional
+from typing import Callable, Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
@@ -113,6 +113,7 @@ class WebhookEventLogsAllRequest(BaseModel):
 
 class WebhookEventLogsAllResponseTypedDict(TypedDict):
     http_meta: HTTPMetadataTypedDict
+    headers: Dict[str, List[str]]
     get_webhook_event_logs_response: NotRequired[GetWebhookEventLogsResponseTypedDict]
     r"""EventLogs"""
     unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
@@ -123,6 +124,8 @@ class WebhookEventLogsAllResponse(BaseModel):
     next: Callable[[], Optional[WebhookEventLogsAllResponse]]
 
     http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    headers: Dict[str, List[str]]
 
     get_webhook_event_logs_response: Optional[GetWebhookEventLogsResponse] = None
     r"""EventLogs"""

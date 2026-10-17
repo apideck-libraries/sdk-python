@@ -19,7 +19,7 @@ from apideck_unify.utils import (
     RequestMetadata,
 )
 import pydantic
-from typing import Optional
+from typing import Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
@@ -94,6 +94,7 @@ class CrmActivitiesAddRequest(BaseModel):
 
 class CrmActivitiesAddResponseTypedDict(TypedDict):
     http_meta: HTTPMetadataTypedDict
+    headers: Dict[str, List[str]]
     create_activity_response: NotRequired[CreateActivityResponseTypedDict]
     r"""Activity created"""
     unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
@@ -102,6 +103,8 @@ class CrmActivitiesAddResponseTypedDict(TypedDict):
 
 class CrmActivitiesAddResponse(BaseModel):
     http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    headers: Dict[str, List[str]]
 
     create_activity_response: Optional[CreateActivityResponse] = None
     r"""Activity created"""

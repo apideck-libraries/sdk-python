@@ -18,7 +18,7 @@ from apideck_unify.utils import (
     QueryParamMetadata,
 )
 import pydantic
-from typing import Optional
+from typing import Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
@@ -94,6 +94,7 @@ class FileStorageDriveGroupsDeleteRequest(BaseModel):
 
 class FileStorageDriveGroupsDeleteResponseTypedDict(TypedDict):
     http_meta: HTTPMetadataTypedDict
+    headers: Dict[str, List[str]]
     delete_drive_group_response: NotRequired[DeleteDriveGroupResponseTypedDict]
     r"""DriveGroups"""
     unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
@@ -102,6 +103,8 @@ class FileStorageDriveGroupsDeleteResponseTypedDict(TypedDict):
 
 class FileStorageDriveGroupsDeleteResponse(BaseModel):
     http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    headers: Dict[str, List[str]]
 
     delete_drive_group_response: Optional[DeleteDriveGroupResponse] = None
     r"""DriveGroups"""

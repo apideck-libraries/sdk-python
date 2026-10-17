@@ -11,7 +11,7 @@ from .unexpectederrorresponse import (
 from apideck_unify.types import BaseModel
 from apideck_unify.utils import FieldMetadata, HeaderMetadata, RequestMetadata
 import pydantic
-from typing import Optional
+from typing import Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
@@ -71,6 +71,7 @@ class VaultSessionsCreateRequest(BaseModel):
 
 class VaultSessionsCreateResponseTypedDict(TypedDict):
     http_meta: HTTPMetadataTypedDict
+    headers: Dict[str, List[str]]
     create_session_response: NotRequired[CreateSessionResponseTypedDict]
     r"""Session created"""
     unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
@@ -79,6 +80,8 @@ class VaultSessionsCreateResponseTypedDict(TypedDict):
 
 class VaultSessionsCreateResponse(BaseModel):
     http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    headers: Dict[str, List[str]]
 
     create_session_response: Optional[CreateSessionResponse] = None
     r"""Session created"""

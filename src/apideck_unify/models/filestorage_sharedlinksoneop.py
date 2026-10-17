@@ -22,7 +22,7 @@ from apideck_unify.utils import (
 )
 import pydantic
 from pydantic import model_serializer
-from typing import Optional
+from typing import Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
@@ -136,6 +136,7 @@ class FileStorageSharedLinksOneRequest(BaseModel):
 
 class FileStorageSharedLinksOneResponseTypedDict(TypedDict):
     http_meta: HTTPMetadataTypedDict
+    headers: Dict[str, List[str]]
     get_shared_link_response: NotRequired[GetSharedLinkResponseTypedDict]
     r"""Shared Link"""
     unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
@@ -144,6 +145,8 @@ class FileStorageSharedLinksOneResponseTypedDict(TypedDict):
 
 class FileStorageSharedLinksOneResponse(BaseModel):
     http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    headers: Dict[str, List[str]]
 
     get_shared_link_response: Optional[GetSharedLinkResponse] = None
     r"""Shared Link"""

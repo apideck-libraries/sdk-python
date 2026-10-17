@@ -25,7 +25,7 @@ from apideck_unify.utils import (
 )
 import pydantic
 from pydantic import model_serializer
-from typing import Optional
+from typing import Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
@@ -146,6 +146,7 @@ class HrisTimeOffRequestsOneRequest(BaseModel):
 
 class HrisTimeOffRequestsOneResponseTypedDict(TypedDict):
     http_meta: HTTPMetadataTypedDict
+    headers: Dict[str, List[str]]
     get_time_off_request_response: NotRequired[GetTimeOffRequestResponseTypedDict]
     r"""TimeOffRequests"""
     unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
@@ -154,6 +155,8 @@ class HrisTimeOffRequestsOneResponseTypedDict(TypedDict):
 
 class HrisTimeOffRequestsOneResponse(BaseModel):
     http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    headers: Dict[str, List[str]]
 
     get_time_off_request_response: Optional[GetTimeOffRequestResponse] = None
     r"""TimeOffRequests"""

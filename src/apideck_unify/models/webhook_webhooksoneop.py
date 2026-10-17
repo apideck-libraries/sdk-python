@@ -10,7 +10,7 @@ from .unexpectederrorresponse import (
 from apideck_unify.types import BaseModel
 from apideck_unify.utils import FieldMetadata, HeaderMetadata, PathParamMetadata
 import pydantic
-from typing import Optional
+from typing import Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
@@ -51,6 +51,7 @@ class WebhookWebhooksOneRequest(BaseModel):
 
 class WebhookWebhooksOneResponseTypedDict(TypedDict):
     http_meta: HTTPMetadataTypedDict
+    headers: Dict[str, List[str]]
     get_webhook_response: NotRequired[GetWebhookResponseTypedDict]
     r"""Webhooks"""
     unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
@@ -59,6 +60,8 @@ class WebhookWebhooksOneResponseTypedDict(TypedDict):
 
 class WebhookWebhooksOneResponse(BaseModel):
     http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    headers: Dict[str, List[str]]
 
     get_webhook_response: Optional[GetWebhookResponse] = None
     r"""Webhooks"""

@@ -16,7 +16,7 @@ from apideck_unify.utils import (
     RequestMetadata,
 )
 import pydantic
-from typing import Optional
+from typing import Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
@@ -63,6 +63,7 @@ class WebhookWebhooksUpdateRequest(BaseModel):
 
 class WebhookWebhooksUpdateResponseTypedDict(TypedDict):
     http_meta: HTTPMetadataTypedDict
+    headers: Dict[str, List[str]]
     update_webhook_response: NotRequired[UpdateWebhookResponseTypedDict]
     r"""Webhooks"""
     unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
@@ -71,6 +72,8 @@ class WebhookWebhooksUpdateResponseTypedDict(TypedDict):
 
 class WebhookWebhooksUpdateResponse(BaseModel):
     http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    headers: Dict[str, List[str]]
 
     update_webhook_response: Optional[UpdateWebhookResponse] = None
     r"""Webhooks"""

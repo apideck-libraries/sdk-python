@@ -17,7 +17,7 @@ from apideck_unify.utils import (
     RequestMetadata,
 )
 import pydantic
-from typing import Optional
+from typing import Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
@@ -98,6 +98,7 @@ class CrmLeadsUpdateRequest(BaseModel):
 
 class CrmLeadsUpdateResponseTypedDict(TypedDict):
     http_meta: HTTPMetadataTypedDict
+    headers: Dict[str, List[str]]
     update_lead_response: NotRequired[UpdateLeadResponseTypedDict]
     r"""Lead updated"""
     unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
@@ -106,6 +107,8 @@ class CrmLeadsUpdateResponseTypedDict(TypedDict):
 
 class CrmLeadsUpdateResponse(BaseModel):
     http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    headers: Dict[str, List[str]]
 
     update_lead_response: Optional[UpdateLeadResponse] = None
     r"""Lead updated"""

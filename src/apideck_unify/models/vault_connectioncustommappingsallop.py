@@ -18,7 +18,7 @@ from apideck_unify.utils import (
     QueryParamMetadata,
 )
 import pydantic
-from typing import Optional
+from typing import Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
@@ -99,6 +99,7 @@ class VaultConnectionCustomMappingsAllRequest(BaseModel):
 
 class VaultConnectionCustomMappingsAllResponseTypedDict(TypedDict):
     http_meta: HTTPMetadataTypedDict
+    headers: Dict[str, List[str]]
     get_custom_mappings_response: NotRequired[GetCustomMappingsResponseTypedDict]
     r"""Custom mapping"""
     unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
@@ -107,6 +108,8 @@ class VaultConnectionCustomMappingsAllResponseTypedDict(TypedDict):
 
 class VaultConnectionCustomMappingsAllResponse(BaseModel):
     http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    headers: Dict[str, List[str]]
 
     get_custom_mappings_response: Optional[GetCustomMappingsResponse] = None
     r"""Custom mapping"""

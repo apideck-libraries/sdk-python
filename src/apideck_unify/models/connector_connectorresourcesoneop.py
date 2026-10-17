@@ -19,7 +19,7 @@ from apideck_unify.utils import (
     QueryParamMetadata,
 )
 import pydantic
-from typing import Optional
+from typing import Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
@@ -75,6 +75,7 @@ class ConnectorConnectorResourcesOneRequest(BaseModel):
 
 class ConnectorConnectorResourcesOneResponseTypedDict(TypedDict):
     http_meta: HTTPMetadataTypedDict
+    headers: Dict[str, List[str]]
     get_connector_resource_response: NotRequired[GetConnectorResourceResponseTypedDict]
     r"""ConnectorResources"""
     unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
@@ -83,6 +84,8 @@ class ConnectorConnectorResourcesOneResponseTypedDict(TypedDict):
 
 class ConnectorConnectorResourcesOneResponse(BaseModel):
     http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    headers: Dict[str, List[str]]
 
     get_connector_resource_response: Optional[GetConnectorResourceResponse] = None
     r"""ConnectorResources"""

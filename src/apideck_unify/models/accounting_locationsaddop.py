@@ -22,7 +22,7 @@ from apideck_unify.utils import (
     RequestMetadata,
 )
 import pydantic
-from typing import Optional
+from typing import Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
@@ -106,6 +106,7 @@ class AccountingLocationsAddRequest(BaseModel):
 
 class AccountingLocationsAddResponseTypedDict(TypedDict):
     http_meta: HTTPMetadataTypedDict
+    headers: Dict[str, List[str]]
     create_accounting_location_response: NotRequired[
         CreateAccountingLocationResponseTypedDict
     ]
@@ -116,6 +117,8 @@ class AccountingLocationsAddResponseTypedDict(TypedDict):
 
 class AccountingLocationsAddResponse(BaseModel):
     http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    headers: Dict[str, List[str]]
 
     create_accounting_location_response: Optional[CreateAccountingLocationResponse] = (
         None

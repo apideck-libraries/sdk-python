@@ -23,7 +23,7 @@ from apideck_unify.utils import (
 )
 import pydantic
 from pydantic import model_serializer
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
@@ -162,6 +162,7 @@ class HrisEmployeesOneRequest(BaseModel):
 
 class HrisEmployeesOneResponseTypedDict(TypedDict):
     http_meta: HTTPMetadataTypedDict
+    headers: Dict[str, List[str]]
     get_employee_response: NotRequired[GetEmployeeResponseTypedDict]
     r"""Employees"""
     unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
@@ -170,6 +171,8 @@ class HrisEmployeesOneResponseTypedDict(TypedDict):
 
 class HrisEmployeesOneResponse(BaseModel):
     http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    headers: Dict[str, List[str]]
 
     get_employee_response: Optional[GetEmployeeResponse] = None
     r"""Employees"""

@@ -17,7 +17,7 @@ from apideck_unify.utils import (
     RequestMetadata,
 )
 import pydantic
-from typing import Optional
+from typing import Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
@@ -99,6 +99,7 @@ class IssueTrackingCollectionTicketsAddRequest(BaseModel):
 
 class IssueTrackingCollectionTicketsAddResponseTypedDict(TypedDict):
     http_meta: HTTPMetadataTypedDict
+    headers: Dict[str, List[str]]
     create_ticket_response: NotRequired[CreateTicketResponseTypedDict]
     r"""Create a Ticket"""
     unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
@@ -107,6 +108,8 @@ class IssueTrackingCollectionTicketsAddResponseTypedDict(TypedDict):
 
 class IssueTrackingCollectionTicketsAddResponse(BaseModel):
     http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    headers: Dict[str, List[str]]
 
     create_ticket_response: Optional[CreateTicketResponse] = None
     r"""Create a Ticket"""

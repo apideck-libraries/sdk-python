@@ -18,7 +18,7 @@ from apideck_unify.utils import (
     QueryParamMetadata,
 )
 import pydantic
-from typing import Optional
+from typing import Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
@@ -101,6 +101,7 @@ class CrmCustomObjectsDeleteRequest(BaseModel):
 
 class CrmCustomObjectsDeleteResponseTypedDict(TypedDict):
     http_meta: HTTPMetadataTypedDict
+    headers: Dict[str, List[str]]
     delete_custom_object_response: NotRequired[DeleteCustomObjectResponseTypedDict]
     r"""Custom object deleted"""
     unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
@@ -109,6 +110,8 @@ class CrmCustomObjectsDeleteResponseTypedDict(TypedDict):
 
 class CrmCustomObjectsDeleteResponse(BaseModel):
     http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    headers: Dict[str, List[str]]
 
     delete_custom_object_response: Optional[DeleteCustomObjectResponse] = None
     r"""Custom object deleted"""

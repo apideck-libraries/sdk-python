@@ -20,7 +20,7 @@ from apideck_unify.types import (
 from apideck_unify.utils import FieldMetadata, HeaderMetadata, QueryParamMetadata
 import pydantic
 from pydantic import model_serializer
-from typing import Any, Callable, Dict, Optional
+from typing import Any, Callable, Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
@@ -151,6 +151,7 @@ class CrmCustomObjectSchemasAllRequest(BaseModel):
 
 class CrmCustomObjectSchemasAllResponseTypedDict(TypedDict):
     http_meta: HTTPMetadataTypedDict
+    headers: Dict[str, List[str]]
     get_custom_object_schemas_response: NotRequired[
         GetCustomObjectSchemasResponseTypedDict
     ]
@@ -163,6 +164,8 @@ class CrmCustomObjectSchemasAllResponse(BaseModel):
     next: Callable[[], Optional[CrmCustomObjectSchemasAllResponse]]
 
     http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    headers: Dict[str, List[str]]
 
     get_custom_object_schemas_response: Optional[GetCustomObjectSchemasResponse] = None
     r"""Custom object schemas"""

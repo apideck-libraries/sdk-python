@@ -14,7 +14,7 @@ from .unexpectederrorresponse import (
 from apideck_unify.types import BaseModel
 from apideck_unify.utils import FieldMetadata, HeaderMetadata, QueryParamMetadata
 import pydantic
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
@@ -109,6 +109,7 @@ class AccountingTrialBalanceOneRequest(BaseModel):
 
 class AccountingTrialBalanceOneResponseTypedDict(TypedDict):
     http_meta: HTTPMetadataTypedDict
+    headers: Dict[str, List[str]]
     get_trial_balance_response: NotRequired[GetTrialBalanceResponseTypedDict]
     r"""Trial Balance"""
     unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
@@ -117,6 +118,8 @@ class AccountingTrialBalanceOneResponseTypedDict(TypedDict):
 
 class AccountingTrialBalanceOneResponse(BaseModel):
     http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    headers: Dict[str, List[str]]
 
     get_trial_balance_response: Optional[GetTrialBalanceResponse] = None
     r"""Trial Balance"""

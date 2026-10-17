@@ -18,7 +18,7 @@ from apideck_unify.types import (
 from apideck_unify.utils import FieldMetadata, HeaderMetadata, QueryParamMetadata
 import pydantic
 from pydantic import model_serializer
-from typing import Any, Callable, Dict, Optional
+from typing import Any, Callable, Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
@@ -169,6 +169,7 @@ class AccountingQuotesAllRequest(BaseModel):
 
 class AccountingQuotesAllResponseTypedDict(TypedDict):
     http_meta: HTTPMetadataTypedDict
+    headers: Dict[str, List[str]]
     get_quotes_response: NotRequired[GetQuotesResponseTypedDict]
     r"""Quotes"""
     unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
@@ -179,6 +180,8 @@ class AccountingQuotesAllResponse(BaseModel):
     next: Callable[[], Optional[AccountingQuotesAllResponse]]
 
     http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    headers: Dict[str, List[str]]
 
     get_quotes_response: Optional[GetQuotesResponse] = None
     r"""Quotes"""

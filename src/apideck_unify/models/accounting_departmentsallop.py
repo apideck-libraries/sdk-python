@@ -24,7 +24,7 @@ from apideck_unify.types import (
 from apideck_unify.utils import FieldMetadata, HeaderMetadata, QueryParamMetadata
 import pydantic
 from pydantic import model_serializer
-from typing import Any, Callable, Dict, Optional
+from typing import Any, Callable, Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
@@ -184,6 +184,7 @@ class AccountingDepartmentsAllRequest(BaseModel):
 
 class AccountingDepartmentsAllResponseTypedDict(TypedDict):
     http_meta: HTTPMetadataTypedDict
+    headers: Dict[str, List[str]]
     get_accounting_departments_response: NotRequired[
         GetAccountingDepartmentsResponseTypedDict
     ]
@@ -196,6 +197,8 @@ class AccountingDepartmentsAllResponse(BaseModel):
     next: Callable[[], Optional[AccountingDepartmentsAllResponse]]
 
     http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    headers: Dict[str, List[str]]
 
     get_accounting_departments_response: Optional[GetAccountingDepartmentsResponse] = (
         None

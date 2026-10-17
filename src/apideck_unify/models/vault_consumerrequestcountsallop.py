@@ -18,7 +18,7 @@ from apideck_unify.utils import (
     QueryParamMetadata,
 )
 import pydantic
-from typing import Optional
+from typing import Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
@@ -73,6 +73,7 @@ class VaultConsumerRequestCountsAllRequest(BaseModel):
 
 class VaultConsumerRequestCountsAllResponseTypedDict(TypedDict):
     http_meta: HTTPMetadataTypedDict
+    headers: Dict[str, List[str]]
     consumer_request_counts_in_date_range_response: NotRequired[
         ConsumerRequestCountsInDateRangeResponseTypedDict
     ]
@@ -83,6 +84,8 @@ class VaultConsumerRequestCountsAllResponseTypedDict(TypedDict):
 
 class VaultConsumerRequestCountsAllResponse(BaseModel):
     http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    headers: Dict[str, List[str]]
 
     consumer_request_counts_in_date_range_response: Optional[
         ConsumerRequestCountsInDateRangeResponse

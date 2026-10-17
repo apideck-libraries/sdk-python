@@ -18,7 +18,7 @@ from apideck_unify.utils import (
     QueryParamMetadata,
 )
 import pydantic
-from typing import Optional
+from typing import Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
@@ -101,6 +101,7 @@ class CrmCustomObjectsOneRequest(BaseModel):
 
 class CrmCustomObjectsOneResponseTypedDict(TypedDict):
     http_meta: HTTPMetadataTypedDict
+    headers: Dict[str, List[str]]
     get_custom_object_response: NotRequired[GetCustomObjectResponseTypedDict]
     r"""Custom object"""
     unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
@@ -109,6 +110,8 @@ class CrmCustomObjectsOneResponseTypedDict(TypedDict):
 
 class CrmCustomObjectsOneResponse(BaseModel):
     http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    headers: Dict[str, List[str]]
 
     get_custom_object_response: Optional[GetCustomObjectResponse] = None
     r"""Custom object"""

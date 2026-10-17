@@ -13,7 +13,7 @@ from .unexpectederrorresponse import (
 from apideck_unify.types import BaseModel
 from apideck_unify.utils import FieldMetadata, HeaderMetadata, QueryParamMetadata
 import pydantic
-from typing import Optional
+from typing import Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
@@ -81,6 +81,7 @@ class VaultConnectionsAllRequest(BaseModel):
 
 class VaultConnectionsAllResponseTypedDict(TypedDict):
     http_meta: HTTPMetadataTypedDict
+    headers: Dict[str, List[str]]
     get_connections_response: NotRequired[GetConnectionsResponseTypedDict]
     r"""Connections"""
     unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
@@ -89,6 +90,8 @@ class VaultConnectionsAllResponseTypedDict(TypedDict):
 
 class VaultConnectionsAllResponse(BaseModel):
     http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    headers: Dict[str, List[str]]
 
     get_connections_response: Optional[GetConnectionsResponse] = None
     r"""Connections"""

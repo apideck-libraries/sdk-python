@@ -25,7 +25,7 @@ from apideck_unify.utils import (
 )
 import pydantic
 from pydantic import model_serializer
-from typing import Any, Callable, Dict, Optional
+from typing import Any, Callable, Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
@@ -172,6 +172,7 @@ class IssueTrackingCollectionUsersAllRequest(BaseModel):
 
 class IssueTrackingCollectionUsersAllResponseTypedDict(TypedDict):
     http_meta: HTTPMetadataTypedDict
+    headers: Dict[str, List[str]]
     get_collection_users_response: NotRequired[GetCollectionUsersResponseTypedDict]
     r"""Users"""
     unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
@@ -182,6 +183,8 @@ class IssueTrackingCollectionUsersAllResponse(BaseModel):
     next: Callable[[], Optional[IssueTrackingCollectionUsersAllResponse]]
 
     http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    headers: Dict[str, List[str]]
 
     get_collection_users_response: Optional[GetCollectionUsersResponse] = None
     r"""Users"""

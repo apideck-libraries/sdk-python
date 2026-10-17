@@ -18,7 +18,7 @@ from apideck_unify.utils import (
     QueryParamMetadata,
 )
 import pydantic
-from typing import Optional
+from typing import Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
@@ -94,6 +94,7 @@ class AccountingBankFeedStatementsDeleteRequest(BaseModel):
 
 class AccountingBankFeedStatementsDeleteResponseTypedDict(TypedDict):
     http_meta: HTTPMetadataTypedDict
+    headers: Dict[str, List[str]]
     delete_bank_feed_statement_response: NotRequired[
         DeleteBankFeedStatementResponseTypedDict
     ]
@@ -104,6 +105,8 @@ class AccountingBankFeedStatementsDeleteResponseTypedDict(TypedDict):
 
 class AccountingBankFeedStatementsDeleteResponse(BaseModel):
     http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    headers: Dict[str, List[str]]
 
     delete_bank_feed_statement_response: Optional[DeleteBankFeedStatementResponse] = (
         None

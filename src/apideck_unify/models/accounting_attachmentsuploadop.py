@@ -25,7 +25,7 @@ import io
 import pydantic
 from pydantic import field_serializer
 from pydantic.functional_validators import PlainValidator
-from typing import IO, Optional, Union
+from typing import Dict, IO, List, Optional, Union
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
@@ -138,6 +138,7 @@ class AccountingAttachmentsUploadRequest(BaseModel):
 
 class AccountingAttachmentsUploadResponseTypedDict(TypedDict):
     http_meta: HTTPMetadataTypedDict
+    headers: Dict[str, List[str]]
     create_attachment_response: NotRequired[CreateAttachmentResponseTypedDict]
     r"""Attachments"""
     unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
@@ -146,6 +147,8 @@ class AccountingAttachmentsUploadResponseTypedDict(TypedDict):
 
 class AccountingAttachmentsUploadResponse(BaseModel):
     http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    headers: Dict[str, List[str]]
 
     create_attachment_response: Optional[CreateAttachmentResponse] = None
     r"""Attachments"""

@@ -20,7 +20,7 @@ from apideck_unify.types import (
 from apideck_unify.utils import FieldMetadata, HeaderMetadata, QueryParamMetadata
 import pydantic
 from pydantic import model_serializer
-from typing import Any, Callable, Dict, Optional
+from typing import Any, Callable, Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
@@ -160,6 +160,7 @@ class HrisCompaniesAllRequest(BaseModel):
 
 class HrisCompaniesAllResponseTypedDict(TypedDict):
     http_meta: HTTPMetadataTypedDict
+    headers: Dict[str, List[str]]
     get_hris_companies_response: NotRequired[GetHrisCompaniesResponseTypedDict]
     r"""Companies"""
     unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
@@ -170,6 +171,8 @@ class HrisCompaniesAllResponse(BaseModel):
     next: Callable[[], Optional[HrisCompaniesAllResponse]]
 
     http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    headers: Dict[str, List[str]]
 
     get_hris_companies_response: Optional[GetHrisCompaniesResponse] = None
     r"""Companies"""

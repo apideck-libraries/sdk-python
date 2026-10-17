@@ -22,7 +22,7 @@ from apideck_unify.utils import (
 )
 import pydantic
 from pydantic import model_serializer
-from typing import Optional
+from typing import Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
@@ -136,6 +136,7 @@ class FileStorageFoldersOneRequest(BaseModel):
 
 class FileStorageFoldersOneResponseTypedDict(TypedDict):
     http_meta: HTTPMetadataTypedDict
+    headers: Dict[str, List[str]]
     get_folder_response: NotRequired[GetFolderResponseTypedDict]
     r"""Folders"""
     unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
@@ -144,6 +145,8 @@ class FileStorageFoldersOneResponseTypedDict(TypedDict):
 
 class FileStorageFoldersOneResponse(BaseModel):
     http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    headers: Dict[str, List[str]]
 
     get_folder_response: Optional[GetFolderResponse] = None
     r"""Folders"""

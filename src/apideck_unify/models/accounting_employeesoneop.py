@@ -25,7 +25,7 @@ from apideck_unify.utils import (
 )
 import pydantic
 from pydantic import model_serializer
-from typing import Optional
+from typing import Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
@@ -139,6 +139,7 @@ class AccountingEmployeesOneRequest(BaseModel):
 
 class AccountingEmployeesOneResponseTypedDict(TypedDict):
     http_meta: HTTPMetadataTypedDict
+    headers: Dict[str, List[str]]
     get_accounting_employee_response: NotRequired[
         GetAccountingEmployeeResponseTypedDict
     ]
@@ -149,6 +150,8 @@ class AccountingEmployeesOneResponseTypedDict(TypedDict):
 
 class AccountingEmployeesOneResponse(BaseModel):
     http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    headers: Dict[str, List[str]]
 
     get_accounting_employee_response: Optional[GetAccountingEmployeeResponse] = None
     r"""Employees"""
