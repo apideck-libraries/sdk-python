@@ -20,7 +20,7 @@ from apideck_unify.utils import (
     RequestMetadata,
 )
 import pydantic
-from typing import Optional
+from typing import Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
@@ -102,6 +102,7 @@ class CrmCustomObjectsAddRequest(BaseModel):
 
 class CrmCustomObjectsAddResponseTypedDict(TypedDict):
     http_meta: HTTPMetadataTypedDict
+    headers: Dict[str, List[str]]
     create_custom_object_response: NotRequired[CreateCustomObjectResponseTypedDict]
     r"""Custom object created"""
     unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
@@ -110,6 +111,8 @@ class CrmCustomObjectsAddResponseTypedDict(TypedDict):
 
 class CrmCustomObjectsAddResponse(BaseModel):
     http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    headers: Dict[str, List[str]]
 
     create_custom_object_response: Optional[CreateCustomObjectResponse] = None
     r"""Custom object created"""

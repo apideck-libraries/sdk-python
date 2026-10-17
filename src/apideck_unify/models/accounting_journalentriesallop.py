@@ -22,7 +22,7 @@ from apideck_unify.types import (
 from apideck_unify.utils import FieldMetadata, HeaderMetadata, QueryParamMetadata
 import pydantic
 from pydantic import model_serializer
-from typing import Any, Callable, Dict, Optional
+from typing import Any, Callable, Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
@@ -191,6 +191,7 @@ class AccountingJournalEntriesAllRequest(BaseModel):
 
 class AccountingJournalEntriesAllResponseTypedDict(TypedDict):
     http_meta: HTTPMetadataTypedDict
+    headers: Dict[str, List[str]]
     get_journal_entries_response: NotRequired[GetJournalEntriesResponseTypedDict]
     r"""JournalEntry"""
     unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
@@ -201,6 +202,8 @@ class AccountingJournalEntriesAllResponse(BaseModel):
     next: Callable[[], Optional[AccountingJournalEntriesAllResponse]]
 
     http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    headers: Dict[str, List[str]]
 
     get_journal_entries_response: Optional[GetJournalEntriesResponse] = None
     r"""JournalEntry"""

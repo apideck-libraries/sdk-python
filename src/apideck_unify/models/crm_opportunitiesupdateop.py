@@ -20,7 +20,7 @@ from apideck_unify.utils import (
     RequestMetadata,
 )
 import pydantic
-from typing import Optional
+from typing import Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
@@ -102,6 +102,7 @@ class CrmOpportunitiesUpdateRequest(BaseModel):
 
 class CrmOpportunitiesUpdateResponseTypedDict(TypedDict):
     http_meta: HTTPMetadataTypedDict
+    headers: Dict[str, List[str]]
     update_opportunity_response: NotRequired[UpdateOpportunityResponseTypedDict]
     r"""Opportunity updated"""
     unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
@@ -110,6 +111,8 @@ class CrmOpportunitiesUpdateResponseTypedDict(TypedDict):
 
 class CrmOpportunitiesUpdateResponse(BaseModel):
     http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    headers: Dict[str, List[str]]
 
     update_opportunity_response: Optional[UpdateOpportunityResponse] = None
     r"""Opportunity updated"""

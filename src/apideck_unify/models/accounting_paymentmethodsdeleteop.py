@@ -18,7 +18,7 @@ from apideck_unify.utils import (
     QueryParamMetadata,
 )
 import pydantic
-from typing import Optional
+from typing import Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
@@ -94,6 +94,7 @@ class AccountingPaymentMethodsDeleteRequest(BaseModel):
 
 class AccountingPaymentMethodsDeleteResponseTypedDict(TypedDict):
     http_meta: HTTPMetadataTypedDict
+    headers: Dict[str, List[str]]
     delete_payment_method_response: NotRequired[DeletePaymentMethodResponseTypedDict]
     r"""Payment Methods"""
     unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
@@ -102,6 +103,8 @@ class AccountingPaymentMethodsDeleteResponseTypedDict(TypedDict):
 
 class AccountingPaymentMethodsDeleteResponse(BaseModel):
     http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    headers: Dict[str, List[str]]
 
     delete_payment_method_response: Optional[DeletePaymentMethodResponse] = None
     r"""Payment Methods"""

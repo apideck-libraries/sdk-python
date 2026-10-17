@@ -21,7 +21,7 @@ from apideck_unify.types import (
 from apideck_unify.utils import FieldMetadata, HeaderMetadata, QueryParamMetadata
 import pydantic
 from pydantic import model_serializer
-from typing import Any, Callable, Dict, Optional
+from typing import Any, Callable, Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
@@ -171,6 +171,7 @@ class FileStorageDriveGroupsAllRequest(BaseModel):
 
 class FileStorageDriveGroupsAllResponseTypedDict(TypedDict):
     http_meta: HTTPMetadataTypedDict
+    headers: Dict[str, List[str]]
     get_drive_groups_response: NotRequired[GetDriveGroupsResponseTypedDict]
     r"""DriveGroups"""
     unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
@@ -181,6 +182,8 @@ class FileStorageDriveGroupsAllResponse(BaseModel):
     next: Callable[[], Optional[FileStorageDriveGroupsAllResponse]]
 
     http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    headers: Dict[str, List[str]]
 
     get_drive_groups_response: Optional[GetDriveGroupsResponse] = None
     r"""DriveGroups"""

@@ -22,7 +22,7 @@ from apideck_unify.utils import (
     RequestMetadata,
 )
 import pydantic
-from typing import Optional
+from typing import Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
@@ -106,6 +106,7 @@ class AccountingBillCreditNotesBatchAddRequest(BaseModel):
 
 class AccountingBillCreditNotesBatchAddResponseTypedDict(TypedDict):
     http_meta: HTTPMetadataTypedDict
+    headers: Dict[str, List[str]]
     batch_bill_credit_notes_response: NotRequired[BatchBillCreditNotesResponseTypedDict]
     r"""Bill Credit Notes batch processed"""
     unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
@@ -114,6 +115,8 @@ class AccountingBillCreditNotesBatchAddResponseTypedDict(TypedDict):
 
 class AccountingBillCreditNotesBatchAddResponse(BaseModel):
     http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    headers: Dict[str, List[str]]
 
     batch_bill_credit_notes_response: Optional[BatchBillCreditNotesResponse] = None
     r"""Bill Credit Notes batch processed"""

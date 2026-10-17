@@ -17,7 +17,7 @@ from apideck_unify.utils import (
     RequestMetadata,
 )
 import pydantic
-from typing import Optional
+from typing import Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
@@ -98,6 +98,7 @@ class AccountingBillsUpdateRequest(BaseModel):
 
 class AccountingBillsUpdateResponseTypedDict(TypedDict):
     http_meta: HTTPMetadataTypedDict
+    headers: Dict[str, List[str]]
     update_bill_response: NotRequired[UpdateBillResponseTypedDict]
     r"""Bill Updated"""
     unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
@@ -106,6 +107,8 @@ class AccountingBillsUpdateResponseTypedDict(TypedDict):
 
 class AccountingBillsUpdateResponse(BaseModel):
     http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    headers: Dict[str, List[str]]
 
     update_bill_response: Optional[UpdateBillResponse] = None
     r"""Bill Updated"""

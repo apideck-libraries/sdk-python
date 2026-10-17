@@ -15,7 +15,7 @@ from apideck_unify.utils import (
     QueryParamMetadata,
 )
 import pydantic
-from typing import Optional
+from typing import Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
@@ -91,6 +91,7 @@ class CrmCompaniesDeleteRequest(BaseModel):
 
 class CrmCompaniesDeleteResponseTypedDict(TypedDict):
     http_meta: HTTPMetadataTypedDict
+    headers: Dict[str, List[str]]
     delete_company_response: NotRequired[DeleteCompanyResponseTypedDict]
     r"""Company deleted"""
     unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
@@ -99,6 +100,8 @@ class CrmCompaniesDeleteResponseTypedDict(TypedDict):
 
 class CrmCompaniesDeleteResponse(BaseModel):
     http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    headers: Dict[str, List[str]]
 
     delete_company_response: Optional[DeleteCompanyResponse] = None
     r"""Company deleted"""

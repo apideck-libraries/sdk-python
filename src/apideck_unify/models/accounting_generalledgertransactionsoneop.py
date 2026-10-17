@@ -25,7 +25,7 @@ from apideck_unify.utils import (
 )
 import pydantic
 from pydantic import model_serializer
-from typing import Optional
+from typing import Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
@@ -155,6 +155,7 @@ class AccountingGeneralLedgerTransactionsOneRequest(BaseModel):
 
 class AccountingGeneralLedgerTransactionsOneResponseTypedDict(TypedDict):
     http_meta: HTTPMetadataTypedDict
+    headers: Dict[str, List[str]]
     get_general_ledger_transaction_response: NotRequired[
         GetGeneralLedgerTransactionResponseTypedDict
     ]
@@ -165,6 +166,8 @@ class AccountingGeneralLedgerTransactionsOneResponseTypedDict(TypedDict):
 
 class AccountingGeneralLedgerTransactionsOneResponse(BaseModel):
     http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    headers: Dict[str, List[str]]
 
     get_general_ledger_transaction_response: Optional[
         GetGeneralLedgerTransactionResponse

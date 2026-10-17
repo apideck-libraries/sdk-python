@@ -15,7 +15,7 @@ from apideck_unify.utils import (
     QueryParamMetadata,
 )
 import pydantic
-from typing import Optional
+from typing import Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
@@ -91,6 +91,7 @@ class AccountingInvoicesDeleteRequest(BaseModel):
 
 class AccountingInvoicesDeleteResponseTypedDict(TypedDict):
     http_meta: HTTPMetadataTypedDict
+    headers: Dict[str, List[str]]
     delete_invoice_response: NotRequired[DeleteInvoiceResponseTypedDict]
     r"""Invoice deleted"""
     unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
@@ -99,6 +100,8 @@ class AccountingInvoicesDeleteResponseTypedDict(TypedDict):
 
 class AccountingInvoicesDeleteResponse(BaseModel):
     http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    headers: Dict[str, List[str]]
 
     delete_invoice_response: Optional[DeleteInvoiceResponse] = None
     r"""Invoice deleted"""

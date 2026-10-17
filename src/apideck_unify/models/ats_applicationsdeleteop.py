@@ -18,7 +18,7 @@ from apideck_unify.utils import (
     QueryParamMetadata,
 )
 import pydantic
-from typing import Optional
+from typing import Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
@@ -94,6 +94,7 @@ class AtsApplicationsDeleteRequest(BaseModel):
 
 class AtsApplicationsDeleteResponseTypedDict(TypedDict):
     http_meta: HTTPMetadataTypedDict
+    headers: Dict[str, List[str]]
     delete_application_response: NotRequired[DeleteApplicationResponseTypedDict]
     r"""Applications"""
     unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
@@ -102,6 +103,8 @@ class AtsApplicationsDeleteResponseTypedDict(TypedDict):
 
 class AtsApplicationsDeleteResponse(BaseModel):
     http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    headers: Dict[str, List[str]]
 
     delete_application_response: Optional[DeleteApplicationResponse] = None
     r"""Applications"""

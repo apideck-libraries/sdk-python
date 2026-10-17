@@ -162,6 +162,7 @@ class Attachments(BaseSDK):
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
+                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -201,6 +202,7 @@ class Attachments(BaseSDK):
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
+                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -349,6 +351,7 @@ class Attachments(BaseSDK):
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
+                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -388,6 +391,7 @@ class Attachments(BaseSDK):
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
+                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -507,6 +511,7 @@ class Attachments(BaseSDK):
                     Optional[models.CreateAttachmentResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
+                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -545,6 +550,7 @@ class Attachments(BaseSDK):
                     Optional[models.UnexpectedErrorResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
+                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -664,6 +670,7 @@ class Attachments(BaseSDK):
                     Optional[models.CreateAttachmentResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
+                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -702,6 +709,7 @@ class Attachments(BaseSDK):
                     Optional[models.UnexpectedErrorResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
+                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -817,6 +825,7 @@ class Attachments(BaseSDK):
                     Optional[models.GetAttachmentResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
+                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -855,6 +864,7 @@ class Attachments(BaseSDK):
                     Optional[models.UnexpectedErrorResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
+                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -970,6 +980,7 @@ class Attachments(BaseSDK):
                     Optional[models.GetAttachmentResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
+                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1008,6 +1019,7 @@ class Attachments(BaseSDK):
                     Optional[models.UnexpectedErrorResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
+                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1117,6 +1129,7 @@ class Attachments(BaseSDK):
                     Optional[models.DeleteAttachmentResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
+                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1155,6 +1168,7 @@ class Attachments(BaseSDK):
                     Optional[models.UnexpectedErrorResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
+                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1264,6 +1278,7 @@ class Attachments(BaseSDK):
                     Optional[models.DeleteAttachmentResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
+                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1302,6 +1317,7 @@ class Attachments(BaseSDK):
                     Optional[models.UnexpectedErrorResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
+                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1420,6 +1436,7 @@ class Attachments(BaseSDK):
             return models.AccountingAttachmentsDownloadResponse(
                 get_attachment_download_response=http_res,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
+                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             http_res_text = utils.stream_to_text(http_res)
@@ -1464,6 +1481,7 @@ class Attachments(BaseSDK):
                     Optional[models.UnexpectedErrorResponse], http_res, http_res_text
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
+                headers=utils.get_response_headers(http_res.headers),
             )
 
         http_res_text = utils.stream_to_text(http_res)
@@ -1583,6 +1601,7 @@ class Attachments(BaseSDK):
             return models.AccountingAttachmentsDownloadResponse(
                 get_attachment_download_response=http_res,
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
+                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             http_res_text = await utils.stream_to_text_async(http_res)
@@ -1627,6 +1646,7 @@ class Attachments(BaseSDK):
                     Optional[models.UnexpectedErrorResponse], http_res, http_res_text
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
+                headers=utils.get_response_headers(http_res.headers),
             )
 
         http_res_text = await utils.stream_to_text_async(http_res)

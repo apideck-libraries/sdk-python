@@ -139,6 +139,7 @@ class Applications(BaseSDK):
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
+                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -178,6 +179,7 @@ class Applications(BaseSDK):
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
+                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -310,6 +312,7 @@ class Applications(BaseSDK):
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
+                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -349,6 +352,7 @@ class Applications(BaseSDK):
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
+                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -473,6 +477,7 @@ class Applications(BaseSDK):
                     Optional[models.CreateApplicationResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
+                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -511,6 +516,7 @@ class Applications(BaseSDK):
                     Optional[models.UnexpectedErrorResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
+                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -635,6 +641,7 @@ class Applications(BaseSDK):
                     Optional[models.CreateApplicationResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
+                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -673,6 +680,7 @@ class Applications(BaseSDK):
                     Optional[models.UnexpectedErrorResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
+                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -776,6 +784,7 @@ class Applications(BaseSDK):
                     Optional[models.GetApplicationResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
+                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -814,6 +823,7 @@ class Applications(BaseSDK):
                     Optional[models.UnexpectedErrorResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
+                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -917,6 +927,7 @@ class Applications(BaseSDK):
                     Optional[models.GetApplicationResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
+                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -955,6 +966,7 @@ class Applications(BaseSDK):
                     Optional[models.UnexpectedErrorResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
+                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1082,6 +1094,7 @@ class Applications(BaseSDK):
                     Optional[models.UpdateApplicationResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
+                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1120,6 +1133,7 @@ class Applications(BaseSDK):
                     Optional[models.UnexpectedErrorResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
+                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1247,6 +1261,7 @@ class Applications(BaseSDK):
                     Optional[models.UpdateApplicationResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
+                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1285,6 +1300,7 @@ class Applications(BaseSDK):
                     Optional[models.UnexpectedErrorResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
+                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1388,6 +1404,7 @@ class Applications(BaseSDK):
                     Optional[models.DeleteApplicationResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
+                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1426,6 +1443,7 @@ class Applications(BaseSDK):
                     Optional[models.UnexpectedErrorResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
+                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1529,6 +1547,7 @@ class Applications(BaseSDK):
                     Optional[models.DeleteApplicationResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
+                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1567,6 +1586,7 @@ class Applications(BaseSDK):
                     Optional[models.UnexpectedErrorResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
+                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)

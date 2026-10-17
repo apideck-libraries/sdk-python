@@ -25,7 +25,7 @@ from apideck_unify.utils import (
 )
 import pydantic
 from pydantic import model_serializer
-from typing import Optional
+from typing import Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
@@ -155,6 +155,7 @@ class AccountingFiscalPeriodsOneRequest(BaseModel):
 
 class AccountingFiscalPeriodsOneResponseTypedDict(TypedDict):
     http_meta: HTTPMetadataTypedDict
+    headers: Dict[str, List[str]]
     get_fiscal_period_response: NotRequired[GetFiscalPeriodResponseTypedDict]
     r"""Fiscal Period"""
     unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
@@ -163,6 +164,8 @@ class AccountingFiscalPeriodsOneResponseTypedDict(TypedDict):
 
 class AccountingFiscalPeriodsOneResponse(BaseModel):
     http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    headers: Dict[str, List[str]]
 
     get_fiscal_period_response: Optional[GetFiscalPeriodResponse] = None
     r"""Fiscal Period"""

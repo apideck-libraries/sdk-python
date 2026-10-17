@@ -20,7 +20,7 @@ from apideck_unify.utils import (
 )
 import io
 import pydantic
-from typing import IO, Optional, Union
+from typing import Dict, IO, List, Optional, Union
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
@@ -122,6 +122,7 @@ class FileStorageUploadSessionsUploadRequest(BaseModel):
 
 class FileStorageUploadSessionsUploadResponseTypedDict(TypedDict):
     http_meta: HTTPMetadataTypedDict
+    headers: Dict[str, List[str]]
     update_upload_session_response: NotRequired[UpdateUploadSessionResponseTypedDict]
     r"""UploadSessions"""
     unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
@@ -130,6 +131,8 @@ class FileStorageUploadSessionsUploadResponseTypedDict(TypedDict):
 
 class FileStorageUploadSessionsUploadResponse(BaseModel):
     http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    headers: Dict[str, List[str]]
 
     update_upload_session_response: Optional[UpdateUploadSessionResponse] = None
     r"""UploadSessions"""

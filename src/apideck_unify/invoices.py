@@ -158,6 +158,7 @@ class Invoices(BaseSDK):
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
+                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -197,6 +198,7 @@ class Invoices(BaseSDK):
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
+                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -347,6 +349,7 @@ class Invoices(BaseSDK):
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
+                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -386,6 +389,7 @@ class Invoices(BaseSDK):
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
+                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -695,6 +699,7 @@ class Invoices(BaseSDK):
                     Optional[models.CreateInvoiceResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
+                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -733,6 +738,7 @@ class Invoices(BaseSDK):
                     Optional[models.UnexpectedErrorResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
+                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1042,6 +1048,7 @@ class Invoices(BaseSDK):
                     Optional[models.CreateInvoiceResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
+                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1080,6 +1087,7 @@ class Invoices(BaseSDK):
                     Optional[models.UnexpectedErrorResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
+                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1189,6 +1197,7 @@ class Invoices(BaseSDK):
                     Optional[models.GetInvoiceResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
+                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1227,6 +1236,7 @@ class Invoices(BaseSDK):
                     Optional[models.UnexpectedErrorResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
+                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1336,6 +1346,7 @@ class Invoices(BaseSDK):
                     Optional[models.GetInvoiceResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
+                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1374,6 +1385,7 @@ class Invoices(BaseSDK):
                     Optional[models.UnexpectedErrorResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
+                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -1683,6 +1695,7 @@ class Invoices(BaseSDK):
                     Optional[models.UpdateInvoiceResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
+                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -1721,6 +1734,7 @@ class Invoices(BaseSDK):
                     Optional[models.UnexpectedErrorResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
+                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -2030,6 +2044,7 @@ class Invoices(BaseSDK):
                     Optional[models.UpdateInvoiceResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
+                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -2068,6 +2083,7 @@ class Invoices(BaseSDK):
                     Optional[models.UnexpectedErrorResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
+                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -2171,6 +2187,7 @@ class Invoices(BaseSDK):
                     Optional[models.DeleteInvoiceResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
+                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -2209,6 +2226,7 @@ class Invoices(BaseSDK):
                     Optional[models.UnexpectedErrorResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
+                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -2312,6 +2330,7 @@ class Invoices(BaseSDK):
                     Optional[models.DeleteInvoiceResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
+                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -2350,6 +2369,7 @@ class Invoices(BaseSDK):
                     Optional[models.UnexpectedErrorResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
+                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -2470,6 +2490,7 @@ class Invoices(BaseSDK):
                     Optional[models.BatchInvoicesResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
+                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -2508,6 +2529,7 @@ class Invoices(BaseSDK):
                     Optional[models.UnexpectedErrorResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
+                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -2628,6 +2650,7 @@ class Invoices(BaseSDK):
                     Optional[models.BatchInvoicesResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
+                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(
@@ -2666,6 +2689,7 @@ class Invoices(BaseSDK):
                     Optional[models.UnexpectedErrorResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
+                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)

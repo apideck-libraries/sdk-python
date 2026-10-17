@@ -16,7 +16,7 @@ from apideck_unify.utils import (
     RequestMetadata,
 )
 import pydantic
-from typing import Optional
+from typing import Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
@@ -100,6 +100,7 @@ class AccountingQuotesAddRequest(BaseModel):
 
 class AccountingQuotesAddResponseTypedDict(TypedDict):
     http_meta: HTTPMetadataTypedDict
+    headers: Dict[str, List[str]]
     create_quote_response: NotRequired[CreateQuoteResponseTypedDict]
     r"""Quotes"""
     unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
@@ -108,6 +109,8 @@ class AccountingQuotesAddResponseTypedDict(TypedDict):
 
 class AccountingQuotesAddResponse(BaseModel):
     http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    headers: Dict[str, List[str]]
 
     create_quote_response: Optional[CreateQuoteResponse] = None
     r"""Quotes"""

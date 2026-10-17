@@ -18,7 +18,7 @@ from apideck_unify.utils import (
     QueryParamMetadata,
 )
 import pydantic
-from typing import Optional
+from typing import Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
@@ -103,6 +103,7 @@ class AccountingSubsidiariesDeleteRequest(BaseModel):
 
 class AccountingSubsidiariesDeleteResponseTypedDict(TypedDict):
     http_meta: HTTPMetadataTypedDict
+    headers: Dict[str, List[str]]
     delete_subsidiary_response: NotRequired[DeleteSubsidiaryResponseTypedDict]
     r"""Subsidiarys"""
     unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
@@ -111,6 +112,8 @@ class AccountingSubsidiariesDeleteResponseTypedDict(TypedDict):
 
 class AccountingSubsidiariesDeleteResponse(BaseModel):
     http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    headers: Dict[str, List[str]]
 
     delete_subsidiary_response: Optional[DeleteSubsidiaryResponse] = None
     r"""Subsidiarys"""

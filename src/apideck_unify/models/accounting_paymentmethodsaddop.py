@@ -22,7 +22,7 @@ from apideck_unify.utils import (
     RequestMetadata,
 )
 import pydantic
-from typing import Optional
+from typing import Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
@@ -97,6 +97,7 @@ class AccountingPaymentMethodsAddRequest(BaseModel):
 
 class AccountingPaymentMethodsAddResponseTypedDict(TypedDict):
     http_meta: HTTPMetadataTypedDict
+    headers: Dict[str, List[str]]
     create_payment_method_response: NotRequired[CreatePaymentMethodResponseTypedDict]
     r"""Payment Methods"""
     unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
@@ -105,6 +106,8 @@ class AccountingPaymentMethodsAddResponseTypedDict(TypedDict):
 
 class AccountingPaymentMethodsAddResponse(BaseModel):
     http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    headers: Dict[str, List[str]]
 
     create_payment_method_response: Optional[CreatePaymentMethodResponse] = None
     r"""Payment Methods"""

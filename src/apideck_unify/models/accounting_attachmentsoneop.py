@@ -26,7 +26,7 @@ from apideck_unify.utils import (
 import pydantic
 from pydantic import field_serializer, model_serializer
 from pydantic.functional_validators import PlainValidator
-from typing import Optional
+from typing import Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
@@ -180,6 +180,7 @@ class AccountingAttachmentsOneRequest(BaseModel):
 
 class AccountingAttachmentsOneResponseTypedDict(TypedDict):
     http_meta: HTTPMetadataTypedDict
+    headers: Dict[str, List[str]]
     get_attachment_response: NotRequired[GetAttachmentResponseTypedDict]
     r"""Attachments"""
     unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
@@ -188,6 +189,8 @@ class AccountingAttachmentsOneResponseTypedDict(TypedDict):
 
 class AccountingAttachmentsOneResponse(BaseModel):
     http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    headers: Dict[str, List[str]]
 
     get_attachment_response: Optional[GetAttachmentResponse] = None
     r"""Attachments"""

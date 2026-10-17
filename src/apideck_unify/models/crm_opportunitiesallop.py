@@ -22,7 +22,7 @@ from apideck_unify.types import (
 from apideck_unify.utils import FieldMetadata, HeaderMetadata, QueryParamMetadata
 import pydantic
 from pydantic import model_serializer
-from typing import Any, Callable, Dict, Optional
+from typing import Any, Callable, Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
@@ -181,6 +181,7 @@ class CrmOpportunitiesAllRequest(BaseModel):
 
 class CrmOpportunitiesAllResponseTypedDict(TypedDict):
     http_meta: HTTPMetadataTypedDict
+    headers: Dict[str, List[str]]
     get_opportunities_response: NotRequired[GetOpportunitiesResponseTypedDict]
     r"""Opportunities"""
     unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
@@ -191,6 +192,8 @@ class CrmOpportunitiesAllResponse(BaseModel):
     next: Callable[[], Optional[CrmOpportunitiesAllResponse]]
 
     http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    headers: Dict[str, List[str]]
 
     get_opportunities_response: Optional[GetOpportunitiesResponse] = None
     r"""Opportunities"""

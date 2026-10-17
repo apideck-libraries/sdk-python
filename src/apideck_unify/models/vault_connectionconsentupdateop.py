@@ -16,7 +16,7 @@ from apideck_unify.utils import (
     RequestMetadata,
 )
 import pydantic
-from typing import Optional
+from typing import Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
@@ -90,6 +90,7 @@ class VaultConnectionConsentUpdateRequest(BaseModel):
 
 class VaultConnectionConsentUpdateResponseTypedDict(TypedDict):
     http_meta: HTTPMetadataTypedDict
+    headers: Dict[str, List[str]]
     update_consent_response: NotRequired[UpdateConsentResponseTypedDict]
     r"""Consent updated"""
     unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
@@ -98,6 +99,8 @@ class VaultConnectionConsentUpdateResponseTypedDict(TypedDict):
 
 class VaultConnectionConsentUpdateResponse(BaseModel):
     http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    headers: Dict[str, List[str]]
 
     update_consent_response: Optional[UpdateConsentResponse] = None
     r"""Consent updated"""

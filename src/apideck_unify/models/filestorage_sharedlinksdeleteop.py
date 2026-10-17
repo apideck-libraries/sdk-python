@@ -18,7 +18,7 @@ from apideck_unify.utils import (
     QueryParamMetadata,
 )
 import pydantic
-from typing import Optional
+from typing import Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
@@ -94,6 +94,7 @@ class FileStorageSharedLinksDeleteRequest(BaseModel):
 
 class FileStorageSharedLinksDeleteResponseTypedDict(TypedDict):
     http_meta: HTTPMetadataTypedDict
+    headers: Dict[str, List[str]]
     delete_shared_link_response: NotRequired[DeleteSharedLinkResponseTypedDict]
     r"""Shared Links"""
     unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
@@ -102,6 +103,8 @@ class FileStorageSharedLinksDeleteResponseTypedDict(TypedDict):
 
 class FileStorageSharedLinksDeleteResponse(BaseModel):
     http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    headers: Dict[str, List[str]]
 
     delete_shared_link_response: Optional[DeleteSharedLinkResponse] = None
     r"""Shared Links"""

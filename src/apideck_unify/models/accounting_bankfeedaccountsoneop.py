@@ -25,7 +25,7 @@ from apideck_unify.utils import (
 )
 import pydantic
 from pydantic import model_serializer
-from typing import Optional
+from typing import Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
@@ -155,6 +155,7 @@ class AccountingBankFeedAccountsOneRequest(BaseModel):
 
 class AccountingBankFeedAccountsOneResponseTypedDict(TypedDict):
     http_meta: HTTPMetadataTypedDict
+    headers: Dict[str, List[str]]
     get_bank_feed_account_response: NotRequired[GetBankFeedAccountResponseTypedDict]
     r"""Bank Feed Accounts"""
     unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
@@ -163,6 +164,8 @@ class AccountingBankFeedAccountsOneResponseTypedDict(TypedDict):
 
 class AccountingBankFeedAccountsOneResponse(BaseModel):
     http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    headers: Dict[str, List[str]]
 
     get_bank_feed_account_response: Optional[GetBankFeedAccountResponse] = None
     r"""Bank Feed Accounts"""

@@ -16,7 +16,7 @@ from apideck_unify.utils import (
     RequestMetadata,
 )
 import pydantic
-from typing import Optional
+from typing import Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
@@ -100,6 +100,7 @@ class AccountingInvoicesBatchAddRequest(BaseModel):
 
 class AccountingInvoicesBatchAddResponseTypedDict(TypedDict):
     http_meta: HTTPMetadataTypedDict
+    headers: Dict[str, List[str]]
     batch_invoices_response: NotRequired[BatchInvoicesResponseTypedDict]
     r"""Invoices batch processed"""
     unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
@@ -108,6 +109,8 @@ class AccountingInvoicesBatchAddResponseTypedDict(TypedDict):
 
 class AccountingInvoicesBatchAddResponse(BaseModel):
     http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    headers: Dict[str, List[str]]
 
     batch_invoices_response: Optional[BatchInvoicesResponse] = None
     r"""Invoices batch processed"""

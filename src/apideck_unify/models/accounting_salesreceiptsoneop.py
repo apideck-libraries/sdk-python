@@ -25,7 +25,7 @@ from apideck_unify.utils import (
 )
 import pydantic
 from pydantic import model_serializer
-from typing import Optional
+from typing import Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
@@ -155,6 +155,7 @@ class AccountingSalesReceiptsOneRequest(BaseModel):
 
 class AccountingSalesReceiptsOneResponseTypedDict(TypedDict):
     http_meta: HTTPMetadataTypedDict
+    headers: Dict[str, List[str]]
     get_sales_receipt_response: NotRequired[GetSalesReceiptResponseTypedDict]
     r"""SalesReceipt"""
     unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
@@ -163,6 +164,8 @@ class AccountingSalesReceiptsOneResponseTypedDict(TypedDict):
 
 class AccountingSalesReceiptsOneResponse(BaseModel):
     http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    headers: Dict[str, List[str]]
 
     get_sales_receipt_response: Optional[GetSalesReceiptResponse] = None
     r"""SalesReceipt"""

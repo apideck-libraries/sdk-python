@@ -20,7 +20,7 @@ from apideck_unify.utils import (
     RequestMetadata,
 )
 import pydantic
-from typing import Optional
+from typing import Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
@@ -111,6 +111,7 @@ class AccountingTrackingCategoriesUpdateRequest(BaseModel):
 
 class AccountingTrackingCategoriesUpdateResponseTypedDict(TypedDict):
     http_meta: HTTPMetadataTypedDict
+    headers: Dict[str, List[str]]
     update_tracking_category_response: NotRequired[
         UpdateTrackingCategoryResponseTypedDict
     ]
@@ -121,6 +122,8 @@ class AccountingTrackingCategoriesUpdateResponseTypedDict(TypedDict):
 
 class AccountingTrackingCategoriesUpdateResponse(BaseModel):
     http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    headers: Dict[str, List[str]]
 
     update_tracking_category_response: Optional[UpdateTrackingCategoryResponse] = None
     r"""Tracking category updated"""

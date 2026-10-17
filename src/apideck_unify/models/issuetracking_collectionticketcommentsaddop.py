@@ -20,7 +20,7 @@ from apideck_unify.utils import (
     RequestMetadata,
 )
 import pydantic
-from typing import Optional
+from typing import Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
@@ -109,6 +109,7 @@ class IssueTrackingCollectionTicketCommentsAddRequest(BaseModel):
 
 class IssueTrackingCollectionTicketCommentsAddResponseTypedDict(TypedDict):
     http_meta: HTTPMetadataTypedDict
+    headers: Dict[str, List[str]]
     create_comment_response: NotRequired[CreateCommentResponseTypedDict]
     r"""Create a Comment"""
     unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
@@ -117,6 +118,8 @@ class IssueTrackingCollectionTicketCommentsAddResponseTypedDict(TypedDict):
 
 class IssueTrackingCollectionTicketCommentsAddResponse(BaseModel):
     http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    headers: Dict[str, List[str]]
 
     create_comment_response: Optional[CreateCommentResponse] = None
     r"""Create a Comment"""

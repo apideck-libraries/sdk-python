@@ -19,7 +19,7 @@ from apideck_unify.utils import (
     RequestMetadata,
 )
 import pydantic
-from typing import Optional
+from typing import Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
@@ -93,6 +93,7 @@ class VaultConnectionsImportRequest(BaseModel):
 
 class VaultConnectionsImportResponseTypedDict(TypedDict):
     http_meta: HTTPMetadataTypedDict
+    headers: Dict[str, List[str]]
     create_connection_response: NotRequired[CreateConnectionResponseTypedDict]
     r"""Connection created"""
     unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
@@ -101,6 +102,8 @@ class VaultConnectionsImportResponseTypedDict(TypedDict):
 
 class VaultConnectionsImportResponse(BaseModel):
     http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    headers: Dict[str, List[str]]
 
     create_connection_response: Optional[CreateConnectionResponse] = None
     r"""Connection created"""

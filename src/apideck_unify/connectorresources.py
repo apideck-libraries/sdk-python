@@ -105,6 +105,7 @@ class ConnectorResources(BaseSDK):
                     Optional[models.GetConnectorResourceResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
+                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "401", "application/json"):
             response_data = unmarshal_json_response(
@@ -133,6 +134,7 @@ class ConnectorResources(BaseSDK):
                     Optional[models.UnexpectedErrorResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
+                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)
@@ -232,6 +234,7 @@ class ConnectorResources(BaseSDK):
                     Optional[models.GetConnectorResourceResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
+                headers=utils.get_response_headers(http_res.headers),
             )
         if utils.match_response(http_res, "401", "application/json"):
             response_data = unmarshal_json_response(
@@ -260,6 +263,7 @@ class ConnectorResources(BaseSDK):
                     Optional[models.UnexpectedErrorResponse], http_res
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
+                headers=utils.get_response_headers(http_res.headers),
             )
 
         raise models.APIError("Unexpected response received", http_res)

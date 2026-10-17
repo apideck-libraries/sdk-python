@@ -25,7 +25,7 @@ from apideck_unify.utils import (
 )
 import pydantic
 from pydantic import model_serializer
-from typing import Any, Callable, Dict, Optional
+from typing import Any, Callable, Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
@@ -172,6 +172,7 @@ class CrmListMembersAllRequest(BaseModel):
 
 class CrmListMembersAllResponseTypedDict(TypedDict):
     http_meta: HTTPMetadataTypedDict
+    headers: Dict[str, List[str]]
     get_list_members_response: NotRequired[GetListMembersResponseTypedDict]
     r"""List Members"""
     unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
@@ -182,6 +183,8 @@ class CrmListMembersAllResponse(BaseModel):
     next: Callable[[], Optional[CrmListMembersAllResponse]]
 
     http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    headers: Dict[str, List[str]]
 
     get_list_members_response: Optional[GetListMembersResponse] = None
     r"""List Members"""

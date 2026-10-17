@@ -22,7 +22,7 @@ from apideck_unify.utils import (
 import httpx
 import pydantic
 from pydantic import model_serializer
-from typing import Optional
+from typing import Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
@@ -143,6 +143,7 @@ class FileStorageFilesDownloadRequest(BaseModel):
 
 class FileStorageFilesDownloadResponseTypedDict(TypedDict):
     http_meta: HTTPMetadataTypedDict
+    headers: Dict[str, List[str]]
     get_file_download_response: NotRequired[httpx.Response]
     r"""File Download. When the request includes `x-apideck-follow-redirects: false` and the download would otherwise redirect to a presigned URL, the response body is instead an `application/json` object `{ url, expires_at }` — fetch `url` explicitly (without the Authorization header) to retrieve the file."""
     unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
@@ -151,6 +152,8 @@ class FileStorageFilesDownloadResponseTypedDict(TypedDict):
 
 class FileStorageFilesDownloadResponse(BaseModel):
     http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    headers: Dict[str, List[str]]
 
     get_file_download_response: Optional[httpx.Response] = None
     r"""File Download. When the request includes `x-apideck-follow-redirects: false` and the download would otherwise redirect to a presigned URL, the response body is instead an `application/json` object `{ url, expires_at }` — fetch `url` explicitly (without the Authorization header) to retrieve the file."""

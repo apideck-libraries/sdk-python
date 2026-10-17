@@ -23,7 +23,7 @@ from apideck_unify.utils import (
 )
 import pydantic
 from pydantic import model_serializer
-from typing import Optional
+from typing import Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
@@ -153,6 +153,7 @@ class CrmContactsOneRequest(BaseModel):
 
 class CrmContactsOneResponseTypedDict(TypedDict):
     http_meta: HTTPMetadataTypedDict
+    headers: Dict[str, List[str]]
     get_contact_response: NotRequired[GetContactResponseTypedDict]
     r"""Contact"""
     unexpected_error_response: NotRequired[UnexpectedErrorResponseTypedDict]
@@ -161,6 +162,8 @@ class CrmContactsOneResponseTypedDict(TypedDict):
 
 class CrmContactsOneResponse(BaseModel):
     http_meta: Annotated[Optional[HTTPMetadata], pydantic.Field(exclude=True)] = None
+
+    headers: Dict[str, List[str]]
 
     get_contact_response: Optional[GetContactResponse] = None
     r"""Contact"""
