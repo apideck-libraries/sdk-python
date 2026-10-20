@@ -1,12 +1,12 @@
 lockVersion: 2.0.0
 id: fca0ac3a-5f4e-452c-bbc7-2311afa8da40
 management:
-  docChecksum: 8eac4b900ae2bbd55245be89ce958d31
-  docVersion: 10.69.5
+  docChecksum: b3d39ea3f9b55559f3d3f6818a8f028b
+  docVersion: 10.69.6
   speakeasyVersion: 1.656.1
   generationVersion: 2.753.1
-  releaseVersion: 0.49.1
-  configChecksum: 9e7c0ffc2de1160856528b5e1644bffb
+  releaseVersion: 0.49.2
+  configChecksum: fb2937a9d7c97f634d4d1896913354b6
   repoURL: https://github.com/apideck-libraries/sdk-python.git
   installationURL: https://github.com/apideck-libraries/sdk-python.git
   published: true
@@ -16814,7 +16814,7 @@ examples:
           x-apideck-app-id: "dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX"
       responses:
         "200":
-          application/json: {"status_code": 200, "status": "OK", "data": {"id": "crm+salesforce", "name": "Salesforce", "description": "A description", "icon_url": "https://res.cloudinary.com/apideck/image/upload/v1529456047/catalog/salesforce/icon128x128.png", "logo_url": "https://c1.sfdcstatic.com/content/dam/web/en_us/www/images/home/logo-salesforce-m.svg", "website_url": "https://www.salesforce.com", "signup_url": "https://www.salesforce.com/signup", "partner_signup_url": "https://www.salesforce.com/partners", "auth_type": "oauth2", "auth_only": true, "blind_mapped": true, "oauth_grant_type": "authorization_code", "oauth_credentials_source": "integration", "oauth_scopes": [{"id": "contacts:all", "label": "Read/write on the Contacts resource", "default_apis": ["crm"]}], "custom_scopes": true, "has_sandbox_credentials": true, "settings": [{"id": "pipeline_id", "label": "Pipeline", "type": "select"}], "service_id": "close", "unified_apis": [{"id": "crm", "name": "File Storage API", "auth_only": true, "oauth_scopes": [{"id": "contacts:all", "label": "Read/write on the Contacts resource"}], "supported_resources": [{"id": "companies", "name": "Companies", "downstream_id": "accounts", "downstream_name": "Accounts"}], "downstream_unsupported_resources": ["companies"], "supported_events": [{"event_type": "employee.created", "event_source": "native", "downstream_event_type": "person_created", "resources": ["companies"], "entity_type": "employee"}]}], "supported_resources": [{"id": "companies", "name": "Companies", "downstream_id": "accounts", "downstream_name": "Accounts"}], "configurable_resources": ["leads", "companies"], "supported_events": [{"event_type": "employee.created", "event_source": "native", "downstream_event_type": "person_created", "resources": ["companies"], "entity_type": "employee"}], "webhook_support": {"mode": "native", "subscription_level": "integration", "managed_via": "api"}, "batch_support": {"mode": "none", "resources": {"key": {"mode": "native", "max_items": 20}}}, "schema_support": {"supported": true}, "docs": [{"id": "12345", "name": "connection", "url": "https://unify.apideck.com/connector/connectors/workday/docs/consumer+connection"}], "overview": {"beta": false, "demo": false, "difficulty": "moderate", "difficulty_reason": "Self-Service Signup + App Review Required", "partnership_required": true, "apideck_credentials_available": true, "account_type_required": "<value>", "sandbox_available": true, "consumer_access_level": "<value>"}}, "meta": {"items_on_page": 50, "cursors": {"previous": "em9oby1jcm06OnBhZ2U6OjE=", "current": "em9oby1jcm06OnBhZ2U6OjI=", "next": "em9oby1jcm06OnBhZ2U6OjM="}, "total_count": 1, "warnings": [{"type": "downstream_request_failed", "status_code": 429, "operation": "getManager"}]}, "links": {"previous": "https://unify.apideck.com/crm/companies?cursor=em9oby1jcm06OnBhZ2U6OjE%3D", "current": "https://unify.apideck.com/crm/companies", "next": "https://unify.apideck.com/crm/companies?cursor=em9oby1jcm06OnBhZ2U6OjM"}}
+          application/json: {"status_code": 200, "status": "OK", "data": {"id": "crm+salesforce", "name": "Salesforce", "description": "A description", "icon_url": "https://res.cloudinary.com/apideck/image/upload/v1529456047/catalog/salesforce/icon128x128.png", "logo_url": "https://c1.sfdcstatic.com/content/dam/web/en_us/www/images/home/logo-salesforce-m.svg", "website_url": "https://www.salesforce.com", "signup_url": "https://www.salesforce.com/signup", "partner_signup_url": "https://www.salesforce.com/partners", "auth_type": "oauth2", "auth_only": true, "blind_mapped": true, "oauth_grant_type": "authorization_code", "oauth_credentials_source": "integration", "oauth_scopes": [{"id": "contacts:all", "label": "Read/write on the Contacts resource", "default_apis": ["crm"]}], "custom_scopes": true, "has_sandbox_credentials": true, "settings": [{"id": "pipeline_id", "label": "Pipeline", "type": "select"}], "service_id": "close", "unified_apis": [{"id": "crm", "name": "File Storage API", "auth_only": true, "oauth_scopes": [{"id": "contacts:all", "label": "Read/write on the Contacts resource"}], "supported_resources": [{"id": "companies", "name": "Companies", "downstream_id": "accounts", "downstream_name": "Accounts"}], "downstream_unsupported_resources": ["companies"], "supported_events": [{"event_type": "employee.created", "event_source": "native", "downstream_event_type": "person_created", "resources": ["companies"], "entity_type": "employee"}]}], "supported_resources": [{"id": "companies", "name": "Companies", "downstream_id": "accounts", "downstream_name": "Accounts"}], "configurable_resources": ["leads", "companies"], "supported_events": [{"event_type": "employee.created", "event_source": "native", "downstream_event_type": "person_created", "resources": ["companies"], "entity_type": "employee"}], "webhook_support": {"mode": "native", "subscription_level": "integration", "managed_via": "api", "shared_with": ["intuit-enterprise-suite"]}, "batch_support": {"mode": "none", "resources": {"key": {"mode": "native", "max_items": 20}}}, "schema_support": {"supported": true}, "docs": [{"id": "12345", "name": "connection", "url": "https://unify.apideck.com/connector/connectors/workday/docs/consumer+connection"}], "overview": {"beta": false, "demo": false, "difficulty": "moderate", "difficulty_reason": "Self-Service Signup + App Review Required", "partnership_required": true, "apideck_credentials_available": true, "account_type_required": "<value>", "sandbox_available": true, "consumer_access_level": "<value>"}}, "meta": {"items_on_page": 50, "cursors": {"previous": "em9oby1jcm06OnBhZ2U6OjE=", "current": "em9oby1jcm06OnBhZ2U6OjI=", "next": "em9oby1jcm06OnBhZ2U6OjM="}, "total_count": 1, "warnings": [{"type": "downstream_request_failed", "status_code": 429, "operation": "getManager"}]}, "links": {"previous": "https://unify.apideck.com/crm/companies?cursor=em9oby1jcm06OnBhZ2U6OjE%3D", "current": "https://unify.apideck.com/crm/companies", "next": "https://unify.apideck.com/crm/companies?cursor=em9oby1jcm06OnBhZ2U6OjM"}}
         "401":
           application/json: {"status_code": 401, "error": "Unauthorized", "type_name": "UnauthorizedError", "message": "Unauthorized Request", "detail": "Missing authentication", "ref": "https://developers.apideck.com/errors#unauthorizederror"}
         "402":
@@ -21481,6 +21481,10 @@ examples:
           application/json: {"status_code": 400, "error": "Bad Request", "type_name": "RequestHeadersValidationError", "message": "Invalid Params", "detail": "Missing Header: x-apideck-consumer-id", "ref": "https://developers.apideck.com/errors#unauthorizederror"}
 examplesVersion: 1.0.2
 generatedTests: {}
+releaseNotes: |
+  ## Python SDK Changes Detected:
+  * `apideck.connector.connectors.list()`:  `response.data.[].webhook_support.shared_with` **Added**
+  * `apideck.connector.connectors.get()`:  `response.data.webhook_support.shared_with` **Added**
 trackedFiles:
   .devcontainer/README.md:
     last_write_checksum: sha1:07adb0c0c051a9be4d479ea06461f3a9b3bbeb2f
@@ -26099,7 +26103,7 @@ trackedFiles:
   docs/models/webhooksubscription.md:
     last_write_checksum: sha1:a698dbef407f125cd3e724b8a0920760f88182cb
   docs/models/webhooksupport.md:
-    last_write_checksum: sha1:387a447c376532356ff3b97b16425c441219420d
+    last_write_checksum: sha1:93a18eca288048494d78f09ac1ede1419f36c095
   docs/models/webhooksupportresources.md:
     last_write_checksum: sha1:8569f6b15a33bbc5ccc50bbe6fe65b1113c88ead
   docs/models/webhookwebhooksaddglobals.md:
@@ -26367,7 +26371,7 @@ trackedFiles:
   src/apideck_unify/_hooks/types.py:
     last_write_checksum: sha1:d57be38e644de01983a9224b9733ae0add898d43
   src/apideck_unify/_version.py:
-    last_write_checksum: sha1:10aedcd4dec35e755d0c85e2493031079f9781f0
+    last_write_checksum: sha1:319e6e9aacbb0ea8b86afb11161fbc0898ad49c4
   src/apideck_unify/accounting.py:
     last_write_checksum: sha1:7f9e809f589467dee3bc2719395ce1cdef2d7421
   src/apideck_unify/activities.py:
@@ -26383,7 +26387,7 @@ trackedFiles:
   src/apideck_unify/apideck_departments.py:
     last_write_checksum: sha1:59a81b7d246ffd8a00dbf65a7d660c112548dd74
   src/apideck_unify/apideck_employees.py:
-    last_write_checksum: sha1:8707907008e9bfc2c26c572286532b96939ebd54
+    last_write_checksum: sha1:496bec38b0cde20342f9f0c2b0025602c5c2a322
   src/apideck_unify/apideck_hris_companies.py:
     last_write_checksum: sha1:4a0e3c47bbedbc5fbed2114c9bd520efa4fbae05
   src/apideck_unify/apiresourcecoverage_sdk.py:
@@ -26413,7 +26417,7 @@ trackedFiles:
   src/apideck_unify/billcreditnotes.py:
     last_write_checksum: sha1:fc0318ecf504f626d238e326fb372764cd8780ec
   src/apideck_unify/billpayments.py:
-    last_write_checksum: sha1:706c3181df4548a61f93b04fed39ce192b735a19
+    last_write_checksum: sha1:ed28bfd43500513085a45cae27ad5ce36c313b46
   src/apideck_unify/bills.py:
     last_write_checksum: sha1:310134f6594cceb11182b9968cbb6b78b8e15172
   src/apideck_unify/categories.py:
@@ -26463,7 +26467,7 @@ trackedFiles:
   src/apideck_unify/crm.py:
     last_write_checksum: sha1:0a3f32ca2265dd9bf40c9b5c0373685dab9e5da6
   src/apideck_unify/customers.py:
-    last_write_checksum: sha1:1ae69927b9592daf9f8d17f1c9a37ddf640c3ede
+    last_write_checksum: sha1:841678e08996200d2701b8ba88c1b647a782c9e9
   src/apideck_unify/customfields.py:
     last_write_checksum: sha1:7666758135082e5efdc1c4b3f570cb2cc9a5c33c
   src/apideck_unify/custommappings.py:
@@ -26513,13 +26517,13 @@ trackedFiles:
   src/apideck_unify/invoiceitems.py:
     last_write_checksum: sha1:f993afa40ed86f8b870c6dd47f5faeffc1a8061d
   src/apideck_unify/invoices.py:
-    last_write_checksum: sha1:eddb4ed76e58eb0b7fb2bba3814b2929984a623d
+    last_write_checksum: sha1:e6ff0d38ddfda7762b065748c0dabd158f9c5b9b
   src/apideck_unify/issuetracking.py:
     last_write_checksum: sha1:a18420473c9ae884dcdc562042a52205924643c5
   src/apideck_unify/jobs.py:
     last_write_checksum: sha1:b16c87611a4857f156f28bd7a93e1e25f2f71dcc
   src/apideck_unify/journalentries.py:
-    last_write_checksum: sha1:c474b3ef75cb32a038ecaa487737782c990db28a
+    last_write_checksum: sha1:23dadb270eca87004b4fba0c58d446d5210518f0
   src/apideck_unify/journals.py:
     last_write_checksum: sha1:9b26be765b428d7ea473cd85305e50d45ebb52c2
   src/apideck_unify/leads.py:
@@ -28805,7 +28809,7 @@ trackedFiles:
   src/apideck_unify/models/webhooksubscription.py:
     last_write_checksum: sha1:12537b4b59e1cdb5798ddf08ad98dfb50f809a83
   src/apideck_unify/models/webhooksupport.py:
-    last_write_checksum: sha1:704d3f1476c4fec6f6bf1b861f53cb554521d582
+    last_write_checksum: sha1:ea8697e3841bbbaf4086618c17054a25cf6ec582
   src/apideck_unify/models/website.py:
     last_write_checksum: sha1:deb21698b9dec32eca6c3c22114c0c678a3c7ef8
   src/apideck_unify/notes.py:
@@ -28813,11 +28817,11 @@ trackedFiles:
   src/apideck_unify/opportunities.py:
     last_write_checksum: sha1:fb0050df440541df69ca18a91682b817ad8e46af
   src/apideck_unify/orders.py:
-    last_write_checksum: sha1:3b864ab4956ca88a67f699d9c18016e20b797871
+    last_write_checksum: sha1:3a17bc7dcabaa21a68344054b6dffa05c217e1c1
   src/apideck_unify/paymentmethods.py:
     last_write_checksum: sha1:af64c2a6945b5f878f5dff6ec4daaa9de0b716ac
   src/apideck_unify/payments.py:
-    last_write_checksum: sha1:351ee98f90702e482a5ff23d69c090f5d5863d38
+    last_write_checksum: sha1:8c8db4fb8b8eb03d07f07ec1b292ff37d470f56d
   src/apideck_unify/payrolls.py:
     last_write_checksum: sha1:5ccd0b249a6acb7ec93202cf3e02d445138a66b0
   src/apideck_unify/pipelines.py:
@@ -28857,7 +28861,7 @@ trackedFiles:
   src/apideck_unify/subsidiaries.py:
     last_write_checksum: sha1:d26c804b603fc62d5357899c5cd2c71756a93184
   src/apideck_unify/suppliers.py:
-    last_write_checksum: sha1:a4807c6eecd6428c5bf6ff23c87d9f21e4dd19ba
+    last_write_checksum: sha1:f3826e4a0d465a7912305af02e9124010e1008be
   src/apideck_unify/taxrates.py:
     last_write_checksum: sha1:7eade8f75fe3fb692eea29caa3fa2852e05faf87
   src/apideck_unify/timeoffrequests.py:
