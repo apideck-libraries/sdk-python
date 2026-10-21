@@ -1,0 +1,21 @@
+name: CI
+"on":
+  pull_request:
+  workflow_dispatch: {}
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      # floor of requires-python: where a dep dropping old Pythons breaks customers
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.9"
+      - run: pipx install poetry
+      # pyproject's readme (README-PYPI.md) is generated at publish time
+      - run: python scripts/prepare_readme.py
+      - run: poetry install
+      - run: poetry build
+      - run: poetry run python -c "import apideck_unify"
