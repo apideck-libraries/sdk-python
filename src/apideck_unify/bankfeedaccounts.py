@@ -391,6 +391,7 @@ class BankFeedAccounts(BaseSDK):
         available_balance: OptionalNullable[float] = UNSET,
         currency: OptionalNullable[models.Currency] = UNSET,
         feed_status: Optional[models.FeedStatus] = None,
+        status: Optional[models.BankFeedAccountStatus] = None,
         country: OptionalNullable[str] = UNSET,
         account_holders: Optional[
             Union[
@@ -432,6 +433,7 @@ class BankFeedAccounts(BaseSDK):
         :param available_balance: The available balance of the source bank account (considering pending transactions and overdraft).
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
         :param feed_status: Current status of the bank feed.
+        :param status: Whether the data consumer may see this account. `revoked` hides it from the consumer without deleting it; `active` restores it. Unrelated to `feed_status`. Only connectors that list it support it; others ignore the field, so setting it there changes nothing.
         :param country: Country code according to ISO 3166-1 alpha-2.
         :param account_holders: The people or businesses that hold the source bank account. Optional; `plaid-exchange` requires at least one.
         :param emails: Email addresses of the account holders. Optional; `plaid-exchange` requires at least one.
@@ -470,6 +472,7 @@ class BankFeedAccounts(BaseSDK):
                 available_balance=available_balance,
                 currency=currency,
                 feed_status=feed_status,
+                status=status,
                 country=country,
                 account_holders=utils.get_pydantic_model(
                     account_holders, Optional[List[models.BankFeedAccountHolder]]
@@ -610,6 +613,7 @@ class BankFeedAccounts(BaseSDK):
         available_balance: OptionalNullable[float] = UNSET,
         currency: OptionalNullable[models.Currency] = UNSET,
         feed_status: Optional[models.FeedStatus] = None,
+        status: Optional[models.BankFeedAccountStatus] = None,
         country: OptionalNullable[str] = UNSET,
         account_holders: Optional[
             Union[
@@ -651,6 +655,7 @@ class BankFeedAccounts(BaseSDK):
         :param available_balance: The available balance of the source bank account (considering pending transactions and overdraft).
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
         :param feed_status: Current status of the bank feed.
+        :param status: Whether the data consumer may see this account. `revoked` hides it from the consumer without deleting it; `active` restores it. Unrelated to `feed_status`. Only connectors that list it support it; others ignore the field, so setting it there changes nothing.
         :param country: Country code according to ISO 3166-1 alpha-2.
         :param account_holders: The people or businesses that hold the source bank account. Optional; `plaid-exchange` requires at least one.
         :param emails: Email addresses of the account holders. Optional; `plaid-exchange` requires at least one.
@@ -689,6 +694,7 @@ class BankFeedAccounts(BaseSDK):
                 available_balance=available_balance,
                 currency=currency,
                 feed_status=feed_status,
+                status=status,
                 country=country,
                 account_holders=utils.get_pydantic_model(
                     account_holders, Optional[List[models.BankFeedAccountHolder]]
@@ -1128,6 +1134,7 @@ class BankFeedAccounts(BaseSDK):
         available_balance: OptionalNullable[float] = UNSET,
         currency: OptionalNullable[models.Currency] = UNSET,
         feed_status: Optional[models.FeedStatus] = None,
+        status: Optional[models.BankFeedAccountStatus] = None,
         country: OptionalNullable[str] = UNSET,
         account_holders: Optional[
             Union[
@@ -1170,6 +1177,7 @@ class BankFeedAccounts(BaseSDK):
         :param available_balance: The available balance of the source bank account (considering pending transactions and overdraft).
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
         :param feed_status: Current status of the bank feed.
+        :param status: Whether the data consumer may see this account. `revoked` hides it from the consumer without deleting it; `active` restores it. Unrelated to `feed_status`. Only connectors that list it support it; others ignore the field, so setting it there changes nothing.
         :param country: Country code according to ISO 3166-1 alpha-2.
         :param account_holders: The people or businesses that hold the source bank account. Optional; `plaid-exchange` requires at least one.
         :param emails: Email addresses of the account holders. Optional; `plaid-exchange` requires at least one.
@@ -1209,6 +1217,7 @@ class BankFeedAccounts(BaseSDK):
                 available_balance=available_balance,
                 currency=currency,
                 feed_status=feed_status,
+                status=status,
                 country=country,
                 account_holders=utils.get_pydantic_model(
                     account_holders, Optional[List[models.BankFeedAccountHolder]]
@@ -1350,6 +1359,7 @@ class BankFeedAccounts(BaseSDK):
         available_balance: OptionalNullable[float] = UNSET,
         currency: OptionalNullable[models.Currency] = UNSET,
         feed_status: Optional[models.FeedStatus] = None,
+        status: Optional[models.BankFeedAccountStatus] = None,
         country: OptionalNullable[str] = UNSET,
         account_holders: Optional[
             Union[
@@ -1392,6 +1402,7 @@ class BankFeedAccounts(BaseSDK):
         :param available_balance: The available balance of the source bank account (considering pending transactions and overdraft).
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
         :param feed_status: Current status of the bank feed.
+        :param status: Whether the data consumer may see this account. `revoked` hides it from the consumer without deleting it; `active` restores it. Unrelated to `feed_status`. Only connectors that list it support it; others ignore the field, so setting it there changes nothing.
         :param country: Country code according to ISO 3166-1 alpha-2.
         :param account_holders: The people or businesses that hold the source bank account. Optional; `plaid-exchange` requires at least one.
         :param emails: Email addresses of the account holders. Optional; `plaid-exchange` requires at least one.
@@ -1431,6 +1442,7 @@ class BankFeedAccounts(BaseSDK):
                 available_balance=available_balance,
                 currency=currency,
                 feed_status=feed_status,
+                status=status,
                 country=country,
                 account_holders=utils.get_pydantic_model(
                     account_holders, Optional[List[models.BankFeedAccountHolder]]

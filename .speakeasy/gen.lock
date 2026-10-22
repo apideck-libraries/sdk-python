@@ -1,12 +1,12 @@
 lockVersion: 2.0.0
 id: fca0ac3a-5f4e-452c-bbc7-2311afa8da40
 management:
-  docChecksum: 5bd9a40a4c84e46f4479bb436341eaed
-  docVersion: 10.69.9
+  docChecksum: 6f424e07a9e4511ded6b95035393893f
+  docVersion: 10.70.0
   speakeasyVersion: 1.656.1
   generationVersion: 2.753.1
-  releaseVersion: 0.49.3
-  configChecksum: 8cead2786bd525dc338229bb5bfd68a9
+  releaseVersion: 0.50.0
+  configChecksum: 12466cedb93491f657f1cad9f48f8512
   repoURL: https://github.com/apideck-libraries/sdk-python.git
   installationURL: https://github.com/apideck-libraries/sdk-python.git
   published: true
@@ -752,6 +752,7 @@ generatedFiles:
   - docs/models/bankfeedaccount.md
   - docs/models/bankfeedaccountholder.md
   - docs/models/bankfeedaccountinput.md
+  - docs/models/bankfeedaccountstatus.md
   - docs/models/bankfeedstatement.md
   - docs/models/bankfeedstatementinput.md
   - docs/models/bankfeedstatementsfilter.md
@@ -9018,7 +9019,7 @@ examples:
           x-apideck-app-id: "dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX"
           x-apideck-service-id: "salesforce"
       requestBody:
-        application/json: {"bank_account_type": "bank", "source_account_id": "src_456", "source_routing_number": "021000021", "source_account_number": "123465", "target_account_id": "tgt_789", "target_account_name": "Main Company Checking", "target_account_number": "NL91ABNA0417164300", "balance": 25000, "available_balance": 24500, "currency": "USD", "feed_status": "pending", "country": "US", "account_holders": [{"type": "consumer", "relationship": "primary", "first_name": "Jane", "middle_name": "Quinn", "last_name": "Doe", "suffix": "Jr", "business_name": "Acme LLC"}], "emails": [{"id": "123", "email": "elon@musk.com", "type": "primary"}], "addresses": [{"id": "123", "type": "primary", "string": "25 Spring Street, Blackburn, VIC 3130", "name": "HQ US", "line1": "Main street", "line2": "apt #", "line3": "Suite #", "line4": "delivery instructions", "line5": "Attention: Finance Dept", "street_number": "25", "city": "San Francisco", "state": "CA", "postal_code": "94104", "country": "US", "latitude": "40.759211", "longitude": "-73.984638", "county": "Santa Clara", "contact_name": "Elon Musk", "salutation": "Mr", "phone_number": "111-111-1111", "fax": "122-111-1111", "email": "elon@musk.com", "website": "https://elonmusk.com", "notes": "Address notes or delivery instructions.", "row_version": "1-12345"}], "phone_numbers": [{"id": "12345", "country_code": "1", "area_code": "323", "number": "111-111-1111", "extension": "105", "type": "primary"}], "custom_fields": [{"id": "2389328923893298", "name": "employee_level", "description": "Employee Level", "value": "Uses Salesforce and Marketo"}]}
+        application/json: {"bank_account_type": "bank", "source_account_id": "src_456", "source_routing_number": "021000021", "source_account_number": "123465", "target_account_id": "tgt_789", "target_account_name": "Main Company Checking", "target_account_number": "NL91ABNA0417164300", "balance": 25000, "available_balance": 24500, "currency": "USD", "feed_status": "pending", "status": "active", "country": "US", "account_holders": [{"type": "consumer", "relationship": "primary", "first_name": "Jane", "middle_name": "Quinn", "last_name": "Doe", "suffix": "Jr", "business_name": "Acme LLC"}], "emails": [{"id": "123", "email": "elon@musk.com", "type": "primary"}], "addresses": [{"id": "123", "type": "primary", "string": "25 Spring Street, Blackburn, VIC 3130", "name": "HQ US", "line1": "Main street", "line2": "apt #", "line3": "Suite #", "line4": "delivery instructions", "line5": "Attention: Finance Dept", "street_number": "25", "city": "San Francisco", "state": "CA", "postal_code": "94104", "country": "US", "latitude": "40.759211", "longitude": "-73.984638", "county": "Santa Clara", "contact_name": "Elon Musk", "salutation": "Mr", "phone_number": "111-111-1111", "fax": "122-111-1111", "email": "elon@musk.com", "website": "https://elonmusk.com", "notes": "Address notes or delivery instructions.", "row_version": "1-12345"}], "phone_numbers": [{"id": "12345", "country_code": "1", "area_code": "323", "number": "111-111-1111", "extension": "105", "type": "primary"}], "custom_fields": [{"id": "2389328923893298", "name": "employee_level", "description": "Employee Level", "value": "Uses Salesforce and Marketo"}]}
       responses:
         "201":
           application/json: {"status_code": 200, "status": "OK", "service": "xero", "resource": "bills", "operation": "add", "data": {"id": "12345"}}
@@ -9075,7 +9076,7 @@ examples:
           x-apideck-company-id: "12345"
       responses:
         "200":
-          application/json: {"status_code": 200, "status": "OK", "service": "xero", "resource": "bank-feed-accounts", "operation": "one", "data": {"id": "12345", "bank_account_type": "bank", "source_account_id": "src_456", "source_routing_number": "021000021", "source_account_number": "123465", "target_account_id": "tgt_789", "target_account_name": "Main Company Checking", "target_account_number": "NL91ABNA0417164300", "balance": 25000, "available_balance": 24500, "currency": "USD", "feed_status": "pending", "country": "US", "account_holders": [{"type": "consumer", "relationship": "primary", "first_name": "Jane", "middle_name": "Quinn", "last_name": "Doe", "suffix": "Jr", "business_name": "Acme LLC"}], "emails": [{"id": "123", "email": "elon@musk.com", "type": "primary"}], "addresses": [{"id": "123", "type": "primary", "string": "25 Spring Street, Blackburn, VIC 3130", "name": "HQ US", "line1": "Main street", "line2": "apt #", "line3": "Suite #", "line4": "delivery instructions", "line5": "Attention: Finance Dept", "street_number": "25", "city": "San Francisco", "state": "CA", "postal_code": "94104", "country": "US", "latitude": "40.759211", "longitude": "-73.984638", "county": "Santa Clara", "contact_name": "Elon Musk", "salutation": "Mr", "phone_number": "111-111-1111", "fax": "122-111-1111", "email": "elon@musk.com", "website": "https://elonmusk.com", "notes": "Address notes or delivery instructions.", "row_version": "1-12345"}], "phone_numbers": [{"id": "12345", "country_code": "1", "area_code": "323", "number": "111-111-1111", "extension": "105", "type": "primary"}], "custom_fields": [{"id": "2389328923893298", "name": "employee_level", "description": "Employee Level", "value": "Uses Salesforce and Marketo"}], "created_at": "2020-09-30T07:43:32.000Z", "updated_at": "2020-09-30T07:43:32.000Z", "updated_by": "12345", "created_by": "12345"}, "meta": {"items_on_page": 50, "cursors": {"previous": "em9oby1jcm06OnBhZ2U6OjE=", "current": "em9oby1jcm06OnBhZ2U6OjI=", "next": "em9oby1jcm06OnBhZ2U6OjM="}, "total_count": 1, "warnings": [{"type": "downstream_request_failed", "status_code": 429, "operation": "getManager"}]}}
+          application/json: {"status_code": 200, "status": "OK", "service": "xero", "resource": "bank-feed-accounts", "operation": "one", "data": {"id": "12345", "bank_account_type": "bank", "source_account_id": "src_456", "source_routing_number": "021000021", "source_account_number": "123465", "target_account_id": "tgt_789", "target_account_name": "Main Company Checking", "target_account_number": "NL91ABNA0417164300", "balance": 25000, "available_balance": 24500, "currency": "USD", "feed_status": "pending", "status": "active", "country": "US", "account_holders": [{"type": "consumer", "relationship": "primary", "first_name": "Jane", "middle_name": "Quinn", "last_name": "Doe", "suffix": "Jr", "business_name": "Acme LLC"}], "emails": [{"id": "123", "email": "elon@musk.com", "type": "primary"}], "addresses": [{"id": "123", "type": "primary", "string": "25 Spring Street, Blackburn, VIC 3130", "name": "HQ US", "line1": "Main street", "line2": "apt #", "line3": "Suite #", "line4": "delivery instructions", "line5": "Attention: Finance Dept", "street_number": "25", "city": "San Francisco", "state": "CA", "postal_code": "94104", "country": "US", "latitude": "40.759211", "longitude": "-73.984638", "county": "Santa Clara", "contact_name": "Elon Musk", "salutation": "Mr", "phone_number": "111-111-1111", "fax": "122-111-1111", "email": "elon@musk.com", "website": "https://elonmusk.com", "notes": "Address notes or delivery instructions.", "row_version": "1-12345"}], "phone_numbers": [{"id": "12345", "country_code": "1", "area_code": "323", "number": "111-111-1111", "extension": "105", "type": "primary"}], "custom_fields": [{"id": "2389328923893298", "name": "employee_level", "description": "Employee Level", "value": "Uses Salesforce and Marketo"}], "created_at": "2020-09-30T07:43:32.000Z", "updated_at": "2020-09-30T07:43:32.000Z", "updated_by": "12345", "created_by": "12345"}, "meta": {"items_on_page": 50, "cursors": {"previous": "em9oby1jcm06OnBhZ2U6OjE=", "current": "em9oby1jcm06OnBhZ2U6OjI=", "next": "em9oby1jcm06OnBhZ2U6OjM="}, "total_count": 1, "warnings": [{"type": "downstream_request_failed", "status_code": 429, "operation": "getManager"}]}}
         "400":
           application/json: {"status_code": 400, "error": "Bad Request", "type_name": "RequestValidationError", "message": "Invalid Params", "detail": "Missing property foobar", "ref": "https://developers.apideck.com/errors#requestvalidationerror", "downstream_errors": [{"message": "Account code '100' has been archived or deleted", "detail": "Each line item must reference a valid account", "code": "VALIDATION_ERROR"}]}
         "401":
@@ -9127,7 +9128,7 @@ examples:
           x-apideck-app-id: "dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX"
           x-apideck-service-id: "salesforce"
       requestBody:
-        application/json: {"bank_account_type": "bank", "source_account_id": "src_456", "source_routing_number": "021000021", "source_account_number": "123465", "target_account_id": "tgt_789", "target_account_name": "Main Company Checking", "target_account_number": "NL91ABNA0417164300", "balance": 25000, "available_balance": 24500, "currency": "USD", "feed_status": "pending", "country": "US", "account_holders": [{"type": "consumer", "relationship": "primary", "first_name": "Jane", "middle_name": "Quinn", "last_name": "Doe", "suffix": "Jr", "business_name": "Acme LLC"}], "emails": [{"id": "123", "email": "elon@musk.com", "type": "primary"}], "addresses": [{"id": "123", "type": "primary", "string": "25 Spring Street, Blackburn, VIC 3130", "name": "HQ US", "line1": "Main street", "line2": "apt #", "line3": "Suite #", "line4": "delivery instructions", "line5": "Attention: Finance Dept", "street_number": "25", "city": "San Francisco", "state": "CA", "postal_code": "94104", "country": "US", "latitude": "40.759211", "longitude": "-73.984638", "county": "Santa Clara", "contact_name": "Elon Musk", "salutation": "Mr", "phone_number": "111-111-1111", "fax": "122-111-1111", "email": "elon@musk.com", "website": "https://elonmusk.com", "notes": "Address notes or delivery instructions.", "row_version": "1-12345"}], "phone_numbers": [{"id": "12345", "country_code": "1", "area_code": "323", "number": "111-111-1111", "extension": "105", "type": "primary"}], "custom_fields": [{"id": "2389328923893298", "name": "employee_level", "description": "Employee Level", "value": "Uses Salesforce and Marketo"}]}
+        application/json: {"bank_account_type": "bank", "source_account_id": "src_456", "source_routing_number": "021000021", "source_account_number": "123465", "target_account_id": "tgt_789", "target_account_name": "Main Company Checking", "target_account_number": "NL91ABNA0417164300", "balance": 25000, "available_balance": 24500, "currency": "USD", "feed_status": "pending", "status": "active", "country": "US", "account_holders": [{"type": "consumer", "relationship": "primary", "first_name": "Jane", "middle_name": "Quinn", "last_name": "Doe", "suffix": "Jr", "business_name": "Acme LLC"}], "emails": [{"id": "123", "email": "elon@musk.com", "type": "primary"}], "addresses": [{"id": "123", "type": "primary", "string": "25 Spring Street, Blackburn, VIC 3130", "name": "HQ US", "line1": "Main street", "line2": "apt #", "line3": "Suite #", "line4": "delivery instructions", "line5": "Attention: Finance Dept", "street_number": "25", "city": "San Francisco", "state": "CA", "postal_code": "94104", "country": "US", "latitude": "40.759211", "longitude": "-73.984638", "county": "Santa Clara", "contact_name": "Elon Musk", "salutation": "Mr", "phone_number": "111-111-1111", "fax": "122-111-1111", "email": "elon@musk.com", "website": "https://elonmusk.com", "notes": "Address notes or delivery instructions.", "row_version": "1-12345"}], "phone_numbers": [{"id": "12345", "country_code": "1", "area_code": "323", "number": "111-111-1111", "extension": "105", "type": "primary"}], "custom_fields": [{"id": "2389328923893298", "name": "employee_level", "description": "Employee Level", "value": "Uses Salesforce and Marketo"}]}
       responses:
         "200":
           application/json: {"status_code": 200, "status": "OK", "service": "xero", "resource": "bank-feed-accounts", "operation": "update", "data": {"id": "12345"}}
@@ -21481,6 +21482,13 @@ examples:
           application/json: {"status_code": 400, "error": "Bad Request", "type_name": "RequestHeadersValidationError", "message": "Invalid Params", "detail": "Missing Header: x-apideck-consumer-id", "ref": "https://developers.apideck.com/errors#unauthorizederror"}
 examplesVersion: 1.0.2
 generatedTests: {}
+releaseNotes: |
+  ## Python SDK Changes Detected:
+  * `apideck.accounting.bank_feed_accounts.list()`:  `response.data.[].status` **Added**
+  * `apideck.accounting.bank_feed_accounts.create()`:  `request.status` **Added**
+  * `apideck.accounting.bank_feed_accounts.get()`:  `response.data.status` **Added**
+  * `apideck.accounting.bank_feed_accounts.update()`:  `request.status` **Added**
+  * `apideck.hris.employees.list()`:  `request.filter` **Changed**
 trackedFiles:
   .devcontainer/README.md:
     last_write_checksum: sha1:07adb0c0c051a9be4d479ea06461f3a9b3bbeb2f
@@ -22887,11 +22895,13 @@ trackedFiles:
   docs/models/bankaccounttype.md:
     last_write_checksum: sha1:6a9f6db9724072d065371f2803f6f6d9f977be70
   docs/models/bankfeedaccount.md:
-    last_write_checksum: sha1:83cdd88735c317a4dd57a5a38c93e297d0bcd4d4
+    last_write_checksum: sha1:0aef71013ac30e3766f8989fb83fe71799be7f3d
   docs/models/bankfeedaccountholder.md:
     last_write_checksum: sha1:958f14f85aa7c76a8ac484cf19a9b691a13e52b3
   docs/models/bankfeedaccountinput.md:
-    last_write_checksum: sha1:b99c14635d30fcec8d355ba702e90b4918fb0efc
+    last_write_checksum: sha1:08ef9fe4bc4c93c323f6fe9d27d2c96fcb97d55e
+  docs/models/bankfeedaccountstatus.md:
+    last_write_checksum: sha1:3144209ace27ca0322573bc2b329325d37150b78
   docs/models/bankfeedstatement.md:
     last_write_checksum: sha1:6192257d44e888e76cfab4d060f33bf0373efbc1
   docs/models/bankfeedstatementinput.md:
@@ -24069,7 +24079,7 @@ trackedFiles:
   docs/models/employeeschedules.md:
     last_write_checksum: sha1:5a5154680c6ac88abaf19d31c3328daf3988e46e
   docs/models/employeesfilter.md:
-    last_write_checksum: sha1:e0dc4358aac854d6a9046df7f2b073f62f814a98
+    last_write_checksum: sha1:eb8abe5279173962b9ca13bd09ef21e3218a75d1
   docs/models/employeesfilteremploymentstatus.md:
     last_write_checksum: sha1:1306ca4de2874753420527fea9fa38c29ce702c6
   docs/models/employeesonefilter.md:
@@ -26173,7 +26183,7 @@ trackedFiles:
   docs/sdks/bankaccounts/README.md:
     last_write_checksum: sha1:862617f7d49417ab0ee3d692b69c8068a61781d7
   docs/sdks/bankfeedaccounts/README.md:
-    last_write_checksum: sha1:e941a446b12be0f8b67e28ad884e7561c2548032
+    last_write_checksum: sha1:20c04ea924ce262a7637b3bc988fb4da7b66548b
   docs/sdks/bankfeedstatements/README.md:
     last_write_checksum: sha1:35cb3b733318efaad114c48ff4b97cca484833ed
   docs/sdks/billcreditnotes/README.md:
@@ -26367,15 +26377,15 @@ trackedFiles:
   src/apideck_unify/_hooks/types.py:
     last_write_checksum: sha1:d57be38e644de01983a9224b9733ae0add898d43
   src/apideck_unify/_version.py:
-    last_write_checksum: sha1:94474b02f096cccfb438350837a9dc1f42b9a73b
+    last_write_checksum: sha1:e634977d518d0cf94014b6038979aa3d6945c807
   src/apideck_unify/accounting.py:
     last_write_checksum: sha1:7f9e809f589467dee3bc2719395ce1cdef2d7421
   src/apideck_unify/activities.py:
     last_write_checksum: sha1:d0d893423acbd8366c1581b05f4f76efffc9ef23
   src/apideck_unify/agedcreditors_sdk.py:
-    last_write_checksum: sha1:58924f489592c15f5fee766db799090b6c0117e6
+    last_write_checksum: sha1:9dc64d71110a00116330f805ece6f60a16981cfe
   src/apideck_unify/ageddebtors_sdk.py:
-    last_write_checksum: sha1:78bdbe3d66fabf42b064631d28b9f6ed05ca5813
+    last_write_checksum: sha1:4b9b3ba3d3bde1eb11ec09bb84c50f18636caced
   src/apideck_unify/apideck_companies.py:
     last_write_checksum: sha1:81d6460092ff832522700ec6a506336043ca21bd
   src/apideck_unify/apideck_customers.py:
@@ -26383,7 +26393,7 @@ trackedFiles:
   src/apideck_unify/apideck_departments.py:
     last_write_checksum: sha1:59a81b7d246ffd8a00dbf65a7d660c112548dd74
   src/apideck_unify/apideck_employees.py:
-    last_write_checksum: sha1:8f6fdca76499bedfc83005f4e0596301ecb753a8
+    last_write_checksum: sha1:35d27725ef0052e45dff3b7b9c24b77b08a288f4
   src/apideck_unify/apideck_hris_companies.py:
     last_write_checksum: sha1:4a0e3c47bbedbc5fbed2114c9bd520efa4fbae05
   src/apideck_unify/apiresourcecoverage_sdk.py:
@@ -26405,7 +26415,7 @@ trackedFiles:
   src/apideck_unify/bankaccounts.py:
     last_write_checksum: sha1:a94042a29e2193ee73ab6719cd3fa0a6d08a9219
   src/apideck_unify/bankfeedaccounts.py:
-    last_write_checksum: sha1:8b8099fe64ab452d89fbecd02881269f4a7fd7f2
+    last_write_checksum: sha1:8b7fe22e12c691d81648f4b2ae0989e5b4dfb8e8
   src/apideck_unify/bankfeedstatements.py:
     last_write_checksum: sha1:6be0a9618a46af3c56e06e0489903a7cbd15f26f
   src/apideck_unify/basesdk.py:
@@ -26503,7 +26513,7 @@ trackedFiles:
   src/apideck_unify/folders.py:
     last_write_checksum: sha1:ff18938d91f50a29e51654d421e1133310545000
   src/apideck_unify/generalledgertransactions.py:
-    last_write_checksum: sha1:683ab9c7cfcde58f10d4aced9799cf0499bfc3ec
+    last_write_checksum: sha1:b57501e2ade22cde2601d620a9f76fe779bb00a5
   src/apideck_unify/goodsreceipts.py:
     last_write_checksum: sha1:a0be3b58b585ab9b0d9149976939d1488c21765d
   src/apideck_unify/hris.py:
@@ -26513,7 +26523,7 @@ trackedFiles:
   src/apideck_unify/invoiceitems.py:
     last_write_checksum: sha1:f993afa40ed86f8b870c6dd47f5faeffc1a8061d
   src/apideck_unify/invoices.py:
-    last_write_checksum: sha1:e6ff0d38ddfda7762b065748c0dabd158f9c5b9b
+    last_write_checksum: sha1:2f4b07d26cacbbf06af862f0eea82f08f065149b
   src/apideck_unify/issuetracking.py:
     last_write_checksum: sha1:a18420473c9ae884dcdc562042a52205924643c5
   src/apideck_unify/jobs.py:
@@ -26537,7 +26547,7 @@ trackedFiles:
   src/apideck_unify/messages.py:
     last_write_checksum: sha1:8b1e180d3c7d2ae9916b1f645460caebf5281d7b
   src/apideck_unify/models/__init__.py:
-    last_write_checksum: sha1:264fff88c242d3123336450aeeef9d0043d814e1
+    last_write_checksum: sha1:c85ffc804684693520a6523926a04ef9a05d8ce3
   src/apideck_unify/models/accounting_agedcreditorsoneop.py:
     last_write_checksum: sha1:7346d1ab1c21db21995aae34c5ba01549c2786c2
   src/apideck_unify/models/accounting_ageddebtorsoneop.py:
@@ -27031,7 +27041,7 @@ trackedFiles:
   src/apideck_unify/models/bankaccountssort.py:
     last_write_checksum: sha1:b92fbc10748133c6b4bd8bee30cd4ec38855a765
   src/apideck_unify/models/bankfeedaccount.py:
-    last_write_checksum: sha1:e55f0d272e75a08865f54dd72d3dfbe9297e0661
+    last_write_checksum: sha1:6ebc4815e419d27d2a8b1da9d1b794cc94fb5dc9
   src/apideck_unify/models/bankfeedaccountholder.py:
     last_write_checksum: sha1:404dfe21d62ad9a7fe87dfd28980801cfdf785b4
   src/apideck_unify/models/bankfeedstatement.py:
@@ -27685,7 +27695,7 @@ trackedFiles:
   src/apideck_unify/models/employeeschedules.py:
     last_write_checksum: sha1:169040c69841a4086b54d7810b159760e763def1
   src/apideck_unify/models/employeesfilter.py:
-    last_write_checksum: sha1:6a661062f7b3b7792df41c413dab90cfce87fb7b
+    last_write_checksum: sha1:7e66030b564a01d4392da9f3ddcdd7759f4dd6e9
   src/apideck_unify/models/employeesonefilter.py:
     last_write_checksum: sha1:1e00a29531cbf872da3050b5fd9fdcf4e101b52f
   src/apideck_unify/models/employeessort.py:
@@ -28817,7 +28827,7 @@ trackedFiles:
   src/apideck_unify/paymentmethods.py:
     last_write_checksum: sha1:af64c2a6945b5f878f5dff6ec4daaa9de0b716ac
   src/apideck_unify/payments.py:
-    last_write_checksum: sha1:8c8db4fb8b8eb03d07f07ec1b292ff37d470f56d
+    last_write_checksum: sha1:c6f8d3b1014864166859700de125129008730b9d
   src/apideck_unify/payrolls.py:
     last_write_checksum: sha1:5ccd0b249a6acb7ec93202cf3e02d445138a66b0
   src/apideck_unify/pipelines.py:
@@ -28831,7 +28841,7 @@ trackedFiles:
   src/apideck_unify/proxy.py:
     last_write_checksum: sha1:53cac21bb7cb5e5c3424547235d9915d7dcc5319
   src/apideck_unify/purchaseorders.py:
-    last_write_checksum: sha1:a057f0abc7a13f6a92d2c901b08dd156725c388f
+    last_write_checksum: sha1:1d5a6dd8b5decc0cd5856b1ebc9c9c4c1bdab158
   src/apideck_unify/py.typed:
     last_write_checksum: sha1:8efc425ffe830805ffcc0f3055871bdcdc542c60
   src/apideck_unify/quotes.py:
@@ -28857,7 +28867,7 @@ trackedFiles:
   src/apideck_unify/subsidiaries.py:
     last_write_checksum: sha1:d26c804b603fc62d5357899c5cd2c71756a93184
   src/apideck_unify/suppliers.py:
-    last_write_checksum: sha1:ccb0083e569e5575e105822c790b8d28e3f87646
+    last_write_checksum: sha1:d7632113e321e576b8438d3101594552d6d3f00a
   src/apideck_unify/taxrates.py:
     last_write_checksum: sha1:7eade8f75fe3fb692eea29caa3fa2852e05faf87
   src/apideck_unify/timeoffrequests.py:

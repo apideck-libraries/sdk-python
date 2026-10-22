@@ -1817,6 +1817,7 @@ if TYPE_CHECKING:
         BankFeedAccount,
         BankFeedAccountInput,
         BankFeedAccountInputTypedDict,
+        BankFeedAccountStatus,
         BankFeedAccountTypedDict,
         FeedStatus,
     )
@@ -7213,6 +7214,7 @@ __all__ = [
     "BankFeedAccountHolderTypedDict",
     "BankFeedAccountInput",
     "BankFeedAccountInputTypedDict",
+    "BankFeedAccountStatus",
     "BankFeedAccountTypedDict",
     "BankFeedStatement",
     "BankFeedStatementInput",
@@ -11620,6 +11622,7 @@ _dynamic_imports: dict[str, str] = {
     "BankFeedAccount": ".bankfeedaccount",
     "BankFeedAccountInput": ".bankfeedaccount",
     "BankFeedAccountInputTypedDict": ".bankfeedaccount",
+    "BankFeedAccountStatus": ".bankfeedaccount",
     "BankFeedAccountTypedDict": ".bankfeedaccount",
     "FeedStatus": ".bankfeedaccount",
     "BankFeedAccountHolder": ".bankfeedaccountholder",
