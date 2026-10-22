@@ -38,6 +38,13 @@ class FeedStatus(str, Enum, metaclass=utils.OpenEnumMeta):
     REJECTED = "rejected"
 
 
+class BankFeedAccountStatus(str, Enum, metaclass=utils.OpenEnumMeta):
+    r"""Whether the data consumer may see this account. `revoked` hides it from the consumer without deleting it; `active` restores it. Unrelated to `feed_status`. Only connectors that list it support it; others ignore the field, so setting it there changes nothing."""
+
+    ACTIVE = "active"
+    REVOKED = "revoked"
+
+
 class BankFeedAccountTypedDict(TypedDict):
     id: str
     r"""A unique identifier for an object."""
@@ -63,6 +70,8 @@ class BankFeedAccountTypedDict(TypedDict):
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
     feed_status: NotRequired[FeedStatus]
     r"""Current status of the bank feed."""
+    status: NotRequired[BankFeedAccountStatus]
+    r"""Whether the data consumer may see this account. `revoked` hides it from the consumer without deleting it; `active` restores it. Unrelated to `feed_status`. Only connectors that list it support it; others ignore the field, so setting it there changes nothing."""
     country: NotRequired[Nullable[str]]
     r"""Country code according to ISO 3166-1 alpha-2."""
     account_holders: NotRequired[List[BankFeedAccountHolderTypedDict]]
@@ -129,6 +138,11 @@ class BankFeedAccount(BaseModel):
     ] = None
     r"""Current status of the bank feed."""
 
+    status: Annotated[
+        Optional[BankFeedAccountStatus], PlainValidator(validate_open_enum(False))
+    ] = None
+    r"""Whether the data consumer may see this account. `revoked` hides it from the consumer without deleting it; `active` restores it. Unrelated to `feed_status`. Only connectors that list it support it; others ignore the field, so setting it there changes nothing."""
+
     country: OptionalNullable[str] = UNSET
     r"""Country code according to ISO 3166-1 alpha-2."""
 
@@ -188,6 +202,15 @@ class BankFeedAccount(BaseModel):
                 return value
         return value
 
+    @field_serializer("status")
+    def serialize_status(self, value):
+        if isinstance(value, str):
+            try:
+                return models.BankFeedAccountStatus(value)
+            except ValueError:
+                return value
+        return value
+
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
         optional_fields = [
@@ -202,6 +225,7 @@ class BankFeedAccount(BaseModel):
             "available_balance",
             "currency",
             "feed_status",
+            "status",
             "country",
             "account_holders",
             "emails",
@@ -277,6 +301,8 @@ class BankFeedAccountInputTypedDict(TypedDict):
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
     feed_status: NotRequired[FeedStatus]
     r"""Current status of the bank feed."""
+    status: NotRequired[BankFeedAccountStatus]
+    r"""Whether the data consumer may see this account. `revoked` hides it from the consumer without deleting it; `active` restores it. Unrelated to `feed_status`. Only connectors that list it support it; others ignore the field, so setting it there changes nothing."""
     country: NotRequired[Nullable[str]]
     r"""Country code according to ISO 3166-1 alpha-2."""
     account_holders: NotRequired[List[BankFeedAccountHolderTypedDict]]
@@ -330,6 +356,11 @@ class BankFeedAccountInput(BaseModel):
     ] = None
     r"""Current status of the bank feed."""
 
+    status: Annotated[
+        Optional[BankFeedAccountStatus], PlainValidator(validate_open_enum(False))
+    ] = None
+    r"""Whether the data consumer may see this account. `revoked` hides it from the consumer without deleting it; `active` restores it. Unrelated to `feed_status`. Only connectors that list it support it; others ignore the field, so setting it there changes nothing."""
+
     country: OptionalNullable[str] = UNSET
     r"""Country code according to ISO 3166-1 alpha-2."""
 
@@ -374,6 +405,15 @@ class BankFeedAccountInput(BaseModel):
                 return value
         return value
 
+    @field_serializer("status")
+    def serialize_status(self, value):
+        if isinstance(value, str):
+            try:
+                return models.BankFeedAccountStatus(value)
+            except ValueError:
+                return value
+        return value
+
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
         optional_fields = [
@@ -388,6 +428,7 @@ class BankFeedAccountInput(BaseModel):
             "available_balance",
             "currency",
             "feed_status",
+            "status",
             "country",
             "account_holders",
             "emails",

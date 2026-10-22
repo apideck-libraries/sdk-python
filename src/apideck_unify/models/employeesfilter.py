@@ -4,6 +4,7 @@ from __future__ import annotations
 from apideck_unify import models, utils
 from apideck_unify.types import BaseModel
 from apideck_unify.utils import FieldMetadata, validate_open_enum
+from datetime import date
 from enum import Enum
 from pydantic import field_serializer
 from pydantic.functional_validators import PlainValidator
@@ -43,6 +44,8 @@ class EmployeesFilterTypedDict(TypedDict):
     r"""City to filter on"""
     country: NotRequired[str]
     r"""Country to filter on"""
+    as_of_date: NotRequired[date]
+    r"""Return employees as of this date (YYYY-MM-DD). Set a future date to include future-dated hires. When omitted, employees are returned as of today."""
 
 
 class EmployeesFilter(BaseModel):
@@ -84,6 +87,9 @@ class EmployeesFilter(BaseModel):
 
     country: Annotated[Optional[str], FieldMetadata(query=True)] = None
     r"""Country to filter on"""
+
+    as_of_date: Annotated[Optional[date], FieldMetadata(query=True)] = None
+    r"""Return employees as of this date (YYYY-MM-DD). Set a future date to include future-dated hires. When omitted, employees are returned as of today."""
 
     @field_serializer("employment_status")
     def serialize_employment_status(self, value):
