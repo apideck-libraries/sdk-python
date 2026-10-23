@@ -52,7 +52,7 @@ class FormFieldTypedDict(TypedDict):
     options_fetch_error: NotRequired[Nullable[bool]]
     r"""Indicates if the options for a form field failed to be fetched from the downstream service. Only applicable to fields with dynamic options. When true, a retry mechanism should be provided to the user."""
     hidden: NotRequired[Nullable[bool]]
-    r"""Indicates if the form field is not displayed but the value that is being stored on the connection."""
+    r"""Indicates the form field is not displayed in Vault. A field is hidden when the connector hides it, or when the application hides it in the dashboard (Fields visible in Vault). An application can hide only optional fields that aren't required for authorization. A hidden field's value is still stored on the connection and can still be set through the API."""
     deprecated: NotRequired[Nullable[bool]]
     r"""When the setting is deprecated, it should be hidden from the user interface. The value will still be stored on the connection for the sake of backwards compatibility."""
     sensitive: NotRequired[Nullable[bool]]
@@ -94,7 +94,7 @@ class FormField(BaseModel):
     r"""Indicates if the options for a form field failed to be fetched from the downstream service. Only applicable to fields with dynamic options. When true, a retry mechanism should be provided to the user."""
 
     hidden: OptionalNullable[bool] = UNSET
-    r"""Indicates if the form field is not displayed but the value that is being stored on the connection."""
+    r"""Indicates the form field is not displayed in Vault. A field is hidden when the connector hides it, or when the application hides it in the dashboard (Fields visible in Vault). An application can hide only optional fields that aren't required for authorization. A hidden field's value is still stored on the connection and can still be set through the API."""
 
     deprecated: OptionalNullable[bool] = UNSET
     r"""When the setting is deprecated, it should be hidden from the user interface. The value will still be stored on the connection for the sake of backwards compatibility."""
