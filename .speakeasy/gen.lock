@@ -1,12 +1,12 @@
 lockVersion: 2.0.0
 id: fca0ac3a-5f4e-452c-bbc7-2311afa8da40
 management:
-  docChecksum: 6f424e07a9e4511ded6b95035393893f
-  docVersion: 10.70.0
+  docChecksum: 652e92ccce88b60a8964250163589509
+  docVersion: 10.71.0
   speakeasyVersion: 1.656.1
   generationVersion: 2.753.1
-  releaseVersion: 0.50.0
-  configChecksum: 12466cedb93491f657f1cad9f48f8512
+  releaseVersion: 0.51.0
+  configChecksum: 76b93b343af40eefa1e61e96b219aa6d
   repoURL: https://github.com/apideck-libraries/sdk-python.git
   installationURL: https://github.com/apideck-libraries/sdk-python.git
   published: true
@@ -21484,11 +21484,8 @@ examplesVersion: 1.0.2
 generatedTests: {}
 releaseNotes: |
   ## Python SDK Changes Detected:
-  * `apideck.accounting.bank_feed_accounts.list()`:  `response.data.[].status` **Added**
-  * `apideck.accounting.bank_feed_accounts.create()`:  `request.status` **Added**
-  * `apideck.accounting.bank_feed_accounts.get()`:  `response.data.status` **Added**
-  * `apideck.accounting.bank_feed_accounts.update()`:  `request.status` **Added**
-  * `apideck.hris.employees.list()`:  `request.filter` **Changed**
+  * `apideck.connector.connectors.list()`:  `response.data.[].settings.[]` **Changed**
+  * `apideck.connector.connectors.get()`:  `response.data.settings.[]` **Changed**
 trackedFiles:
   .devcontainer/README.md:
     last_write_checksum: sha1:07adb0c0c051a9be4d479ea06461f3a9b3bbeb2f
@@ -23211,7 +23208,7 @@ trackedFiles:
   docs/models/connectorresource.md:
     last_write_checksum: sha1:7057eda11e9d342bc3fdace427b114d9231c1aca
   docs/models/connectorsetting.md:
-    last_write_checksum: sha1:7507edef250e878dd633ceb06b3668c2a9d6100c
+    last_write_checksum: sha1:86abbf7d151d7e2b20bcebbee5a87fe1710f353c
   docs/models/connectorsettingtype.md:
     last_write_checksum: sha1:094e977427a36ebea5d2e02eb9c13d52776867ac
   docs/models/connectorsfilter.md:
@@ -24383,7 +24380,7 @@ trackedFiles:
   docs/models/format_.md:
     last_write_checksum: sha1:5e1ebe5085522cec790029f5b1734424aa78a678
   docs/models/formfield.md:
-    last_write_checksum: sha1:ef6d0056529c1414a56bb0ba9afa49eaf39bc188
+    last_write_checksum: sha1:4e9305efacfce9e5314a643e8f03aaf66d630700
   docs/models/formfieldoption.md:
     last_write_checksum: sha1:0426675ee662b057a1993aa29746a1b9b34122f0
   docs/models/formfieldoptiongroup.md:
@@ -26363,7 +26360,7 @@ trackedFiles:
   pylintrc:
     last_write_checksum: sha1:ec6665a4862060890cf4c6ba61438d11decf5c3c
   pyproject.toml:
-    last_write_checksum: sha1:fbbf78650e469739505aa7c55e62eabafe369b84
+    last_write_checksum: sha1:d3f651b9bba3ee628aa872f62dcc37afc2dac3a5
   scripts/prepare_readme.py:
     last_write_checksum: sha1:798a05bafe4fbbfff5b67037866fa25efc52f11a
   scripts/publish.sh:
@@ -26377,7 +26374,7 @@ trackedFiles:
   src/apideck_unify/_hooks/types.py:
     last_write_checksum: sha1:d57be38e644de01983a9224b9733ae0add898d43
   src/apideck_unify/_version.py:
-    last_write_checksum: sha1:e634977d518d0cf94014b6038979aa3d6945c807
+    last_write_checksum: sha1:ea61fca243679fba7e578a5e1fa909271b0fa392
   src/apideck_unify/accounting.py:
     last_write_checksum: sha1:7f9e809f589467dee3bc2719395ce1cdef2d7421
   src/apideck_unify/activities.py:
@@ -26393,7 +26390,7 @@ trackedFiles:
   src/apideck_unify/apideck_departments.py:
     last_write_checksum: sha1:59a81b7d246ffd8a00dbf65a7d660c112548dd74
   src/apideck_unify/apideck_employees.py:
-    last_write_checksum: sha1:35d27725ef0052e45dff3b7b9c24b77b08a288f4
+    last_write_checksum: sha1:0105126a8a786defb83798a613a0394ffcb83431
   src/apideck_unify/apideck_hris_companies.py:
     last_write_checksum: sha1:4a0e3c47bbedbc5fbed2114c9bd520efa4fbae05
   src/apideck_unify/apiresourcecoverage_sdk.py:
@@ -26473,7 +26470,7 @@ trackedFiles:
   src/apideck_unify/crm.py:
     last_write_checksum: sha1:0a3f32ca2265dd9bf40c9b5c0373685dab9e5da6
   src/apideck_unify/customers.py:
-    last_write_checksum: sha1:deabfed1851d006705d7f622891ad7f4df98b56b
+    last_write_checksum: sha1:d76bcec252fb221fa4fe6009e082d9847b55b45b
   src/apideck_unify/customfields.py:
     last_write_checksum: sha1:7666758135082e5efdc1c4b3f570cb2cc9a5c33c
   src/apideck_unify/custommappings.py:
@@ -27195,7 +27192,7 @@ trackedFiles:
   src/apideck_unify/models/connectorresource.py:
     last_write_checksum: sha1:767e73bc341703941120697d4271f4a35f1c3876
   src/apideck_unify/models/connectorsetting.py:
-    last_write_checksum: sha1:3f47dbb663a96fc6169b1bc4dcc0f5283a06959e
+    last_write_checksum: sha1:674ca56204b205aa09fa9a96cfa8a8f10015f2ee
   src/apideck_unify/models/connectorsfilter.py:
     last_write_checksum: sha1:35cedf42c48a521ea12697322fccf428c9144408
   src/apideck_unify/models/connectorstatus.py:
@@ -27799,7 +27796,7 @@ trackedFiles:
   src/apideck_unify/models/folder.py:
     last_write_checksum: sha1:63fc7eb0fcbc97f72d886490ed90d020182199db
   src/apideck_unify/models/formfield.py:
-    last_write_checksum: sha1:1dafc99404a08576af51f20d6b13904d6d92f86e
+    last_write_checksum: sha1:3678bf20d6d8be3b0cf0e33ed7a6cb08864e1948
   src/apideck_unify/models/formfieldoption.py:
     last_write_checksum: sha1:7112154511634b1042ebe34423e5eb3a47bd67f1
   src/apideck_unify/models/formfieldoptiongroup.py:
@@ -28867,7 +28864,7 @@ trackedFiles:
   src/apideck_unify/subsidiaries.py:
     last_write_checksum: sha1:d26c804b603fc62d5357899c5cd2c71756a93184
   src/apideck_unify/suppliers.py:
-    last_write_checksum: sha1:d7632113e321e576b8438d3101594552d6d3f00a
+    last_write_checksum: sha1:42179530bf5be72b6023952e88ec5b1f169a55cc
   src/apideck_unify/taxrates.py:
     last_write_checksum: sha1:7eade8f75fe3fb692eea29caa3fa2852e05faf87
   src/apideck_unify/timeoffrequests.py:

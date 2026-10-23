@@ -28,6 +28,14 @@ class ConnectorSettingTypedDict(TypedDict):
     id: NotRequired[str]
     label: NotRequired[str]
     type: NotRequired[ConnectorSettingType]
+    required: NotRequired[bool]
+    r"""Whether a value is required for the connection to work. Required settings are always shown in Vault and cannot be hidden by an application."""
+    required_for_authorization: NotRequired[bool]
+    r"""Whether a value is required before the connection can be authorized. These settings are always shown in Vault and cannot be hidden by an application."""
+    hidden: NotRequired[bool]
+    r"""Whether the connector hides this setting from the Vault connection form for every application."""
+    description: NotRequired[str]
+    r"""Help text shown under the setting in the Vault connection form. May contain `${integrationSettings.<key>}` placeholders that are filled in from the application's integration settings when the Vault form is built."""
 
 
 class ConnectorSetting(BaseModel):
@@ -36,3 +44,15 @@ class ConnectorSetting(BaseModel):
     label: Optional[str] = None
 
     type: Optional[ConnectorSettingType] = None
+
+    required: Optional[bool] = None
+    r"""Whether a value is required for the connection to work. Required settings are always shown in Vault and cannot be hidden by an application."""
+
+    required_for_authorization: Optional[bool] = None
+    r"""Whether a value is required before the connection can be authorized. These settings are always shown in Vault and cannot be hidden by an application."""
+
+    hidden: Optional[bool] = None
+    r"""Whether the connector hides this setting from the Vault connection form for every application."""
+
+    description: Optional[str] = None
+    r"""Help text shown under the setting in the Vault connection form. May contain `${integrationSettings.<key>}` placeholders that are filled in from the application's integration settings when the Vault form is built."""
