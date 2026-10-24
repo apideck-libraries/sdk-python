@@ -1,12 +1,12 @@
 lockVersion: 2.0.0
 id: fca0ac3a-5f4e-452c-bbc7-2311afa8da40
 management:
-  docChecksum: 652e92ccce88b60a8964250163589509
-  docVersion: 10.71.0
+  docChecksum: 6d144f05843a6299fdccdc6f4f4efaf5
+  docVersion: 10.72.0
   speakeasyVersion: 1.656.1
   generationVersion: 2.753.1
-  releaseVersion: 0.51.0
-  configChecksum: 76b93b343af40eefa1e61e96b219aa6d
+  releaseVersion: 0.52.0
+  configChecksum: 0a096c41ee27f5b5f1810b97e7d049f0
   repoURL: https://github.com/apideck-libraries/sdk-python.git
   installationURL: https://github.com/apideck-libraries/sdk-python.git
   published: true
@@ -21482,10 +21482,6 @@ examples:
           application/json: {"status_code": 400, "error": "Bad Request", "type_name": "RequestHeadersValidationError", "message": "Invalid Params", "detail": "Missing Header: x-apideck-consumer-id", "ref": "https://developers.apideck.com/errors#unauthorizederror"}
 examplesVersion: 1.0.2
 generatedTests: {}
-releaseNotes: |
-  ## Python SDK Changes Detected:
-  * `apideck.connector.connectors.list()`:  `response.data.[].settings.[]` **Changed**
-  * `apideck.connector.connectors.get()`:  `response.data.settings.[]` **Changed**
 trackedFiles:
   .devcontainer/README.md:
     last_write_checksum: sha1:07adb0c0c051a9be4d479ea06461f3a9b3bbeb2f
@@ -26360,7 +26356,7 @@ trackedFiles:
   pylintrc:
     last_write_checksum: sha1:ec6665a4862060890cf4c6ba61438d11decf5c3c
   pyproject.toml:
-    last_write_checksum: sha1:d3f651b9bba3ee628aa872f62dcc37afc2dac3a5
+    last_write_checksum: sha1:66c238757fd5870ed22981687803d32372debdac
   scripts/prepare_readme.py:
     last_write_checksum: sha1:798a05bafe4fbbfff5b67037866fa25efc52f11a
   scripts/publish.sh:
@@ -26374,7 +26370,7 @@ trackedFiles:
   src/apideck_unify/_hooks/types.py:
     last_write_checksum: sha1:d57be38e644de01983a9224b9733ae0add898d43
   src/apideck_unify/_version.py:
-    last_write_checksum: sha1:ea61fca243679fba7e578a5e1fa909271b0fa392
+    last_write_checksum: sha1:e9c09f09db088e62ae80b76da1a94a1de1ea323a
   src/apideck_unify/accounting.py:
     last_write_checksum: sha1:7f9e809f589467dee3bc2719395ce1cdef2d7421
   src/apideck_unify/activities.py:
