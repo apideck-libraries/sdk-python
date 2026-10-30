@@ -33,7 +33,7 @@ generation:
   persistentEdits: {}
   versioningStrategy: automatic
 python:
-  version: 0.53.0
+  version: 0.53.1
   additionalDependencies:
     dev: {}
     main: {}
@@ -82,6 +82,7 @@ python:
   methodArguments: infer-optional-args
   methodTimeoutArgument: timeout-ms
   methodTimeoutUnits: milliseconds
+  modelSerializationMethods: false
   moduleName: ""
   multipartArrayFormat: legacy
   optionalDependencies: {}
@@ -89,6 +90,7 @@ python:
   packageManager: poetry
   packageName: apideck-unify
   preApplyUnionDiscriminators: false
+  preserveUnknownFields: false
   pytestFilterWarnings: []
   pytestTimeout: 0
   rawResponseHelpers: false
