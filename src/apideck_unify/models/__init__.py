@@ -4719,6 +4719,9 @@ if TYPE_CHECKING:
         AccountStatus,
         CategoriesModel,
         CategoriesModelTypedDict,
+        DepreciationMethod,
+        FixedAsset,
+        FixedAssetTypedDict,
         LedgerAccount,
         LedgerAccountClassification,
         LedgerAccountInput,
@@ -4801,6 +4804,8 @@ if TYPE_CHECKING:
         LinkedPaymentAllocationsTypedDict,
     )
     from .linkedpurchaseorder import LinkedPurchaseOrder, LinkedPurchaseOrderTypedDict
+    from .linkedquotes import LinkedQuotes, LinkedQuotesTypedDict
+    from .linkedquotes_input import LinkedQuotesInput, LinkedQuotesInputTypedDict
     from .linkedsubsidiary import LinkedSubsidiary, LinkedSubsidiaryTypedDict
     from .linkedsubsidiary_input import (
         LinkedSubsidiaryInput,
@@ -8204,6 +8209,7 @@ __all__ = [
     "DeprecatedLinkedSupplierTypedDict",
     "DeprecatedLinkedTrackingCategory",
     "DeprecatedLinkedTrackingCategoryTypedDict",
+    "DepreciationMethod",
     "Detail",
     "Detail2",
     "Detail2TypedDict",
@@ -8610,6 +8616,8 @@ __all__ = [
     "FiscalPeriodTypedDict",
     "Five",
     "FiveTypedDict",
+    "FixedAsset",
+    "FixedAssetTypedDict",
     "FlsaStatus",
     "Folder",
     "FolderTypedDict",
@@ -9392,6 +9400,10 @@ __all__ = [
     "LinkedPaymentAllocationsTypedDict",
     "LinkedPurchaseOrder",
     "LinkedPurchaseOrderTypedDict",
+    "LinkedQuotes",
+    "LinkedQuotesInput",
+    "LinkedQuotesInputTypedDict",
+    "LinkedQuotesTypedDict",
     "LinkedResources",
     "LinkedResourcesTypedDict",
     "LinkedSubsidiary",
@@ -13753,6 +13765,9 @@ _dynamic_imports: dict[str, str] = {
     "AccountStatus": ".ledgeraccount",
     "CategoriesModel": ".ledgeraccount",
     "CategoriesModelTypedDict": ".ledgeraccount",
+    "DepreciationMethod": ".ledgeraccount",
+    "FixedAsset": ".ledgeraccount",
+    "FixedAssetTypedDict": ".ledgeraccount",
     "LedgerAccount": ".ledgeraccount",
     "LedgerAccountClassification": ".ledgeraccount",
     "LedgerAccountInput": ".ledgeraccount",
@@ -13823,6 +13838,10 @@ _dynamic_imports: dict[str, str] = {
     "LinkedPaymentAllocationsTypedDict": ".linkedpaymentallocations",
     "LinkedPurchaseOrder": ".linkedpurchaseorder",
     "LinkedPurchaseOrderTypedDict": ".linkedpurchaseorder",
+    "LinkedQuotes": ".linkedquotes",
+    "LinkedQuotesTypedDict": ".linkedquotes",
+    "LinkedQuotesInput": ".linkedquotes_input",
+    "LinkedQuotesInputTypedDict": ".linkedquotes_input",
     "LinkedSubsidiary": ".linkedsubsidiary",
     "LinkedSubsidiaryTypedDict": ".linkedsubsidiary",
     "LinkedSubsidiaryInput": ".linkedsubsidiary_input",

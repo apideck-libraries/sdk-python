@@ -65,6 +65,109 @@ class LedgerAccountType(str, Enum, metaclass=utils.OpenEnumMeta):
     OTHER = "other"
 
 
+class DepreciationMethod(str, Enum, metaclass=utils.OpenEnumMeta):
+    r"""The depreciation method of the assets, normalised across accounting systems: declining-balance variants (for example 150% or 200%) are all `declining_balance`, and the accounting system's own value is in `downstream_depreciation_method`. Set only when every asset recorded in the account uses the same method."""
+
+    OTHER = "other"
+    STRAIGHT_LINE = "straight_line"
+    DECLINING_BALANCE = "declining_balance"
+    NONE = "none"
+
+
+class FixedAssetTypedDict(TypedDict):
+    r"""For an account that holds the cost of fixed assets, the fixed-asset register's figures for the assets recorded in it. Null for other accounts, including accumulated-depreciation accounts, and when the accounting system does not provide them."""
+
+    cost: NotRequired[Nullable[float]]
+    r"""The total cost of the fixed assets recorded in the account."""
+    accumulated_depreciation: NotRequired[Nullable[float]]
+    r"""The depreciation accumulated so far on the fixed assets recorded in the account, as a positive amount."""
+    acquisition_date: NotRequired[Nullable[date]]
+    r"""The date the assets were purchased - YYYY-MM-DD. Set only when every asset recorded in the account shares the same date."""
+    depreciation_method: NotRequired[Nullable[DepreciationMethod]]
+    r"""The depreciation method of the assets, normalised across accounting systems: declining-balance variants (for example 150% or 200%) are all `declining_balance`, and the accounting system's own value is in `downstream_depreciation_method`. Set only when every asset recorded in the account uses the same method."""
+    downstream_depreciation_method: NotRequired[Nullable[str]]
+    r"""The depreciation method exactly as the accounting system names it, under the same condition as `depreciation_method`."""
+    useful_life_months: NotRequired[Nullable[int]]
+    r"""The useful life of the assets, in months. Set only when every asset recorded in the account has the same useful life."""
+
+
+class FixedAsset(BaseModel):
+    r"""For an account that holds the cost of fixed assets, the fixed-asset register's figures for the assets recorded in it. Null for other accounts, including accumulated-depreciation accounts, and when the accounting system does not provide them."""
+
+    cost: OptionalNullable[float] = UNSET
+    r"""The total cost of the fixed assets recorded in the account."""
+
+    accumulated_depreciation: OptionalNullable[float] = UNSET
+    r"""The depreciation accumulated so far on the fixed assets recorded in the account, as a positive amount."""
+
+    acquisition_date: OptionalNullable[date] = UNSET
+    r"""The date the assets were purchased - YYYY-MM-DD. Set only when every asset recorded in the account shares the same date."""
+
+    depreciation_method: Annotated[
+        OptionalNullable[DepreciationMethod], PlainValidator(validate_open_enum(False))
+    ] = UNSET
+    r"""The depreciation method of the assets, normalised across accounting systems: declining-balance variants (for example 150% or 200%) are all `declining_balance`, and the accounting system's own value is in `downstream_depreciation_method`. Set only when every asset recorded in the account uses the same method."""
+
+    downstream_depreciation_method: OptionalNullable[str] = UNSET
+    r"""The depreciation method exactly as the accounting system names it, under the same condition as `depreciation_method`."""
+
+    useful_life_months: OptionalNullable[int] = UNSET
+    r"""The useful life of the assets, in months. Set only when every asset recorded in the account has the same useful life."""
+
+    @field_serializer("depreciation_method")
+    def serialize_depreciation_method(self, value):
+        if isinstance(value, str):
+            try:
+                return models.DepreciationMethod(value)
+            except ValueError:
+                return value
+        return value
+
+    @model_serializer(mode="wrap")
+    def serialize_model(self, handler):
+        optional_fields = [
+            "cost",
+            "accumulated_depreciation",
+            "acquisition_date",
+            "depreciation_method",
+            "downstream_depreciation_method",
+            "useful_life_months",
+        ]
+        nullable_fields = [
+            "cost",
+            "accumulated_depreciation",
+            "acquisition_date",
+            "depreciation_method",
+            "downstream_depreciation_method",
+            "useful_life_months",
+        ]
+        null_default_fields = []
+
+        serialized = handler(self)
+
+        m = {}
+
+        for n, f in type(self).model_fields.items():
+            k = f.alias or n
+            val = serialized.get(k)
+            serialized.pop(k, None)
+
+            optional_nullable = k in optional_fields and k in nullable_fields
+            is_set = (
+                self.__pydantic_fields_set__.intersection({n})
+                or k in null_default_fields
+            )  # pylint: disable=no-member
+
+            if val is not None and val != UNSET_SENTINEL:
+                m[k] = val
+            elif val != UNSET_SENTINEL and (
+                not k in optional_fields or (optional_nullable and is_set)
+            ):
+                m[k] = val
+
+        return m
+
+
 class AccountStatus(str, Enum, metaclass=utils.OpenEnumMeta):
     r"""The status of the account."""
 
@@ -156,6 +259,8 @@ class LedgerAccountTypedDict(TypedDict):
     r"""The opening balance of the account."""
     current_balance: NotRequired[Nullable[float]]
     r"""The current balance of the account."""
+    fixed_asset: NotRequired[Nullable[FixedAssetTypedDict]]
+    r"""For an account that holds the cost of fixed assets, the fixed-asset register's figures for the assets recorded in it. Null for other accounts, including accumulated-depreciation accounts, and when the accounting system does not provide them."""
     currency: NotRequired[Nullable[Currency]]
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
     tax_type: NotRequired[Nullable[str]]
@@ -243,6 +348,9 @@ class LedgerAccount(BaseModel):
 
     current_balance: OptionalNullable[float] = UNSET
     r"""The current balance of the account."""
+
+    fixed_asset: OptionalNullable[FixedAsset] = UNSET
+    r"""For an account that holds the cost of fixed assets, the fixed-asset register's figures for the assets recorded in it. Null for other accounts, including accumulated-depreciation accounts, and when the accounting system does not provide them."""
 
     currency: Annotated[
         OptionalNullable[Currency], PlainValidator(validate_open_enum(False))
@@ -360,6 +468,7 @@ class LedgerAccount(BaseModel):
             "description",
             "opening_balance",
             "current_balance",
+            "fixed_asset",
             "currency",
             "tax_type",
             "tax_rate",
@@ -393,6 +502,7 @@ class LedgerAccount(BaseModel):
             "description",
             "opening_balance",
             "current_balance",
+            "fixed_asset",
             "currency",
             "tax_type",
             "level",
