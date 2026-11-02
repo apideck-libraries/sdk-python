@@ -12,6 +12,7 @@ from .deprecatedlinkedtrackingcategory import (
 from .invoicelineitem import InvoiceLineItemInput, InvoiceLineItemInputTypedDict
 from .linkedcustomer_input import LinkedCustomerInput, LinkedCustomerInputTypedDict
 from .linkedledgeraccount import LinkedLedgerAccount, LinkedLedgerAccountTypedDict
+from .linkedquotes_input import LinkedQuotesInput, LinkedQuotesInputTypedDict
 from .linkedsubsidiary_input import (
     LinkedSubsidiaryInput,
     LinkedSubsidiaryInputTypedDict,
@@ -189,6 +190,8 @@ class InvoiceCreateInputTypedDict(TypedDict):
         Nullable[List[InvoiceCreateInputPaymentAllocationsTypedDict]]
     ]
     r"""IDs of payments made on the invoice"""
+    quotes: NotRequired[Nullable[List[LinkedQuotesInputTypedDict]]]
+    r"""A list of quotes linked to this record."""
     payment_method: NotRequired[Nullable[str]]
     r"""Payment method used for the transaction, such as cash, credit card, bank transfer, or check"""
     channel: NotRequired[Nullable[str]]
@@ -329,6 +332,9 @@ class InvoiceCreateInput(BaseModel):
     ] = UNSET
     r"""IDs of payments made on the invoice"""
 
+    quotes: OptionalNullable[List[LinkedQuotesInput]] = UNSET
+    r"""A list of quotes linked to this record."""
+
     payment_method: OptionalNullable[str] = UNSET
     r"""Payment method used for the transaction, such as cash, credit card, bank transfer, or check"""
 
@@ -419,6 +425,7 @@ class InvoiceCreateInput(BaseModel):
             "template_id",
             "source_document_url",
             "payment_allocations",
+            "quotes",
             "payment_method",
             "channel",
             "language",
@@ -462,6 +469,7 @@ class InvoiceCreateInput(BaseModel):
             "template_id",
             "source_document_url",
             "payment_allocations",
+            "quotes",
             "payment_method",
             "channel",
             "language",

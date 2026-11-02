@@ -18,6 +18,8 @@ from .invoicelineitem import (
 from .linkedcustomer import LinkedCustomer, LinkedCustomerTypedDict
 from .linkedcustomer_input import LinkedCustomerInput, LinkedCustomerInputTypedDict
 from .linkedledgeraccount import LinkedLedgerAccount, LinkedLedgerAccountTypedDict
+from .linkedquotes import LinkedQuotes, LinkedQuotesTypedDict
+from .linkedquotes_input import LinkedQuotesInput, LinkedQuotesInputTypedDict
 from .linkedsubsidiary import LinkedSubsidiary, LinkedSubsidiaryTypedDict
 from .linkedsubsidiary_input import (
     LinkedSubsidiaryInput,
@@ -196,6 +198,8 @@ class InvoiceTypedDict(TypedDict):
     r"""URL link to a source document - shown as 'Go to [appName]' in the downstream app. Currently only supported for Xero."""
     payment_allocations: NotRequired[Nullable[List[PaymentAllocationsTypedDict]]]
     r"""IDs of payments made on the invoice"""
+    quotes: NotRequired[Nullable[List[LinkedQuotesTypedDict]]]
+    r"""A list of quotes linked to this record."""
     payment_method: NotRequired[Nullable[str]]
     r"""Payment method used for the transaction, such as cash, credit card, bank transfer, or check"""
     channel: NotRequired[Nullable[str]]
@@ -346,6 +350,9 @@ class Invoice(BaseModel):
     payment_allocations: OptionalNullable[List[PaymentAllocations]] = UNSET
     r"""IDs of payments made on the invoice"""
 
+    quotes: OptionalNullable[List[LinkedQuotes]] = UNSET
+    r"""A list of quotes linked to this record."""
+
     payment_method: OptionalNullable[str] = UNSET
     r"""Payment method used for the transaction, such as cash, credit card, bank transfer, or check"""
 
@@ -453,6 +460,7 @@ class Invoice(BaseModel):
             "template_id",
             "source_document_url",
             "payment_allocations",
+            "quotes",
             "payment_method",
             "channel",
             "language",
@@ -502,6 +510,7 @@ class Invoice(BaseModel):
             "template_id",
             "source_document_url",
             "payment_allocations",
+            "quotes",
             "payment_method",
             "channel",
             "language",
@@ -611,6 +620,8 @@ class InvoiceInputTypedDict(TypedDict):
     r"""URL link to a source document - shown as 'Go to [appName]' in the downstream app. Currently only supported for Xero."""
     payment_allocations: NotRequired[Nullable[List[PaymentAllocationsTypedDict]]]
     r"""IDs of payments made on the invoice"""
+    quotes: NotRequired[Nullable[List[LinkedQuotesInputTypedDict]]]
+    r"""A list of quotes linked to this record."""
     payment_method: NotRequired[Nullable[str]]
     r"""Payment method used for the transaction, such as cash, credit card, bank transfer, or check"""
     channel: NotRequired[Nullable[str]]
@@ -745,6 +756,9 @@ class InvoiceInput(BaseModel):
     payment_allocations: OptionalNullable[List[PaymentAllocations]] = UNSET
     r"""IDs of payments made on the invoice"""
 
+    quotes: OptionalNullable[List[LinkedQuotesInput]] = UNSET
+    r"""A list of quotes linked to this record."""
+
     payment_method: OptionalNullable[str] = UNSET
     r"""Payment method used for the transaction, such as cash, credit card, bank transfer, or check"""
 
@@ -835,6 +849,7 @@ class InvoiceInput(BaseModel):
             "template_id",
             "source_document_url",
             "payment_allocations",
+            "quotes",
             "payment_method",
             "channel",
             "language",
@@ -878,6 +893,7 @@ class InvoiceInput(BaseModel):
             "template_id",
             "source_document_url",
             "payment_allocations",
+            "quotes",
             "payment_method",
             "channel",
             "language",

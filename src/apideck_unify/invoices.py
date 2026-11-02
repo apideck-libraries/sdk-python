@@ -467,6 +467,11 @@ class Invoices(BaseSDK):
                 List[models.PaymentAllocationsTypedDict],
             ]
         ] = UNSET,
+        quotes: OptionalNullable[
+            Union[
+                List[models.LinkedQuotesInput], List[models.LinkedQuotesInputTypedDict]
+            ]
+        ] = UNSET,
         payment_method: OptionalNullable[str] = UNSET,
         channel: OptionalNullable[str] = UNSET,
         language: OptionalNullable[str] = UNSET,
@@ -535,6 +540,7 @@ class Invoices(BaseSDK):
         :param template_id: Optional invoice template
         :param source_document_url: URL link to a source document - shown as 'Go to [appName]' in the downstream app. Currently only supported for Xero.
         :param payment_allocations: IDs of payments made on the invoice
+        :param quotes: A list of quotes linked to this record.
         :param payment_method: Payment method used for the transaction, such as cash, credit card, bank transfer, or check
         :param channel: The channel through which the transaction is processed.
         :param language: language code according to ISO 639-1. For the United States - EN
@@ -621,6 +627,9 @@ class Invoices(BaseSDK):
                 payment_allocations=utils.get_pydantic_model(
                     payment_allocations,
                     OptionalNullable[List[models.PaymentAllocations]],
+                ),
+                quotes=utils.get_pydantic_model(
+                    quotes, OptionalNullable[List[models.LinkedQuotesInput]]
                 ),
                 payment_method=payment_method,
                 channel=channel,
@@ -816,6 +825,11 @@ class Invoices(BaseSDK):
                 List[models.PaymentAllocationsTypedDict],
             ]
         ] = UNSET,
+        quotes: OptionalNullable[
+            Union[
+                List[models.LinkedQuotesInput], List[models.LinkedQuotesInputTypedDict]
+            ]
+        ] = UNSET,
         payment_method: OptionalNullable[str] = UNSET,
         channel: OptionalNullable[str] = UNSET,
         language: OptionalNullable[str] = UNSET,
@@ -884,6 +898,7 @@ class Invoices(BaseSDK):
         :param template_id: Optional invoice template
         :param source_document_url: URL link to a source document - shown as 'Go to [appName]' in the downstream app. Currently only supported for Xero.
         :param payment_allocations: IDs of payments made on the invoice
+        :param quotes: A list of quotes linked to this record.
         :param payment_method: Payment method used for the transaction, such as cash, credit card, bank transfer, or check
         :param channel: The channel through which the transaction is processed.
         :param language: language code according to ISO 639-1. For the United States - EN
@@ -970,6 +985,9 @@ class Invoices(BaseSDK):
                 payment_allocations=utils.get_pydantic_model(
                     payment_allocations,
                     OptionalNullable[List[models.PaymentAllocations]],
+                ),
+                quotes=utils.get_pydantic_model(
+                    quotes, OptionalNullable[List[models.LinkedQuotesInput]]
                 ),
                 payment_method=payment_method,
                 channel=channel,
@@ -1463,6 +1481,11 @@ class Invoices(BaseSDK):
                 List[models.PaymentAllocationsTypedDict],
             ]
         ] = UNSET,
+        quotes: OptionalNullable[
+            Union[
+                List[models.LinkedQuotesInput], List[models.LinkedQuotesInputTypedDict]
+            ]
+        ] = UNSET,
         payment_method: OptionalNullable[str] = UNSET,
         channel: OptionalNullable[str] = UNSET,
         language: OptionalNullable[str] = UNSET,
@@ -1531,6 +1554,7 @@ class Invoices(BaseSDK):
         :param template_id: Optional invoice template
         :param source_document_url: URL link to a source document - shown as 'Go to [appName]' in the downstream app. Currently only supported for Xero.
         :param payment_allocations: IDs of payments made on the invoice
+        :param quotes: A list of quotes linked to this record.
         :param payment_method: Payment method used for the transaction, such as cash, credit card, bank transfer, or check
         :param channel: The channel through which the transaction is processed.
         :param language: language code according to ISO 639-1. For the United States - EN
@@ -1617,6 +1641,9 @@ class Invoices(BaseSDK):
                 payment_allocations=utils.get_pydantic_model(
                     payment_allocations,
                     OptionalNullable[List[models.PaymentAllocations]],
+                ),
+                quotes=utils.get_pydantic_model(
+                    quotes, OptionalNullable[List[models.LinkedQuotesInput]]
                 ),
                 payment_method=payment_method,
                 channel=channel,
@@ -1812,6 +1839,11 @@ class Invoices(BaseSDK):
                 List[models.PaymentAllocationsTypedDict],
             ]
         ] = UNSET,
+        quotes: OptionalNullable[
+            Union[
+                List[models.LinkedQuotesInput], List[models.LinkedQuotesInputTypedDict]
+            ]
+        ] = UNSET,
         payment_method: OptionalNullable[str] = UNSET,
         channel: OptionalNullable[str] = UNSET,
         language: OptionalNullable[str] = UNSET,
@@ -1880,6 +1912,7 @@ class Invoices(BaseSDK):
         :param template_id: Optional invoice template
         :param source_document_url: URL link to a source document - shown as 'Go to [appName]' in the downstream app. Currently only supported for Xero.
         :param payment_allocations: IDs of payments made on the invoice
+        :param quotes: A list of quotes linked to this record.
         :param payment_method: Payment method used for the transaction, such as cash, credit card, bank transfer, or check
         :param channel: The channel through which the transaction is processed.
         :param language: language code according to ISO 639-1. For the United States - EN
@@ -1966,6 +1999,9 @@ class Invoices(BaseSDK):
                 payment_allocations=utils.get_pydantic_model(
                     payment_allocations,
                     OptionalNullable[List[models.PaymentAllocations]],
+                ),
+                quotes=utils.get_pydantic_model(
+                    quotes, OptionalNullable[List[models.LinkedQuotesInput]]
                 ),
                 payment_method=payment_method,
                 channel=channel,
