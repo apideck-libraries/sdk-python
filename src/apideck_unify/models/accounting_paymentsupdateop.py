@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
-from .payment_input import PaymentInput, PaymentInputTypedDict
+from .paymentupdateinput import PaymentUpdateInput, PaymentUpdateInputTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -47,7 +47,7 @@ class AccountingPaymentsUpdateGlobals(BaseModel):
 class AccountingPaymentsUpdateRequestTypedDict(TypedDict):
     id: str
     r"""ID of the record you are acting upon."""
-    payment: PaymentInputTypedDict
+    payment_update_input: PaymentUpdateInputTypedDict
     consumer_id: NotRequired[str]
     r"""ID of the consumer which you want to get or push data from"""
     app_id: NotRequired[str]
@@ -66,8 +66,8 @@ class AccountingPaymentsUpdateRequest(BaseModel):
     ]
     r"""ID of the record you are acting upon."""
 
-    payment: Annotated[
-        PaymentInput,
+    payment_update_input: Annotated[
+        PaymentUpdateInput,
         FieldMetadata(request=RequestMetadata(media_type="application/json")),
     ]
 

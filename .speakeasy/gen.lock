@@ -1,12 +1,12 @@
 lockVersion: 2.0.0
 id: fca0ac3a-5f4e-452c-bbc7-2311afa8da40
 management:
-  docChecksum: ee22593055f1c1ecb2ce810e5db1b8f1
-  docVersion: 10.76.0
+  docChecksum: 1aab6049ef6bf2a91ef4f9c65c5df3b6
+  docVersion: 10.77.0
   speakeasyVersion: 1.656.1
   generationVersion: 2.753.1
-  releaseVersion: 0.55.0
-  configChecksum: f93350fc8265800aa24dbf4fb1d72549
+  releaseVersion: 0.56.0
+  configChecksum: f2373bf8fe005e84ab4e17217e9bd4b6
   repoURL: https://github.com/apideck-libraries/sdk-python.git
   installationURL: https://github.com/apideck-libraries/sdk-python.git
   published: true
@@ -826,6 +826,10 @@ generatedFiles:
   - docs/models/billpaymentcreateinputbillpaymenttype.md
   - docs/models/billpaymentinput.md
   - docs/models/billpaymenttype.md
+  - docs/models/billpaymentupdateinput.md
+  - docs/models/billpaymentupdateinputallocations.md
+  - docs/models/billpaymentupdateinputallocationtype.md
+  - docs/models/billpaymentupdateinputbillpaymenttype.md
   - docs/models/billsfilter.md
   - docs/models/billsfilterstatus.md
   - docs/models/billssort.md
@@ -1010,6 +1014,9 @@ generatedFiles:
   - docs/models/creditnotessortby.md
   - docs/models/creditnotestatus.md
   - docs/models/creditnotetype.md
+  - docs/models/creditnoteupdateinput.md
+  - docs/models/creditnoteupdateinputcreditnotestatus.md
+  - docs/models/creditnoteupdateinputcreditnotetype.md
   - docs/models/creditordebit.md
   - docs/models/crmactivitiesaddglobals.md
   - docs/models/crmactivitiesaddrequest.md
@@ -1363,6 +1370,8 @@ generatedFiles:
   - docs/models/expensecategory.md
   - docs/models/expensecategoryinput.md
   - docs/models/expensecategorystatus.md
+  - docs/models/expensecategoryupdateinput.md
+  - docs/models/expensecategoryupdateinputstatus.md
   - docs/models/expenseinput.md
   - docs/models/expenselineitem.md
   - docs/models/expenselineiteminput.md
@@ -1375,12 +1384,21 @@ generatedFiles:
   - docs/models/expensereportsfilter.md
   - docs/models/expensereportsfilterstatus.md
   - docs/models/expensereportstatus.md
+  - docs/models/expensereportupdateinput.md
+  - docs/models/expensereportupdateinputaccountingperiod.md
+  - docs/models/expensereportupdateinputapprovedby.md
+  - docs/models/expensereportupdateinputemployee.md
+  - docs/models/expensereportupdateinputstatus.md
   - docs/models/expensesfilter.md
   - docs/models/expensesfilterstatus.md
   - docs/models/expensesfiltertype.md
   - docs/models/expensesmodel.md
   - docs/models/expensestatus.md
   - docs/models/expensetype.md
+  - docs/models/expenseupdateinput.md
+  - docs/models/expenseupdateinputexpensetype.md
+  - docs/models/expenseupdateinputpaymenttype.md
+  - docs/models/expenseupdateinputstatus.md
   - docs/models/extendpaths.md
   - docs/models/externalguides.md
   - docs/models/feedstatus.md
@@ -1987,6 +2005,7 @@ generatedFiles:
   - docs/models/paymentstatus.md
   - docs/models/paymenttype.md
   - docs/models/paymentunit.md
+  - docs/models/paymentupdateinput.md
   - docs/models/payroll.md
   - docs/models/payrollsfilter.md
   - docs/models/payrolltotals.md
@@ -2018,6 +2037,15 @@ generatedFiles:
   - docs/models/projectssortsortby.md
   - docs/models/projectstatus.md
   - docs/models/projecttype.md
+  - docs/models/projectupdateinput.md
+  - docs/models/projectupdateinputbillingmethod.md
+  - docs/models/projectupdateinputdepartment.md
+  - docs/models/projectupdateinputparentproject.md
+  - docs/models/projectupdateinputpriority.md
+  - docs/models/projectupdateinputprojectphase.md
+  - docs/models/projectupdateinputprojectstatus.md
+  - docs/models/projectupdateinputprojecttype.md
+  - docs/models/projectupdateinputschedulestatus.md
   - docs/models/proxydeleteproxyglobals.md
   - docs/models/proxydeleteproxyrequest.md
   - docs/models/proxydeleteproxyresponse.md
@@ -2063,6 +2091,7 @@ generatedFiles:
   - docs/models/refundssortby.md
   - docs/models/refundstatus.md
   - docs/models/refundtype.md
+  - docs/models/refundupdateinput.md
   - docs/models/reports.md
   - docs/models/request.md
   - docs/models/requestbody1.md
@@ -2085,6 +2114,7 @@ generatedFiles:
   - docs/models/salesreceiptsfilter.md
   - docs/models/salesreceiptssort.md
   - docs/models/salesreceiptssortby.md
+  - docs/models/salesreceiptupdateinput.md
   - docs/models/schedule.md
   - docs/models/schedulestatus.md
   - docs/models/schema.md
@@ -2867,6 +2897,7 @@ generatedFiles:
   - src/apideck_unify/models/billlineitem_input.py
   - src/apideck_unify/models/billpayment.py
   - src/apideck_unify/models/billpaymentcreateinput.py
+  - src/apideck_unify/models/billpaymentupdateinput.py
   - src/apideck_unify/models/billsfilter.py
   - src/apideck_unify/models/billssort.py
   - src/apideck_unify/models/categoriesfilter.py
@@ -2989,6 +3020,7 @@ generatedFiles:
   - src/apideck_unify/models/creditnotecreateinput.py
   - src/apideck_unify/models/creditnotesfilter.py
   - src/apideck_unify/models/creditnotessort.py
+  - src/apideck_unify/models/creditnoteupdateinput.py
   - src/apideck_unify/models/creditordebit.py
   - src/apideck_unify/models/crm_activitiesaddop.py
   - src/apideck_unify/models/crm_activitiesallop.py
@@ -3160,13 +3192,16 @@ generatedFiles:
   - src/apideck_unify/models/expense.py
   - src/apideck_unify/models/expensecategoriesfilter.py
   - src/apideck_unify/models/expensecategory.py
+  - src/apideck_unify/models/expensecategoryupdateinput.py
   - src/apideck_unify/models/expenselineitem.py
   - src/apideck_unify/models/expenselineitem_input.py
   - src/apideck_unify/models/expensereport.py
   - src/apideck_unify/models/expensereportlineitem.py
   - src/apideck_unify/models/expensereportlineitem_input.py
   - src/apideck_unify/models/expensereportsfilter.py
+  - src/apideck_unify/models/expensereportupdateinput.py
   - src/apideck_unify/models/expensesfilter.py
+  - src/apideck_unify/models/expenseupdateinput.py
   - src/apideck_unify/models/filesfilter.py
   - src/apideck_unify/models/filessearch.py
   - src/apideck_unify/models/filessort.py
@@ -3522,6 +3557,7 @@ generatedFiles:
   - src/apideck_unify/models/paymentstatus.py
   - src/apideck_unify/models/paymenttype.py
   - src/apideck_unify/models/paymentunit.py
+  - src/apideck_unify/models/paymentupdateinput.py
   - src/apideck_unify/models/payroll.py
   - src/apideck_unify/models/payrollsfilter.py
   - src/apideck_unify/models/payrolltotals.py
@@ -3537,6 +3573,7 @@ generatedFiles:
   - src/apideck_unify/models/project.py
   - src/apideck_unify/models/projectsfilter.py
   - src/apideck_unify/models/projectssort.py
+  - src/apideck_unify/models/projectupdateinput.py
   - src/apideck_unify/models/proxy_deleteproxyop.py
   - src/apideck_unify/models/proxy_getproxyop.py
   - src/apideck_unify/models/proxy_optionsproxyop.py
@@ -3556,6 +3593,7 @@ generatedFiles:
   - src/apideck_unify/models/refundssort.py
   - src/apideck_unify/models/refundstatus.py
   - src/apideck_unify/models/refundtype.py
+  - src/apideck_unify/models/refundupdateinput.py
   - src/apideck_unify/models/requestcountallocation.py
   - src/apideck_unify/models/resourcestatus.py
   - src/apideck_unify/models/responsevalidationerror.py
@@ -3565,6 +3603,7 @@ generatedFiles:
   - src/apideck_unify/models/salesreceipt_input.py
   - src/apideck_unify/models/salesreceiptsfilter.py
   - src/apideck_unify/models/salesreceiptssort.py
+  - src/apideck_unify/models/salesreceiptupdateinput.py
   - src/apideck_unify/models/schedule.py
   - src/apideck_unify/models/schemasupport.py
   - src/apideck_unify/models/security.py
@@ -21488,6 +21527,17 @@ examples:
           application/json: {"status_code": 400, "error": "Bad Request", "type_name": "RequestHeadersValidationError", "message": "Invalid Params", "detail": "Missing Header: x-apideck-consumer-id", "ref": "https://developers.apideck.com/errors#unauthorizederror"}
 examplesVersion: 1.0.2
 generatedTests: {}
+releaseNotes: |
+  ## Python SDK Changes Detected:
+  * `apideck.accounting.credit_notes.update()`:  `request.total_amount` **Changed**
+  * `apideck.accounting.payments.update()`:  `request` **Changed**
+  * `apideck.accounting.refunds.update()`:  `request.total_amount` **Changed**
+  * `apideck.accounting.sales_receipts.update()`:  `request.total_amount` **Changed**
+  * `apideck.accounting.bill_payments.update()`:  `request` **Changed**
+  * `apideck.accounting.expenses.update()`:  `request` **Changed**
+  * `apideck.accounting.projects.update()`:  `request.name` **Changed**
+  * `apideck.accounting.expense_categories.update()`:  `request.name` **Changed**
+  * `apideck.accounting.expense_reports.update()`:  `request` **Changed**
 trackedFiles:
   .devcontainer/README.md:
     last_write_checksum: sha1:07adb0c0c051a9be4d479ea06461f3a9b3bbeb2f
@@ -21716,7 +21766,7 @@ trackedFiles:
   docs/models/accountingbillpaymentsupdateglobals.md:
     last_write_checksum: sha1:8a1fbe647f916c6eb1dbab813c929a8f3d8d78fd
   docs/models/accountingbillpaymentsupdaterequest.md:
-    last_write_checksum: sha1:8ca43c5f94db03224a4a61e16aa8d845c07b7a69
+    last_write_checksum: sha1:8c29e7c04b23d291e96d58f5741ce01a70f886e4
   docs/models/accountingbillpaymentsupdateresponse.md:
     last_write_checksum: sha1:ce46a6f42376a47136346a773a49ba28bfbca703
   docs/models/accountingbillsaddglobals.md:
@@ -21814,7 +21864,7 @@ trackedFiles:
   docs/models/accountingcreditnotesupdateglobals.md:
     last_write_checksum: sha1:caa9541775092318575d4882a9cc0ce66e240a24
   docs/models/accountingcreditnotesupdaterequest.md:
-    last_write_checksum: sha1:d54df23bb06c5e33286cce321cf3062317f2cef0
+    last_write_checksum: sha1:bd2630f961faa9625a685f444e016414b4588e0e
   docs/models/accountingcreditnotesupdateresponse.md:
     last_write_checksum: sha1:fc62f9297c9a66ea327279b0b820be3a4bd958b5
   docs/models/accountingcustomersaddglobals.md:
@@ -21956,7 +22006,7 @@ trackedFiles:
   docs/models/accountingexpensecategoriesupdateglobals.md:
     last_write_checksum: sha1:735b4f2c49f9c46e22c97507170e0ec327fc5ae6
   docs/models/accountingexpensecategoriesupdaterequest.md:
-    last_write_checksum: sha1:b30d1e96e5a8fba46d096b53e09343d64bf34c7e
+    last_write_checksum: sha1:e705bbb0dcefd1e1b818a530fe57f5ce3e04c1e7
   docs/models/accountingexpensecategoriesupdateresponse.md:
     last_write_checksum: sha1:4497c57d9a29229dddf22b982beb177129d0ee6c
   docs/models/accountingexpensereportsaddglobals.md:
@@ -21986,7 +22036,7 @@ trackedFiles:
   docs/models/accountingexpensereportsupdateglobals.md:
     last_write_checksum: sha1:5acc3a4048f18b5785c78968bb95dbab7cc5aa9d
   docs/models/accountingexpensereportsupdaterequest.md:
-    last_write_checksum: sha1:ed254b1bb2de2a1c681cb991ddb0c06951a2956a
+    last_write_checksum: sha1:e26557c97e3e2e470882d18dfa4cc96803650ec1
   docs/models/accountingexpensereportsupdateresponse.md:
     last_write_checksum: sha1:6d5302fdecea7094ae6f5db998a8d3159010d78e
   docs/models/accountingexpensesaddglobals.md:
@@ -22016,7 +22066,7 @@ trackedFiles:
   docs/models/accountingexpensesupdateglobals.md:
     last_write_checksum: sha1:7e5728aa32fc1eb7114bc88cde0d2c8c22207b62
   docs/models/accountingexpensesupdaterequest.md:
-    last_write_checksum: sha1:649afc75e803cce6376bbed159716fe8895b06f1
+    last_write_checksum: sha1:19183480ab9ce218c19d773ed7124a155f3d730c
   docs/models/accountingexpensesupdateresponse.md:
     last_write_checksum: sha1:a0abf9ee705650d2635889c9e4290e4e62224020
   docs/models/accountingfiscalperiodsallglobals.md:
@@ -22332,7 +22382,7 @@ trackedFiles:
   docs/models/accountingpaymentsupdateglobals.md:
     last_write_checksum: sha1:a0cc628cbacaa17d851d26dc3364b6dc7936df75
   docs/models/accountingpaymentsupdaterequest.md:
-    last_write_checksum: sha1:6ab0e1709dfc04021773f2eaf90c7a88540963fc
+    last_write_checksum: sha1:355bb256bbb25ae8014af9660847fde4f4de45c8
   docs/models/accountingpaymentsupdateresponse.md:
     last_write_checksum: sha1:a0278bd0a78245f1c822a810f0d9b2b0984145a9
   docs/models/accountingperiod.md:
@@ -22370,7 +22420,7 @@ trackedFiles:
   docs/models/accountingprojectsupdateglobals.md:
     last_write_checksum: sha1:4d85b1d482f54e712d541375df25226ab014aa35
   docs/models/accountingprojectsupdaterequest.md:
-    last_write_checksum: sha1:7b4cfeb1de9462a4049c78365e44735b0a9a9009
+    last_write_checksum: sha1:07b4af1aca9575fc923216149fa247836c27a8a8
   docs/models/accountingprojectsupdateresponse.md:
     last_write_checksum: sha1:9bb77e35709ec8661d68f56b621019fe4c34d3a9
   docs/models/accountingpurchaseordersaddglobals.md:
@@ -22460,7 +22510,7 @@ trackedFiles:
   docs/models/accountingrefundsupdateglobals.md:
     last_write_checksum: sha1:d21f5a5e74f52d073539038b2278c34823d8684b
   docs/models/accountingrefundsupdaterequest.md:
-    last_write_checksum: sha1:712ad48af3b704b5749f357dd2992d5c762ec573
+    last_write_checksum: sha1:dacf93541e48a2f552769b12070f487e9895f7da
   docs/models/accountingrefundsupdateresponse.md:
     last_write_checksum: sha1:678f3673a94cde429faa5179b81b7765caa6649e
   docs/models/accountingsalesordersaddglobals.md:
@@ -22520,7 +22570,7 @@ trackedFiles:
   docs/models/accountingsalesreceiptsupdateglobals.md:
     last_write_checksum: sha1:1cf2b38c4a242a6de9fdcc30aac72e165f3800f4
   docs/models/accountingsalesreceiptsupdaterequest.md:
-    last_write_checksum: sha1:bc7918fc286e44e742d01fc6338ade15988785c0
+    last_write_checksum: sha1:3be70f603befcd99844196e9a5304d6854999268
   docs/models/accountingsalesreceiptsupdateresponse.md:
     last_write_checksum: sha1:8c0a8a3ed70d751d5f06d8b78638765f722bc50a
   docs/models/accountingsubsidiariesaddglobals.md:
@@ -23047,6 +23097,14 @@ trackedFiles:
     last_write_checksum: sha1:f3ad5264be0d14eb8dfcdd4a156b06c5abed4a64
   docs/models/billpaymenttype.md:
     last_write_checksum: sha1:f13abce9e8c13c55e827b79f5d569b5423c101f5
+  docs/models/billpaymentupdateinput.md:
+    last_write_checksum: sha1:a4283c42d3cfad37aff5955385bc1a598f04921c
+  docs/models/billpaymentupdateinputallocations.md:
+    last_write_checksum: sha1:8d5a107a7822112853e556d57f6f6b371a79d441
+  docs/models/billpaymentupdateinputallocationtype.md:
+    last_write_checksum: sha1:b9f92f9926a30b1f0330d8a0e3ec884a7baff68d
+  docs/models/billpaymentupdateinputbillpaymenttype.md:
+    last_write_checksum: sha1:1e6d1961d7c3249352d1852365905334b66fac84
   docs/models/billsfilter.md:
     last_write_checksum: sha1:68119dffda3793b52f9dce27864bfe5a8ffaf6ec
   docs/models/billsfilterstatus.md:
@@ -23415,6 +23473,12 @@ trackedFiles:
     last_write_checksum: sha1:1faec31112350d09bbb7ba52eb68c7c64d1c48c0
   docs/models/creditnotetype.md:
     last_write_checksum: sha1:fe336d8d4487c90f26ca00431565300a0bd4613a
+  docs/models/creditnoteupdateinput.md:
+    last_write_checksum: sha1:d8c2216c104559fd468acfa17d187e68f43d9954
+  docs/models/creditnoteupdateinputcreditnotestatus.md:
+    last_write_checksum: sha1:9fb18c8ab07f6b0e09e5c09aa35562c7cac9a18c
+  docs/models/creditnoteupdateinputcreditnotetype.md:
+    last_write_checksum: sha1:70e009ab85f230f7e0411b81711d507044ceb45d
   docs/models/creditordebit.md:
     last_write_checksum: sha1:422dfcd066d9425a72370c13aec74a5f93c71bcd
   docs/models/crmactivitiesaddglobals.md:
@@ -24121,6 +24185,10 @@ trackedFiles:
     last_write_checksum: sha1:81da05e5770bd56ba8bc563ccdff1838f40537eb
   docs/models/expensecategorystatus.md:
     last_write_checksum: sha1:caf2ca18dcaedad0ab9d7bb5c74a488696d0b86a
+  docs/models/expensecategoryupdateinput.md:
+    last_write_checksum: sha1:adcdcc886f90137429ac0772a1714a64c49b1adb
+  docs/models/expensecategoryupdateinputstatus.md:
+    last_write_checksum: sha1:200b3e0101420f074e2bb899c823e6b5673315bb
   docs/models/expenseinput.md:
     last_write_checksum: sha1:75ab9a1e071884daf9828ada4f4479a49b8b9589
   docs/models/expenselineitem.md:
@@ -24145,6 +24213,16 @@ trackedFiles:
     last_write_checksum: sha1:8f2339fcb79d520c87ca3406153b2144542b9f2f
   docs/models/expensereportstatus.md:
     last_write_checksum: sha1:5ad3d9efa944f1ed01c65621e49b03afc29adc2a
+  docs/models/expensereportupdateinput.md:
+    last_write_checksum: sha1:4a3a55c7c2a72b897f07d623cb346590e12f1688
+  docs/models/expensereportupdateinputaccountingperiod.md:
+    last_write_checksum: sha1:348f65b95196d0d9223b04bef3c4e802326f0e87
+  docs/models/expensereportupdateinputapprovedby.md:
+    last_write_checksum: sha1:04e979a34962b1a8fedb8a278c768946c87d14b1
+  docs/models/expensereportupdateinputemployee.md:
+    last_write_checksum: sha1:7c46b79fc1e89a98db0809bbf4624ed3381524a0
+  docs/models/expensereportupdateinputstatus.md:
+    last_write_checksum: sha1:f24af7a8d93c941d64e844aeda8c9f2859cc262a
   docs/models/expensesfilter.md:
     last_write_checksum: sha1:a49160b91222ffd6a18855ed18866cad6b25dffd
   docs/models/expensesfilterstatus.md:
@@ -24157,6 +24235,14 @@ trackedFiles:
     last_write_checksum: sha1:b13be026bdba8e8eec2cc8b35bbe33634308f18a
   docs/models/expensetype.md:
     last_write_checksum: sha1:d0987ead6a8c1f221ab055fd62639307698bb42a
+  docs/models/expenseupdateinput.md:
+    last_write_checksum: sha1:aa0f201321b40774ba5d0bd6d230ef23912ff9d7
+  docs/models/expenseupdateinputexpensetype.md:
+    last_write_checksum: sha1:c2b87ea55ad1f377cf4254d1eb5d63706eafb3a8
+  docs/models/expenseupdateinputpaymenttype.md:
+    last_write_checksum: sha1:57ac272129fccb5a752addfdec1834edc89505d0
+  docs/models/expenseupdateinputstatus.md:
+    last_write_checksum: sha1:1ff7d4d6f984b424500007d734db9b9ce1b60cce
   docs/models/extendpaths.md:
     last_write_checksum: sha1:22b4c2dfeba68fe7a4ed1fee747d2b98b65bf33f
   docs/models/externalguides.md:
@@ -25369,6 +25455,8 @@ trackedFiles:
     last_write_checksum: sha1:285d4ed4f33ac66d15dd9527219fe182fb7b335f
   docs/models/paymentunit.md:
     last_write_checksum: sha1:dc26afb5d22afb7c0c1e2ee029c973a39f7339ab
+  docs/models/paymentupdateinput.md:
+    last_write_checksum: sha1:089d0c10f82c874241a45a41764ff037fe8ef302
   docs/models/payroll.md:
     last_write_checksum: sha1:edec2dcd1b151c83076afa9118591d540e0df6cf
   docs/models/payrollsfilter.md:
@@ -25431,6 +25519,24 @@ trackedFiles:
     last_write_checksum: sha1:9767ac7e11f5877f0e3e37705389652763901fa5
   docs/models/projecttype.md:
     last_write_checksum: sha1:a33408294f6733288572b18b93f81ebc1cb1559a
+  docs/models/projectupdateinput.md:
+    last_write_checksum: sha1:010728c409a8bb69b0075983d8ad8d1a2c69f04c
+  docs/models/projectupdateinputbillingmethod.md:
+    last_write_checksum: sha1:131bf99e6a4bbdd6a62243a425644b051946b6bf
+  docs/models/projectupdateinputdepartment.md:
+    last_write_checksum: sha1:f1f1dc72b252724af32b84742a4ce79d2a72fbc1
+  docs/models/projectupdateinputparentproject.md:
+    last_write_checksum: sha1:94a98d723868efbbfd7855f2f422599b15518153
+  docs/models/projectupdateinputpriority.md:
+    last_write_checksum: sha1:5a6b9fb1fb8952ca75ff88e54cdd0d4b9dd50243
+  docs/models/projectupdateinputprojectphase.md:
+    last_write_checksum: sha1:59c2e8ce47e94ac3f62a21fbe3032a5f61cc1995
+  docs/models/projectupdateinputprojectstatus.md:
+    last_write_checksum: sha1:cee0406a864effca69b7fd9d10006c98bd7a6439
+  docs/models/projectupdateinputprojecttype.md:
+    last_write_checksum: sha1:f03a91743025e93841bf1efee6f67a9e36676f4c
+  docs/models/projectupdateinputschedulestatus.md:
+    last_write_checksum: sha1:5c4336ae037a85827a5ca7b481006d7c91a9273b
   docs/models/proxydeleteproxyglobals.md:
     last_write_checksum: sha1:c16f7d91cb601bda587c2de8d7d9977d2c34ffb7
   docs/models/proxydeleteproxyrequest.md:
@@ -25521,6 +25627,8 @@ trackedFiles:
     last_write_checksum: sha1:4730a5415dc75da4b18348c19d1a5b5e2a9e7117
   docs/models/refundtype.md:
     last_write_checksum: sha1:e105fff033833b9daaeb20fa0d9024f0471088ed
+  docs/models/refundupdateinput.md:
+    last_write_checksum: sha1:e0ada63447b3b616b3cb1fb5e3e88843defdc751
   docs/models/reports.md:
     last_write_checksum: sha1:fb63b4d156c42f27390a3a349d69a949611c45f5
   docs/models/request.md:
@@ -25565,6 +25673,8 @@ trackedFiles:
     last_write_checksum: sha1:cf8f276110d210ace9166cc204a54c73daf12d40
   docs/models/salesreceiptssortby.md:
     last_write_checksum: sha1:3192727a3c47327233213105afde62ab98560689
+  docs/models/salesreceiptupdateinput.md:
+    last_write_checksum: sha1:ffe2a80b38f51b48ae7ba498d7fa430587977284
   docs/models/schedule.md:
     last_write_checksum: sha1:ccc6fd5f3721e9dbdaae3d1f47607f54d793652e
   docs/models/schedulestatus.md:
@@ -26196,7 +26306,7 @@ trackedFiles:
   docs/sdks/billcreditnotes/README.md:
     last_write_checksum: sha1:38b72f417bc0afb047d13b4040d518c09ea57c38
   docs/sdks/billpayments/README.md:
-    last_write_checksum: sha1:c4eb7f8792916d330b1908dc851a4e1842db92ff
+    last_write_checksum: sha1:ad638142973fb28a38066b27bd702d49027a02ac
   docs/sdks/bills/README.md:
     last_write_checksum: sha1:34934da01e8d84ce5001302409ce346ea57f116d
   docs/sdks/categories/README.md:
@@ -26240,7 +26350,7 @@ trackedFiles:
   docs/sdks/createcallback/README.md:
     last_write_checksum: sha1:906eb56b0ddb57494c26dbc43ff017770df07b66
   docs/sdks/creditnotes/README.md:
-    last_write_checksum: sha1:3c63660ea8960ac69bc7c19d80d4e7976c3dc8aa
+    last_write_checksum: sha1:880f4d925f09fc51efda66bf1b9c5577f58d6a82
   docs/sdks/customers/README.md:
     last_write_checksum: sha1:4b05791a1b06a639bec9395e320e2438b1bab4a0
   docs/sdks/customfields/README.md:
@@ -26266,11 +26376,11 @@ trackedFiles:
   docs/sdks/eventlogs/README.md:
     last_write_checksum: sha1:a2a4fbc7393de6df2095ac81961aaffea03f2f7a
   docs/sdks/expensecategories/README.md:
-    last_write_checksum: sha1:85f2904856dda70609a77b43fa67e77d3076d152
+    last_write_checksum: sha1:e1a63da4f799a5e62f655980ff61ecc8bee69b17
   docs/sdks/expensereports/README.md:
-    last_write_checksum: sha1:c1ca02527652a931551ac36cd89238e2438cae97
+    last_write_checksum: sha1:e7752d23207a28f64482bc05fc14030a0132bde5
   docs/sdks/expenses/README.md:
-    last_write_checksum: sha1:f748decf00299e345696599932d8318af8159401
+    last_write_checksum: sha1:aa4599295985556a0e8ed7aa8405e1aded437a61
   docs/sdks/files/README.md:
     last_write_checksum: sha1:9889b57620ab478df4ea91fb4544bdfff422e73c
   docs/sdks/fiscalperiods/README.md:
@@ -26314,7 +26424,7 @@ trackedFiles:
   docs/sdks/paymentmethods/README.md:
     last_write_checksum: sha1:22823ec7b65fa535074dca1090b76679883ac634
   docs/sdks/payments/README.md:
-    last_write_checksum: sha1:13e787fc2c7d41163f4a9e4f9e476f39e6e55122
+    last_write_checksum: sha1:d631152b577514303c6ac11c8c1b044f1ab85087
   docs/sdks/payrolls/README.md:
     last_write_checksum: sha1:6ac8986bc3eb1c25eb2fe7070636ad9751c8c585
   docs/sdks/pipelines/README.md:
@@ -26324,7 +26434,7 @@ trackedFiles:
   docs/sdks/profitandlosssdk/README.md:
     last_write_checksum: sha1:d1e7becf00ac178f97ed1eaf988914063cff429c
   docs/sdks/projects/README.md:
-    last_write_checksum: sha1:cf777bfcb054a636a16123d1f75cc36d4aecc4cc
+    last_write_checksum: sha1:2e1ab6bcbbe6c3d2046179d02361d5cec01bf6ef
   docs/sdks/proxy/README.md:
     last_write_checksum: sha1:1c0f76a80851bd87fbd73f1db9636c90396f96b0
   docs/sdks/purchaseorders/README.md:
@@ -26332,11 +26442,11 @@ trackedFiles:
   docs/sdks/quotes/README.md:
     last_write_checksum: sha1:f50efc6a9f0b46c2e2ec763968a2dda675bfbe36
   docs/sdks/refunds/README.md:
-    last_write_checksum: sha1:6af751b31ea64bc4ec0839882b7da4d7c062ed9c
+    last_write_checksum: sha1:6e65ebf13c93151c19bd8e8d30458b3b36bf39ff
   docs/sdks/salesorders/README.md:
     last_write_checksum: sha1:f243115ffe100bccb11163e58e23f404b1f6ed3b
   docs/sdks/salesreceipts/README.md:
-    last_write_checksum: sha1:b98c1dbbfc87e8743a1a84cf95f11cbbdc0ec2c7
+    last_write_checksum: sha1:b7ea47c2b50a940810a4a56797fe797d154f98f7
   docs/sdks/sessions/README.md:
     last_write_checksum: sha1:9c1332fc7b3c3ace6dae6d9e1f127d360135f85c
   docs/sdks/sharedlinks/README.md:
@@ -26370,7 +26480,7 @@ trackedFiles:
   pylintrc:
     last_write_checksum: sha1:ec6665a4862060890cf4c6ba61438d11decf5c3c
   pyproject.toml:
-    last_write_checksum: sha1:494145d5c6f7f1b23c4059587a746bbccc9c6696
+    last_write_checksum: sha1:f85fbd224a79c37aabb085ddf6457543f1ffccb5
   scripts/prepare_readme.py:
     last_write_checksum: sha1:798a05bafe4fbbfff5b67037866fa25efc52f11a
   scripts/publish.sh:
@@ -26384,7 +26494,7 @@ trackedFiles:
   src/apideck_unify/_hooks/types.py:
     last_write_checksum: sha1:d57be38e644de01983a9224b9733ae0add898d43
   src/apideck_unify/_version.py:
-    last_write_checksum: sha1:afd4695243190fafddd6e3147cbcfabc66050a71
+    last_write_checksum: sha1:12d632d214b3bc0fa5f9b03fa723f9ecc79a6c45
   src/apideck_unify/accounting.py:
     last_write_checksum: sha1:7f9e809f589467dee3bc2719395ce1cdef2d7421
   src/apideck_unify/activities.py:
@@ -26400,7 +26510,7 @@ trackedFiles:
   src/apideck_unify/apideck_departments.py:
     last_write_checksum: sha1:59a81b7d246ffd8a00dbf65a7d660c112548dd74
   src/apideck_unify/apideck_employees.py:
-    last_write_checksum: sha1:2d97564087b06b8840be84cff6b0172a8ed29adf
+    last_write_checksum: sha1:f3645ee5af43e0c0454bbc397e4138b416cf7403
   src/apideck_unify/apideck_hris_companies.py:
     last_write_checksum: sha1:4a0e3c47bbedbc5fbed2114c9bd520efa4fbae05
   src/apideck_unify/apiresourcecoverage_sdk.py:
@@ -26430,7 +26540,7 @@ trackedFiles:
   src/apideck_unify/billcreditnotes.py:
     last_write_checksum: sha1:56c354107b41b742cc0354cf9d5c3bf58644f455
   src/apideck_unify/billpayments.py:
-    last_write_checksum: sha1:793b507a75a7c6295b40de1de208827c8f89244b
+    last_write_checksum: sha1:61b5c343917b7fb84a43a1c4714a8858da410077
   src/apideck_unify/bills.py:
     last_write_checksum: sha1:2d0da455c619679c7fb0dc6259d560d4fbacf1e5
   src/apideck_unify/categories.py:
@@ -26476,7 +26586,7 @@ trackedFiles:
   src/apideck_unify/createcallback.py:
     last_write_checksum: sha1:fa6cddb89b59b3890fbc0a06c4b7730e91e76f2e
   src/apideck_unify/creditnotes.py:
-    last_write_checksum: sha1:3c4a31322ad32efe9da0ed69d963329e81506496
+    last_write_checksum: sha1:ec6b67715b115dce97453d2a948f24172b627a04
   src/apideck_unify/crm.py:
     last_write_checksum: sha1:0a3f32ca2265dd9bf40c9b5c0373685dab9e5da6
   src/apideck_unify/customers.py:
@@ -26506,11 +26616,11 @@ trackedFiles:
   src/apideck_unify/eventlogs.py:
     last_write_checksum: sha1:d1729709f928d9c708ff4d4eb825cb98c5423f1f
   src/apideck_unify/expensecategories.py:
-    last_write_checksum: sha1:8fe0fa088b4b364ce8b9ef7a32cdde9050caf4ca
+    last_write_checksum: sha1:b2770ea00eb14d3948c9a4c36fcb13b975e739d3
   src/apideck_unify/expensereports.py:
-    last_write_checksum: sha1:3f6f38c22128c7d4c74bb4fe4305a6c7ab1574f9
+    last_write_checksum: sha1:2b9d80cd307dd083b2a8307dbf57dd4cf4172259
   src/apideck_unify/expenses.py:
-    last_write_checksum: sha1:ee7092fe810a4c13f525e91f2bde28aaa2eba959
+    last_write_checksum: sha1:a5abe18007f54db73da578cb708e9b780ee9e617
   src/apideck_unify/files.py:
     last_write_checksum: sha1:21b25dc08beaf72df1e912f498f65cb5f57846e9
   src/apideck_unify/filestorage.py:
@@ -26554,7 +26664,7 @@ trackedFiles:
   src/apideck_unify/messages.py:
     last_write_checksum: sha1:236641f6bc253c8f2943d4118653a42751001b66
   src/apideck_unify/models/__init__.py:
-    last_write_checksum: sha1:09b20b3f27e1c77a8697ac81be9f7ba5b742c605
+    last_write_checksum: sha1:0f6a1f9142e927b5bba6e08d5e3777e9c028dcdc
   src/apideck_unify/models/accounting_agedcreditorsoneop.py:
     last_write_checksum: sha1:84bf1980c907ac868efd2e5d54f8649b6263d880
   src/apideck_unify/models/accounting_ageddebtorsoneop.py:
@@ -26624,7 +26734,7 @@ trackedFiles:
   src/apideck_unify/models/accounting_billpaymentsoneop.py:
     last_write_checksum: sha1:ab6ef0cafab679c97f178e251d08cc6e091305ac
   src/apideck_unify/models/accounting_billpaymentsupdateop.py:
-    last_write_checksum: sha1:b75c22f7141e7ec35fff7d8fc3c7f26174d4f15f
+    last_write_checksum: sha1:b36a0cbc532bbc4d8fa43cc67fd46b8dae8aba9e
   src/apideck_unify/models/accounting_billsaddop.py:
     last_write_checksum: sha1:316d97d99bb3a935bf6f76b8208d197bbbb71891
   src/apideck_unify/models/accounting_billsallop.py:
@@ -26656,7 +26766,7 @@ trackedFiles:
   src/apideck_unify/models/accounting_creditnotesoneop.py:
     last_write_checksum: sha1:8a477e35e318a6fba9090cc0894c29228a0e362b
   src/apideck_unify/models/accounting_creditnotesupdateop.py:
-    last_write_checksum: sha1:9a03df3f7ff80222f742976556090f1749561781
+    last_write_checksum: sha1:4b912e3623770d44ff5aaaecc5cd8f1ad1ee8026
   src/apideck_unify/models/accounting_customersaddop.py:
     last_write_checksum: sha1:91ab278b99a7864679026b8fc6b1c965a25abdbc
   src/apideck_unify/models/accounting_customersallop.py:
@@ -26698,7 +26808,7 @@ trackedFiles:
   src/apideck_unify/models/accounting_expensecategoriesoneop.py:
     last_write_checksum: sha1:43e64537c6e5d69a730dc04f91b9e76e9bceba5b
   src/apideck_unify/models/accounting_expensecategoriesupdateop.py:
-    last_write_checksum: sha1:8f93a85bf3478dd57cd2e2acac2a78c78a8354b4
+    last_write_checksum: sha1:aa464c1a0a1f28f2144cfe75651968170cb0d096
   src/apideck_unify/models/accounting_expensereportsaddop.py:
     last_write_checksum: sha1:2087564ed9b07f33bf982e2fbded52a51ef1b781
   src/apideck_unify/models/accounting_expensereportsallop.py:
@@ -26708,7 +26818,7 @@ trackedFiles:
   src/apideck_unify/models/accounting_expensereportsoneop.py:
     last_write_checksum: sha1:20e258683335aa1033a1e2f7a0c59474236d8f91
   src/apideck_unify/models/accounting_expensereportsupdateop.py:
-    last_write_checksum: sha1:7ddc7620e5a8fd32ef2a0d60aab4b5dfa93321e8
+    last_write_checksum: sha1:41d4fc566ba378d0c0d56cb61c44c8c40bc4e60a
   src/apideck_unify/models/accounting_expensesaddop.py:
     last_write_checksum: sha1:1cb3a41322357dad48d02d864e8210578889b9d0
   src/apideck_unify/models/accounting_expensesallop.py:
@@ -26718,7 +26828,7 @@ trackedFiles:
   src/apideck_unify/models/accounting_expensesoneop.py:
     last_write_checksum: sha1:dfd878c92ffddcb8d3e3f710e9a44920a7e65711
   src/apideck_unify/models/accounting_expensesupdateop.py:
-    last_write_checksum: sha1:9daa85816579881d950e05c40076ed281728a7d3
+    last_write_checksum: sha1:cb0191d79ada81889a39e4eda311bc0b2a1f02d0
   src/apideck_unify/models/accounting_fiscalperiodsallop.py:
     last_write_checksum: sha1:d0f0fea66fbc4bfe4c77eccaf496f49bba4e0d1c
   src/apideck_unify/models/accounting_fiscalperiodsoneop.py:
@@ -26818,7 +26928,7 @@ trackedFiles:
   src/apideck_unify/models/accounting_paymentsoneop.py:
     last_write_checksum: sha1:a504b25360e0c95ff01bb25c41db5b9865f431af
   src/apideck_unify/models/accounting_paymentsupdateop.py:
-    last_write_checksum: sha1:87a4102eb05dbbb0b6e0cd51a91ce4e9a3b73d38
+    last_write_checksum: sha1:e26833e156518410ab55fa7f0b33d570ae54aab8
   src/apideck_unify/models/accounting_profitandlossoneop.py:
     last_write_checksum: sha1:19bb298974b5753c4fbeab1834aa5368047752bf
   src/apideck_unify/models/accounting_projectsaddop.py:
@@ -26830,7 +26940,7 @@ trackedFiles:
   src/apideck_unify/models/accounting_projectsoneop.py:
     last_write_checksum: sha1:c8d3975d5d721ebc5519788e2dc0956b925965cc
   src/apideck_unify/models/accounting_projectsupdateop.py:
-    last_write_checksum: sha1:a4f9ef33f1dc4dea7b10d476e2edaa070805cc1f
+    last_write_checksum: sha1:7b68e988cfd732b5b8f424e663b85dae1b2403e1
   src/apideck_unify/models/accounting_purchaseordersaddop.py:
     last_write_checksum: sha1:c9a091c0e370eed194a9bc97bb45368ebe799157
   src/apideck_unify/models/accounting_purchaseordersallop.py:
@@ -26860,7 +26970,7 @@ trackedFiles:
   src/apideck_unify/models/accounting_refundsoneop.py:
     last_write_checksum: sha1:2a1ed78953d147af84f79180048653abd615b6fd
   src/apideck_unify/models/accounting_refundsupdateop.py:
-    last_write_checksum: sha1:71fced621b826217c51d9d0baad33f5047646e68
+    last_write_checksum: sha1:68f4dc07e9787e9bfd831a7812f60088b0ccd437
   src/apideck_unify/models/accounting_salesordersaddop.py:
     last_write_checksum: sha1:015fd9436129b3d781beac6435e93b8af0dbb6d0
   src/apideck_unify/models/accounting_salesordersallop.py:
@@ -26880,7 +26990,7 @@ trackedFiles:
   src/apideck_unify/models/accounting_salesreceiptsoneop.py:
     last_write_checksum: sha1:ae6062d90db8bea4fba3e425e683de63a3fcd504
   src/apideck_unify/models/accounting_salesreceiptsupdateop.py:
-    last_write_checksum: sha1:4f80fc2231c9a913ca5bb463f382a8a2302fcdca
+    last_write_checksum: sha1:b3cc33d323073fdd6f412832331b4b023e2a6a40
   src/apideck_unify/models/accounting_subsidiariesaddop.py:
     last_write_checksum: sha1:2c53218749783b49cdc39828a13d043ec7e38ba0
   src/apideck_unify/models/accounting_subsidiariesallop.py:
@@ -27129,6 +27239,8 @@ trackedFiles:
     last_write_checksum: sha1:415cc9974224e4a957015c57e0fa1bb377d98a65
   src/apideck_unify/models/billpaymentcreateinput.py:
     last_write_checksum: sha1:e8a70e84f0af92ddcb6fcc48d9cae63934c0c808
+  src/apideck_unify/models/billpaymentupdateinput.py:
+    last_write_checksum: sha1:022aa6d4734e1a123b15788eb157a7e782851efa
   src/apideck_unify/models/billsfilter.py:
     last_write_checksum: sha1:2881d6989e8ad218b674ad6c6911cd3173ff20d8
   src/apideck_unify/models/billssort.py:
@@ -27373,6 +27485,8 @@ trackedFiles:
     last_write_checksum: sha1:dc52d3de09c625ca2babae0c66c10d534e484d87
   src/apideck_unify/models/creditnotessort.py:
     last_write_checksum: sha1:b0a1c5a0acb96c8179b56f2bbaf9e6c48e0f4872
+  src/apideck_unify/models/creditnoteupdateinput.py:
+    last_write_checksum: sha1:eddc25bc5a6a14fb35f5a9772bdc6f39992a048f
   src/apideck_unify/models/creditordebit.py:
     last_write_checksum: sha1:edd5178093d2a4b5e97b17266d75c2598b5c090d
   src/apideck_unify/models/crm_activitiesaddop.py:
@@ -27715,6 +27829,8 @@ trackedFiles:
     last_write_checksum: sha1:54d0116cd709831502dabc70b910ddbea403c560
   src/apideck_unify/models/expensecategory.py:
     last_write_checksum: sha1:6df6411de454a5cf35c34b38969a79619910d179
+  src/apideck_unify/models/expensecategoryupdateinput.py:
+    last_write_checksum: sha1:7fe8a4ba047eb0337ade99910b5309a1e2b8cb67
   src/apideck_unify/models/expenselineitem.py:
     last_write_checksum: sha1:1cc563de5344ad838ab48f87d1499d7ddc38cb6f
   src/apideck_unify/models/expenselineitem_input.py:
@@ -27727,8 +27843,12 @@ trackedFiles:
     last_write_checksum: sha1:61104fdff0285d53643c1597a1113874ea4356d7
   src/apideck_unify/models/expensereportsfilter.py:
     last_write_checksum: sha1:340c4797a19c391d146a6094c45d282483fa7492
+  src/apideck_unify/models/expensereportupdateinput.py:
+    last_write_checksum: sha1:545815e11cb74b812f6a9ab1a39aba5337b0b069
   src/apideck_unify/models/expensesfilter.py:
     last_write_checksum: sha1:e976af441c4722197d79f7fbdaba17b052675d8c
+  src/apideck_unify/models/expenseupdateinput.py:
+    last_write_checksum: sha1:bc90c3e7556dcd969d80c172a54ed5ec9a4efffb
   src/apideck_unify/models/filesfilter.py:
     last_write_checksum: sha1:929828f85b45dd2379793a75f2e1c16032b93a25
   src/apideck_unify/models/filessearch.py:
@@ -28439,6 +28559,8 @@ trackedFiles:
     last_write_checksum: sha1:37ce9b61ba2c02301036ead4ae0526b010bac3f9
   src/apideck_unify/models/paymentunit.py:
     last_write_checksum: sha1:07b8e718c872314a055311906bf8c6dd1f35bf68
+  src/apideck_unify/models/paymentupdateinput.py:
+    last_write_checksum: sha1:8556aa727fdb74e0de2cccc584b3cb2de24e4201
   src/apideck_unify/models/payroll.py:
     last_write_checksum: sha1:1c4157720c5ac74a2902d7f3d0c520ca62a37e6d
   src/apideck_unify/models/payrollsfilter.py:
@@ -28469,6 +28591,8 @@ trackedFiles:
     last_write_checksum: sha1:e5df91550d9cb82f645b89ca25996f4d03550254
   src/apideck_unify/models/projectssort.py:
     last_write_checksum: sha1:fe22e634254b65c1f07b98151372852da40e441d
+  src/apideck_unify/models/projectupdateinput.py:
+    last_write_checksum: sha1:72425b8326a6bfb5c5bb3efb711460414417e923
   src/apideck_unify/models/proxy_deleteproxyop.py:
     last_write_checksum: sha1:4fc93324c1d5274f87eabbe3a437574b81c2b351
   src/apideck_unify/models/proxy_getproxyop.py:
@@ -28507,6 +28631,8 @@ trackedFiles:
     last_write_checksum: sha1:bae0fc337952a1a249aae12fbdff4d8eb881af76
   src/apideck_unify/models/refundtype.py:
     last_write_checksum: sha1:8a9e307ba9976bb48cc8d14b679cb6a234470f5a
+  src/apideck_unify/models/refundupdateinput.py:
+    last_write_checksum: sha1:baaab203ee2731ccc5a0890d5c8d5c74942dbf14
   src/apideck_unify/models/requestcountallocation.py:
     last_write_checksum: sha1:e212bdc841ad7b2c8fec91ccb191dde831283e68
   src/apideck_unify/models/resourcestatus.py:
@@ -28525,6 +28651,8 @@ trackedFiles:
     last_write_checksum: sha1:39db2d0d76a11ee3a00ab2676322e4523291493a
   src/apideck_unify/models/salesreceiptssort.py:
     last_write_checksum: sha1:dc6c2d194017d1e34d2b8d5fcf0e2f1b56b195a2
+  src/apideck_unify/models/salesreceiptupdateinput.py:
+    last_write_checksum: sha1:32dabff8e942a9b1a184cc8b7a85346a0c562f6f
   src/apideck_unify/models/schedule.py:
     last_write_checksum: sha1:0a493f453a3ce36ea3d71c0926d00aabb94b8301
   src/apideck_unify/models/schemasupport.py:
@@ -28838,7 +28966,7 @@ trackedFiles:
   src/apideck_unify/paymentmethods.py:
     last_write_checksum: sha1:9ad408dfe5b2ccf1b5f2e96f08efb265c3c8e092
   src/apideck_unify/payments.py:
-    last_write_checksum: sha1:069736c6d9114e6a48525e434fb64bdb08180f6b
+    last_write_checksum: sha1:44867d48ab6db8ba5da316050d770d468208f30d
   src/apideck_unify/payrolls.py:
     last_write_checksum: sha1:5ccd0b249a6acb7ec93202cf3e02d445138a66b0
   src/apideck_unify/pipelines.py:
@@ -28848,7 +28976,7 @@ trackedFiles:
   src/apideck_unify/profitandloss_sdk.py:
     last_write_checksum: sha1:4f8c0556e3d1e6906db32f7939a4096bb9a4d579
   src/apideck_unify/projects.py:
-    last_write_checksum: sha1:0098027dacc7f7b08783c6a0915d278d9ca43091
+    last_write_checksum: sha1:5b450da5ea86aa76a81e10f7eedc68660b6d995b
   src/apideck_unify/proxy.py:
     last_write_checksum: sha1:53cac21bb7cb5e5c3424547235d9915d7dcc5319
   src/apideck_unify/purchaseorders.py:
@@ -28856,13 +28984,13 @@ trackedFiles:
   src/apideck_unify/py.typed:
     last_write_checksum: sha1:8efc425ffe830805ffcc0f3055871bdcdc542c60
   src/apideck_unify/quotes.py:
-    last_write_checksum: sha1:acdb10639b63a1370b69dcf3d42261cf906b4ee8
+    last_write_checksum: sha1:df05a3073d8db2b356a511ee3b7fb5c8ab3adad5
   src/apideck_unify/refunds.py:
-    last_write_checksum: sha1:e656f42152706cd51d0c21b8cf5151d1c7fa9049
+    last_write_checksum: sha1:44b73277da1eea9c2933cfd56bec71c1c227a27d
   src/apideck_unify/salesorders.py:
     last_write_checksum: sha1:b6c3801e13262b0955f4719bdb527c300d289a34
   src/apideck_unify/salesreceipts.py:
-    last_write_checksum: sha1:1f8adef24efb6e8fd5f5f50e9b3f77f189311146
+    last_write_checksum: sha1:6f1a7e0ef4164589e70eb0ef4a3f50fb23534ce0
   src/apideck_unify/sdk.py:
     last_write_checksum: sha1:c36fd87d8a9d1b51c46deeb198cc84a9761aedfb
   src/apideck_unify/sdkconfiguration.py:
@@ -28882,7 +29010,7 @@ trackedFiles:
   src/apideck_unify/taxrates.py:
     last_write_checksum: sha1:a0e49e5dac40330d8292c648392358efbcb94e3a
   src/apideck_unify/timeoffrequests.py:
-    last_write_checksum: sha1:653404a6177c58b53d79d8e89ca7e0f2c4206273
+    last_write_checksum: sha1:679cfedc46f49036f5cce133b0f2b33dcf523713
   src/apideck_unify/trackingcategories.py:
     last_write_checksum: sha1:3bbe59111e9f9f51d0c70e8a290931fda7738e48
   src/apideck_unify/trialbalance_sdk.py:

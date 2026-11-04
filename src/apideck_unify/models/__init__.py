@@ -2037,6 +2037,14 @@ if TYPE_CHECKING:
         BillPaymentCreateInputBillPaymentType,
         BillPaymentCreateInputTypedDict,
     )
+    from .billpaymentupdateinput import (
+        BillPaymentUpdateInput,
+        BillPaymentUpdateInputAllocationType,
+        BillPaymentUpdateInputAllocations,
+        BillPaymentUpdateInputAllocationsTypedDict,
+        BillPaymentUpdateInputBillPaymentType,
+        BillPaymentUpdateInputTypedDict,
+    )
     from .billsfilter import BillsFilter, BillsFilterStatus, BillsFilterTypedDict
     from .billssort import BillsSort, BillsSortTypedDict, By
     from .categoriesfilter import (
@@ -2519,6 +2527,12 @@ if TYPE_CHECKING:
         CreditNotesSort,
         CreditNotesSortBy,
         CreditNotesSortTypedDict,
+    )
+    from .creditnoteupdateinput import (
+        CreditNoteUpdateInput,
+        CreditNoteUpdateInputCreditNoteStatus,
+        CreditNoteUpdateInputCreditNoteType,
+        CreditNoteUpdateInputTypedDict,
     )
     from .creditordebit import CreditOrDebit
     from .crm_activitiesaddop import (
@@ -3421,6 +3435,11 @@ if TYPE_CHECKING:
         ExpenseCategoryStatus,
         ExpenseCategoryTypedDict,
     )
+    from .expensecategoryupdateinput import (
+        ExpenseCategoryUpdateInput,
+        ExpenseCategoryUpdateInputStatus,
+        ExpenseCategoryUpdateInputTypedDict,
+    )
     from .expenselineitem import ExpenseLineItem, ExpenseLineItemTypedDict
     from .expenselineitem_input import (
         ExpenseLineItemInput,
@@ -3452,11 +3471,29 @@ if TYPE_CHECKING:
         ExpenseReportsFilterStatus,
         ExpenseReportsFilterTypedDict,
     )
+    from .expensereportupdateinput import (
+        ExpenseReportUpdateInput,
+        ExpenseReportUpdateInputAccountingPeriod,
+        ExpenseReportUpdateInputAccountingPeriodTypedDict,
+        ExpenseReportUpdateInputApprovedBy,
+        ExpenseReportUpdateInputApprovedByTypedDict,
+        ExpenseReportUpdateInputEmployee,
+        ExpenseReportUpdateInputEmployeeTypedDict,
+        ExpenseReportUpdateInputStatus,
+        ExpenseReportUpdateInputTypedDict,
+    )
     from .expensesfilter import (
         ExpensesFilter,
         ExpensesFilterStatus,
         ExpensesFilterType,
         ExpensesFilterTypedDict,
+    )
+    from .expenseupdateinput import (
+        ExpenseUpdateInput,
+        ExpenseUpdateInputExpenseType,
+        ExpenseUpdateInputPaymentType,
+        ExpenseUpdateInputStatus,
+        ExpenseUpdateInputTypedDict,
     )
     from .filesfilter import FilesFilter, FilesFilterTypedDict
     from .filessearch import FilesSearch, FilesSearchTypedDict
@@ -4920,6 +4957,7 @@ if TYPE_CHECKING:
     from .paymentstatus import PaymentStatus
     from .paymenttype import PaymentType
     from .paymentunit import PaymentUnit
+    from .paymentupdateinput import PaymentUpdateInput, PaymentUpdateInputTypedDict
     from .payroll import Payroll, PayrollTypedDict
     from .payrollsfilter import PayrollsFilter, PayrollsFilterTypedDict
     from .payrolltotals import PayrollTotals, PayrollTotalsTypedDict
@@ -4977,6 +5015,20 @@ if TYPE_CHECKING:
     )
     from .projectsfilter import ProjectStatus, ProjectsFilter, ProjectsFilterTypedDict
     from .projectssort import ProjectsSort, ProjectsSortSortBy, ProjectsSortTypedDict
+    from .projectupdateinput import (
+        ProjectUpdateInput,
+        ProjectUpdateInputBillingMethod,
+        ProjectUpdateInputDepartment,
+        ProjectUpdateInputDepartmentTypedDict,
+        ProjectUpdateInputParentProject,
+        ProjectUpdateInputParentProjectTypedDict,
+        ProjectUpdateInputPriority,
+        ProjectUpdateInputProjectPhase,
+        ProjectUpdateInputProjectStatus,
+        ProjectUpdateInputProjectType,
+        ProjectUpdateInputScheduleStatus,
+        ProjectUpdateInputTypedDict,
+    )
     from .proxy_deleteproxyop import (
         ProxyDeleteProxyGlobals,
         ProxyDeleteProxyGlobalsTypedDict,
@@ -5076,6 +5128,7 @@ if TYPE_CHECKING:
     from .refundssort import RefundsSort, RefundsSortBy, RefundsSortTypedDict
     from .refundstatus import RefundStatus
     from .refundtype import RefundType
+    from .refundupdateinput import RefundUpdateInput, RefundUpdateInputTypedDict
     from .requestcountallocation import (
         RequestCountAllocation,
         RequestCountAllocationTypedDict,
@@ -5097,6 +5150,10 @@ if TYPE_CHECKING:
         SalesReceiptsSort,
         SalesReceiptsSortBy,
         SalesReceiptsSortTypedDict,
+    )
+    from .salesreceiptupdateinput import (
+        SalesReceiptUpdateInput,
+        SalesReceiptUpdateInputTypedDict,
     )
     from .schedule import (
         EvenWeeks,
@@ -7349,6 +7406,12 @@ __all__ = [
     "BillPaymentInputTypedDict",
     "BillPaymentType",
     "BillPaymentTypedDict",
+    "BillPaymentUpdateInput",
+    "BillPaymentUpdateInputAllocationType",
+    "BillPaymentUpdateInputAllocations",
+    "BillPaymentUpdateInputAllocationsTypedDict",
+    "BillPaymentUpdateInputBillPaymentType",
+    "BillPaymentUpdateInputTypedDict",
     "BillStatus",
     "BillTypedDict",
     "BillingMethod",
@@ -7686,6 +7749,10 @@ __all__ = [
     "CreditNoteStatus",
     "CreditNoteType",
     "CreditNoteTypedDict",
+    "CreditNoteUpdateInput",
+    "CreditNoteUpdateInputCreditNoteStatus",
+    "CreditNoteUpdateInputCreditNoteType",
+    "CreditNoteUpdateInputTypedDict",
     "CreditNotesFilter",
     "CreditNotesFilterTypedDict",
     "CreditNotesSort",
@@ -8367,6 +8434,9 @@ __all__ = [
     "ExpenseCategoryInputTypedDict",
     "ExpenseCategoryStatus",
     "ExpenseCategoryTypedDict",
+    "ExpenseCategoryUpdateInput",
+    "ExpenseCategoryUpdateInputStatus",
+    "ExpenseCategoryUpdateInputTypedDict",
     "ExpenseInput",
     "ExpenseInputTypedDict",
     "ExpenseLineItem",
@@ -8385,12 +8455,26 @@ __all__ = [
     "ExpenseReportLineItemTypedDict",
     "ExpenseReportStatus",
     "ExpenseReportTypedDict",
+    "ExpenseReportUpdateInput",
+    "ExpenseReportUpdateInputAccountingPeriod",
+    "ExpenseReportUpdateInputAccountingPeriodTypedDict",
+    "ExpenseReportUpdateInputApprovedBy",
+    "ExpenseReportUpdateInputApprovedByTypedDict",
+    "ExpenseReportUpdateInputEmployee",
+    "ExpenseReportUpdateInputEmployeeTypedDict",
+    "ExpenseReportUpdateInputStatus",
+    "ExpenseReportUpdateInputTypedDict",
     "ExpenseReportsFilter",
     "ExpenseReportsFilterStatus",
     "ExpenseReportsFilterTypedDict",
     "ExpenseStatus",
     "ExpenseType",
     "ExpenseTypedDict",
+    "ExpenseUpdateInput",
+    "ExpenseUpdateInputExpenseType",
+    "ExpenseUpdateInputPaymentType",
+    "ExpenseUpdateInputStatus",
+    "ExpenseUpdateInputTypedDict",
     "ExpensesFilter",
     "ExpensesFilterStatus",
     "ExpensesFilterType",
@@ -9529,6 +9613,8 @@ __all__ = [
     "PaymentType",
     "PaymentTypedDict",
     "PaymentUnit",
+    "PaymentUpdateInput",
+    "PaymentUpdateInputTypedDict",
     "PaymentsFilter",
     "PaymentsFilterPaymentStatus",
     "PaymentsFilterType",
@@ -9582,6 +9668,18 @@ __all__ = [
     "ProjectStatus",
     "ProjectType",
     "ProjectTypedDict",
+    "ProjectUpdateInput",
+    "ProjectUpdateInputBillingMethod",
+    "ProjectUpdateInputDepartment",
+    "ProjectUpdateInputDepartmentTypedDict",
+    "ProjectUpdateInputParentProject",
+    "ProjectUpdateInputParentProjectTypedDict",
+    "ProjectUpdateInputPriority",
+    "ProjectUpdateInputProjectPhase",
+    "ProjectUpdateInputProjectStatus",
+    "ProjectUpdateInputProjectType",
+    "ProjectUpdateInputScheduleStatus",
+    "ProjectUpdateInputTypedDict",
     "ProjectsFilter",
     "ProjectsFilterTypedDict",
     "ProjectsSort",
@@ -9663,6 +9761,8 @@ __all__ = [
     "RefundStatus",
     "RefundType",
     "RefundTypedDict",
+    "RefundUpdateInput",
+    "RefundUpdateInputTypedDict",
     "RefundsFilter",
     "RefundsFilterTypedDict",
     "RefundsSort",
@@ -9704,6 +9804,8 @@ __all__ = [
     "SalesReceiptInput",
     "SalesReceiptInputTypedDict",
     "SalesReceiptTypedDict",
+    "SalesReceiptUpdateInput",
+    "SalesReceiptUpdateInputTypedDict",
     "SalesReceiptsFilter",
     "SalesReceiptsFilterTypedDict",
     "SalesReceiptsSort",
@@ -11785,6 +11887,12 @@ _dynamic_imports: dict[str, str] = {
     "BillPaymentCreateInputAllocationsTypedDict": ".billpaymentcreateinput",
     "BillPaymentCreateInputBillPaymentType": ".billpaymentcreateinput",
     "BillPaymentCreateInputTypedDict": ".billpaymentcreateinput",
+    "BillPaymentUpdateInput": ".billpaymentupdateinput",
+    "BillPaymentUpdateInputAllocationType": ".billpaymentupdateinput",
+    "BillPaymentUpdateInputAllocations": ".billpaymentupdateinput",
+    "BillPaymentUpdateInputAllocationsTypedDict": ".billpaymentupdateinput",
+    "BillPaymentUpdateInputBillPaymentType": ".billpaymentupdateinput",
+    "BillPaymentUpdateInputTypedDict": ".billpaymentupdateinput",
     "BillsFilter": ".billsfilter",
     "BillsFilterStatus": ".billsfilter",
     "BillsFilterTypedDict": ".billsfilter",
@@ -12141,6 +12249,10 @@ _dynamic_imports: dict[str, str] = {
     "CreditNotesSort": ".creditnotessort",
     "CreditNotesSortBy": ".creditnotessort",
     "CreditNotesSortTypedDict": ".creditnotessort",
+    "CreditNoteUpdateInput": ".creditnoteupdateinput",
+    "CreditNoteUpdateInputCreditNoteStatus": ".creditnoteupdateinput",
+    "CreditNoteUpdateInputCreditNoteType": ".creditnoteupdateinput",
+    "CreditNoteUpdateInputTypedDict": ".creditnoteupdateinput",
     "CreditOrDebit": ".creditordebit",
     "CrmActivitiesAddGlobals": ".crm_activitiesaddop",
     "CrmActivitiesAddGlobalsTypedDict": ".crm_activitiesaddop",
@@ -12804,6 +12916,9 @@ _dynamic_imports: dict[str, str] = {
     "ExpenseCategoryInputTypedDict": ".expensecategory",
     "ExpenseCategoryStatus": ".expensecategory",
     "ExpenseCategoryTypedDict": ".expensecategory",
+    "ExpenseCategoryUpdateInput": ".expensecategoryupdateinput",
+    "ExpenseCategoryUpdateInputStatus": ".expensecategoryupdateinput",
+    "ExpenseCategoryUpdateInputTypedDict": ".expensecategoryupdateinput",
     "ExpenseLineItem": ".expenselineitem",
     "ExpenseLineItemTypedDict": ".expenselineitem",
     "ExpenseLineItemInput": ".expenselineitem_input",
@@ -12826,10 +12941,24 @@ _dynamic_imports: dict[str, str] = {
     "ExpenseReportsFilter": ".expensereportsfilter",
     "ExpenseReportsFilterStatus": ".expensereportsfilter",
     "ExpenseReportsFilterTypedDict": ".expensereportsfilter",
+    "ExpenseReportUpdateInput": ".expensereportupdateinput",
+    "ExpenseReportUpdateInputAccountingPeriod": ".expensereportupdateinput",
+    "ExpenseReportUpdateInputAccountingPeriodTypedDict": ".expensereportupdateinput",
+    "ExpenseReportUpdateInputApprovedBy": ".expensereportupdateinput",
+    "ExpenseReportUpdateInputApprovedByTypedDict": ".expensereportupdateinput",
+    "ExpenseReportUpdateInputEmployee": ".expensereportupdateinput",
+    "ExpenseReportUpdateInputEmployeeTypedDict": ".expensereportupdateinput",
+    "ExpenseReportUpdateInputStatus": ".expensereportupdateinput",
+    "ExpenseReportUpdateInputTypedDict": ".expensereportupdateinput",
     "ExpensesFilter": ".expensesfilter",
     "ExpensesFilterStatus": ".expensesfilter",
     "ExpensesFilterType": ".expensesfilter",
     "ExpensesFilterTypedDict": ".expensesfilter",
+    "ExpenseUpdateInput": ".expenseupdateinput",
+    "ExpenseUpdateInputExpenseType": ".expenseupdateinput",
+    "ExpenseUpdateInputPaymentType": ".expenseupdateinput",
+    "ExpenseUpdateInputStatus": ".expenseupdateinput",
+    "ExpenseUpdateInputTypedDict": ".expenseupdateinput",
     "FilesFilter": ".filesfilter",
     "FilesFilterTypedDict": ".filesfilter",
     "FilesSearch": ".filessearch",
@@ -13954,6 +14083,8 @@ _dynamic_imports: dict[str, str] = {
     "PaymentStatus": ".paymentstatus",
     "PaymentType": ".paymenttype",
     "PaymentUnit": ".paymentunit",
+    "PaymentUpdateInput": ".paymentupdateinput",
+    "PaymentUpdateInputTypedDict": ".paymentupdateinput",
     "Payroll": ".payroll",
     "PayrollTypedDict": ".payroll",
     "PayrollsFilter": ".payrollsfilter",
@@ -14015,6 +14146,18 @@ _dynamic_imports: dict[str, str] = {
     "ProjectsSort": ".projectssort",
     "ProjectsSortSortBy": ".projectssort",
     "ProjectsSortTypedDict": ".projectssort",
+    "ProjectUpdateInput": ".projectupdateinput",
+    "ProjectUpdateInputBillingMethod": ".projectupdateinput",
+    "ProjectUpdateInputDepartment": ".projectupdateinput",
+    "ProjectUpdateInputDepartmentTypedDict": ".projectupdateinput",
+    "ProjectUpdateInputParentProject": ".projectupdateinput",
+    "ProjectUpdateInputParentProjectTypedDict": ".projectupdateinput",
+    "ProjectUpdateInputPriority": ".projectupdateinput",
+    "ProjectUpdateInputProjectPhase": ".projectupdateinput",
+    "ProjectUpdateInputProjectStatus": ".projectupdateinput",
+    "ProjectUpdateInputProjectType": ".projectupdateinput",
+    "ProjectUpdateInputScheduleStatus": ".projectupdateinput",
+    "ProjectUpdateInputTypedDict": ".projectupdateinput",
     "ProxyDeleteProxyGlobals": ".proxy_deleteproxyop",
     "ProxyDeleteProxyGlobalsTypedDict": ".proxy_deleteproxyop",
     "ProxyDeleteProxyRequest": ".proxy_deleteproxyop",
@@ -14100,6 +14243,8 @@ _dynamic_imports: dict[str, str] = {
     "RefundsSortTypedDict": ".refundssort",
     "RefundStatus": ".refundstatus",
     "RefundType": ".refundtype",
+    "RefundUpdateInput": ".refundupdateinput",
+    "RefundUpdateInputTypedDict": ".refundupdateinput",
     "RequestCountAllocation": ".requestcountallocation",
     "RequestCountAllocationTypedDict": ".requestcountallocation",
     "ResourceStatus": ".resourcestatus",
@@ -14120,6 +14265,8 @@ _dynamic_imports: dict[str, str] = {
     "SalesReceiptsSort": ".salesreceiptssort",
     "SalesReceiptsSortBy": ".salesreceiptssort",
     "SalesReceiptsSortTypedDict": ".salesreceiptssort",
+    "SalesReceiptUpdateInput": ".salesreceiptupdateinput",
+    "SalesReceiptUpdateInputTypedDict": ".salesreceiptupdateinput",
     "EvenWeeks": ".schedule",
     "EvenWeeksTypedDict": ".schedule",
     "OddWeeks": ".schedule",
