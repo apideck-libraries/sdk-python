@@ -1248,7 +1248,6 @@ class SalesReceipts(BaseSDK):
         self,
         *,
         id: str,
-        total_amount: Nullable[float],
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
@@ -1262,6 +1261,7 @@ class SalesReceipts(BaseSDK):
         currency_rate: OptionalNullable[float] = UNSET,
         tax_inclusive: OptionalNullable[bool] = UNSET,
         sub_total: OptionalNullable[float] = UNSET,
+        total_amount: OptionalNullable[float] = UNSET,
         total_tax: OptionalNullable[float] = UNSET,
         transaction_date: OptionalNullable[datetime] = UNSET,
         payment_method: OptionalNullable[str] = UNSET,
@@ -1314,7 +1314,6 @@ class SalesReceipts(BaseSDK):
         Update Sales Receipt
 
         :param id: ID of the record you are acting upon.
-        :param total_amount: The total amount of the transaction or record
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
@@ -1326,6 +1325,7 @@ class SalesReceipts(BaseSDK):
         :param currency_rate: Currency Exchange Rate at the time entity was recorded/generated.
         :param tax_inclusive: Amounts are including tax
         :param sub_total: Subtotal amount, normally before tax.
+        :param total_amount: The total amount of the transaction or record
         :param total_tax: Total tax amount applied to this transaction.
         :param transaction_date: The date of the sales receipt transaction - YYYY-MM-DDThh:mm:ss.sTZD
         :param payment_method: Payment method used for the transaction, such as cash, credit card, bank transfer, or check
@@ -1368,7 +1368,7 @@ class SalesReceipts(BaseSDK):
             service_id=service_id,
             raw=raw,
             company_id=company_id,
-            sales_receipt=models.SalesReceiptInput(
+            sales_receipt_update_input=models.SalesReceiptUpdateInput(
                 number=number,
                 customer=utils.get_pydantic_model(
                     customer, OptionalNullable[models.LinkedCustomerInput]
@@ -1436,7 +1436,11 @@ class SalesReceipts(BaseSDK):
             ),
             security=self.sdk_configuration.security,
             get_serialized_body=lambda: utils.serialize_request_body(
-                request.sales_receipt, False, False, "json", models.SalesReceiptInput
+                request.sales_receipt_update_input,
+                False,
+                False,
+                "json",
+                models.SalesReceiptUpdateInput,
             ),
             timeout_ms=timeout_ms,
         )
@@ -1523,7 +1527,6 @@ class SalesReceipts(BaseSDK):
         self,
         *,
         id: str,
-        total_amount: Nullable[float],
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
@@ -1537,6 +1540,7 @@ class SalesReceipts(BaseSDK):
         currency_rate: OptionalNullable[float] = UNSET,
         tax_inclusive: OptionalNullable[bool] = UNSET,
         sub_total: OptionalNullable[float] = UNSET,
+        total_amount: OptionalNullable[float] = UNSET,
         total_tax: OptionalNullable[float] = UNSET,
         transaction_date: OptionalNullable[datetime] = UNSET,
         payment_method: OptionalNullable[str] = UNSET,
@@ -1589,7 +1593,6 @@ class SalesReceipts(BaseSDK):
         Update Sales Receipt
 
         :param id: ID of the record you are acting upon.
-        :param total_amount: The total amount of the transaction or record
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
@@ -1601,6 +1604,7 @@ class SalesReceipts(BaseSDK):
         :param currency_rate: Currency Exchange Rate at the time entity was recorded/generated.
         :param tax_inclusive: Amounts are including tax
         :param sub_total: Subtotal amount, normally before tax.
+        :param total_amount: The total amount of the transaction or record
         :param total_tax: Total tax amount applied to this transaction.
         :param transaction_date: The date of the sales receipt transaction - YYYY-MM-DDThh:mm:ss.sTZD
         :param payment_method: Payment method used for the transaction, such as cash, credit card, bank transfer, or check
@@ -1643,7 +1647,7 @@ class SalesReceipts(BaseSDK):
             service_id=service_id,
             raw=raw,
             company_id=company_id,
-            sales_receipt=models.SalesReceiptInput(
+            sales_receipt_update_input=models.SalesReceiptUpdateInput(
                 number=number,
                 customer=utils.get_pydantic_model(
                     customer, OptionalNullable[models.LinkedCustomerInput]
@@ -1711,7 +1715,11 @@ class SalesReceipts(BaseSDK):
             ),
             security=self.sdk_configuration.security,
             get_serialized_body=lambda: utils.serialize_request_body(
-                request.sales_receipt, False, False, "json", models.SalesReceiptInput
+                request.sales_receipt_update_input,
+                False,
+                False,
+                "json",
+                models.SalesReceiptUpdateInput,
             ),
             timeout_ms=timeout_ms,
         )

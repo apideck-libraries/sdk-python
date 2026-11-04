@@ -1292,7 +1292,6 @@ class CreditNotes(BaseSDK):
         self,
         *,
         id: str,
-        total_amount: float,
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
@@ -1311,15 +1310,16 @@ class CreditNotes(BaseSDK):
         currency_rate: OptionalNullable[float] = UNSET,
         tax_inclusive: OptionalNullable[bool] = UNSET,
         sub_total: OptionalNullable[float] = UNSET,
+        total_amount: Optional[float] = None,
         total_tax: OptionalNullable[float] = UNSET,
         tax_code: OptionalNullable[str] = UNSET,
         balance: OptionalNullable[float] = UNSET,
         remaining_credit: OptionalNullable[float] = UNSET,
-        status: Optional[models.CreditNoteStatus] = None,
+        status: Optional[models.CreditNoteUpdateInputCreditNoteStatus] = None,
         reference: OptionalNullable[str] = UNSET,
         date_issued: Optional[datetime] = None,
         date_paid: OptionalNullable[datetime] = UNSET,
-        type_: Optional[models.CreditNoteType] = None,
+        type_: Optional[models.CreditNoteUpdateInputCreditNoteType] = None,
         account: OptionalNullable[
             Union[models.LinkedLedgerAccount, models.LinkedLedgerAccountTypedDict]
         ] = UNSET,
@@ -1364,7 +1364,6 @@ class CreditNotes(BaseSDK):
         Update Credit Note
 
         :param id: ID of the record you are acting upon.
-        :param total_amount: Amount of transaction
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
@@ -1379,6 +1378,7 @@ class CreditNotes(BaseSDK):
         :param currency_rate: Currency Exchange Rate at the time entity was recorded/generated.
         :param tax_inclusive: Amounts are including tax
         :param sub_total: Sub-total amount, normally before tax.
+        :param total_amount: Amount of transaction
         :param total_tax: Total tax amount applied to this invoice.
         :param tax_code: Applicable tax id/code override if tax is not supplied on a line item basis.
         :param balance: The balance reflecting any payments made against the transaction.
@@ -1421,7 +1421,7 @@ class CreditNotes(BaseSDK):
             app_id=app_id,
             service_id=service_id,
             raw=raw,
-            credit_note=models.CreditNoteInput(
+            credit_note_update_input=models.CreditNoteUpdateInput(
                 number=number,
                 customer=utils.get_pydantic_model(
                     customer, OptionalNullable[models.LinkedCustomerInput]
@@ -1496,7 +1496,11 @@ class CreditNotes(BaseSDK):
             ),
             security=self.sdk_configuration.security,
             get_serialized_body=lambda: utils.serialize_request_body(
-                request.credit_note, False, False, "json", models.CreditNoteInput
+                request.credit_note_update_input,
+                False,
+                False,
+                "json",
+                models.CreditNoteUpdateInput,
             ),
             timeout_ms=timeout_ms,
         )
@@ -1583,7 +1587,6 @@ class CreditNotes(BaseSDK):
         self,
         *,
         id: str,
-        total_amount: float,
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
@@ -1602,15 +1605,16 @@ class CreditNotes(BaseSDK):
         currency_rate: OptionalNullable[float] = UNSET,
         tax_inclusive: OptionalNullable[bool] = UNSET,
         sub_total: OptionalNullable[float] = UNSET,
+        total_amount: Optional[float] = None,
         total_tax: OptionalNullable[float] = UNSET,
         tax_code: OptionalNullable[str] = UNSET,
         balance: OptionalNullable[float] = UNSET,
         remaining_credit: OptionalNullable[float] = UNSET,
-        status: Optional[models.CreditNoteStatus] = None,
+        status: Optional[models.CreditNoteUpdateInputCreditNoteStatus] = None,
         reference: OptionalNullable[str] = UNSET,
         date_issued: Optional[datetime] = None,
         date_paid: OptionalNullable[datetime] = UNSET,
-        type_: Optional[models.CreditNoteType] = None,
+        type_: Optional[models.CreditNoteUpdateInputCreditNoteType] = None,
         account: OptionalNullable[
             Union[models.LinkedLedgerAccount, models.LinkedLedgerAccountTypedDict]
         ] = UNSET,
@@ -1655,7 +1659,6 @@ class CreditNotes(BaseSDK):
         Update Credit Note
 
         :param id: ID of the record you are acting upon.
-        :param total_amount: Amount of transaction
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
@@ -1670,6 +1673,7 @@ class CreditNotes(BaseSDK):
         :param currency_rate: Currency Exchange Rate at the time entity was recorded/generated.
         :param tax_inclusive: Amounts are including tax
         :param sub_total: Sub-total amount, normally before tax.
+        :param total_amount: Amount of transaction
         :param total_tax: Total tax amount applied to this invoice.
         :param tax_code: Applicable tax id/code override if tax is not supplied on a line item basis.
         :param balance: The balance reflecting any payments made against the transaction.
@@ -1712,7 +1716,7 @@ class CreditNotes(BaseSDK):
             app_id=app_id,
             service_id=service_id,
             raw=raw,
-            credit_note=models.CreditNoteInput(
+            credit_note_update_input=models.CreditNoteUpdateInput(
                 number=number,
                 customer=utils.get_pydantic_model(
                     customer, OptionalNullable[models.LinkedCustomerInput]
@@ -1787,7 +1791,11 @@ class CreditNotes(BaseSDK):
             ),
             security=self.sdk_configuration.security,
             get_serialized_body=lambda: utils.serialize_request_body(
-                request.credit_note, False, False, "json", models.CreditNoteInput
+                request.credit_note_update_input,
+                False,
+                False,
+                "json",
+                models.CreditNoteUpdateInput,
             ),
             timeout_ms=timeout_ms,
         )

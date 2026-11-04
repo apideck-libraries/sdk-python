@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
-from .project import ProjectInput, ProjectInputTypedDict
+from .projectupdateinput import ProjectUpdateInput, ProjectUpdateInputTypedDict
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -47,7 +47,7 @@ class AccountingProjectsUpdateGlobals(BaseModel):
 class AccountingProjectsUpdateRequestTypedDict(TypedDict):
     id: str
     r"""ID of the record you are acting upon."""
-    project: ProjectInputTypedDict
+    project_update_input: ProjectUpdateInputTypedDict
     consumer_id: NotRequired[str]
     r"""ID of the consumer which you want to get or push data from"""
     app_id: NotRequired[str]
@@ -66,8 +66,8 @@ class AccountingProjectsUpdateRequest(BaseModel):
     ]
     r"""ID of the record you are acting upon."""
 
-    project: Annotated[
-        ProjectInput,
+    project_update_input: Annotated[
+        ProjectUpdateInput,
         FieldMetadata(request=RequestMetadata(media_type="application/json")),
     ]
 

@@ -1232,17 +1232,13 @@ class Expenses(BaseSDK):
         self,
         *,
         id: str,
-        transaction_date: Nullable[datetime],
-        line_items: Union[
-            List[models.ExpenseLineItemInput],
-            List[models.ExpenseLineItemInputTypedDict],
-        ],
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
         display_id: OptionalNullable[str] = UNSET,
         number: OptionalNullable[str] = UNSET,
+        transaction_date: OptionalNullable[datetime] = UNSET,
         account_id: Optional[str] = None,
         account: OptionalNullable[
             Union[
@@ -1262,10 +1258,10 @@ class Expenses(BaseSDK):
         department: OptionalNullable[
             Union[models.LinkedDepartmentInput, models.LinkedDepartmentInputTypedDict]
         ] = UNSET,
-        payment_type: OptionalNullable[models.ExpensePaymentType] = UNSET,
+        payment_type: OptionalNullable[models.ExpenseUpdateInputPaymentType] = UNSET,
         currency: OptionalNullable[models.Currency] = UNSET,
         currency_rate: OptionalNullable[float] = UNSET,
-        type_: OptionalNullable[models.ExpenseType] = UNSET,
+        type_: OptionalNullable[models.ExpenseUpdateInputExpenseType] = UNSET,
         memo: OptionalNullable[str] = UNSET,
         tax_rate: Optional[
             Union[models.LinkedTaxRateInput, models.LinkedTaxRateInputTypedDict]
@@ -1280,12 +1276,18 @@ class Expenses(BaseSDK):
                 List[Nullable[models.LinkedTrackingCategoryTypedDict]],
             ]
         ] = UNSET,
+        line_items: Optional[
+            Union[
+                List[models.ExpenseLineItemInput],
+                List[models.ExpenseLineItemInputTypedDict],
+            ]
+        ] = None,
         reference: OptionalNullable[str] = UNSET,
         source_document_url: OptionalNullable[str] = UNSET,
         custom_fields: Optional[
             Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
         ] = None,
-        status: OptionalNullable[models.ExpenseStatus] = UNSET,
+        status: OptionalNullable[models.ExpenseUpdateInputStatus] = UNSET,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
@@ -1300,14 +1302,13 @@ class Expenses(BaseSDK):
         Update Expense
 
         :param id: ID of the record you are acting upon.
-        :param transaction_date: The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD
-        :param line_items: Expense line items linked to this expense.
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param display_id: Id to be displayed.
         :param number: Number.
+        :param transaction_date: The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD
         :param account_id: The unique identifier for the ledger account that this expense should be credited to. Deprecated, use account instead.
         :param account: A flexible account reference that can represent a ledger account (GL account), a bank account, or an employee payable account, depending on the connector's requirements.
         :param supplier_id: The ID of the supplier this entity is linked to. Deprecated, use supplier instead.
@@ -1327,6 +1328,7 @@ class Expenses(BaseSDK):
         :param total_tax: Total tax amount applied to this transaction.
         :param total_amount: The total amount of the expense line item.
         :param tracking_categories: A list of linked tracking categories.
+        :param line_items: Expense line items linked to this expense.
         :param reference: Optional reference identifier for the transaction.
         :param source_document_url: URL link to a source document - shown as 'Go to [appName]' in the downstream app. Currently only supported for Xero.
         :param custom_fields:
@@ -1354,7 +1356,7 @@ class Expenses(BaseSDK):
             app_id=app_id,
             service_id=service_id,
             raw=raw,
-            expense=models.ExpenseInput(
+            expense_update_input=models.ExpenseUpdateInput(
                 display_id=display_id,
                 number=number,
                 transaction_date=transaction_date,
@@ -1391,7 +1393,7 @@ class Expenses(BaseSDK):
                     OptionalNullable[List[Nullable[models.LinkedTrackingCategory]]],
                 ),
                 line_items=utils.get_pydantic_model(
-                    line_items, List[models.ExpenseLineItemInput]
+                    line_items, Optional[List[models.ExpenseLineItemInput]]
                 ),
                 reference=reference,
                 source_document_url=source_document_url,
@@ -1424,7 +1426,11 @@ class Expenses(BaseSDK):
             ),
             security=self.sdk_configuration.security,
             get_serialized_body=lambda: utils.serialize_request_body(
-                request.expense, False, False, "json", models.ExpenseInput
+                request.expense_update_input,
+                False,
+                False,
+                "json",
+                models.ExpenseUpdateInput,
             ),
             timeout_ms=timeout_ms,
         )
@@ -1511,17 +1517,13 @@ class Expenses(BaseSDK):
         self,
         *,
         id: str,
-        transaction_date: Nullable[datetime],
-        line_items: Union[
-            List[models.ExpenseLineItemInput],
-            List[models.ExpenseLineItemInputTypedDict],
-        ],
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
         display_id: OptionalNullable[str] = UNSET,
         number: OptionalNullable[str] = UNSET,
+        transaction_date: OptionalNullable[datetime] = UNSET,
         account_id: Optional[str] = None,
         account: OptionalNullable[
             Union[
@@ -1541,10 +1543,10 @@ class Expenses(BaseSDK):
         department: OptionalNullable[
             Union[models.LinkedDepartmentInput, models.LinkedDepartmentInputTypedDict]
         ] = UNSET,
-        payment_type: OptionalNullable[models.ExpensePaymentType] = UNSET,
+        payment_type: OptionalNullable[models.ExpenseUpdateInputPaymentType] = UNSET,
         currency: OptionalNullable[models.Currency] = UNSET,
         currency_rate: OptionalNullable[float] = UNSET,
-        type_: OptionalNullable[models.ExpenseType] = UNSET,
+        type_: OptionalNullable[models.ExpenseUpdateInputExpenseType] = UNSET,
         memo: OptionalNullable[str] = UNSET,
         tax_rate: Optional[
             Union[models.LinkedTaxRateInput, models.LinkedTaxRateInputTypedDict]
@@ -1559,12 +1561,18 @@ class Expenses(BaseSDK):
                 List[Nullable[models.LinkedTrackingCategoryTypedDict]],
             ]
         ] = UNSET,
+        line_items: Optional[
+            Union[
+                List[models.ExpenseLineItemInput],
+                List[models.ExpenseLineItemInputTypedDict],
+            ]
+        ] = None,
         reference: OptionalNullable[str] = UNSET,
         source_document_url: OptionalNullable[str] = UNSET,
         custom_fields: Optional[
             Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
         ] = None,
-        status: OptionalNullable[models.ExpenseStatus] = UNSET,
+        status: OptionalNullable[models.ExpenseUpdateInputStatus] = UNSET,
         row_version: OptionalNullable[str] = UNSET,
         pass_through: Optional[
             Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
@@ -1579,14 +1587,13 @@ class Expenses(BaseSDK):
         Update Expense
 
         :param id: ID of the record you are acting upon.
-        :param transaction_date: The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD
-        :param line_items: Expense line items linked to this expense.
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param display_id: Id to be displayed.
         :param number: Number.
+        :param transaction_date: The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD
         :param account_id: The unique identifier for the ledger account that this expense should be credited to. Deprecated, use account instead.
         :param account: A flexible account reference that can represent a ledger account (GL account), a bank account, or an employee payable account, depending on the connector's requirements.
         :param supplier_id: The ID of the supplier this entity is linked to. Deprecated, use supplier instead.
@@ -1606,6 +1613,7 @@ class Expenses(BaseSDK):
         :param total_tax: Total tax amount applied to this transaction.
         :param total_amount: The total amount of the expense line item.
         :param tracking_categories: A list of linked tracking categories.
+        :param line_items: Expense line items linked to this expense.
         :param reference: Optional reference identifier for the transaction.
         :param source_document_url: URL link to a source document - shown as 'Go to [appName]' in the downstream app. Currently only supported for Xero.
         :param custom_fields:
@@ -1633,7 +1641,7 @@ class Expenses(BaseSDK):
             app_id=app_id,
             service_id=service_id,
             raw=raw,
-            expense=models.ExpenseInput(
+            expense_update_input=models.ExpenseUpdateInput(
                 display_id=display_id,
                 number=number,
                 transaction_date=transaction_date,
@@ -1670,7 +1678,7 @@ class Expenses(BaseSDK):
                     OptionalNullable[List[Nullable[models.LinkedTrackingCategory]]],
                 ),
                 line_items=utils.get_pydantic_model(
-                    line_items, List[models.ExpenseLineItemInput]
+                    line_items, Optional[List[models.ExpenseLineItemInput]]
                 ),
                 reference=reference,
                 source_document_url=source_document_url,
@@ -1703,7 +1711,11 @@ class Expenses(BaseSDK):
             ),
             security=self.sdk_configuration.security,
             get_serialized_body=lambda: utils.serialize_request_body(
-                request.expense, False, False, "json", models.ExpenseInput
+                request.expense_update_input,
+                False,
+                False,
+                "json",
+                models.ExpenseUpdateInput,
             ),
             timeout_ms=timeout_ms,
         )

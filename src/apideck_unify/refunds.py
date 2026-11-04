@@ -1266,7 +1266,6 @@ class Refunds(BaseSDK):
         self,
         *,
         id: str,
-        total_amount: Nullable[float],
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
@@ -1280,6 +1279,7 @@ class Refunds(BaseSDK):
         currency_rate: OptionalNullable[float] = UNSET,
         tax_inclusive: OptionalNullable[bool] = UNSET,
         sub_total: OptionalNullable[float] = UNSET,
+        total_amount: OptionalNullable[float] = UNSET,
         total_tax: OptionalNullable[float] = UNSET,
         refund_date: OptionalNullable[datetime] = UNSET,
         status: Optional[models.RefundStatus] = None,
@@ -1340,7 +1340,6 @@ class Refunds(BaseSDK):
         Update Refund
 
         :param id: ID of the record you are acting upon.
-        :param total_amount: The total amount of the transaction or record
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
@@ -1352,6 +1351,7 @@ class Refunds(BaseSDK):
         :param currency_rate: Currency Exchange Rate at the time entity was recorded/generated.
         :param tax_inclusive: Amounts are including tax
         :param sub_total: Subtotal amount, normally before tax.
+        :param total_amount: The total amount of the transaction or record
         :param total_tax: Total tax amount applied to this transaction.
         :param refund_date: The date of the refund - YYYY-MM-DDThh:mm:ss.sTZD
         :param status: Status of refund. Maps to: QBO (limited status), NetSuite CashRefund status, Sage Intacct state (draft/posted/voided), Zoho Books vis_state.
@@ -1397,7 +1397,7 @@ class Refunds(BaseSDK):
             app_id=app_id,
             service_id=service_id,
             raw=raw,
-            refund=models.RefundInput(
+            refund_update_input=models.RefundUpdateInput(
                 number=number,
                 customer=utils.get_pydantic_model(
                     customer, OptionalNullable[models.LinkedCustomerInput]
@@ -1474,7 +1474,11 @@ class Refunds(BaseSDK):
             ),
             security=self.sdk_configuration.security,
             get_serialized_body=lambda: utils.serialize_request_body(
-                request.refund, False, False, "json", models.RefundInput
+                request.refund_update_input,
+                False,
+                False,
+                "json",
+                models.RefundUpdateInput,
             ),
             timeout_ms=timeout_ms,
         )
@@ -1561,7 +1565,6 @@ class Refunds(BaseSDK):
         self,
         *,
         id: str,
-        total_amount: Nullable[float],
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
@@ -1575,6 +1578,7 @@ class Refunds(BaseSDK):
         currency_rate: OptionalNullable[float] = UNSET,
         tax_inclusive: OptionalNullable[bool] = UNSET,
         sub_total: OptionalNullable[float] = UNSET,
+        total_amount: OptionalNullable[float] = UNSET,
         total_tax: OptionalNullable[float] = UNSET,
         refund_date: OptionalNullable[datetime] = UNSET,
         status: Optional[models.RefundStatus] = None,
@@ -1635,7 +1639,6 @@ class Refunds(BaseSDK):
         Update Refund
 
         :param id: ID of the record you are acting upon.
-        :param total_amount: The total amount of the transaction or record
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
@@ -1647,6 +1650,7 @@ class Refunds(BaseSDK):
         :param currency_rate: Currency Exchange Rate at the time entity was recorded/generated.
         :param tax_inclusive: Amounts are including tax
         :param sub_total: Subtotal amount, normally before tax.
+        :param total_amount: The total amount of the transaction or record
         :param total_tax: Total tax amount applied to this transaction.
         :param refund_date: The date of the refund - YYYY-MM-DDThh:mm:ss.sTZD
         :param status: Status of refund. Maps to: QBO (limited status), NetSuite CashRefund status, Sage Intacct state (draft/posted/voided), Zoho Books vis_state.
@@ -1692,7 +1696,7 @@ class Refunds(BaseSDK):
             app_id=app_id,
             service_id=service_id,
             raw=raw,
-            refund=models.RefundInput(
+            refund_update_input=models.RefundUpdateInput(
                 number=number,
                 customer=utils.get_pydantic_model(
                     customer, OptionalNullable[models.LinkedCustomerInput]
@@ -1769,7 +1773,11 @@ class Refunds(BaseSDK):
             ),
             security=self.sdk_configuration.security,
             get_serialized_body=lambda: utils.serialize_request_body(
-                request.refund, False, False, "json", models.RefundInput
+                request.refund_update_input,
+                False,
+                False,
+                "json",
+                models.RefundUpdateInput,
             ),
             timeout_ms=timeout_ms,
         )

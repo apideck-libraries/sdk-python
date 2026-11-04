@@ -1234,14 +1234,6 @@ class ExpenseReports(BaseSDK):
         self,
         *,
         id: str,
-        employee: Union[
-            models.ExpenseReportEmployee, models.ExpenseReportEmployeeTypedDict
-        ],
-        transaction_date: Nullable[datetime],
-        line_items: Union[
-            List[models.ExpenseReportLineItemInput],
-            List[models.ExpenseReportLineItemInputTypedDict],
-        ],
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
@@ -1249,7 +1241,14 @@ class ExpenseReports(BaseSDK):
         display_id: OptionalNullable[str] = UNSET,
         number: OptionalNullable[str] = UNSET,
         title: OptionalNullable[str] = UNSET,
-        status: OptionalNullable[models.ExpenseReportStatus] = UNSET,
+        employee: Optional[
+            Union[
+                models.ExpenseReportUpdateInputEmployee,
+                models.ExpenseReportUpdateInputEmployeeTypedDict,
+            ]
+        ] = None,
+        status: OptionalNullable[models.ExpenseReportUpdateInputStatus] = UNSET,
+        transaction_date: OptionalNullable[datetime] = UNSET,
         posting_date: OptionalNullable[date] = UNSET,
         due_date: OptionalNullable[date] = UNSET,
         currency: OptionalNullable[models.Currency] = UNSET,
@@ -1269,8 +1268,17 @@ class ExpenseReports(BaseSDK):
             Union[models.LinkedLedgerAccount, models.LinkedLedgerAccountTypedDict]
         ] = UNSET,
         accounting_period: OptionalNullable[
-            Union[models.AccountingPeriod, models.AccountingPeriodTypedDict]
+            Union[
+                models.ExpenseReportUpdateInputAccountingPeriod,
+                models.ExpenseReportUpdateInputAccountingPeriodTypedDict,
+            ]
         ] = UNSET,
+        line_items: Optional[
+            Union[
+                List[models.ExpenseReportLineItemInput],
+                List[models.ExpenseReportLineItemInputTypedDict],
+            ]
+        ] = None,
         reference: OptionalNullable[str] = UNSET,
         subsidiary: OptionalNullable[
             Union[models.LinkedSubsidiaryInput, models.LinkedSubsidiaryInputTypedDict]
@@ -1283,7 +1291,10 @@ class ExpenseReports(BaseSDK):
         ] = UNSET,
         tax_inclusive: OptionalNullable[bool] = UNSET,
         approved_by: OptionalNullable[
-            Union[models.ApprovedBy, models.ApprovedByTypedDict]
+            Union[
+                models.ExpenseReportUpdateInputApprovedBy,
+                models.ExpenseReportUpdateInputApprovedByTypedDict,
+            ]
         ] = UNSET,
         custom_fields: Optional[
             Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
@@ -1302,9 +1313,6 @@ class ExpenseReports(BaseSDK):
         Update Expense Report
 
         :param id: ID of the record you are acting upon.
-        :param employee: The employee who submitted the expense report.
-        :param transaction_date: The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD
-        :param line_items: Expense line items linked to this expense report.
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
@@ -1312,7 +1320,9 @@ class ExpenseReports(BaseSDK):
         :param display_id: Id to be displayed.
         :param number: The expense report number.
         :param title: Title or purpose of the expense report.
+        :param employee: The employee who submitted the expense report.
         :param status: The status of the expense report.
+        :param transaction_date: The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD
         :param posting_date: The date the expense report was posted to the general ledger.
         :param due_date: Date when reimbursement is due.
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
@@ -1326,6 +1336,7 @@ class ExpenseReports(BaseSDK):
         :param location:
         :param account:
         :param accounting_period: The accounting period the expense report is posted to.
+        :param line_items: Expense line items linked to this expense report.
         :param reference: Optional reference identifier for the transaction.
         :param subsidiary:
         :param tracking_categories: A list of linked tracking categories.
@@ -1355,12 +1366,12 @@ class ExpenseReports(BaseSDK):
             app_id=app_id,
             service_id=service_id,
             raw=raw,
-            expense_report=models.ExpenseReportInput(
+            expense_report_update_input=models.ExpenseReportUpdateInput(
                 display_id=display_id,
                 number=number,
                 title=title,
                 employee=utils.get_pydantic_model(
-                    employee, models.ExpenseReportEmployee
+                    employee, Optional[models.ExpenseReportUpdateInputEmployee]
                 ),
                 status=status,
                 transaction_date=transaction_date,
@@ -1383,10 +1394,11 @@ class ExpenseReports(BaseSDK):
                     account, OptionalNullable[models.LinkedLedgerAccount]
                 ),
                 accounting_period=utils.get_pydantic_model(
-                    accounting_period, OptionalNullable[models.AccountingPeriod]
+                    accounting_period,
+                    OptionalNullable[models.ExpenseReportUpdateInputAccountingPeriod],
                 ),
                 line_items=utils.get_pydantic_model(
-                    line_items, List[models.ExpenseReportLineItemInput]
+                    line_items, Optional[List[models.ExpenseReportLineItemInput]]
                 ),
                 reference=reference,
                 subsidiary=utils.get_pydantic_model(
@@ -1398,7 +1410,8 @@ class ExpenseReports(BaseSDK):
                 ),
                 tax_inclusive=tax_inclusive,
                 approved_by=utils.get_pydantic_model(
-                    approved_by, OptionalNullable[models.ApprovedBy]
+                    approved_by,
+                    OptionalNullable[models.ExpenseReportUpdateInputApprovedBy],
                 ),
                 custom_fields=utils.get_pydantic_model(
                     custom_fields, Optional[List[models.CustomField]]
@@ -1428,7 +1441,11 @@ class ExpenseReports(BaseSDK):
             ),
             security=self.sdk_configuration.security,
             get_serialized_body=lambda: utils.serialize_request_body(
-                request.expense_report, False, False, "json", models.ExpenseReportInput
+                request.expense_report_update_input,
+                False,
+                False,
+                "json",
+                models.ExpenseReportUpdateInput,
             ),
             timeout_ms=timeout_ms,
         )
@@ -1515,14 +1532,6 @@ class ExpenseReports(BaseSDK):
         self,
         *,
         id: str,
-        employee: Union[
-            models.ExpenseReportEmployee, models.ExpenseReportEmployeeTypedDict
-        ],
-        transaction_date: Nullable[datetime],
-        line_items: Union[
-            List[models.ExpenseReportLineItemInput],
-            List[models.ExpenseReportLineItemInputTypedDict],
-        ],
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
@@ -1530,7 +1539,14 @@ class ExpenseReports(BaseSDK):
         display_id: OptionalNullable[str] = UNSET,
         number: OptionalNullable[str] = UNSET,
         title: OptionalNullable[str] = UNSET,
-        status: OptionalNullable[models.ExpenseReportStatus] = UNSET,
+        employee: Optional[
+            Union[
+                models.ExpenseReportUpdateInputEmployee,
+                models.ExpenseReportUpdateInputEmployeeTypedDict,
+            ]
+        ] = None,
+        status: OptionalNullable[models.ExpenseReportUpdateInputStatus] = UNSET,
+        transaction_date: OptionalNullable[datetime] = UNSET,
         posting_date: OptionalNullable[date] = UNSET,
         due_date: OptionalNullable[date] = UNSET,
         currency: OptionalNullable[models.Currency] = UNSET,
@@ -1550,8 +1566,17 @@ class ExpenseReports(BaseSDK):
             Union[models.LinkedLedgerAccount, models.LinkedLedgerAccountTypedDict]
         ] = UNSET,
         accounting_period: OptionalNullable[
-            Union[models.AccountingPeriod, models.AccountingPeriodTypedDict]
+            Union[
+                models.ExpenseReportUpdateInputAccountingPeriod,
+                models.ExpenseReportUpdateInputAccountingPeriodTypedDict,
+            ]
         ] = UNSET,
+        line_items: Optional[
+            Union[
+                List[models.ExpenseReportLineItemInput],
+                List[models.ExpenseReportLineItemInputTypedDict],
+            ]
+        ] = None,
         reference: OptionalNullable[str] = UNSET,
         subsidiary: OptionalNullable[
             Union[models.LinkedSubsidiaryInput, models.LinkedSubsidiaryInputTypedDict]
@@ -1564,7 +1589,10 @@ class ExpenseReports(BaseSDK):
         ] = UNSET,
         tax_inclusive: OptionalNullable[bool] = UNSET,
         approved_by: OptionalNullable[
-            Union[models.ApprovedBy, models.ApprovedByTypedDict]
+            Union[
+                models.ExpenseReportUpdateInputApprovedBy,
+                models.ExpenseReportUpdateInputApprovedByTypedDict,
+            ]
         ] = UNSET,
         custom_fields: Optional[
             Union[List[models.CustomField], List[models.CustomFieldTypedDict]]
@@ -1583,9 +1611,6 @@ class ExpenseReports(BaseSDK):
         Update Expense Report
 
         :param id: ID of the record you are acting upon.
-        :param employee: The employee who submitted the expense report.
-        :param transaction_date: The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD
-        :param line_items: Expense line items linked to this expense report.
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
@@ -1593,7 +1618,9 @@ class ExpenseReports(BaseSDK):
         :param display_id: Id to be displayed.
         :param number: The expense report number.
         :param title: Title or purpose of the expense report.
+        :param employee: The employee who submitted the expense report.
         :param status: The status of the expense report.
+        :param transaction_date: The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD
         :param posting_date: The date the expense report was posted to the general ledger.
         :param due_date: Date when reimbursement is due.
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
@@ -1607,6 +1634,7 @@ class ExpenseReports(BaseSDK):
         :param location:
         :param account:
         :param accounting_period: The accounting period the expense report is posted to.
+        :param line_items: Expense line items linked to this expense report.
         :param reference: Optional reference identifier for the transaction.
         :param subsidiary:
         :param tracking_categories: A list of linked tracking categories.
@@ -1636,12 +1664,12 @@ class ExpenseReports(BaseSDK):
             app_id=app_id,
             service_id=service_id,
             raw=raw,
-            expense_report=models.ExpenseReportInput(
+            expense_report_update_input=models.ExpenseReportUpdateInput(
                 display_id=display_id,
                 number=number,
                 title=title,
                 employee=utils.get_pydantic_model(
-                    employee, models.ExpenseReportEmployee
+                    employee, Optional[models.ExpenseReportUpdateInputEmployee]
                 ),
                 status=status,
                 transaction_date=transaction_date,
@@ -1664,10 +1692,11 @@ class ExpenseReports(BaseSDK):
                     account, OptionalNullable[models.LinkedLedgerAccount]
                 ),
                 accounting_period=utils.get_pydantic_model(
-                    accounting_period, OptionalNullable[models.AccountingPeriod]
+                    accounting_period,
+                    OptionalNullable[models.ExpenseReportUpdateInputAccountingPeriod],
                 ),
                 line_items=utils.get_pydantic_model(
-                    line_items, List[models.ExpenseReportLineItemInput]
+                    line_items, Optional[List[models.ExpenseReportLineItemInput]]
                 ),
                 reference=reference,
                 subsidiary=utils.get_pydantic_model(
@@ -1679,7 +1708,8 @@ class ExpenseReports(BaseSDK):
                 ),
                 tax_inclusive=tax_inclusive,
                 approved_by=utils.get_pydantic_model(
-                    approved_by, OptionalNullable[models.ApprovedBy]
+                    approved_by,
+                    OptionalNullable[models.ExpenseReportUpdateInputApprovedBy],
                 ),
                 custom_fields=utils.get_pydantic_model(
                     custom_fields, Optional[List[models.CustomField]]
@@ -1709,7 +1739,11 @@ class ExpenseReports(BaseSDK):
             ),
             security=self.sdk_configuration.security,
             get_serialized_body=lambda: utils.serialize_request_body(
-                request.expense_report, False, False, "json", models.ExpenseReportInput
+                request.expense_report_update_input,
+                False,
+                False,
+                "json",
+                models.ExpenseReportUpdateInput,
             ),
             timeout_ms=timeout_ms,
         )

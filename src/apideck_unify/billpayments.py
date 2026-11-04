@@ -1200,14 +1200,13 @@ class BillPayments(BaseSDK):
         self,
         *,
         id: str,
-        total_amount: Nullable[float],
-        transaction_date: Nullable[datetime],
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
         currency: OptionalNullable[models.Currency] = UNSET,
         currency_rate: OptionalNullable[float] = UNSET,
+        total_amount: OptionalNullable[float] = UNSET,
         reference: OptionalNullable[str] = UNSET,
         payment_method: OptionalNullable[str] = UNSET,
         payment_method_reference: OptionalNullable[str] = UNSET,
@@ -1215,6 +1214,7 @@ class BillPayments(BaseSDK):
         account: OptionalNullable[
             Union[models.LinkedLedgerAccount, models.LinkedLedgerAccountTypedDict]
         ] = UNSET,
+        transaction_date: OptionalNullable[datetime] = UNSET,
         supplier: OptionalNullable[
             Union[models.LinkedSupplierInput, models.LinkedSupplierInputTypedDict]
         ] = UNSET,
@@ -1224,11 +1224,11 @@ class BillPayments(BaseSDK):
         ] = UNSET,
         reconciled: OptionalNullable[bool] = UNSET,
         status: Optional[models.PaymentStatus] = None,
-        type_: Optional[models.BillPaymentType] = None,
+        type_: Optional[models.BillPaymentUpdateInputBillPaymentType] = None,
         allocations: Optional[
             Union[
-                List[models.BillPaymentAllocations],
-                List[models.BillPaymentAllocationsTypedDict],
+                List[models.BillPaymentUpdateInputAllocations],
+                List[models.BillPaymentUpdateInputAllocationsTypedDict],
             ]
         ] = None,
         note: OptionalNullable[str] = UNSET,
@@ -1257,19 +1257,19 @@ class BillPayments(BaseSDK):
         Update Bill Payment
 
         :param id: ID of the record you are acting upon.
-        :param total_amount: The total amount of the transaction or record
-        :param transaction_date: The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
         :param currency_rate: Currency Exchange Rate at the time entity was recorded/generated.
+        :param total_amount: The total amount of the transaction or record
         :param reference: Optional transaction reference message ie: Debit remittance detail.
         :param payment_method: Payment method used for the transaction, such as cash, credit card, bank transfer, or check
         :param payment_method_reference: Optional reference message returned by payment method on processing
         :param payment_method_id: A unique identifier for an object.
         :param account:
+        :param transaction_date: The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD
         :param supplier: The supplier this entity is linked to.
         :param company_id: The company ID the transaction belongs to
         :param subsidiary:
@@ -1305,7 +1305,7 @@ class BillPayments(BaseSDK):
             app_id=app_id,
             service_id=service_id,
             raw=raw,
-            bill_payment=models.BillPaymentInput(
+            bill_payment_update_input=models.BillPaymentUpdateInput(
                 currency=currency,
                 currency_rate=currency_rate,
                 total_amount=total_amount,
@@ -1328,7 +1328,8 @@ class BillPayments(BaseSDK):
                 status=status,
                 type=type_,
                 allocations=utils.get_pydantic_model(
-                    allocations, Optional[List[models.BillPaymentAllocations]]
+                    allocations,
+                    Optional[List[models.BillPaymentUpdateInputAllocations]],
                 ),
                 note=note,
                 number=number,
@@ -1365,7 +1366,11 @@ class BillPayments(BaseSDK):
             ),
             security=self.sdk_configuration.security,
             get_serialized_body=lambda: utils.serialize_request_body(
-                request.bill_payment, False, False, "json", models.BillPaymentInput
+                request.bill_payment_update_input,
+                False,
+                False,
+                "json",
+                models.BillPaymentUpdateInput,
             ),
             timeout_ms=timeout_ms,
         )
@@ -1452,14 +1457,13 @@ class BillPayments(BaseSDK):
         self,
         *,
         id: str,
-        total_amount: Nullable[float],
-        transaction_date: Nullable[datetime],
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
         currency: OptionalNullable[models.Currency] = UNSET,
         currency_rate: OptionalNullable[float] = UNSET,
+        total_amount: OptionalNullable[float] = UNSET,
         reference: OptionalNullable[str] = UNSET,
         payment_method: OptionalNullable[str] = UNSET,
         payment_method_reference: OptionalNullable[str] = UNSET,
@@ -1467,6 +1471,7 @@ class BillPayments(BaseSDK):
         account: OptionalNullable[
             Union[models.LinkedLedgerAccount, models.LinkedLedgerAccountTypedDict]
         ] = UNSET,
+        transaction_date: OptionalNullable[datetime] = UNSET,
         supplier: OptionalNullable[
             Union[models.LinkedSupplierInput, models.LinkedSupplierInputTypedDict]
         ] = UNSET,
@@ -1476,11 +1481,11 @@ class BillPayments(BaseSDK):
         ] = UNSET,
         reconciled: OptionalNullable[bool] = UNSET,
         status: Optional[models.PaymentStatus] = None,
-        type_: Optional[models.BillPaymentType] = None,
+        type_: Optional[models.BillPaymentUpdateInputBillPaymentType] = None,
         allocations: Optional[
             Union[
-                List[models.BillPaymentAllocations],
-                List[models.BillPaymentAllocationsTypedDict],
+                List[models.BillPaymentUpdateInputAllocations],
+                List[models.BillPaymentUpdateInputAllocationsTypedDict],
             ]
         ] = None,
         note: OptionalNullable[str] = UNSET,
@@ -1509,19 +1514,19 @@ class BillPayments(BaseSDK):
         Update Bill Payment
 
         :param id: ID of the record you are acting upon.
-        :param total_amount: The total amount of the transaction or record
-        :param transaction_date: The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
         :param currency_rate: Currency Exchange Rate at the time entity was recorded/generated.
+        :param total_amount: The total amount of the transaction or record
         :param reference: Optional transaction reference message ie: Debit remittance detail.
         :param payment_method: Payment method used for the transaction, such as cash, credit card, bank transfer, or check
         :param payment_method_reference: Optional reference message returned by payment method on processing
         :param payment_method_id: A unique identifier for an object.
         :param account:
+        :param transaction_date: The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD
         :param supplier: The supplier this entity is linked to.
         :param company_id: The company ID the transaction belongs to
         :param subsidiary:
@@ -1557,7 +1562,7 @@ class BillPayments(BaseSDK):
             app_id=app_id,
             service_id=service_id,
             raw=raw,
-            bill_payment=models.BillPaymentInput(
+            bill_payment_update_input=models.BillPaymentUpdateInput(
                 currency=currency,
                 currency_rate=currency_rate,
                 total_amount=total_amount,
@@ -1580,7 +1585,8 @@ class BillPayments(BaseSDK):
                 status=status,
                 type=type_,
                 allocations=utils.get_pydantic_model(
-                    allocations, Optional[List[models.BillPaymentAllocations]]
+                    allocations,
+                    Optional[List[models.BillPaymentUpdateInputAllocations]],
                 ),
                 note=note,
                 number=number,
@@ -1617,7 +1623,11 @@ class BillPayments(BaseSDK):
             ),
             security=self.sdk_configuration.security,
             get_serialized_body=lambda: utils.serialize_request_body(
-                request.bill_payment, False, False, "json", models.BillPaymentInput
+                request.bill_payment_update_input,
+                False,
+                False,
+                "json",
+                models.BillPaymentUpdateInput,
             ),
             timeout_ms=timeout_ms,
         )

@@ -1226,8 +1226,6 @@ class Payments(BaseSDK):
         self,
         *,
         id: str,
-        total_amount: Nullable[float],
-        transaction_date: Nullable[datetime],
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
@@ -1235,6 +1233,7 @@ class Payments(BaseSDK):
         raw: Optional[bool] = False,
         currency: OptionalNullable[models.Currency] = UNSET,
         currency_rate: OptionalNullable[float] = UNSET,
+        total_amount: OptionalNullable[float] = UNSET,
         reference: OptionalNullable[str] = UNSET,
         payment_method: OptionalNullable[str] = UNSET,
         payment_method_reference: OptionalNullable[str] = UNSET,
@@ -1244,6 +1243,7 @@ class Payments(BaseSDK):
         account: OptionalNullable[
             Union[models.LinkedLedgerAccount, models.LinkedLedgerAccountTypedDict]
         ] = UNSET,
+        transaction_date: OptionalNullable[datetime] = UNSET,
         customer: OptionalNullable[
             Union[models.LinkedCustomerInput, models.LinkedCustomerInputTypedDict]
         ] = UNSET,
@@ -1289,8 +1289,6 @@ class Payments(BaseSDK):
         Update Payment
 
         :param id: ID of the record you are acting upon.
-        :param total_amount: The total amount of the transaction or record
-        :param transaction_date: The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
@@ -1298,6 +1296,7 @@ class Payments(BaseSDK):
         :param raw: Include raw response. Mostly used for debugging purposes
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
         :param currency_rate: Currency Exchange Rate at the time entity was recorded/generated.
+        :param total_amount: The total amount of the transaction or record
         :param reference: Optional transaction reference message ie: Debit remittance detail.
         :param payment_method: Payment method used for the transaction, such as cash, credit card, bank transfer, or check
         :param payment_method_reference: Optional reference message returned by payment method on processing
@@ -1305,6 +1304,7 @@ class Payments(BaseSDK):
         :param accounts_receivable_account_type: Type of accounts receivable account.
         :param accounts_receivable_account_id: Unique identifier for the account to allocate payment to.
         :param account:
+        :param transaction_date: The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD
         :param customer: The customer this entity is linked to.
         :param supplier: The supplier this entity is linked to.
         :param company_id: The company ID the transaction belongs to
@@ -1342,7 +1342,7 @@ class Payments(BaseSDK):
             service_id=service_id,
             company_id_param=company_id_param,
             raw=raw,
-            payment=models.PaymentInput(
+            payment_update_input=models.PaymentUpdateInput(
                 currency=currency,
                 currency_rate=currency_rate,
                 total_amount=total_amount,
@@ -1407,7 +1407,11 @@ class Payments(BaseSDK):
             ),
             security=self.sdk_configuration.security,
             get_serialized_body=lambda: utils.serialize_request_body(
-                request.payment, False, False, "json", models.PaymentInput
+                request.payment_update_input,
+                False,
+                False,
+                "json",
+                models.PaymentUpdateInput,
             ),
             timeout_ms=timeout_ms,
         )
@@ -1494,8 +1498,6 @@ class Payments(BaseSDK):
         self,
         *,
         id: str,
-        total_amount: Nullable[float],
-        transaction_date: Nullable[datetime],
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
@@ -1503,6 +1505,7 @@ class Payments(BaseSDK):
         raw: Optional[bool] = False,
         currency: OptionalNullable[models.Currency] = UNSET,
         currency_rate: OptionalNullable[float] = UNSET,
+        total_amount: OptionalNullable[float] = UNSET,
         reference: OptionalNullable[str] = UNSET,
         payment_method: OptionalNullable[str] = UNSET,
         payment_method_reference: OptionalNullable[str] = UNSET,
@@ -1512,6 +1515,7 @@ class Payments(BaseSDK):
         account: OptionalNullable[
             Union[models.LinkedLedgerAccount, models.LinkedLedgerAccountTypedDict]
         ] = UNSET,
+        transaction_date: OptionalNullable[datetime] = UNSET,
         customer: OptionalNullable[
             Union[models.LinkedCustomerInput, models.LinkedCustomerInputTypedDict]
         ] = UNSET,
@@ -1557,8 +1561,6 @@ class Payments(BaseSDK):
         Update Payment
 
         :param id: ID of the record you are acting upon.
-        :param total_amount: The total amount of the transaction or record
-        :param transaction_date: The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
@@ -1566,6 +1568,7 @@ class Payments(BaseSDK):
         :param raw: Include raw response. Mostly used for debugging purposes
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
         :param currency_rate: Currency Exchange Rate at the time entity was recorded/generated.
+        :param total_amount: The total amount of the transaction or record
         :param reference: Optional transaction reference message ie: Debit remittance detail.
         :param payment_method: Payment method used for the transaction, such as cash, credit card, bank transfer, or check
         :param payment_method_reference: Optional reference message returned by payment method on processing
@@ -1573,6 +1576,7 @@ class Payments(BaseSDK):
         :param accounts_receivable_account_type: Type of accounts receivable account.
         :param accounts_receivable_account_id: Unique identifier for the account to allocate payment to.
         :param account:
+        :param transaction_date: The date of the transaction - YYYY:MM::DDThh:mm:ss.sTZD
         :param customer: The customer this entity is linked to.
         :param supplier: The supplier this entity is linked to.
         :param company_id: The company ID the transaction belongs to
@@ -1610,7 +1614,7 @@ class Payments(BaseSDK):
             service_id=service_id,
             company_id_param=company_id_param,
             raw=raw,
-            payment=models.PaymentInput(
+            payment_update_input=models.PaymentUpdateInput(
                 currency=currency,
                 currency_rate=currency_rate,
                 total_amount=total_amount,
@@ -1675,7 +1679,11 @@ class Payments(BaseSDK):
             ),
             security=self.sdk_configuration.security,
             get_serialized_body=lambda: utils.serialize_request_body(
-                request.payment, False, False, "json", models.PaymentInput
+                request.payment_update_input,
+                False,
+                False,
+                "json",
+                models.PaymentUpdateInput,
             ),
             timeout_ms=timeout_ms,
         )

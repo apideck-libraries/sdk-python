@@ -1266,19 +1266,19 @@ class Projects(BaseSDK):
         self,
         *,
         id: str,
-        name: str,
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         company_id_param: Optional[str] = None,
         raw: Optional[bool] = False,
+        name: Optional[str] = None,
         display_id: OptionalNullable[str] = UNSET,
         reference_id: OptionalNullable[str] = UNSET,
         description: OptionalNullable[str] = UNSET,
-        status: OptionalNullable[models.ProjectProjectStatus] = UNSET,
+        status: OptionalNullable[models.ProjectUpdateInputProjectStatus] = UNSET,
         active: OptionalNullable[bool] = UNSET,
-        project_type: OptionalNullable[models.ProjectType] = UNSET,
-        priority: OptionalNullable[models.Priority] = UNSET,
+        project_type: OptionalNullable[models.ProjectUpdateInputProjectType] = UNSET,
+        priority: OptionalNullable[models.ProjectUpdateInputPriority] = UNSET,
         completion_percentage: OptionalNullable[float] = UNSET,
         start_date: OptionalNullable[date] = UNSET,
         end_date: OptionalNullable[date] = UNSET,
@@ -1287,21 +1287,29 @@ class Projects(BaseSDK):
             Union[models.LinkedCustomerInput, models.LinkedCustomerInputTypedDict]
         ] = UNSET,
         department: OptionalNullable[
-            Union[models.ProjectDepartment, models.ProjectDepartmentTypedDict]
+            Union[
+                models.ProjectUpdateInputDepartment,
+                models.ProjectUpdateInputDepartmentTypedDict,
+            ]
         ] = UNSET,
         company_id: OptionalNullable[str] = UNSET,
         owner_id: OptionalNullable[str] = UNSET,
         parent_project: OptionalNullable[
-            Union[models.ParentProject, models.ParentProjectTypedDict]
+            Union[
+                models.ProjectUpdateInputParentProject,
+                models.ProjectUpdateInputParentProjectTypedDict,
+            ]
         ] = UNSET,
         currency: OptionalNullable[models.Currency] = UNSET,
         budget_amount: OptionalNullable[float] = UNSET,
         approved_amount: OptionalNullable[float] = UNSET,
         budget_hours: OptionalNullable[float] = UNSET,
         hourly_rate: OptionalNullable[float] = UNSET,
-        billing_method: OptionalNullable[models.BillingMethod] = UNSET,
+        billing_method: OptionalNullable[
+            models.ProjectUpdateInputBillingMethod
+        ] = UNSET,
         is_billable: OptionalNullable[bool] = True,
-        phase: OptionalNullable[models.ProjectPhase] = UNSET,
+        phase: OptionalNullable[models.ProjectUpdateInputProjectPhase] = UNSET,
         tax_rate: Optional[
             Union[models.LinkedTaxRateInput, models.LinkedTaxRateInputTypedDict]
         ] = None,
@@ -1315,7 +1323,9 @@ class Projects(BaseSDK):
         notes: OptionalNullable[str] = UNSET,
         contract_number: OptionalNullable[str] = UNSET,
         profit_margin: OptionalNullable[float] = UNSET,
-        schedule_status: OptionalNullable[models.ScheduleStatus] = UNSET,
+        schedule_status: OptionalNullable[
+            models.ProjectUpdateInputScheduleStatus
+        ] = UNSET,
         addresses: Optional[
             Union[List[models.Address], List[models.AddressTypedDict]]
         ] = None,
@@ -1334,12 +1344,12 @@ class Projects(BaseSDK):
         Update project
 
         :param id: ID of the record you are acting upon.
-        :param name: Name of the project
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param company_id_param: The ID of the company to scope requests to. For connectors that support multi-company, this overrides the default company configured in connection settings.
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param name: Name of the project
         :param display_id: User-friendly project identifier
         :param reference_id: External reference identifier for the project
         :param description: Detailed description of the project
@@ -1397,7 +1407,7 @@ class Projects(BaseSDK):
             service_id=service_id,
             company_id_param=company_id_param,
             raw=raw,
-            project=models.ProjectInput(
+            project_update_input=models.ProjectUpdateInput(
                 name=name,
                 display_id=display_id,
                 reference_id=reference_id,
@@ -1414,12 +1424,13 @@ class Projects(BaseSDK):
                     customer, OptionalNullable[models.LinkedCustomerInput]
                 ),
                 department=utils.get_pydantic_model(
-                    department, OptionalNullable[models.ProjectDepartment]
+                    department, OptionalNullable[models.ProjectUpdateInputDepartment]
                 ),
                 company_id=company_id,
                 owner_id=owner_id,
                 parent_project=utils.get_pydantic_model(
-                    parent_project, OptionalNullable[models.ParentProject]
+                    parent_project,
+                    OptionalNullable[models.ProjectUpdateInputParentProject],
                 ),
                 currency=currency,
                 budget_amount=budget_amount,
@@ -1470,7 +1481,11 @@ class Projects(BaseSDK):
             ),
             security=self.sdk_configuration.security,
             get_serialized_body=lambda: utils.serialize_request_body(
-                request.project, False, False, "json", models.ProjectInput
+                request.project_update_input,
+                False,
+                False,
+                "json",
+                models.ProjectUpdateInput,
             ),
             timeout_ms=timeout_ms,
         )
@@ -1557,19 +1572,19 @@ class Projects(BaseSDK):
         self,
         *,
         id: str,
-        name: str,
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         company_id_param: Optional[str] = None,
         raw: Optional[bool] = False,
+        name: Optional[str] = None,
         display_id: OptionalNullable[str] = UNSET,
         reference_id: OptionalNullable[str] = UNSET,
         description: OptionalNullable[str] = UNSET,
-        status: OptionalNullable[models.ProjectProjectStatus] = UNSET,
+        status: OptionalNullable[models.ProjectUpdateInputProjectStatus] = UNSET,
         active: OptionalNullable[bool] = UNSET,
-        project_type: OptionalNullable[models.ProjectType] = UNSET,
-        priority: OptionalNullable[models.Priority] = UNSET,
+        project_type: OptionalNullable[models.ProjectUpdateInputProjectType] = UNSET,
+        priority: OptionalNullable[models.ProjectUpdateInputPriority] = UNSET,
         completion_percentage: OptionalNullable[float] = UNSET,
         start_date: OptionalNullable[date] = UNSET,
         end_date: OptionalNullable[date] = UNSET,
@@ -1578,21 +1593,29 @@ class Projects(BaseSDK):
             Union[models.LinkedCustomerInput, models.LinkedCustomerInputTypedDict]
         ] = UNSET,
         department: OptionalNullable[
-            Union[models.ProjectDepartment, models.ProjectDepartmentTypedDict]
+            Union[
+                models.ProjectUpdateInputDepartment,
+                models.ProjectUpdateInputDepartmentTypedDict,
+            ]
         ] = UNSET,
         company_id: OptionalNullable[str] = UNSET,
         owner_id: OptionalNullable[str] = UNSET,
         parent_project: OptionalNullable[
-            Union[models.ParentProject, models.ParentProjectTypedDict]
+            Union[
+                models.ProjectUpdateInputParentProject,
+                models.ProjectUpdateInputParentProjectTypedDict,
+            ]
         ] = UNSET,
         currency: OptionalNullable[models.Currency] = UNSET,
         budget_amount: OptionalNullable[float] = UNSET,
         approved_amount: OptionalNullable[float] = UNSET,
         budget_hours: OptionalNullable[float] = UNSET,
         hourly_rate: OptionalNullable[float] = UNSET,
-        billing_method: OptionalNullable[models.BillingMethod] = UNSET,
+        billing_method: OptionalNullable[
+            models.ProjectUpdateInputBillingMethod
+        ] = UNSET,
         is_billable: OptionalNullable[bool] = True,
-        phase: OptionalNullable[models.ProjectPhase] = UNSET,
+        phase: OptionalNullable[models.ProjectUpdateInputProjectPhase] = UNSET,
         tax_rate: Optional[
             Union[models.LinkedTaxRateInput, models.LinkedTaxRateInputTypedDict]
         ] = None,
@@ -1606,7 +1629,9 @@ class Projects(BaseSDK):
         notes: OptionalNullable[str] = UNSET,
         contract_number: OptionalNullable[str] = UNSET,
         profit_margin: OptionalNullable[float] = UNSET,
-        schedule_status: OptionalNullable[models.ScheduleStatus] = UNSET,
+        schedule_status: OptionalNullable[
+            models.ProjectUpdateInputScheduleStatus
+        ] = UNSET,
         addresses: Optional[
             Union[List[models.Address], List[models.AddressTypedDict]]
         ] = None,
@@ -1625,12 +1650,12 @@ class Projects(BaseSDK):
         Update project
 
         :param id: ID of the record you are acting upon.
-        :param name: Name of the project
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param company_id_param: The ID of the company to scope requests to. For connectors that support multi-company, this overrides the default company configured in connection settings.
         :param raw: Include raw response. Mostly used for debugging purposes
+        :param name: Name of the project
         :param display_id: User-friendly project identifier
         :param reference_id: External reference identifier for the project
         :param description: Detailed description of the project
@@ -1688,7 +1713,7 @@ class Projects(BaseSDK):
             service_id=service_id,
             company_id_param=company_id_param,
             raw=raw,
-            project=models.ProjectInput(
+            project_update_input=models.ProjectUpdateInput(
                 name=name,
                 display_id=display_id,
                 reference_id=reference_id,
@@ -1705,12 +1730,13 @@ class Projects(BaseSDK):
                     customer, OptionalNullable[models.LinkedCustomerInput]
                 ),
                 department=utils.get_pydantic_model(
-                    department, OptionalNullable[models.ProjectDepartment]
+                    department, OptionalNullable[models.ProjectUpdateInputDepartment]
                 ),
                 company_id=company_id,
                 owner_id=owner_id,
                 parent_project=utils.get_pydantic_model(
-                    parent_project, OptionalNullable[models.ParentProject]
+                    parent_project,
+                    OptionalNullable[models.ProjectUpdateInputParentProject],
                 ),
                 currency=currency,
                 budget_amount=budget_amount,
@@ -1761,7 +1787,11 @@ class Projects(BaseSDK):
             ),
             security=self.sdk_configuration.security,
             get_serialized_body=lambda: utils.serialize_request_body(
-                request.project, False, False, "json", models.ProjectInput
+                request.project_update_input,
+                False,
+                False,
+                "json",
+                models.ProjectUpdateInput,
             ),
             timeout_ms=timeout_ms,
         )

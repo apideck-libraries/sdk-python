@@ -2,7 +2,10 @@
 
 from __future__ import annotations
 from .httpmetadata import HTTPMetadata, HTTPMetadataTypedDict
-from .salesreceipt_input import SalesReceiptInput, SalesReceiptInputTypedDict
+from .salesreceiptupdateinput import (
+    SalesReceiptUpdateInput,
+    SalesReceiptUpdateInputTypedDict,
+)
 from .unexpectederrorresponse import (
     UnexpectedErrorResponse,
     UnexpectedErrorResponseTypedDict,
@@ -50,7 +53,7 @@ class AccountingSalesReceiptsUpdateGlobals(BaseModel):
 class AccountingSalesReceiptsUpdateRequestTypedDict(TypedDict):
     id: str
     r"""ID of the record you are acting upon."""
-    sales_receipt: SalesReceiptInputTypedDict
+    sales_receipt_update_input: SalesReceiptUpdateInputTypedDict
     consumer_id: NotRequired[str]
     r"""ID of the consumer which you want to get or push data from"""
     app_id: NotRequired[str]
@@ -69,8 +72,8 @@ class AccountingSalesReceiptsUpdateRequest(BaseModel):
     ]
     r"""ID of the record you are acting upon."""
 
-    sales_receipt: Annotated[
-        SalesReceiptInput,
+    sales_receipt_update_input: Annotated[
+        SalesReceiptUpdateInput,
         FieldMetadata(request=RequestMetadata(media_type="application/json")),
     ]
 

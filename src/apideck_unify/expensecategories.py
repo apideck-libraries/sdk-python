@@ -1083,15 +1083,15 @@ class ExpenseCategories(BaseSDK):
         self,
         *,
         id: str,
-        name: str,
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
         display_id: OptionalNullable[str] = UNSET,
+        name: Optional[str] = None,
         code: OptionalNullable[str] = UNSET,
         description: OptionalNullable[str] = UNSET,
-        status: OptionalNullable[models.ExpenseCategoryStatus] = UNSET,
+        status: OptionalNullable[models.ExpenseCategoryUpdateInputStatus] = UNSET,
         account: OptionalNullable[
             Union[models.LinkedLedgerAccount, models.LinkedLedgerAccountTypedDict]
         ] = UNSET,
@@ -1117,12 +1117,12 @@ class ExpenseCategories(BaseSDK):
         Update Expense Category
 
         :param id: ID of the record you are acting upon.
-        :param name: The name of the expense category.
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param display_id: Id to be displayed.
+        :param name: The name of the expense category.
         :param code: The code or external identifier of the expense category.
         :param description: The description of the expense category.
         :param status: The status of the expense category.
@@ -1154,7 +1154,7 @@ class ExpenseCategories(BaseSDK):
             app_id=app_id,
             service_id=service_id,
             raw=raw,
-            expense_category=models.ExpenseCategoryInput(
+            expense_category_update_input=models.ExpenseCategoryUpdateInput(
                 display_id=display_id,
                 name=name,
                 code=code,
@@ -1196,11 +1196,11 @@ class ExpenseCategories(BaseSDK):
             ),
             security=self.sdk_configuration.security,
             get_serialized_body=lambda: utils.serialize_request_body(
-                request.expense_category,
+                request.expense_category_update_input,
                 False,
                 False,
                 "json",
-                models.ExpenseCategoryInput,
+                models.ExpenseCategoryUpdateInput,
             ),
             timeout_ms=timeout_ms,
         )
@@ -1287,15 +1287,15 @@ class ExpenseCategories(BaseSDK):
         self,
         *,
         id: str,
-        name: str,
         consumer_id: Optional[str] = None,
         app_id: Optional[str] = None,
         service_id: Optional[str] = None,
         raw: Optional[bool] = False,
         display_id: OptionalNullable[str] = UNSET,
+        name: Optional[str] = None,
         code: OptionalNullable[str] = UNSET,
         description: OptionalNullable[str] = UNSET,
-        status: OptionalNullable[models.ExpenseCategoryStatus] = UNSET,
+        status: OptionalNullable[models.ExpenseCategoryUpdateInputStatus] = UNSET,
         account: OptionalNullable[
             Union[models.LinkedLedgerAccount, models.LinkedLedgerAccountTypedDict]
         ] = UNSET,
@@ -1321,12 +1321,12 @@ class ExpenseCategories(BaseSDK):
         Update Expense Category
 
         :param id: ID of the record you are acting upon.
-        :param name: The name of the expense category.
         :param consumer_id: ID of the consumer which you want to get or push data from
         :param app_id: The ID of your Unify application
         :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
         :param raw: Include raw response. Mostly used for debugging purposes
         :param display_id: Id to be displayed.
+        :param name: The name of the expense category.
         :param code: The code or external identifier of the expense category.
         :param description: The description of the expense category.
         :param status: The status of the expense category.
@@ -1358,7 +1358,7 @@ class ExpenseCategories(BaseSDK):
             app_id=app_id,
             service_id=service_id,
             raw=raw,
-            expense_category=models.ExpenseCategoryInput(
+            expense_category_update_input=models.ExpenseCategoryUpdateInput(
                 display_id=display_id,
                 name=name,
                 code=code,
@@ -1400,11 +1400,11 @@ class ExpenseCategories(BaseSDK):
             ),
             security=self.sdk_configuration.security,
             get_serialized_body=lambda: utils.serialize_request_body(
-                request.expense_category,
+                request.expense_category_update_input,
                 False,
                 False,
                 "json",
-                models.ExpenseCategoryInput,
+                models.ExpenseCategoryUpdateInput,
             ),
             timeout_ms=timeout_ms,
         )
