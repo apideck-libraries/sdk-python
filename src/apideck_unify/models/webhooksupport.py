@@ -33,6 +33,13 @@ class ManagedVia(str, Enum, metaclass=utils.OpenEnumMeta):
     API = "api"
 
 
+class TargetURLScope(str, Enum, metaclass=utils.OpenEnumMeta):
+    r"""Where the vendor stores the webhook target URL. `app` means one URL per vendor developer app, which customers on Apideck's own credentials cannot configure. `tenant` means each customer's vendor account holds its own URL."""
+
+    APP = "app"
+    TENANT = "tenant"
+
+
 class Unit(str, Enum, metaclass=utils.OpenEnumMeta):
     r"""The window unit for the rate."""
 
@@ -113,6 +120,10 @@ class WebhookSupportTypedDict(TypedDict):
     r"""How the subscription is managed in the downstream."""
     shared_with: NotRequired[List[str]]
     r"""Service IDs of connectors that receive events from this connector's webhook URL when the URL's own connector has no callable connection for the event. Connectors listed here must use the same webhook event mapping."""
+    target_url_scope: NotRequired[TargetURLScope]
+    r"""Where the vendor stores the webhook target URL. `app` means one URL per vendor developer app, which customers on Apideck's own credentials cannot configure. `tenant` means each customer's vendor account holds its own URL."""
+    vendor_app_url: NotRequired[bool]
+    r"""Whether Unify accepts webhook URLs scoped to a vendor developer app for this connector, rather than to one Apideck application. Events delivered to such a URL reach every connection that the vendor app authorized."""
     virtual_webhooks: NotRequired[VirtualWebhooksTypedDict]
     r"""Virtual webhook config for the connector."""
 
@@ -135,6 +146,14 @@ class WebhookSupport(BaseModel):
 
     shared_with: Optional[List[str]] = None
     r"""Service IDs of connectors that receive events from this connector's webhook URL when the URL's own connector has no callable connection for the event. Connectors listed here must use the same webhook event mapping."""
+
+    target_url_scope: Annotated[
+        Optional[TargetURLScope], PlainValidator(validate_open_enum(False))
+    ] = None
+    r"""Where the vendor stores the webhook target URL. `app` means one URL per vendor developer app, which customers on Apideck's own credentials cannot configure. `tenant` means each customer's vendor account holds its own URL."""
+
+    vendor_app_url: Optional[bool] = None
+    r"""Whether Unify accepts webhook URLs scoped to a vendor developer app for this connector, rather than to one Apideck application. Events delivered to such a URL reach every connection that the vendor app authorized."""
 
     virtual_webhooks: Optional[VirtualWebhooks] = None
     r"""Virtual webhook config for the connector."""
@@ -162,6 +181,15 @@ class WebhookSupport(BaseModel):
         if isinstance(value, str):
             try:
                 return models.ManagedVia(value)
+            except ValueError:
+                return value
+        return value
+
+    @field_serializer("target_url_scope")
+    def serialize_target_url_scope(self, value):
+        if isinstance(value, str):
+            try:
+                return models.TargetURLScope(value)
             except ValueError:
                 return value
         return value
