@@ -876,6 +876,7 @@ with Apideck(
 * [imports](docs/sdks/connections/README.md#imports) - Import connection
 * [migrate](docs/sdks/connections/README.md#migrate) - Migrate connection
 * [token](docs/sdks/connections/README.md#token) - Authorize Access Token
+* [confirm](docs/sdks/connections/README.md#confirm) - Confirm Connection
 
 #### [vault.consumer_request_counts](docs/sdks/consumerrequestcounts/README.md)
 
@@ -1135,6 +1136,7 @@ with Apideck(
   * [`NotFoundResponse`](./src/apideck_unify/models/notfoundresponse.py): The specified resource was not found. Status code `404`. *
   * [`BadRequestResponse`](./src/apideck_unify/models/badrequestresponse.py): Bad Request. Status code `400`. *
   * [`UnprocessableResponse`](./src/apideck_unify/models/unprocessableresponse.py): Unprocessable. Status code `422`. *
+  * [`MethodNotAllowedResponse`](./src/apideck_unify/models/methodnotallowedresponse.py): The connector cannot serve this operation. No request was sent to the connector, and retrying will not help. The `Allow` header lists the methods the connector does serve on the same URL. Status code `405`. *
 
 <details><summary>Less common errors (7)</summary>
 
@@ -1147,8 +1149,8 @@ with Apideck(
 
 
 **Inherit from [`ApideckError`](./src/apideck_unify/models/apideckerror.py)**:
-* [`Unauthorized`](./src/apideck_unify/models/unauthorized.py): Unauthorized. Status code `401`. Applicable to 6 of 382 methods.*
-* [`ConflictResponse`](./src/apideck_unify/models/conflictresponse.py): Conflict — a connection already exists for the target connector. Status code `409`. Applicable to 1 of 382 methods.*
+* [`Unauthorized`](./src/apideck_unify/models/unauthorized.py): Unauthorized. Status code `401`. Applicable to 6 of 383 methods.*
+* [`ConflictResponse`](./src/apideck_unify/models/conflictresponse.py): Conflict — a connection already exists for the target connector. Status code `409`. Applicable to 1 of 383 methods.*
 * [`ResponseValidationError`](./src/apideck_unify/models/responsevalidationerror.py): Type mismatch between the response data and the expected Pydantic model. Provides access to the Pydantic validation error via the `cause` attribute.
 
 </details>

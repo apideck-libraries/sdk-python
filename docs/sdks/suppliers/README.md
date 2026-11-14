@@ -76,14 +76,15 @@ with Apideck(
 
 ### Errors
 
-| Error Type                     | Status Code                    | Content Type                   |
-| ------------------------------ | ------------------------------ | ------------------------------ |
-| models.BadRequestResponse      | 400                            | application/json               |
-| models.UnauthorizedResponse    | 401                            | application/json               |
-| models.PaymentRequiredResponse | 402                            | application/json               |
-| models.NotFoundResponse        | 404                            | application/json               |
-| models.UnprocessableResponse   | 422                            | application/json               |
-| models.APIError                | 4XX, 5XX                       | \*/\*                          |
+| Error Type                      | Status Code                     | Content Type                    |
+| ------------------------------- | ------------------------------- | ------------------------------- |
+| models.BadRequestResponse       | 400                             | application/json                |
+| models.UnauthorizedResponse     | 401                             | application/json                |
+| models.PaymentRequiredResponse  | 402                             | application/json                |
+| models.NotFoundResponse         | 404                             | application/json                |
+| models.MethodNotAllowedResponse | 405                             | application/json                |
+| models.UnprocessableResponse    | 422                             | application/json                |
+| models.APIError                 | 4XX, 5XX                        | \*/\*                           |
 
 ## create
 
@@ -298,14 +299,15 @@ with Apideck(
 
 ### Errors
 
-| Error Type                     | Status Code                    | Content Type                   |
-| ------------------------------ | ------------------------------ | ------------------------------ |
-| models.BadRequestResponse      | 400                            | application/json               |
-| models.UnauthorizedResponse    | 401                            | application/json               |
-| models.PaymentRequiredResponse | 402                            | application/json               |
-| models.NotFoundResponse        | 404                            | application/json               |
-| models.UnprocessableResponse   | 422                            | application/json               |
-| models.APIError                | 4XX, 5XX                       | \*/\*                          |
+| Error Type                      | Status Code                     | Content Type                    |
+| ------------------------------- | ------------------------------- | ------------------------------- |
+| models.BadRequestResponse       | 400                             | application/json                |
+| models.UnauthorizedResponse     | 401                             | application/json                |
+| models.PaymentRequiredResponse  | 402                             | application/json                |
+| models.NotFoundResponse         | 404                             | application/json                |
+| models.MethodNotAllowedResponse | 405                             | application/json                |
+| models.UnprocessableResponse    | 422                             | application/json                |
+| models.APIError                 | 4XX, 5XX                        | \*/\*                           |
 
 ## get
 
@@ -353,14 +355,15 @@ with Apideck(
 
 ### Errors
 
-| Error Type                     | Status Code                    | Content Type                   |
-| ------------------------------ | ------------------------------ | ------------------------------ |
-| models.BadRequestResponse      | 400                            | application/json               |
-| models.UnauthorizedResponse    | 401                            | application/json               |
-| models.PaymentRequiredResponse | 402                            | application/json               |
-| models.NotFoundResponse        | 404                            | application/json               |
-| models.UnprocessableResponse   | 422                            | application/json               |
-| models.APIError                | 4XX, 5XX                       | \*/\*                          |
+| Error Type                      | Status Code                     | Content Type                    |
+| ------------------------------- | ------------------------------- | ------------------------------- |
+| models.BadRequestResponse       | 400                             | application/json                |
+| models.UnauthorizedResponse     | 401                             | application/json                |
+| models.PaymentRequiredResponse  | 402                             | application/json                |
+| models.NotFoundResponse         | 404                             | application/json                |
+| models.MethodNotAllowedResponse | 405                             | application/json                |
+| models.UnprocessableResponse    | 422                             | application/json                |
+| models.APIError                 | 4XX, 5XX                        | \*/\*                           |
 
 ## update
 
@@ -599,14 +602,15 @@ with Apideck(
 
 ### Errors
 
-| Error Type                     | Status Code                    | Content Type                   |
-| ------------------------------ | ------------------------------ | ------------------------------ |
-| models.BadRequestResponse      | 400                            | application/json               |
-| models.UnauthorizedResponse    | 401                            | application/json               |
-| models.PaymentRequiredResponse | 402                            | application/json               |
-| models.NotFoundResponse        | 404                            | application/json               |
-| models.UnprocessableResponse   | 422                            | application/json               |
-| models.APIError                | 4XX, 5XX                       | \*/\*                          |
+| Error Type                      | Status Code                     | Content Type                    |
+| ------------------------------- | ------------------------------- | ------------------------------- |
+| models.BadRequestResponse       | 400                             | application/json                |
+| models.UnauthorizedResponse     | 401                             | application/json                |
+| models.PaymentRequiredResponse  | 402                             | application/json                |
+| models.NotFoundResponse         | 404                             | application/json                |
+| models.MethodNotAllowedResponse | 405                             | application/json                |
+| models.UnprocessableResponse    | 422                             | application/json                |
+| models.APIError                 | 4XX, 5XX                        | \*/\*                           |
 
 ## delete
 
@@ -653,14 +657,15 @@ with Apideck(
 
 ### Errors
 
-| Error Type                     | Status Code                    | Content Type                   |
-| ------------------------------ | ------------------------------ | ------------------------------ |
-| models.BadRequestResponse      | 400                            | application/json               |
-| models.UnauthorizedResponse    | 401                            | application/json               |
-| models.PaymentRequiredResponse | 402                            | application/json               |
-| models.NotFoundResponse        | 404                            | application/json               |
-| models.UnprocessableResponse   | 422                            | application/json               |
-| models.APIError                | 4XX, 5XX                       | \*/\*                          |
+| Error Type                      | Status Code                     | Content Type                    |
+| ------------------------------- | ------------------------------- | ------------------------------- |
+| models.BadRequestResponse       | 400                             | application/json                |
+| models.UnauthorizedResponse     | 401                             | application/json                |
+| models.PaymentRequiredResponse  | 402                             | application/json                |
+| models.NotFoundResponse         | 404                             | application/json                |
+| models.MethodNotAllowedResponse | 405                             | application/json                |
+| models.UnprocessableResponse    | 422                             | application/json                |
+| models.APIError                 | 4XX, 5XX                        | \*/\*                           |
 
 ## create_batch
 
@@ -863,11 +868,12 @@ with Apideck(
 
 ### Errors
 
-| Error Type                     | Status Code                    | Content Type                   |
-| ------------------------------ | ------------------------------ | ------------------------------ |
-| models.BadRequestResponse      | 400                            | application/json               |
-| models.UnauthorizedResponse    | 401                            | application/json               |
-| models.PaymentRequiredResponse | 402                            | application/json               |
-| models.NotFoundResponse        | 404                            | application/json               |
-| models.UnprocessableResponse   | 422                            | application/json               |
-| models.APIError                | 4XX, 5XX                       | \*/\*                          |
+| Error Type                      | Status Code                     | Content Type                    |
+| ------------------------------- | ------------------------------- | ------------------------------- |
+| models.BadRequestResponse       | 400                             | application/json                |
+| models.UnauthorizedResponse     | 401                             | application/json                |
+| models.PaymentRequiredResponse  | 402                             | application/json                |
+| models.NotFoundResponse         | 404                             | application/json                |
+| models.MethodNotAllowedResponse | 405                             | application/json                |
+| models.UnprocessableResponse    | 422                             | application/json                |
+| models.APIError                 | 4XX, 5XX                        | \*/\*                           |
