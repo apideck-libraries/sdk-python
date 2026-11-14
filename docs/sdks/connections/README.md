@@ -12,6 +12,7 @@
 * [imports](#imports) - Import connection
 * [migrate](#migrate) - Migrate connection
 * [token](#token) - Authorize Access Token
+* [confirm](#confirm) - Confirm Connection
 
 ## list
 
@@ -622,6 +623,81 @@ with Apideck(
 ### Response
 
 **[models.VaultConnectionsTokenResponse](../../models/vaultconnectionstokenresponse.md)**
+
+### Errors
+
+| Error Type                     | Status Code                    | Content Type                   |
+| ------------------------------ | ------------------------------ | ------------------------------ |
+| models.BadRequestResponse      | 400                            | application/json               |
+| models.UnauthorizedResponse    | 401                            | application/json               |
+| models.PaymentRequiredResponse | 402                            | application/json               |
+| models.NotFoundResponse        | 404                            | application/json               |
+| models.UnprocessableResponse   | 422                            | application/json               |
+| models.APIError                | 4XX, 5XX                       | \*/\*                          |
+
+## confirm
+
+Confirms an OAuth connection after the callback by redeeming its confirm token.
+
+The confirm step is required when your application's OAuth protection mode was `enforced` when the
+authorization flow started. In that case Vault completes the OAuth exchange but leaves the connection
+**unconfirmed** and not callable, and the callback redirects to your `redirect_uri` with a hash
+fragment containing a `confirm_token`, the `service_id` and the `unified_api`, plus the `nonce` when
+the authorize request included one and the `target_origin` when it included an `opener_origin`:
+`#confirm_token=<token>&service_id=<service_id>&unified_api=<unified_api>&nonce=<nonce>&target_origin=<origin>`.
+Call this endpoint with that `confirm_token` to confirm the connection and make it callable.
+
+The `confirm_token` is single use and expires 30 minutes after the callback. Only confirm tokens are
+accepted; other tokens (such as an authorize `state`) are rejected. In the `off`
+protection mode there is no confirm step: the connection is callable immediately after the
+callback and no `confirm_token` is issued.
+
+Authenticate in one of two ways:
+
+- With the Vault session JWT as the bearer token (`Authorization: Bearer <session token>`) and the
+  `x-apideck-auth-type: JWT` header, as Hosted Vault and Vault JS do. The application and consumer
+  are taken from the session.
+- With your API key (`Authorization: Bearer <API key>`) plus the `x-apideck-app-id` and
+  `x-apideck-consumer-id` headers, from your backend.
+
+
+### Example Usage
+
+<!-- UsageSnippet language="python" operationID="vault.connectionsConfirm" method="post" path="/vault/connections/{unified_api}/{service_id}/confirm" -->
+```python
+from apideck_unify import Apideck
+import os
+
+
+with Apideck(
+    consumer_id="test-consumer",
+    app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
+) as apideck:
+
+    res = apideck.vault.connections.confirm(service_id="pipedrive", unified_api="crm", confirm_token="550e8400-e29b-41d4-a716-446655440000")
+
+    assert res.confirm_connection_response is not None
+
+    # Handle response
+    print(res.confirm_connection_response)
+
+```
+
+### Parameters
+
+| Parameter                                                           | Type                                                                | Required                                                            | Description                                                         | Example                                                             |
+| ------------------------------------------------------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------------- |
+| `service_id`                                                        | *str*                                                               | :heavy_check_mark:                                                  | Service ID of the resource to return                                | pipedrive                                                           |
+| `unified_api`                                                       | *str*                                                               | :heavy_check_mark:                                                  | Unified API                                                         | crm                                                                 |
+| `confirm_token`                                                     | *str*                                                               | :heavy_check_mark:                                                  | The confirm token received from the OAuth callback redirect.        | 550e8400-e29b-41d4-a716-446655440000                                |
+| `consumer_id`                                                       | *Optional[str]*                                                     | :heavy_minus_sign:                                                  | ID of the consumer which you want to get or push data from          | test-consumer                                                       |
+| `app_id`                                                            | *Optional[str]*                                                     | :heavy_minus_sign:                                                  | The ID of your Unify application                                    | dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX                             |
+| `retries`                                                           | [Optional[utils.RetryConfig]](../../models/utils/retryconfig.md)    | :heavy_minus_sign:                                                  | Configuration to override the default retry behavior of the client. |                                                                     |
+
+### Response
+
+**[models.VaultConnectionsConfirmResponse](../../models/vaultconnectionsconfirmresponse.md)**
 
 ### Errors
 

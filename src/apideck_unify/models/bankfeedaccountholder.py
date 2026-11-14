@@ -47,7 +47,7 @@ class HolderRelationship(str, Enum, metaclass=utils.OpenEnumMeta):
 
 
 class BankFeedAccountHolderTypedDict(TypedDict):
-    r"""A person or business that holds the source bank account. Connectors that serve account contact data to a bank-feed consumer (`plaid-exchange`) require each holder to carry `first_name` and `last_name`, or `business_name` when the holder is a business."""
+    r"""A person or business that holds the source bank account. Connectors that serve account contact data to a bank-feed consumer (`intuit-bank-feeds` and `plaid-exchange`) require each holder to carry `first_name` and `last_name`, or `business_name` when the holder is a business."""
 
     type: NotRequired[HolderType]
     r"""Whether the holder is an individual or a business."""
@@ -66,7 +66,7 @@ class BankFeedAccountHolderTypedDict(TypedDict):
 
 
 class BankFeedAccountHolder(BaseModel):
-    r"""A person or business that holds the source bank account. Connectors that serve account contact data to a bank-feed consumer (`plaid-exchange`) require each holder to carry `first_name` and `last_name`, or `business_name` when the holder is a business."""
+    r"""A person or business that holds the source bank account. Connectors that serve account contact data to a bank-feed consumer (`intuit-bank-feeds` and `plaid-exchange`) require each holder to carry `first_name` and `last_name`, or `business_name` when the holder is a business."""
 
     type: Annotated[Optional[HolderType], PlainValidator(validate_open_enum(False))] = (
         None

@@ -66,6 +66,8 @@ class BankFeedAccountTypedDict(TypedDict):
     r"""The current balance of the source bank account."""
     available_balance: NotRequired[Nullable[float]]
     r"""The available balance of the source bank account (considering pending transactions and overdraft)."""
+    balance_as_of: NotRequired[Nullable[datetime]]
+    r"""When `balance` was true, as an ISO 8601 date-time with a UTC offset. Connectors that record it stamp the time they received the balance when it is omitted."""
     currency: NotRequired[Nullable[Currency]]
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
     feed_status: NotRequired[FeedStatus]
@@ -75,13 +77,13 @@ class BankFeedAccountTypedDict(TypedDict):
     country: NotRequired[Nullable[str]]
     r"""Country code according to ISO 3166-1 alpha-2."""
     account_holders: NotRequired[List[BankFeedAccountHolderTypedDict]]
-    r"""The people or businesses that hold the source bank account. Optional; `plaid-exchange` requires at least one."""
+    r"""The people or businesses that hold the source bank account. Optional; `intuit-bank-feeds` and `plaid-exchange` require at least one."""
     emails: NotRequired[List[EmailTypedDict]]
-    r"""Email addresses of the account holders. Optional; `plaid-exchange` requires at least one."""
+    r"""Email addresses of the account holders. Optional; `intuit-bank-feeds` and `plaid-exchange` require at least one."""
     addresses: NotRequired[List[AddressTypedDict]]
-    r"""Addresses of the account holders. Optional; `plaid-exchange` requires at least one."""
+    r"""Addresses of the account holders. Optional; `intuit-bank-feeds` and `plaid-exchange` require at least one."""
     phone_numbers: NotRequired[List[PhoneNumberTypedDict]]
-    r"""Phone numbers of the account holders. Optional; `plaid-exchange` requires at least one."""
+    r"""Phone numbers of the account holders. Optional; `intuit-bank-feeds` and `plaid-exchange` require at least one."""
     custom_fields: NotRequired[List[CustomFieldTypedDict]]
     custom_mappings: NotRequired[Nullable[Dict[str, Any]]]
     r"""When custom mappings are configured on the resource, the result is included here."""
@@ -128,6 +130,9 @@ class BankFeedAccount(BaseModel):
     available_balance: OptionalNullable[float] = UNSET
     r"""The available balance of the source bank account (considering pending transactions and overdraft)."""
 
+    balance_as_of: OptionalNullable[datetime] = UNSET
+    r"""When `balance` was true, as an ISO 8601 date-time with a UTC offset. Connectors that record it stamp the time they received the balance when it is omitted."""
+
     currency: Annotated[
         OptionalNullable[Currency], PlainValidator(validate_open_enum(False))
     ] = UNSET
@@ -147,16 +152,16 @@ class BankFeedAccount(BaseModel):
     r"""Country code according to ISO 3166-1 alpha-2."""
 
     account_holders: Optional[List[BankFeedAccountHolder]] = None
-    r"""The people or businesses that hold the source bank account. Optional; `plaid-exchange` requires at least one."""
+    r"""The people or businesses that hold the source bank account. Optional; `intuit-bank-feeds` and `plaid-exchange` require at least one."""
 
     emails: Optional[List[Email]] = None
-    r"""Email addresses of the account holders. Optional; `plaid-exchange` requires at least one."""
+    r"""Email addresses of the account holders. Optional; `intuit-bank-feeds` and `plaid-exchange` require at least one."""
 
     addresses: Optional[List[Address]] = None
-    r"""Addresses of the account holders. Optional; `plaid-exchange` requires at least one."""
+    r"""Addresses of the account holders. Optional; `intuit-bank-feeds` and `plaid-exchange` require at least one."""
 
     phone_numbers: Optional[List[PhoneNumber]] = None
-    r"""Phone numbers of the account holders. Optional; `plaid-exchange` requires at least one."""
+    r"""Phone numbers of the account holders. Optional; `intuit-bank-feeds` and `plaid-exchange` require at least one."""
 
     custom_fields: Optional[List[CustomField]] = None
 
@@ -223,6 +228,7 @@ class BankFeedAccount(BaseModel):
             "target_account_number",
             "balance",
             "available_balance",
+            "balance_as_of",
             "currency",
             "feed_status",
             "status",
@@ -243,6 +249,7 @@ class BankFeedAccount(BaseModel):
             "source_account_number",
             "balance",
             "available_balance",
+            "balance_as_of",
             "currency",
             "country",
             "custom_mappings",
@@ -297,6 +304,8 @@ class BankFeedAccountInputTypedDict(TypedDict):
     r"""The current balance of the source bank account."""
     available_balance: NotRequired[Nullable[float]]
     r"""The available balance of the source bank account (considering pending transactions and overdraft)."""
+    balance_as_of: NotRequired[Nullable[datetime]]
+    r"""When `balance` was true, as an ISO 8601 date-time with a UTC offset. Connectors that record it stamp the time they received the balance when it is omitted."""
     currency: NotRequired[Nullable[Currency]]
     r"""Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)."""
     feed_status: NotRequired[FeedStatus]
@@ -306,13 +315,13 @@ class BankFeedAccountInputTypedDict(TypedDict):
     country: NotRequired[Nullable[str]]
     r"""Country code according to ISO 3166-1 alpha-2."""
     account_holders: NotRequired[List[BankFeedAccountHolderTypedDict]]
-    r"""The people or businesses that hold the source bank account. Optional; `plaid-exchange` requires at least one."""
+    r"""The people or businesses that hold the source bank account. Optional; `intuit-bank-feeds` and `plaid-exchange` require at least one."""
     emails: NotRequired[List[EmailTypedDict]]
-    r"""Email addresses of the account holders. Optional; `plaid-exchange` requires at least one."""
+    r"""Email addresses of the account holders. Optional; `intuit-bank-feeds` and `plaid-exchange` require at least one."""
     addresses: NotRequired[List[AddressTypedDict]]
-    r"""Addresses of the account holders. Optional; `plaid-exchange` requires at least one."""
+    r"""Addresses of the account holders. Optional; `intuit-bank-feeds` and `plaid-exchange` require at least one."""
     phone_numbers: NotRequired[List[PhoneNumberTypedDict]]
-    r"""Phone numbers of the account holders. Optional; `plaid-exchange` requires at least one."""
+    r"""Phone numbers of the account holders. Optional; `intuit-bank-feeds` and `plaid-exchange` require at least one."""
     custom_fields: NotRequired[List[CustomFieldTypedDict]]
 
 
@@ -346,6 +355,9 @@ class BankFeedAccountInput(BaseModel):
     available_balance: OptionalNullable[float] = UNSET
     r"""The available balance of the source bank account (considering pending transactions and overdraft)."""
 
+    balance_as_of: OptionalNullable[datetime] = UNSET
+    r"""When `balance` was true, as an ISO 8601 date-time with a UTC offset. Connectors that record it stamp the time they received the balance when it is omitted."""
+
     currency: Annotated[
         OptionalNullable[Currency], PlainValidator(validate_open_enum(False))
     ] = UNSET
@@ -365,16 +377,16 @@ class BankFeedAccountInput(BaseModel):
     r"""Country code according to ISO 3166-1 alpha-2."""
 
     account_holders: Optional[List[BankFeedAccountHolder]] = None
-    r"""The people or businesses that hold the source bank account. Optional; `plaid-exchange` requires at least one."""
+    r"""The people or businesses that hold the source bank account. Optional; `intuit-bank-feeds` and `plaid-exchange` require at least one."""
 
     emails: Optional[List[Email]] = None
-    r"""Email addresses of the account holders. Optional; `plaid-exchange` requires at least one."""
+    r"""Email addresses of the account holders. Optional; `intuit-bank-feeds` and `plaid-exchange` require at least one."""
 
     addresses: Optional[List[Address]] = None
-    r"""Addresses of the account holders. Optional; `plaid-exchange` requires at least one."""
+    r"""Addresses of the account holders. Optional; `intuit-bank-feeds` and `plaid-exchange` require at least one."""
 
     phone_numbers: Optional[List[PhoneNumber]] = None
-    r"""Phone numbers of the account holders. Optional; `plaid-exchange` requires at least one."""
+    r"""Phone numbers of the account holders. Optional; `intuit-bank-feeds` and `plaid-exchange` require at least one."""
 
     custom_fields: Optional[List[CustomField]] = None
 
@@ -426,6 +438,7 @@ class BankFeedAccountInput(BaseModel):
             "target_account_number",
             "balance",
             "available_balance",
+            "balance_as_of",
             "currency",
             "feed_status",
             "status",
@@ -441,6 +454,7 @@ class BankFeedAccountInput(BaseModel):
             "source_account_number",
             "balance",
             "available_balance",
+            "balance_as_of",
             "currency",
             "country",
         ]
