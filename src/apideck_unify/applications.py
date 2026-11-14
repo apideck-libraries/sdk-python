@@ -105,7 +105,7 @@ class Applications(BaseSDK):
                 ),
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "422", "4XX", "5XX"],
+            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
             retry_config=retry_config,
         )
 
@@ -161,6 +161,11 @@ class Applications(BaseSDK):
                 models.NotFoundResponseData, http_res
             )
             raise models.NotFoundResponse(response_data, http_res)
+        if utils.match_response(http_res, "405", "application/json"):
+            response_data = unmarshal_json_response(
+                models.MethodNotAllowedResponseData, http_res
+            )
+            raise models.MethodNotAllowedResponse(response_data, http_res)
         if utils.match_response(http_res, "422", "application/json"):
             response_data = unmarshal_json_response(
                 models.UnprocessableResponseData, http_res
@@ -278,7 +283,7 @@ class Applications(BaseSDK):
                 ),
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "422", "4XX", "5XX"],
+            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
             retry_config=retry_config,
         )
 
@@ -334,6 +339,11 @@ class Applications(BaseSDK):
                 models.NotFoundResponseData, http_res
             )
             raise models.NotFoundResponse(response_data, http_res)
+        if utils.match_response(http_res, "405", "application/json"):
+            response_data = unmarshal_json_response(
+                models.MethodNotAllowedResponseData, http_res
+            )
+            raise models.MethodNotAllowedResponse(response_data, http_res)
         if utils.match_response(http_res, "422", "application/json"):
             response_data = unmarshal_json_response(
                 models.UnprocessableResponseData, http_res
@@ -466,7 +476,7 @@ class Applications(BaseSDK):
                 ),
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "422", "4XX", "5XX"],
+            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
             retry_config=retry_config,
         )
 
@@ -499,6 +509,11 @@ class Applications(BaseSDK):
                 models.NotFoundResponseData, http_res
             )
             raise models.NotFoundResponse(response_data, http_res)
+        if utils.match_response(http_res, "405", "application/json"):
+            response_data = unmarshal_json_response(
+                models.MethodNotAllowedResponseData, http_res
+            )
+            raise models.MethodNotAllowedResponse(response_data, http_res)
         if utils.match_response(http_res, "422", "application/json"):
             response_data = unmarshal_json_response(
                 models.UnprocessableResponseData, http_res
@@ -630,7 +645,7 @@ class Applications(BaseSDK):
                 ),
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "422", "4XX", "5XX"],
+            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
             retry_config=retry_config,
         )
 
@@ -663,6 +678,11 @@ class Applications(BaseSDK):
                 models.NotFoundResponseData, http_res
             )
             raise models.NotFoundResponse(response_data, http_res)
+        if utils.match_response(http_res, "405", "application/json"):
+            response_data = unmarshal_json_response(
+                models.MethodNotAllowedResponseData, http_res
+            )
+            raise models.MethodNotAllowedResponse(response_data, http_res)
         if utils.match_response(http_res, "422", "application/json"):
             response_data = unmarshal_json_response(
                 models.UnprocessableResponseData, http_res
@@ -773,7 +793,7 @@ class Applications(BaseSDK):
                 ),
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "422", "4XX", "5XX"],
+            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
             retry_config=retry_config,
         )
 
@@ -806,6 +826,11 @@ class Applications(BaseSDK):
                 models.NotFoundResponseData, http_res
             )
             raise models.NotFoundResponse(response_data, http_res)
+        if utils.match_response(http_res, "405", "application/json"):
+            response_data = unmarshal_json_response(
+                models.MethodNotAllowedResponseData, http_res
+            )
+            raise models.MethodNotAllowedResponse(response_data, http_res)
         if utils.match_response(http_res, "422", "application/json"):
             response_data = unmarshal_json_response(
                 models.UnprocessableResponseData, http_res
@@ -916,7 +941,7 @@ class Applications(BaseSDK):
                 ),
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "422", "4XX", "5XX"],
+            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
             retry_config=retry_config,
         )
 
@@ -949,6 +974,11 @@ class Applications(BaseSDK):
                 models.NotFoundResponseData, http_res
             )
             raise models.NotFoundResponse(response_data, http_res)
+        if utils.match_response(http_res, "405", "application/json"):
+            response_data = unmarshal_json_response(
+                models.MethodNotAllowedResponseData, http_res
+            )
+            raise models.MethodNotAllowedResponse(response_data, http_res)
         if utils.match_response(http_res, "422", "application/json"):
             response_data = unmarshal_json_response(
                 models.UnprocessableResponseData, http_res
@@ -1083,7 +1113,7 @@ class Applications(BaseSDK):
                 ),
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "422", "4XX", "5XX"],
+            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
             retry_config=retry_config,
         )
 
@@ -1116,6 +1146,11 @@ class Applications(BaseSDK):
                 models.NotFoundResponseData, http_res
             )
             raise models.NotFoundResponse(response_data, http_res)
+        if utils.match_response(http_res, "405", "application/json"):
+            response_data = unmarshal_json_response(
+                models.MethodNotAllowedResponseData, http_res
+            )
+            raise models.MethodNotAllowedResponse(response_data, http_res)
         if utils.match_response(http_res, "422", "application/json"):
             response_data = unmarshal_json_response(
                 models.UnprocessableResponseData, http_res
@@ -1250,7 +1285,7 @@ class Applications(BaseSDK):
                 ),
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "422", "4XX", "5XX"],
+            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
             retry_config=retry_config,
         )
 
@@ -1283,6 +1318,11 @@ class Applications(BaseSDK):
                 models.NotFoundResponseData, http_res
             )
             raise models.NotFoundResponse(response_data, http_res)
+        if utils.match_response(http_res, "405", "application/json"):
+            response_data = unmarshal_json_response(
+                models.MethodNotAllowedResponseData, http_res
+            )
+            raise models.MethodNotAllowedResponse(response_data, http_res)
         if utils.match_response(http_res, "422", "application/json"):
             response_data = unmarshal_json_response(
                 models.UnprocessableResponseData, http_res
@@ -1393,7 +1433,7 @@ class Applications(BaseSDK):
                 ),
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "422", "4XX", "5XX"],
+            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
             retry_config=retry_config,
         )
 
@@ -1426,6 +1466,11 @@ class Applications(BaseSDK):
                 models.NotFoundResponseData, http_res
             )
             raise models.NotFoundResponse(response_data, http_res)
+        if utils.match_response(http_res, "405", "application/json"):
+            response_data = unmarshal_json_response(
+                models.MethodNotAllowedResponseData, http_res
+            )
+            raise models.MethodNotAllowedResponse(response_data, http_res)
         if utils.match_response(http_res, "422", "application/json"):
             response_data = unmarshal_json_response(
                 models.UnprocessableResponseData, http_res
@@ -1536,7 +1581,7 @@ class Applications(BaseSDK):
                 ),
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "422", "4XX", "5XX"],
+            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
             retry_config=retry_config,
         )
 
@@ -1569,6 +1614,11 @@ class Applications(BaseSDK):
                 models.NotFoundResponseData, http_res
             )
             raise models.NotFoundResponse(response_data, http_res)
+        if utils.match_response(http_res, "405", "application/json"):
+            response_data = unmarshal_json_response(
+                models.MethodNotAllowedResponseData, http_res
+            )
+            raise models.MethodNotAllowedResponse(response_data, http_res)
         if utils.match_response(http_res, "422", "application/json"):
             response_data = unmarshal_json_response(
                 models.UnprocessableResponseData, http_res

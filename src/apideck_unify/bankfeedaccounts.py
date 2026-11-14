@@ -6,6 +6,7 @@ from apideck_unify._hooks import HookContext
 from apideck_unify.types import OptionalNullable, UNSET
 from apideck_unify.utils import get_security_from_env
 from apideck_unify.utils.unmarshal_json_response import unmarshal_json_response
+from datetime import datetime
 from jsonpath import JSONPath
 from typing import Any, Dict, List, Mapping, Optional, Union
 
@@ -111,7 +112,7 @@ class BankFeedAccounts(BaseSDK):
                 ),
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "422", "4XX", "5XX"],
+            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
             retry_config=retry_config,
         )
 
@@ -169,6 +170,11 @@ class BankFeedAccounts(BaseSDK):
                 models.NotFoundResponseData, http_res
             )
             raise models.NotFoundResponse(response_data, http_res)
+        if utils.match_response(http_res, "405", "application/json"):
+            response_data = unmarshal_json_response(
+                models.MethodNotAllowedResponseData, http_res
+            )
+            raise models.MethodNotAllowedResponse(response_data, http_res)
         if utils.match_response(http_res, "422", "application/json"):
             response_data = unmarshal_json_response(
                 models.UnprocessableResponseData, http_res
@@ -292,7 +298,7 @@ class BankFeedAccounts(BaseSDK):
                 ),
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "422", "4XX", "5XX"],
+            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
             retry_config=retry_config,
         )
 
@@ -350,6 +356,11 @@ class BankFeedAccounts(BaseSDK):
                 models.NotFoundResponseData, http_res
             )
             raise models.NotFoundResponse(response_data, http_res)
+        if utils.match_response(http_res, "405", "application/json"):
+            response_data = unmarshal_json_response(
+                models.MethodNotAllowedResponseData, http_res
+            )
+            raise models.MethodNotAllowedResponse(response_data, http_res)
         if utils.match_response(http_res, "422", "application/json"):
             response_data = unmarshal_json_response(
                 models.UnprocessableResponseData, http_res
@@ -389,6 +400,7 @@ class BankFeedAccounts(BaseSDK):
         target_account_number: Optional[str] = None,
         balance: OptionalNullable[float] = UNSET,
         available_balance: OptionalNullable[float] = UNSET,
+        balance_as_of: OptionalNullable[datetime] = UNSET,
         currency: OptionalNullable[models.Currency] = UNSET,
         feed_status: Optional[models.FeedStatus] = None,
         status: Optional[models.BankFeedAccountStatus] = None,
@@ -431,14 +443,15 @@ class BankFeedAccounts(BaseSDK):
         :param target_account_number: Account number of the destination bank account.
         :param balance: The current balance of the source bank account.
         :param available_balance: The available balance of the source bank account (considering pending transactions and overdraft).
+        :param balance_as_of: When `balance` was true, as an ISO 8601 date-time with a UTC offset. Connectors that record it stamp the time they received the balance when it is omitted.
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
         :param feed_status: Current status of the bank feed.
         :param status: Whether the data consumer may see this account. `revoked` hides it from the consumer without deleting it; `active` restores it. Unrelated to `feed_status`. Only connectors that list it support it; others ignore the field, so setting it there changes nothing.
         :param country: Country code according to ISO 3166-1 alpha-2.
-        :param account_holders: The people or businesses that hold the source bank account. Optional; `plaid-exchange` requires at least one.
-        :param emails: Email addresses of the account holders. Optional; `plaid-exchange` requires at least one.
-        :param addresses: Addresses of the account holders. Optional; `plaid-exchange` requires at least one.
-        :param phone_numbers: Phone numbers of the account holders. Optional; `plaid-exchange` requires at least one.
+        :param account_holders: The people or businesses that hold the source bank account. Optional; `intuit-bank-feeds` and `plaid-exchange` require at least one.
+        :param emails: Email addresses of the account holders. Optional; `intuit-bank-feeds` and `plaid-exchange` require at least one.
+        :param addresses: Addresses of the account holders. Optional; `intuit-bank-feeds` and `plaid-exchange` require at least one.
+        :param phone_numbers: Phone numbers of the account holders. Optional; `intuit-bank-feeds` and `plaid-exchange` require at least one.
         :param custom_fields:
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
@@ -470,6 +483,7 @@ class BankFeedAccounts(BaseSDK):
                 target_account_number=target_account_number,
                 balance=balance,
                 available_balance=available_balance,
+                balance_as_of=balance_as_of,
                 currency=currency,
                 feed_status=feed_status,
                 status=status,
@@ -540,7 +554,7 @@ class BankFeedAccounts(BaseSDK):
                 ),
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "422", "4XX", "5XX"],
+            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
             retry_config=retry_config,
         )
 
@@ -573,6 +587,11 @@ class BankFeedAccounts(BaseSDK):
                 models.NotFoundResponseData, http_res
             )
             raise models.NotFoundResponse(response_data, http_res)
+        if utils.match_response(http_res, "405", "application/json"):
+            response_data = unmarshal_json_response(
+                models.MethodNotAllowedResponseData, http_res
+            )
+            raise models.MethodNotAllowedResponse(response_data, http_res)
         if utils.match_response(http_res, "422", "application/json"):
             response_data = unmarshal_json_response(
                 models.UnprocessableResponseData, http_res
@@ -611,6 +630,7 @@ class BankFeedAccounts(BaseSDK):
         target_account_number: Optional[str] = None,
         balance: OptionalNullable[float] = UNSET,
         available_balance: OptionalNullable[float] = UNSET,
+        balance_as_of: OptionalNullable[datetime] = UNSET,
         currency: OptionalNullable[models.Currency] = UNSET,
         feed_status: Optional[models.FeedStatus] = None,
         status: Optional[models.BankFeedAccountStatus] = None,
@@ -653,14 +673,15 @@ class BankFeedAccounts(BaseSDK):
         :param target_account_number: Account number of the destination bank account.
         :param balance: The current balance of the source bank account.
         :param available_balance: The available balance of the source bank account (considering pending transactions and overdraft).
+        :param balance_as_of: When `balance` was true, as an ISO 8601 date-time with a UTC offset. Connectors that record it stamp the time they received the balance when it is omitted.
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
         :param feed_status: Current status of the bank feed.
         :param status: Whether the data consumer may see this account. `revoked` hides it from the consumer without deleting it; `active` restores it. Unrelated to `feed_status`. Only connectors that list it support it; others ignore the field, so setting it there changes nothing.
         :param country: Country code according to ISO 3166-1 alpha-2.
-        :param account_holders: The people or businesses that hold the source bank account. Optional; `plaid-exchange` requires at least one.
-        :param emails: Email addresses of the account holders. Optional; `plaid-exchange` requires at least one.
-        :param addresses: Addresses of the account holders. Optional; `plaid-exchange` requires at least one.
-        :param phone_numbers: Phone numbers of the account holders. Optional; `plaid-exchange` requires at least one.
+        :param account_holders: The people or businesses that hold the source bank account. Optional; `intuit-bank-feeds` and `plaid-exchange` require at least one.
+        :param emails: Email addresses of the account holders. Optional; `intuit-bank-feeds` and `plaid-exchange` require at least one.
+        :param addresses: Addresses of the account holders. Optional; `intuit-bank-feeds` and `plaid-exchange` require at least one.
+        :param phone_numbers: Phone numbers of the account holders. Optional; `intuit-bank-feeds` and `plaid-exchange` require at least one.
         :param custom_fields:
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
@@ -692,6 +713,7 @@ class BankFeedAccounts(BaseSDK):
                 target_account_number=target_account_number,
                 balance=balance,
                 available_balance=available_balance,
+                balance_as_of=balance_as_of,
                 currency=currency,
                 feed_status=feed_status,
                 status=status,
@@ -762,7 +784,7 @@ class BankFeedAccounts(BaseSDK):
                 ),
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "422", "4XX", "5XX"],
+            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
             retry_config=retry_config,
         )
 
@@ -795,6 +817,11 @@ class BankFeedAccounts(BaseSDK):
                 models.NotFoundResponseData, http_res
             )
             raise models.NotFoundResponse(response_data, http_res)
+        if utils.match_response(http_res, "405", "application/json"):
+            response_data = unmarshal_json_response(
+                models.MethodNotAllowedResponseData, http_res
+            )
+            raise models.MethodNotAllowedResponse(response_data, http_res)
         if utils.match_response(http_res, "422", "application/json"):
             response_data = unmarshal_json_response(
                 models.UnprocessableResponseData, http_res
@@ -911,7 +938,7 @@ class BankFeedAccounts(BaseSDK):
                 ),
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "422", "4XX", "5XX"],
+            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
             retry_config=retry_config,
         )
 
@@ -944,6 +971,11 @@ class BankFeedAccounts(BaseSDK):
                 models.NotFoundResponseData, http_res
             )
             raise models.NotFoundResponse(response_data, http_res)
+        if utils.match_response(http_res, "405", "application/json"):
+            response_data = unmarshal_json_response(
+                models.MethodNotAllowedResponseData, http_res
+            )
+            raise models.MethodNotAllowedResponse(response_data, http_res)
         if utils.match_response(http_res, "422", "application/json"):
             response_data = unmarshal_json_response(
                 models.UnprocessableResponseData, http_res
@@ -1060,7 +1092,7 @@ class BankFeedAccounts(BaseSDK):
                 ),
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "422", "4XX", "5XX"],
+            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
             retry_config=retry_config,
         )
 
@@ -1093,6 +1125,11 @@ class BankFeedAccounts(BaseSDK):
                 models.NotFoundResponseData, http_res
             )
             raise models.NotFoundResponse(response_data, http_res)
+        if utils.match_response(http_res, "405", "application/json"):
+            response_data = unmarshal_json_response(
+                models.MethodNotAllowedResponseData, http_res
+            )
+            raise models.MethodNotAllowedResponse(response_data, http_res)
         if utils.match_response(http_res, "422", "application/json"):
             response_data = unmarshal_json_response(
                 models.UnprocessableResponseData, http_res
@@ -1132,6 +1169,7 @@ class BankFeedAccounts(BaseSDK):
         target_account_number: Optional[str] = None,
         balance: OptionalNullable[float] = UNSET,
         available_balance: OptionalNullable[float] = UNSET,
+        balance_as_of: OptionalNullable[datetime] = UNSET,
         currency: OptionalNullable[models.Currency] = UNSET,
         feed_status: Optional[models.FeedStatus] = None,
         status: Optional[models.BankFeedAccountStatus] = None,
@@ -1175,14 +1213,15 @@ class BankFeedAccounts(BaseSDK):
         :param target_account_number: Account number of the destination bank account.
         :param balance: The current balance of the source bank account.
         :param available_balance: The available balance of the source bank account (considering pending transactions and overdraft).
+        :param balance_as_of: When `balance` was true, as an ISO 8601 date-time with a UTC offset. Connectors that record it stamp the time they received the balance when it is omitted.
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
         :param feed_status: Current status of the bank feed.
         :param status: Whether the data consumer may see this account. `revoked` hides it from the consumer without deleting it; `active` restores it. Unrelated to `feed_status`. Only connectors that list it support it; others ignore the field, so setting it there changes nothing.
         :param country: Country code according to ISO 3166-1 alpha-2.
-        :param account_holders: The people or businesses that hold the source bank account. Optional; `plaid-exchange` requires at least one.
-        :param emails: Email addresses of the account holders. Optional; `plaid-exchange` requires at least one.
-        :param addresses: Addresses of the account holders. Optional; `plaid-exchange` requires at least one.
-        :param phone_numbers: Phone numbers of the account holders. Optional; `plaid-exchange` requires at least one.
+        :param account_holders: The people or businesses that hold the source bank account. Optional; `intuit-bank-feeds` and `plaid-exchange` require at least one.
+        :param emails: Email addresses of the account holders. Optional; `intuit-bank-feeds` and `plaid-exchange` require at least one.
+        :param addresses: Addresses of the account holders. Optional; `intuit-bank-feeds` and `plaid-exchange` require at least one.
+        :param phone_numbers: Phone numbers of the account holders. Optional; `intuit-bank-feeds` and `plaid-exchange` require at least one.
         :param custom_fields:
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
@@ -1215,6 +1254,7 @@ class BankFeedAccounts(BaseSDK):
                 target_account_number=target_account_number,
                 balance=balance,
                 available_balance=available_balance,
+                balance_as_of=balance_as_of,
                 currency=currency,
                 feed_status=feed_status,
                 status=status,
@@ -1285,7 +1325,7 @@ class BankFeedAccounts(BaseSDK):
                 ),
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "422", "4XX", "5XX"],
+            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
             retry_config=retry_config,
         )
 
@@ -1318,6 +1358,11 @@ class BankFeedAccounts(BaseSDK):
                 models.NotFoundResponseData, http_res
             )
             raise models.NotFoundResponse(response_data, http_res)
+        if utils.match_response(http_res, "405", "application/json"):
+            response_data = unmarshal_json_response(
+                models.MethodNotAllowedResponseData, http_res
+            )
+            raise models.MethodNotAllowedResponse(response_data, http_res)
         if utils.match_response(http_res, "422", "application/json"):
             response_data = unmarshal_json_response(
                 models.UnprocessableResponseData, http_res
@@ -1357,6 +1402,7 @@ class BankFeedAccounts(BaseSDK):
         target_account_number: Optional[str] = None,
         balance: OptionalNullable[float] = UNSET,
         available_balance: OptionalNullable[float] = UNSET,
+        balance_as_of: OptionalNullable[datetime] = UNSET,
         currency: OptionalNullable[models.Currency] = UNSET,
         feed_status: Optional[models.FeedStatus] = None,
         status: Optional[models.BankFeedAccountStatus] = None,
@@ -1400,14 +1446,15 @@ class BankFeedAccounts(BaseSDK):
         :param target_account_number: Account number of the destination bank account.
         :param balance: The current balance of the source bank account.
         :param available_balance: The available balance of the source bank account (considering pending transactions and overdraft).
+        :param balance_as_of: When `balance` was true, as an ISO 8601 date-time with a UTC offset. Connectors that record it stamp the time they received the balance when it is omitted.
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
         :param feed_status: Current status of the bank feed.
         :param status: Whether the data consumer may see this account. `revoked` hides it from the consumer without deleting it; `active` restores it. Unrelated to `feed_status`. Only connectors that list it support it; others ignore the field, so setting it there changes nothing.
         :param country: Country code according to ISO 3166-1 alpha-2.
-        :param account_holders: The people or businesses that hold the source bank account. Optional; `plaid-exchange` requires at least one.
-        :param emails: Email addresses of the account holders. Optional; `plaid-exchange` requires at least one.
-        :param addresses: Addresses of the account holders. Optional; `plaid-exchange` requires at least one.
-        :param phone_numbers: Phone numbers of the account holders. Optional; `plaid-exchange` requires at least one.
+        :param account_holders: The people or businesses that hold the source bank account. Optional; `intuit-bank-feeds` and `plaid-exchange` require at least one.
+        :param emails: Email addresses of the account holders. Optional; `intuit-bank-feeds` and `plaid-exchange` require at least one.
+        :param addresses: Addresses of the account holders. Optional; `intuit-bank-feeds` and `plaid-exchange` require at least one.
+        :param phone_numbers: Phone numbers of the account holders. Optional; `intuit-bank-feeds` and `plaid-exchange` require at least one.
         :param custom_fields:
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
@@ -1440,6 +1487,7 @@ class BankFeedAccounts(BaseSDK):
                 target_account_number=target_account_number,
                 balance=balance,
                 available_balance=available_balance,
+                balance_as_of=balance_as_of,
                 currency=currency,
                 feed_status=feed_status,
                 status=status,
@@ -1510,7 +1558,7 @@ class BankFeedAccounts(BaseSDK):
                 ),
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "422", "4XX", "5XX"],
+            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
             retry_config=retry_config,
         )
 
@@ -1543,6 +1591,11 @@ class BankFeedAccounts(BaseSDK):
                 models.NotFoundResponseData, http_res
             )
             raise models.NotFoundResponse(response_data, http_res)
+        if utils.match_response(http_res, "405", "application/json"):
+            response_data = unmarshal_json_response(
+                models.MethodNotAllowedResponseData, http_res
+            )
+            raise models.MethodNotAllowedResponse(response_data, http_res)
         if utils.match_response(http_res, "422", "application/json"):
             response_data = unmarshal_json_response(
                 models.UnprocessableResponseData, http_res
@@ -1653,7 +1706,7 @@ class BankFeedAccounts(BaseSDK):
                 ),
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "422", "4XX", "5XX"],
+            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
             retry_config=retry_config,
         )
 
@@ -1686,6 +1739,11 @@ class BankFeedAccounts(BaseSDK):
                 models.NotFoundResponseData, http_res
             )
             raise models.NotFoundResponse(response_data, http_res)
+        if utils.match_response(http_res, "405", "application/json"):
+            response_data = unmarshal_json_response(
+                models.MethodNotAllowedResponseData, http_res
+            )
+            raise models.MethodNotAllowedResponse(response_data, http_res)
         if utils.match_response(http_res, "422", "application/json"):
             response_data = unmarshal_json_response(
                 models.UnprocessableResponseData, http_res
@@ -1796,7 +1854,7 @@ class BankFeedAccounts(BaseSDK):
                 ),
             ),
             request=req,
-            error_status_codes=["400", "401", "402", "404", "422", "4XX", "5XX"],
+            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
             retry_config=retry_config,
         )
 
@@ -1829,6 +1887,11 @@ class BankFeedAccounts(BaseSDK):
                 models.NotFoundResponseData, http_res
             )
             raise models.NotFoundResponse(response_data, http_res)
+        if utils.match_response(http_res, "405", "application/json"):
+            response_data = unmarshal_json_response(
+                models.MethodNotAllowedResponseData, http_res
+            )
+            raise models.MethodNotAllowedResponse(response_data, http_res)
         if utils.match_response(http_res, "422", "application/json"):
             response_data = unmarshal_json_response(
                 models.UnprocessableResponseData, http_res

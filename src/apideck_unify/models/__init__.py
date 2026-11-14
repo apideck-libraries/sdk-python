@@ -2090,6 +2090,13 @@ if TYPE_CHECKING:
         TrackingCategoriesMode,
     )
     from .compensation import Compensation, CompensationTypedDict
+    from .confirmconnection import ConfirmConnection, ConfirmConnectionTypedDict
+    from .confirmconnectionresponse import (
+        ConfirmConnectionResponse,
+        ConfirmConnectionResponseData,
+        ConfirmConnectionResponseDataTypedDict,
+        ConfirmConnectionResponseTypedDict,
+    )
     from .conflictresponse import (
         ConflictResponse,
         ConflictResponseData,
@@ -4896,6 +4903,15 @@ if TYPE_CHECKING:
         Warnings,
         WarningsTypedDict,
     )
+    from .methodnotallowedresponse import (
+        Error2,
+        Error2TypedDict,
+        MethodNotAllowedResponse,
+        MethodNotAllowedResponseData,
+        MethodNotAllowedResponseDetail,
+        MethodNotAllowedResponseDetailTypedDict,
+        MethodNotAllowedResponseError,
+    )
     from .no_response_error import NoResponseError
     from .note import Note, NoteTypedDict
     from .note_input import NoteInput, NoteInputTypedDict
@@ -5660,6 +5676,14 @@ if TYPE_CHECKING:
         VaultConnectionsAllRequestTypedDict,
         VaultConnectionsAllResponse,
         VaultConnectionsAllResponseTypedDict,
+    )
+    from .vault_connectionsconfirmop import (
+        VaultConnectionsConfirmGlobals,
+        VaultConnectionsConfirmGlobalsTypedDict,
+        VaultConnectionsConfirmRequest,
+        VaultConnectionsConfirmRequestTypedDict,
+        VaultConnectionsConfirmResponse,
+        VaultConnectionsConfirmResponseTypedDict,
     )
     from .vault_connectionsdeleteop import (
         VaultConnectionsDeleteGlobals,
@@ -7474,6 +7498,12 @@ __all__ = [
     "ComponentsTypedDict",
     "Configuration",
     "ConfigurationTypedDict",
+    "ConfirmConnection",
+    "ConfirmConnectionResponse",
+    "ConfirmConnectionResponseData",
+    "ConfirmConnectionResponseDataTypedDict",
+    "ConfirmConnectionResponseTypedDict",
+    "ConfirmConnectionTypedDict",
     "ConflictResponse",
     "ConflictResponseData",
     "ConflictResponseDetail",
@@ -8422,6 +8452,8 @@ __all__ = [
     "EnvironmentNotes",
     "EnvironmentNotesTypedDict",
     "Error",
+    "Error2",
+    "Error2TypedDict",
     "ErrorTypedDict",
     "EvenWeeks",
     "EvenWeeksTypedDict",
@@ -9540,6 +9572,11 @@ __all__ = [
     "MetaTypedDict",
     "Metadata",
     "MetadataTypedDict",
+    "MethodNotAllowedResponse",
+    "MethodNotAllowedResponseData",
+    "MethodNotAllowedResponseDetail",
+    "MethodNotAllowedResponseDetailTypedDict",
+    "MethodNotAllowedResponseError",
     "Mode",
     "NoResponseError",
     "NotFoundResponse",
@@ -10186,6 +10223,12 @@ __all__ = [
     "VaultConnectionsAllRequestTypedDict",
     "VaultConnectionsAllResponse",
     "VaultConnectionsAllResponseTypedDict",
+    "VaultConnectionsConfirmGlobals",
+    "VaultConnectionsConfirmGlobalsTypedDict",
+    "VaultConnectionsConfirmRequest",
+    "VaultConnectionsConfirmRequestTypedDict",
+    "VaultConnectionsConfirmResponse",
+    "VaultConnectionsConfirmResponseTypedDict",
     "VaultConnectionsDeleteGlobals",
     "VaultConnectionsDeleteGlobalsTypedDict",
     "VaultConnectionsDeleteRequest",
@@ -11945,6 +11988,12 @@ _dynamic_imports: dict[str, str] = {
     "TrackingCategoriesMode": ".companyinfo",
     "Compensation": ".compensation",
     "CompensationTypedDict": ".compensation",
+    "ConfirmConnection": ".confirmconnection",
+    "ConfirmConnectionTypedDict": ".confirmconnection",
+    "ConfirmConnectionResponse": ".confirmconnectionresponse",
+    "ConfirmConnectionResponseData": ".confirmconnectionresponse",
+    "ConfirmConnectionResponseDataTypedDict": ".confirmconnectionresponse",
+    "ConfirmConnectionResponseTypedDict": ".confirmconnectionresponse",
     "ConflictResponse": ".conflictresponse",
     "ConflictResponseData": ".conflictresponse",
     "ConflictResponseDetail": ".conflictresponse",
@@ -14028,6 +14077,13 @@ _dynamic_imports: dict[str, str] = {
     "MetaTypedDict": ".meta",
     "Warnings": ".meta",
     "WarningsTypedDict": ".meta",
+    "Error2": ".methodnotallowedresponse",
+    "Error2TypedDict": ".methodnotallowedresponse",
+    "MethodNotAllowedResponse": ".methodnotallowedresponse",
+    "MethodNotAllowedResponseData": ".methodnotallowedresponse",
+    "MethodNotAllowedResponseDetail": ".methodnotallowedresponse",
+    "MethodNotAllowedResponseDetailTypedDict": ".methodnotallowedresponse",
+    "MethodNotAllowedResponseError": ".methodnotallowedresponse",
     "NoResponseError": ".no_response_error",
     "Note": ".note",
     "NoteTypedDict": ".note",
@@ -14628,6 +14684,12 @@ _dynamic_imports: dict[str, str] = {
     "VaultConnectionsAllRequestTypedDict": ".vault_connectionsallop",
     "VaultConnectionsAllResponse": ".vault_connectionsallop",
     "VaultConnectionsAllResponseTypedDict": ".vault_connectionsallop",
+    "VaultConnectionsConfirmGlobals": ".vault_connectionsconfirmop",
+    "VaultConnectionsConfirmGlobalsTypedDict": ".vault_connectionsconfirmop",
+    "VaultConnectionsConfirmRequest": ".vault_connectionsconfirmop",
+    "VaultConnectionsConfirmRequestTypedDict": ".vault_connectionsconfirmop",
+    "VaultConnectionsConfirmResponse": ".vault_connectionsconfirmop",
+    "VaultConnectionsConfirmResponseTypedDict": ".vault_connectionsconfirmop",
     "VaultConnectionsDeleteGlobals": ".vault_connectionsdeleteop",
     "VaultConnectionsDeleteGlobalsTypedDict": ".vault_connectionsdeleteop",
     "VaultConnectionsDeleteRequest": ".vault_connectionsdeleteop",

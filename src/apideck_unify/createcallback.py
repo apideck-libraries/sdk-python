@@ -27,6 +27,8 @@ class CreateCallback(BaseSDK):
 
         This endpoint creates a callback state that can be used to issue requests to the callback endpoint.
 
+        Call it with your API key. For an application with `enforced` OAuth protection, a Vault session token (`x-apideck-auth-type: JWT`) gets a `401`, because a callback state skips the browser binding.
+
 
         :param service_id: Service ID of the resource to return
         :param unified_api: Unified API
@@ -179,6 +181,8 @@ class CreateCallback(BaseSDK):
         r"""Create Callback State
 
         This endpoint creates a callback state that can be used to issue requests to the callback endpoint.
+
+        Call it with your API key. For an application with `enforced` OAuth protection, a Vault session token (`x-apideck-auth-type: JWT`) gets a `401`, because a callback state skips the browser binding.
 
 
         :param service_id: Service ID of the resource to return

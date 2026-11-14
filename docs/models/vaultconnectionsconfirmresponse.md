@@ -1,0 +1,11 @@
+# VaultConnectionsConfirmResponse
+
+
+## Fields
+
+| Field                                                                                | Type                                                                                 | Required                                                                             | Description                                                                          |
+| ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ |
+| `http_meta`                                                                          | [models.HTTPMetadata](../models/httpmetadata.md)                                     | :heavy_check_mark:                                                                   | N/A                                                                                  |
+| `confirm_connection_response`                                                        | [Optional[models.ConfirmConnectionResponse]](../models/confirmconnectionresponse.md) | :heavy_minus_sign:                                                                   | Connection confirmed                                                                 |
+| `unexpected_error_response`                                                          | [Optional[models.UnexpectedErrorResponse]](../models/unexpectederrorresponse.md)     | :heavy_minus_sign:                                                                   | Unexpected error                                                                     |
+| `headers`                                                                            | Dict[str, List[*str*]]                                                               | :heavy_check_mark:                                                                   | N/A                                                                                  |

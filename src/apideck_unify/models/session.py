@@ -146,7 +146,7 @@ class SessionTypedDict(TypedDict):
     consumer_metadata: NotRequired[ConsumerMetadataTypedDict]
     r"""The metadata of the consumer. This is used to display the consumer in the sidebar. This is optional, but recommended."""
     redirect_uri: NotRequired[str]
-    r"""The URL to redirect the user to after the session has been configured."""
+    r"""The URL to redirect the user to after the session has been configured. When your application's OAuth protection mode is `enforced`, this value must match one of the application's allowed redirect URLs or redirect URIs (the Hosted Vault callback page is always allowed, and the integration page when its query is empty or a single registered `redirectToAppUrl`); an unregistered value is rejected with a 400 `RequestValidationError` and no session is created."""
     settings: NotRequired[SettingsTypedDict]
     r"""Settings to change the way the Vault is displayed."""
     theme: NotRequired[ThemeTypedDict]
@@ -160,7 +160,7 @@ class Session(BaseModel):
     r"""The metadata of the consumer. This is used to display the consumer in the sidebar. This is optional, but recommended."""
 
     redirect_uri: Optional[str] = None
-    r"""The URL to redirect the user to after the session has been configured."""
+    r"""The URL to redirect the user to after the session has been configured. When your application's OAuth protection mode is `enforced`, this value must match one of the application's allowed redirect URLs or redirect URIs (the Hosted Vault callback page is always allowed, and the integration page when its query is empty or a single registered `redirectToAppUrl`); an unregistered value is rejected with a 400 `RequestValidationError` and no session is created."""
 
     settings: Optional[Settings] = None
     r"""Settings to change the way the Vault is displayed."""
