@@ -409,6 +409,7 @@ class Quotes(BaseSDK):
         terms: OptionalNullable[str] = UNSET,
         terms_id: OptionalNullable[str] = UNSET,
         reference: OptionalNullable[str] = UNSET,
+        po_number: OptionalNullable[str] = UNSET,
         status: OptionalNullable[models.QuoteStatus] = UNSET,
         currency: OptionalNullable[models.Currency] = UNSET,
         currency_rate: OptionalNullable[float] = UNSET,
@@ -472,6 +473,7 @@ class Quotes(BaseSDK):
         :param terms: Terms of the quote.
         :param terms_id: The ID of the payment terms
         :param reference: Optional reference identifier for the transaction.
+        :param po_number: A PO Number uniquely identifies a purchase order and is generally defined by the buyer. The buyer will match the PO number in the quote to the Purchase Order.
         :param status: Quote status
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
         :param currency_rate: Currency Exchange Rate at the time entity was recorded/generated.
@@ -527,6 +529,7 @@ class Quotes(BaseSDK):
                 terms=terms,
                 terms_id=terms_id,
                 reference=reference,
+                po_number=po_number,
                 status=status,
                 currency=currency,
                 currency_rate=currency_rate,
@@ -690,6 +693,7 @@ class Quotes(BaseSDK):
         terms: OptionalNullable[str] = UNSET,
         terms_id: OptionalNullable[str] = UNSET,
         reference: OptionalNullable[str] = UNSET,
+        po_number: OptionalNullable[str] = UNSET,
         status: OptionalNullable[models.QuoteStatus] = UNSET,
         currency: OptionalNullable[models.Currency] = UNSET,
         currency_rate: OptionalNullable[float] = UNSET,
@@ -753,6 +757,7 @@ class Quotes(BaseSDK):
         :param terms: Terms of the quote.
         :param terms_id: The ID of the payment terms
         :param reference: Optional reference identifier for the transaction.
+        :param po_number: A PO Number uniquely identifies a purchase order and is generally defined by the buyer. The buyer will match the PO number in the quote to the Purchase Order.
         :param status: Quote status
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
         :param currency_rate: Currency Exchange Rate at the time entity was recorded/generated.
@@ -808,6 +813,7 @@ class Quotes(BaseSDK):
                 terms=terms,
                 terms_id=terms_id,
                 reference=reference,
+                po_number=po_number,
                 status=status,
                 currency=currency,
                 currency_rate=currency_rate,
@@ -1274,6 +1280,7 @@ class Quotes(BaseSDK):
         terms: OptionalNullable[str] = UNSET,
         terms_id: OptionalNullable[str] = UNSET,
         reference: OptionalNullable[str] = UNSET,
+        po_number: OptionalNullable[str] = UNSET,
         status: OptionalNullable[models.QuoteStatus] = UNSET,
         currency: OptionalNullable[models.Currency] = UNSET,
         currency_rate: OptionalNullable[float] = UNSET,
@@ -1338,6 +1345,7 @@ class Quotes(BaseSDK):
         :param terms: Terms of the quote.
         :param terms_id: The ID of the payment terms
         :param reference: Optional reference identifier for the transaction.
+        :param po_number: A PO Number uniquely identifies a purchase order and is generally defined by the buyer. The buyer will match the PO number in the quote to the Purchase Order.
         :param status: Quote status
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
         :param currency_rate: Currency Exchange Rate at the time entity was recorded/generated.
@@ -1394,6 +1402,7 @@ class Quotes(BaseSDK):
                 terms=terms,
                 terms_id=terms_id,
                 reference=reference,
+                po_number=po_number,
                 status=status,
                 currency=currency,
                 currency_rate=currency_rate,
@@ -1558,6 +1567,7 @@ class Quotes(BaseSDK):
         terms: OptionalNullable[str] = UNSET,
         terms_id: OptionalNullable[str] = UNSET,
         reference: OptionalNullable[str] = UNSET,
+        po_number: OptionalNullable[str] = UNSET,
         status: OptionalNullable[models.QuoteStatus] = UNSET,
         currency: OptionalNullable[models.Currency] = UNSET,
         currency_rate: OptionalNullable[float] = UNSET,
@@ -1622,6 +1632,7 @@ class Quotes(BaseSDK):
         :param terms: Terms of the quote.
         :param terms_id: The ID of the payment terms
         :param reference: Optional reference identifier for the transaction.
+        :param po_number: A PO Number uniquely identifies a purchase order and is generally defined by the buyer. The buyer will match the PO number in the quote to the Purchase Order.
         :param status: Quote status
         :param currency: Indicates the associated currency for an amount of money. Values correspond to [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217).
         :param currency_rate: Currency Exchange Rate at the time entity was recorded/generated.
@@ -1678,6 +1689,7 @@ class Quotes(BaseSDK):
                 terms=terms,
                 terms_id=terms_id,
                 reference=reference,
+                po_number=po_number,
                 status=status,
                 currency=currency,
                 currency_rate=currency_rate,

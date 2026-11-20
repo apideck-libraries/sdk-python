@@ -76,6 +76,8 @@ class QuoteTypedDict(TypedDict):
     r"""The ID of the payment terms"""
     reference: NotRequired[Nullable[str]]
     r"""Optional reference identifier for the transaction."""
+    po_number: NotRequired[Nullable[str]]
+    r"""A PO Number uniquely identifies a purchase order and is generally defined by the buyer. The buyer will match the PO number in the quote to the Purchase Order."""
     status: NotRequired[Nullable[QuoteStatus]]
     r"""Quote status"""
     currency: NotRequired[Nullable[Currency]]
@@ -166,6 +168,9 @@ class Quote(BaseModel):
 
     reference: OptionalNullable[str] = UNSET
     r"""Optional reference identifier for the transaction."""
+
+    po_number: OptionalNullable[str] = UNSET
+    r"""A PO Number uniquely identifies a purchase order and is generally defined by the buyer. The buyer will match the PO number in the quote to the Purchase Order."""
 
     status: Annotated[
         OptionalNullable[QuoteStatus], PlainValidator(validate_open_enum(False))
@@ -276,6 +281,7 @@ class Quote(BaseModel):
             "terms",
             "terms_id",
             "reference",
+            "po_number",
             "status",
             "currency",
             "currency_rate",
@@ -313,6 +319,7 @@ class Quote(BaseModel):
             "terms",
             "terms_id",
             "reference",
+            "po_number",
             "status",
             "currency",
             "currency_rate",
@@ -383,6 +390,8 @@ class QuoteInputTypedDict(TypedDict):
     r"""The ID of the payment terms"""
     reference: NotRequired[Nullable[str]]
     r"""Optional reference identifier for the transaction."""
+    po_number: NotRequired[Nullable[str]]
+    r"""A PO Number uniquely identifies a purchase order and is generally defined by the buyer. The buyer will match the PO number in the quote to the Purchase Order."""
     status: NotRequired[Nullable[QuoteStatus]]
     r"""Quote status"""
     currency: NotRequired[Nullable[Currency]]
@@ -456,6 +465,9 @@ class QuoteInput(BaseModel):
 
     reference: OptionalNullable[str] = UNSET
     r"""Optional reference identifier for the transaction."""
+
+    po_number: OptionalNullable[str] = UNSET
+    r"""A PO Number uniquely identifies a purchase order and is generally defined by the buyer. The buyer will match the PO number in the quote to the Purchase Order."""
 
     status: Annotated[
         OptionalNullable[QuoteStatus], PlainValidator(validate_open_enum(False))
@@ -551,6 +563,7 @@ class QuoteInput(BaseModel):
             "terms",
             "terms_id",
             "reference",
+            "po_number",
             "status",
             "currency",
             "currency_rate",
@@ -583,6 +596,7 @@ class QuoteInput(BaseModel):
             "terms",
             "terms_id",
             "reference",
+            "po_number",
             "status",
             "currency",
             "currency_rate",
