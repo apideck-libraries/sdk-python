@@ -118,6 +118,8 @@ class BillTypedDict(TypedDict):
     notes: NotRequired[Nullable[str]]
     status: NotRequired[Nullable[BillStatus]]
     r"""Invoice status"""
+    payment_hold: NotRequired[Nullable[bool]]
+    r"""Whether the bill is on payment hold. A bill on hold is not ready to pay, whatever its status. Not returned by connectors that do not report a payment hold."""
     ledger_account: NotRequired[Nullable[LinkedLedgerAccountTypedDict]]
     payment_method: NotRequired[Nullable[str]]
     r"""Payment method used for the transaction, such as cash, credit card, bank transfer, or check"""
@@ -256,6 +258,9 @@ class Bill(BaseModel):
     ] = UNSET
     r"""Invoice status"""
 
+    payment_hold: OptionalNullable[bool] = UNSET
+    r"""Whether the bill is on payment hold. A bill on hold is not ready to pay, whatever its status. Not returned by connectors that do not report a payment hold."""
+
     ledger_account: OptionalNullable[LinkedLedgerAccount] = UNSET
 
     payment_method: OptionalNullable[str] = UNSET
@@ -391,6 +396,7 @@ class Bill(BaseModel):
             "tax_code",
             "notes",
             "status",
+            "payment_hold",
             "ledger_account",
             "payment_method",
             "channel",
@@ -444,6 +450,7 @@ class Bill(BaseModel):
             "tax_code",
             "notes",
             "status",
+            "payment_hold",
             "ledger_account",
             "payment_method",
             "channel",
