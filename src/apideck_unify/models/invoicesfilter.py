@@ -23,6 +23,8 @@ class InvoicesFilterTypedDict(TypedDict):
     r"""Filter by the subsidiary (legal entity) the record belongs to. Only honored on connectors that support multi-entity scoping (e.g. NetSuite OneWorld); ignored elsewhere."""
     customer_id: NotRequired[str]
     r"""Filter by customer id"""
+    po_number: NotRequired[str]
+    r"""Filter by the purchase order number (customer reference) set on the invoice. Exact match; more than one invoice can carry the same PO number."""
 
 
 class InvoicesFilter(BaseModel):
@@ -47,3 +49,6 @@ class InvoicesFilter(BaseModel):
 
     customer_id: Annotated[Optional[str], FieldMetadata(query=True)] = None
     r"""Filter by customer id"""
+
+    po_number: Annotated[Optional[str], FieldMetadata(query=True)] = None
+    r"""Filter by the purchase order number (customer reference) set on the invoice. Exact match; more than one invoice can carry the same PO number."""
