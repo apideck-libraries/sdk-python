@@ -3001,7 +3001,11 @@ if TYPE_CHECKING:
         CustomFieldValue5TypedDict,
         CustomFieldValueTypedDict,
     )
-    from .customfieldfinder import CustomFieldFinder, CustomFieldFinderTypedDict
+    from .customfieldfinder import (
+        CustomFieldFinder,
+        CustomFieldFinderType,
+        CustomFieldFinderTypedDict,
+    )
     from .custommapping import CustomMapping, CustomMappingTypedDict
     from .custommapping_input import CustomMappingInput, CustomMappingInputTypedDict
     from .customobject import (
@@ -8119,6 +8123,7 @@ __all__ = [
     "CustomField2",
     "CustomField2TypedDict",
     "CustomFieldFinder",
+    "CustomFieldFinderType",
     "CustomFieldFinderTypedDict",
     "CustomFieldTypedDict",
     "CustomFieldValue",
@@ -12653,6 +12658,7 @@ _dynamic_imports: dict[str, str] = {
     "CustomFieldValue5TypedDict": ".customfield",
     "CustomFieldValueTypedDict": ".customfield",
     "CustomFieldFinder": ".customfieldfinder",
+    "CustomFieldFinderType": ".customfieldfinder",
     "CustomFieldFinderTypedDict": ".customfieldfinder",
     "CustomMapping": ".custommapping",
     "CustomMappingTypedDict": ".custommapping",
