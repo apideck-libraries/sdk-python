@@ -18,6 +18,8 @@ class CoverageTypedDict(TypedDict):
     r"""ID of the resource in the Connector's API (downstream)"""
     downstream_name: NotRequired[str]
     r"""Name of the resource in the Connector's API (downstream)"""
+    status: NotRequired[ResourceStatus]
+    r"""Status of the resource. Resources with status live or beta are callable."""
     pagination_supported: NotRequired[bool]
     r"""Indicates if pagination (cursor and limit parameters) is supported on the list endpoint of the resource."""
     pagination: NotRequired[PaginationCoverageTypedDict]
@@ -40,6 +42,11 @@ class Coverage(BaseModel):
     downstream_name: Optional[str] = None
     r"""Name of the resource in the Connector's API (downstream)"""
 
+    status: Annotated[
+        Optional[ResourceStatus], PlainValidator(validate_open_enum(False))
+    ] = None
+    r"""Status of the resource. Resources with status live or beta are callable."""
+
     pagination_supported: Optional[bool] = None
     r"""Indicates if pagination (cursor and limit parameters) is supported on the list endpoint of the resource."""
 
@@ -59,6 +66,15 @@ class Coverage(BaseModel):
 
     supported_list_fields: Optional[List[SupportedProperty]] = None
     r"""Supported fields on the list endpoint."""
+
+    @field_serializer("status")
+    def serialize_status(self, value):
+        if isinstance(value, str):
+            try:
+                return models.ResourceStatus(value)
+            except ValueError:
+                return value
+        return value
 
 
 class APIResourceCoverageTypedDict(TypedDict):

@@ -6,6 +6,7 @@ from apideck_unify._hooks import HookContext
 from apideck_unify.types import OptionalNullable, UNSET
 from apideck_unify.utils import get_security_from_env
 from apideck_unify.utils.unmarshal_json_response import unmarshal_json_response
+from datetime import date
 from jsonpath import JSONPath
 from typing import Any, Dict, List, Mapping, Optional, Union
 
@@ -406,6 +407,386 @@ class GoodsReceipts(BaseSDK):
                 ),
                 http_meta=models.HTTPMetadata(request=req, response=http_res),
                 next=next_func,
+                headers=utils.get_response_headers(http_res.headers),
+            )
+
+        raise models.APIError("Unexpected response received", http_res)
+
+    def create(
+        self,
+        *,
+        purchase_order_id: str,
+        line_items: Union[
+            List[models.GoodsReceiptLineCreateInput],
+            List[models.GoodsReceiptLineCreateInputTypedDict],
+        ],
+        raw: Optional[bool] = False,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
+        service_id: Optional[str] = None,
+        company_id: Optional[str] = None,
+        received_date: OptionalNullable[date] = UNSET,
+        posted_date: OptionalNullable[date] = UNSET,
+        reference: OptionalNullable[str] = UNSET,
+        notes: OptionalNullable[str] = UNSET,
+        location_id: OptionalNullable[str] = UNSET,
+        pass_through: Optional[
+            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+        ] = None,
+        retries: OptionalNullable[utils.RetryConfig] = UNSET,
+        server_url: Optional[str] = None,
+        timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
+    ) -> models.AccountingGoodsReceiptsAddResponse:
+        r"""Create Goods Receipt
+
+        Create a Goods Receipt against a purchase order. `purchase_order_id` is required and every line names the purchase order line it receives against; a receipt that is not tied to a purchase order cannot be created. The response returns the `id` of the new receipt only: read it with `GET /accounting/goods-receipts/{id}` to see the posted document.
+
+        :param purchase_order_id: ID of the purchase order the goods are received against, as returned by `GET /accounting/purchase-orders`.
+        :param line_items: The quantities received, one entry per purchase order line (or per delivery of a line).
+        :param raw: Include raw response. Mostly used for debugging purposes
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
+        :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param company_id: The ID of the company to scope requests to. For connectors that support multi-company, this overrides the default company configured in connection settings.
+        :param received_date: Date the goods were received - YYYY-MM-DD.
+        :param posted_date: Accounting posting date of the receipt - YYYY-MM-DD, for accounting systems that distinguish it from the received date.
+        :param reference: Supplier-side reference, typically the supplier's delivery note or packing slip number.
+        :param notes: Internal notes or description recorded on the receipt.
+        :param location_id: ID of the warehouse or location the goods are received into. Used for every line that does not set its own `line_items[].location_id`.
+        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
+        :param retries: Override the default retry configuration for this method
+        :param server_url: Override the default server URL for this method
+        :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
+        """
+        base_url = None
+        url_variables = None
+        if timeout_ms is None:
+            timeout_ms = self.sdk_configuration.timeout_ms
+
+        if server_url is not None:
+            base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
+
+        request = models.AccountingGoodsReceiptsAddRequest(
+            raw=raw,
+            consumer_id=consumer_id,
+            app_id=app_id,
+            service_id=service_id,
+            company_id=company_id,
+            goods_receipt_create_input=models.GoodsReceiptCreateInput(
+                purchase_order_id=purchase_order_id,
+                received_date=received_date,
+                posted_date=posted_date,
+                reference=reference,
+                notes=notes,
+                location_id=location_id,
+                line_items=utils.get_pydantic_model(
+                    line_items, List[models.GoodsReceiptLineCreateInput]
+                ),
+                pass_through=utils.get_pydantic_model(
+                    pass_through, Optional[List[models.PassThroughBody]]
+                ),
+            ),
+        )
+
+        req = self._build_request(
+            method="POST",
+            path="/accounting/goods-receipts",
+            base_url=base_url,
+            url_variables=url_variables,
+            request=request,
+            request_body_required=True,
+            request_has_path_params=False,
+            request_has_query_params=True,
+            user_agent_header="user-agent",
+            accept_header_value="application/json",
+            http_headers=http_headers,
+            _globals=models.AccountingGoodsReceiptsAddGlobals(
+                consumer_id=self.sdk_configuration.globals.consumer_id,
+                app_id=self.sdk_configuration.globals.app_id,
+            ),
+            security=self.sdk_configuration.security,
+            get_serialized_body=lambda: utils.serialize_request_body(
+                request.goods_receipt_create_input,
+                False,
+                False,
+                "json",
+                models.GoodsReceiptCreateInput,
+            ),
+            timeout_ms=timeout_ms,
+        )
+
+        if retries == UNSET:
+            if self.sdk_configuration.retry_config is not UNSET:
+                retries = self.sdk_configuration.retry_config
+            else:
+                retries = utils.RetryConfig(
+                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 900000), True
+                )
+
+        retry_config = None
+        if isinstance(retries, utils.RetryConfig):
+            retry_config = (retries, ["408", "500", "502", "503", "504"])
+
+        http_res = self.do_request(
+            hook_ctx=HookContext(
+                config=self.sdk_configuration,
+                base_url=base_url or "",
+                operation_id="accounting.goodsReceiptsAdd",
+                oauth2_scopes=None,
+                security_source=get_security_from_env(
+                    self.sdk_configuration.security, models.Security
+                ),
+            ),
+            request=req,
+            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            retry_config=retry_config,
+        )
+
+        response_data: Any = None
+        if utils.match_response(http_res, "201", "application/json"):
+            return models.AccountingGoodsReceiptsAddResponse(
+                create_goods_receipt_response=unmarshal_json_response(
+                    Optional[models.CreateGoodsReceiptResponse], http_res
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+                headers=utils.get_response_headers(http_res.headers),
+            )
+        if utils.match_response(http_res, "400", "application/json"):
+            response_data = unmarshal_json_response(
+                models.BadRequestResponseData, http_res
+            )
+            raise models.BadRequestResponse(response_data, http_res)
+        if utils.match_response(http_res, "401", "application/json"):
+            response_data = unmarshal_json_response(
+                models.UnauthorizedResponseData, http_res
+            )
+            raise models.UnauthorizedResponse(response_data, http_res)
+        if utils.match_response(http_res, "402", "application/json"):
+            response_data = unmarshal_json_response(
+                models.PaymentRequiredResponseData, http_res
+            )
+            raise models.PaymentRequiredResponse(response_data, http_res)
+        if utils.match_response(http_res, "404", "application/json"):
+            response_data = unmarshal_json_response(
+                models.NotFoundResponseData, http_res
+            )
+            raise models.NotFoundResponse(response_data, http_res)
+        if utils.match_response(http_res, "405", "application/json"):
+            response_data = unmarshal_json_response(
+                models.MethodNotAllowedResponseData, http_res
+            )
+            raise models.MethodNotAllowedResponse(response_data, http_res)
+        if utils.match_response(http_res, "422", "application/json"):
+            response_data = unmarshal_json_response(
+                models.UnprocessableResponseData, http_res
+            )
+            raise models.UnprocessableResponse(response_data, http_res)
+        if utils.match_response(http_res, "4XX", "*"):
+            http_res_text = utils.stream_to_text(http_res)
+            raise models.APIError("API error occurred", http_res, http_res_text)
+        if utils.match_response(http_res, "5XX", "*"):
+            http_res_text = utils.stream_to_text(http_res)
+            raise models.APIError("API error occurred", http_res, http_res_text)
+        if utils.match_response(http_res, "default", "application/json"):
+            return models.AccountingGoodsReceiptsAddResponse(
+                unexpected_error_response=unmarshal_json_response(
+                    Optional[models.UnexpectedErrorResponse], http_res
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+                headers=utils.get_response_headers(http_res.headers),
+            )
+
+        raise models.APIError("Unexpected response received", http_res)
+
+    async def create_async(
+        self,
+        *,
+        purchase_order_id: str,
+        line_items: Union[
+            List[models.GoodsReceiptLineCreateInput],
+            List[models.GoodsReceiptLineCreateInputTypedDict],
+        ],
+        raw: Optional[bool] = False,
+        consumer_id: Optional[str] = None,
+        app_id: Optional[str] = None,
+        service_id: Optional[str] = None,
+        company_id: Optional[str] = None,
+        received_date: OptionalNullable[date] = UNSET,
+        posted_date: OptionalNullable[date] = UNSET,
+        reference: OptionalNullable[str] = UNSET,
+        notes: OptionalNullable[str] = UNSET,
+        location_id: OptionalNullable[str] = UNSET,
+        pass_through: Optional[
+            Union[List[models.PassThroughBody], List[models.PassThroughBodyTypedDict]]
+        ] = None,
+        retries: OptionalNullable[utils.RetryConfig] = UNSET,
+        server_url: Optional[str] = None,
+        timeout_ms: Optional[int] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
+    ) -> models.AccountingGoodsReceiptsAddResponse:
+        r"""Create Goods Receipt
+
+        Create a Goods Receipt against a purchase order. `purchase_order_id` is required and every line names the purchase order line it receives against; a receipt that is not tied to a purchase order cannot be created. The response returns the `id` of the new receipt only: read it with `GET /accounting/goods-receipts/{id}` to see the posted document.
+
+        :param purchase_order_id: ID of the purchase order the goods are received against, as returned by `GET /accounting/purchase-orders`.
+        :param line_items: The quantities received, one entry per purchase order line (or per delivery of a line).
+        :param raw: Include raw response. Mostly used for debugging purposes
+        :param consumer_id: ID of the consumer which you want to get or push data from
+        :param app_id: The ID of your Unify application
+        :param service_id: Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.
+        :param company_id: The ID of the company to scope requests to. For connectors that support multi-company, this overrides the default company configured in connection settings.
+        :param received_date: Date the goods were received - YYYY-MM-DD.
+        :param posted_date: Accounting posting date of the receipt - YYYY-MM-DD, for accounting systems that distinguish it from the received date.
+        :param reference: Supplier-side reference, typically the supplier's delivery note or packing slip number.
+        :param notes: Internal notes or description recorded on the receipt.
+        :param location_id: ID of the warehouse or location the goods are received into. Used for every line that does not set its own `line_items[].location_id`.
+        :param pass_through: The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.
+        :param retries: Override the default retry configuration for this method
+        :param server_url: Override the default server URL for this method
+        :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
+        :param http_headers: Additional headers to set or replace on requests.
+        """
+        base_url = None
+        url_variables = None
+        if timeout_ms is None:
+            timeout_ms = self.sdk_configuration.timeout_ms
+
+        if server_url is not None:
+            base_url = server_url
+        else:
+            base_url = self._get_url(base_url, url_variables)
+
+        request = models.AccountingGoodsReceiptsAddRequest(
+            raw=raw,
+            consumer_id=consumer_id,
+            app_id=app_id,
+            service_id=service_id,
+            company_id=company_id,
+            goods_receipt_create_input=models.GoodsReceiptCreateInput(
+                purchase_order_id=purchase_order_id,
+                received_date=received_date,
+                posted_date=posted_date,
+                reference=reference,
+                notes=notes,
+                location_id=location_id,
+                line_items=utils.get_pydantic_model(
+                    line_items, List[models.GoodsReceiptLineCreateInput]
+                ),
+                pass_through=utils.get_pydantic_model(
+                    pass_through, Optional[List[models.PassThroughBody]]
+                ),
+            ),
+        )
+
+        req = self._build_request_async(
+            method="POST",
+            path="/accounting/goods-receipts",
+            base_url=base_url,
+            url_variables=url_variables,
+            request=request,
+            request_body_required=True,
+            request_has_path_params=False,
+            request_has_query_params=True,
+            user_agent_header="user-agent",
+            accept_header_value="application/json",
+            http_headers=http_headers,
+            _globals=models.AccountingGoodsReceiptsAddGlobals(
+                consumer_id=self.sdk_configuration.globals.consumer_id,
+                app_id=self.sdk_configuration.globals.app_id,
+            ),
+            security=self.sdk_configuration.security,
+            get_serialized_body=lambda: utils.serialize_request_body(
+                request.goods_receipt_create_input,
+                False,
+                False,
+                "json",
+                models.GoodsReceiptCreateInput,
+            ),
+            timeout_ms=timeout_ms,
+        )
+
+        if retries == UNSET:
+            if self.sdk_configuration.retry_config is not UNSET:
+                retries = self.sdk_configuration.retry_config
+            else:
+                retries = utils.RetryConfig(
+                    "backoff", utils.BackoffStrategy(500, 60000, 1.5, 900000), True
+                )
+
+        retry_config = None
+        if isinstance(retries, utils.RetryConfig):
+            retry_config = (retries, ["408", "500", "502", "503", "504"])
+
+        http_res = await self.do_request_async(
+            hook_ctx=HookContext(
+                config=self.sdk_configuration,
+                base_url=base_url or "",
+                operation_id="accounting.goodsReceiptsAdd",
+                oauth2_scopes=None,
+                security_source=get_security_from_env(
+                    self.sdk_configuration.security, models.Security
+                ),
+            ),
+            request=req,
+            error_status_codes=["400", "401", "402", "404", "405", "422", "4XX", "5XX"],
+            retry_config=retry_config,
+        )
+
+        response_data: Any = None
+        if utils.match_response(http_res, "201", "application/json"):
+            return models.AccountingGoodsReceiptsAddResponse(
+                create_goods_receipt_response=unmarshal_json_response(
+                    Optional[models.CreateGoodsReceiptResponse], http_res
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
+                headers=utils.get_response_headers(http_res.headers),
+            )
+        if utils.match_response(http_res, "400", "application/json"):
+            response_data = unmarshal_json_response(
+                models.BadRequestResponseData, http_res
+            )
+            raise models.BadRequestResponse(response_data, http_res)
+        if utils.match_response(http_res, "401", "application/json"):
+            response_data = unmarshal_json_response(
+                models.UnauthorizedResponseData, http_res
+            )
+            raise models.UnauthorizedResponse(response_data, http_res)
+        if utils.match_response(http_res, "402", "application/json"):
+            response_data = unmarshal_json_response(
+                models.PaymentRequiredResponseData, http_res
+            )
+            raise models.PaymentRequiredResponse(response_data, http_res)
+        if utils.match_response(http_res, "404", "application/json"):
+            response_data = unmarshal_json_response(
+                models.NotFoundResponseData, http_res
+            )
+            raise models.NotFoundResponse(response_data, http_res)
+        if utils.match_response(http_res, "405", "application/json"):
+            response_data = unmarshal_json_response(
+                models.MethodNotAllowedResponseData, http_res
+            )
+            raise models.MethodNotAllowedResponse(response_data, http_res)
+        if utils.match_response(http_res, "422", "application/json"):
+            response_data = unmarshal_json_response(
+                models.UnprocessableResponseData, http_res
+            )
+            raise models.UnprocessableResponse(response_data, http_res)
+        if utils.match_response(http_res, "4XX", "*"):
+            http_res_text = await utils.stream_to_text_async(http_res)
+            raise models.APIError("API error occurred", http_res, http_res_text)
+        if utils.match_response(http_res, "5XX", "*"):
+            http_res_text = await utils.stream_to_text_async(http_res)
+            raise models.APIError("API error occurred", http_res, http_res_text)
+        if utils.match_response(http_res, "default", "application/json"):
+            return models.AccountingGoodsReceiptsAddResponse(
+                unexpected_error_response=unmarshal_json_response(
+                    Optional[models.UnexpectedErrorResponse], http_res
+                ),
+                http_meta=models.HTTPMetadata(request=req, response=http_res),
                 headers=utils.get_response_headers(http_res.headers),
             )
 

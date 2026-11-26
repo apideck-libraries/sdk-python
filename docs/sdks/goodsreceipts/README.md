@@ -6,6 +6,7 @@
 ### Available Operations
 
 * [list](#list) - List Goods Receipts
+* [create](#create) - Create Goods Receipt
 * [get](#get) - Get Goods Receipt
 
 ## list
@@ -66,6 +67,83 @@ with Apideck(
 ### Response
 
 **[models.AccountingGoodsReceiptsAllResponse](../../models/accountinggoodsreceiptsallresponse.md)**
+
+### Errors
+
+| Error Type                      | Status Code                     | Content Type                    |
+| ------------------------------- | ------------------------------- | ------------------------------- |
+| models.BadRequestResponse       | 400                             | application/json                |
+| models.UnauthorizedResponse     | 401                             | application/json                |
+| models.PaymentRequiredResponse  | 402                             | application/json                |
+| models.NotFoundResponse         | 404                             | application/json                |
+| models.MethodNotAllowedResponse | 405                             | application/json                |
+| models.UnprocessableResponse    | 422                             | application/json                |
+| models.APIError                 | 4XX, 5XX                        | \*/\*                           |
+
+## create
+
+Create a Goods Receipt against a purchase order. `purchase_order_id` is required and every line names the purchase order line it receives against; a receipt that is not tied to a purchase order cannot be created. The response returns the `id` of the new receipt only: read it with `GET /accounting/goods-receipts/{id}` to see the posted document.
+
+### Example Usage
+
+<!-- UsageSnippet language="python" operationID="accounting.goodsReceiptsAdd" method="post" path="/accounting/goods-receipts" -->
+```python
+from apideck_unify import Apideck
+from datetime import date
+import os
+
+
+with Apideck(
+    consumer_id="test-consumer",
+    app_id="dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX",
+    api_key=os.getenv("APIDECK_API_KEY", ""),
+) as apideck:
+
+    res = apideck.accounting.goods_receipts.create(purchase_order_id="4500000004", line_items=[], raw=False, service_id="salesforce", company_id="12345", received_date=date.fromisoformat("2026-09-01"), posted_date=date.fromisoformat("2026-09-01"), reference="DN-78910", notes="Partial delivery, remainder expected next week.", location_id="1710/171A", pass_through=[
+        {
+            "service_id": "<id>",
+            "extend_paths": [
+                {
+                    "path": "$.nested.property",
+                    "value": {
+                        "TaxClassificationRef": {
+                            "value": "EUC-99990201-V1-00020000",
+                        },
+                    },
+                },
+            ],
+        },
+    ])
+
+    assert res.create_goods_receipt_response is not None
+
+    # Handle response
+    print(res.create_goods_receipt_response)
+
+```
+
+### Parameters
+
+| Parameter                                                                                                                                                    | Type                                                                                                                                                         | Required                                                                                                                                                     | Description                                                                                                                                                  | Example                                                                                                                                                      |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `purchase_order_id`                                                                                                                                          | *str*                                                                                                                                                        | :heavy_check_mark:                                                                                                                                           | ID of the purchase order the goods are received against, as returned by `GET /accounting/purchase-orders`.                                                   | 4500000004                                                                                                                                                   |
+| `line_items`                                                                                                                                                 | List[[models.GoodsReceiptLineCreateInput](../../models/goodsreceiptlinecreateinput.md)]                                                                      | :heavy_check_mark:                                                                                                                                           | The quantities received, one entry per purchase order line (or per delivery of a line).                                                                      |                                                                                                                                                              |
+| `raw`                                                                                                                                                        | *Optional[bool]*                                                                                                                                             | :heavy_minus_sign:                                                                                                                                           | Include raw response. Mostly used for debugging purposes                                                                                                     |                                                                                                                                                              |
+| `consumer_id`                                                                                                                                                | *Optional[str]*                                                                                                                                              | :heavy_minus_sign:                                                                                                                                           | ID of the consumer which you want to get or push data from                                                                                                   | test-consumer                                                                                                                                                |
+| `app_id`                                                                                                                                                     | *Optional[str]*                                                                                                                                              | :heavy_minus_sign:                                                                                                                                           | The ID of your Unify application                                                                                                                             | dSBdXd2H6Mqwfg0atXHXYcysLJE9qyn1VwBtXHX                                                                                                                      |
+| `service_id`                                                                                                                                                 | *Optional[str]*                                                                                                                                              | :heavy_minus_sign:                                                                                                                                           | Provide the service id you want to call (e.g., pipedrive). Only needed when a consumer has activated multiple integrations for a Unified API.                | salesforce                                                                                                                                                   |
+| `company_id`                                                                                                                                                 | *Optional[str]*                                                                                                                                              | :heavy_minus_sign:                                                                                                                                           | The ID of the company to scope requests to. For connectors that support multi-company, this overrides the default company configured in connection settings. | 12345                                                                                                                                                        |
+| `received_date`                                                                                                                                              | [datetime](https://docs.python.org/3/library/datetime.html#datetime-objects)                                                                                 | :heavy_minus_sign:                                                                                                                                           | Date the goods were received - YYYY-MM-DD.                                                                                                                   | 2026-09-01                                                                                                                                                   |
+| `posted_date`                                                                                                                                                | [datetime](https://docs.python.org/3/library/datetime.html#datetime-objects)                                                                                 | :heavy_minus_sign:                                                                                                                                           | Accounting posting date of the receipt - YYYY-MM-DD, for accounting systems that distinguish it from the received date.                                      | 2026-09-01                                                                                                                                                   |
+| `reference`                                                                                                                                                  | *OptionalNullable[str]*                                                                                                                                      | :heavy_minus_sign:                                                                                                                                           | Supplier-side reference, typically the supplier's delivery note or packing slip number.                                                                      | DN-78910                                                                                                                                                     |
+| `notes`                                                                                                                                                      | *OptionalNullable[str]*                                                                                                                                      | :heavy_minus_sign:                                                                                                                                           | Internal notes or description recorded on the receipt.                                                                                                       | Partial delivery, remainder expected next week.                                                                                                              |
+| `location_id`                                                                                                                                                | *OptionalNullable[str]*                                                                                                                                      | :heavy_minus_sign:                                                                                                                                           | ID of the warehouse or location the goods are received into. Used for every line that does not set its own `line_items[].location_id`.                       | 1710/171A                                                                                                                                                    |
+| `pass_through`                                                                                                                                               | List[[models.PassThroughBody](../../models/passthroughbody.md)]                                                                                              | :heavy_minus_sign:                                                                                                                                           | The pass_through property allows passing service-specific, custom data or structured modifications in request body when creating or updating resources.      |                                                                                                                                                              |
+| `retries`                                                                                                                                                    | [Optional[utils.RetryConfig]](../../models/utils/retryconfig.md)                                                                                             | :heavy_minus_sign:                                                                                                                                           | Configuration to override the default retry behavior of the client.                                                                                          |                                                                                                                                                              |
+
+### Response
+
+**[models.AccountingGoodsReceiptsAddResponse](../../models/accountinggoodsreceiptsaddresponse.md)**
 
 ### Errors
 

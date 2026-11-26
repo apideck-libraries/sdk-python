@@ -389,6 +389,7 @@ with Apideck(
 #### [accounting.goods_receipts](docs/sdks/goodsreceipts/README.md)
 
 * [list](docs/sdks/goodsreceipts/README.md#list) - List Goods Receipts
+* [create](docs/sdks/goodsreceipts/README.md#create) - Create Goods Receipt
 * [get](docs/sdks/goodsreceipts/README.md#get) - Get Goods Receipt
 
 #### [accounting.invoice_items](docs/sdks/invoiceitems/README.md)
@@ -1149,8 +1150,8 @@ with Apideck(
 
 
 **Inherit from [`ApideckError`](./src/apideck_unify/models/apideckerror.py)**:
-* [`Unauthorized`](./src/apideck_unify/models/unauthorized.py): Unauthorized. Status code `401`. Applicable to 6 of 383 methods.*
-* [`ConflictResponse`](./src/apideck_unify/models/conflictresponse.py): Conflict — a connection already exists for the target connector. Status code `409`. Applicable to 1 of 383 methods.*
+* [`Unauthorized`](./src/apideck_unify/models/unauthorized.py): Unauthorized. Status code `401`. Applicable to 6 of 384 methods.*
+* [`ConflictResponse`](./src/apideck_unify/models/conflictresponse.py): Conflict — a connection already exists for the target connector. Status code `409`. Applicable to 1 of 384 methods.*
 * [`ResponseValidationError`](./src/apideck_unify/models/responsevalidationerror.py): Type mismatch between the response data and the expected Pydantic model. Provides access to the Pydantic validation error via the `cause` attribute.
 
 </details>
