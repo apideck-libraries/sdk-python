@@ -696,6 +696,14 @@ if TYPE_CHECKING:
         AccountingGeneralLedgerTransactionsOneResponse,
         AccountingGeneralLedgerTransactionsOneResponseTypedDict,
     )
+    from .accounting_goodsreceiptsaddop import (
+        AccountingGoodsReceiptsAddGlobals,
+        AccountingGoodsReceiptsAddGlobalsTypedDict,
+        AccountingGoodsReceiptsAddRequest,
+        AccountingGoodsReceiptsAddRequestTypedDict,
+        AccountingGoodsReceiptsAddResponse,
+        AccountingGoodsReceiptsAddResponseTypedDict,
+    )
     from .accounting_goodsreceiptsallop import (
         AccountingGoodsReceiptsAllGlobals,
         AccountingGoodsReceiptsAllGlobalsTypedDict,
@@ -2395,6 +2403,10 @@ if TYPE_CHECKING:
     from .createfolderresponse import (
         CreateFolderResponse,
         CreateFolderResponseTypedDict,
+    )
+    from .creategoodsreceiptresponse import (
+        CreateGoodsReceiptResponse,
+        CreateGoodsReceiptResponseTypedDict,
     )
     from .createhriscompanyresponse import (
         CreateHrisCompanyResponse,
@@ -4301,6 +4313,16 @@ if TYPE_CHECKING:
     from .getwebhookresponse import GetWebhookResponse, GetWebhookResponseTypedDict
     from .getwebhooksresponse import GetWebhooksResponse, GetWebhooksResponseTypedDict
     from .goodsreceipt import GoodsReceipt, GoodsReceiptStatus, GoodsReceiptTypedDict
+    from .goodsreceiptcreateinput import (
+        GoodsReceiptCreateInput,
+        GoodsReceiptCreateInputTypedDict,
+    )
+    from .goodsreceiptlinecreateinput import (
+        GoodsReceiptLineCreateInput,
+        GoodsReceiptLineCreateInputTypedDict,
+        PurchaseOrderLine,
+        PurchaseOrderLineTypedDict,
+    )
     from .goodsreceiptlineitem import (
         GoodsReceiptLineItem,
         GoodsReceiptLineItemTypedDict,
@@ -6489,6 +6511,12 @@ __all__ = [
     "AccountingGeneralLedgerTransactionsOneRequestTypedDict",
     "AccountingGeneralLedgerTransactionsOneResponse",
     "AccountingGeneralLedgerTransactionsOneResponseTypedDict",
+    "AccountingGoodsReceiptsAddGlobals",
+    "AccountingGoodsReceiptsAddGlobalsTypedDict",
+    "AccountingGoodsReceiptsAddRequest",
+    "AccountingGoodsReceiptsAddRequestTypedDict",
+    "AccountingGoodsReceiptsAddResponse",
+    "AccountingGoodsReceiptsAddResponseTypedDict",
     "AccountingGoodsReceiptsAllGlobals",
     "AccountingGoodsReceiptsAllGlobalsTypedDict",
     "AccountingGoodsReceiptsAllRequest",
@@ -7704,6 +7732,8 @@ __all__ = [
     "CreateFolderRequestTypedDict",
     "CreateFolderResponse",
     "CreateFolderResponseTypedDict",
+    "CreateGoodsReceiptResponse",
+    "CreateGoodsReceiptResponseTypedDict",
     "CreateHrisCompanyResponse",
     "CreateHrisCompanyResponseTypedDict",
     "CreateInvoiceItemResponse",
@@ -9100,6 +9130,10 @@ __all__ = [
     "GetWebhooksResponse",
     "GetWebhooksResponseTypedDict",
     "GoodsReceipt",
+    "GoodsReceiptCreateInput",
+    "GoodsReceiptCreateInputTypedDict",
+    "GoodsReceiptLineCreateInput",
+    "GoodsReceiptLineCreateInputTypedDict",
     "GoodsReceiptLineItem",
     "GoodsReceiptLineItemTypedDict",
     "GoodsReceiptStatus",
@@ -9776,6 +9810,8 @@ __all__ = [
     "PurchaseOrderAmortizationType",
     "PurchaseOrderInput",
     "PurchaseOrderInputTypedDict",
+    "PurchaseOrderLine",
+    "PurchaseOrderLineTypedDict",
     "PurchaseOrderStatus",
     "PurchaseOrderTypedDict",
     "PurchaseOrdersFilter",
@@ -10931,6 +10967,12 @@ _dynamic_imports: dict[str, str] = {
     "AccountingGeneralLedgerTransactionsOneRequestTypedDict": ".accounting_generalledgertransactionsoneop",
     "AccountingGeneralLedgerTransactionsOneResponse": ".accounting_generalledgertransactionsoneop",
     "AccountingGeneralLedgerTransactionsOneResponseTypedDict": ".accounting_generalledgertransactionsoneop",
+    "AccountingGoodsReceiptsAddGlobals": ".accounting_goodsreceiptsaddop",
+    "AccountingGoodsReceiptsAddGlobalsTypedDict": ".accounting_goodsreceiptsaddop",
+    "AccountingGoodsReceiptsAddRequest": ".accounting_goodsreceiptsaddop",
+    "AccountingGoodsReceiptsAddRequestTypedDict": ".accounting_goodsreceiptsaddop",
+    "AccountingGoodsReceiptsAddResponse": ".accounting_goodsreceiptsaddop",
+    "AccountingGoodsReceiptsAddResponseTypedDict": ".accounting_goodsreceiptsaddop",
     "AccountingGoodsReceiptsAllGlobals": ".accounting_goodsreceiptsallop",
     "AccountingGoodsReceiptsAllGlobalsTypedDict": ".accounting_goodsreceiptsallop",
     "AccountingGoodsReceiptsAllRequest": ".accounting_goodsreceiptsallop",
@@ -12222,6 +12264,8 @@ _dynamic_imports: dict[str, str] = {
     "CreateFolderRequestTypedDict": ".createfolderrequest",
     "CreateFolderResponse": ".createfolderresponse",
     "CreateFolderResponseTypedDict": ".createfolderresponse",
+    "CreateGoodsReceiptResponse": ".creategoodsreceiptresponse",
+    "CreateGoodsReceiptResponseTypedDict": ".creategoodsreceiptresponse",
     "CreateHrisCompanyResponse": ".createhriscompanyresponse",
     "CreateHrisCompanyResponseTypedDict": ".createhriscompanyresponse",
     "CreateInvoiceItemResponse": ".createinvoiceitemresponse",
@@ -13588,6 +13632,12 @@ _dynamic_imports: dict[str, str] = {
     "GoodsReceipt": ".goodsreceipt",
     "GoodsReceiptStatus": ".goodsreceipt",
     "GoodsReceiptTypedDict": ".goodsreceipt",
+    "GoodsReceiptCreateInput": ".goodsreceiptcreateinput",
+    "GoodsReceiptCreateInputTypedDict": ".goodsreceiptcreateinput",
+    "GoodsReceiptLineCreateInput": ".goodsreceiptlinecreateinput",
+    "GoodsReceiptLineCreateInputTypedDict": ".goodsreceiptlinecreateinput",
+    "PurchaseOrderLine": ".goodsreceiptlinecreateinput",
+    "PurchaseOrderLineTypedDict": ".goodsreceiptlinecreateinput",
     "GoodsReceiptLineItem": ".goodsreceiptlineitem",
     "GoodsReceiptLineItemTypedDict": ".goodsreceiptlineitem",
     "GoodsReceiptsFilter": ".goodsreceiptsfilter",
