@@ -1,19 +1,19 @@
 lockVersion: 2.0.0
 id: fca0ac3a-5f4e-452c-bbc7-2311afa8da40
 management:
-  docChecksum: 312230c07a24c466b8fbb435bb42bcca
-  docVersion: 10.96.1
-  speakeasyVersion: 1.812.1
-  generationVersion: 2.968.17
-  releaseVersion: 0.66.0
-  configChecksum: 3450a7d46dc97651bc174b16928ef11f
+  docChecksum: 479e9b0219592afbd5fde8604ea47957
+  docVersion: 10.97.0
+  speakeasyVersion: 1.813.0
+  generationVersion: 2.969.4
+  releaseVersion: 0.67.0
+  configChecksum: 8a38a8b1770dc2083fb9ef3b22dc6c5b
   repoURL: https://github.com/apideck-libraries/sdk-python.git
   installationURL: https://github.com/apideck-libraries/sdk-python.git
   published: true
 persistentEdits:
-  generation_id: 0622b2c6-2b6b-4f2b-9b1d-d9a0d593226c
-  pristine_commit_hash: 4f1aacf839b15b9ec2a37d22a66573071f55ab1b
-  pristine_tree_hash: 0dfc88553770cd273f1cba36f26c5d340fb2fab8
+  generation_id: f888eadd-214e-4a22-880e-8cb3f8f0f5b4
+  pristine_commit_hash: 9d19dce0d8122b6f148a9f7c7464afc4dac52945
+  pristine_tree_hash: 8dec9776b22afa651fd02b401bea47ba5088e82c
 features:
   python:
     acceptHeaders: 3.0.0
@@ -10009,8 +10009,8 @@ trackedFiles:
     pristine_git_object: 9436b5a21f972729fb3f96e807af2bbe7f74b2cf
   pyproject.toml:
     id: 5d07e7d72637
-    last_write_checksum: sha1:f426bc2bae1a3eba2be002ff7e5e3d663a291f63
-    pristine_git_object: d2b24cde90866dbb149f1e06d73902e97f08f308
+    last_write_checksum: sha1:4ef789eeda09a1a7457a0c53d30b2e00d01a62f6
+    pristine_git_object: d0c0bcb33f334d9ffc278dfd1432d94f68dd8e4e
   scripts/prepare_readme.py:
     id: e0c5957a6035
     last_write_checksum: sha1:798a05bafe4fbbfff5b67037866fa25efc52f11a
@@ -10037,8 +10037,8 @@ trackedFiles:
     pristine_git_object: a5d17fde274bd5659de1c7f62a2b381a1d2b47ee
   src/apideck_unify/_version.py:
     id: a63391feed94
-    last_write_checksum: sha1:0a04349606b2744bc48b740b4220a434692fd7d5
-    pristine_git_object: 68fe633fb9fc5930bd42910eb213da3e3ed424e1
+    last_write_checksum: sha1:012383ee044296ba4d5d09ae3329fb0c561b8e93
+    pristine_git_object: 57146a0634680a31485eb618c6b1618cae64309a
   src/apideck_unify/accounting.py:
     id: 8c052190e8ac
     last_write_checksum: sha1:7f9e809f589467dee3bc2719395ce1cdef2d7421
@@ -10117,8 +10117,8 @@ trackedFiles:
     pristine_git_object: 6211f8e8e0ca62d6d1842f53b6d6c5b7be1316fa
   src/apideck_unify/bankfeedstatements.py:
     id: 669df20fb85c
-    last_write_checksum: sha1:4d8e4da1abedb6c65958e8d148203c7f454b8148
-    pristine_git_object: 680101b7010f9a1358e26ea5b6ad03a7dcde4f40
+    last_write_checksum: sha1:ab342d740aafc77b0a3fd25ff857d1eaa28b1e60
+    pristine_git_object: 20cc61a33626bec794cd0d653aba4edbc6e83da8
   src/apideck_unify/basesdk.py:
     id: dea34f44b4d1
     last_write_checksum: sha1:02f62bd40dfedb9697666050be333be287dd5a5b
