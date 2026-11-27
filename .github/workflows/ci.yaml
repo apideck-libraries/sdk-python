@@ -6,14 +6,14 @@ permissions:
   contents: read
 jobs:
   build:
-    # ponytail: pinned, ubuntu-latest (26.04) has no 3.9 build; move to uv-managed Python when 22.04 retires
+    # ponytail: pinned, ubuntu-latest (26.04) lacks old Pythons; move to uv-managed Python when 22.04 retires
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
       # floor of requires-python: where a dep dropping old Pythons breaks customers
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.9"
+          python-version: "3.10"
       - run: pipx install poetry
       # pyproject's readme (README-PYPI.md) is generated at publish time
       - run: python scripts/prepare_readme.py
