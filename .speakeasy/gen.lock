@@ -1,12 +1,12 @@
 lockVersion: 2.0.0
 id: fca0ac3a-5f4e-452c-bbc7-2311afa8da40
 management:
-  docChecksum: 8e15dc079788afe7493658fa7bc4d53b
-  docVersion: 10.96.0
+  docChecksum: 312230c07a24c466b8fbb435bb42bcca
+  docVersion: 10.96.1
   speakeasyVersion: 1.656.1
   generationVersion: 2.753.1
-  releaseVersion: 0.65.0
-  configChecksum: 516c23622db72325cf4cb523d6650dbb
+  releaseVersion: 0.65.1
+  configChecksum: 897916263a5efe2976508503a4b658f1
   repoURL: https://github.com/apideck-libraries/sdk-python.git
   installationURL: https://github.com/apideck-libraries/sdk-python.git
   published: true
@@ -27273,7 +27273,7 @@ trackedFiles:
   pylintrc:
     last_write_checksum: sha1:ec6665a4862060890cf4c6ba61438d11decf5c3c
   pyproject.toml:
-    last_write_checksum: sha1:1cc88ba92d931b65576560364ad06cd8158ec8e9
+    last_write_checksum: sha1:f426bc2bae1a3eba2be002ff7e5e3d663a291f63
   scripts/prepare_readme.py:
     last_write_checksum: sha1:798a05bafe4fbbfff5b67037866fa25efc52f11a
   scripts/publish.sh:
@@ -27287,7 +27287,7 @@ trackedFiles:
   src/apideck_unify/_hooks/types.py:
     last_write_checksum: sha1:d57be38e644de01983a9224b9733ae0add898d43
   src/apideck_unify/_version.py:
-    last_write_checksum: sha1:8098b3de406780570951afbf9c7b040d6e71f0f4
+    last_write_checksum: sha1:0a04349606b2744bc48b740b4220a434692fd7d5
   src/apideck_unify/accounting.py:
     last_write_checksum: sha1:7f9e809f589467dee3bc2719395ce1cdef2d7421
   src/apideck_unify/activities.py:
@@ -27331,11 +27331,11 @@ trackedFiles:
   src/apideck_unify/basesdk.py:
     last_write_checksum: sha1:02f62bd40dfedb9697666050be333be287dd5a5b
   src/apideck_unify/billcreditnotes.py:
-    last_write_checksum: sha1:5a41684a395cdf242c963bfcf875cff93d3fdad1
+    last_write_checksum: sha1:80bb663879be3482a3795d51d39ce246048d4911
   src/apideck_unify/billpayments.py:
-    last_write_checksum: sha1:e294a31667c499f59048fb492a500759c7e2c970
+    last_write_checksum: sha1:54a700733b58049c1662c7b35dd80c3275938a12
   src/apideck_unify/bills.py:
-    last_write_checksum: sha1:5640157fcc405b4b08ee8f9e370654581f3f3f9d
+    last_write_checksum: sha1:639d3129c1389f84280b429eb17b564fefd0ace1
   src/apideck_unify/categories.py:
     last_write_checksum: sha1:da3a7da0ad2678c125baabac8f91f802b3223ab8
   src/apideck_unify/collections.py:
