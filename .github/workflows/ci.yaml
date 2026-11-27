@@ -6,7 +6,8 @@ permissions:
   contents: read
 jobs:
   build:
-    runs-on: ubuntu-latest
+    # ponytail: pinned, ubuntu-latest (26.04) has no 3.9 build; move to uv-managed Python when 22.04 retires
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
       # floor of requires-python: where a dep dropping old Pythons breaks customers
